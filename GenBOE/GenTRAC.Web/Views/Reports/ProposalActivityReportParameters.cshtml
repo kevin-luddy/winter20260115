@@ -1,0 +1,175 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Reports.ProposalActivityReportModelView
+@{
+    ViewBag.Title = "Report Parameters";
+}
+
+<script type="text/javascript">
+
+    var ProposalActivityReportParameterWidget;
+
+    $(function () {
+
+        var ParameterWidgetConfig = {};
+        ParameterWidgetConfig.ContextID = "proposalActivityReportParameterSection";
+        ParameterWidgetConfig.IsModule = true;
+
+        ProposalActivityReportParameterWidget = new GenWidget(ParameterWidgetConfig);
+        ProposalActivityReportParameterWidget.LoadDataPlaceholderID = 'proposalActivityReportParametersPlaceholder';
+
+        ProposalActivityReportParameterWidget.getElement('input[name="CreateStartDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
+        ProposalActivityReportParameterWidget.getElement('input[name="CreateEndDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
+        // skip datepicker icons when tabbing
+        ProposalActivityReportParameterWidget.getElement('.ui-datepicker-trigger').attr('tabindex', '-1');
+        ProposalActivityReportParameterWidget.getElement('.ui-datepicker-trigger').on('blur', function () {
+            $(this).attr('tabindex', '-1');
+        });
+
+        $("#AllCustomersRadio").on("change", function () {
+            ProposalActivityReportParameterWidget.clearSpecificProposals();
+        });
+
+        ProposalActivityReportParameterWidget.clearSpecificProposals = function () {
+            $("select[name=CustomerTypeIds]").val([]);
+            $("select[name=ProgramAreaIds]").val([]);
+            customerList = [];
+            programAreaList = [];
+        }
+
+        ProposalActivityReportParameterWidget.getElement('select[name=CustomerTypeIds], select[name=ProgramAreaIds]').on("focus", function () {
+            $("#SpecificCustomersRadio").prop('checked', true);
+        });
+
+        // Manage the selected End Customer Types to allow select/deselect with mouse click
+        var customerList = [];
+        ProposalActivityReportParameterWidget.UpdateCustomerSelect = function (row) {
+            GenTRAC.UpdateSelect(customerList, row, 'ProposalActivityCustomerTypeIds');
+        }
+
+        // Manage the selected Program Areas to allow select/deselect with mouse click
+        var programAreaList = [];
+        ProposalActivityReportParameterWidget.UpdateProgramSelect = function (row) {
+            GenTRAC.UpdateSelect(programAreaList, row, 'ProposalActivityProgramAreaIds');
+        }
+    });
+</script>
+
+<div id="proposalActivityReportParameterSection" class="composite module expanded full">
+    <div class="module-header-data"><b>Report Parameters</b></div>
+    <div class="module-content-data expanded-content">
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ReportsControllerLogic.PROPOSAL_ACTIVITY_REPORT_PARAMETER_FORM, name = GenTRAC.ActionLogic.ReportsControllerLogic.PROPOSAL_ACTIVITY_REPORT_PARAMETER_FORM }))
+        {
+           <input name="ExecutionUserIds" value="@Model.ExecutionUserIds" type="hidden"/>
+            <div class="form-row">
+                   <div class="form-label"><b>Proposal Status</b></div>
+                    <div class="form-element" style="margin:0px 21px">
+                    @Html.DropDownListFor(model => model.ProposalStatus, Model.ProposalStatusList, new { name = "ProposalStatus", @class="ignore-dirty" })
+                    </div>
+                </div>
+            <div id="ProposalActivityFilterOption">
+                <span><b>End Customer Type/Program Area</b></span>
+                <div style="margin:0px 128px;">
+                    <div class="form-row">
+                        <div class="form-element">
+                            <div>
+                                <input type="radio" class="radio ignore-dirty" id="AllCustomersRadio" value="AllCustomerTypesFilter" name="ProposalActivityFilterOption"  checked="checked" />
+                                <label for="AllCustomersRadio">All</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-element">
+                            <div>
+                                <input type="radio" class="radio ignore-dirty" id="SpecificCustomersRadio" value="SpecificCustomerTypesFilter" name="ProposalActivityFilterOption" />
+                                <label for="SpecificCustomersRadio">Specific End Customer Types and/or Program Areas</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                      <table id="ProposalActivityCustomerTypeTable" style="margin:0px 15px 0px 30px; display:inline-block;">
+                            <thead>
+                                <tr style="height: 15px;">
+                                    <th class="last-child">
+                                        End Customer Types
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                    <select multiple="multiple" id="ProposalActivityCustomerTypeIds" name="CustomerTypeIds" class="ignore-dirty" onclick="ProposalActivityReportParameterWidget.UpdateCustomerSelect(this);" style="max-width:350px;">
+                                           @foreach (SelectListItem option in Model.CustomerTypeList)
+                                            {
+                                                <option value="@option.Value">@option.Text</option>
+                                            }
+                                      </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                      <table id="ProposalActivityProgramAreaTable" style="margin:0px 0px 0px 0px; display: inline-block;">
+                            <thead>
+                                <tr style="height: 15px;">
+                                    <th class="last-child">
+                                        Program Area
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                    <select multiple="multiple" id="ProposalActivityProgramAreaIds" name="ProgramAreaIds" class="ignore-dirty"   onclick="ProposalActivityReportParameterWidget.UpdateProgramSelect(this);" style="max-width:350px;">
+                                            @foreach (SelectListItem option in Model.ProgramAreaList)
+                                            {
+                                                <option value="@option.Value">@option.Text</option>
+                                            }
+                                      </select>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                 </div>
+                </div>
+            <br /><br />
+            <div class="form-row">
+                <div class="form-label">Create Date Range</div>
+                &nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <div class="form-element">
+                    <input name="CreateStartDate" type="text" placeholder="mm/dd/yyyy" class="date ignore-dirty" value="@Model.CreateStartDate" maxlength="10"/>
+                </div>
+                <span>to</span>
+                <div class="form-element">
+                    <input name="CreateEndDate" type="text" placeholder="mm/dd/yyyy" class="date ignore-dirty" value="@Model.CreateEndDate" maxlength="10"/>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(m => m.LeadEstimatorNtid)</div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.LeadEstimatorNtid, new SelectList(Model.LeadEstimatorList, "Ntid", "DisplayName").OrderBy(u => u.Text), "Select " + Model.LeadEstimatorNtidDisplayName, new { name = "LeadEstimator", style = "margin-left:25px;" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">Tracking # begins with</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(model => model.TrackingNumber, new { maxlength = 13, size = 13, name="TrackingNumber", @class= "ignore-dirty", style="margin-left:6px;" })
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,293 @@
+﻿@{
+    ViewBag.Title = "RPM - Opportunities";
+}
+<br />
+<div ng-app="RPM" ng-controller="OTISController">
+    <div class="row top-margin-2">
+        <div class="col-xs-7">
+            <div id="otisGantSearchModule" class="module">
+                <div class="module-header-data">
+                    <span style="font-size:large; font-weight:bold">OMS&nbsp;</span><span>&nbsp;BD Opportunity Gantt</span>
+                    <div class="navbar-right pointer refreshData" ng-click="refreshOTISOpportunities()" title="Refresh Data"><i class="right glyphicon glyphicon-repeat"></i></div>
+                    <div class="navbar-right clearAllFilter icon-stack" ng-click="clearAllOTISFilters()" title="Clear Selected Filters">
+                        <i class="glyphicon glyphicon-filter"></i>
+                        <i class="glyphicon glyphicon-stack-big glyphicon-ban-circle"></i>
+                    </div>
+                    <div class="navbar-right loadFilter icon-stack" ng-click="loadFiltersFromCookieOTIS();refreshOTISData(true)" title="Load Saved Filters">
+                        <i class="glyphicon glyphicon-filter"></i>
+                        <i class="glyphicon glyphicon-stack-big glyphicon-refresh"></i>
+                    </div>
+                    <div class="navbar-right saveFilter icon-stack" ng-click="saveFiltersIntoCookieOTIS()" title="Save Selected Filters">
+                        <i class="glyphicon glyphicon-filter"></i>
+                        <i class="glyphicon glyphicon-stack-big glyphicon-ok"></i>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-3">
+                        Status&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(StatusFilter.selectedIndex, 'StatusFilterClear');" id="StatusFilter" class="otiswide" ng-model="selectedOTISFilters.status" ng-change="refreshOTISData(true)" ng-options="x.display for x in filterOTIS.status track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'StatusFilterClear');" id="StatusFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.status=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        LOB&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(LOBFilter.selectedIndex, 'LOBFilterClear');" id="LOBFilter" class="otiswide" ng-model="selectedOTISFilters.lob" ng-change="refreshOTISData(true)" ng-options="x.display for x in filterOTIS.lob track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'LOBFilterClear');" id="LOBFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.lob=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Con Type&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(ContractTypeFilter.selectedIndex, 'ContractTypeFilterClear');" id="ContractTypeFilter" class="otiswide" ng-model="selectedOTISFilters.contractType" ng-change="refreshOTISData(true)" ng-options="x.display for x in filterOTIS.contractType track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'ContractTypeFilterClear');" id="ContractTypeFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.contractType=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Date&nbsp;
+                        <input onblur="filterObjectRangeChange(document.getElementById('endDate').value, document.getElementById('startDate').value, 'DateFilterClear');" id="startDate" jqdatepicker class="range" type="text" placeholder="dd/mm/yyyy" ng-model="selectedOTISFilters.startDate" ng-change="daterangeOTISUpdate()" />
+                        <input onblur="filterObjectRangeChange(document.getElementById('endDate').value, document.getElementById('startDate').value, 'DateFilterClear');" id="endDate" jqdatepicker class="range" type="text" placeholder="dd/mm/yyyy" ng-model="selectedOTISFilters.endDate" ng-change="daterangeOTISUpdate()" />
+                        <span onclick="filterObjectRangeChange('','','DateFilterClear');" id="DateFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.startDate='';selectedOTISFilters.endDate='';daterangeOTISUpdate()">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-3 ">
+                        Ref#&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(ReferenceNumberFilter.selectedIndex, 'ReferenceNumberFilterClear');" id="ReferenceNumberFilter" class="otiswide" ng-model="selectedOTISFilters.referenceNumber" ng-change="refreshOTISData(true)" ng-options="x.display for x in filterOTIS.referenceNumber track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'ReferenceNumberFilterClear');" id="ReferenceNumberFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.referenceNumber=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        PA&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(PAFilter.selectedIndex, 'PAFilterClear');" id="PAFilter" class="tiswide" ng-model="selectedOTISFilters.pa" ng-change="refreshOTISData(true)" ng-options="x.display for x in filterOTIS.pa track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'PAFilterClear');" id="PAFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.pa=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Opp Type&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(OppTypeFilter.selectedIndex, 'OppTypeFilterClear');" id="OppTypeFilter" class="otiswide" ng-model="selectedOTISFilters.oppType" ng-change="refreshOTISData(true)" ng-options="x.display for x in filterOTIS.oppType track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'OppTypeFilterClear');" id="OppTypeFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.oppType=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Value M$&nbsp;
+                        <input id="minValue" onkeyup="filterObjectRangeChange(document.getElementById('minValue').value, document.getElementById('maxValue').value, 'ValueFilterClear');" class="range" type="text" ng-model="selectedOTISFilters.minValue" ng-change="refreshOTISData(true)" />
+                        <input id="maxValue" onkeyup="filterObjectRangeChange(document.getElementById('minValue').value, document.getElementById('maxValue').value, 'ValueFilterClear');" class="range" type="text" ng-model="selectedOTISFilters.maxValue" ng-change="refreshOTISData(true)" />
+                        <span onclick="filterObjectRangeChange('','','ValueFilterClear');" id="ValueFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.minValue='';selectedOTISFilters.maxValue='';refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-3">
+                        Role&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(RoleFilter.selectedIndex, 'RoleFilterClear');" id="RoleFilter" class="otiswide" ng-model="selectedOTISFilters.role" ng-change="refreshOTISData(true)" ng-options="x.display for x in filterOTIS.role track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'RoleFilterClear');" id="RoleFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.role=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Classified&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(ClassifiedFilter.selectedIndex, 'ClassifiedFilterClear');" id="ClassifiedFilter" class="otiswide" ng-model="selectedOTISFilters.classified" ng-change="refreshOTISData(true)" ng-options="x.display for x in filterOTIS.classified track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'ClassifiedFilterClear');" id="ClassifiedFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.classified=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Competitive&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(CompetitiveFilter.selectedIndex, 'CompetitiveFilterClear');" id="CompetitiveFilter" class="otiswide" ng-model="selectedOTISFilters.competitive" ng-change="refreshOTISData(true)" ng-options="x.display for x in filterOTIS.competitive track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'CompetitiveFilterClear');" id="CompetitiveFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.competitive=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Name Contains&nbsp;<input class="nameContains" type="text" onkeyup="filterObjectChange(document.getElementById('NameFilter').value, 'NameFilterClear');" id="NameFilter" ng-model="selectedOTISFilters.nameContains" ng-change="refreshOTISData(true)" />
+                        <span onclick="filterObjectChange('', 'NameFilterClear');" id="NameFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.nameContains='';refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-3">
+                        Cust&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(CustomerFilter.selectedIndex, 'CustomerFilterClear');" id="CustomerFilter" class="otiswide" ng-model="selectedOTISFilters.customer" ng-change="refreshOTISData(true)" ng-options="x.display for x in filterOTIS.customer track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'CustomerFilterClear');" id="CustomerFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.customer=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Capt Mgr&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(CaptMgrFilter.selectedIndex, 'CaptMgrFilterClear');" id="CaptMgrFilter" class="otiswide" ng-model="selectedOTISFilters.captMgr" ng-change="refreshOTISData(true)" ng-options="x.display for x in filterOTIS.captMgr track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'CaptMgrFilterClear');" id="CaptMgrFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.captMgr=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Prop Mgr&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(PropMgrFilter.selectedIndex, 'PropMgrFilterClear');" id="PropMgrFilter" class="otiswide" ng-model="selectedOTISFilters.propMgr" ng-change="refreshOTISData(true)" ng-options="x.display for x in filterOTIS.propMgr track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'PropMgrFilterClear');" id="PropMgrFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.propMgr=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3 ">
+                        Int'l&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(InternationalFilter.selectedIndex, 'InternationalFilterClear');" id="InternationalFilter" type="checkbox" ng-model="selectedOTISFilters.international" ng-change="refreshOTISData(true)" ng-options="boolArray(x.display) for x in filterOTIS.international track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'InternationalFilterClear');" id="InternationalFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.international=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-3">
+                        CE Lead&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(CELeadFilter.selectedIndex, 'CELeadFilterClear');" id="CELeadFilter" class="otiswide" ng-model="selectedOTISFilters.ceLead" ng-change="refreshOTISData(true)" ng-options="x.display for x in filterOTIS.ceLead track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'CELeadFilterClear');" id="CELeadFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.ceLead=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        BD Lead&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(BDLeadFilter.selectedIndex, 'BDLeadFilterClear');" id="BDLeadFilter" class="otiswide" ng-model="selectedOTISFilters.bdLead" ng-change="refreshOTISData(true)" ng-options="x.display for x in filterOTIS.bdLead track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'BDLeadFilterClear');" id="BDLeadFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.bdLead=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Category&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(CategoryFilter.selectedIndex, 'CategoryFilterClear');" id="CategoryFilter" class="otisnarrow" ng-model="selectedOTISFilters.category" ng-change="refreshOTISData(true)" ng-options="x.display for x in filterOTIS.category track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'CategoryFilterClear');" id="CategoryFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedOTISFilters.category=[];refreshOTISData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-5 opp-details-padding left">
+            <div id="opportunityDetails" ng-cloak class="module" ng-hide="hideOTISDetails">
+                <div class="module-header-data">Opportunity Details: OMS</div>
+                <div class="details">
+                    <div class="row">
+                        <div class="col-xs-4 indent">OMS OPP#:&nbsp;<b>{{selectedOTIS.model.OTISNumber}}</b></div>
+                        <div class="col-xs-4">LOB:&nbsp;<b>{{selectedOTIS.model.LOB}}</b></div>
+                        <div class="col-xs-4">PA:&nbsp;<b>{{selectedOTIS.model.PA}}</b></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 indent">Program:&nbsp;<b>{{selectedOTIS.model.Title}}</b></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6 indent">Customer:&nbsp;<b>{{selectedOTIS.model.Customer}}</b></div>
+                        <div class="col-xs-4">Location:&nbsp;<b>{{selectedOTIS.model.Location}}</b></div>
+                        <div class="col-xs-2">Int'l:&nbsp;<b>{{selectedOTIS.model.International | true_false}}</b></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4 indent">Status:&nbsp;<b>{{selectedOTIS.model.Status}}</b></div>
+                        <div class="col-xs-4">Con Type:&nbsp;<b>{{selectedOTIS.model.ContractType}}</b></div>
+                        <div class="col-xs-4">Opp Type:&nbsp;<b>{{selectedOTIS.model.OppType}}</b></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4 indent">Classified:&nbsp;<b>{{selectedOTIS.model.Classified}}</b></div>
+                        <div class="col-xs-4">Competitive:&nbsp;<b>{{selectedOTIS.model.Competitive}}</b></div>
+                        <div class="col-xs-4">Role:&nbsp;<b>{{selectedOTIS.model.Role}}</b></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12 indent">Description:&nbsp;<b>{{selectedOTIS.model.Description}}</b></div>
+                    </div>
+                </div>
+                <div class="details-middle">
+                    <div class="row">
+                        <div class="col-xs-4 indent">RFP:&nbsp;<b>{{selectedOTIS.model.RFPDateString}}</b></div>
+                        <div class="col-xs-4 ">Award:&nbsp;<b>{{selectedOTIS.model.AwardDateString}}</b></div>
+                        <div class="col-xs-4 ">Actual:&nbsp;<b>{{selectedOTIS.model.ActualDateString}}</b></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4 indent">Total Prop Value $M:&nbsp;<b>{{selectedOTIS.model.EVal}}</b></div>
+                        <div class="col-xs-4 ">&nbsp;</div>
+                        <div class="col-xs-4 ">&nbsp;</div>
+                    </div>
+                </div>
+                <div class="details">
+                    <div class="row">
+                        <div class="col-xs-4 indent">Prop Mgr:&nbsp;<b>{{selectedOTIS.model.PM}}</b></div>
+                        <div class="col-xs-4 ">Capt Mgr:&nbsp;<b>{{selectedOTIS.model.CaptMgr}}</b></div>
+                        <div class="col-xs-4">BD Lead:&nbsp;<b>{{selectedOTIS.model.BDLead}}</b></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4 indent">CE Lead:&nbsp;<b>{{selectedOTIS.model.CELead}}</b></div>
+                        <div class="col-xs-4 ">&nbsp;</div>
+                        <div class="col-xs-4 ">&nbsp;</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="module">
+        <div class="row" style="padding:3px; background-color:#e4e4e4">
+            <div class="col-xs-12"><b>Annotation:</b>&nbsp;<input type="checkbox" ng-model="selectedOTISFilters.includePropMgr" ng-change="annotationOTISUpdate()" /> Prop MGR&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" ng-model="selectedOTISFilters.includeCELead" ng-change="annotationOTISUpdate()" /> Price/CE Lead&nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" ng-model="selectedOTISFilters.includeValue" ng-change="annotationOTISUpdate()" /> Value M$</div>
+        </div>
+        <div ng-cloak data-ng-show="isOTISError" class="row">
+            <div class="col-xs-12 alert alert-danger">Error retrieving OMS Information, retry using refresh button above or contact:&nbsp;<a href="mailto:@(System.Web.Configuration.WebConfigurationManager.AppSettings["HelpdeskEmailAddress"])">GenBOE</a>.</div>
+        </div>
+        <div class="row no-top-margin">
+            <div class="col-xs-12 no-padding">
+                <div data-ng-show="isOTISLoading" class="loader"></div>
+                <div ng-cloak
+                     data-ng-hide="isOTISLoading || isOTISError"
+                     gantt
+                     auto-expand="false"
+                     column-width="40"
+                     data="ganttOTISData"
+                     from-date="optionsOTIS.fromDate"
+                     to-date="optionsOTIS.toDate"
+                     headers="['month', 'week']" @*This has to be here since it was horribly broken when moved into optionsOTIS*@
+                     task-content="optionsOTIS.taskContent"
+                     view-scale="optionsOTIS.scale"
+                     api="optionsOTIS.api"
+                     sort-mode="optionsOTIS.sortMode"
+                     max-height="550"
+                     min-height="550"
+                     allow-side-resizing="optionsOTIS.allowSideResizing">
+                    <gantt-table enabled="true"
+                                 columns="optionsOTIS.columns"
+                                 headers="optionsOTIS.columnsHeaders"
+                                 classes="optionsOTIS.columnsClasses"
+                                 header-contents="optionsOTIS.columnsHeaderContents">
+                    </gantt-table>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-cloak>
+            <div class="col-xs-6">
+                <div class="paging-control" genpaging data-num-pages="{{numberOfPages(filteredOTISCount, pageSizeOTIS)}}" data-current-page="currentOTISPage"></div>
+                <div data-ng-show="!isOTISLoading && !isOTISError && (filteredOTISCount === 0)">There are no Proposals for the current filter(s).</div>
+            </div>
+            <div class="col-xs-3">Count:&nbsp;<span class="bold">{{filteredOTISCount}}</span></div>
+            <div class="col-xs-3 left">Est. Value ($M):&nbsp;<span class="bold">{{filteredOTISValue | currency : '$' : 1}}M</span></div>
+        </div>
+    </div>
+</div>

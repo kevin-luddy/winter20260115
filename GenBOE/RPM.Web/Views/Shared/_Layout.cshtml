@@ -1,0 +1,114 @@
+﻿@using IES.Common;
+
+<!DOCTYPE html>
+<html>
+<head>
+    <base href="/Home/" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/angularapp")
+    @Scripts.Render("~/bundles/angular")
+
+    <script type="text/javascript">
+        // This script is used to prevent cross-frame attacks
+        if (top.frames.length != 0) {
+            top.location = self.document.location;
+        }
+    </script>
+</head>
+<body class="home">
+    <div class="navbar navbar-fixed-top">
+        <div class="lmproprietary">Lockheed Martin Proprietary Information </div>
+        <iframe class="iframe" src="@ConfigurationUtilities.IESHeaderUrl("RPM")"></iframe>
+        <div class="navbar-header">
+            <ul class="nav navbar-nav">
+                <li class="dropdown open">
+                    <ul class="dropdown-menu" id="rpmMenu">
+                        <li>
+                            <ul class='list-inline'>
+                                <li>
+                                    <a href="/Home/Proposals">PTM Data</a>
+                                </li>
+                                <li>
+                                    <a href="/Home/Opportunities">OMS Data</a>
+                                </li>
+                                <li>
+                                    <a href="/Home/ProposalMetrics">Proposal Metrics</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="body-content">
+        <div class="rpm-logo-div">
+            <img src="~/Content/images/logo_RPM_wide.jpg" class="rpm-logo" />
+            @if (!Utilities.IsProduction())
+            {
+                <span style="font-weight:bold;">
+                    @("Username : " + System.Threading.Thread.CurrentPrincipal.Identity.Name)
+                </span>
+            }
+            <img src="~/Content/images/LM_logo_notagline_black.png" alt="Lockheed Martin logo" class="lmlogo" />
+        </div>
+        <iframe class="bannerframe" src="@ConfigurationUtilities.IESBannerUrl("RPM")"></iframe>
+        @RenderBody()
+    </div>
+    <iframe class="appOfflineFrame" src="@ConfigurationUtilities.AppOfflineUrl("RPM")"></iframe>
+    <div class="lmproprietary">
+        Lockheed Martin Proprietary Information
+        <div class="footerVersionInfo">@Utilities.VersionAndUpdatedDate</div>
+    </div>
+
+    @RenderSection("scripts", required: false)
+    @if (!Utilities.DisablePiwik())
+    {
+        <!-- Piwik Statistics -->
+        <script type="text/javascript">
+            window.piwikAsyncInit = function () {
+                try {
+                    var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 25);                //<!-- BusApps Rollup -->
+                    piwikTracker.setDocumentTitle(document.domain + "/" + document.title);
+                    piwikTracker.trackPageView();
+                    piwikTracker.enableLinkTracking();
+
+                    var piwikTracker1 = Piwik.getTracker(pkBaseURL + "piwik.php", 91);           //<!-- Space Rollup -->
+                    piwikTracker1.setDocumentTitle(document.domain + "/" + document.title);
+                    piwikTracker1.trackPageView();
+                    piwikTracker1.enableLinkTracking();
+
+                    var piwikTracker2 = Piwik.getTracker(pkBaseURL + "piwik.php", 94);           //<!-- Space Business Systems -->
+                    piwikTracker2.setDocumentTitle(document.domain + "/" + document.title);
+                    piwikTracker2.trackPageView();
+                    piwikTracker2.enableLinkTracking();
+
+                    var piwikTracker3 = Piwik.getTracker(pkBaseURL + "piwik.php", @Utilities.PiwikId());          //<!-- Space RPM  -->
+                    var currentUser = '@Utilities.CurrentUser()';
+                    // Track each user's visit
+                    piwikTracker3.setCustomVariable(1, "User Account", currentUser, "visit");
+                    piwikTracker3.setDocumentTitle(document.domain + "/" + document.title);
+                    piwikTracker3.trackPageView();
+                    piwikTracker3.enableLinkTracking();
+                } catch( err ) {}
+            };
+        </script>
+        <noscript>
+            <p><img src="https://techopstoolbox.global.lmco.com/piwik/piwik.php?idsite=25" style="border:0" alt="Piwik"></p>
+            <p><img src="https://techopstoolbox.global.lmco.com/piwik/piwik.php?idsite=91" style="border:0" alt="Piwik"></p>
+            <p><img src="https://techopstoolbox.global.lmco.com/piwik/piwik.php?idsite=94" style="border:0" alt="Piwik"></p>
+            <p><img src="https://techopstoolbox.global.lmco.com/piwik/piwik.php?idsite=@Utilities.PiwikId()" style="border:0" alt="Piwik"></p>
+
+        </noscript>
+        <script type="text/javascript">
+        var pkBaseURL = "@Utilities.PiwikUrl()";
+        document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+        </script>
+        <!-- End Piwik Statistics Code -->
+    }
+</body>
+</html>

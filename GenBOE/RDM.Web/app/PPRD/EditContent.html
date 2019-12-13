@@ -1,0 +1,66 @@
+﻿<style type="text/css">
+    .modal-dialog { width:900px; }
+</style>
+
+<div id="editContentModal">
+    <div class="ui-widget-header modal-title-bar">Edit Content<div class="modal-close-box" data-ng-click="$close()"><i class="glyphicon glyphicon-remove"></i></div></div>
+    <div class="modal-content-area">
+        <form name="form">
+            <div class="form-row css3pie-position-fix">
+                <div gen-validation data-errors="$root.modalErrors"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">Content Type *</div>
+                <div class="form-element tinyMceOutside">
+                    <div data-ng-if="newNode !== true">
+                        <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions | filter:{Id:'{{model.ContentType}}'}" data-ng-model="model.ContentType"></select>
+                    </div>
+
+                    <div data-ng-if="newNode === true">
+                        <div data-ng-if="model.NumTablesInSection <= 0">
+                            <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions | filter:{Id:'!{{PPRDModel.SectionContentTypeSection}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeNone}}'}" data-ng-model="model.ContentType"></select>
+                        </div>
+                        <div data-ng-if="model.NumTablesInSection >= 1">
+                            <select data-ng-change="onContentTypeChange();" data-ng-options="item.Id as item.Label for item in PPRDModel.SectionContentTypeOptions | filter:{Id:'!{{PPRDModel.SectionContentTypeRateTable}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeSection}}'} | filter:{Id:'!{{PPRDModel.SectionContentTypeNone}}'}" data-ng-model="model.ContentType"></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div data-ng-if="model.ContentType === PPRDModel.SectionContentTypeText">
+                <div class="form-row">
+                    <div class="form-label">Internal</div>
+                    <div class="form-element">
+                        <input data-ng-disabled="isReadOnly" type="checkbox" data-ng-model="model.IsInternalSection" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">Text *</div>
+                    <div class="form-element tinyMceOutside">
+                        <textarea ui-tinymce="tinyMceOptions" data-ng-model="model.TextContent" data-ng-required="true" name="contentText"></textarea>
+                        <span class="small">Note: Images can be dragged into the above text area.</span>
+                        <div class="bg-danger">
+                            <span class="error" data-ng-show="form.contentText.$error.required">
+                                Text is Required.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div data-ng-if="model.ContentType === PPRDModel.SectionContentTypeRateTable">
+                <div class="form-row">
+                    <div class="form-label">Display Resource Code</div>
+                    <div class="form-element">
+                        <input data-ng-disabled="isReadOnly" type="checkbox" data-ng-model="model.DisplayRateCode" />
+                    </div>
+                </div>
+            </div>
+            <div data-ng-if="model.ContentType !== PPRDModel.SectionContentTypeText && model.ContentType !== PPRDModel.SectionContentTypeRateTable">
+                Unknown Content Type!!
+            </div>
+            <div class="modal-footer">
+                <button class="ies-action" data-ng-disabled="form.$invalid || $root.modalErrors.length > 0" type="submit" data-ng-click="$close(model)">OK</button>
+                <button class="ies" type="button" data-ng-click="$close()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

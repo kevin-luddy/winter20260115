@@ -1,0 +1,32 @@
+﻿<div>
+    <div class="modal-title-bar">Insert Workspace Variable<div class="modal-close-box" data-ng-click="$close()"><i class="glyphicon glyphicon-remove"></i></div></div>
+    <div class="modal-content-area">
+        <div data-ng-if="model.length > 0">
+            <p>Click on a Workspace Variable to insert it into the MOQ Equation.</p>
+            <p data-ng-if="hasDisabledVariable">
+                <div class="circular-ref"></div> - Workspace Variables with a <div class="circular-ref"></div> cannot be selected because they will cause a circular reference.
+                <div class="help" uib-tooltip="Circular references are any references within a formula that depend upon the results of that same formula. For example, a variable that refers to the total of the BOE the user is in or a variable that refers to another variable which depends on the total of the BOE the user is in."></div>
+            </p>
+            <div class="var-table-area">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Workspace Variable</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-ng-repeat="variable in model">
+                            <td>
+                                <a data-ng-if="!variable.Disabled" data-ng-click="VariableClicked(variable)">{{variable.WorkspaceVariableName}}</a>
+                                <div data-ng-if="variable.Disabled" class="circular-ref-var"><div class="circular-ref"></div><span>{{variable.WorkspaceVariableName}}</span></div>
+                            </td>
+                            <td>{{variable.WorkspaceVariableValue}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div data-ng-if="model.length == 0">There are currently no variables for this workspace.</div>
+    </div>
+</div>

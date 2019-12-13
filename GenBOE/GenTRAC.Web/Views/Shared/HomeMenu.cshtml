@@ -1,0 +1,162 @@
+﻿@model ICollection<GenTRAC.ActionLogic.ModelView.GenTRACMenuItemModelView>
+
+<script type="text/javascript">
+    var menuWidget;
+
+    $(function () {
+        var widgetConfig = {};
+        widgetConfig.ContextID = "genTRACMenu";
+        widgetConfig.IsModule = true;
+
+        widgetConfig.DialogConfigs = [];
+        widgetConfig.DialogConfigs.push(
+           {
+               ElementID: "WhosOnlineDialog",
+               Params: { width: "600px", title: "Users" }
+           });
+
+        menuWidget = new GenWidget(widgetConfig);
+
+        $(".whos-online-button").click(function (response) {
+            var dialog = menuWidget.getDialog("WhosOnlineDialog");
+            dialog.closeDialog();
+        });
+    });
+
+    function WhosOnline() {
+        var dialog = menuWidget.getDialog("WhosOnlineDialog");
+        var onlineUsersDetailsURL = GenSession.GetSiteURL() + '@WebConstants.Controller.GEN_TRAC' + '/@WebConstants.Action.WHOS_ONLINE';
+
+        var options =
+        {
+            url: onlineUsersDetailsURL,
+            data: JSON.stringify({ parentWidget: 'menuWidget', dialogName: 'WhosOnlineDialog' }),
+            dataType: 'html',
+            success: function (response) {
+                dialog.dialogElement.html(response);
+                dialog.openDialog();
+            }
+        };
+        menuWidget.ajaxRequest(options);
+    };
+
+    function ClearCache() {
+        var clearCacheURL = GenSession.GetSiteURL() + '@WebConstants.Controller.HOME' + '/@WebConstants.Action.HOME_CLEAR_CACHE';
+        ShowClearingCache();
+
+        var options =
+        {
+            url: clearCacheURL,
+            data: JSON.stringify({}),
+            dataType: 'html',
+            success: function (response) {
+                HideClearingCache();
+            }
+        };
+        menuWidget.ajaxRequest(options);
+    };
+
+    function ShowClearingCache() {
+        $('#ClearingCache').removeClass('display-none');
+    };
+
+    function HideClearingCache() {
+        $('#ClearingCache').addClass('display-none');
+    };
+
+</script>
+
+<div class="nav-container">
+    <div class="nav-bar left">
+        @foreach (var item in Model.Where(x => x.MenuLocation == MenuLocation.Left))
+        {
+            <div @MvcHtmlString.Create(item.Selected ? "class=\"selected\"" : string.Empty)>
+            @if (!item.SubMenuItems.Any())
+            {
+                if (item.ActionName.Length > 0)
+                {
+                    @Html.RouteLink(item.LinkText, item.RouteName, new { controller = item.ControllerName, action = item.ActionName }, item.HtmlAttributes)
+                }
+                else if (item.LinkUrl != null)
+                {
+                    <a href="@item.LinkUrl" target="_blank">@item.LinkText</a>
+                }
+                else if (item.OnClickAction != null)
+                {
+                    <a href="#" onclick="@item.OnClickAction">@item.LinkText</a>
+                }
+            }
+            else
+            {
+                <a class="inactive">@item.LinkText</a>
+                <div class="submenu">
+                    @foreach (var subItem in item.SubMenuItems)
+                    {
+                        if (subItem.ActionName.Length > 0)
+                        {
+                            <div>                                   
+                                @Html.RouteLink(subItem.LinkText, subItem.RouteName, subItem.RouteValues, subItem.HtmlAttributes)
+                            </div>
+                        }
+                        else if (subItem.LinkUrl != null)
+                        {
+                            <a href="@subItem.LinkUrl" target="_blank">@subItem.LinkText</a>
+                        }
+                    }
+                </div>
+            }
+            </div>
+        }
+    </div>
+    <div class="nav-bar right">
+        @foreach (var item in Model.Where(x => x.MenuLocation == MenuLocation.Right))
+        {
+            <div @MvcHtmlString.Create(item.Selected ? "class=\"selected\"" : string.Empty)>
+            @if (!item.SubMenuItems.Any())
+            {
+                if (item.ActionName.Length > 0)
+                {
+                    @Html.RouteLink(item.LinkText, item.RouteName, new { controller = item.ControllerName, action = item.ActionName }, item.HtmlAttributes)
+                }
+                else if (item.LinkUrl != null)
+                {
+                    <a href="@item.LinkUrl" target="_blank">@item.LinkText</a>
+                }
+                else if (item.OnClickAction != null)
+                {
+                    <a href="#" onclick="@item.OnClickAction">@item.LinkText</a>
+                }
+            }
+            else
+            {
+                <a class="inactive">@item.LinkText</a>
+                <div class="submenu">
+                    @foreach (var subItem in item.SubMenuItems)
+                    {
+                        if (subItem.ActionName.Length > 0)
+                        {
+                            <div>                                   
+                                @Html.RouteLink(subItem.LinkText, subItem.RouteName, subItem.RouteValues, subItem.HtmlAttributes)
+                            </div>
+                        }
+                        else if (subItem.LinkUrl != null)
+                        {
+                            <a href="@subItem.LinkUrl" target="_blank">@subItem.LinkText</a>
+                        }
+                    }
+                </div>
+            }
+            </div>
+        }
+    </div>
+</div>
+<div class="nav-shadow">
+    <div class="whos-online" id="WhosOnlineDialog"></div>
+</div>
+<div id="ClearingCache" class="page-loading display-none">
+    <div class="loading-box">
+        <div class="loader white"></div>
+        <span>Clearing Cache...</span>
+    </div>
+</div>
+

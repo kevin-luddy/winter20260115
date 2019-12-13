@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microsoft.Practices.EnterpriseLibrary.Logging.Service</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage">
+            <summary>
+            Represents a log message contract.  Contains the common properties that are required for all log messages.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.Message">
+            <summary>
+            Message body to log.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.Categories">
+            <summary>
+            Category name used to route the log entry to a one or more trace listeners.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.Priority">
+            <summary>
+            Importance of the log message.  Only messages whose priority is between the minimum and maximum priorities (inclusive)
+            will be processed.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.EventId">
+            <summary>
+            Event number or identifier.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.Severity">
+            <summary>
+            Log entry severity as a <see cref="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.Severity"/> enumeration. (Unspecified, Information, Warning or Error).
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.Title">
+            <summary>
+            Additional description of the log entry message.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.TimeStamp">
+            <summary>
+            Date and time of the log entry message. This timestamp must use the <see cref="F:System.Globalization.DateTimeStyles.RoundtripKind"/> format.
+            </summary>
+            <example>entry.TimeStamp = DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture);</example>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.AppDomainName">
+            <summary>
+            The <see cref="T:System.AppDomain"/> in which the program is running
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.ManagedThreadName">
+            <summary>
+            The name of the .NET thread.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.ExtendedPropertiesKeys">
+            <summary>
+            Together with <see cref="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.ExtendedPropertiesValues"/>, this property represent the keys for a Dictionary of extended properties.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.ExtendedPropertiesValues">
+            <summary>
+            Together with <see cref="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.ExtendedPropertiesKeys"/>, this property represent the values for a Dictionary of extended properties.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.ActivityId">
+            <summary>
+            Tracing activity id
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.RelatedActivityId">
+            <summary>
+            Related activity id
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.MachineName">
+            <summary>
+            Name of the computer.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.ProcessId">
+            <summary>
+            The Win32 process ID for the current running process.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.ProcessName">
+            <summary>
+            The name of the current running process.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage.Win32ThreadId">
+            <summary>
+            The Win32 Thread ID for the current thread.
+            </summary>
+        </member>
+        <member name="T:Microsoft.Practices.EnterpriseLibrary.Logging.Service.ILoggingService">
+            <summary>
+            Allows clients to submit log entries into the server log.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Practices.EnterpriseLibrary.Logging.Service.ILoggingService.Add(Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage[])">
+            <summary>
+            Adds log entries into to the server log.
+            </summary>
+            <param name="entries">The client log entries to log in the server.</param>
+        </member>
+        <member name="T:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryExtensions">
+            <summary>
+            Contains useful extension methods to handle the <see cref="T:Microsoft.Practices.EnterpriseLibrary.Logging.LogEntry"/> class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryExtensions.ToLogEntry(Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage)">
+            <summary>
+            Maps a <see cref="T:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage"/> to a <see cref="T:Microsoft.Practices.EnterpriseLibrary.Logging.LogEntry"/>.
+            </summary>
+            <param name="entry">The log entry message to map.</param>
+            <returns>The resulting entry.</returns>
+        </member>
+        <member name="T:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LoggingService">
+            <summary>
+            Allows clients to submit log entries into the server log.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LoggingService.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LoggingService"/> class.
+            </summary>
+        </member>
+        <member name="M:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LoggingService.#ctor(Microsoft.Practices.EnterpriseLibrary.Logging.LogWriter)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LoggingService"/> class.
+            </summary>
+            <param name="logWriter">The log sink where to store incoming entries.</param>
+        </member>
+        <member name="M:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LoggingService.Add(Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage[])">
+            <summary>
+            Adds log entries into to the server log.
+            </summary>
+            <param name="entries">The client log entries to log in the server.</param>
+        </member>
+        <member name="M:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LoggingService.CollectInformation(Microsoft.Practices.EnterpriseLibrary.Logging.LogEntry)">
+            <summary>
+            Used to collect more information or customize the incoming log entry before logging it.
+            </summary>
+            <param name="entry">The log entry coming from the client.</param>
+        </member>
+        <member name="M:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LoggingService.Translate(Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage)">
+            <summary>
+            Translates the incoming <see cref="T:Microsoft.Practices.EnterpriseLibrary.Logging.Service.LogEntryMessage"/> into a <see cref="T:Microsoft.Practices.EnterpriseLibrary.Logging.LogEntry"/>.
+            </summary>
+            <param name="entry">The log entry coming from the client.</param>
+            <returns>A <see cref="T:Microsoft.Practices.EnterpriseLibrary.Logging.LogEntry"/> instance that can be stored in the log.</returns>
+        </member>
+        <member name="T:Microsoft.Practices.EnterpriseLibrary.Logging.Service.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.Properties.Resources.CannotDeserializeExtendedProperties">
+            <summary>
+              Looks up a localized string similar to Cannot deserialize ExtendedProperties property from incoming message. The ExtendedPropertiesKeys and ExtendedPropertiesValues property values must be collections of the same length..
+            </summary>
+        </member>
+        <member name="P:Microsoft.Practices.EnterpriseLibrary.Logging.Service.Properties.Resources.CannotDeserializeTimeStamp">
+            <summary>
+              Looks up a localized string similar to Cannot deserialize TimeStamp property from incoming message. The timestamp is required and must use the DateTimeStyles.RoundtripKind format..
+            </summary>
+        </member>
+    </members>
+</doc>

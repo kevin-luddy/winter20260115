@@ -1,0 +1,273 @@
+﻿<%@ Master Language="C#" Inherits="System.Web.Mvc.ViewMasterPage" %>
+<%@ Import namespace="IES.Common" %>
+<%@ Import namespace="IES.Common.classes" %>
+<%@ Import namespace="System.Web.Optimization" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <!--  *** DO NOT PLACE ANYTHING ABOVE THIS META STATEMENT, OR YOU WILL BREAK US AGAIN. THIS HAS TO BE THE FIRST THING IN THE HEAD. IF THAT'S AN ISSUE, 
+                TALK TO DUSAN OR MATT. *** 
+        Force Internet Explorer 8 if its available.
+    -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    
+    <script type="text/jscript">
+        // The global variables are created/assigned in every master/layout page, so that way our JS libraries (in this solution and in common) don't have to have the URL hardcoded,
+        // but they can use the web.config values instead :)
+
+        // Stores the production URL. This is used to decide whether we are in production or not.
+        var prodGenBoeUrl_Global = "<%: SiteMasterUtilities.ProductionUrl() %>";
+
+        // Do we disable external links?
+        var disableLinks_Global = "<%: SiteMasterUtilities.DisableExternalHelpLinksForClassifiedInstallations() %>" == "True";
+    </script>
+
+    <title>
+        <asp:ContentPlaceHolder ID="TitleContent" runat="server" />
+    </title>
+
+    <%: Scripts.Render("~/bundles/home") %>
+    <%: Styles.Render("~/Content/homeCss") %>
+    
+    <script type="text/javascript">
+        var prefix = '';
+    </script> 
+
+    <link rel="shortcut icon" href="<%= this.ResolveClientUrl("~/Resources/css/images/genBOE_16x16_favicon.ico") %>" />
+
+    <% if(!Utilities.DisablePiwik()) { %>
+    <!-- Piwik Statistics -->
+    <script type="text/javascript">
+        var piwikTracker3;
+    window.piwikAsyncInit = function () {
+	    try {
+            var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 25);                       //<!-- BusApps Rollup -->
+		    piwikTracker.setDocumentTitle(document.domain + "/" + document.title);
+		    piwikTracker.trackPageView();
+		    piwikTracker.enableLinkTracking();
+
+		    var piwikTracker1 = Piwik.getTracker(pkBaseURL + "piwik.php", 91);           //<!-- Space Rollup -->
+		    piwikTracker1.setDocumentTitle(document.domain + "/" + document.title);
+		    piwikTracker1.trackPageView();
+		    piwikTracker1.enableLinkTracking();
+
+		    var piwikTracker2 = Piwik.getTracker(pkBaseURL + "piwik.php", 94);           //<!-- Space Business Systems -->
+		    piwikTracker2.setDocumentTitle(document.domain + "/" + document.title);
+		    piwikTracker2.trackPageView();
+		    piwikTracker2.enableLinkTracking();
+
+		    piwikTracker3 = Piwik.getTracker(pkBaseURL + "piwik.php", <%:Utilities.PiwikId()%>);          //<!-- BOE  -->
+		    var currentUser = '<%: ViewData["CurrentUserName"] %>';
+            // Track each user's visit
+            piwikTracker3.setCustomVariable(1, "User Account", currentUser, "visit");
+            piwikTracker3.setDocumentTitle(document.domain + "/" + document.title);
+		    piwikTracker3.trackPageView();
+		    piwikTracker3.enableLinkTracking();
+	    } catch( err ) {}
+    };
+    </script>
+    <noscript>
+	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=25" style="border:0" alt="Piwik"></p>
+	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=91" style="border:0" alt="Piwik"></p>
+	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=94" style="border:0" alt="Piwik"></p>
+	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=<%:Utilities.PiwikId()%>" style="border:0" alt="Piwik"></p>
+    </noscript>
+    <script type="text/javascript">
+        var pkBaseURL = "<%:Utilities.PiwikUrl()%>";
+        document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <!-- End Piwik Statistics Code -->
+    <% } %>
+    
+    <%: Scripts.Render("~/bundles/initialization") %>
+    <% if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems) { %>
+    <style type="text/css">
+        body { background: url(/Resources/css/images/orion-bg.jpg) no-repeat center center fixed; background-size: cover; }
+    </style>
+    <% } else { %>
+    <style type="text/css">
+        body { background: url(/Resources/css/images/littoral-bg.jpg) no-repeat center center fixed; background-size: cover; }
+    </style>
+    <% } %>    
+    <style type="text/css">
+        .nav-container { text-align: left; height: 30px; }
+        .nav-bar > div { margin: 0; padding: 10px 0; }
+    </style>
+</head>
+<body class="home">
+    <% if (IdentitySwap.IdentitySwappingForTesting.IsIdentitySwappingAllowed("IsIdentitySwappingAllowed", "ActiveDirectoryPath", "ADGroupsAllowedToSwapIdentity")) { %>
+        <div id="IdentitySwappingDiv">
+            <script src="<%= this.ResolveClientUrl("~/Resources/js/IdentitySwappingScript.js")%>" type="text/javascript"></script>
+        </div>        
+    <% } %>
+    <div class="page">
+        <div class="header">
+            <div class="lmproprietary">
+                Lockheed Martin Proprietary Information
+            </div>
+            <% if (!string.IsNullOrEmpty(SiteMasterUtilities.UnclassifiedBannerText))
+            {%>
+                <div class="unclassifiedbanner">
+                    <%=SiteMasterUtilities.UnclassifiedBannerText%>
+                </div>
+            <%}%>
+
+            <% if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems) { %>
+            <iframe class="iframe" src="<%:ConfigurationUtilities.IESHeaderUrl("BOE")%>"></iframe>
+            <% } %>
+            <div class="title">
+                <div class="site-name bootstrap">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4 col-sm-4">
+                            <div class="workspace-status">
+                            <% if (ConfigurationUtilities.GetAppSetting<bool>("ShowUserName", false))
+                            {
+                                Response.Write("Username : " + System.Threading.Thread.CurrentPrincipal.Identity.Name);
+                            }
+                            %>
+                            <% if (ConfigurationUtilities.GetAppSetting<bool>("ShowCompanyConfiguration", false)) 
+                            { %>
+                                <div>Company Mode: <%: SystemConfiguration.Instance().CompanyMode.GetDescription() %></div>
+                            <% } %> 
+                            </div>
+                        </div>
+                        <div class="col-lg-5 col-md-5 col-sm-5">
+                            <a href="/"><div class="sscLogo"></div></a>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-3 no-padding">
+                            <div class="lmlogo"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% Html.RenderAction(WebConstants.ACTION_HOME_DISPLAY_MASTER_MENU, WebConstants.CONTROLLER_HOME); %>
+        <div class="bannerContainer">
+            <iframe class="bannerframe" id="bannerIFrame" src="<%:ConfigurationUtilities.IESBannerUrl(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems ? "BOESSC" : "BOERMS")%>"></iframe>
+        </div>
+        <div class="main">
+            <div id="Notification" class="notification-bar display-none">
+                <div class="notification">
+                    <div class="text">Notify Me!</div>
+                    <div id="MessageClose" class="button message-close-button"></div>
+                </div>
+            </div>
+            <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+        </div>
+    </div>
+    <div class="footer">
+        <div class="lmproprietary">
+            Lockheed Martin Proprietary Information
+
+            <div id="footerVersionInfo"><%: Html.Raw(IES.Common.Utilities.VersionAndUpdatedDate)%></div>
+        </div>
+    </div>
+    <div id="ExceptionDialog" style="display: none; text-align: center;">
+        <div id="ErrorText" class="dialog-text">
+            Replace me!
+            <br />
+        </div>
+        <span id="ToggleErrorDetails" class="underline pointer">
+            Error Details
+            <br />
+        </span>
+        <div id="ErrorDetails" class="error-details">
+            Replace me!
+            <br />
+            <br />
+        </div>
+        <div class="error-buttons">
+            <button id="ExceptionDialog-OK" class="ies" onclick="CloseExceptionDialog();" name="ok-button" type="button">OK</button>
+        </div>
+    </div>
+    <div id="CommonDialog" style="display: none; text-align: center;">
+        <div id="CommonDialogBody" class="dialog-text">
+            <br />
+        </div>
+        <div class="buttons">
+        </div>
+    </div>
+    <div id="PageLoading" class="page-loading display-none">
+        <div class="loading-box">
+            <div class="loader white"></div>
+            <span>Loading...</span>
+        </div>
+    </div>
+    <div id="PageValidating" class="page-loading display-none">
+        <div class="loading-box">
+            <div class="loader white"></div>
+            <span>Validating...</span>
+        </div>
+    </div>
+    <iframe  class="appOfflineFrame" src="<%:ConfigurationUtilities.AppOfflineUrl(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems ? "BOE SSC" : "BOE RMS")%>"></iframe>
+<script type="text/javascript">
+    $(function () {
+        $(".nav-bar.left .submenu").each(function () {
+            // Move each submenu directly under its parent tab
+            // the submenu will be aligned with the start of the nav-bar
+            // move it right to the position of its parent menu item.
+            $(this).css("margin-left", $(this).parent().position().left - 1);
+
+            // Set the submenu width the greater of its current size or the tab width + 50px
+            // This will make sure that the submenu is always wider than its parent tab
+            // Add five for off-by-one problem with System Administration in Chrome
+            $(this).css("width", Math.max($(this).parent().width() + 50, $(this).width() + 5));
+
+            // Sets the parent of the selected submenu item to selected also.
+            $('.submenu').each(function () {
+                if ($(this).find('.selected').length > 0) {
+                    $(this).parent().addClass('selected');
+                }
+            });
+        });
+
+        $(".nav-bar.right .submenu").each(function () {
+            // Set the submenu width the greater of its current size or the tab width + 75px
+            // This will make sure that the submenu is always wider than its parent tab
+            $(this).css("width", Math.max($(this).parent().width() + 75, $(this).width()));
+
+            // the submenu will be aligned with the start of the nav-bar
+            // move it right to the position of its parent menu item.
+            $(this).css("margin-left", $(this).parent().position().left - 1 - ($(this).width() - $(this).parent().width()));
+
+            // Sets the parent of the selected submenu item to selected also.
+            $('.submenu').each(function () {
+                if ($(this).find('.selected').length > 0) {
+                    $(this).parent().addClass('selected');
+                }
+            });
+        });
+
+        $(document).bind('SHOW_LOADING_BOX', function () {
+            $('#PageLoading').removeClass('display-none');
+        });
+
+        $(document).bind('HIDE_LOADING_BOX', function () {
+            $('#PageLoading').addClass('display-none');
+        });
+
+        $(document).bind('DISPLAY_NOTIFICATION', function (event, text) {
+            $('#Notification div.text').html(text);
+            $('#Notification').removeClass('display-none');
+            $('html, body').animate({ scrollTop: $("#Notification").offset().top }, 200);
+        });
+
+        $('#MessageClose').click(function () {
+            $('#Notification').addClass('display-none');
+        });
+
+
+        /*** This utility is for a browser alert 
+        the session var ensures single prompt per session */
+        var reminder = '<%: SiteMasterUtilities.GetBrowserReminder() %>';
+        if (reminder == "True" && !GenSession.isValidBrowser()) {
+            Session.alertDialog('Browser Warning',
+              'This is not a supported browser.  Please use Internet Explorer 8.0, Firefox 3.6, '
+              + 'or higher versions of these recommended browsers for the best experience. '
+              + 'Select OK to continue with your current browser.  <br/><br/>');
+        }
+
+    });
+</script>
+</body>
+</html>

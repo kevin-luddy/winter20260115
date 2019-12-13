@@ -1,0 +1,226 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9EDD2F08-51F2-4294-BD62-6A81676AFF03}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GenBOE.Tests.DAL</RootNamespace>
+    <AssemblyName>GenBOE.Tests.DAL</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\boe.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>0</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+    <DebugSymbols>true</DebugSymbols>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.0.5022.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common, Version=5.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Logging, Version=5.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\Microsoft.Practices.EnterpriseLibrary.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Logging.Database, Version=5.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\Microsoft.Practices.EnterpriseLibrary.Logging.Database.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=2.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Interception, Version=2.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\Microsoft.Practices.Unity.Interception.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="Moq">
+      <HintPath>..\libraries\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDependentAssemblyPaths Condition=" '$(VS100COMNTOOLS)' != '' " Include="$(VS100COMNTOOLS)..\IDE\PrivateAssemblies">
+      <Visible>False</Visible>
+    </CodeAnalysisDependentAssemblyPaths>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="DataLoaders\BoeApproverResponseDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\BOECommentDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\BoeDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\BOEHistoryDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\BOESearchDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\BOESummaryGridDataLoaderTest.cs" />
+    <Compile Include="DataLoaders\BoeTaskElementDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\CacheDataLoaderTest.cs" />
+    <Compile Include="DataLoaders\ClinDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\CommonDataLoaderTest.cs" />
+    <Compile Include="DataLoaders\BOEFormDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\ProjectMapDataLoaderTest.cs" />
+    <Compile Include="DataLoaders\SystemSettingDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\TMResourceRateDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\OffloadRatesDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\MSTMetricLoaderTest.cs" />
+    <Compile Include="DataLoaders\EscalationRatesDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\InUseDataLoaderTest.cs" />
+    <Compile Include="DataLoaders\LineOfBusinessDataLoaderTest.cs" />
+    <Compile Include="DataLoaders\MileReimbursementRateDTOLoaderTest.cs" />
+    <Compile Include="DataLoaders\MSTTravelDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\RMSZoneTravelRatesFeesDataLoaderTest.cs" />
+    <Compile Include="DataLoaders\MSTTravelNonzoneFeesAndCostsDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\MSTZoneTravelDestinationDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\MSTZoneTravelOriginDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\MSTZoneTravelResourceDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\CustomFieldDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\CustomFieldValueDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\FindReplaceDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\GenBOEMetricsDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\GlobalTestCaseSetup.cs" />
+    <Compile Include="DataLoaders\LocationDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\MOQLoaderObject.cs" />
+    <Compile Include="DataLoaders\NonCacheDataLoaderTest.cs" />
+    <Compile Include="DataLoaders\OtherDirectCostDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\PerDiemDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\PerfOrgDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\PerformingOrgListDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\PermissionsDTODataLoaderTest.cs" />
+    <Compile Include="DataMappers\CommonDataMapperTest.cs" />
+    <Compile Include="Other\MemoryCacheTest.cs" />
+    <Compile Include="Other\SecurityAccessTest.cs" />
+    <Compile Include="Other\WorkspaceControllerLogicTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DataLoaders\ProPricerDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\ResourceDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\ResourceListDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\SecurityUserAuthorizationsDataLoaderTest.cs" />
+    <Compile Include="DataLoaders\TravelDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\TripDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\UserDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\WbsDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\WorkspaceDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\WorkspaceExportFormatDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\WorkspaceHistoryDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\WorkspaceSearchDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\WorkspaceVariableDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\WorkspaceVersionMetaDataDTODataLoaderTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GenBOE.ActionLogic\GenBOE.ActionLogic.csproj">
+      <Project>{8B23113C-48A0-4F65-8ED5-0F725AC170E7}</Project>
+      <Name>GenBOE.ActionLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenTRAC.DataBridge\GenTRAC.DataBridge.csproj">
+      <Project>{6ebd0376-9273-4a2a-9e23-1912418ddba5}</Project>
+      <Name>GenTRAC.DataBridge</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IES.Common\IES.Common.csproj">
+      <Project>{fadfe985-0aa1-41af-b7cb-a740673fc0d7}</Project>
+      <Name>IES.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.Models\GenBOE.Models.csproj">
+      <Project>{5E73D211-CFD8-49AC-B164-3ECDDEA9B443}</Project>
+      <Name>GenBOE.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.ModelView\GenBOE.DataBridge.csproj">
+      <Project>{F909CD46-E2D7-4D57-B647-6D93F9DD9618}</Project>
+      <Name>GenBOE.DataBridge</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.MSTMetricModel\GenBOE.MSTMetricModel.csproj">
+      <Project>{d9645139-bd1d-474b-8960-ed105bb1a4dc}</Project>
+      <Name>GenBOE.MSTMetricModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.Tests\GenBOE.Tests.csproj">
+      <Project>{AA84EB3D-E855-41E8-85BD-E98DBAAB0CA0}</Project>
+      <Name>GenBOE.Tests</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.Web\GenBOE.Web.csproj">
+      <Project>{AD87CC58-CFBC-4901-9AE3-418473E78590}</Project>
+      <Name>GenBOE.Web</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="CodeCloneIgnoreSettings.codeclonesettings" />
+    <None Include="packages.config" />
+    <None Include="Settings.StyleCop" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

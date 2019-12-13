@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="3364e78928374f36a82548a9fed22543" Name="Diagram1" ZoomLevel="71">
+        <EntityTypeShape EntityType="IESModel.BurdenElementLU" Width="1.5" PointX="1.25" PointY="6.875" />
+        <EntityTypeShape EntityType="IESModel.CategoryLU" Width="1.5" PointX="1.5" PointY="4.5" />
+        <EntityTypeShape EntityType="IESModel.CobraCode1LU" Width="1.5" PointX="7.75" PointY="13.375" />
+        <EntityTypeShape EntityType="IESModel.ProPricerBurdenRateMap" Width="1.5" PointX="3.875" PointY="6.625" />
+        <EntityTypeShape EntityType="IESModel.ProPricerRateCodeXref" Width="1.5" PointX="8.625" PointY="7.75" />
+        <EntityTypeShape EntityType="IESModel.RateCode" Width="1.5" PointX="6.5" PointY="5.625" />
+        <EntityTypeShape EntityType="IESModel.RateCodeExtensionLU" Width="1.5" PointX="11.625" PointY="8.375" />
+        <EntityTypeShape EntityType="IESModel.RateCodeYear" Width="1.5" PointX="11.875" PointY="12.125" />
+        <EntityTypeShape EntityType="IESModel.RateTypeLU" Width="1.5" PointX="3" PointY="11.625" />
+        <EntityTypeShape EntityType="IESModel.ResourceTypeLU" Width="1.5" PointX="1" PointY="9.375" />
+        <EntityTypeShape EntityType="IESModel.Section" Width="1.5" PointX="9" PointY="3" />
+        <EntityTypeShape EntityType="IESModel.SectionContentTypeLU" Width="1.5" PointX="8.5" PointY="0.625" />
+        <AssociationConnector Association="IESModel.FK_ProPricerBurdenRateMap_BurdenElementLU" />
+        <AssociationConnector Association="IESModel.FK_RateCode_CategoryLU" />
+        <AssociationConnector Association="IESModel.FK_RateCode_CobraCode1LU" />
+        <AssociationConnector Association="IESModel.FK_ProPricerBurdenRateMap_RateCode" />
+        <AssociationConnector Association="IESModel.FK_ProPricerRateCodeXref_RateCode" />
+        <AssociationConnector Association="IESModel.FK_ProPricerRateCodeXref_RateCodeExtensionLU" />
+        <AssociationConnector Association="IESModel.FK_RateCode_RateCode" />
+        <AssociationConnector Association="IESModel.FK_RateCode_RateTypeLU" />
+        <AssociationConnector Association="IESModel.FK_RateCode_ResourceTypeLU" />
+        <AssociationConnector Association="IESModel.FK_RateCode_Section" />
+        <AssociationConnector Association="IESModel.FK_RateCodeYear_RateCode" />
+        <AssociationConnector Association="IESModel.FK_Section_Section" />
+        <AssociationConnector Association="IESModel.FK_Section_SectionContentTypeLU" />
+        <EntityTypeShape EntityType="IESModel.CobraFiscalYearLU" Width="1.5" PointX="0.75" PointY="0.75" />
+        <EntityTypeShape EntityType="IESModel.Revision" Width="1.5" PointX="4.25" PointY="1.5" />
+        <AssociationConnector Association="IESModel.FK_RateCode_Revision" />
+        <AssociationConnector Association="IESModel.FK_Section_Revision" />
+        <EntityTypeShape EntityType="IESModel.UserLog" Width="1.5" PointX="11.375" PointY="0.75" />
+        <EntityTypeShape EntityType="IESModel.ResourceClassLU" Width="1.5" PointX="11.375" PointY="3.875" />
+        <AssociationConnector Association="IESModel.FK_ProPricerRateCodeXref_ResourceClassLU" />
+        <EntityTypeShape EntityType="IESModel.FileAttachment" Width="1.5" PointX="11.25" PointY="16" />
+        <AssociationConnector Association="IESModel.FK_FileAttachment_SectionId" />
+        <EntityTypeShape EntityType="IESModel.RDSBRateCodeXref" Width="1.5" PointX="8.75" PointY="15.875" />
+        <EntityTypeShape EntityType="IESModel.RDSBSectionXref" Width="1.5" PointX="11.25" PointY="19.375" />
+        <AssociationConnector Association="IESModel.FK_RDSBRateCodeXref_RateCode" />
+        <AssociationConnector Association="IESModel.FK_RDSBSectionXref_RateCode" />
+        <EntityTypeShape EntityType="IESModel.RDSBDocumentInformation" Width="1.5" PointX="6.5" PointY="16.125" />
+        <AssociationConnector Association="IESModel.FK__RDSBDocum__RDMRe__308E3499" />
+        <AssociationConnector Association="IESModel.FK_RDSBRateCodeXref_RDSBDocumentInformation" />
+        <AssociationConnector Association="IESModel.FK_RDSBSectionXref_RDSBDocumentInformation" />
+        <EntityTypeShape EntityType="IESModel.Banner" Width="1.5" PointX="13.375" PointY="0.75" />
+        <EntityTypeShape EntityType="IESModel.RateCodeReplication" Width="1.5" PointX="13.375" PointY="4.75" />
+        <EntityTypeShape EntityType="IESModel.OfflineApplication" Width="1.5" PointX="0.75" PointY="14.75" />
+        <EntityTypeShape EntityType="IESModel.BurdenPoolLU" Width="1.5" PointX="6.5" PointY="20.75" />
+        <AssociationConnector Association="IESModel.FK_ProPricerBurdenRateMap_BurdenPoolLU" />
+        <AssociationConnector Association="IESModel.FK_RateCode_CommBurdenPoolLU" />
+        <AssociationConnector Association="IESModel.FK_RateCode_GovtBurdenPoolLU" />
+        <AssociationConnector Association="IESModel.FK_BurdenPoolLU_Revision" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

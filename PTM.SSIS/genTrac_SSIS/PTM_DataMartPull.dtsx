@@ -1,0 +1,2047 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="10/1/2012 10:31:01 AM"
+  DTS:CreationName="SSIS.Package.3"
+  DTS:CreatorComputerName="MORLEDGE"
+  DTS:CreatorName="US\a-canusd"
+  DTS:DTSID="{86D19F48-06EC-4289-A45D-0605BF0EC6AA}"
+  DTS:EnableConfig="True"
+  DTS:ExecutableType="SSIS.Package.3"
+  DTS:LastModifiedProductVersion="13.0.2165.0"
+  DTS:LocaleID="1033"
+  DTS:ObjectName="PTM_DataMartPull"
+  DTS:PackageType="5"
+  DTS:VersionBuild="67"
+  DTS:VersionGUID="{63B879D6-4223-4C66-8BC0-39FF5082166D}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">6</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Data Mart]"
+      DTS:CreationName="OLEDB"
+      DTS:Description="Data Mart"
+      DTS:DTSID="{0b5d72f5-3f8b-4424-928a-4fb363a42b6a}"
+      DTS:ObjectName="Data Mart">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=VFMSQL06;Initial Catalog=MRTDP001;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-CapToolDataMartPull-{E2B4C540-AE5B-4CC5-88B5-2A6B4463905A}Data Mart;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[genTrac]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{C2EA39E4-9ED5-4B88-9D32-3AF415D75CC7}"
+      DTS:ObjectName="genTrac">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="Data Source=IDESQL35D\SSGENVFDEV;Initial Catalog=genTRAC;Provider=SQLNCLI11.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-CapToolDataMartPull-{C2EA39E4-9ED5-4B88-9D32-3AF415D75CC7}vfassql13\archsvcsdev2008.CapTool_DBDevelopment1;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Configurations>
+    <DTS:Configuration
+      DTS:ConfigurationString="E:\user_home\a-canusd\generation\genTRAC\dev\dev\genTrac_SSIS\genTrac_SSIS\genTrac_DataMartPull_DEV.dtsConfig"
+      DTS:ConfigurationType="1"
+      DTS:CreationName=""
+      DTS:DTSID="{50C3E8C1-C372-4C4C-8168-925F62B829C5}"
+      DTS:ObjectName="genTrac_DataMart_Configuration" />
+  </DTS:Configurations>
+  <DTS:Variables />
+  <DTS:LoggingOptions
+    DTS:FilterKind="0"
+    DTS:LoggingMode="2">
+    <DTS:Property
+      DTS:DataType="8"
+      DTS:Name="EventFilter">1,7,OnError</DTS:Property>
+    <DTS:Property
+      DTS:EventName="OnError"
+      DTS:Name="ColumnFilter">
+      <DTS:Property
+        DTS:Name="Computer">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="Operator">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceName">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="SourceID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="ExecutionID">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="MessageText">-1</DTS:Property>
+      <DTS:Property
+        DTS:Name="DataBytes">-1</DTS:Property>
+    </DTS:Property>
+  </DTS:LoggingOptions>
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Load Employee Processing"
+      DTS:CreationName="SSIS.Pipeline.3"
+      DTS:Description="Data Flow Task"
+      DTS:DTSID="{4ec0048c-7455-40f6-ac14-0b99f5c6f0c1}"
+      DTS:ExecutableType="SSIS.Pipeline.3"
+      DTS:FailPackageOnFailure="True"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Load Employee Processing"
+      DTS:TaskContact="Performs high-performance data extraction, transformation and loading;Microsoft Corporation; Microsoft SQL Server v9; (C) 2004 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1">
+      <DTS:Variables />
+      <DTS:LoggingOptions
+        DTS:FilterKind="0"
+        DTS:LoggingMode="1">
+        <DTS:Property
+          DTS:DataType="8"
+          DTS:Name="EventFilter">1,7,OnError</DTS:Property>
+        <DTS:Property
+          DTS:EventName="OnError"
+          DTS:Name="ColumnFilter">
+          <DTS:Property
+            DTS:Name="Computer">-1</DTS:Property>
+          <DTS:Property
+            DTS:Name="Operator">-1</DTS:Property>
+          <DTS:Property
+            DTS:Name="SourceName">-1</DTS:Property>
+          <DTS:Property
+            DTS:Name="SourceID">-1</DTS:Property>
+          <DTS:Property
+            DTS:Name="ExecutionID">-1</DTS:Property>
+          <DTS:Property
+            DTS:Name="MessageText">-1</DTS:Property>
+          <DTS:Property
+            DTS:Name="DataBytes">-1</DTS:Property>
+        </DTS:Property>
+      </DTS:LoggingOptions>
+      <DTS:ObjectData>
+        <pipeline
+          BLOBTempStoragePath=""
+          bufferTempStoragePath=""
+          engineThreads="5"
+          version="1">
+          <components>
+            <component
+              refId="Package\Load Employee Processing\DataMartPull"
+              componentClassID="DTSAdapter.OLEDBSource.3"
+              contactInfo="OLE DB Source;Microsoft Corporation; Microsoft SqlServer v10; (C) Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;7"
+              description="OLE DB Source"
+              name="DataMartPull"
+              usesDispositions="true"
+              version="7">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset"></property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91">SELECT DISTINCT
+
+RTRIM(g.empl_ser_no) AS empl_ser_no,
+RTRIM(n.empl_tl_nm) AS empl_tl_nm,
+RTRIM(n.empl_first_nm) AS empl_first_nm,
+RTRIM(n.empl_mi_nm) AS empl_mi_nm,
+RTRIM(n.empl_last_nm) AS empl_last_nm,
+RTRIM(n.empl_gq_nm) AS empl_gq_nm,
+RTRIM(s.nt_account_nm) AS nt_account_nm,
+RTRIM(s.nt_domain_nm) AS nt_domain_nm,
+RTRIM(o.rpt_to_ser_no) AS rpt_to_ser_no,
+RTRIM(o.dept_no) AS dept_no,
+CASE 
+	WHEN RTRIM(d.dept_tl) IS NULL OR RTRIM(d.dept_tl) = '' THEN '(' + n.empl_last_nm + ', ' + SUBSTRING(n.empl_first_nm, 0, 15) + ')'
+	ELSE RTRIM(d.dept_tl) 
+END AS dept_tl,
+SUBSTRING(o.job_cd, 5, 1) AS job_level,
+RTRIM(o.job_cd) AS job_cd,
+RTRIM(g.job_tl) AS job_tl,
+
+RTRIM(s.email_adr) AS email_adr,
+RTRIM(w.work_phone_no) AS work_phone_no,
+RTRIM(g.empl_stat_cd) AS empl_stat_cd,
+CAST(ROUND(CAST(ISNULL(LTRIM(RTRIM(o.empl_std_hrs)),0.0)AS float)/40, 2) AS DECIMAL(3,2)) AS empl_std_hrs,
+RTRIM(o.pstn_no) AS pstn_no,
+ISNULL(dr.num, 0) AS direct_report_no,
+ISNULL( LTRIM (RTRIM(d.pool_cd)), '') AS pool_cd,
+RTRIM(w.separation_dt) AS separation_dt,
+getDate() AS [TimeStamp],
+RTRIM(o.service_dt) AS service_dt,
+RTRIM(s.gal_label) AS gal_label,
+RTRIM(n.empl_called_by_nm) AS empl_called_by_nm,
+/*RTRIM(o.dept_setid_no) AS dept_setid_no,*/
+RTRIM(w.bldg_no)  AS bldg_no,
+RTRIM(w.office_no) AS office_no,
+	CASE 
+		WHEN LEFT(RTRIM(o.job_cd)/*JobCode*/, 1) = 'N' THEN 0	
+          -- N = Non-Exempt - relates to enum in code
+		WHEN LEFT(RTRIM(o.job_cd)/*JobCode*/, 1) = 'B' THEN 0	
+          -- B = Non-Exempt - relates to enum in code
+        WHEN LEFT(RTRIM(o.job_cd)/*JobCode*/, 1) = 'W' THEN 0	
+          -- W = Non-Exempt - relates to enum in code
+		WHEN LEFT(RTRIM(o.job_cd)/*JobCode*/, 1) = 'E' THEN 1	
+           -- E = Exempt - relates to enum in code
+		WHEN LEFT(RTRIM(o.job_cd)/*JobCode*/, 1) = 'L' THEN 1	
+            -- L = Exempt Leaders - relates to enum in code
+		ELSE 1					
+           -- Default unknown as exempt since this accounts for 90% of our workforce
+	END AS FLSAStatus,
+	
+
+RTRIM(w.work_cntry_cd) AS work_country_cd,
+      CASE  WHEN RTRIM(w.work_cntry_cd) = 'US' THEN 'United States'
+                  WHEN RTRIM(w.work_cntry_cd) = 'GB' THEN 'Great Britain'
+                  WHEN RTRIM(w.work_cntry_cd) = 'AU' THEN 'Australia'
+                  WHEN RTRIM(w.work_cntry_cd) = 'CA' THEN 'Canada'
+                  WHEN RTRIM(w.work_cntry_cd) = 'NZ' THEN 'New Zealand'
+/*                  WHEN RTRIM(w.work_cntry_cd) = 'DE' THEN 'Denmark'*/
+
+                  WHEN RTRIM(w.work_cntry_cd) = 'DE' THEN 'Germany'
+                  WHEN RTRIM(w.work_cntry_cd) = 'DK' THEN 'Denmark'
+
+
+                  WHEN RTRIM(w.work_cntry_cd) = 'HK' THEN 'Hong Kong'
+                  WHEN RTRIM(w.work_cntry_cd) = 'CH' THEN 'Switzerland'
+                  WHEN RTRIM(w.work_cntry_cd) = 'TW' THEN 'Taiwan'
+                  WHEN RTRIM(w.work_cntry_cd) = 'JP' THEN 'Japan'
+                  WHEN RTRIM(w.work_cntry_cd) = 'AR' THEN 'Argentina'
+                  WHEN RTRIM(w.work_cntry_cd) = 'SG' THEN 'Singapore'
+                  WHEN RTRIM(w.work_cntry_cd) = 'IN' THEN 'India'
+                  WHEN RTRIM(w.work_cntry_cd) = 'GR' THEN 'Greece'
+                  WHEN RTRIM(w.work_cntry_cd) = 'RO' THEN 'Romania'
+                  WHEN RTRIM(w.work_cntry_cd) = 'IS' THEN 'Iceland'
+                  WHEN RTRIM(w.work_cntry_cd) = 'ES' THEN 'Spain'
+                  WHEN RTRIM(w.work_cntry_cd) = 'IL' THEN 'Israel'
+                  WHEN RTRIM(w.work_cntry_cd) = 'EG' THEN 'Egypt'
+                  WHEN RTRIM(w.work_cntry_cd) = 'BE' THEN 'Belgium'
+/*                  WHEN RTRIM(w.work_cntry_cd) = 'SA' THEN 'South Africa'*/
+
+                  WHEN RTRIM(w.work_cntry_cd) = 'ZA' THEN 'South Africa'
+                  WHEN RTRIM(w.work_cntry_cd) = 'SA' THEN 'Saudi Arabia'
+
+                  WHEN RTRIM(w.work_cntry_cd) = 'MH' THEN 'Marshall Islands'
+                  WHEN RTRIM(w.work_cntry_cd) = 'PL' THEN 'Poland'
+                  WHEN RTRIM(w.work_cntry_cd) = 'IT' THEN 'Italy'
+                  WHEN RTRIM(w.work_cntry_cd) = 'CN' THEN 'China'
+                  WHEN RTRIM(w.work_cntry_cd) = 'AE' THEN 'United Arab Emirates'
+                  WHEN RTRIM(w.work_cntry_cd) = 'MY' THEN 'Malaysia'
+                  WHEN RTRIM(w.work_cntry_cd) = 'FR' THEN 'France'
+                  WHEN RTRIM(w.work_cntry_cd) = 'AL' THEN 'Albania'
+                  WHEN RTRIM(w.work_cntry_cd) = 'PH' THEN 'Philippines'
+                  WHEN RTRIM(w.work_cntry_cd) = 'ID' THEN 'Indonesia'
+                  WHEN RTRIM(w.work_cntry_cd) = 'TR' THEN 'Turkey (TR)'
+   	  WHEN RTRIM(w.work_cntry_cd) = 'TU' THEN 'Turkey (TU)'
+                  WHEN RTRIM(w.work_cntry_cd) = 'KR' THEN 'Korea (KR)' 
+                  WHEN RTRIM(w.work_cntry_cd) = 'KO' THEN 'Korea (KO)'     
+      ELSE RTRIM(w.work_cntry_cd) END AS work_cntry_name,
+RTRIM(w.work_st_cd) AS work_st_cd,
+CASE 
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) = 'AL' THEN 'Alabama'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'AK' THEN 'Alaska'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'AB' THEN 'Alberta'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'AS' THEN 'American Samoa'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'AZ' THEN 'Arizona'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'AR' THEN 'Arkansas'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'BC' THEN 'British Columbia'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'CA' THEN 'California'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'PW' THEN 'Caroline Islands'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'CO' THEN 'Colorado'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'CT' THEN 'Connecticut'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'DE' THEN 'Delaware'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'DC' THEN 'District of Columbia'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'FM' THEN 'Federated State'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'FL' THEN 'Florida'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'GA' THEN 'Georgia'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'GU' THEN 'Guam'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'HI' THEN 'Hawaii'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'ID' THEN 'Idaho'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'IL' THEN 'Illinois'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'IN' THEN 'Indiana'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'IA' THEN 'Iowa'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'KS' THEN 'Kansas'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'KY' THEN 'Kentucky'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'LA' THEN 'Louisiana'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'ME' THEN 'Maine'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'MB' THEN 'Manitoba'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'MP' THEN 'Marina Islands'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'MH' THEN 'Marshall Islands'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'MD' THEN 'Maryland'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'MA' THEN 'Massachusetts'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'MI' THEN 'Michigan'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'MN' THEN 'Minnesota'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'MS' THEN 'Mississippi'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'MO' THEN 'Missouri'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'MT' THEN 'Montana'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'NE' THEN 'Nebraska'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'NV' THEN 'Nevada'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'NB' THEN 'New Brunswick'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'NH' THEN 'New Hampshire'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'NJ' THEN 'New Jersey'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'NM' THEN 'New Mexico'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'NY' THEN 'New York'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'NF' THEN 'Newfoundland'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'NC' THEN 'North Carolina'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'ND' THEN 'North Dakota'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'NT' THEN 'Northwest Territories'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'NS' THEN 'Nova Scotia'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'NU' THEN 'Nunavut'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'OH' THEN 'Ohio'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'OK' THEN 'Oklahoma'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'ON' THEN 'Ontario'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'OR' THEN 'Oregon'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'PA' THEN 'Pennsylvania'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'PE' THEN 'Prince Edward Island'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'PR' THEN 'Puerto Rico'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'PQ' THEN 'Quebec'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'RI' THEN 'Rhode Island'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'SK' THEN 'Saskatchewan'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'SC' THEN 'South Carolina'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'SD' THEN 'South Dakota'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'TN' THEN 'Tennessee'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'TX' THEN 'Texas'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'UT' THEN 'Utah'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'VT' THEN 'Vermont'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'VI' THEN 'Virgin Islands'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'VA' THEN 'Virginia'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'WA' THEN 'Washington'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'WV' THEN 'West Virginia'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'WI' THEN 'Wisconsin'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'WY' THEN 'Wyoming'
+WHEN RTRIM(w.work_cntry_cd) = 'US'  AND RTRIM(w.work_st_cd) =  'YT' THEN 'Yukon Terrirtory'
+WHEN RTRIM(w.work_cntry_cd) &lt;&gt; 'US' THEN RTRIM(w.work_st_cd)
+END AS 'State',
+RTRIM(w.work_city_nm) AS work_city_nm/*w.work_lctn_cd--, w.work_lctn_desc*/,
+
+O.[OPERATING_CMPT_CD],
+O.[OPERATING_CMPT_DESC],
+O.[FORMAL_DESC],
+O.[TOP_TIER_OC_CD],
+O.[TOP_TIER_DESC],
+/*O.[BUS_AREA_CD],*/
+O.[BUS_AREA_DESC],
+
+/*D.[DEPT_SETID_NO],*/
+
+SX.[BUS_AREA_CD],
+SX.[DEPT_SETID_NO],
+
+/*LU.[BUS_AREA_CD],*/
+LU.[BUS_AREA_SHORT_NM],
+LU.[BUS_AREA_LONG_NM]
+
+FROM dbo.MRTTORG o 
+	INNER JOIN dbo.MRTTNAME n 
+		ON o.EMPL_SER_NO = n.EMPL_SER_NO 
+	INNER JOIN dbo.MRTTSYS s 
+		ON n.EMPL_SER_NO = s.EMPL_SER_NO 
+	INNER JOIN dbo.MRTTWORK w 
+		ON n.EMPL_SER_NO = w.EMPL_SER_NO 
+	INNER JOIN dbo.MRTTGEN g 
+		ON w.EMPL_SER_NO = g.EMPL_SER_NO 
+
+	LEFT OUTER JOIN dbo.MRTTDEPT d 
+		ON o.DEPT_NO = d.DEPT_NO 
+		AND o.RPT_TO_SER_NO = d.MANAGER_SER_NO 
+
+	INNER JOIN dbo.MRTT_SETID_BA_XREF sx													
+		ON 
+			o.DEPT_SETID_NO = sx.DEPT_SETID_NO AND
+			o.[BUS_AREA_CD] = sx.[BUS_AREA_CD]
+				
+	INNER JOIN [dbo].[MRTT_BUS_AREA_LOOKUP] LU 		
+		ON 	SX.BUS_AREA_CD = LU.BUS_AREA_CD 	
+
+
+	LEFT OUTER JOIN (SELECT mo.RPT_TO_SER_NO, COUNT(mo.RPT_TO_SER_NO) AS num 
+			FROM MRTTORG mo INNER JOIN MRTTGEN mg
+				ON mo.EMPL_SER_NO = mg.EMPL_SER_NO
+			WHERE mg.EMPL_STAT_CD IN ('A', 'L', 'P')
+			GROUP BY mo.RPT_TO_SER_NO) dr 
+		ON o.EMPL_SER_NO = dr.RPT_TO_SER_NO
+
+WHERE 
+o.EMPL_TYPE_CD &lt;&gt; 'V'					-- Employee is not a vendor
+AND g.EMPL_STAT_CD IN ('A', 'L', 'P', 'T', 'D', 'R')	-- Employee's status is valid (Active, Leave, PaidLeave, Terminated, Deceased, Retired)</property>
+                <property
+                  dataType="System.String"
+                  description="The variable that contains the SQL command to be executed."
+                  name="SqlCommandVariable"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">2</property>
+                <property
+                  dataType="System.String"
+                  description="The mappings between the parameters in the SQL command and variables."
+                  name="ParameterMapping"></property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Load Employee Processing\DataMartPull.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[Data Mart]"
+                  connectionManagerRefId="Package.ConnectionManagers[Data Mart]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <outputs>
+                <output
+                  refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output]"
+                  name="OLE DB Source Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_ser_no]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_ser_no]"
+                      length="11"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_ser_no]"
+                      name="empl_ser_no"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_tl_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_tl_nm]"
+                      length="4"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_tl_nm]"
+                      name="empl_tl_nm"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_first_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_first_nm]"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_first_nm]"
+                      name="empl_first_nm"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_mi_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_mi_nm]"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_mi_nm]"
+                      name="empl_mi_nm"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_last_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_last_nm]"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_last_nm]"
+                      name="empl_last_nm"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_gq_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_gq_nm]"
+                      length="15"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_gq_nm]"
+                      name="empl_gq_nm"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[nt_account_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[nt_account_nm]"
+                      length="20"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[nt_account_nm]"
+                      name="nt_account_nm"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[nt_domain_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[nt_domain_nm]"
+                      length="15"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[nt_domain_nm]"
+                      name="nt_domain_nm"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[rpt_to_ser_no]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[rpt_to_ser_no]"
+                      length="11"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[rpt_to_ser_no]"
+                      name="rpt_to_ser_no"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[dept_no]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[dept_no]"
+                      length="10"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[dept_no]"
+                      name="dept_no"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[dept_tl]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[dept_tl]"
+                      length="49"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[dept_tl]"
+                      name="dept_tl"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[job_level]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[job_level]"
+                      length="1"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[job_level]"
+                      name="job_level"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[job_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[job_cd]"
+                      length="6"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[job_cd]"
+                      name="job_cd"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[job_tl]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[job_tl]"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[job_tl]"
+                      name="job_tl"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[email_adr]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[email_adr]"
+                      length="50"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[email_adr]"
+                      name="email_adr"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[work_phone_no]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[work_phone_no]"
+                      length="24"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[work_phone_no]"
+                      name="work_phone_no"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_stat_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_stat_cd]"
+                      length="1"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_stat_cd]"
+                      name="empl_stat_cd"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_std_hrs]"
+                      dataType="numeric"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_std_hrs]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_std_hrs]"
+                      name="empl_std_hrs"
+                      precision="3"
+                      scale="2"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[pstn_no]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[pstn_no]"
+                      length="8"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[pstn_no]"
+                      name="pstn_no"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[direct_report_no]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[direct_report_no]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[direct_report_no]"
+                      name="direct_report_no"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[pool_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[pool_cd]"
+                      length="3"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[pool_cd]"
+                      name="pool_cd"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[separation_dt]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[separation_dt]"
+                      length="8"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[separation_dt]"
+                      name="separation_dt"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[TimeStamp]"
+                      dataType="dbTimeStamp"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[TimeStamp]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[TimeStamp]"
+                      name="TimeStamp"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[service_dt]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[service_dt]"
+                      length="8"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[service_dt]"
+                      name="service_dt"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[gal_label]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[gal_label]"
+                      length="50"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[gal_label]"
+                      name="gal_label"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_called_by_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_called_by_nm]"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_called_by_nm]"
+                      name="empl_called_by_nm"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[bldg_no]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[bldg_no]"
+                      length="8"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[bldg_no]"
+                      name="bldg_no"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[office_no]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[office_no]"
+                      length="6"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[office_no]"
+                      name="office_no"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[FLSAStatus]"
+                      dataType="i4"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[FLSAStatus]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[FLSAStatus]"
+                      name="FLSAStatus"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[work_country_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[work_country_cd]"
+                      length="2"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[work_country_cd]"
+                      name="work_country_cd"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[work_cntry_name]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[work_cntry_name]"
+                      length="20"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[work_cntry_name]"
+                      name="work_cntry_name"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[work_st_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[work_st_cd]"
+                      length="6"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[work_st_cd]"
+                      name="work_st_cd"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[State]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[State]"
+                      length="21"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[State]"
+                      name="State"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[work_city_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[work_city_nm]"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[work_city_nm]"
+                      name="work_city_nm"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[OPERATING_CMPT_CD]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[OPERATING_CMPT_CD]"
+                      length="10"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[OPERATING_CMPT_CD]"
+                      name="OPERATING_CMPT_CD"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[OPERATING_CMPT_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[OPERATING_CMPT_DESC]"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[OPERATING_CMPT_DESC]"
+                      name="OPERATING_CMPT_DESC"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[FORMAL_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[FORMAL_DESC]"
+                      length="50"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[FORMAL_DESC]"
+                      name="FORMAL_DESC"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[TOP_TIER_OC_CD]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[TOP_TIER_OC_CD]"
+                      length="10"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[TOP_TIER_OC_CD]"
+                      name="TOP_TIER_OC_CD"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[TOP_TIER_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[TOP_TIER_DESC]"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[TOP_TIER_DESC]"
+                      name="TOP_TIER_DESC"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[BUS_AREA_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[BUS_AREA_DESC]"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[BUS_AREA_DESC]"
+                      name="BUS_AREA_DESC"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[BUS_AREA_CD]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[BUS_AREA_CD]"
+                      length="5"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[BUS_AREA_CD]"
+                      name="BUS_AREA_CD"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[DEPT_SETID_NO]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[DEPT_SETID_NO]"
+                      length="5"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[DEPT_SETID_NO]"
+                      name="DEPT_SETID_NO"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[BUS_AREA_SHORT_NM]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[BUS_AREA_SHORT_NM]"
+                      length="5"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[BUS_AREA_SHORT_NM]"
+                      name="BUS_AREA_SHORT_NM"
+                      truncationRowDisposition="FailComponent" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[BUS_AREA_LONG_NM]"
+                      codePage="1252"
+                      dataType="str"
+                      errorOrTruncationOperation="Conversion"
+                      errorRowDisposition="FailComponent"
+                      externalMetadataColumnId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[BUS_AREA_LONG_NM]"
+                      length="55"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[BUS_AREA_LONG_NM]"
+                      name="BUS_AREA_LONG_NM"
+                      truncationRowDisposition="FailComponent" />
+                  </outputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_ser_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="11"
+                      name="empl_ser_no" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_tl_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="4"
+                      name="empl_tl_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_first_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="empl_first_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_mi_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="empl_mi_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_last_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="empl_last_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_gq_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="15"
+                      name="empl_gq_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[nt_account_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="20"
+                      name="nt_account_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[nt_domain_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="15"
+                      name="nt_domain_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[rpt_to_ser_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="11"
+                      name="rpt_to_ser_no" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[dept_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="10"
+                      name="dept_no" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[dept_tl]"
+                      codePage="1252"
+                      dataType="str"
+                      length="49"
+                      name="dept_tl" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[job_level]"
+                      codePage="1252"
+                      dataType="str"
+                      length="1"
+                      name="job_level" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[job_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      length="6"
+                      name="job_cd" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[job_tl]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="job_tl" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[email_adr]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="email_adr" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[work_phone_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="24"
+                      name="work_phone_no" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_stat_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      length="1"
+                      name="empl_stat_cd" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_std_hrs]"
+                      dataType="numeric"
+                      name="empl_std_hrs"
+                      precision="3"
+                      scale="2" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[pstn_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="8"
+                      name="pstn_no" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[direct_report_no]"
+                      dataType="i4"
+                      name="direct_report_no" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[pool_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      length="3"
+                      name="pool_cd" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[separation_dt]"
+                      codePage="1252"
+                      dataType="str"
+                      length="8"
+                      name="separation_dt" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[TimeStamp]"
+                      dataType="dbTimeStamp"
+                      name="TimeStamp" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[service_dt]"
+                      codePage="1252"
+                      dataType="str"
+                      length="8"
+                      name="service_dt" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[gal_label]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="gal_label" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[empl_called_by_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="empl_called_by_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[bldg_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="8"
+                      name="bldg_no" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[office_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="6"
+                      name="office_no" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[FLSAStatus]"
+                      dataType="i4"
+                      name="FLSAStatus" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[work_country_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      length="2"
+                      name="work_country_cd" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[work_cntry_name]"
+                      codePage="1252"
+                      dataType="str"
+                      length="20"
+                      name="work_cntry_name" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[work_st_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      length="6"
+                      name="work_st_cd" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[State]"
+                      codePage="1252"
+                      dataType="str"
+                      length="21"
+                      name="State" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[work_city_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="work_city_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[OPERATING_CMPT_CD]"
+                      codePage="1252"
+                      dataType="str"
+                      length="10"
+                      name="OPERATING_CMPT_CD" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[OPERATING_CMPT_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="OPERATING_CMPT_DESC" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[FORMAL_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="FORMAL_DESC" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[TOP_TIER_OC_CD]"
+                      codePage="1252"
+                      dataType="str"
+                      length="10"
+                      name="TOP_TIER_OC_CD" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[TOP_TIER_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="TOP_TIER_DESC" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[BUS_AREA_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="BUS_AREA_DESC" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[BUS_AREA_CD]"
+                      codePage="1252"
+                      dataType="str"
+                      length="5"
+                      name="BUS_AREA_CD" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[DEPT_SETID_NO]"
+                      codePage="1252"
+                      dataType="str"
+                      length="5"
+                      name="DEPT_SETID_NO" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[BUS_AREA_SHORT_NM]"
+                      codePage="1252"
+                      dataType="str"
+                      length="5"
+                      name="BUS_AREA_SHORT_NM" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].ExternalColumns[BUS_AREA_LONG_NM]"
+                      codePage="1252"
+                      dataType="str"
+                      length="55"
+                      name="BUS_AREA_LONG_NM" />
+                  </externalMetadataColumns>
+                </output>
+                <output
+                  refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output]"
+                  isErrorOut="true"
+                  name="OLE DB Source Error Output">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_ser_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="11"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_ser_no]"
+                      name="empl_ser_no" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_tl_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="4"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_tl_nm]"
+                      name="empl_tl_nm" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_first_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_first_nm]"
+                      name="empl_first_nm" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_mi_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_mi_nm]"
+                      name="empl_mi_nm" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_last_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_last_nm]"
+                      name="empl_last_nm" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_gq_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="15"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_gq_nm]"
+                      name="empl_gq_nm" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[nt_account_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="20"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[nt_account_nm]"
+                      name="nt_account_nm" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[nt_domain_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="15"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[nt_domain_nm]"
+                      name="nt_domain_nm" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[rpt_to_ser_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="11"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[rpt_to_ser_no]"
+                      name="rpt_to_ser_no" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[dept_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="10"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[dept_no]"
+                      name="dept_no" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[dept_tl]"
+                      codePage="1252"
+                      dataType="str"
+                      length="49"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[dept_tl]"
+                      name="dept_tl" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[job_level]"
+                      codePage="1252"
+                      dataType="str"
+                      length="1"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[job_level]"
+                      name="job_level" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[job_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      length="6"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[job_cd]"
+                      name="job_cd" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[job_tl]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[job_tl]"
+                      name="job_tl" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[email_adr]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[email_adr]"
+                      name="email_adr" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[work_phone_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="24"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[work_phone_no]"
+                      name="work_phone_no" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_stat_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      length="1"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_stat_cd]"
+                      name="empl_stat_cd" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_std_hrs]"
+                      dataType="numeric"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_std_hrs]"
+                      name="empl_std_hrs"
+                      precision="3"
+                      scale="2" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[pstn_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="8"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[pstn_no]"
+                      name="pstn_no" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[direct_report_no]"
+                      dataType="i4"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[direct_report_no]"
+                      name="direct_report_no" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[pool_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      length="3"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[pool_cd]"
+                      name="pool_cd" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[separation_dt]"
+                      codePage="1252"
+                      dataType="str"
+                      length="8"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[separation_dt]"
+                      name="separation_dt" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[TimeStamp]"
+                      dataType="dbTimeStamp"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[TimeStamp]"
+                      name="TimeStamp" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[service_dt]"
+                      codePage="1252"
+                      dataType="str"
+                      length="8"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[service_dt]"
+                      name="service_dt" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[gal_label]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[gal_label]"
+                      name="gal_label" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_called_by_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[empl_called_by_nm]"
+                      name="empl_called_by_nm" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[bldg_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="8"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[bldg_no]"
+                      name="bldg_no" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[office_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="6"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[office_no]"
+                      name="office_no" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[FLSAStatus]"
+                      dataType="i4"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[FLSAStatus]"
+                      name="FLSAStatus" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[work_country_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      length="2"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[work_country_cd]"
+                      name="work_country_cd" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[work_cntry_name]"
+                      codePage="1252"
+                      dataType="str"
+                      length="20"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[work_cntry_name]"
+                      name="work_cntry_name" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[work_st_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      length="6"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[work_st_cd]"
+                      name="work_st_cd" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[State]"
+                      codePage="1252"
+                      dataType="str"
+                      length="21"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[State]"
+                      name="State" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[work_city_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[work_city_nm]"
+                      name="work_city_nm" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[OPERATING_CMPT_CD]"
+                      codePage="1252"
+                      dataType="str"
+                      length="10"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[OPERATING_CMPT_CD]"
+                      name="OPERATING_CMPT_CD" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[OPERATING_CMPT_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[OPERATING_CMPT_DESC]"
+                      name="OPERATING_CMPT_DESC" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[FORMAL_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[FORMAL_DESC]"
+                      name="FORMAL_DESC" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[TOP_TIER_OC_CD]"
+                      codePage="1252"
+                      dataType="str"
+                      length="10"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[TOP_TIER_OC_CD]"
+                      name="TOP_TIER_OC_CD" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[TOP_TIER_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[TOP_TIER_DESC]"
+                      name="TOP_TIER_DESC" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[BUS_AREA_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[BUS_AREA_DESC]"
+                      name="BUS_AREA_DESC" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[BUS_AREA_CD]"
+                      codePage="1252"
+                      dataType="str"
+                      length="5"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[BUS_AREA_CD]"
+                      name="BUS_AREA_CD" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[DEPT_SETID_NO]"
+                      codePage="1252"
+                      dataType="str"
+                      length="5"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[DEPT_SETID_NO]"
+                      name="DEPT_SETID_NO" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[BUS_AREA_SHORT_NM]"
+                      codePage="1252"
+                      dataType="str"
+                      length="5"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[BUS_AREA_SHORT_NM]"
+                      name="BUS_AREA_SHORT_NM" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[BUS_AREA_LONG_NM]"
+                      codePage="1252"
+                      dataType="str"
+                      length="55"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[BUS_AREA_LONG_NM]"
+                      name="BUS_AREA_LONG_NM" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+            <component
+              refId="Package\Load Employee Processing\Load Employee Temp Table"
+              componentClassID="DTSAdapter.OLEDBDestination.3"
+              contactInfo="OLE DB Destination;Microsoft Corporation;Microsoft SqlServer v9; (C) 2005 Microsoft Corporation; All Rights Reserved; http://www.microsoft.com/sql/support;4"
+              description="OLE DB Destination"
+              name="Load Employee Temp Table"
+              usesDispositions="true"
+              version="4">
+              <properties>
+                <property
+                  dataType="System.Int32"
+                  description="The number of seconds before a command times out.  A value of 0 indicates an infinite time-out."
+                  name="CommandTimeout">0</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the name of the database object used to open a rowset."
+                  name="OpenRowset">[DataMart].[DataMartEmployee]</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies the variable that contains the name of the database object used to open a rowset."
+                  name="OpenRowsetVariable"></property>
+                <property
+                  dataType="System.String"
+                  description="The SQL command to be executed."
+                  name="SqlCommand"
+                  UITypeEditor="Microsoft.DataTransformationServices.Controls.ModalMultilineStringEditor, Microsoft.DataTransformationServices.Controls, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"></property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the column code page to use when code page information is unavailable from the data source."
+                  name="DefaultCodePage">1252</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Forces the use of the DefaultCodePage property value when describing character data."
+                  name="AlwaysUseDefaultCodePage">false</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies the mode used to access the database."
+                  name="AccessMode"
+                  typeConverter="AccessMode">3</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the values supplied for identity columns will be copied to the destination. If false, values for identity columns will be auto-generated at the destination. Applies only if fast load is turned on."
+                  name="FastLoadKeepIdentity">false</property>
+                <property
+                  dataType="System.Boolean"
+                  description="Indicates whether the columns containing null will have null inserted in the destination. If false, columns containing null will have their default values inserted at the destinaton. Applies only if fast load is turned on."
+                  name="FastLoadKeepNulls">true</property>
+                <property
+                  dataType="System.String"
+                  description="Specifies options to be used with fast load.  Applies only if fast load is turned on."
+                  name="FastLoadOptions">TABLOCK,CHECK_CONSTRAINTS</property>
+                <property
+                  dataType="System.Int32"
+                  description="Specifies when commits are issued during data insertion.  A value of 0 specifies that one commit will be issued at the end of data insertion.  Applies only if fast load is turned on."
+                  name="FastLoadMaxInsertCommitSize">2147483647</property>
+              </properties>
+              <connections>
+                <connection
+                  refId="Package\Load Employee Processing\Load Employee Temp Table.Connections[OleDbConnection]"
+                  connectionManagerID="Package.ConnectionManagers[genTrac]"
+                  connectionManagerRefId="Package.ConnectionManagers[genTrac]"
+                  description="The OLE DB runtime connection used to access the database."
+                  name="OleDbConnection" />
+              </connections>
+              <inputs>
+                <input
+                  refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input]"
+                  errorOrTruncationOperation="Insert"
+                  errorRowDisposition="FailComponent"
+                  hasSideEffects="true"
+                  name="OLE DB Destination Input">
+                  <inputColumns>
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[empl_first_nm]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="30"
+                      cachedName="empl_first_nm"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[empl_first_nm]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_first_nm]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[empl_mi_nm]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="30"
+                      cachedName="empl_mi_nm"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[empl_mi_nm]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_mi_nm]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[empl_last_nm]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="30"
+                      cachedName="empl_last_nm"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[empl_last_nm]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_last_nm]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[empl_gq_nm]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="15"
+                      cachedName="empl_gq_nm"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[empl_gq_nm]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_gq_nm]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[nt_account_nm]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="20"
+                      cachedName="nt_account_nm"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[nt_account_nm]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[nt_account_nm]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[empl_stat_cd]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="1"
+                      cachedName="empl_stat_cd"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[empl_stat_cd]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_stat_cd]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[work_st_cd]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="6"
+                      cachedName="work_st_cd"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[work_st_cd]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[work_st_cd]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[work_city_nm]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="30"
+                      cachedName="work_city_nm"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[work_city_nm]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[work_city_nm]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[job_level]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="1"
+                      cachedName="job_level"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[job_level]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[job_level]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[rpt_to_ser_no]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="11"
+                      cachedName="rpt_to_ser_no"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[rpt_to_ser_no]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[rpt_to_ser_no]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[FLSAStatus]"
+                      cachedDataType="i4"
+                      cachedName="FLSAStatus"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[FLSAStatus]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[FLSAStatus]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[TimeStamp]"
+                      cachedDataType="dbTimeStamp"
+                      cachedName="TimeStamp"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[TimeStamp]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[TimeStamp]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[nt_domain_nm]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="15"
+                      cachedName="nt_domain_nm"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[nt_domain_nm]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[nt_domain_nm]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[empl_std_hrs]"
+                      cachedDataType="numeric"
+                      cachedName="empl_std_hrs"
+                      cachedPrecision="3"
+                      cachedScale="2"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[empl_std_hrs]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_std_hrs]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[State]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="21"
+                      cachedName="State"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[work_st_nm]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[State]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[work_country_cd]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="2"
+                      cachedName="work_country_cd"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[work_country_cd]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[work_country_cd]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[work_cntry_name]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="20"
+                      cachedName="work_cntry_name"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[work_country_nm]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[work_cntry_name]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[OPERATING_CMPT_CD]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="10"
+                      cachedName="OPERATING_CMPT_CD"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[OPERATING_CMPT_CD]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[OPERATING_CMPT_CD]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[OPERATING_CMPT_DESC]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="30"
+                      cachedName="OPERATING_CMPT_DESC"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[OPERATING_CMPT_DESC]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[OPERATING_CMPT_DESC]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[FORMAL_DESC]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="50"
+                      cachedName="FORMAL_DESC"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[FORMAL_DESC]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[FORMAL_DESC]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[TOP_TIER_OC_CD]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="10"
+                      cachedName="TOP_TIER_OC_CD"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[TOP_TIER_OC_CD]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[TOP_TIER_OC_CD]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[TOP_TIER_DESC]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="30"
+                      cachedName="TOP_TIER_DESC"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[TOP_TIER_DESC]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[TOP_TIER_DESC]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[BUS_AREA_DESC]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="30"
+                      cachedName="BUS_AREA_DESC"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[BUS_AREA_DESC]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[BUS_AREA_DESC]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[BUS_AREA_CD]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="5"
+                      cachedName="BUS_AREA_CD"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[BUS_AREA_CD]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[BUS_AREA_CD]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[DEPT_SETID_NO]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="5"
+                      cachedName="DEPT_SETID_NO"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[DEPT_SETID_NO]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[DEPT_SETID_NO]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[BUS_AREA_SHORT_NM]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="5"
+                      cachedName="BUS_AREA_SHORT_NM"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[BUS_AREA_SHORT_NM]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[BUS_AREA_SHORT_NM]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[BUS_AREA_LONG_NM]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="55"
+                      cachedName="BUS_AREA_LONG_NM"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[BUS_AREA_LONG_NM]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[BUS_AREA_LONG_NM]" />
+                    <inputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].Columns[empl_ser_no]"
+                      cachedCodepage="1252"
+                      cachedDataType="str"
+                      cachedLength="11"
+                      cachedName="empl_ser_no"
+                      externalMetadataColumnId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[empl_ser_no]"
+                      lineageId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output].Columns[empl_ser_no]" />
+                  </inputColumns>
+                  <externalMetadataColumns
+                    isUsed="True">
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[empl_ser_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="empl_ser_no" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[empl_first_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="empl_first_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[empl_mi_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="empl_mi_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[empl_last_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="empl_last_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[empl_gq_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="15"
+                      name="empl_gq_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[nt_account_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="20"
+                      name="nt_account_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[empl_stat_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      length="1"
+                      name="empl_stat_cd" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[TimeStamp]"
+                      dataType="dbTimeStamp"
+                      name="TimeStamp" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[work_st_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      length="10"
+                      name="work_st_cd" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[work_city_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      name="work_city_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[job_level]"
+                      codePage="1252"
+                      dataType="str"
+                      length="1"
+                      name="job_level" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[FLSAStatus]"
+                      dataType="ui1"
+                      name="FLSAStatus" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[rpt_to_ser_no]"
+                      codePage="1252"
+                      dataType="str"
+                      length="11"
+                      name="rpt_to_ser_no" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[nt_domain_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="15"
+                      name="nt_domain_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[empl_std_hrs]"
+                      dataType="r8"
+                      name="empl_std_hrs" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[work_st_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      name="work_st_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[work_country_cd]"
+                      codePage="1252"
+                      dataType="str"
+                      length="10"
+                      name="work_country_cd" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[work_country_nm]"
+                      codePage="1252"
+                      dataType="str"
+                      length="100"
+                      name="work_country_nm" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[OPERATING_CMPT_CD]"
+                      codePage="1252"
+                      dataType="str"
+                      length="10"
+                      name="OPERATING_CMPT_CD" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[OPERATING_CMPT_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="OPERATING_CMPT_DESC" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[FORMAL_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      length="50"
+                      name="FORMAL_DESC" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[TOP_TIER_OC_CD]"
+                      codePage="1252"
+                      dataType="str"
+                      length="10"
+                      name="TOP_TIER_OC_CD" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[TOP_TIER_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="TOP_TIER_DESC" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[BUS_AREA_DESC]"
+                      codePage="1252"
+                      dataType="str"
+                      length="30"
+                      name="BUS_AREA_DESC" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[BUS_AREA_CD]"
+                      codePage="1252"
+                      dataType="str"
+                      length="5"
+                      name="BUS_AREA_CD" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[DEPT_SETID_NO]"
+                      codePage="1252"
+                      dataType="str"
+                      length="5"
+                      name="DEPT_SETID_NO" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[BUS_AREA_SHORT_NM]"
+                      codePage="1252"
+                      dataType="str"
+                      length="5"
+                      name="BUS_AREA_SHORT_NM" />
+                    <externalMetadataColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input].ExternalColumns[BUS_AREA_LONG_NM]"
+                      codePage="1252"
+                      dataType="str"
+                      length="55"
+                      name="BUS_AREA_LONG_NM" />
+                  </externalMetadataColumns>
+                </input>
+              </inputs>
+              <outputs>
+                <output
+                  refId="Package\Load Employee Processing\Load Employee Temp Table.Outputs[OLE DB Destination Error Output]"
+                  exclusionGroup="1"
+                  isErrorOut="true"
+                  name="OLE DB Destination Error Output"
+                  synchronousInputId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input]">
+                  <outputColumns>
+                    <outputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      dataType="i4"
+                      lineageId="Package\Load Employee Processing\Load Employee Temp Table.Outputs[OLE DB Destination Error Output].Columns[ErrorCode]"
+                      name="ErrorCode"
+                      specialFlags="1" />
+                    <outputColumn
+                      refId="Package\Load Employee Processing\Load Employee Temp Table.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      dataType="i4"
+                      lineageId="Package\Load Employee Processing\Load Employee Temp Table.Outputs[OLE DB Destination Error Output].Columns[ErrorColumn]"
+                      name="ErrorColumn"
+                      specialFlags="2" />
+                  </outputColumns>
+                  <externalMetadataColumns />
+                </output>
+              </outputs>
+            </component>
+          </components>
+          <paths>
+            <path
+              refId="Package\Load Employee Processing.Paths[OLE DB Source Output]"
+              endId="Package\Load Employee Processing\Load Employee Temp Table.Inputs[OLE DB Destination Input]"
+              name="OLE DB Source Output"
+              startId="Package\Load Employee Processing\DataMartPull.Outputs[OLE DB Source Output]" />
+          </paths>
+        </pipeline>
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\TRUNCATE DataMartEmployee"
+      DTS:CreationName="Microsoft.SqlServer.Dts.Tasks.ExecuteSQLTask.ExecuteSQLTask, Microsoft.SqlServer.SQLTask, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
+      DTS:Description="Execute SQL Task"
+      DTS:DTSID="{7EB072F6-59B2-48FC-966D-D649F1EA19BC}"
+      DTS:ExecutableType="Microsoft.SqlServer.Dts.Tasks.ExecuteSQLTask.ExecuteSQLTask, Microsoft.SqlServer.SQLTask, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="TRUNCATE DataMartEmployee"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; Microsoft SQL Server 2008; © 2007 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:LoggingOptions
+        DTS:FilterKind="0" />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{C2EA39E4-9ED5-4B88-9D32-3AF415D75CC7}"
+          SQLTask:BypassPrepare="False"
+          SQLTask:SqlStatementSource="TRUNCATE TABLE [DataMart].[DataMartEmployee]&#xA;&#xA;&#xA;&#xA;GO" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint]"
+      DTS:CreationName=""
+      DTS:DTSID="{5A1B6850-0207-44B3-A3BC-665C4DDA049C}"
+      DTS:From="Package\TRUNCATE DataMartEmployee"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint"
+      DTS:To="Package\Load Employee Processing" />
+  </DTS:PrecedenceConstraints>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="sql11">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="159,79"
+          Id="Package\Load Employee Processing"
+          TopLeft="5.5,183.160377358491" />
+        <NodeLayout
+          Size="136,44"
+          Id="Package\TRUNCATE DataMartEmployee"
+          TopLeft="49.4245283018868,5.5" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="117.311320754717,49.4245283018868">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="-32.4528301886792,133.735849056604"
+              Start="0,0"
+              End="-32.4528301886792,126.235849056604">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="0,66.8679245283019" />
+                  <mssgle:LineSegment
+                    End="-32.4528301886792,66.8679245283019" />
+                  <mssgle:LineSegment
+                    End="-32.4528301886792,126.235849056604" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>

@@ -1,0 +1,201 @@
+﻿<div id="editMappingsModal">
+    <div class="ui-widget-header modal-title-bar">Edit Mappings for {{model.Co}}
+        <div class="modal-close-box" data-ng-click="$close()"><i class="glyphicon glyphicon-remove"></i>
+        </div>
+    </div>
+    <div class="modal-content-area">
+        <form name="form" id="editMappings">
+            <div class="form-row css3pie-position-fix">
+                <div gen-validation data-errors="$root.modalErrors"></div>
+            </div>
+            <div class="module-header-data">PPR&amp;D Section</div>
+            <div class="module-content-data">
+                <div class="form-row">
+                    <div class="form-label-wide">Linked Section</div>
+                    <div class="form-element">
+                        <select class="select-large" data-ng-disabled="!canEdit()" data-ng-options="item.Id as item.Label for item in rateModel.sections" data-ng-model="model.S"></select>
+                    </div>
+                </div>
+            </div>
+            <br/>
+            <div class="module-header-data">ProPricer Direct Rates</div>
+            <div class="module-content-data">
+                <div class="form-row">
+                    <div class="form-label-wide">Resource Type:</div>
+                    <div class="form-element">
+                        <select data-ng-disabled="!canEdit()" data-ng-change="onResourceTypeChange();" data-ng-options="item.Id as item.Label for item in rateModel.resourceTypes" data-ng-model="model.RT" style="width: 175px"></select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label-wide">Rate Type:</div>
+                    <div class="form-element">
+                        <select data-ng-disabled="!canEdit()" data-ng-options="item.Id as item.Label for item in rateModel.rateTypes" data-ng-model="model.Ra" style="width: 175px"></select>
+                    </div>
+                </div>
+
+                <div class="form-group" data-ng-show="model.RT == '1'">
+                    <div class="form-row">
+                        <div class="form-label-wide">Generate Additional Direct Labor Rates</div>
+                        <div class="form-element">
+                            <input data-ng-disabled="!canEdit()" type="checkbox" id="AdditionalRates" data-ng-model="model.Gen"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group" data-ng-hide="model.Gen">
+                    <div class="form-row">
+                        <table class="table table-hover table-bordered table-condensed">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Rate Code</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Resource Class</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">{{model.Co}}</th>
+                                    <td>
+                                        <div class="form-element">
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD" data-ng-change="model.RCId = model.RD === '' ? 0 : model.RCId;"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-element">
+                                            <select data-ng-disabled="!canEdit() || model.RD === ''" data-ng-options="item.Id as item.Label for item in rateModel.resourceClasses" data-ng-model="model.RCId" style="width: 300px"></select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div data-ng-show="model.Gen && model.RT == '1'">
+                    <div class="form-row">
+                        <table class="table table-hover table-bordered table-condensed">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Rate Code w/ext</th>
+                                    <th scope="col">Description</th>
+                                    <th scope="col">Resource Class</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">{{model.Co}}1</th>
+                                    <td>
+                                        <div class="form-element">
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD1" data-ng-change="model.RCId1 = model.RD1 === '' ? 0 : model.RCId1;"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-element">
+                                            <select data-ng-disabled="!canEdit() || model.RD1 === ''" data-ng-options="item.Id as item.Label for item in rateModel.resourceClasses" data-ng-model="model.RCId1" style="width: 300px"></select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{model.Co}}2</th>
+                                    <td>
+                                        <div class="form-element">
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD2" data-ng-change="model.RCId2 = model.RD2 === '' ? 0 : model.RCId2;"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-element">
+                                            <select data-ng-disabled="!canEdit() || model.RD2 === ''" data-ng-options="item.Id as item.Label for item in rateModel.resourceClasses" data-ng-model="model.RCId2" style="width: 300px"></select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{model.Co}}3</th>
+                                    <td>
+                                        <div class="form-element">
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD3" data-ng-change="model.RCId3 = model.RD3 === '' ? 0 : model.RCId3;"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-element">
+                                            <select data-ng-disabled="!canEdit() || model.RD3 === ''" data-ng-options="item.Id as item.Label for item in rateModel.resourceClasses" data-ng-model="model.RCId3" style="width: 300px"></select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{model.Co}}4</th>
+                                    <td>
+                                        <div class="form-element">
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD4" data-ng-change="model.RCId4 = model.RD4 === '' ? 0 : model.RCId4;"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-element">
+                                            <select data-ng-disabled="!canEdit() || model.RD4 === ''" data-ng-options="item.Id as item.Label for item in rateModel.resourceClasses" data-ng-model="model.RCId4" style="width: 300px"></select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{model.Co}}5</th>
+                                    <td>
+                                        <div class="form-element">
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD5" data-ng-change="model.RCId5 = model.RD5 === '' ? 0 : model.RCId5;"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-element">
+                                            <select data-ng-disabled="!canEdit() || model.RD5 === ''" data-ng-options="item.Id as item.Label for item in rateModel.resourceClasses" data-ng-model="model.RCId5" style="width: 300px"></select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{model.Co}}6</th>
+                                    <td>
+                                        <div class="form-element">
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD6" data-ng-change="model.RCId6 = model.RD6 === '' ? 0 : model.RCId6;"/>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-element">
+                                            <select data-ng-disabled="!canEdit() || model.RD6 === ''" data-ng-options="item.Id as item.Label for item in rateModel.resourceClasses" data-ng-model="model.RCId6" style="width: 300px"></select>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">{{model.Co}}7</th>
+                                    <td>
+                                        <div class="form-element">
+                                            <input data-ng-disabled="!canEdit()" class="form-input-wide" maxlength="254" type="text" data-ng-model="model.RD7" data-ng-change="model.RCId7 = model.RD7 === '' ? 0 : model.RCId7;" />
+                                         </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-element">
+                                            <select data-ng-disabled="!canEdit() || model.RD7 === ''" data-ng-options="item.Id as item.Label for item in rateModel.resourceClasses" data-ng-model="model.RCId7" style="width: 300px"></select>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table> 
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label-wide">Government Burden Pool:</div>
+                    <div class="form-element">
+                        <select data-ng-disabled="!canEdit()" class="select-large" data-ng-options="item.Id as item.Label for item in rateModel.governmentBurdenPools" data-ng-model="model.GBPId"></select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label-wide">Commercial Burden Pool:</div>
+                    <div class="form-element">
+                        <select data-ng-disabled="!canEdit()" class="select-large" data-ng-options="item.Id as item.Label for item in rateModel.commercialBurdenPools" data-ng-model="model.CBPId"></select>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="ies-action"
+                data-ng-disabled="!canEdit() || form.$invalid || $root.modalErrors.length > 0"
+                data-ng-click="editMappings(model);"
+                type="button" id="editMappings">OK</button>
+        <button class="ies" type="button" data-ng-click="$close()">Cancel</button>
+        <br/><br/>
+    </div>
+</div>

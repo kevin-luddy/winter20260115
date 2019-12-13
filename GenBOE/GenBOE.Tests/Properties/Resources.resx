@@ -1,0 +1,277 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="BOEImporterTest" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\BOEImporterTest.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportHours" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportHours.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportHoursChangeCurve" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportHoursChangeCurve.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportInvalidSpreadData" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportInvalidSpreadData.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportMissingEndDate" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportMissingEndDate.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportMissingPerfOrg" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportMissingPerfOrg.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportMissingResource" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportMissingResource.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportMissingSpreadCurve" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportMissingSpreadCurve.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportMissingStartDate" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportMissingStartDate.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportNoRows" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportNoRows.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportSpreadDataDecimalsTooLong" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportSpreadDataDecimalsTooLong.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportSpreadDataExtraMonth" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportSpreadDataExtraMonth.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportSpreadDataLargerSum" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportSpreadDataLargerSum.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportSpreadDataMissingMonth" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportSpreadDataMissingMonth.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportSpreadDataMissingValue" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportSpreadDataMissingValue.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportSpreadDataTooLong" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportSpreadDataTooLong.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Workoffline" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Workoffline.xlsm;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportCost" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportCost.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportCostDecimalPrecision" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportCostDecimalPrecision.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportCostEmptyCost" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportCostEmptyCost.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportCostMissingCost" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportCostMissingCost.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportCostSpreadDecimalPrecision" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportCostSpreadDecimalPrecision.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportCostSpreadTooLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportCostSpreadTooLarge.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportCostTooLarge" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportCostTooLarge.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImporterBadFormat" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImporterBadFormat.xls;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImporterNotExcel" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImporterNotExcel.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportHoursChangeCurveAndRateType" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportHoursChangeCurveAndRateType.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportHoursInvalidEnd" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportHoursInvalidEnd.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportHoursInvalidPerfOrg" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportHoursInvalidPerfOrg.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportHoursInvalidResource" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportHoursInvalidResource.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportHoursInvalidStart" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportHoursInvalidStart.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportCostInvalidTotal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportCostInvalidTotal.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportCostSpreadRangeInvalid" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportCostSpreadRangeInvalid.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportHoursInvalidDates" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportHoursInvalidDates.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportHoursInvalidTotal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportHoursInvalidTotal.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportHoursSpreadInvalidDecimal" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportHoursSpreadInvalidDecimal.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportHoursCustomFieldsMulti" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\import\labor\laborimporthourscustomfieldsmulti.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportMultiClin" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\import\labor\laborimportmulticlin.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportMultiNull" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\import\labor\laborimportmultinull.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportMultiWBS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\import\labor\laborimportmultiwbs.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportHoursPercentage" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportHoursPercentage.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportInvalidResourceId" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportInvalidResourceId.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportEPs" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportEPs.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborTypesAndSpread" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LaborTypesAndSpread.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="ProjectMap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ProjectMap.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportSpreadDataInvalidStartMonth" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportSpreadDataInvalidStartMonth.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportSpreadDataInvalidStartMonth0" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportSpreadDataInvalidStartMonth0.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportSpreadDataValidStartMonth" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\ActionLogic\Import\Labor\LaborImportSpreadDataValidStartMonth.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportHoursCustomFields" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LaborImportHoursCustomFields.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportHoursCustomFieldsNoChange" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LaborImportHoursCustomFieldsNoChange.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="LaborImportHoursCustomFieldsNoSelection" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\LaborImportHoursCustomFieldsNoSelection.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="laborimportmulticustomfields" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\laborimportmulticustomfields.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+</root>

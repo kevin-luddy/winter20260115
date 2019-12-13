@@ -1,0 +1,200 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Home.HomeProposalModelView
+@{ 
+    string rdsbWriteAccessUrl = IES.Common.ConfigurationUtilities.GetAppSetting("RDSBUrl") + "Document/Edit/";
+    string rdsbReadAccessUrl = IES.Common.ConfigurationUtilities.GetAppSetting("RDSBUrl") + "Document/Publish/";
+    string boeUrl = IES.Common.ConfigurationUtilities.GetAppSetting("BOEUrl");
+}
+<script type="text/javascript">
+    HomeProposalWidget.getElement('#totalProposalsValue').html(@Model.DataRows.Count);
+    var HomeProposalGridWidget;
+    $(function () {
+
+        var HomeProposalGridWidgetConfig = {};
+        HomeProposalGridWidgetConfig.ContextID = "homeProposalGrid";
+        HomeProposalGridWidget = new GenWidget(HomeProposalGridWidgetConfig);
+
+        HomeProposalGridWidget.getElement('.help-dialog').css('max-width', '550px');
+    });
+</script>
+
+<input type="hidden" id="SortField" name="SortField" value="@Model.SortField" />
+<input type="hidden" id="Order" name="Order" value="@Model.Order" />
+
+<div id="homeProposalGrid" class="homeProposalGrid">
+    <table id="homeProposalTable" name="homeProposalTable" class="row-template grid sortable readonly" style="width: 100%;">
+        <colgroup>
+            <col width="70px"/>
+            <col />
+            <col width="70px"/>
+            <col />
+            <col width="70px"/>
+            <col />
+            <col />
+            <col />
+            <col />
+            <col width="66px" />
+            <col width="66px" />
+            <col width="66px" />
+            <col width="70px" />
+            <col width="70px" />
+        </colgroup>
+        <thead>
+            <tr>
+                <th sortby="TrackingNumber">Tracking<br />Number</th>
+                <th sortby="ProposalTitle">Proposal<br />Title</th>
+                <th sortby="ProgramArea"><span helptext="@Model.ProgramAreaHelpText">Program<br />Area</span></th>
+                <th sortby="Customer">Customer</th>
+                <th sortby="EstValue">Est.<br />Value ($)</th>
+                <th sortby="CaptureManagerDisplayName">Capture<br />Manager</th>
+                <th sortby="PricerDisplayName">Lead<br />Estimator</th>
+                <th sortby="PeerReviewerDisplayName">Independent<br />Reviewer</th>
+                <th sortby="CostVolumeLeadDisplayName">Cost Volume<br />Lead</th>
+                <th sortby="ProposalDateAssigned">Date<br />Assigned</th>
+                <th sortby="ProposalDueDate">Est.<br />Ship Date</th>
+                <th sortby="ProposalCompletedDate">Actual<br />Submittal<br />Date</th>
+                <th sortby="Status">Proposal<br />Status</th>
+                <th class="last-child">Manage</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="no-rows-template" id="proposalLoader">
+                <td colspan="14">
+                    <div>Loading Data<div class="loader" style="vertical-align: middle;"></div></div>
+                </td>
+            </tr>
+            @if (Model == null || Model.DataRows == null || !Model.DataRows.Any())
+            {
+                <tr class="no-rows-template proposalDataRows">
+                    <td colspan="14">
+                        <div class="empty-grid-text" style="color: Black">There are no active Proposals in your result set</div>
+                    </td>
+                </tr>
+            }
+            else
+            {
+                foreach (GenTRAC.ActionLogic.ModelView.Home.HomeProposalGridModelView item in Model.DataRows)
+                {
+                <tr class="row-template proposalDataRows">
+                    <td>
+                        @if (item.IsForecastProposal)
+                        {
+                        <span title="Temporary Forecasted Tracking Number">@item.ForecastedTrackingNumber</span>
+                        }
+                        else
+                        {
+                            <span class="auto-tooltip">@item.TrackingNumber</span>
+                        }
+                        <input type="hidden" id="ProposalId" name="ProposalId" value="@item.ProposalId" />
+                    </td>
+                    <td>
+                        <span class="auto-tooltip">@item.ProposalTitle</span>
+                    </td>
+                    <td>
+                        <span class="auto-tooltip">@item.ProgramArea</span>
+                    </td>
+                    <td>
+                        <span class="auto-tooltip">@item.Customer</span>
+                    </td>
+                    <td style="text-align: right;">
+                        <span class="auto-tooltip">@item.EstValueString</span>
+                    </td>
+                    <td>
+                        <span class="auto-tooltip">@item.CaptureManagerDisplayName</span>
+                    </td>
+                    <td>
+                        <span class="auto-tooltip">@item.PricerDisplayName</span>
+                    </td>
+                    <td>
+                        <span class="auto-tooltip">@item.PeerReviewerDisplayName</span>
+                    </td>
+                    <td>
+                        <span class="auto-tooltip">@item.CostVolumeLeadDisplayName</span>
+                    </td>
+                    <td>
+                        <span class="auto-tooltip">@item.ProposalDateAssignedString</span>
+                    </td>
+                    <td style="@item.DueDateBackground">
+                        <span class="auto-tooltip">@item.ProposalDueDateString</span>
+                    </td>
+                    <td>
+                        <span class="auto-tooltip">@item.ProposalCompletedDateString</span>
+                    </td>
+                    <td>
+                        <span class="auto-tooltip">@item.Status.GetDescription()</span>
+                    </td>
+                    <td class="manage-buttons">
+                        <div title="View or Edit the proposal record" class="button proposal-button" onclick="HomeProposalWidget.ShowProposal(event, '@item.ProposalId');"></div>
+                        @if (!item.IsForecastProposal)
+                        {
+                        <div title="View or Edit the checklists" class="button checklist-button" onclick="HomeProposalWidget.ShowChecklist(event, '@item.ProposalId');"></div>
+                        <div title="View or Edit the Approvals" class="button approval-button" onclick="HomeProposalWidget.ShowApprovals(event, '@item.ProposalId');"></div>
+                        if (item.IsDeleteAllowed)
+                        {
+                            <div class="button delete-document-div" title="Delete Proposal">
+                                <span class="fa fa-remove delete-document-icon" onclick="HomeProposalWidget.ShowConfirmDelete(event, '@item.ProposalId')"></span>
+                            </div>
+                        }
+                        <br />
+                        <div title="View or Edit Post Submittal Attachments" class="fa fa-paperclip button psa-button" onclick="HomeProposalWidget.ShowPostSubmittalAttachments(event, '@item.ProposalId');"></div>                        
+                            if (item.Workspaces.Any() || Model.CanCreateBOEWorkspace)
+                            {
+                                <div class="dropdown">
+                                    <button class="dropbtn boe-button"></button>
+                                    <div class="dropdown-content">
+                                        @foreach (string workspace in item.Workspaces)
+                                        {
+                                            <a href="@(boeUrl)@workspace" target="_blank">@workspace</a>
+                                        }
+                                        @if (Model.CanCreateBOEWorkspace)
+                                        {
+                                            <a href="@(boeUrl)default/Workspace/CreateWorkspace?TrackingNumber=@item.TrackingNumber" target="_blank">Create New genBOE Workspace</a>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            if (!item.IsCommercialCustomer)
+                            {
+                                if (item.HasLinkedDocument)
+                                {
+                                    <div class="add-document-div">
+                                        <div class="document-button-div">
+                                            @if (item.HasWriteAccessToLinkedDocument)
+                                            {
+                                                <a title="Edit Rates &amp; Disclosures Document" href="@(rdsbWriteAccessUrl)@item.ProposalId" target="_blank"><i class="fa fa-file-text-o document-button"></i></a>
+                                            }
+                                            else
+                                            {
+                                                <a title="Download Rates &amp; Disclosures Document" href="#" onclick="HomeProposalGridWidget.performExport('@(rdsbReadAccessUrl)@item.ProposalId');"><i class="fa fa-file-text-o document-button"></i></a>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                else if (item.HasWriteAccessToLinkedDocument)
+                                {
+                                    <div class="add-document-div">
+                                        <div class="document-button-div fa-stack add-document-icon-stack">
+                                            <a title="Create Rates &amp; Disclosures Document" href="@(rdsbWriteAccessUrl)@item.ProposalId?createIfNotExists=true" target="_blank">
+                                                <i class="fa fa-circle fa-stack-1x add-document-icon-circle"></i>
+                                                <i class="fa fa-plus fa-stack-2x add-document-icon-plus"></i>
+                                                <i class="fa fa-file-text-o add-document-icon document-button"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        }
+                        @if (item.IsForecastProposal && item.IsDeleteAllowed)
+                        {
+                            <div class="button delete-document-div" title="Delete Proposal">
+                                <span class="fa fa-remove delete-document-icon" onclick="HomeProposalWidget.ShowConfirmDelete(event, '@item.ProposalId')"></span>
+                            </div>
+                        }
+
+                    </td>
+                </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

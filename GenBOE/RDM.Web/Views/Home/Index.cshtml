@@ -1,0 +1,75 @@
+﻿@using IES.Common
+@{
+    ViewBag.Title = "Home Page";
+}
+<script type="text/javascript">
+    angular.module('RDM').value('RevisionModel', {
+        controller: '@IESWebConstants.CONTROLLER_HOME',
+        getAction: '@IESWebConstants.ACTION_GET_REVISIONS',
+        wcReportsController: '@IESWebConstants.CONTROLLER_REPORTS',
+        wcActionExportCobra: '@IESWebConstants.ACTION_EXPORT_COBRA_DATA',
+        wcActionExportProPricer: '@IESWebConstants.ACTION_EXPORT_PRO_PRICER_DATA',
+        wcActionGenerateFullPPRD: '@IESWebConstants.ACTION_GENERATE_FULL_PPRD',
+        wcRateController: '@IESWebConstants.CONTROLLER_RATE',
+        wcGetRatesByVersionAction: '@IESWebConstants.ACTION_GET_RATES_BY_VERSION'
+    });
+</script>
+<br />
+
+<div class="row top-margin-2" data-ng-controller="HomeController">
+    <div id="ActionSpinner" class="page-loading" data-ng-show="isExportingPPRD || isExportingRateDoc" data-ng-cloak>
+        <div class="loading-box">
+            <div class="loader white"></div>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="module">
+            <div class="module-header-data left">
+                PPR&amp;D Revisions
+            </div>
+            <div class="module-content-data">
+                <gen-validation data-errors="$root.errors"></gen-validation>
+                <table id="RevisionGrid" class="grid readonly" data-ng-cloak>
+                    <thead>
+                        <tr>
+                            <th class="revision-revision bootstrap center"><b>Revision</b></th>
+                            <th class="revision-date-published bootstrap center"><b>Published</b></th>
+                            <th class="revision-release-notes bootstrap center"><b>Release Notes</b></th>
+                            <th class="revision-manage bootstrap center"><b>Manage</b></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr data-ng-show="isDataLoading"><td colspan="5"><div class="loader"></div></td></tr>
+                        <tr data-ng-repeat="revision in revisions | orderBy:'ID':'true'">
+                            <td class="columnLines">{{::revision.DisplayRevision}}</td>
+                            <td class="columnLines revision-date-published" title="{{::revision.DatePublished}}">{{::revision.DatePublished}}</td>
+                            <td class="columnLines"><div style="max-height: 200px; overflow: auto" data-ng-bind-html="revision.ReleaseNotes"></div></td>
+                            <td class="columnLines">
+                                <div>
+                                    <div title="Export PPR&amp;D" class="word-button" data-ng-click="generatePPRDClick(revision.Id);" data-ng-disabled="isExportingPPRD" data-ng-show="isRdmAdminUser || isRdmCobraAdminUser || !revision.IsWipRevision"></div>
+                                    <div title="Export Rates" class="excel-button" data-ng-click="generateRateDocClick(revision.Id, revision.Revision);" data-ng-disabled="isExportingRateDoc" data-ng-show="isRdmAdminUser || isRdmCobraAdminUser || !revision.IsWipRevision"></div>
+                                    <div data-ng-show="managePprdUrl && isRdmAdminUser && revision.IsWipRevision" class="action-link">
+                                        <a href="{{managePprdUrl}}" title="Manage PPR&amp;D">PPR&amp;D</a>
+                                    </div>
+                                    <div data-ng-show="manageRatesUrl && (isRdmAdminUser || isRdmCobraAdminUser || !revision.IsWipRevision)" class="action-link">
+                                        <a href="{{manageRatesUrl}}/Index/{{revision.Id}}" title="Manage Rates">Rates</a>
+                                    </div>
+                                    <div data-ng-show="manageBurdenPoolsUrl && isRdmAdminUser" class="action-link">
+                                        <a href="{{manageBurdenPoolsUrl}}/Index/{{revision.Id}}" title="Manage Burden Pools">Burdens</a>
+                                    </div>
+                                    <div data-ng-show="manageCobraMappingsUrl && isRdmCobraAdminUser" class="action-link">
+                                        <a href="{{manageCobraMappingsUrl}}/{{revision.Id}}" title="Manage Cobra Mappings">Cobra</a>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    @*Hidden Rate Grid for exports.*@
+    <div class="hidden">
+        <div ui-grid="rateGridOptions" ui-grid-exporter class="rate-grid-ui"></div>
+    </div>
+</div>

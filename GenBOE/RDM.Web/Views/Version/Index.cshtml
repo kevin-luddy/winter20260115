@@ -1,0 +1,145 @@
+﻿@inherits System.Web.Mvc.WebViewPage<IES.DataBridge.ModelViews.VersionComparisonModelView>
+@using Newtonsoft.Json;
+@using IES.Common
+@using IES.ActionLogic.Validation
+@{
+    ViewBag.Title = "Version Comparison";
+    JsonSerializerSettings microsoftDateFormatSettings = new JsonSerializerSettings
+    {
+        DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
+        DateParseHandling = DateParseHandling.DateTime,
+        DateTimeZoneHandling = DateTimeZoneHandling.Local
+    };
+}
+
+<script type="text/javascript">
+    angular.module("RDM").value('VersionIndexModel', {
+        baseUrl : '@Url.Content("~/")',
+        controller: '@IESWebConstants.CONTROLLER_VERSION',
+        compareAction: '@IESWebConstants.ACTION_GET_VERSION_DIFFERENCES',
+        rateController: '@IESWebConstants.CONTROLLER_RATE',
+        reportsController: '@IESWebConstants.CONTROLLER_REPORTS',
+        publishAction: '@IESWebConstants.ACTION_PUBLISH',
+        rollbackAction: '@IESWebConstants.ACTION_ROLLBACK',
+        validateRatesAction: '@IESWebConstants.ACTION_VALIDATE_RATES',
+        workInProgressName: '@IES.Common.classes.CommonConstants.WorkInProgress',
+        ratePrecisionError: '@RateMappingValidationConstants.RATEDETAILS_RATEPRECISION_ERROR',
+        defaultRateHistory: '@IESWebConstants.DEFAULT_RATE_HISTORY',
+        pprdFormattingTarget: '@IES.Common.RateTarget.PPRD',
+        rateFormattingTarget: '@IES.Common.RateTarget.Rate',
+        data: @Html.Raw(JsonConvert.SerializeObject(Model, microsoftDateFormatSettings))
+        });
+</script>
+<br />
+<div data-ng-app="RDM" data-ng-controller="VersionIndexController">
+    <div class="row top-margin-2">
+        <div class="col-xs-12">
+            <div class="module" data-ng-cloak>
+                <div class="module-header-data left">Version Comparison</div>
+                <div class="row css3pie-position-fix">
+                    <gen-validation data-errors="$root.errors"></gen-validation>
+                </div><div class="row">
+                    <div class="col-xs-12" style="text-align: center;">
+                        <div id="Versions" class="col-xs-6" style="display: inline; text-align: left; padding-left:20px">                      
+                            Select a Version from the dropdown to compare it to the previous version: <select data-ng-options="item.Id as item.Label for item in versionData.AvailableVersions" data-ng-model="versionData.SelectedRevision.Id" data-ng-change="updateDiff(true)"></select>
+                        </div>
+                        <div id="ToleranceSlider" class="tolerance-container  col-xs-6" style="display: inline; float: left; visibility:hidden">
+                            <md-slider-container flex>
+                                Select a tolerance for highlighting large changes.
+                                <md-input-container style="margin: 0px 18px; padding: 0px 2px; top: 4px ">
+                                    <input flex type="number" data-ng-model="tolerance" aria-label="tolerance" aria-controls="tolerance-slider" min="0" max="100" maxlength="3" data-ng-change="updateTolerance()">
+                                </md-input-container>
+                                %
+                                <md-slider id="red-slider" md-discrete data-ng-model="tolerance" style="height: 21px;top: -14px" min="0" max="100" step="5" aria-label="tolerance" class="md-primary" data-ng-change="updateTolerance()"></md-slider>
+                            </md-slider-container>
+                        </div>
+                        @* ---- Show the buttons and messages below for WIP revision when user is an RDM admin. ---- *@
+                        <div class="module-content-data" data-ng-show="versionData.SelectedRevision.Label === '@IES.Common.classes.CommonConstants.WorkInProgress' && versionData.AdminUser" style="border: none; text-align: left; padding-bottom: 0px; padding-top:3px">
+                            <button id="Publish" data-ng-hide="ReplicationValidationMessages.length > 0" data-ng-click="validateRates();" type="button" class="ies-action" style="margin-left: 9px">Publish</button>
+                            <button id="Rollback" data-ng-click="showRollbackModal();" type="button" class="ies-danger">Rollback</button>
+                        </div>
+                        <div data-ng-show="activeLockMessages.length && versionData.SelectedRevision.Label === '@IES.Common.classes.CommonConstants.WorkInProgress' && versionData.AdminUser">
+                            <br/>
+                            <b>Publish/Rollback is disabled due to the following active locks:</b>
+                            <div data-ng-repeat="message in activeLockMessages">{{message}}</div>
+                        </div>
+
+                        <p></p>
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a  style="padding-top: 5px; padding-bottom: 5px" data-toggle="tab" href="#pprd" data-ng-click="getPPRD();">PPR&amp;D</a></li>
+                            <li><a style="padding-top: 5px; padding-bottom: 5px" data-toggle="tab" href="#rates" data-ng-click="getRates();">Rates</a></li>
+                        </ul>
+                        <div class="tab-content" style="min-height:500px">
+                            <div id="pprd" class="tab-pane fade in active">
+                                <div data-ng-show="versionData.IsEarliestVersion">The earliest version cannot be compared as there is no previous version.</div>
+                                <div data-ng-hide="versionData.IsEarliestVersion" class="tolerance-container col-xs-12" style="padding-top: 10px">
+                                    <div class="form-row last-form-row">
+                                        <div class="version-grid">
+                                            <div data-ng-hide="versionData.PPRDDifferences.length">No PPR&amp;D differences found...</div>
+                                            <div data-ng-show="versionData.PPRDDifferences.length" class="scrollable" style="height: 500px;">
+                                                <table class="grid readonly full-width">
+                                                    <thead>
+                                                    <tr>
+                                                        <th class="version-field bootstrap center"><b>Field / Change</b></th>
+                                                        <th class="version-value bootstrap center"><b>{{versionData.PreviousVersionNumberDisplay}} Value</b></th>
+                                                        <th class="version-value bootstrap center"><b>{{versionData.SelectedVersionNumberDisplay}} Value</b></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr data-ng-show="isDataLoading"><td colspan="4"><div class="loader"></div></td></tr>
+                                                    <tr data-ng-repeat="difference in versionData.PPRDDifferences" data-ng-class="{'version-red': difference.LargeChange}">
+                                                        <td class="columnLines">{{::difference.FieldChanged}}<br />{{::difference.ChangeTypeDescription}}</td>
+                                                        <td class="columnLines"><div style="max-height: 200px; overflow: auto" data-ng-bind-html="difference.OldValue"></div></td>
+                                                        <td class="columnLines"><div style="max-height: 200px; overflow: auto" data-ng-bind-html="difference.NewValue"></div></td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br />
+                                </div>
+                            </div>
+                            <div id="rates" class="tab-pane fade">
+                                <div data-ng-show="versionData.IsEarliestVersion">The earliest version cannot be compared as there is no previous version.</div>
+                                <div data-ng-hide="versionData.IsEarliestVersion" class="form-row" data-ng-show="rateData">
+                                    <div data-ng-hide="rateData" class="form-row">No rate differences found...</div>
+                                    <div data-ng-show="rateData" id="compareRateGrid" ui-grid="gridOptions" ui-grid-edit ui-grid-cellNav ui-grid-pinning ui-grid-exporter class="rate-grid-ui"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @*Rollback Modal*@
+    <div style="visibility: hidden">
+        <div class="md-dialog-container" id="rollbackDialog">
+            <md-dialog style="width: 400px;">
+                <form>
+                    <div class="modal-title-bar modal-header">
+                        <span class="modal-title-text">Rollback to Previous Version</span>
+                        <div class="modal-close-box" data-ng-click="closeRollbackModal()">
+                            <i class="glyphicon glyphicon-remove"></i>
+                        </div>
+                    </div>
+                    <div class="modal-content-area">
+                        <span>Rolling back to the last version will delete all the changes in the Work in Progress version.
+                            If you are sure you wish to Rollback and delete all current changes, type <b>ROLLBACK</b> into the confirmation box below.</span>
+                        <div gen-validation data-errors="$scope.importModalErrors" data-ng-show="importModalErrors.length || "></div>
+                        <hr class="modal-separator"/>
+                        <div style="text-align: center">
+                            <input type="text" id="rollbackConfirmInput" class="modal-input" data-ng-model="rollbackConfirmationText" style="margin-bottom: 10px; width: 50%" md-autofocus/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button id="rollbackButton" class="ies-danger" data-ng-disabled="rollbackConfirmationText.toUpperCase() != 'ROLLBACK'" type="submit" data-ng-click="rollbackConfirmClick();">Rollback</button>
+                        <button class="ies" type="button" data-ng-click="closeRollbackModal();">Cancel</button>
+                    </div>
+                </form>
+            </md-dialog>
+        </div>
+    </div>
+</div>

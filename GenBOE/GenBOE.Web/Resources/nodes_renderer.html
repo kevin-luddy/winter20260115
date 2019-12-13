@@ -1,0 +1,12 @@
+﻿<div class="angular-ui-tree-handle">
+    <a class="btn btn-success btn-xxs" data-ng-if="!node.IsP" data-ng-click="toggleFolder(this)" data-ng-class="{'gray-chevron': !node.IsP && (node.Ce == undefined || node.Ce.length == 0) }">
+        <span style="color:white" class="glyphicon" data-ng-class="{'glyphicon-chevron-right': !node.expanded, 'glyphicon-chevron-down': node.expanded }"></span>
+    </a>
+    <span data-ng-if="!node.IsP" data-ng-click="toggleFolder(this)" folder-name="{{::node.Name}}">{{::node.Name}}</span>
+    <span class="glyphicon glyphicon-book" data-ng-if="node.IsP" data-ng-click="selectProposal(node.Id, node.Name + ', Ver. ' + node.V)"></span>
+    <span data-ng-if="node.IsP" proposal-name="{{::node.Name}}" proposal-version="{{::node.V}}" data-ng-click="selectProposal(node.Id, node.Name + ', Ver. ' + node.V)" data-ng-class="{highlightedNode : node.Id === model.SendToProPricerData.SelectedProposalId}">{{::node.Name}}, Ver. {{::node.V}}</span>
+</div>
+<ol class="angular-ui-tree-nodes" data-ng-class="{hidden: !node.expanded}">
+    <li data-ng-if="!node.IsP && (node.Children == undefined || node.Children.length == 0)"><i>(Empty Folder)</i></li>
+    <li data-ng-repeat="node in node.Children" data-ng-show="node.matched" data-ng-include="'/Resources/nodes_renderer.html'"></li>
+</ol>

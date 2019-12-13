@@ -1,0 +1,29 @@
+﻿@using IES.ActionLogic.Common
+@using IES.Common
+@{
+    ViewBag.Title = "Main Menu";
+}
+<br />
+<script type="text/javascript">
+    angular.module('RDM').value('MainMenuModel', {
+        controller: '@IESWebConstants.CONTROLLER_ADMIN',
+        menuOptionControllerName: '@ViewContext.RouteData.Values["controller"].ToString()',
+        baseUrl: '@Url.Content("~/")',
+        getWhosOnlineAction: '@IESWebConstants.ACTION_GET_WHOS_ONLINE'
+    });
+
+    angular.module('RDM').constant('RATE_FORMATS', @Html.Raw(RateFormatter.JSONFormats()));
+</script>
+<div data-ng-controller="MainMenuController">
+    <div class="mainMenuContainer">
+        <div class="mainMenuBar">
+            <div data-ng-repeat="menuOption in menu" data-ng-cloak data-ng-if="userCanAccessMenuOption(menuOption)">
+                <a href="{{ menuOption.Link }}" data-ng-class="{ 'selected' : menuOption.Selected, 'subMenuLink' : menuOption.SubMenuOptions && menuOption.SubMenuOptions.length > 0 }">{{ menuOption.Label }}</a>
+                <div class="subMenu" data-ng-show="menuOption.SubMenuOptions && menuOption.SubMenuOptions.length > 0">
+                    <a href="{{ subMenuOption.Link }}" data-ng-if="subMenuOption.UserCanAccess" data-ng-repeat="subMenuOption in menuOption.SubMenuOptions">{{ subMenuOption.Label }}</a>
+                    <a data-ng-if="menuOption.IsAdminMenuOption" data-ng-click="openWhosOnlineModal()" class="whosOnline">Who's Online</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

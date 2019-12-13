@@ -1,0 +1,101 @@
+﻿@model ICollection<RequiredApprovalsModelView>
+@using GenTRAC.ActionLogic.ModelView.Home;
+@{
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+    ViewBag.Title = "My Approvals";
+}
+
+<script type="text/javascript">
+    var ApprovalsWidget;
+
+    $(function () {
+        var FormConfigs = [];
+        var DialogConfigs = [];
+
+        var widgetConfig = {};
+        widgetConfig.ContextID = "Approvals";
+        widgetConfig.IsModule = true;
+        widgetConfig.FormConfigs = FormConfigs;
+        widgetConfig.DialogConfigs = DialogConfigs;
+
+        ApprovalsWidget = new GenListWidget(widgetConfig);
+
+        ApprovalsWidget.ReloadGrid = function() {
+            window.location.reload();
+        };
+
+        ApprovalsWidget.ShowProposal = function (proposal) {
+            var url = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PROPOSAL',
+                action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
+                id: proposal
+            });
+            window.location = url + '#Proposal';
+        };
+
+        ApprovalsWidget.ShowApproval = function (proposal) {
+            var url = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PROPOSAL',
+                action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
+                id: proposal
+            });
+            window.location = url + '#Approvals';
+        };
+
+        ApprovalsWidget.refreshModule();
+        
+        // Set the menu item to show selection correctly
+        $('div').removeClass('selected');
+        $('[href*=DisplayMyApprovals]').parent('div').addClass('selected');
+    });
+</script>
+
+<div id="Approvals" class="module full">
+    <div class="module-header-data">
+        Proposal Approvals
+    </div>
+    <div class="module-content-data" style="width: 982px">
+        <table>
+            <tr>
+                <th width="70">Tracking Number</th>
+                <th width="150">Proposal Title</th>
+                <th width="150">Capture Manager</th>
+                <th width="100">Proposal Status</th>
+                <th width="120">Approvals Start Date</th>
+                <th width="160">Approval Role</th>
+                <th width="120">Approved Date</th>
+            </tr>
+
+            @if (Model == null || !Model.Any())
+            {
+                <tr>
+                    <td colspan="7" style="font-style:italic; text-align:center; padding:10px 0 0 0;">No Approvals</td>
+                </tr>
+            }
+
+            @foreach (RequiredApprovalsModelView approval in Model)
+            {
+                <tr>
+                    <td>
+                        <a onclick="ApprovalsWidget.ShowProposal(@approval.ProposalId)">@approval.TrackingNumber</a>
+                    </td>
+                    <td>@approval.ProposalTitle</td>
+                    <td>@approval.CaptureManager</td>
+                    <td>@approval.ProposalStatus.GetDescription()</td>
+                    <td>@approval.SubmittedForApprovalDate.ToShortDateString(), @approval.SubmittedForApprovalDate.ToShortTimeString() ET</td>
+                    <td>@approval.UserRole.GetDescription()</td>
+                    <td>
+                        @if (approval.ApprovedDate.HasValue)
+                        {
+                            @(approval.ApprovedDate.Value.ToShortDateString() + ", " + approval.ApprovedDate.Value.ToShortTimeString() + " ET")
+                        }
+                        else
+                        {
+                            <a onclick="ApprovalsWidget.ShowApproval(@approval.ProposalId)">Approve</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

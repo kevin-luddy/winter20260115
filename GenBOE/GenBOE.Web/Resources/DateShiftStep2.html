@@ -1,0 +1,84 @@
+﻿<div class="bootstrap" data-ng-show="step == 2">
+	<div data-ng-show="showShift && !finished">
+		<div class="form-row">
+			<h2 style="margin-top:0">Shift</h2> <img class="shiftgif" src="/Content/images/dateshift/shift.gif" />
+		</div>
+		<div class="form-row">
+			<div class="form-element row">
+				<div class="col-md-2 col-sm-2 bold"></div>
+				<div class="col-md-2 col-sm-2 bold underline">Start Date</div>
+				<div class="col-md-2 col-sm-2 bold underline">End Date</div>
+			</div>
+		</div>
+		<div class="form-row">
+			<!-- Original -->
+			<div class="form-element row">
+				<div class="col-md-2 col-sm-2 bold">Original</div>
+				<div class="col-md-2 col-sm-2"><span style="padding-left:6px">{{model.startDate}}</span></div>
+				<div class="col-md-2 col-sm-2">{{model.endDate}}</div>
+				<div class="col-md-2 col-sm-2 bold underline">Offset</div>
+				<div class="col-md-3 col-sm-3 bold underline">Child Handling Option</div>
+			</div>
+		</div>
+		<!-- Shifted -->
+		<div class="form-row">
+			<div class="form-element row">
+				<div class="col-md-2 col-sm-2 bold">Shifted</div>
+				<div class="col-md-2 col-sm-2"><input class="normal-date" id="ShiftStartDate" disabled="disabled" type="text" data-ng-model="shift.startDate" data-ng-change="shiftDateChange()" /></div>
+				<div class="col-md-2 col-sm-2">{{ shift.endDate.toFormattedString(true) }}</div>
+				<div class="col-md-2 col-sm-2"><input class="numberpicker" jq-spinner data-ng-model="shift.offset" data-ng-change="shiftOffsetChange()" /> months</div>
+				<div class="col-md-3 col-sm-3">
+					<select data-ng-model="shift.childModification" data-ng-change="clearErrors()">
+						<option data-ng-value="constants.UNSELECTED"></option>
+						<option data-ng-value="constants.NO_CHANGE">No Change</option>
+						<option data-ng-value="constants.FLOWDOWN">Flowdown</option>
+						<option data-ng-value="constants.TO_POP">To POP (Period of Performance)</option>
+						<option data-ng-value="constants.TO_START">To Start (Positive Shift only)</option>
+						<option data-ng-value="constants.TO_END">To End (Negative Shift only)</option>
+					</select>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div data-ng-show="showDuration && !finished">
+		<hr data-ng-if="showShift" />
+		<div class="form-row">
+			<h2>Change Duration</h2>  <img class="durationgif" src="/Content/images/dateshift/duration.gif" />
+		</div>
+		<div class="form-row">
+			<div class="form-element row">
+				<div class="col-md-2 col-sm-2 bold underline">Original End</div>
+				<div class="col-md-2 col-sm-2 bold underline" data-ng-if="showShift">Shifted End</div>
+				<div class="col-md-2 col-sm-2 bold underline">New End</div>
+				<div class="col-md-2 col-sm-2 bold underline">Offset</div>
+				<div class="col-md-3 col-sm-3 bold underline">Child Handling Option</div>
+
+			</div>
+		</div>
+		<div class="form-row">
+			<div class="form-element row">
+				<div class="col-md-2 col-sm-2">{{model.endDate}}</div>
+				<div class="col-md-2 col-sm-2" data-ng-if="showShift">{{ shift.endDate.toFormattedString(true) }}</div>
+				<div class="col-md-2 col-sm-2">
+					<input class="normal-date" id="DurationEndDate" disabled="disabled" type="text" data-ng-model="durationChange.endDate" data-ng-change="durationDateChange()" />
+				</div>
+				<div class="col-md-2 col-sm-2"><input class="numberpicker" jq-spinner data-ng-model="durationChange.offset" data-ng-change="durationOffsetChange()" /> months</div>
+				<div class="col-md-3 col-sm-3">
+					<select data-ng-model="durationChange.childModification" data-ng-change="clearErrors()">
+						<option data-ng-value="constants.UNSELECTED"></option>
+						<option data-ng-value="constants.NO_CHANGE">No Change</option>
+						<option data-ng-value="constants.FLOWDOWN">Flowdown</option>
+						<option data-ng-value="constants.TO_POP">To POP (Period of Performance)</option>
+						<option data-ng-value="constants.TO_END">To End</option>
+					</select>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+$(function () {
+		SetupMonthPicker('#ShiftStartDate');
+		SetupMonthPicker('#DurationEndDate');
+	});
+</script>

@@ -1,0 +1,176 @@
+﻿@inherits System.Web.Mvc.WebViewPage<IES.DataBridge.ModelViews.ReportsModelView> 
+@using IES.Common
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = "Reports / Exports";
+    JsonSerializerSettings microsoftDateFormatSettings = new JsonSerializerSettings
+    {
+        DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
+        DateParseHandling = DateParseHandling.DateTime,
+        DateTimeZoneHandling = DateTimeZoneHandling.Local
+    };
+}
+<br />
+<script type="text/javascript">
+    angular.module("RDM").value('VersionIndexModel', {
+        wcController: '@IESWebConstants.CONTROLLER_REPORTS',
+        wcActionExportCobra: '@IESWebConstants.ACTION_EXPORT_COBRA_DATA',
+        wcActionExportProPricer: '@IESWebConstants.ACTION_EXPORT_PRO_PRICER_DATA',
+        wcActionGenerateFullPPRD: '@IESWebConstants.ACTION_GENERATE_FULL_PPRD',
+        wcActionExportRevisionAsJson: '@IESWebConstants.ACTION_EXPORT_REVISION_AS_JSON',
+        wcRateController: '@IESWebConstants.CONTROLLER_RATE',
+        wcGetRatesByVersionAction: '@IESWebConstants.ACTION_GET_RATES_BY_VERSION',
+        data: @Html.Raw(JsonConvert.SerializeObject(Model, microsoftDateFormatSettings)),
+    });
+</script>
+
+<div data-ng-app="RDM" data-ng-controller="ReportsController">
+    <div id="GeneratingPPRDSpinner" class="page-loading" data-ng-show="isPPRDLoading" data-ng-cloak>
+        <div class="loading-box">
+            <div class="loader white"></div>
+            <span>Generating PPR&amp;D...</span>
+        </div>
+    </div>
+
+    <div class="row top-margin-2">
+        <div class="col-xs-12">
+            <div class="module">
+                <div class="module-header-data left">
+                    Reports / Exports
+                </div>
+                <div class="module-content-data" data-ng-cloak>
+                    <div class="form-row css3pie-position-fix">
+                        <div id="errorMessage" data-ng-show="isDataError"></div>
+                        <gen-validation data-errors="$root.errors"></gen-validation>
+                        <div class="notificationMessage" id="notificationMessage" data-ng-show="notificationMessage" data-ng-cloak>{{notificationMessage}}</div>
+                        <div class="form-element black">
+                            Version: <select data-ng-options="item.Label for item in data.AvailableVersions" data-ng-model="selectedVersion"></select>
+                        </div>
+                    </div>
+                    <table class="grid readonly full-width">
+                        <thead>
+                        <tr>
+                            <th class="version-field bootstrap"><b>Reports</b></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <div class="row">
+                                    Generate a full PPR&amp;D document for selected version.
+                                    <button class="ies-action floatRight"
+                                            id="Export-PPRD"
+                                            type="button"
+                                            data-ng-disabled="isExportingPPRD"
+                                            data-ng-click="generatePPRDClick()"
+                                            style="min-width: 190px">
+                                        <div data-ng-hide="isExportingPPRD" >Generate Full PPR&amp;D</div>
+                                        <div data-ng-show="isExportingPPRD" class="loader button-loader"></div>
+                                    </button>                                    
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <br /><br />
+                    <table class="grid readonly full-width">
+                        <thead>
+                        <tr>
+                            <th class="version-field bootstrap"><b>Exports</b></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <div class="row">
+                                    Export a Rate document for selected version.
+                                    <button class="ies-action floatRight"
+                                            id="Export-Rates"
+                                            type="button"
+                                            data-ng-disabled="isExportingRateDoc"
+                                            data-ng-click="generateRateDocClick(false)"
+                                            style="min-width: 190px">
+                                        <div data-ng-hide="isExportingRateDoc" >Export Rates</div>
+                                        <div data-ng-show="isExportingRateDoc" class="loader button-loader"></div>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                            <tr>
+                                <td>
+                                    <div class="row">
+                                        Export an expanded Rate document for selected version.  
+                                        <button class="ies-action floatRight"
+                                                id="Export-Expanded-Rates"
+                                                type="button"
+                                                data-ng-disabled="isExportingExpandedRateDoc"
+                                                data-ng-click="generateRateDocClick(true)"
+                                                style="min-width: 190px">
+                                            <div data-ng-hide="isExportingExpandedRateDoc">Export Expanded Rates</div>
+                                            <div data-ng-show="isExportingExpandedRateDoc" class="loader button-loader"></div>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <tr data-ng-hide="!data.AdminUser">
+                            <td>
+                                <div class="row">
+                                    Export a ProPricer rate file for selected version.
+                                    <button class="ies-action floatRight"
+                                            id="Export-ProPricer2"
+                                            type="button"
+                                            data-ng-disabled="isExportingProPricer"
+                                            data-ng-click="exportProPricerClick()"
+                                            style="min-width: 190px">
+                                        <div id="Export-ProPricerText" data-ng-hide="isExportingProPricer">Export ProPricer Rates</div>
+                                        <div id="Export-ProPricer" data-ng-show="isExportingProPricer" class="loader button-loader"></div>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-ng-hide="!data.AdminUser || selectedVersion.Label === '@IES.Common.classes.CommonConstants.WorkInProgress'">
+                            <td>
+                                <div class="row">
+                                    Export revision data for classified deployment for selected version.
+                                    <button class="ies-action floatRight"
+                                            id="Export-RevisionAsJson"
+                                            type="button"
+                                            data-ng-disabled="isExportingRevisionAsJson"
+                                            data-ng-click="exportRevisionAsJsonClick()"
+                                            style="min-width: 190px">
+                                        <div id="Export-RevisionAsJsonText" data-ng-hide="isExportingRevisionAsJson">Export Revision</div>
+                                        <div id="Export-RevisionAsJson" data-ng-show="isExportingRevisionAsJson" class="loader button-loader"></div>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr data-ng-hide="!data.CobraAdminUser">
+                            <td>
+                                <div class="row" >
+                                    Export a Cobra rate file for selected version.
+                                    <button class="ies-action floatRight"
+                                            id="Export-Cobra"
+                                            type="button"
+                                            data-ng-disabled="isExportingCobra"
+                                            data-ng-click="exportCobraClick()"
+                                            style="min-width: 190px">
+                                        <div data-ng-hide="isExportingCobra" >Export Cobra Rates</div>
+                                        <div data-ng-show="isExportingCobra" class="loader button-loader"></div>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="loader white" data-ng-show="isDataLoading"></div>
+                </div>
+            </div>
+        </div>
+        @*Hidden Rate Grid window for exports.*@
+        <div class="form-row hidden">
+            <div ui-grid="rateGridOptions" ui-grid-edit ui-grid-cellNav ui-grid-pinning ui-grid-exporter class="rate-grid-ui"></div>
+        </div>
+    </div>
+</div>
+

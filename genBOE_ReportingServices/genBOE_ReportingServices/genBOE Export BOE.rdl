@@ -1,0 +1,1355 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <Body>
+    <ReportItems>
+      <Tablix Name="matrix1">
+        <TablixCorner>
+          <TablixCornerRows>
+            <TablixCornerRow>
+              <TablixCornerCell>
+                <CellContents>
+                  <Textbox Name="Task_ID1">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>Task ID   </Value>
+                            <Style>
+                              <FontFamily>Tahoma</FontFamily>
+                            </Style>
+                          </TextRun>
+                        </TextRuns>
+                        <Style />
+                      </Paragraph>
+                    </Paragraphs>
+                    <rd:DefaultName>Task_ID1</rd:DefaultName>
+                    <Style>
+                      <Border>
+                        <Color>DimGray</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <PaddingLeft>2pt</PaddingLeft>
+                      <PaddingRight>2pt</PaddingRight>
+                      <PaddingTop>2pt</PaddingTop>
+                      <PaddingBottom>2pt</PaddingBottom>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixCornerCell>
+              <TablixCornerCell>
+                <CellContents>
+                  <Textbox Name="Textbox9">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>Displayed WBSNumber</Value>
+                            <Style>
+                              <FontFamily>Tahoma</FontFamily>
+                            </Style>
+                          </TextRun>
+                        </TextRuns>
+                        <Style />
+                      </Paragraph>
+                    </Paragraphs>
+                    <rd:DefaultName>Textbox9</rd:DefaultName>
+                    <Style>
+                      <Border>
+                        <Color>DimGray</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <PaddingLeft>2pt</PaddingLeft>
+                      <PaddingRight>2pt</PaddingRight>
+                      <PaddingTop>2pt</PaddingTop>
+                      <PaddingBottom>2pt</PaddingBottom>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixCornerCell>
+              <TablixCornerCell>
+                <CellContents>
+                  <Textbox Name="Textbox12">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>WBSTitle</Value>
+                            <Style>
+                              <FontFamily>Tahoma</FontFamily>
+                            </Style>
+                          </TextRun>
+                        </TextRuns>
+                        <Style />
+                      </Paragraph>
+                    </Paragraphs>
+                    <rd:DefaultName>Textbox12</rd:DefaultName>
+                    <Style>
+                      <Border>
+                        <Color>DimGray</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <PaddingLeft>2pt</PaddingLeft>
+                      <PaddingRight>2pt</PaddingRight>
+                      <PaddingTop>2pt</PaddingTop>
+                      <PaddingBottom>2pt</PaddingBottom>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixCornerCell>
+              <TablixCornerCell>
+                <CellContents>
+                  <Textbox Name="Resource_ID1">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>Resource ID</Value>
+                            <Style>
+                              <FontFamily>Tahoma</FontFamily>
+                            </Style>
+                          </TextRun>
+                        </TextRuns>
+                        <Style />
+                      </Paragraph>
+                    </Paragraphs>
+                    <rd:DefaultName>Resource_ID1</rd:DefaultName>
+                    <Style>
+                      <Border>
+                        <Color>DimGray</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <PaddingLeft>2pt</PaddingLeft>
+                      <PaddingRight>2pt</PaddingRight>
+                      <PaddingTop>2pt</PaddingTop>
+                      <PaddingBottom>2pt</PaddingBottom>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixCornerCell>
+              <TablixCornerCell>
+                <CellContents>
+                  <Textbox Name="Textbox3">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>Line Key</Value>
+                            <Style>
+                              <FontFamily>Tahoma</FontFamily>
+                            </Style>
+                          </TextRun>
+                        </TextRuns>
+                        <Style />
+                      </Paragraph>
+                    </Paragraphs>
+                    <rd:DefaultName>Textbox3</rd:DefaultName>
+                    <Style>
+                      <Border>
+                        <Color>DimGray</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <PaddingLeft>2pt</PaddingLeft>
+                      <PaddingRight>2pt</PaddingRight>
+                      <PaddingTop>2pt</PaddingTop>
+                      <PaddingBottom>2pt</PaddingBottom>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixCornerCell>
+              <TablixCornerCell>
+                <CellContents>
+                  <Textbox Name="Textbox10">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>Burden Pool ID</Value>
+                            <Style>
+                              <FontFamily>Tahoma</FontFamily>
+                            </Style>
+                          </TextRun>
+                        </TextRuns>
+                        <Style />
+                      </Paragraph>
+                    </Paragraphs>
+                    <rd:DefaultName>Textbox10</rd:DefaultName>
+                    <Style>
+                      <Border>
+                        <Color>DimGray</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <PaddingLeft>2pt</PaddingLeft>
+                      <PaddingRight>2pt</PaddingRight>
+                      <PaddingTop>2pt</PaddingTop>
+                      <PaddingBottom>2pt</PaddingBottom>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixCornerCell>
+              <TablixCornerCell>
+                <CellContents>
+                  <Textbox Name="Textbox5">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>Rate Band Id</Value>
+                            <Style>
+                              <FontFamily>Tahoma</FontFamily>
+                            </Style>
+                          </TextRun>
+                        </TextRuns>
+                        <Style />
+                      </Paragraph>
+                    </Paragraphs>
+                    <rd:DefaultName>Textbox5</rd:DefaultName>
+                    <Style>
+                      <Border>
+                        <Color>DimGray</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <PaddingLeft>2pt</PaddingLeft>
+                      <PaddingRight>2pt</PaddingRight>
+                      <PaddingTop>2pt</PaddingTop>
+                      <PaddingBottom>2pt</PaddingBottom>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixCornerCell>
+              <TablixCornerCell>
+                <CellContents>
+                  <Textbox Name="Textbox6">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>Hours/Heads</Value>
+                            <Style>
+                              <FontFamily>Tahoma</FontFamily>
+                            </Style>
+                          </TextRun>
+                        </TextRuns>
+                        <Style />
+                      </Paragraph>
+                    </Paragraphs>
+                    <rd:DefaultName>Textbox6</rd:DefaultName>
+                    <Style>
+                      <Border>
+                        <Color>DimGray</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <PaddingLeft>2pt</PaddingLeft>
+                      <PaddingRight>2pt</PaddingRight>
+                      <PaddingTop>2pt</PaddingTop>
+                      <PaddingBottom>2pt</PaddingBottom>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixCornerCell>
+              <TablixCornerCell>
+                <CellContents>
+                  <Textbox Name="Textbox7">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>Curve(D)</Value>
+                            <Style>
+                              <FontFamily>Tahoma</FontFamily>
+                            </Style>
+                          </TextRun>
+                        </TextRuns>
+                        <Style />
+                      </Paragraph>
+                    </Paragraphs>
+                    <rd:DefaultName>Textbox7</rd:DefaultName>
+                    <Style>
+                      <Border>
+                        <Color>DimGray</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <PaddingLeft>2pt</PaddingLeft>
+                      <PaddingRight>2pt</PaddingRight>
+                      <PaddingTop>2pt</PaddingTop>
+                      <PaddingBottom>2pt</PaddingBottom>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixCornerCell>
+              <TablixCornerCell>
+                <CellContents>
+                  <Textbox Name="Textbox8">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>Start Date</Value>
+                            <Style>
+                              <FontFamily>Tahoma</FontFamily>
+                            </Style>
+                          </TextRun>
+                        </TextRuns>
+                        <Style />
+                      </Paragraph>
+                    </Paragraphs>
+                    <rd:DefaultName>Textbox8</rd:DefaultName>
+                    <Style>
+                      <Border>
+                        <Color>DimGray</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <PaddingLeft>2pt</PaddingLeft>
+                      <PaddingRight>2pt</PaddingRight>
+                      <PaddingTop>2pt</PaddingTop>
+                      <PaddingBottom>2pt</PaddingBottom>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixCornerCell>
+            </TablixCornerRow>
+          </TablixCornerRows>
+        </TablixCorner>
+        <TablixBody>
+          <TablixColumns>
+            <TablixColumn>
+              <Width>1.59375in</Width>
+            </TablixColumn>
+          </TablixColumns>
+          <TablixRows>
+            <TablixRow>
+              <Height>0.21in</Height>
+              <TablixCells>
+                <TablixCell>
+                  <CellContents>
+                    <Textbox Name="textbox2">
+                      <CanGrow>true</CanGrow>
+                      <KeepTogether>true</KeepTogether>
+                      <Paragraphs>
+                        <Paragraph>
+                          <TextRuns>
+                            <TextRun>
+                              <Value>=Sum(Fields!LaborSpreadValue.Value)</Value>
+                              <Style>
+                                <FontFamily>Tahoma</FontFamily>
+                              </Style>
+                            </TextRun>
+                          </TextRuns>
+                          <Style />
+                        </Paragraph>
+                      </Paragraphs>
+                      <rd:DefaultName>textbox2</rd:DefaultName>
+                      <Style>
+                        <Border>
+                          <Color>DimGray</Color>
+                          <Style>Solid</Style>
+                        </Border>
+                        <PaddingLeft>2pt</PaddingLeft>
+                        <PaddingRight>2pt</PaddingRight>
+                        <PaddingTop>2pt</PaddingTop>
+                        <PaddingBottom>2pt</PaddingBottom>
+                      </Style>
+                    </Textbox>
+                  </CellContents>
+                  <DataElementOutput>Output</DataElementOutput>
+                </TablixCell>
+              </TablixCells>
+            </TablixRow>
+          </TablixRows>
+        </TablixBody>
+        <TablixColumnHierarchy>
+          <TablixMembers>
+            <TablixMember>
+              <Group Name="matrix1_LaborSpreadDate">
+                <GroupExpressions>
+                  <GroupExpression>=Fields!LaborSpreadDate.Value</GroupExpression>
+                </GroupExpressions>
+              </Group>
+              <SortExpressions>
+                <SortExpression>
+                  <Value>=Fields!LaborSpreadDate.Value</Value>
+                </SortExpression>
+              </SortExpressions>
+              <TablixHeader>
+                <Size>0.25in</Size>
+                <CellContents>
+                  <Textbox Name="LaborSpreadDate1">
+                    <CanGrow>true</CanGrow>
+                    <KeepTogether>true</KeepTogether>
+                    <Paragraphs>
+                      <Paragraph>
+                        <TextRuns>
+                          <TextRun>
+                            <Value>=Format(Fields!LaborSpreadDate.Value, "MM-yyyy")</Value>
+                            <Style>
+                              <FontFamily>Tahoma</FontFamily>
+                              <Format>MM/dd/yyyy</Format>
+                              <Color>White</Color>
+                            </Style>
+                          </TextRun>
+                        </TextRuns>
+                        <Style />
+                      </Paragraph>
+                    </Paragraphs>
+                    <rd:DefaultName>LaborSpreadDate1</rd:DefaultName>
+                    <Style>
+                      <Border>
+                        <Color>DimGray</Color>
+                        <Style>Solid</Style>
+                      </Border>
+                      <BackgroundColor>#60759b</BackgroundColor>
+                      <PaddingLeft>2pt</PaddingLeft>
+                      <PaddingRight>2pt</PaddingRight>
+                      <PaddingTop>2pt</PaddingTop>
+                      <PaddingBottom>2pt</PaddingBottom>
+                    </Style>
+                  </Textbox>
+                </CellContents>
+              </TablixHeader>
+              <TablixMembers>
+                <TablixMember />
+              </TablixMembers>
+              <DataElementOutput>Output</DataElementOutput>
+            </TablixMember>
+          </TablixMembers>
+        </TablixColumnHierarchy>
+        <TablixRowHierarchy>
+          <TablixMembers>
+            <TablixMember>
+              <Group Name="matrix1_Task_ID">
+                <GroupExpressions>
+                  <GroupExpression>=Fields!Task_ID.Value</GroupExpression>
+                </GroupExpressions>
+              </Group>
+              <SortExpressions>
+                <SortExpression>
+                  <Value>=Fields!Task_ID.Value</Value>
+                </SortExpression>
+              </SortExpressions>
+              <TablixMembers>
+                <TablixMember>
+                  <TablixHeader>
+                    <Size>2.97917in</Size>
+                    <CellContents>
+                      <Textbox Name="Task_ID">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>=Fields!Task_ID.Value</Value>
+                                <Style>
+                                  <FontFamily>Tahoma</FontFamily>
+                                  <Color>White</Color>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style />
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Task_ID</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Color>DimGray</Color>
+                            <Style>Solid</Style>
+                          </Border>
+                          <BackgroundColor>#60759b</BackgroundColor>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixHeader>
+                  <TablixMembers>
+                    <TablixMember>
+                      <Group Name="matrix1_Resource_ID">
+                        <GroupExpressions>
+                          <GroupExpression>=Fields!Resource_ID.Value</GroupExpression>
+                        </GroupExpressions>
+                      </Group>
+                      <SortExpressions>
+                        <SortExpression>
+                          <Value>=Fields!Resource_ID.Value</Value>
+                        </SortExpression>
+                      </SortExpressions>
+                      <TablixHeader>
+                        <Size>2.58333in</Size>
+                        <CellContents>
+                          <Textbox Name="DisplayedWBSNumber1">
+                            <CanGrow>true</CanGrow>
+                            <KeepTogether>true</KeepTogether>
+                            <Paragraphs>
+                              <Paragraph>
+                                <TextRuns>
+                                  <TextRun>
+                                    <Value>=Fields!DisplayedWBSNumber.Value</Value>
+                                    <Style>
+                                      <FontFamily>Tahoma</FontFamily>
+                                    </Style>
+                                  </TextRun>
+                                </TextRuns>
+                                <Style />
+                              </Paragraph>
+                            </Paragraphs>
+                            <rd:DefaultName>DisplayedWBSNumber1</rd:DefaultName>
+                            <Style>
+                              <Border>
+                                <Color>DimGray</Color>
+                                <Style>Solid</Style>
+                              </Border>
+                              <BackgroundColor>LightSteelBlue</BackgroundColor>
+                              <PaddingLeft>2pt</PaddingLeft>
+                              <PaddingRight>2pt</PaddingRight>
+                              <PaddingTop>2pt</PaddingTop>
+                              <PaddingBottom>2pt</PaddingBottom>
+                            </Style>
+                          </Textbox>
+                        </CellContents>
+                      </TablixHeader>
+                      <TablixMembers>
+                        <TablixMember>
+                          <TablixHeader>
+                            <Size>2.75in</Size>
+                            <CellContents>
+                              <Textbox Name="WBSTitle1">
+                                <CanGrow>true</CanGrow>
+                                <KeepTogether>true</KeepTogether>
+                                <Paragraphs>
+                                  <Paragraph>
+                                    <TextRuns>
+                                      <TextRun>
+                                        <Value>=Fields!WBSTitle.Value</Value>
+                                        <Style>
+                                          <FontFamily>Tahoma</FontFamily>
+                                        </Style>
+                                      </TextRun>
+                                    </TextRuns>
+                                    <Style />
+                                  </Paragraph>
+                                </Paragraphs>
+                                <rd:DefaultName>WBSTitle1</rd:DefaultName>
+                                <Style>
+                                  <Border>
+                                    <Color>DimGray</Color>
+                                    <Style>Solid</Style>
+                                  </Border>
+                                  <BackgroundColor>LightSteelBlue</BackgroundColor>
+                                  <PaddingLeft>2pt</PaddingLeft>
+                                  <PaddingRight>2pt</PaddingRight>
+                                  <PaddingTop>2pt</PaddingTop>
+                                  <PaddingBottom>2pt</PaddingBottom>
+                                </Style>
+                              </Textbox>
+                            </CellContents>
+                          </TablixHeader>
+                          <TablixMembers>
+                            <TablixMember>
+                              <TablixHeader>
+                                <Size>2.46875in</Size>
+                                <CellContents>
+                                  <Textbox Name="Resource_ID">
+                                    <CanGrow>true</CanGrow>
+                                    <KeepTogether>true</KeepTogether>
+                                    <Paragraphs>
+                                      <Paragraph>
+                                        <TextRuns>
+                                          <TextRun>
+                                            <Value>=Fields!Resource_ID.Value</Value>
+                                            <Style>
+                                              <FontFamily>Tahoma</FontFamily>
+                                            </Style>
+                                          </TextRun>
+                                        </TextRuns>
+                                        <Style />
+                                      </Paragraph>
+                                    </Paragraphs>
+                                    <rd:DefaultName>Resource_ID</rd:DefaultName>
+                                    <Style>
+                                      <Border>
+                                        <Color>DimGray</Color>
+                                        <Style>Solid</Style>
+                                      </Border>
+                                      <BackgroundColor>LightSteelBlue</BackgroundColor>
+                                      <PaddingLeft>2pt</PaddingLeft>
+                                      <PaddingRight>2pt</PaddingRight>
+                                      <PaddingTop>2pt</PaddingTop>
+                                      <PaddingBottom>2pt</PaddingBottom>
+                                    </Style>
+                                  </Textbox>
+                                </CellContents>
+                              </TablixHeader>
+                              <TablixMembers>
+                                <TablixMember>
+                                  <Group Name="matrix1_Line_Key">
+                                    <GroupExpressions>
+                                      <GroupExpression>=Fields!Line_Key.Value</GroupExpression>
+                                    </GroupExpressions>
+                                  </Group>
+                                  <SortExpressions>
+                                    <SortExpression>
+                                      <Value>=Fields!Line_Key.Value</Value>
+                                    </SortExpression>
+                                  </SortExpressions>
+                                  <TablixHeader>
+                                    <Size>1.36458in</Size>
+                                    <CellContents>
+                                      <Textbox Name="Line_Key">
+                                        <CanGrow>true</CanGrow>
+                                        <KeepTogether>true</KeepTogether>
+                                        <Paragraphs>
+                                          <Paragraph>
+                                            <TextRuns>
+                                              <TextRun>
+                                                <Value>=Fields!Line_Key.Value</Value>
+                                                <Style>
+                                                  <FontFamily>Tahoma</FontFamily>
+                                                </Style>
+                                              </TextRun>
+                                            </TextRuns>
+                                            <Style />
+                                          </Paragraph>
+                                        </Paragraphs>
+                                        <rd:DefaultName>Line_Key</rd:DefaultName>
+                                        <Style>
+                                          <Border>
+                                            <Color>DimGray</Color>
+                                            <Style>Solid</Style>
+                                          </Border>
+                                          <BackgroundColor>#cad8ea</BackgroundColor>
+                                          <PaddingLeft>2pt</PaddingLeft>
+                                          <PaddingRight>2pt</PaddingRight>
+                                          <PaddingTop>2pt</PaddingTop>
+                                          <PaddingBottom>2pt</PaddingBottom>
+                                        </Style>
+                                      </Textbox>
+                                    </CellContents>
+                                  </TablixHeader>
+                                  <TablixMembers>
+                                    <TablixMember>
+                                      <Group Name="matrix1_Burden_Pool_ID">
+                                        <GroupExpressions>
+                                          <GroupExpression>=Fields!Burden_Pool_ID.Value</GroupExpression>
+                                        </GroupExpressions>
+                                      </Group>
+                                      <SortExpressions>
+                                        <SortExpression>
+                                          <Value>=Fields!Burden_Pool_ID.Value</Value>
+                                        </SortExpression>
+                                      </SortExpressions>
+                                      <TablixHeader>
+                                        <Size>1.44792in</Size>
+                                        <CellContents>
+                                          <Textbox Name="Burden_Pool_ID">
+                                            <CanGrow>true</CanGrow>
+                                            <KeepTogether>true</KeepTogether>
+                                            <Paragraphs>
+                                              <Paragraph>
+                                                <TextRuns>
+                                                  <TextRun>
+                                                    <Value>=Fields!Burden_Pool_ID.Value</Value>
+                                                    <Style>
+                                                      <FontFamily>Tahoma</FontFamily>
+                                                    </Style>
+                                                  </TextRun>
+                                                </TextRuns>
+                                                <Style />
+                                              </Paragraph>
+                                            </Paragraphs>
+                                            <rd:DefaultName>Burden_Pool_ID</rd:DefaultName>
+                                            <Style>
+                                              <Border>
+                                                <Color>DimGray</Color>
+                                                <Style>Solid</Style>
+                                              </Border>
+                                              <BackgroundColor>#cad8ea</BackgroundColor>
+                                              <PaddingLeft>2pt</PaddingLeft>
+                                              <PaddingRight>2pt</PaddingRight>
+                                              <PaddingTop>2pt</PaddingTop>
+                                              <PaddingBottom>2pt</PaddingBottom>
+                                            </Style>
+                                          </Textbox>
+                                        </CellContents>
+                                      </TablixHeader>
+                                      <TablixMembers>
+                                        <TablixMember>
+                                          <Group Name="matrix1_Rate_Band_ID">
+                                            <GroupExpressions>
+                                              <GroupExpression>=Fields!Rate_Band_ID.Value</GroupExpression>
+                                            </GroupExpressions>
+                                          </Group>
+                                          <SortExpressions>
+                                            <SortExpression>
+                                              <Value>=Fields!Rate_Band_ID.Value</Value>
+                                            </SortExpression>
+                                          </SortExpressions>
+                                          <TablixHeader>
+                                            <Size>1.39583in</Size>
+                                            <CellContents>
+                                              <Textbox Name="Rate_Band_ID">
+                                                <CanGrow>true</CanGrow>
+                                                <KeepTogether>true</KeepTogether>
+                                                <Paragraphs>
+                                                  <Paragraph>
+                                                    <TextRuns>
+                                                      <TextRun>
+                                                        <Value>=Fields!Rate_Band_ID.Value</Value>
+                                                        <Style>
+                                                          <FontFamily>Tahoma</FontFamily>
+                                                        </Style>
+                                                      </TextRun>
+                                                    </TextRuns>
+                                                    <Style />
+                                                  </Paragraph>
+                                                </Paragraphs>
+                                                <rd:DefaultName>Rate_Band_ID</rd:DefaultName>
+                                                <Style>
+                                                  <Border>
+                                                    <Color>DimGray</Color>
+                                                    <Style>Solid</Style>
+                                                  </Border>
+                                                  <BackgroundColor>#cad8ea</BackgroundColor>
+                                                  <PaddingLeft>2pt</PaddingLeft>
+                                                  <PaddingRight>2pt</PaddingRight>
+                                                  <PaddingTop>2pt</PaddingTop>
+                                                  <PaddingBottom>2pt</PaddingBottom>
+                                                </Style>
+                                              </Textbox>
+                                            </CellContents>
+                                          </TablixHeader>
+                                          <TablixMembers>
+                                            <TablixMember>
+                                              <Group Name="matrix1_Hours_Heads">
+                                                <GroupExpressions>
+                                                  <GroupExpression>=Fields!Hours_Heads.Value</GroupExpression>
+                                                </GroupExpressions>
+                                              </Group>
+                                              <SortExpressions>
+                                                <SortExpression>
+                                                  <Value>=Fields!Hours_Heads.Value</Value>
+                                                </SortExpression>
+                                              </SortExpressions>
+                                              <TablixHeader>
+                                                <Size>1.44792in</Size>
+                                                <CellContents>
+                                                  <Textbox Name="Hours_Heads">
+                                                    <CanGrow>true</CanGrow>
+                                                    <KeepTogether>true</KeepTogether>
+                                                    <Paragraphs>
+                                                      <Paragraph>
+                                                        <TextRuns>
+                                                          <TextRun>
+                                                            <Value>=Fields!Hours_Heads.Value</Value>
+                                                            <Style>
+                                                              <FontFamily>Tahoma</FontFamily>
+                                                            </Style>
+                                                          </TextRun>
+                                                        </TextRuns>
+                                                        <Style />
+                                                      </Paragraph>
+                                                    </Paragraphs>
+                                                    <rd:DefaultName>Hours_Heads</rd:DefaultName>
+                                                    <Style>
+                                                      <Border>
+                                                        <Color>DimGray</Color>
+                                                        <Style>Solid</Style>
+                                                      </Border>
+                                                      <BackgroundColor>#cad8ea</BackgroundColor>
+                                                      <PaddingLeft>2pt</PaddingLeft>
+                                                      <PaddingRight>2pt</PaddingRight>
+                                                      <PaddingTop>2pt</PaddingTop>
+                                                      <PaddingBottom>2pt</PaddingBottom>
+                                                    </Style>
+                                                  </Textbox>
+                                                </CellContents>
+                                              </TablixHeader>
+                                              <TablixMembers>
+                                                <TablixMember>
+                                                  <Group Name="matrix1_Curve_D_">
+                                                    <GroupExpressions>
+                                                      <GroupExpression>=Fields!Curve_D_.Value</GroupExpression>
+                                                    </GroupExpressions>
+                                                  </Group>
+                                                  <SortExpressions>
+                                                    <SortExpression>
+                                                      <Value>=Fields!Curve_D_.Value</Value>
+                                                    </SortExpression>
+                                                  </SortExpressions>
+                                                  <TablixHeader>
+                                                    <Size>1in</Size>
+                                                    <CellContents>
+                                                      <Textbox Name="Curve_D_">
+                                                        <CanGrow>true</CanGrow>
+                                                        <KeepTogether>true</KeepTogether>
+                                                        <Paragraphs>
+                                                          <Paragraph>
+                                                            <TextRuns>
+                                                              <TextRun>
+                                                                <Value>=Fields!Curve_D_.Value</Value>
+                                                                <Style>
+                                                                  <FontFamily>Tahoma</FontFamily>
+                                                                </Style>
+                                                              </TextRun>
+                                                            </TextRuns>
+                                                            <Style />
+                                                          </Paragraph>
+                                                        </Paragraphs>
+                                                        <rd:DefaultName>Curve_D_</rd:DefaultName>
+                                                        <Style>
+                                                          <Border>
+                                                            <Color>DimGray</Color>
+                                                            <Style>Solid</Style>
+                                                          </Border>
+                                                          <BackgroundColor>#cad8ea</BackgroundColor>
+                                                          <PaddingLeft>2pt</PaddingLeft>
+                                                          <PaddingRight>2pt</PaddingRight>
+                                                          <PaddingTop>2pt</PaddingTop>
+                                                          <PaddingBottom>2pt</PaddingBottom>
+                                                        </Style>
+                                                      </Textbox>
+                                                    </CellContents>
+                                                  </TablixHeader>
+                                                  <TablixMembers>
+                                                    <TablixMember>
+                                                      <Group Name="matrix1_StartDate">
+                                                        <GroupExpressions>
+                                                          <GroupExpression>=Fields!StartDate.Value</GroupExpression>
+                                                        </GroupExpressions>
+                                                      </Group>
+                                                      <SortExpressions>
+                                                        <SortExpression>
+                                                          <Value>=Fields!StartDate.Value</Value>
+                                                        </SortExpression>
+                                                      </SortExpressions>
+                                                      <TablixHeader>
+                                                        <Size>1.4375in</Size>
+                                                        <CellContents>
+                                                          <Textbox Name="StartDate">
+                                                            <CanGrow>true</CanGrow>
+                                                            <KeepTogether>true</KeepTogether>
+                                                            <Paragraphs>
+                                                              <Paragraph>
+                                                                <TextRuns>
+                                                                  <TextRun>
+                                                                    <Value>=Fields!StartDate.Value</Value>
+                                                                    <Style>
+                                                                      <FontFamily>Tahoma</FontFamily>
+                                                                      <Format>MM/dd/yyyy</Format>
+                                                                    </Style>
+                                                                  </TextRun>
+                                                                </TextRuns>
+                                                                <Style />
+                                                              </Paragraph>
+                                                            </Paragraphs>
+                                                            <rd:DefaultName>StartDate</rd:DefaultName>
+                                                            <Style>
+                                                              <Border>
+                                                                <Color>DimGray</Color>
+                                                                <Style>Solid</Style>
+                                                              </Border>
+                                                              <BackgroundColor>#cad8ea</BackgroundColor>
+                                                              <PaddingLeft>2pt</PaddingLeft>
+                                                              <PaddingRight>2pt</PaddingRight>
+                                                              <PaddingTop>2pt</PaddingTop>
+                                                              <PaddingBottom>2pt</PaddingBottom>
+                                                            </Style>
+                                                          </Textbox>
+                                                        </CellContents>
+                                                      </TablixHeader>
+                                                      <DataElementOutput>Output</DataElementOutput>
+                                                      <KeepTogether>true</KeepTogether>
+                                                    </TablixMember>
+                                                  </TablixMembers>
+                                                  <DataElementOutput>Output</DataElementOutput>
+                                                  <KeepTogether>true</KeepTogether>
+                                                </TablixMember>
+                                              </TablixMembers>
+                                              <DataElementOutput>Output</DataElementOutput>
+                                              <KeepTogether>true</KeepTogether>
+                                            </TablixMember>
+                                          </TablixMembers>
+                                          <DataElementOutput>Output</DataElementOutput>
+                                          <KeepTogether>true</KeepTogether>
+                                        </TablixMember>
+                                      </TablixMembers>
+                                      <DataElementOutput>Output</DataElementOutput>
+                                      <KeepTogether>true</KeepTogether>
+                                    </TablixMember>
+                                  </TablixMembers>
+                                  <DataElementOutput>Output</DataElementOutput>
+                                  <KeepTogether>true</KeepTogether>
+                                </TablixMember>
+                              </TablixMembers>
+                            </TablixMember>
+                          </TablixMembers>
+                        </TablixMember>
+                      </TablixMembers>
+                      <DataElementOutput>Output</DataElementOutput>
+                      <KeepTogether>true</KeepTogether>
+                    </TablixMember>
+                  </TablixMembers>
+                </TablixMember>
+              </TablixMembers>
+              <DataElementOutput>Output</DataElementOutput>
+            </TablixMember>
+          </TablixMembers>
+        </TablixRowHierarchy>
+        <RepeatColumnHeaders>true</RepeatColumnHeaders>
+        <RepeatRowHeaders>true</RepeatRowHeaders>
+        <DataSetName>DataSet1</DataSetName>
+        <Top>0.33in</Top>
+        <Height>0.46in</Height>
+        <Width>20.46875in</Width>
+        <Style />
+      </Tablix>
+      <Textbox Name="textbox1">
+        <CanGrow>true</CanGrow>
+        <KeepTogether>true</KeepTogether>
+        <Paragraphs>
+          <Paragraph>
+            <TextRuns>
+              <TextRun>
+                <Value>genBOE Export BOE</Value>
+                <Style>
+                  <FontFamily>Tahoma</FontFamily>
+                  <FontSize>18pt</FontSize>
+                  <Color>#1c3a70</Color>
+                </Style>
+              </TextRun>
+            </TextRuns>
+            <Style />
+          </Paragraph>
+        </Paragraphs>
+        <rd:DefaultName>textbox1</rd:DefaultName>
+        <Height>0.33in</Height>
+        <Width>20.46875in</Width>
+        <ZIndex>1</ZIndex>
+        <Style>
+          <PaddingLeft>2pt</PaddingLeft>
+          <PaddingRight>2pt</PaddingRight>
+          <PaddingTop>2pt</PaddingTop>
+          <PaddingBottom>2pt</PaddingBottom>
+        </Style>
+      </Textbox>
+    </ReportItems>
+    <Height>1in</Height>
+    <Style />
+  </Body>
+  <Width>20.46875in</Width>
+  <Page>
+    <LeftMargin>1in</LeftMargin>
+    <RightMargin>1in</RightMargin>
+    <TopMargin>1in</TopMargin>
+    <BottomMargin>1in</BottomMargin>
+    <Style />
+  </Page>
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="genBOE">
+      <DataSourceReference>genBOE</DataSourceReference>
+      <rd:SecurityType>None</rd:SecurityType>
+      <rd:DataSourceID>02737fd5-144c-41f4-b377-734bbf524291</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DataSet1">
+      <Query>
+        <DataSourceName>genBOE</DataSourceName>
+        <QueryParameters>
+          <QueryParameter Name="@WorkspaceShortName">
+            <Value>=Parameters!Workspace.Value</Value>
+          </QueryParameter>
+        </QueryParameters>
+        <CommandText>/*
+Create a Workspace Drop Down Paramater
+*/
+DECLARE @WorkspaceID int 
+SELECT @WorkspaceID = WorkspaceID FROM dbo.Workspace WHERE WorkspaceShortName = @WorkspaceShortName--'marshall_rdel'
+
+
+/*
+MAKE START DATE FOR EVERY RECORD
+CONTRACT START DATE FROM WORKSPACE IDENTIFICATION DATE 
+*/
+DECLARE @StartDate datetime2(7)
+DECLARE @EndDate datetime2(7)
+SELECT 
+	@StartDate = ContractStartDate,
+	@EndDate = ContractEndDate
+FROM dbo.Workspace 
+WHERE WorkspaceID = @WorkspaceID
+
+
+
+
+
+/*Create Task IDs*/
+DECLARE @TaskID TABLE
+(
+	BOETaskElementID int,
+	ResourceID int,
+	CostElementID int, 
+	CostElement varchar (100),
+	TaskID varchar(100),
+	Processed bit
+)	
+INSERT INTO @TaskID
+SELECT A.*, NULL, 0 FROM 
+(
+SELECT TE.BOETaskElementID, R.ResourceID, R.CostElementID, C.CostElement		
+FROM dbo.BOE B 
+	INNER JOIN dbo.BOETaskElement TE ON B.BOEID = TE.BOEID
+	INNER JOIN dbo.BOELaborType LT ON TE.BOETaskElementID = LT.BOETaskElementID
+	INNER JOIN dbo.[Resource] R ON Lt.ResourceID = R.ResourceID	
+	INNER JOIN dbo.CostElementLU C ON R.CostElementID = C.CostElementID
+WHERE 
+	B.WorkspaceID = @WorkspaceID 
+UNION
+SELECT TE.MaterialTaskElementID, R.ResourceID, R.CostElementID, C.CostElement		
+FROM dbo.BOE B 
+	INNER JOIN dbo.MaterialTaskElement TE ON B.BOEID = TE.BOEID
+	INNER JOIN dbo.Material M ON TE.MaterialTaskElementID = M.MaterialTaskElementID
+	INNER JOIN dbo.[Resource] R ON M.ResourceID = R.ResourceID	
+	INNER JOIN dbo.CostElementLU C ON R.CostElementID = C.CostElementID
+WHERE 
+	B.WorkspaceID = @WorkspaceID 
+UNION
+SELECT TE.ODCTaskElementID, R.ResourceID, R.CostElementID, C.CostElement		
+FROM dbo.BOE B 
+	INNER JOIN dbo.ODCTaskElement TE ON B.BOEID = TE.BOEID
+	INNER JOIN dbo.ODCType LT ON TE.ODCTaskElementID = LT.ODCTaskElementID
+	INNER JOIN dbo.[Resource] R ON Lt.ResourceID = R.ResourceID	
+	INNER JOIN dbo.CostElementLU C ON R.CostElementID = C.CostElementID
+WHERE 
+	B.WorkspaceID = @WorkspaceID 
+UNION
+SELECT TE.TravelTripTaskElementID, R.ResourceID, R.CostElementID, C.CostElement		
+/* Special Processing for Travel */
+		FROM [dbo].[Resource] R
+		INNER JOIN dbo.CostElementLU C ON R.CostElementID = C.CostElementID		
+		INNER JOIN dbo.WorkspaceResource WR ON R.ResourceID = WR.SystemResourceID
+		INNER JOIN dbo.Workspace W ON WR.WorkspaceID = W.WorkspaceID
+		INNER JOIN dbo.BOE B ON W.WorkspaceID = B.WorkspaceID
+		INNER JOIN dbo.TravelTripTaskElement TE ON B.BOEID = TE.BOEID
+		INNER JOIN dbo.TravelTrip TT ON TE.TravelTripTaskElementID = TT.TravelTripTaskElementID 
+		WHERE 
+		R.SegmentID = TT.SegmentID AND
+		R.CostElementID = 6 /*Travel*/ AND
+		W.WorkspaceID = @WorkspaceID 
+) A
+ORDER BY A.BOETaskElementID ASC 	
+
+
+
+DECLARE @Labor int = 0
+DECLARE @Sub int = 0
+DECLARE @ODC int = 0
+DECLARE @Travel int = 0
+DECLARE @Material int = 0
+DECLARE @IWTA int = 0
+
+DECLARE @TaskElementID int, @CostElementID int
+WHILE EXISTS (SELECT 1 FROM @TaskID WHERE Processed = 0)
+BEGIN
+	SELECT DISTINCT TOP 1 
+		@TaskElementID = BOETaskElementID,  
+		@CostElementID = CostElementID
+	FROM @TaskID WHERE Processed = 0
+
+	UPDATE @TaskID 
+	SET	TaskID = 
+	CASE 
+		WHEN @CostElementID = 1 THEN
+			CASE
+				WHEN LEN (@Labor + 1) = 1 THEN 'LIDN' + '00000' + CAST ((@Labor + 1) AS varchar)
+				WHEN LEN (@Labor + 1) = 2 THEN 'LIDN' + '0000' + CAST ((@Labor + 1) AS varchar)
+				WHEN LEN (@Labor + 1) = 3 THEN 'LIDN' + '000' + CAST ((@Labor + 1) AS varchar)
+				WHEN LEN (@Labor + 1) = 4 THEN 'LIDN' + '00' + CAST ((@Labor + 1) AS varchar)
+				WHEN LEN (@Labor + 1) = 5 THEN 'LIDN' + '0' + CAST ((@Labor + 1) AS varchar)
+				WHEN LEN (@Labor + 1) = 6 THEN 'LIDN' + '' + CAST ((@Labor + 1) AS varchar)
+			END 	
+		 WHEN @CostElementID = 2 THEN
+			CASE
+				WHEN LEN (@IWTA + 1) = 1 THEN 'IIDN' + '00000' + CAST ((@IWTA + 1) AS varchar)
+				WHEN LEN (@IWTA + 1) = 2 THEN 'IIDN' + '0000' + CAST ((@IWTA + 1) AS varchar)
+				WHEN LEN (@IWTA + 1) = 3 THEN 'IIDN' + '000' + CAST ((@IWTA + 1) AS varchar)
+				WHEN LEN (@IWTA + 1) = 4 THEN 'IIDN' + '00' + CAST ((@IWTA + 1) AS varchar)
+				WHEN LEN (@IWTA + 1) = 5 THEN 'IIDN' + '0' + CAST ((@IWTA + 1) AS varchar)
+				WHEN LEN (@IWTA + 1) = 6 THEN 'IIDN' + '' + CAST ((@IWTA + 1) AS varchar)
+			END 	
+		WHEN @CostElementID = 3 THEN
+			CASE
+				WHEN LEN (@Sub + 1) = 1 THEN 'SIDN' + '00000' + CAST ((@Sub + 1) AS varchar)
+				WHEN LEN (@Sub + 1) = 2 THEN 'SIDN' + '0000' + CAST ((@Sub + 1) AS varchar)
+				WHEN LEN (@Sub + 1) = 3 THEN 'SIDN' + '000' + CAST ((@Sub + 1) AS varchar)
+				WHEN LEN (@Sub + 1) = 4 THEN 'SIDN' + '00' + CAST ((@Sub + 1) AS varchar)
+				WHEN LEN (@Sub + 1) = 5 THEN 'SIDN' + '0' + CAST ((@Sub + 1) AS varchar)
+				WHEN LEN (@Sub + 1) = 6 THEN 'SIDN' + '' + CAST ((@Sub + 1) AS varchar)
+			END 	
+		WHEN @CostElementID = 4 THEN
+			CASE
+				WHEN LEN (@Material + 1) = 1 THEN 'MIDN' + '00000' + CAST ((@Material + 1) AS varchar)
+				WHEN LEN (@Material + 1) = 2 THEN 'MIDN' + '0000' + CAST ((@Material + 1) AS varchar)
+				WHEN LEN (@Material + 1) = 3 THEN 'MIDN' + '000' + CAST ((@Material + 1) AS varchar)
+				WHEN LEN (@Material + 1) = 4 THEN 'MIDN' + '00' + CAST ((@Material + 1) AS varchar)
+				WHEN LEN (@Material + 1) = 5 THEN 'MIDN' + '0' + CAST ((@Material + 1) AS varchar)
+				WHEN LEN (@Material + 1) = 6 THEN 'MIDN' + '' + CAST ((@Material + 1) AS varchar)
+			END 	
+		WHEN @CostElementID = 5 THEN
+			CASE
+				WHEN LEN (@ODC + 1) = 1 THEN 'OIDN' + '00000' + CAST ((@ODC + 1) AS varchar)
+				WHEN LEN (@ODC + 1) = 2 THEN 'OIDN' + '0000' + CAST ((@ODC + 1) AS varchar)
+				WHEN LEN (@ODC + 1) = 3 THEN 'OIDN' + '000' + CAST ((@ODC + 1) AS varchar)
+				WHEN LEN (@ODC + 1) = 4 THEN 'OIDN' + '00' + CAST ((@ODC + 1) AS varchar)
+				WHEN LEN (@ODC + 1) = 5 THEN 'OIDN' + '0' + CAST ((@ODC + 1) AS varchar)
+				WHEN LEN (@ODC + 1) = 6 THEN 'OIDN' + '' + CAST ((@ODC + 1) AS varchar)
+			END 	
+		WHEN @CostElementID = 6 THEN
+			CASE
+				WHEN LEN (@Travel + 1) = 1 THEN 'TIDN' + '00000' + CAST ((@Travel + 1) AS varchar)
+				WHEN LEN (@Travel + 1) = 2 THEN 'TIDN' + '0000' + CAST ((@Travel + 1) AS varchar)
+				WHEN LEN (@Travel + 1) = 3 THEN 'TIDN' + '000' + CAST ((@Travel + 1) AS varchar)
+				WHEN LEN (@Travel + 1) = 4 THEN 'TIDN' + '00' + CAST ((@Travel + 1) AS varchar)
+				WHEN LEN (@Travel + 1) = 5 THEN 'TIDN' + '0' + CAST ((@Travel + 1) AS varchar)
+				WHEN LEN (@Travel + 1) = 6 THEN 'TIDN' + '' + CAST ((@Travel + 1) AS varchar)
+			END 	
+		END,
+		Processed = 1			
+	WHERE 
+		BOETaskElementID = @TaskElementID AND
+		CostElementID	 = @CostElementID AND
+		Processed = 0
+
+
+
+	IF @CostElementID = 1 SET @Labor = @Labor + 1
+	IF @CostElementID = 2 SET @IWTA = @IWTA + 1
+	IF @CostElementID = 3 SET @Sub = @Sub + 1
+	IF @CostElementID = 4 SET @Material = @Material + 1
+	IF @CostElementID = 5 SET @ODC = @ODC + 1
+	IF @CostElementID = 6 SET @Travel = @Travel + 1
+
+END
+
+
+/*Frank wants to start the reults at January*/
+/*select @StartDate*/
+DECLARE @AddedLaborSpread TABLE
+(
+	LaborSpreadDate date,
+	LaborSpreadValue int
+)
+DECLARE @AddedDate date = DateAdd(DD, -1, @StartDate)
+
+WHILE (SELECT DATEPART(MM, @AddedDate)) &gt; 1
+BEGIN 
+	
+	SET @AddedDate = DATEADD(MM, -1, @AddedDate)
+	
+	INSERT INTO @AddedLaborSpread
+	SELECT @AddedDate, 0
+
+END
+
+--SELECT * FROM @AddedLaborSpread	
+
+	
+
+
+
+
+SELECT --*,B.BOEID,LT.*,
+-- w.WorkspaceID,
+
+WBS.DisplayedWBSNumber,
+WBS.WBSTitle,
+/*'LIND' --labor task
+'SIDN for subs  000001
+oidn - odc
+TIDN - travel
+midn-- material
+iidn - iwta*/
+T.TaskID AS [Task ID],
+R.ResourceName AS [Resource ID], /*--+ '-' + ResourceDescription,*/
+--R.ResourceName + 'SSRS:' +  CAST(RAND(1) AS varchar) AS [Resource ID], /*--+ '-' + ResourceDescription,*/
+'' AS [Line Key], 
+'' AS [Burden Pool ID], 
+'' AS [Rate Band ID], 
+'' AS [Hours/Heads], 
+'D' AS [Curve(D)],
+CAST (@StartDate AS DATE) AS StartDate,
+/*CAST(DatePart(MM,LS.LaborSpreadDate) AS VArchar)  + '-' + CAST (DatePart(YYYY,LS.LaborSpreadDate) AS Varchar)    AS LaborSpreadDate*/  
+--LS.LaborSpreadDate, 
+
+
+CASE 
+	WHEN DATEPART (DD, LS.LaborSpreadDate) = 14 THEN DATEADD(DD, -13, LS.LaborSpreadDate)
+	WHEN DATEPART (DD, LS.LaborSpreadDate) = 15 THEN DATEADD(DD, -14, LS.LaborSpreadDate)
+END AS LaborSpreadDate,
+
+
+
+LS.LaborSpreadValue
+FROM dbo.Workspace W
+	INNER JOIN dbo.BOE B ON W.WorkspaceID = B.WorkspaceID
+	INNER JOIN dbo.BOETaskElement TE ON B.BOEID = TE.BOEID
+	INNER JOIN dbo.BOELaborType LT ON TE.BOETaskElementID = LT.BOETaskElementID
+	INNER JOIN dbo.[Resource] R ON Lt.ResourceID = R.ResourceID	
+	INNER JOIN dbo.BOELaborSpread LS ON LT.BOELaborTypeID = LS.BOELaborTypeID
+	INNER JOIN dbo.WBS_CLIN_BOE_XREF X ON B.BOEID = X.BOEID
+	INNER JOIN dbo.WorkBreakdownStructure WBS ON X.WBSID = WBS.WBSID
+	INNER JOIN @TaskID T ON 
+		TE.BOETaskElementID = T.BOETaskElementID AND
+		R.ResourceID = T.ResourceID
+WHERE 
+	W.WorkspaceID = @WorkspaceID 
+UNION
+SELECT
+WBS.DisplayedWBSNumber,
+WBS.WBSTitle,
+T.TaskID AS [Task ID],
+R.ResourceName AS [Resource ID], /*--+ '-' + ResourceDescription,*/
+--R.ResourceName + 'SSRS:' +  CAST(RAND(1) AS varchar) AS [Resource ID], /*--+ '-' + ResourceDescription,*/
+'' AS [Line Key], 
+'' AS [Burden Pool ID], 
+'' AS [Rate Band ID], 
+'' AS [Hours/Heads], 
+'D' AS [Curve(D)],
+CAST (@StartDate AS DATE) AS StartDate,
+/*CAST(DatePart(MM,ALS.LaborSpreadDate) AS VArchar)  + '-' + CAST (DatePart(YYYY,ALS.LaborSpreadDate) AS Varchar)    AS LaborSpreadDate*/
+--ALS.LaborSpreadDate, 
+
+
+
+
+CASE 
+	WHEN DATEPART (DD, ALS.LaborSpreadDate) = 14 THEN DATEADD(DD, -13, ALS.LaborSpreadDate)
+	WHEN DATEPART (DD, ALS.LaborSpreadDate) = 15 THEN DATEADD(DD, -14, ALS.LaborSpreadDate)
+END AS LaborSpreadDate,
+
+
+
+
+
+
+ALS.LaborSpreadValue
+FROM dbo.Workspace W
+	INNER JOIN dbo.BOE B ON W.WorkspaceID = B.WorkspaceID
+	INNER JOIN dbo.BOETaskElement TE ON B.BOEID = TE.BOEID
+	INNER JOIN dbo.BOELaborType LT ON TE.BOETaskElementID = LT.BOETaskElementID
+	INNER JOIN dbo.[Resource] R ON Lt.ResourceID = R.ResourceID	
+	INNER JOIN dbo.BOELaborSpread LS ON LT.BOELaborTypeID = LS.BOELaborTypeID
+	INNER JOIN dbo.WBS_CLIN_BOE_XREF X ON B.BOEID = X.BOEID
+	INNER JOIN dbo.WorkBreakdownStructure WBS ON X.WBSID = WBS.WBSID
+	INNER JOIN @TaskID T ON 
+		TE.BOETaskElementID = T.BOETaskElementID AND
+		R.ResourceID = T.ResourceID
+	INNER JOIN @AddedLaborSpread ALS ON 1=1
+WHERE 
+	W.WorkspaceID = @WorkspaceID</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="Task_ID">
+          <DataField>Task ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="DisplayedWBSNumber">
+          <DataField>DisplayedWBSNumber</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Resource_ID">
+          <DataField>Resource ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="WBSTitle">
+          <DataField>WBSTitle</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Line_Key">
+          <DataField>Line Key</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Burden_Pool_ID">
+          <DataField>Burden Pool ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Rate_Band_ID">
+          <DataField>Rate Band ID</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Hours_Heads">
+          <DataField>Hours/Heads</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Curve_D_">
+          <DataField>Curve(D)</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="StartDate">
+          <DataField>StartDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="LaborSpreadDate">
+          <DataField>LaborSpreadDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="LaborSpreadValue">
+          <DataField>LaborSpreadValue</DataField>
+          <rd:TypeName>System.Int64</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+    <DataSet Name="DataSet2">
+      <Query>
+        <DataSourceName>genBOE</DataSourceName>
+        <CommandText>SELECT WorkspaceShortName FROM dbo.Workspace</CommandText>
+        <rd:UseGenericDesigner>true</rd:UseGenericDesigner>
+      </Query>
+      <Fields>
+        <Field Name="WorkspaceShortName">
+          <DataField>WorkspaceShortName</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+      </Fields>
+    </DataSet>
+  </DataSets>
+  <ReportParameters>
+    <ReportParameter Name="Workspace">
+      <DataType>String</DataType>
+      <Prompt>Workspace</Prompt>
+      <ValidValues>
+        <DataSetReference>
+          <DataSetName>DataSet2</DataSetName>
+          <ValueField>WorkspaceShortName</ValueField>
+          <LabelField>WorkspaceShortName</LabelField>
+        </DataSetReference>
+      </ValidValues>
+    </ReportParameter>
+  </ReportParameters>
+  <Language>en-US</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>fd5f94fb-2104-4b54-b1be-28b0bdd4c930</rd:ReportID>
+</Report>

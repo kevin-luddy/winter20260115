@@ -1,0 +1,228 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>Microsoft.VisualStudio.TestTools.UITest.CodeGeneration</name>
+  </assembly>
+  <members>
+    <member name="T:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter">
+      <summary>Executes a test action in a user interface (UI) test, interprets the results, and writes to a log.</summary>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.#ctor(Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter)">
+      <summary>Initializes a new instance of the <see cref="T:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter" /> class by using the given interpreter. </summary>
+      <param name="interpreter">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Cancel">
+      <summary>Called when the Cancel Playback button is clicked by the user.</summary>
+    </member>
+    <member name="P:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.CurrentBrowser">
+      <summary>Gets or sets a string that contains the name and version of the current browser. </summary>
+      <returns>The name and version of the current browser.</returns>
+    </member>
+    <member name="P:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.DelayBetweenActions">
+      <summary>Gets or sets the time to delay before executing each action.</summary>
+      <returns>The number of seconds between executions.</returns>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Dispose">
+      <summary>Releases resources.</summary>
+    </member>
+    <member name="P:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.InRetryMode">
+      <summary>Gets or sets a value that indicates whether the interpreter is in retry mode.</summary>
+      <returns>true if the interpreter is in retry mode; otherwise, false. The default is false.</returns>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.AssertAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">An <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.AssertAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.BrowserAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="browserAction">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.BrowserAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.DelayAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.DelayAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.DragAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.DragAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.DragDropAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.DragDropAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.ErrorAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">An <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.ErrorAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.InvokeAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Invoke for SystemAction.</summary>
+      <param name="action">The SystemAction.</param>
+      <param name="map">The UIMap</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.KeyboardAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.KeyboardAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.LaunchApplicationAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.LaunchApplicationAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.MarkerAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.MarkerAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.MediaAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Generate action log for MediaAction</summary>
+      <param name="map">Map of controls and actions</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.MouseAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.MouseAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.NavigateToUrlAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.NavigateToUrlAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.NoOperationAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.NoOperationAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.SendKeysAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.SendKeysAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.SetStateAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.SetStateAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.SetValueAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.SetValueAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.SharedStepsReferenceAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.SharedStepsReferenceAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.StringAssertAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.StringAssertAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.SystemAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Invoke for SystemAction.</summary>
+      <param name="action">The SystemAction.</param>
+      <param name="map">The UIMap</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.TestStepMarkerAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.TestStepMarkerAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.VerifyConfigurationAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.VerifyConfigurationAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.WarningAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.WarningAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.Invoke(Microsoft.VisualStudio.TestTools.UITest.Common.WebDialogAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the provided action by using the given map and logs the result.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.WebDialogAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.SearchAndInvoke(Microsoft.VisualStudio.TestTools.UITest.Common.UITestAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap,Microsoft.VisualStudio.TestTools.UITest.Common.CustomInvoker)">
+      <summary>Executes the provided action by using the given map and logs the result by using your implementation of a custom invoker.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UITestAction" /> object.</param>
+      <param name="map">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap" /> object.</param>
+      <param name="func">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.CustomInvoker" /> delegate.</param>
+    </member>
+    <member name="P:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.SearchTimeout">
+      <summary>Gets or sets the number of seconds before a search process times out.</summary>
+      <returns>The number of seconds before time-out.</returns>
+    </member>
+    <member name="P:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.ThinkTimeMultiplier">
+      <summary>Gets or sets the multiplier to use for think time values.</summary>
+      <returns>A double value.</returns>
+    </member>
+    <member name="P:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.TopLevelWindowSinglePassSearch">
+      <summary>Gets or sets a value that indicates whether single pass search will be used for top level windows.</summary>
+      <returns>true to use single pass search; otherwise, false.</returns>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UIActionInterpreter.WaitForThinkTime(Microsoft.VisualStudio.TestTools.UITest.Common.UITestAction)">
+      <summary>Waits for an appropriate amount of think time before the provided action is invoked.</summary>
+      <param name="action">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UITestAction" /> object.</param>
+    </member>
+    <member name="T:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter">
+      <summary>Executes each test action in a user interface (UI) test and interprets the results of each action by using the value of the <see cref="P:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter.ActionInvoker" /> property.</summary>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter.#ctor(Microsoft.VisualStudio.TestTools.UITest.Common.UITest)">
+      <summary>Initializes a new instance of the <see cref="T:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter" /> class. </summary>
+      <param name="uiTest">The <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UITest" /> that is being interpreted.</param>
+    </member>
+    <member name="P:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter.ActionInvoker">
+      <summary>Gets or sets the <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UITestActionInvoker" /> to interpret this test.</summary>
+      <returns>The test action invoker.</returns>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter.Cancel">
+      <summary>Cancels the interpretation of the current step or test.</summary>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter.Dispose(System.Boolean)">
+      <summary>Optionally releases resources.</summary>
+      <param name="disposing">true to release internal resources.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter.ExecuteAction(Microsoft.VisualStudio.TestTools.UITest.Common.UITestAction,Microsoft.VisualStudio.TestTools.UITest.Common.UIMap.UIMap)">
+      <summary>Executes the given action. The action contains an ID for the UIObject on which it acts. This ID is used to get a queryid for the object and this is passed to the invoke method of the input action object. The Invoke method also requires an object of the UITestActionInvoker interface type. In this case the default is the UITestPlayback type that implements the UITestActionInvoker.</summary>
+      <param name="action">The action to execute.</param>
+      <param name="map">UIMap that contains the action.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter.ExecuteTest(Microsoft.VisualStudio.TestTools.UITest.Common.UITest)">
+      <summary>Executes the given test.</summary>
+      <param name="uiTest">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UITest" /> object.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter.ExecuteTest(Microsoft.VisualStudio.TestTools.UITest.Common.UITest,System.Int64,System.Int64)">
+      <summary>Executes the given test for the specified range of actions.</summary>
+      <param name="uiTest">A <see cref="T:Microsoft.VisualStudio.TestTools.UITest.Common.UITest" /> object.</param>
+      <param name="startId">The identifier for the starting action. Provides a negative number to start at the beginning of the list.</param>
+      <param name="stopId">The identifier for the ending action. Provides a negative number to execute to the last action in the list.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter.HighlightElement">
+      <summary>Highlights the UI element that is associated with the current action.</summary>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter.IsExpectedExceptionFromActionExecution(System.Exception)">
+      <summary>Returns true if the given exception is expected from the execution of an action.</summary>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter.LogActionExecutionException(System.Exception)">
+      <summary>Logs SQM Data for Playback Exception.</summary>
+      <param name="exception">Exception that Occured during Playback.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter.OnErrorHandledByUser(Microsoft.VisualStudio.TestTools.UITest.Common.UITestErrorEventArgs)">
+      <summary>Called after user handles the action execution error. This can be used to trace log something.</summary>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter.RaiseWaitForThinkTimeEvent(Microsoft.VisualStudio.TestTools.UITest.Common.UITestAction,System.Int32)">
+      <summary>Raises the <see cref="E:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter.InterpreterProgress" /> event.</summary>
+      <param name="action">The current action.</param>
+      <param name="thinkTime">The wait time in seconds.</param>
+    </member>
+    <member name="M:Microsoft.VisualStudio.TestTools.UITest.CodeGeneration.UITestInterpreter.Unhighlight">
+      <summary>Removes highlighting from the UI element that is associated with the current action.</summary>
+    </member>
+  </members>
+</doc>

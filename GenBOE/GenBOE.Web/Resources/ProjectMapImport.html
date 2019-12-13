@@ -1,0 +1,54 @@
+﻿<div class="dialog form ui-dialog-content ui-widget-content">
+    <div class="ui-widget-header modal-title-bar">Import Project Map Data<div class="modal-close-box" data-ng-click="$close()"><i class="glyphicon glyphicon-remove"></i></div></div>
+    <div class="module-content-data">
+            <div class="form-row">
+                <div id="ImportProjectMapDialog-Error" class="validation-box" style="display: none;">
+                    <div>
+                        <b>Import Failed.</b>
+                        <div class="import-error-header">Errors</div>
+                        <div id="ImportProjectMapDialog-ErrorText">
+                        </div>
+                        <div class="import-warning-header">Warnings</div>
+                        <div id="ImportProjectMapDialog-WarningText">
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <span>Importing Project Map does a complete replacement of the existing Project Map data.  Start by exporting the existing Project Map data defined in genBOE to get the column definitions and the existing data. Then you modify the data and finally import the updated information.</span>
+                <div>
+                    <div class="step one">
+                        <div class="title">Step 1: Export the existing Project Map Data</div>
+                        <span>Start by exporting the existing Project Map Data. This file has the correct column headings and all of the current Project Map data. Then you modify the data and finally import the updated information.</span>
+                        <div><a data-ng-click="exportGrid()">Export existing Project Map data</a></div>
+                    </div>
+                    <div class="step two">
+                        <div class="title">Step 2: Modify the existing Project Map Data</div>
+                        <div>
+                            <ul>
+                                <li>If you are only going to add new Project Map data, then leave all of the existing data in the spreadsheet.</li>
+                                <li>Add data for new Project Map rows.</li>
+                                <li>The header row should not be modified.</li>
+                                <li>The following columns are required: Activity ID, Activity Name, Resource, Cost Center, Start Date, End Date, WBS Number, WBS Element Title, CLIN</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="step three">
+                        <form id="ImportProjectMapDialog-Form" action="{{formAction}}" enctype="multipart/form-data" method="post" target="ImportProjectMapDialog-UploadTarget">
+                        <div class="title">Step 3: Import the Project Map data </div>
+                        <div id="ImportProjectMapDialog-FileValidation" style="color: #990000; display: none;">
+                            <div>Select the file to import and then click the <i>Import</i> button.</div>
+                        </div>
+                        <div>
+                            <input type="file" id="ImportProjectMapDialog-File" style="width:410px;" name="file" custom-on-change="fileImportChanged"/>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <div class="modal-footer">
+        <button class="ies-action" data-ng-show="showImportButton" type="button" data-ng-click="submit()">Import</button>
+        <div data-ng-show="importInProgress" class="loader valign-middle"></div>
+        <button class="ies" type="button" data-ng-click="$close()">Cancel</button>
+    </div>
+</div>

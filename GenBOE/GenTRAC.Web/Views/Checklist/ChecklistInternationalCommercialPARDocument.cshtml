@@ -1,0 +1,252 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Checklist.ChecklistProposalAdequacyReviewDocumentModelView
+
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ChecklistControllerLogic.CHECKLIST_PAR_DOCUMENT_FORM, name = GenTRAC.ActionLogic.ChecklistControllerLogic.CHECKLIST_PAR_DOCUMENT_FORM }))
+        {
+            <input name="ProposalID" value="@Model.ProposalID" type="hidden"/>
+            <input name="ProposalChecklistID" value="@Model.ProposalChecklistID" type="hidden" />
+            <input name="ShowChecklistResponse" value="@Model.ShowChecklistResponse" type="hidden" />
+            <input name="PricerLastSavedDate" value="@Model.PricerLastSavedDate" type="hidden" />
+            <input name="PARPricerComment" value="@Model.PARPricerComment" type="hidden" />
+            <input name="PARPeerComment" value="@Model.PARPeerComment" type="hidden" />
+            <input name="ChecklistVersion" value="@Model.ChecklistVersion" type="hidden" />
+            <input name="ParID" value="@Model.ProposalAdequacyReviewID" type="hidden" />
+            var IntroRows = Model.ChecklistRows.Where(z => z.RowType == ChecklistTextType.Introduction).ToList();
+            foreach (GenTRAC.ActionLogic.ModelView.Checklist.ChecklistRowModelView row in IntroRows)
+            {
+                <div style="position: relative;">@Html.Raw(row.DisplayText)</div>               
+            }
+            <div><br></div>
+            var GridRows = Model.ChecklistRows.Except(IntroRows).Where(x => x.ColumnOrder == 1);
+            var isFirstHeader = true;
+            <table id="PARGrid" class="PARGridTableSetup" name="ChecklistRows">
+                <colgroup>
+                    <col class=""/>
+                    <col class="InternationalYesNoNAWidth" />
+                    <col class="InternationalYesNoNAWidth" />
+                    <col class="InternationalYesNoNAWidth" />
+                    @if (Model.ShowChecklistResponse == ShowChecklistResponse.ShowBoth)
+                    {
+                        <col class="InternationalYesNoNAWidth" />
+                        <col class="InternationalYesNoNAWidth" />
+                        <col class="InternationalYesNoNAWidth" />
+
+                    }
+                    @if (Model.ShowComment == true)
+                    {
+                        <!-- This is the first comment column -->
+                        <col />
+                    }
+                    @if (Model.ShowComment == true && (Model.ShowChecklistResponse == ShowChecklistResponse.ShowBoth))
+                    {
+                        <!-- This is the second comment column if needed -->
+                        <col />
+                    }
+                </colgroup>
+                <tr style="border: none;">
+                    <td class="InternationalChecklistItemColumnWidth">&nbsp;</td>                              
+                    @if (Model.ShowChecklistResponse == ShowChecklistResponse.ShowBoth ||
+                         Model.ShowChecklistResponse == ShowChecklistResponse.Pricer)
+                    {                   
+                        <td id="RadioPricer" class="column-pricer @Model.RadioResponseColSpanWidth" colspan="@Model.RadioResponseColSpan">Estimator</td>
+                    }
+                    else
+                    {
+                        <td id="RadioPeer" class="column-peer @Model.RadioResponseColSpanWidth" colspan="@Model.RadioResponseColSpan">Peer Reviewer</td>
+                    }
+
+                    @if (Model.ShowChecklistResponse == ShowChecklistResponse.ShowBoth)
+                    {
+                        <td id="RadioPeer" class="column-peer @Model.RadioResponseColSpanWidth" colspan="@Model.RadioResponseColSpan">Peer Reviewer</td>
+                    }
+                    @if (Model.ShowComment == true && Model.ShowChecklistResponse == ShowChecklistResponse.ShowBoth)
+                    {
+                        <td style="border-left: thin solid;" id="CommentPricer" class="column-pricer">Estimator</td>
+                        <td id="CommentPeer" class="column-peer">Peer Reviewer</td>
+                    }
+                    else if (Model.ShowComment == true)
+                    {
+                         <td>&nbsp;</td>
+                    }
+                </tr>
+                @foreach (var row in GridRows)
+                {                     
+                      <tr @if (row.RowType == ChecklistTextType.Question || row.RowType == ChecklistTextType.PricerComment || row.RowType == ChecklistTextType.PeerComment )
+                          { <text>pkid="@row.SortOrder"</text> }>
+   
+                        @switch (row.RowType)
+                        {
+                            case ChecklistTextType.Header:
+                                
+                                <th style="border-right: thin solid;" class="InternationalChecklistItemColumnWidth">
+                                     <input name="ChecklistContentId" value="@row.ChecklistContentId" type="hidden" />
+                                     <input name="RowType" value="@row.RowType" type="hidden" />
+                                     <div id="InternationalPARHeader" style="white-space:normal">@Html.Raw(row.DisplayText)</div>
+                                </th>
+                                
+                                if (isFirstHeader)
+                                {
+                                    <th style="border-left: thin solid;" class="InternationalYesNoNAWidth">         
+                                        <div>Yes</div>
+                                    </th>
+                                    <th class="InternationalYesNoNAWidth">
+                                        <div>No</div>
+                                    </th>
+                                    <th class="InternationalYesNoNAWidth">
+                                        <div>N/A</div>
+                                    </th>
+                                
+                                   if (Model.ShowChecklistResponse == ShowChecklistResponse.ShowBoth)
+                                   {
+                                       <th class="InternationalYesNoNAWidth" style="border-left: thin solid">
+                                            <div>Yes</div>
+                                       </th>
+                                       <th class="InternationalYesNoNAWidth">
+                                            <div>No</div>
+                                       </th>
+                                       <th class="InternationalYesNoNAWidth">
+                                            <div>N/A</div>
+                                       </th>
+                                   }
+                                   if (Model.ShowComment == true && (Model.ShowChecklistResponse == ShowChecklistResponse.Pricer || Model.ShowChecklistResponse == ShowChecklistResponse.ShowBoth))
+                                   {
+                                        <th style="border-left: thin solid; border-right: thin solid; text-align: center;">
+                                           <b>Comments</b>
+                                        </th>
+                                    }
+                                    if (Model.ShowComment == true && (Model.ShowChecklistResponse == ShowChecklistResponse.Peer || Model.ShowChecklistResponse == ShowChecklistResponse.ShowBoth))
+                                    {
+                                           <th style="border-left: thin solid; text-align: center;">
+                                           <b>Comments</b>
+                                        </th>
+                                    }
+                                }
+                                else
+                                {
+                                    <th colspan="@Model.SecondHeaderColSpan">
+                                        <div>&nbsp;</div>
+                                    </th>
+                                }
+
+                                isFirstHeader = false;
+
+                                break;
+                            case ChecklistTextType.Question:
+                                <td style="border-right: thin solid; height:43px;" class="InternationalChecklistItemColumnWidth">
+                                    <input name="ChecklistContentId" value="@row.ChecklistContentId" type="hidden" />
+                                    <input name="RowType" value="@row.RowType" type="hidden" />
+                                    <input name="SubmissionItem" value="@row.SubmissionItem" type="hidden" />                                    
+                                    <div>@Html.Raw(row.DisplayText)</div>
+                                </td>
+
+                                if (Model.ShowChecklistResponse == ShowChecklistResponse.Pricer || Model.ShowChecklistResponse == ShowChecklistResponse.ShowBoth)
+                                {
+                                    <td>
+                                        <div>
+                                            <input type="radio" class="radio" id=@string.Concat("QPARYes", @row.SortOrder) value="Yes" mvprop="PricerResponse" name=PricerResponse.@row.ChecklistContentId @if (@row.PricerResponse == ChecklistResponseOption.Yes)
+                                                                                                                                                                                                        {<text>checked</text>} />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <input type="radio" class="radio" id=@string.Concat("QPARNo", @row.SortOrder) value="No" mvprop="PricerResponse" name=PricerResponse.@row.ChecklistContentId @if (@row.PricerResponse == ChecklistResponseOption.No)
+                                                                                                                                                                                                      {<text>checked</text>} />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>   
+                                            <input type="radio" class="radio" id=@string.Concat("QPARNa", @row.SortOrder) value="NA" mvprop="PricerResponse" name=PricerResponse.@row.ChecklistContentId @if (@row.PricerResponse == ChecklistResponseOption.NA)
+                                                                                                                                                                                                          {<text>checked</text>} />
+                                        </div>
+                                    </td>   
+                                }
+                                if (Model.ShowChecklistResponse == ShowChecklistResponse.Peer || Model.ShowChecklistResponse == ShowChecklistResponse.ShowBoth)
+                                {
+                                    <td style="border-left:thin solid">
+                                        <div>
+                                            <input type="radio" class="radio" id=@string.Concat("QPARYes", @row.SortOrder) value="Yes" mvprop="PeerResponse" name=PeerResponse.@row.ChecklistContentId @if (@row.PeerResponse == ChecklistResponseOption.Yes)
+                                                                                                                                                                                                    {<text>checked</text>} />
+                                      </div>
+                                    </td>
+                                    <td>
+                                       <div>
+                                          <input type="radio" class="radio" id=@string.Concat("QPARNo", @row.SortOrder) value="No" mvprop="PeerResponse" name=PeerResponse.@row.ChecklistContentId @if (@row.PeerResponse == ChecklistResponseOption.No)
+                                                                                                                                                                                                      {<text>checked</text>} />
+                                       </div>
+                                    </td>
+                                    <td>
+                                        <div>   
+                                            <input type="radio" class="radio" id=@string.Concat("QPARNa", @row.SortOrder) value="NA" mvprop="PeerResponse" name=PeerResponse.@row.ChecklistContentId @if (@row.PeerResponse == ChecklistResponseOption.NA)                                                                                                                                                                                            
+                                                                                                                                                                                                        {<text>checked</text>} />
+                                        </div>
+                                    </td>
+                                }
+                                if (Model.ShowComment == true && (Model.ShowChecklistResponse == ShowChecklistResponse.Pricer || Model.ShowChecklistResponse == ShowChecklistResponse.ShowBoth))
+                                {                           
+                                    <td style="border-left:thin solid; border-right: thin solid; vertical-align:top;"> 
+                                        <div class="ColumnContent">
+                                            <select id="@string.Concat(" PricerRowCommentSelect", @row.SortOrder)" name="PricerRowComment.@row.ChecklistContentId" class="display-none ChecklistPricerResponse">
+                                                <option value="">Select a response</option>
+                                                @foreach (CannedResponse response in Enum.GetValues(typeof(CannedResponse)))
+                                                {
+                                                    <option value="@response">@response.GetDescription()</option>
+                                                }
+                                            </select>
+                                            <textarea maxlength="300" class="ChecklistPricerComment" id="@string.Concat(" PricerRowCommentText", @row.SortOrder)" mvprop="PricerRowComment" name="PricerRowComment.@row.ChecklistContentId">@Html.Raw(row.PricerRowComment)</textarea>
+                                        </div>
+                                    </td>
+                                }
+                                if (Model.ShowComment == true && (Model.ShowChecklistResponse == ShowChecklistResponse.Peer || Model.ShowChecklistResponse == ShowChecklistResponse.ShowBoth))
+                                {
+                                    <td style="border-left:thin solid; border-right: thin solid; vertical-align:top"> 
+                                        <div class="ColumnContent">
+                                            <select id="@string.Concat(" PeerRowCommentSelect", @row.SortOrder)" name="PeerRowComment.@row.ChecklistContentId" class="display-none ChecklistPeerResponse">
+                                                <option value="">Select a response</option>
+                                                @foreach (CannedResponse response in Enum.GetValues(typeof(CannedResponse)))
+                                                {
+                                                    <option value="@response">@response.GetDescription()</option>
+                                                }
+                                            </select>
+                                            <textarea maxlength="300" class="ChecklistPeerComment" id="@string.Concat(" PeerRowCommentText", @row.SortOrder)" mvprop="PeerRowComment" name="PeerRowComment.@row.ChecklistContentId">@Html.Raw(row.PeerRowComment)</textarea>
+                                        </div>
+                                    </td>
+                                }
+                                break;
+                            case ChecklistTextType.PricerComment:
+                                <td colspan="@Model.CommentColSpan">
+                                    <input name="ChecklistContentId" value="@row.ChecklistContentId" type="hidden" />
+                                    <input name="RowType" value="@row.RowType" type="hidden" />
+                                    <div>@Html.Raw(row.DisplayText)</div>
+                                    <div>
+                                        <textarea name="PricerComment" maxlength="2500" class="resize" id="PARDocumentPricerComment">@Model.PARPricerComment</textarea>                                     
+                                    </div>
+                                    <div class="comments" id="PrintPARPricerComment">@Html.Raw(Model.PARPricerComment)</div>
+                                </td>
+                                break;
+                            case ChecklistTextType.PeerComment:
+                                if (Model.IsPTMChecklistUIEnabled.HasValue && Model.IsPTMChecklistUIEnabled.Value == true)
+                                {   // Hide Peer Review Comments (create hidden DOM elements so existing javascript works)
+                                    <td colspan="@Model.CommentColSpan" style="visibility:hidden;">
+                                        <input name="PeerReviewerComment" id="PARDocumentPeerReviewerComment" type="hidden" />
+                                        <input name="peerComments" id="PrintPARPeerReviewerComment" type="hidden" />
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td colspan="@Model.CommentColSpan">
+                                        <input name="ChecklistContentId" value="@row.ChecklistContentId" type="hidden" />
+                                        <input name="RowType" value="@row.RowType" type="hidden" />
+                                        <div> @Html.Raw(row.DisplayText)</div>
+                                        <div>
+                                            <textarea name="PeerReviewerComment" maxlength="2500" class="resize" id="PARDocumentPeerReviewerComment">@Model.PARPeerComment</textarea>
+                                        </div>
+                                        <div class="peerComments" id="PrintPARPeerReviewerComment">@Html.Raw(Model.PARPeerComment)</div>
+                                    </td>
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                       </tr>
+                }
+           </table>
+        }

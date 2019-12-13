@@ -1,0 +1,400 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Proposals.ProposalInformationModelView
+@{
+    ViewBag.Title = "Proposal Information";
+    string contractTypeGroupHelpText = "<b>CP</b> - A cost-reimbursement type contract that includes one or more cost type CLINs (CPFF, CPAF, CPIF, etc.)<br /><br />" +
+        "<b>FP</b> - A firm-fixed-price type contract that includes one or more fixed price type CLINs (FFP, FPIF, FPAF, FFLE, etc.)<br /><br />" +
+        "<b>Hybrid</b> - A contract that has multiple CLINs with different contract types (combination of two or more of the following: CP, FP, T&M).<br /><br />" +
+        "<b>IDIQ</b> - An indefinite-quantity contract provides for an indefinite quantity, within stated limits, of supplies or services during a fixed period. " +
+        "Only used for unfunded 'parent' contract.<br /><br />" +
+        "<b>IWTA</b> - Intra-Lockheed Martin Work Transfer Agreement between two LM Business Areas (e.g. SSC and RMS).<br /><br />" +
+        "<b>Other</b> - A contract that does not fit into one of the other categories (e.g., BAA, BOA, OTA, etc.)<br /><br />" +
+        "<b>T&M</b> - A time-and-materials type contract provides for acquiring supplies or services on the basis of- (1) Direct labor hours at specified fully " +
+        "burdened fixed hourly; and (2) Actual cost for materials (includes labor hour contracts)<br /><br />" +
+        "<b>OTA</b> - Under a cost share agreement the requesting agency funds a portion of the effort as \"reimbursable IRAD\"";
+}
+<script type="text/javascript">
+
+    var ProposalInfoWidget;
+    $(function () {
+        var readOnly = @Model.IsReadOnly;
+        var previousProposalClass = '';
+
+        var InfoWidget = {};
+        InfoWidget.ContextID = "proposalInformationSection";
+        InfoWidget.IsModule = true;
+        InfoWidget.isReadOnly = readOnly;
+
+        $('select[name="ProposalType"]').val(@((int)Model.ProposalType));
+        $('select[name="CustomerType"]').val(@((int)Model.CustomerType));
+        $('select[name="ISGSRole"]').val(@((int)Model.ISGSRole));
+        $('select[name="RequestType"]').val(@(Model.RequestType.HasValue ? ((int)Model.RequestType).ToString() : string.Empty));
+        $('select[name="ContractTypeGroup"]').val(@(Model.ContractTypeGroup));
+
+        if (readOnly) {
+            //hide dd/mm/yyyy placeholder
+            $('input[placeholder="mm/dd/yyyy"]').each(function() {
+                $(this).attr('placeholder', '');
+            });
+        }
+        // Store the previous proposal class when the Proposal Class field is focused.
+        $('select[name="ProposalClass"]').on('focus', function () {
+            previousProposalClass = $('select[name="ProposalClass"]').val();
+        });
+
+        // Process changes to the Proposal Class field.
+        $('select[name="ProposalClass"]').on('change', function () {
+            var currentProposalClass = $('select[name="ProposalClass"]').val();
+            // If the Proposal Class was changed to 'Forecasted', fire the change event.  For existing Proposals, this will
+            // prompt the user before allowing the change (and revert the change if necessary).
+            if (currentProposalClass != previousProposalClass && $('select[name="ProposalClass"] option:selected').text() === '@Constants.PROPOSAL_CLASS_FORECASTED') {
+                var revertedValue = previousProposalClass;  // This is written to a new variable because previousProposalClass is updated (onFocus) prior to the callback being executed and thus it would not revert the value properly.
+                $(document).trigger('CHANGE_PROPOSAL_CLASS', function () { $('select[name="ProposalClass"]').val(revertedValue); previousProposalClass = revertedValue; });
+            }
+            else {
+                // Change was to a non-Forecasted value, so show the appropriate fields.
+                $(document).trigger('SHOW_STANDARD_PROPOSAL_FIELDS');
+                previousProposalClass = $('select[name="ProposalClass"]').val();
+            }
+        });
+
+        ProposalInfoWidget = new GenWidget(InfoWidget);
+
+        ProposalInfoWidget.getElement('input[name="anticipatedDeliveryDate"]').data('previousDateText', '@Model.AnticipatedDeliveryDate');
+        ProposalInfoWidget.getElement('input[name="anticipatedDeliveryDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                ProposalIndexWidget.setDirty("proposalForm");
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
+        ProposalInfoWidget.getElement('input[name="revisedSubmittalDate"]').data('previousDateText', '@Model.RevisedSubmittalDate');
+        ProposalInfoWidget.getElement('input[name="revisedSubmittalDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                ProposalIndexWidget.setDirty("proposalForm");
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
+        ProposalInfoWidget.getElement('input[name="rfpIssuedDate"]').data('previousDateText', '@Model.RFPIssuedDate');
+        ProposalInfoWidget.getElement('input[name="rfpIssuedDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                ProposalIndexWidget.setDirty("proposalForm");
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
+        ProposalInfoWidget.getElement('input[name="rfpReceivedDate"]').data('previousDateText', '@Model.RFPReceivedDate');
+        ProposalInfoWidget.getElement('input[name="rfpReceivedDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                ProposalIndexWidget.setDirty("proposalForm");
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
+        // skip datepicker icons when tabbing
+        ProposalInfoWidget.getElement('.ui-datepicker-trigger').attr('tabindex', '-1');
+        ProposalInfoWidget.getElement('.ui-datepicker-trigger').on('blur', function() {
+            $(this).attr('tabindex', '-1');
+        });
+
+        // On lose focus, adds thousand comma separator for dollar amount input field.
+        ProposalInfoWidget.getElement('input[name="EstimatedProposalValue"]').change(function () {
+            var dollarAmount = ProposalInfoWidget.getElement('input[name="EstimatedProposalValue"]').val().replace(/\,/g, "");
+
+            ProposalInfoWidget.CommaSeparator(dollarAmount);
+        });
+
+        // Formats dollar amount value by adding comma separator, when applicable.
+        ProposalInfoWidget.CommaSeparator = function (dollarAmount) {
+            GenTRAC.numericCommaSeparator(ProposalInfoWidget, dollarAmount, 'input[name="EstimatedProposalValue"]', readOnly);
+        }
+
+        ProposalInfoWidget.CommaSeparator(@(Model.EstimatedProposalValue));
+
+        if (readOnly) {
+            // remove calendar link
+            $(".ui-datepicker-trigger").each(function() {
+                $(this).hide();
+            });
+
+            // display contract type as disabled select box
+            $('#ContractType').next('.replacedWidgetText').hide();
+            $('#ContractType').addClass('ignore-dirty');
+            $('#ContractType').removeClass('display-none');
+            $('#ContractType option').attr('disabled', 'disabled');
+            $('#ContractType option:selected').css('background-color', '#D0D0D0');
+
+            // display cost elements as disabled select box
+            $('#CostElements').next('.replacedWidgetText').hide();
+            $('#CostElements').addClass('ignore-dirty');
+            $('#CostElements').removeClass('display-none');
+            $('#CostElements option').attr('disabled', 'disabled');
+            $('#CostElements option:selected').css('background-color', '#D0D0D0');
+
+            ProposalInfoWidget.getElement('select[name=ProposalType]').next('.replacedWidgetText').html('@Model.ProposalTypeText');
+            ProposalInfoWidget.getElement('select[name=RequestType]').next('.replacedWidgetText').html('@Model.RequestTypeText');
+            ProposalInfoWidget.getElement('select[name=ProposalClass]').next('.replacedWidgetText').html('@Model.ProposalClassText');
+
+            ProposalInfoWidget.getElement('select[name=CustomerType]').next('.replacedWidgetText').html('@Model.CustomerType.GetDescription()');
+            ProposalInfoWidget.getElement('select[name=ISGSRole]').next('.replacedWidgetText').html('@Model.ISGSRole.GetDescription()');
+            ProposalInfoWidget.getElement('select[name=ContractTypeGroup]').next('.replacedWidgetText').html('@Model.ContractTypeGroup.GetDescription()');
+        }
+
+        ProposalInfoWidget.getElement('select[name="ContractTypeGroup"]').change(function () {
+            var dataToSend = {};
+            dataToSend.contractTypeGroup = ProposalInfoWidget.getElement('select[name="ContractTypeGroup"]').val();
+            dataToSend.proposalId = ProposalInfoWidget.getElement('input[name="ProposalID"]').val();
+            dataToSend.isScheduleProposal = $('input[name=IsScheduleProposal]:checked').val();
+
+            dataToSend = JSON.stringify(dataToSend);
+            $.ajax({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.PROPOSAL',
+                    action: '@WebConstants.Action.PROPOSAL_FILTER_CONTRACT_TYPES'}),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'html',
+                data: dataToSend,
+                success: function (response) {
+                    var element = ProposalInfoWidget.getElement('select[name="ContractType"]')
+                    element.html(response);
+                    element.focus();
+                    $('#InactiveContractTypes').hide();
+                }
+            });
+        });
+
+        // update to add/remove the checked attribute for each radio button change, as ie won't detect dynamic changes by the user when printing
+        ProposalInfoWidget.getElement('input[type="radio"]').change(function () {
+
+            // set the checked attribute for the checked radio button
+            GenTRAC.SetCheckAttr(this);
+
+            var responseId = this.id;
+            var row = $(this).parent();
+
+            // find all radio buttons in current row and remove its checked attribute, if it doesn't match the current selection
+            $(row).find(".radio").each(function() {
+                if(this.id != responseId)
+                    $(this).removeAttr('checked');
+            });
+
+            if (responseId == 'ScheduleProposal-Yes' || responseId == 'ScheduleProposal-No'){
+                ProposalInfoWidget.IDIQChanged(false);
+            }
+        });
+
+        ProposalInfoWidget.IDIQChanged = function (isStartup) {
+            var isScheduleProposal = $('input[name=IsScheduleProposal]:checked').val();
+            var IDIQContractGroup = $('#ContractTypeGroup option[value="@(Constants.PTM_IDIQ_VALUE)"]');
+            if (isScheduleProposal === "true"){
+                if (!isStartup){
+                    var span = IDIQContractGroup.parent();
+                    var opt = IDIQContractGroup;
+                    if(IDIQContractGroup.parent().is('span')) {
+                        opt.show();
+                        $(span).replaceWith(opt);
+                    }
+
+                    $('#ContractTypeGroup').val(@(Constants.PTM_IDIQ_VALUE));
+                }
+            } else if (isScheduleProposal === "false") {
+                if (IDIQContractGroup.is('option') && (!IDIQContractGroup.parent().is('span'))){
+                    // The span wrapper is needed because hide/show does not work in IE on select option
+                    var wrapper = '<span>'; 
+                    IDIQContractGroup.wrap(wrapper).hide();
+                }
+            }
+
+            // reset the values in the group (in case we need to show/hide IDIQ)
+            ProposalInfoWidget.getElement('select[name="ContractTypeGroup"]').change();
+        };
+
+        // Hide unneeded fields after all widgets are loaded.
+        ProposalInfoWidget.HideUnneededFields = function () {
+            if ('@Model.ProposalClassText' === '@Constants.PROPOSAL_CLASS_FORECASTED') {
+                $(document).trigger('HIDE_STANDARD_PROPOSAL_FIELDS');
+            }
+        };
+    });
+</script>
+
+<div id="proposalInformationSection" class="composite module full">
+    <div class="module-header-data">Proposal Information</div>
+    <div class="module-content-data expanded-content">
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_INFO_FORM, name = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_INFO_FORM }))
+        {
+            <input name="ProposalID" value="@Model.ProposalID" type="hidden"/>
+            <input name="UpdateDateLong" value="@Model.UpdateDateLong" type="hidden" />
+            <input name="ProposalTrackingNumber" value="@Model.ProposalTrackingNumber" type="hidden"/>
+            <input name="ForecastedTrackingNumber" value="@Model.ForecastedTrackingNumber" type="hidden" />
+            <input name="ProposalStatus" value="@Model.ProposalStatus" type="hidden"/>
+            <div class="form-row">
+                <div class="form-label">
+                    Proposal Title*
+                </div>
+                <div class="form-element">
+                    @Html.TextBoxFor(model => model.ProposalTitle, new { maxlength = 75, style = "width:650px" })
+                    @Html.HiddenFor(model => model.DocumentId)
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    Proposal Type*
+                </div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.ProposalType, Model.ProposalTypesList, new { name = "proposalType" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    <span helptext="For IWTAs and subcontracts, enter the immediate customer as well as the end customer (e.g., LM-RMS (Navy), Raytheon (FAA), etc.). Enter &quot;Classified&quot; for classified customers.">Customer*</span>
+                </div>
+                <div class="form-element">
+                    @Html.TextBoxFor(model => model.Customer, new { maxlength = 50, size = 50 })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    <span helptext="For IWTAs and subcontracts, select the customer type applicable to the end customer (e.g. IWTA to RMS, end customer = Navy, select &quot;Federal Government&quot;; Subcontract to Boeing, end customer = Missile Defense Agency (MDA), select &quot;Federal Government&quot;, etc.).">End Customer Type*</span>
+                </div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.CustomerType, Model.CustomerTypesList, new { name = "CustomerType" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    Proposal Class*
+                </div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.ProposalClass, Model.ProposalClassesList, new { name = "ProposalClass" })
+                </div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">
+                    Type of Request*
+                </div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.RequestType, Model.RequestTypesList, new { name = "RequestType" })
+                </div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">
+                    <span helptext="This field is to capture the reference number associated with the opportunity that has been provided by the customer (i.e., RFP #, RFQ #, BAA #, ECP #, or any other identification number).  If no number provided, indicate &quot;N/A&quot;.">RFP #*</span>
+                </div>
+                <div class="form-element">
+                    @Html.TextBoxFor(model => model.RFPNumber, new { maxlength = 40, size = 40 })
+                </div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">
+                    <span helptext="Date of the (end) customer request (request could be RFP/RFQ, BAA, letter, email, etc.)">RFP Issued Date*</span>
+                </div>
+                <div class="form-element">
+                    <input name="rfpIssuedDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.RFPIssuedDate" maxlength="10"/>
+                </div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">
+                    <span helptext="Date the customer request was received by LM Contracts/BD (if unknown, enter the &quot;RFP Issued Date&quot;)">RFP Received Date*</span>
+                </div>
+                <div class="form-element">
+                    <input name="rfpReceivedDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.RFPReceivedDate" maxlength="10"/>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    Anticipated Delivery Date*
+                </div>
+                <div class="form-element">
+                    <input name="anticipatedDeliveryDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.AnticipatedDeliveryDate" maxlength="10"/>
+                </div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">
+                    <span helptext="Customer agreed to date.">Revised Submittal Date</span>
+                </div>
+                <div class="form-element">
+                    <input name="revisedSubmittalDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.RevisedSubmittalDate" maxlength="10" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    Space Role*
+                </div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.ISGSRole, Model.ISGSRolesList, new { name = "ISGSRole" })
+                </div>
+            </div>
+           <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">
+                    <span helptext="e.g., GSA Schedule (IT70), GWAC (Alliant), Agency-specific IDIQ (EAGLE)">
+                        Is this proposal for a new IDIQ contract<br />
+                        vehicle or a task order under an existing <br />
+                        IDIQ vehicle?*
+                    </span>
+                </div>
+                <div class="form-element">
+                    <div>
+                     <label for="ScheduleProposal-Yes">Yes</label>
+                     <input type="radio" class="radio" id="ScheduleProposal-Yes" value="true" name="IsScheduleProposal" @if (Model.ProposalID > 0 && Model.IsScheduleProposal.HasValue && Model.IsScheduleProposal.Value) {<text>checked</text>} />
+                     <label for="ScheduleProposal-No">No</label>
+                     <input type="radio" class="radio" id="ScheduleProposal-No" value="false" name="IsScheduleProposal" @if (Model.ProposalID > 0 && Model.IsScheduleProposal.HasValue && !Model.IsScheduleProposal.Value) {<text>checked</text>} />
+                   </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    <span helptext="@contractTypeGroupHelpText">Contract Type Group*</span>
+                </div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.ContractTypeGroup, Model.ContractTypeGroupsList, new { name = "ContractTypeGroup" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    <span helptext="Press Ctrl and use mouse to select multiple contract types.">Contract Type*</span>
+                </div>
+                <div class="form-element">
+                    <select id="ContractType" name="ContractType" size="7" multiple="multiple" style="min-width:50px;">
+                        @Html.Raw(Model.ContractTypeHtmlOptions)
+                    </select>
+                </div>
+                <div class="form-label red" id="InactiveContractTypes" style="margin-left: 10px; max-width:350px;">
+                    @Html.Raw(Model.InactiveContractTypes)
+                </div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">
+                    <span helptext="Press Ctrl and use mouse to select multiple contract types.">Elements of Cost*</span>
+                </div>
+                <div class="form-element">
+                    @Html.ListBoxFor(model => model.CostElements, new MultiSelectList(Model.CostElementsList, "ID", "Name", Model.CostElements), new { size = "7" })
+                </div>
+                <div class="form-label red" style="margin-left: 10px; max-width:350px;">
+                    @Html.Raw(Model.InactiveCostElements)
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    <span helptext="Enter in U.S. whole dollars">Estimated Proposal Value ($) *</span>
+                </div>
+                <div class="form-element">
+                    @Html.TextBoxFor(model => model.EstimatedProposalValue, new { style = "text-align: right", name = "EstimatedProposalValue" })
+                </div>
+            </div>
+        }
+    </div>
+</div>

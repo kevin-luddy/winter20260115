@@ -1,0 +1,187 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>PTM</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{f02b9dfb-97ca-4f13-9d4d-79186413cba9}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>PTM</RootNamespace>
+    <AssemblyName>PTM</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+    <AutoCreateStatistics>False</AutoCreateStatistics>
+    <AutoUpdateStatistics>False</AutoUpdateStatistics>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="Object Scripts" />
+    <Folder Include="Object Scripts\Stored Procedures" />
+    <Folder Include="Release Scripts" />
+    <Folder Include="Release Scripts\Release 1.0" />
+    <Folder Include="Release Scripts\Release 1.1" />
+    <Folder Include="_Other Scripts" />
+    <Folder Include="Object Scripts\Functions" />
+    <Folder Include="Object Scripts\Table Based Processing" />
+    <Folder Include="Release Scripts\Release 1.2" />
+    <Folder Include="_Full Script Files For Specific Versions" />
+    <Folder Include="Object Scripts\1 Views" />
+    <Folder Include="Release Scripts\Release 1.3" />
+    <Folder Include="Release Scripts\Release 1.4" />
+    <Folder Include="Release Scripts\Release 2018.1" />
+    <Folder Include="Release Scripts\Release 2018.2" />
+    <Folder Include="_Full Script Files For Specific Versions\Older" />
+    <Folder Include="Release Scripts\Release 2018.3" />
+    <Folder Include="Object Scripts\X_Data Cleanup" />
+    <Folder Include="Release Scripts\Release 2018.5" />
+    <Folder Include="Release Scripts\Release 2018.6" />
+    <Folder Include="Release Scripts\Release 2018.7" />
+    <Folder Include="Release Scripts\Release 2018.8" />
+    <Folder Include="Release Scripts\Release 2019.2" />
+    <Folder Include="Release Scripts\Release 2019.4" />
+    <Folder Include="Release Scripts\Release 2019.7" />
+    <Folder Include="Release Scripts\Release 2019.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Object Scripts\Stored Procedures\upsertProposalChecklistTemplate.sql" />
+    <Build Include="Release Scripts\Release 1.0\1 - Release 1.0 Script.sql" />
+    <Build Include="Release Scripts\Release 1.1\1 - Release 1.1 Script.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteProposalClass.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteProposalType.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteTypeOfRequest.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertProposal.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertProposalClass.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertProposalType.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertRequestTypes.sql" />
+    <Build Include="Object Scripts\Functions\udfCreateCommaSeparatedList.function.sql" />
+    <Build Include="Object Scripts\Stored Procedures\archiveProposal.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\archiveProposalCount.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\CreatePARChecklistReport.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\CreateProposalActivityReport.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\CreateProposalLogReport.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deletegenTRACUser.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteProposal.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteProposalRolesByProposalID.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteProposalRolesByUserID.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteSystemRoleByID.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\getMyFunctionalTree.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\getMyProposals.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\insertProposalUserRole.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\insertSystemUserRole.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\rsCentralEstimator.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\rsContractType.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\rsCustomerType.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\rsLineOfBusiness.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\rsProposalStatus.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\rsSegment.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\rsYear.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\unlockProposal.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\updateProposalInformation.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\updateProposalPARChecklist.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\updateProposalPPRChecklist.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\updateProposalStatus.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertgenTRACUser.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertProposalChecklist.proc.sql" />
+    <Build Include="Object Scripts\Table Based Processing\tt_ProposalContractTypeXREF.udtt.sql" />
+    <Build Include="Release Scripts\Release 1.2\1 - Release 1.2 Script.sql" />
+    <Build Include="Object Scripts\1 Views\vwProposalLogReport.view.sql" />
+    <Build Include="Object Scripts\1 Views\genTracData.view.sql" />
+    <Build Include="Object Scripts\1 Views\vwProposalActivityReport.view.sql" />
+    <None Include="Release Scripts\Release 1.4\Release 1.4 Script.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteAttachment.proc.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertAttachment.sql" />
+    <None Include="Release Scripts\Release 2018.2\1 - Release 2018.2 Script.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 1.3 Generated On 6_12_2017.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 1.4 Generated On 11_27_2017.sql" />
+    <Build Include="Object Scripts\Stored Procedures\updateProposalForecastEmailSent.proc.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2018.1 Generated On 1_30_2018.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2018.2 Generated On 2_19_2018.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteChecklist.sql" />
+    <None Include="Object Scripts\X_Data Cleanup\DeleteErrorLogs.sql" />
+    <None Include="Release Scripts\Release 2018.5\1 - Release 2018.5 Script.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertContractType.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertContractTypeGroup.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteContractType.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteContractTypeGroup.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertLOB.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertProgramArea.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteLOB.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteProgramArea.sql" />
+    <Build Include="Object Scripts\1 Views\vwProgramArea.view.sql" />
+    <Build Include="Object Scripts\Stored Procedures\rsProgramArea.proc.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2018.3 Generated On 4_4_2018.sql" />
+    <None Include="Release Scripts\Release 2018.6\1 - Release 2018.6 Script.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2018.5 Generated On 6_13_2018.sql" />
+    <Build Include="Release Scripts\Release 2018.7\1 - Release 2018.7 Script.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2018.6 Generated On 7_23_2018.sql" />
+    <Build Include="Release Scripts\Release 2018.8\1 - Release 2018.8 Script.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2018.7 Generated On 10_9_2018.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2018.8 Generated On 10_29_2018.sql" />
+    <Build Include="Object Scripts\1 Views\vwDfarsChecklistResponseReport.sql" />
+    <Build Include="Object Scripts\Stored Procedures\CreateDfarsChecklistResponseReport.proc.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2019.2 Generated On 5_21_2019.sql" />
+    <Build Include="_Full Script Files For Specific Versions\PTM - Sql Script For Release 2019.4 Generated On 7_1_2019.sql" />
+    <None Include="Release Scripts\Release 2019.7\Release 2019.7.sql" />
+    <None Include="Release Scripts\Release 2019.8\Release 2019.8.sql" />
+    <Build Include="_Full Script Files For Specific Versions\PTM - Sql Script For Release 2019.8 Generated On 12_2_2019.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Release Scripts\Release 1.3\Release 1.3 Script.sql" />
+    <None Include="Release Scripts\Release 1.3\Release 1.3.2 Script.sql" />
+    <None Include="Release Scripts\Release 2018.1\1 - Release 2018.1 Script.sql" />
+    <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />
+    <None Include="Object Scripts\Stored Procedures\UpdateDbVersion.sql" />
+    <None Include="Release Scripts\Release 2018.3\1 - Release 2018.3 Script.sql" />
+    <None Include="Release Scripts\Release 2019.2\Release 2019.2.sql" />
+    <None Include="Release Scripts\Release 2019.4\Release 2019.4.sql" />
+    <None Include="Object Scripts\Table Based Processing\DataMart.sql" />
+  </ItemGroup>
+</Project>

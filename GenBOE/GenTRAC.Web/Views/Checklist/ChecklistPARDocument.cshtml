@@ -1,0 +1,290 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Checklist.ChecklistProposalAdequacyReviewDocumentModelView
+@using GenTRAC.ActionLogic.Validation
+@{
+    ViewBag.Title = "Proposal Adequacy Review (PAR) Document";
+}
+<script type="text/javascript">
+
+    var ChecklistPARDocumentDataWidget;
+
+    $(function () {
+        var readOnly = @Model.IsReadOnly;
+        var DisplayPARSection =  @Model.ShouldDisplayPARSection;
+        var ChecklistResponse = '@Model.ShowChecklistResponse';
+        var ShowExportButton = '@Model.ShowExportButton';
+        var PARDocumentDataWidgetConfig = {};
+        PARDocumentDataWidgetConfig.ContextID = "checklistPARDocumentSection";
+        PARDocumentDataWidgetConfig.IsModule = true;
+        PARDocumentDataWidgetConfig.isReadOnly = readOnly;
+
+        ChecklistPARDocumentDataWidget = new GenWidget(PARDocumentDataWidgetConfig);
+
+        ChecklistPARDocumentDataWidget.LoadDataPlaceholderID = 'checklistPARDocumentPlaceholder';
+
+        ChecklistPARDocumentDataWidget.on('HIDE_PAR_SECTION', function (e, params) {
+            $('#checklistPARDocumentSection').addClass('display-none');
+
+            // all previous radio button selections should be cleared
+            $('#checklistPARDocumentSection :input[type=radio]').each(function () {
+                this.checked = false;
+            });
+
+            // all previous comments should be cleared
+            $('#PARDocumentPricerComment').val('');
+            $('[name=PARPricerComment]').val('');
+            $('#PARDocumentPeerReviewerComment').val('');
+            $('[name=PARPeerComment]').val('');
+
+            // all previous page numbers should be cleared
+            $('.ChecklistPageNumber').each(function () {
+                $(this).val('');
+            });
+
+            // all previous row comments should be cleared
+            $('.ChecklistPricerComment').each(function () {
+                $(this).val('');
+            });
+
+            $('.ChecklistPeerComment').each(function () {
+                $(this).val('');
+            });
+        });
+
+        if (DisplayPARSection)
+        {
+            $('#checklistPARDocumentSection').removeClass('display-none');
+            var previousCheckboxChecked = false;
+            $('input[id^=QPAR]').each(function () {
+                if ($(this).attr('checked') != undefined) {
+                    managePageNumberAndCommentValues(this, false);
+                } else if (!previousCheckboxChecked && this.id.match(/No/)) { 
+                    // If both yes and no are unchecked, hide both text areas
+                    var rowNum = this.id.match(/\d+/);
+                    $("textarea[id^=" + "PricerRowCommentText".concat(rowNum) + "]").hide();
+                    $("textarea[id^=" + "PricerPageNumberText".concat(rowNum) + "]").hide();
+                }
+
+                previousCheckboxChecked = $(this).attr('checked') != undefined;
+            });
+
+            $('.ColumnContent .replacedWidgetText').removeClass('replacedWidgetText');
+        }
+        else {
+            $('#checklistPARDocumentSection').addClass('display-none');
+        }
+
+        var pricerEdit = false;
+        var peerEdit = false;
+        if (ChecklistResponse == 'Pricer' && !PARDocumentDataWidgetConfig.isReadOnly) {
+            $('#PARDocumentPeerReviewerComment').hide();
+            var replacementText = GenHelper.htmlEncode($("#PARDocumentPeerReviewerComment").val());
+            replacementText = GenHelper.htmlDecode(replacementText);
+            $('#PARDocumentPeerReviewerComment').after('<div class="replacedWidgetText">' + replacementText + '</div>');
+            pricerEdit = true;
+        }
+        else if (ChecklistResponse == 'Peer' && !PARDocumentDataWidgetConfig.isReadOnly) {
+            $('#PARDocumentPricerComment').hide();
+            var replacementText = GenHelper.htmlEncode($("#PARDocumentPricerComment").val());
+            replacementText = GenHelper.htmlDecode(replacementText);
+            $('#PARDocumentPricerComment').after('<div class="replacedWidgetText">' + replacementText + '</div>');
+            peerEdit = true;
+        }
+
+        // Used for print to pdf, display textarea content in a div to preserve textarea overflow text.
+        if (pricerEdit) {
+            var pricerComment = ChecklistPARDocumentDataWidget.getElement('#PARDocumentPricerComment').val().replace(/\n/g, '<br/>');
+            ChecklistPARDocumentDataWidget.getElement('#PrintPARPricerComment').html(pricerComment);
+
+            ChecklistPARDocumentDataWidget.getElement('#PARDocumentPricerComment').change(function () {
+                $('[name=PARPricerComment]').val(this.value);
+                var pricerComment = ChecklistPARDocumentDataWidget.getElement('#PARDocumentPricerComment').val().replace(/\n/g, '<br/>');
+                ChecklistPARDocumentDataWidget.getElement('#PrintPARPricerComment').html(pricerComment);
+            });
+        } else {
+            // read-only div will already be visible so clear the special print div
+            ChecklistPARDocumentDataWidget.getElement('#PrintPARPricerComment').html('');
+        }
+
+        if (peerEdit) {
+            var peerComment = ChecklistPARDocumentDataWidget.getElement('#PARDocumentPeerReviewerComment').val().replace(/\n/g, '<br/>');
+            ChecklistPARDocumentDataWidget.getElement('#PrintPARPeerReviewerComment').html(peerComment);
+
+            ChecklistPARDocumentDataWidget.getElement('#PARDocumentPeerReviewerComment').change(function () {
+                $('[name=PARPeerComment]').val(this.value);
+                var peerComment = ChecklistPARDocumentDataWidget.getElement('#PARDocumentPeerReviewerComment').val().replace(/\n/g, '<br/>');
+                ChecklistPARDocumentDataWidget.getElement('#PrintPARPeerReviewerComment').html(peerComment);
+            });
+        } else {
+            // read-only div will already be visible so clear the special print div
+            ChecklistPARDocumentDataWidget.getElement('#PrintPARPeerReviewerComment').html('');
+        }
+
+        // update to add/remove the checked attribute for each radio button change, as ie won't detect dynamic changes by the user when printing
+        ChecklistPARDocumentDataWidget.getElement('#PARGrid input[type="radio"]').change(function () {
+
+            // set the checked attribute for the checked radio button
+            GenTRAC.SetCheckAttr(this);
+
+            var responseId = this.id;
+            var checked = this;
+            var row = $(this).parents('tr');
+
+            // find all radio buttons in current row and remove its checked attribute, if it doesn't match the current selection
+            $(row).find(".radio").each(function() {
+                if(this.id != responseId) {
+                    $(this).removeAttr('checked');
+                    managePageNumberAndCommentValues(checked, false);
+                }
+            });
+        });
+
+        ChecklistPARDocumentDataWidget.getElement('#PARGrid select').change(function () {
+            var value = $(this).find('option:selected')[0].value;
+            $(this)[0].setAttribute('selected', value);
+
+            var cell = $(this).parents('td');
+            var textarea = $(cell).find("textarea");
+            if (value === String(@ValidationConstants.ChecklistValidationConstants.OTHER_CANNED_RESPONSE_ID)) {
+                $(textarea).show();
+                // Trigger keyup so resizes to show full placeholder text
+                $(textarea).keyup();
+            } else {
+                $(textarea).hide();
+            }
+        });
+
+        ChecklistPARDocumentDataWidget.getElement('#PARGrid textarea.ChecklistPricerComment').focus(function () {
+            if (@Model.ChecklistVersion >= @ValidationConstants.ChecklistValidationConstants.CANNED_RESPONSE_CHECKLIST_VERSION) {
+                var value = $(this)[0].value;
+                if (value === '' || value === undefined) {
+                    $(this)[0].value = 'NA - ';
+                }
+            }
+        });
+
+        function managePageNumberAndCommentValues (response, isSaveOrSubmit)  {
+            var rowNum = response.id.match(/\d+/);
+            var pageNum = "textarea[id^=" + "PricerPageNumberText".concat(rowNum) + "]";
+            var comment = "textarea[id^=" + "PricerRowCommentText".concat(rowNum) + "]";
+            var select = "select[id^=" + "PricerRowCommentSelect".concat(rowNum) + "]";
+
+            if (response.id.match(/No/)) {
+                $(pageNum).hide();
+
+                if (@Model.ChecklistVersion >= @ValidationConstants.ChecklistValidationConstants.CANNED_RESPONSE_CHECKLIST_VERSION) {
+                    if (response.getAttribute('yesonly') === 'true') {
+                        $('#YesOnlyDialog').dialog('open');
+                        $(response).removeAttr('checked');
+                    }
+                    else if ($(select)[0].options.length > 1) {
+                        var selectedValue = document.getElementById("PricerRowCommentSelect".concat(rowNum)).getAttribute('selected');
+                        if (selectedValue == null) {
+                            // Set to empty string so "Select a response" is selected/shown
+                            selectedValue = "";
+                        }
+                        $(select)[0].value = selectedValue;
+                        $(select).show();
+
+                        // Show comment text area if "Other" is selected
+                        var selectedOption = $(select).find('option:selected')[0];
+                        if (selectedOption && selectedOption.value === String(@ValidationConstants.ChecklistValidationConstants.OTHER_CANNED_RESPONSE_ID)) {
+                            $(comment).show();
+                        } else if (isSaveOrSubmit) {
+                            // Clear comments of non-"Other" responses on save/submit
+                            $(comment).val('');
+                        } else if (readOnly && selectedOption) {
+                            var readOnlyElement = $("<div/>", {
+                                "class": "replacedWidgetText",
+                                html: selectedOption.text
+                            });
+                            $(select).after(readOnlyElement);
+                        } else {
+                            $(comment).hide();
+                        }
+                    } else {
+                        $(select).hide();
+                        $(comment).hide();
+                    }
+                } else {
+                    $(comment).show();
+                }
+
+                // erase any Page # values for No responses
+                if (isSaveOrSubmit) {
+                    $(pageNum).val('');
+                }
+            }
+
+            if (response.id.match(/Yes/)) {
+                $(comment).hide();
+                $(pageNum).show();
+                $(select).hide();
+
+                // erase any Comment values for Yes responses
+                if (isSaveOrSubmit) {
+                    $(comment).val('');
+                    $(select)[0].selectedIndex = "";
+                }
+            }
+
+            if (response.id.match(/Na/)) {
+                $(comment).show();
+                $(pageNum).show();
+            }
+        };
+
+        ChecklistPARDocumentDataWidget.updateInputValuesOnSave = function () {
+            $('[id^=QPAR]').each(function () {
+                var id = this.id;
+                if ($(this).attr('checked') == "checked") {
+                    managePageNumberAndCommentValues(this, true);
+                }
+            });
+        };
+
+        // Show the Export button when Proposal is Completed and user is a Pricer
+        if (ShowExportButton != "True") {
+            $("button[name='export-button-checklist']").hide();
+        }
+
+        if (ShowExportButton === "True" && readOnly === true) {
+            // Generation.js hides all the buttons when the page is readonly, but we still want
+            // to display the export button if ShowExportButton is true
+            $('.buttons').removeClass('display-none');
+            $("button[name='save-button']").hide();
+            $("button[name='cancel-button']").hide();
+            $("button[name='validate-button']").hide();
+        }
+
+        // define keyup event for .ColumnContent
+        $('ColumnContent').find( 'textarea' ).keyup();
+
+        // shrink or expand textarea box height
+        $('.ColumnContent').on('keyup', 'textarea', function () {
+            $(this).css('height', 'auto');
+            $(this).height( Math.max(this.scrollHeight, this.parentElement.parentElement.scrollHeight - 4) );
+            ChecklistPARDocumentDataWidget.refreshModule();
+        });
+
+        // initialize textarea heights on page load event
+        $('.ColumnContent').find( 'textarea' ).each( function () {
+            $(this).height( Math.max(this.scrollHeight, this.parentElement.parentElement.scrollHeight - 4) );
+        });
+
+        $('#YesOnlyDialog').dialog({ width: 350, modal: true, resizable: false, draggable: true, title: 'Invalid Response', autoOpen: false, buttons: [{ text: "OK", click: function () { $(this).dialog("close"); } }] });
+    });
+</script>
+
+<div id="checklistPARDocumentSection" class="composite module expanded full">
+    <div class="module-header-data">Proposal Adequacy Review (PAR) Document</div>
+    <div class="module-content-data expanded-content">
+        @if (Model.ProposalChecklistType == ProposalChecklistType.InternationalCommercial)
+        {
+            @Html.Partial("~/Views/Checklist/ChecklistInternationalCommercialPARDocument.cshtml", Model)
+        }
+        else
+        {
+            @Html.Partial("~/Views/Checklist/ChecklistDefaultPARDocument.cshtml", Model)
+        }
+    </div>
+</div>

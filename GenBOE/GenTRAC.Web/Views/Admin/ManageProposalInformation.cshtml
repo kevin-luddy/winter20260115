@@ -1,0 +1,152 @@
+﻿@{
+    ViewBag.Title = "Manage Proposal Information";
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+}
+
+<script type="text/javascript">
+    var ManageProposalInfoWidget;
+
+    $(function () {
+        var ManageProposalInfoWidgetConfig = {};
+        ManageProposalInfoWidgetConfig.ContextID = "manageProposalInfo";
+        ManageProposalInfoWidgetConfig.IsModule = true;
+
+        var FormConfigs = [];
+        FormConfigs.push({
+            ElementID: "manageProposalInfoForm",
+            Buttons: [
+            {
+                ButtonClass: 'ies',
+                ButtonText: 'Retrieve',
+                ButtonName: "retrieve-button",
+                ButtonAction: function (buttonPressed) {
+                    ManageProposalInfoWidget.RetrieveProposal(buttonPressed);
+                },
+                Stateful: false
+            }],
+            HideOCI: "true"
+        });
+      
+        $(document).keypress(function(event) {
+            var keycode = (event.keycode ? event.keycode : event.which);
+            if (keycode == 13) {
+                $("button[name='retrieve-button']").click();
+                return false;
+            }
+        });
+
+        ManageProposalInfoWidgetConfig.FormConfigs = FormConfigs;
+
+        ManageProposalInfoWidget = new GenWidget(ManageProposalInfoWidgetConfig);
+
+        ManageProposalInfoWidget.originalRefreshModule = ManageProposalInfoWidget.refreshModule;
+
+        ManageProposalInfoWidget.refreshModule = function () {
+            if (typeof (ManageProposalInfoDetailsWidget) != 'undefined') {
+                ManageProposalInfoDetailsWidget.refreshModule();
+            }
+
+            ManageProposalInfoWidget.originalRefreshModule();
+        };
+
+        ManageProposalInfoWidget.GetData = function () {
+            var dataToSave = {};
+            dataToSave.TrackingNumber = ManageProposalInfoWidget.getElement('input[name="manageTrackingNumber"]').val();
+            return dataToSave;
+        };
+
+        ManageProposalInfoWidget.RetrieveProposal = function (buttonPressed) {
+            var dataToSend = ManageProposalInfoWidget.GetData();
+            dataToSend = JSON.stringify(dataToSend);
+
+            // Make the call
+            ManageProposalInfoWidget.saveRequest({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.ADMIN',
+                    action: '@WebConstants.Action.RETRIEVE_MANAGE_PROPOSAL_TRACKING_NUMBER'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                data: dataToSend,
+                success: function (response) {
+                    ManageProposalInfoWidget.ProcessRetrieveStatus(response.Result);
+                }
+            }, buttonPressed);
+        };
+
+        ManageProposalInfoWidget.ProcessRetrieveStatus = function (result) {
+            if (result == "not_found") {
+                ManageProposalInfoWidget.ToggleNotFound(true);
+                ManageProposalInfoWidget.ToggleDetails(false);
+            }
+            else if (result != "") {
+                ManageProposalInfoWidget.ToggleNotFound(false);
+                ManageProposalInfoWidget.ToggleDetails(true);
+                ManageProposalInfoWidget.ReloadDetails(result);
+            }
+        };
+
+        ManageProposalInfoWidget.ReloadDetails = function (proposalId) {
+            $.ajax({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.ADMIN',
+                    action: '@WebConstants.Action.DISPLAY_MANAGE_PROPOSAL_INFO_DETAILS',
+                    id: proposalId
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'html',
+                success: function (response) {
+                    ManageProposalInfoWidget.getElement('#manageProposalInfoDetailsPlaceholder').html(response);
+                    ManageProposalInfoWidget.refreshModule();
+                }
+            });
+        }
+
+        // toggle Not Found message visibility
+        ManageProposalInfoWidget.ToggleNotFound = function (showElement) {
+            var notFoundElement = ManageProposalInfoWidget.getElement('.manageProposalInfoRetrieveNotFound');
+            if (showElement) {
+                notFoundElement.show();
+            } else {
+                notFoundElement.hide();
+            }
+        }
+
+        // toggle Proposal Details visibility
+        ManageProposalInfoWidget.ToggleDetails = function (showElement) {
+            var detailsElement = ManageProposalInfoWidget.getElement('#manageProposalInfoDetailsSection');
+            if (showElement) {
+                detailsElement.show();
+            } else {
+                detailsElement.hide();
+            }
+        }
+
+        ManageProposalInfoWidget.ToggleDetails(false);
+        ManageProposalInfoWidget.ToggleNotFound(false);
+        ManageProposalInfoWidget.getElement('input[name="manageTrackingNumber"]').val('');
+    });
+</script>
+
+<div id="manageProposalInfo" class="module full">
+    <div class="module-header-data">
+        Manage Proposal Information
+    </div>
+    <div class="module-content-data" style="width: 982px">
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.AdminControllerLogic.MANAGE_PROPOSAL_INFO_FORM, name = GenTRAC.ActionLogic.AdminControllerLogic.MANAGE_PROPOSAL_INFO_FORM }))
+        {
+            <div class="form-row">
+                <div class="form-label">
+                    Tracking #:
+                </div>
+                <div class="form-element" style="padding-right: 10px;">
+                    <input type="text" name="manageTrackingNumber" size="12" maxlength="10" class="ignore-dirty" />
+                </div>
+                <div class="button-container"></div>
+                <div class="manageProposalInfoRetrieveNotFound red" style="display: none">Tracking # Not Found</div>
+            </div>
+        }
+    </div>
+    <div id="manageProposalInfoDetailsPlaceholder"></div>
+</div>

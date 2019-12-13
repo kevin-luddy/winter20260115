@@ -1,0 +1,1122 @@
+﻿/* Styles for basic forms
+-----------------------------------------------------------*/
+.header
+{
+    height: 60px;
+}
+
+.lmproprietary_extrabanner
+{
+    color: darkred;
+    display: block;
+}
+
+input[type=radio] {
+    padding: 0;
+}
+
+.radio_no {
+    border-right: 1px solid black;
+    padding: 0px;
+}
+
+.editor-label {
+    margin: 1em 0 0 0;
+}
+
+.editor-field {
+    margin: 0.5em 0 0 0;
+}
+
+.group
+{
+    border:1px;
+    border-style: solid;
+    border-color: black;
+}
+
+.whitetext
+{
+    color: white;
+}
+
+.nav-bar.left {
+    width: 780px;
+}
+
+.nav-bar.right {
+    width: 125px;
+    float:right;
+}
+
+.grid td > * { 
+    display: inline; 
+    white-space: normal; 
+} 
+
+#managePermissionsGridForm .grid td > * { 
+    display: block; 
+}
+
+.form-element div
+{
+    margin-top: 3px;
+}
+
+#BOEToolName, .free-text,
+#PricingToolName, .free-text
+{
+    padding: 3px;
+    margin-left: 5px;
+    width: 200px;
+    height: 10px;
+}
+
+#ProposalLocationName, .free-text 
+{
+    width: 172px;
+}
+
+#BOETool .select,
+#PricingTool .select,
+.selection-width 
+{
+    width: 119px;
+}
+
+#proposalInfoForm .form-label,
+#proposalGeneralInfoForm .form-label
+{
+    min-width: 250px;
+}
+
+#proposalInfoForm .help-icon,
+#proposalGeneralInfoForm .help-icon,
+#proposalUserInfoForm .help-icon,
+#checklistGeneralInfoForm .help-icon,
+#checklistProposalPricingDataForm .help-icon
+{
+    margin-top: 1px;
+}
+
+#proposalApprovalsForm .form-label {
+    min-width: 332px;
+}
+
+#proposalApprovalsForm select {
+    width: 287px;
+}
+
+#proposalUserInfoForm .form-label {
+    min-width: 180px;
+}
+
+#proposalUserInfoForm .form-element {
+    min-width: 150px;
+}
+
+#GenBoeWorkspaceCreatorNtid {
+    width: 287px;
+    height: 18px;
+}
+
+.ChecklistPageNumber
+{
+    border: none;
+    padding: 0px;
+    width: 100%;
+}
+
+.ChecklistPricerComment,
+.ChecklistPeerComment
+{
+    border: none;
+    padding: 0px;
+    width: 100%;
+}
+
+.CannedResponseSelect 
+{
+    width: 100%;
+}
+
+.ChecklistPricerResponse,
+.ChecklistPeerResponse 
+{
+    width: 100%;
+}
+
+.ChecklistPricerResponse option[disabled]:first-child,
+.ChecklistPeerResponse option[disabled]:first-child {
+    display: none;
+}
+
+.ColumnContent > div,
+.ColumnContent > textarea 
+{
+    resize: none;
+    overflow-y: hidden;
+    word-wrap: break-word;
+}
+
+#goToProposal
+{
+    float: right;
+}
+
+#goToProposalForm {
+    word-spacing:normal;
+    height:30px;
+    text-align:right;
+    color: #333333;
+}
+
+#goToProposalForm .form-label
+{
+    margin-top: 6px;
+}
+
+#goToProposalForm .help-icon {
+    margin-top: 6px;
+    margin-right: 4px;
+}
+
+#goToProposalForm .help-dialog-text
+{
+    text-align: left;
+}
+
+#proposalFilterHeaderData .help-icon {
+    margin: 10px 0 0 3px;
+}
+
+#newRevisionForm .form-label {
+    min-width: 170px;
+}
+
+#manageProposalInfoForm .form-label {
+    min-width: 75px;
+    width: 75px;
+    vertical-align: inherit;
+}
+
+#manageProposalInfoDetailsForm .form-label {
+    min-width: 190px;
+}
+
+.homeProposal > div
+{
+    display: inline-block;
+    vertical-align: central;
+    height: 30px;
+}
+
+.homeProposal .search-box
+{
+    width: 350px;
+    text-align: right;
+}
+
+.homeProposal .totalProposals
+{
+    width: 258px;
+    max-width: 258px;
+    text-align: center;
+    display: table-cell;
+    vertical-align: middle;
+    margin-left: auto;
+    margin-right: auto;
+    padding-bottom: 6px;
+}
+
+.proposalFilters > div
+{
+    display: inline-block;
+    vertical-align: central;
+    height: 30px;
+}
+
+#proposalFiltersSection .help-dialog-text
+{
+    line-height: 18px;
+    font-weight: normal;
+    font-size: 11px;
+    color: #333333;
+}
+
+#homeProposalTable .help-dialog
+{
+    max-width: 400px;
+}
+
+#homeProposalTable .help-dialog-text
+{
+    font-weight: normal;
+    font-size: 11px;
+    color: #333333;
+    cursor: text;
+}
+
+table#PPRGrid th  { 
+    font-weight: bold;
+} 
+
+#PPRGrid tr { 
+    border-bottom: thin solid;
+} 
+
+#PARGrid tr  { 
+    border-bottom: thin solid;
+}
+
+#PPRGrid div.replacedWidgetText {
+    width: 860px;
+    word-wrap: break-word;
+}
+
+#PARGrid div.replacedWidgetText {
+    width: 860px;
+    word-wrap: break-word;
+}
+
+.goToProposal > div
+{
+    display: inline-block;
+}
+
+#manageProposalInfoForm > div > div
+{
+    display: inline-block;
+}
+
+.manageProposalInfoRetrieveNotFound
+{
+    font-weight: bold;
+}
+
+.red
+{
+    color: red;
+}
+
+.manageProposalInfoDetailsHeader {
+    width: 900px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+#PriceTableOne td,
+#PriceTableTwo td,
+#PriceTableThree td {
+    border:thin solid;
+}
+
+#PriceTableOne th,
+#PriceTableTwo th,
+#PriceTableThree th {
+    font-weight: bold;
+    border:thin solid;
+}
+
+#PriceTableOne td input,
+#PriceTableTwo td input,
+#PriceTableThree td input {
+    border:none;
+}
+
+.hiddenColumn 
+{
+    background: none !important;
+    border: none !important;
+}
+
+#checklistProposalPricingDataSection .help-icon {
+    margin-top:2px;
+}
+
+#checklistProposalPricingDataSection .help-dialog-text
+{
+    line-height: 18px;
+    font-weight: normal;
+    font-size: 11px;
+}
+
+.link-header .module-header-data {
+    font-size: 12px;
+}
+
+#PARDocumentPeerReviewerComment {
+    width:905px;
+    max-width: 905px;
+    border:none;
+}
+
+#PARDocumentPricerComment {
+    width:905px;
+    max-width: 905px;
+    border:none;
+}
+
+#PPRDocumentPricerComment {
+    width:905px;
+    max-width: 905px;
+    border:none;
+}
+
+#checklistGeneralInfoForm .form-label{
+    min-width:155px;
+}
+
+.second-form-label{
+    min-width:100px;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    font-weight: bold;
+    margin-right: 10px;
+    vertical-align: top;
+    margin-top: 3px;
+    margin-left: 40px;
+}
+
+.second-form-label span
+{
+    display: inline;
+}
+
+#checklistProposalPricingDataSection .help-icon
+{
+    margin-left: 5px;
+    *margin-right: 3px;
+}
+
+.second-form-label .help-icon
+{
+    margin: -3px 0px 0px 5px;
+    *margin-right: 3px;
+}
+
+#checklistGeneralInfoForm .form-element{
+    min-width:177px;
+}
+
+.ChecklistDocumentFinalRow div {
+   display: inline-block;
+   margin-right: 40px;
+   font: bold 10px;
+   font-style: italic;
+}
+
+#PARGrid  { 
+    position: relative;
+    margin-top: -5px;
+} 
+
+table#PARGrid th  { 
+    font-weight: bold;
+}
+
+table#PARGrid tr {
+    border: thin solid; 
+}
+
+.column-peer,
+.column-pricer
+{
+    border: 1px solid black;
+    text-align:center;
+    font-weight: bold;
+    box-sizing: border-box;
+}
+
+div[name=SubmittedValue]
+{
+    min-height:14px;
+    max-width: 175px;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+/* Dialogs */
+.itco-radio-btn 
+{
+    float:left;
+}
+
+.itco-radio-btn-label 
+{
+    float: right;
+    width: 92%;
+}
+
+.itco-btn-row, .checklist-type-change-btn-row, .checklist-type-change-table-cells, .checklist-type-matrix-header, .checklist-type-codes, .checklist-type-matrix
+{
+    text-align: center;
+}
+
+.itco-ok-btn, .checklist-type-change-yes-btn
+{
+    display: inline-block;
+}
+
+.itco-cancel-btn, .checklist-type-change-no-btn
+{
+    display: inline-block; 
+    margin-left: 45px;
+}
+
+#ChecklistTypeChangeTable,
+#ChecklistTypeChangeTable th,
+#ChecklistTypeChangeTable td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+.checklist-type-change-no-border {
+    border-top-color: white !important;
+    border-left-color: white !important;
+    background: white !important;
+}
+
+#ChecklistTypeChangeTable th {
+    background-color: lightgray;
+    font: bold;
+}
+
+/* Added to limit the width of the inputs for looking up folks based on NTIDs */
+input.half, input.half.not-placeholder-value {
+    width: 275px;
+}
+
+input.date, input.date.not-placeholder-value {
+    width: 60px;
+}
+
+#manageProposalInfoDetailsForm .date, 
+#manageProposalInfoDetailsForm .date.not-placeholder-value {
+    width: 86px;
+    margin-right: 3px;
+}
+
+#ProposalLogYearsTable td,
+#ProposalLogLOBTable td,
+#ProposalLogSegmentTable td,
+#ProposalLogCompanyFieldEstimatorTable td,
+#ProposalLogCentralEstimatorTable td,
+#ProposalActivityProgramAreaTable td,
+#ProposalActivityCustomerTypeTable td
+{
+    padding: 0px;
+}
+
+#ProposalLogYearsTable select,
+#ProposalLogLOBTable select,
+#ProposalLogSegmentTable select,
+#ProposalLogCompanyFieldEstimatorTable select,
+#ProposalLogCentralEstimatorTable select,
+#ProposalActivityProgramAreaTable select,
+#ProposalActivityCustomerTypeTable select
+{
+    width: 100%;
+}
+
+.form-element.startDate, span.bulk {
+    margin-right: 8px;
+}
+
+.hidden-span {
+    visibility: hidden;
+}
+
+hr {
+    margin-left: 3px;
+    width: 985px;
+}
+
+#proposalRevisionsForm
+{
+    display: inline-block;
+}
+
+#proposalRevisions .help-icon
+{
+    margin-top: 8px;
+}
+
+.proposalRevisionsFormButtonsHelp {
+    display: inline-block;
+}
+
+/* Adds space after Bulk Archive Page's "Created Between" text*/
+.created-between {
+    font-weight: bold;
+    margin-right: 10.5px;
+}
+
+/* Set width for Bulk Archive datepicker*/
+#BulkArchiveStartDate {
+    width: 75px;
+}
+
+/* Set width for Bulk Archive datepicker*/
+#BulkArchiveEndDate {
+    width: 75px;
+}
+
+/* TABS
+----------------------------------------------------------*/
+
+.tabs
+{
+    clear: both;
+}
+
+.tabs-left
+{
+    background: transparent url(images/tabLeft_72px.png) no-repeat 0 0;
+    width: 7px;
+    height: 72px;
+}
+
+.tabs-center
+{    
+    background: transparent url(images/tabBG_72px.png) repeat-x 0 0;
+    color: #ffffff;
+    height: 72px;
+}
+
+.tabs-right
+{
+    background: transparent url(images/tabRightCorner_72px.png) no-repeat 0 0;
+    width: 7px;
+    height: 72px;
+}
+
+#ProposalTabs .tabs-center .proposal-text div {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 0 5px;
+    color: #FFFFFF;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    vertical-align: top;
+}
+
+/* Buttons
+-----------------------------------------------------------*/
+td .proposal-button
+{
+    display: inline-block;
+    width: 16px;
+    height: 20px;
+    background: transparent url(images/proposal.png) 0 0 no-repeat; 
+}
+
+td .checklist-button
+{
+    display: inline-block;
+    width: 16px;
+    height: 20px;
+    background: transparent url(images/checklist.png) 0 0 no-repeat; 
+}
+
+td .approval-button
+{
+    display: inline-block;
+    width: 16px;
+    height: 20px;
+    background: transparent url(images/approval.png) 0 0 no-repeat; 
+}
+
+td .psa-button
+{
+    display: inline-block;
+    width: 16px;
+    height: 20px;
+    color: blue;
+    font-size: 16px;
+}
+
+td .document-button
+{
+    display: inline-block;
+    color:blue;
+    font-size:16px
+}
+
+div.document-button-div {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+}
+
+div.delete-document-div {
+    height: 20px;
+    display: inline-block;
+}
+
+.delete-document-icon {
+    font-size: 1.4em;
+    vertical-align: 0%;
+    color: #a94442;
+}
+
+/* stacked font-awesome styling for add document icon */
+.add-document-div {
+    display: inline-block !important;
+    width: 19px !important;
+}
+
+.add-document-icon-stack {
+  font-size: .5em;
+  vertical-align: 0%;
+}
+
+.add-document-icon-circle {
+    color: blue;
+    top: .7em; 
+    font-size: 2.25em;
+}
+
+.add-document-icon-plus {
+    color: white;
+    top: 1.25em; 
+    font-size: 1.5em;
+}
+
+.add-document-icon {
+    top: .25em;
+}
+
+td .boe-button {
+    cursor: pointer;
+    display: inline-block;
+    width: 16px;
+    height: 20px;
+    background: transparent url(images/favicon.ico) 0 0 no-repeat; 
+}
+
+/* Dropdown Button */
+.dropbtn {
+    border: none;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropdown {
+    position: relative;
+    display: inline-block !important;
+    overflow: visible !important;
+    width: 18px !important;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #ebebeb;
+    min-width: 180px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content a:hover {background-color: #cccccc}
+
+/* Show the dropdown menu on hover */
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.manage-buttons {
+    padding: 4px 0 !important;
+    overflow: visible !important;
+}
+
+.homeProposal .buttons
+{
+    width: 350px;
+    margin-bottom: 0px;
+    vertical-align:inherit;
+}
+
+#homeProposal .module-content-center 
+{
+    width: 982px !important;
+}
+
+.filter-module 
+{
+    padding-left: 0px !important;
+}
+
+.proposalFilters .buttons
+{
+    width: 219px;
+    vertical-align:inherit;
+}
+
+#goToProposalForm .buttons 
+{
+    display: inline;
+    width: 44px;
+    margin-left: 5px;
+}
+
+#goToProposalForm button[name="go-button"]
+{
+    margin-right: 5px;
+}
+
+.breadcrumb
+{
+    padding-top: 8px;
+}
+
+div.comments,
+div.peerComments{
+    display: none;
+}
+
+#IncludeCurrentOrgMapping
+{
+    padding-left:0px;
+    padding-right:0px;
+}
+
+/*Print styles for checklist page*/
+@media print {
+    #IdentitySwappingDiv {
+        display: none;
+    }
+
+    #checklist div {
+        display: inline;
+    }
+
+    #checklist .form-row
+    {
+        display: block;
+    }
+
+    #checklist .collapsible-header
+    {
+        position: relative;
+        margin-left: -40px;
+    }
+
+    #checklist .form-label,
+    #checklist .second-form-label,
+    #checklist .form-element
+    {
+        display: inline-block;
+    }
+
+    #checklist .help-dialog{
+        display: none;
+    }
+
+    #PARGrid  th { 
+        background-color: lightgray;
+    }
+
+    div.breadcrumb {
+        display: none;
+    }
+
+    div#checklist textarea.resize {
+        min-height: 250px;
+        overflow-y: hidden;
+    }
+
+    #goToProposalForm {
+        display: none;
+    }
+
+    #PPRDocumentPricerComment,
+    #PARDocumentPricerComment,
+    #PARDocumentPeerReviewerComment {
+        display: none;
+    }
+
+    div.comments,
+    div.peerComments{
+        display: block;
+        width: 928px;
+        word-wrap: break-word; 
+    }
+
+    .nav-container {
+        display: none;
+    }
+
+    ul.inline-block {
+        display: none;
+    }
+    
+    .module-content-left {
+        display: none;
+    }
+    
+    .module-content-right {
+        display: none;
+    }
+
+    .module-footer {
+        display: none;
+    }
+
+    .header {
+        display: none;
+    }
+
+    .footer {
+        display: none;
+    }
+
+    .oci-note {
+        display: none;
+    }
+}
+/**/
+
+/*Who's Online styles*/
+.whos-online-status {
+    color: #000000;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    padding: 15px;
+}
+
+.whos-online {
+    word-spacing:0px;
+}
+
+.grid {
+    width: 100%;
+}
+
+#GeneralReports .data-to-display .grid .longfield{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 380px;
+}
+#GeneralReports .data-to-display .grid .shortfield{width: auto;} 
+
+/* Width styles for the PAR Checklist */
+.PARGridTableSetup 
+{
+    width:928px; 
+    table-layout:fixed;
+}
+
+.ProposalPageNumberColumnWidth 
+{
+    width: 50px;
+}
+
+.RowCommentColumnWidth 
+{
+    width: 100px;
+}
+
+.ChecklistItemArtifactColumnWidth 
+{
+    width: 200px;
+}
+
+.InternationalChecklistItemColumnWidth 
+{
+    width: 450px;
+}
+
+/* This value should be double the above width */
+.CheclistItemAndArtifactColumnWidth 
+{
+    width: 400px;
+}
+
+.YesNoNAWidth 
+{
+    width: 23px;
+}
+
+.InternationalYesNoNAWidth 
+{
+    width: 30px;
+}
+
+.InternationalYesNoWidthTwo 
+{
+    width: 60px;
+}
+
+.InternationalYesNoWidthThree 
+{
+    width: 90px;
+}
+
+.YesNoWidthTwo 
+{
+    width: 46px;
+}
+
+.YesNoWidthThree 
+{
+    width: 69px;
+}
+
+.iframe {
+    width: 100%;
+    height: 30px;
+    border: none;
+}
+
+.lmlogo {
+    float: right;
+    padding-top: 5px;
+    width: 200px;
+}
+
+.ptm-logo-header {
+    width: 360px;
+    margin-right: 5px;
+    border-radius: 4px;
+}
+
+.bannerframe {
+    border: none;
+    height: 0;
+    width: 100%;
+}
+
+div.bannerContainer
+{
+    margin:auto;
+    width:985px;
+}
+
+.appOfflineFrame {
+    width: 100%;
+    top: 0;
+    left: 0;
+    height: 0px;
+    border: 0px;
+}
+
+.user-name {
+    width: 74px;
+}
+
+img.disabled {
+    opacity: 0.4;
+}
+
+label.disabled {
+    color: #888888;
+}
+
+button.ies,
+button.ies-action,
+button.ies-warning,
+button.ies-danger {
+    border-radius: 3px;
+    border: 1px solid #A6A6A6;
+    padding: 0px 10px;
+    line-height: 24px;
+    background: linear-gradient(to bottom, #EEEEEE, #D6D6D6 1px, #E6E6E6);
+    -pie-background: linear-gradient(to bottom, #EEEEEE, #D6D6D6 1px, #E6E6E6);
+    background-color: #E6E6E6;
+    margin-right: 10px;
+    font-weight: bold;
+    font-size: 12px;
+    font-family: Verdana;
+    color: #0E2314;
+    cursor: pointer;
+    behavior: url('pie/pie.htc');
+    word-spacing: normal;
+    position: relative;
+}
+
+button.ies-action {
+    background: linear-gradient(to bottom, #32DE68, #7BB98F 1px, #558E65);
+    -pie-background: linear-gradient(to bottom, #32DE68, #7BB98F 1px, #558E65);
+    background-color: #EEEEEE;
+}
+
+button.ies-danger {
+    background: linear-gradient(to bottom, #fe0002, #fe0002 1px, #930000);
+    -pie-background: linear-gradient(to bottom, #fe0002, #fe0002 1px, #930000);
+    background-color: #EEEEEE;
+}
+
+button.ies-warning {
+    background: linear-gradient(to bottom, #f3b603, #fffa8c 1px, #fcc508);
+    -pie-background: linear-gradient(to bottom, #f3b603, #fffa8c 1px, #fcc508);
+    background-color: #EEEEEE;
+}
+
+button.ies[disabled],
+button.ies-action[disabled]:not(.go-button),
+button.ies-warning[disabled],
+button.ies-danger[disabled],
+button.ies.disabled,
+button.ies-action.disabled:not(.go-button),
+button.ies-warning.disabled,
+button.ies-danger.disabled {
+    border: 1px solid #D9D9D9;
+    background: linear-gradient(to bottom, #F8F8F8, #EDEDED 1px, #F4F4F4);
+    -pie-background: linear-gradient(to bottom, #F8F8F8, #EDEDED 1px, #F4F4F4);
+    background-color: #EEEEEE;
+    color: #B9B9B9;
+    text-shadow: 0 0 2px rgba(185,185,185,0.25);
+    cursor: default;
+    behavior: url('pie/pie.htc');
+}
+
+#certificationTimelineForm div.form-label {
+    width: 305px;
+}
+
+#certificationTimelineForm div.form-element {
+    min-width: 120px;
+    text-align: right;
+}
+
+#CertificationTimelineComment {
+    width: 425px;
+}
+
+.proposalTitle {
+    width: 680px; 
+    text-align: left;
+}
+
+.proposalStatusDates {
+    text-align: left;
+    font-size: 13px !important;
+}
+
+.proposalStatusDates p {
+    height: 15px;
+}
+
+.proposalTabMenu {
+    margin-top: -11px !important;
+}
+
+#nonPreferredJustification {
+    width: 100%;
+    height: 100px;
+}

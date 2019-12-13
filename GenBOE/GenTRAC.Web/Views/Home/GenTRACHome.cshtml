@@ -1,0 +1,96 @@
+﻿@{
+    ViewBag.Title = "My Proposals";
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+}
+
+<script type="text/javascript">
+    var homeWidget;
+
+    $(function () {
+        var widgetConfig = {};
+        widgetConfig.ContextID = "genTRACHome";
+        widgetConfig.IsModule = true;
+
+        homeWidget = new GenWidget(widgetConfig);
+
+        // create the nested widgets
+        $.ajax({
+            type: 'POST',
+            url: GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.HOME',
+                action: '@WebConstants.Action.HOME_PROPOSAL_DISPLAY'
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'html',
+            success: function (response) {
+                $('#gridPlaceholder').html(response);
+                homeWidget.refreshModule();
+
+                // load filters view
+                $.ajax({
+                    type: 'POST',
+                    url: GenSession.CreateUrl({
+                        controller: '@WebConstants.Controller.HOME',
+                        action: '@WebConstants.Action.HOME_PROPOSAL_FILTERS_DISPLAY'
+                    }),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'html',
+                    success: function (response) {
+                        $('#filtersPlaceholder').html(response);
+                        // Load up the data
+                        ProposalFiltersWidget.ApplyFilters(false);
+                        homeWidget.refreshModule();
+                    }
+                });
+            }
+        });
+
+        // override refreshModule
+        homeWidget.refreshModule = function () {
+            if (typeof (ProposalFiltersWidget) != 'undefined') {
+                ProposalFiltersWidget.refreshModule();
+            }
+            if (typeof (HomeProposalWidget) != 'undefined') {
+                HomeProposalWidget.refreshModule();
+            }
+        };
+
+        var proposalFiltersCookieName = '@GenTRAC.Web.Common.WebConstants.ProposalFiltersCookieConstants.COOKIE_KEY';
+
+        /*
+        * Creates an individual ProposalFilters cookie
+        * Source: ProgramSharedSerivce code Impersonation/IdentitySwappingScript.js
+        */
+        WriteProposalFiltersCookie = function (cookieName, cookieValue, expirationInMinutes) {
+            // Setup expiration time for the new cookies
+            var date = new Date();
+            date.setTime(date.getTime() + (expirationInMinutes * 60 * 1000));
+            var cookieExpiration = '; expires=' + date.toGMTString();
+
+            // Create Cookie
+            var cookie = cookieName + '=value=' + cookieValue + cookieExpiration + '; path=/';
+
+            // Write it into the document
+            document.cookie = cookie;
+        }
+
+        /*
+        * Removes ProposalFiltersCookie, primarily to check default values in a coded UI Test
+        * Source: ProgramSharedSerivce code Impersonation/IdentitySwappingScript.js
+        */
+        RemoveProposalFiltersCookie = function () {
+            WriteProposalFiltersCookie(proposalFiltersCookieName, '', -1 * 24 * 60);
+        }
+    });
+</script>
+
+<div class="module full" id="genTRACHome">
+    <div style="text-align: right;">
+    </div>
+    <div class="module-header-data">
+        My Proposals
+    </div>
+    <div id="filtersPlaceholder"></div>
+    <div id="gridPlaceholder"></div>
+</div>
+

@@ -1,0 +1,243 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Home.HomeProposalModelView
+
+<script type="text/javascript">
+
+    var HomeProposalWidget;
+
+    $(function () {
+        /*
+        *  widget configuration
+        */
+        var HomeProposalWidgetConfig = {};
+        HomeProposalWidgetConfig.ContextID = "homeProposal";
+        HomeProposalWidgetConfig.IsModule = true;
+        var FormConfigs = [];
+        FormConfigs.push({
+            ElementID: "proposalGridForm",
+            Buttons: [
+            {
+                ButtonClass: 'ies',
+                ButtonText: '+ New Proposal',
+                ButtonName: "new-proposal-button",
+                ButtonAction: function (buttonPressed) {
+                    var url = GenSession.CreateUrl({
+                        controller: '@WebConstants.Controller.PROPOSAL',
+                        action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS'
+                    });
+                    window.location = url;
+
+                },
+                Stateful: false
+            },
+            {
+                ButtonClass: 'ies',
+                ButtonText: 'Export',
+                ButtonName: "export-button",
+                ButtonAction: function (buttonPressed) {
+                    HomeProposalWidget.ViewReport(buttonPressed);
+                },
+                Stateful: false
+            }],
+            HideOCI: "true"
+        });
+
+        HomeProposalWidgetConfig.FormConfigs = FormConfigs;
+
+        /*
+        * Widget creation
+        */
+        HomeProposalWidget = new GenListWidget(HomeProposalWidgetConfig);
+
+        /*
+        * Show/Hide New Proposal button based on current user's system role(s).
+        */
+        HomeProposalWidget.ShowNewProposalButton = function () {
+            @if (((bool)Model.AllowNewProposal)) {
+                <Text>
+                    $("#proposalGridForm button[name='new-proposal-button']").show();
+                </Text>
+            } else {
+                <Text>
+                    $("#proposalGridForm button[name='new-proposal-button']").hide();
+                </Text>
+            }
+        }
+
+        /*
+        * Written so that way the sorting can hook into it. Triggers a reload of the grid.
+        */
+        HomeProposalWidget.ReloadGrid = function () {
+            ProposalFiltersWidget.ApplyFilters(false);
+        }
+
+        /*
+        * Show Proposal Click
+        */
+        HomeProposalWidget.ShowProposal = function (event, proposal) {
+            var url = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PROPOSAL',
+                action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
+                id: proposal
+            });
+            window.location = url + '#Proposal';
+        }
+
+        /*
+        * Show checklist Click
+        */
+        HomeProposalWidget.ShowChecklist = function (event, proposal) {
+            var url = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PROPOSAL',
+                action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
+                id: proposal
+            });
+            window.location = url + '#Checklist';
+        }
+
+        /*
+        * Show Approvals Click
+        */
+        HomeProposalWidget.ShowApprovals = function (event, proposal) {
+            var url = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PROPOSAL',
+                action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
+                id: proposal
+            });
+            window.location = url + '#Approvals';
+        }
+
+        /*
+        * Show Confirm Delete dialog and process delete
+        */
+        HomeProposalWidget.ShowConfirmDelete = function (event, proposalId) {
+            var title = 'Delete Proposal Confirmation';
+            var msg = 'Are you sure you want to Delete this Proposal?';
+
+            GenSession.confirmDialog(title, msg, function () {
+                // Make the call
+                $.ajax({
+                    type: 'POST',
+                    url: GenSession.CreateUrl({
+                        controller: '@WebConstants.Controller.PROPOSAL',
+                        action: '@WebConstants.Action.DELETE_PROPOSAL',
+                        id: proposalId
+                    }),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'html',
+                    success: function (response) {
+                        window.location.reload(true);  // refresh page
+                    },
+                    error: function (response) {
+                        var errorMessages = JSON.parse(response.responseText).MessageList
+                        var errorList = [];
+                        if (errorMessages.length != 0) {
+                            errorMessages.forEach(function (message) {
+                                errorList.push(message.ValidationIssue);
+                            });
+                        }
+                        GenSession.alertDialog('Delete Failed', errorList.join('<br/>'));
+                    }
+                });
+            });
+        }
+
+        /*
+        * Show post submittal attachments Click
+        */
+        HomeProposalWidget.ShowPostSubmittalAttachments = function (event, proposal) {
+            var url = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PROPOSAL',
+                action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
+                id: proposal
+            });
+            window.location = url + '#PSA';
+        }
+
+        HomeProposalWidget.getElement('.search-magnify-glass-button').click(function () { HomeProposalWidget.ApplySearch(); });
+
+        HomeProposalWidget.on('keydown', 'input[name=SearchText]', function (e) {
+            /****enter key to search */
+            var keyCode = (e.keyCode ? e.keyCode : (e.which ? e.which : e.charcode));
+            if (keyCode == 13) {
+                HomeProposalWidget.ApplySearch();
+            }
+        });
+
+        HomeProposalWidget.ApplySearch = function () {
+            HomeProposalWidget.SearchText = HomeProposalWidget.getElement('input[name=SearchText]').val();
+            ProposalFiltersWidget.ApplyFilters(false);
+            $('input[name="searchString"]').val(HomeProposalWidget.SearchText);
+        };
+
+        HomeProposalWidget.GetData = function () {
+            var dataToSave = {};
+            dataToSave.reportParameters = HomeProposalWidget.getForm("proposalFiltersForm").GetData();
+            return dataToSave;
+        };
+
+        HomeProposalWidget.ViewReport = function (buttonPressed) {
+            var data = new Object;
+            data.filterOption = ProposalFiltersWidget.getElement('input[name="proposalFilterOption"]').val();
+            data.viewerFilterOption = ProposalFiltersWidget.getElement('input[name="viewerProposalFilterOption"]').val();
+            data.filterStartDate = ProposalFiltersWidget.getElement('input[name="proposalFilterStart"]').val();
+            data.filterEndDate = ProposalFiltersWidget.getElement('input[name="proposalFilterEnd"]').val();
+            data.searchText = HomeProposalWidget.getElement('input[name=searchString]').val();
+            data.filterProposalClass = ProposalFiltersWidget.getElement('input[name="proposalClassFilterOption"]').val();
+            var dataToSend = JSON.stringify(data);
+
+            // make the call
+            HomeProposalWidget.saveRequest({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.HOME',
+                    action: '@WebConstants.Action.VIEW_EXPORT_PROPOSALS_REPORT'
+                }),
+                contentType: 'application/json; charset-utf-8',
+                data: dataToSend,
+                success: function (response) {
+                    HomeProposalWidget.CallSSRS(response);
+                },
+                error: function () {
+                    HomeProposalWidget.refreshModule();
+                }
+            }, buttonPressed);
+        };
+
+        HomeProposalWidget.CallSSRS = function (data) {
+            if (data.Url.length >= 2083) {
+                GenSession.alertDialog('URL Limit Warning', 'If using IE, the url limit is 2083 chars. You have exceeded that which may limit the report results');
+            }
+            var report = window.open(data.Url, '_blank', 'resizable=yes, location=yes, titlebar=no');
+            report.focus();
+        };
+
+        HomeProposalWidget.ShowNewProposalButton();
+    });
+</script>
+
+
+<div id="homeProposal" class="composite module full">
+    <div class="module-content-data">
+        <div class="homeProposal">
+            <div style="float: left;">
+                @using (Html.BeginForm("", "", FormMethod.Post, new { id = "proposalGridForm", name = "proposalGridForm" }))
+                {
+                }
+            </div>
+            <div class="search-box" style="float: right;">
+                @Html.TextBox("SearchText")
+                <div id="search-Proposal" class="button search-magnify-glass-button"></div>
+            </div>
+            <div class="totalProposals">
+                Total Proposals:&nbsp;<span id="totalProposalsValue"></span>
+            </div>
+        </div>
+        <div id="homeProposalPlaceholder">
+            <span>Loading Data</span>
+            <div class="loader" style="vertical-align: middle;"></div>
+        </div>
+        <div>
+            <input type="hidden" name="searchString" />
+        </div>
+    </div>
+</div>

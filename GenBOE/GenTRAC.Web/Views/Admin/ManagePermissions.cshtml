@@ -1,0 +1,401 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Admin.ManagePermissionsModelView
+@{
+    ViewBag.Title = "Manage Permissions";
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+}
+
+<script type="text/javascript">
+
+    var ManagePermissionsWidget;
+
+    $(function () {
+
+        function onDeletePressed() {
+            var button = ManagePermissionsWidget.getElement("button[name='delete-button']");
+            var elementsToDelete = ManagePermissionsWidget.getElement('input[name=toDelete]:checked');
+            var data = [];
+
+            var title = 'Delete Confirmation';
+            var msg = 'Are you sure you want to delete this user/group?';
+
+            var currentUserId = @ViewData["currentUserId"];
+            var attemptingToDeleteYourself = false;
+
+            elementsToDelete.each(function () {
+                var row = $(this).parents('tr');
+                if($(row).attr("pkid") == currentUserId) {
+                        attemptingToDeleteYourself = true;
+                    }
+                });
+
+            if(attemptingToDeleteYourself) {
+                title = 'Delete Confirmation';
+                msg = 'Performing this action will remove your role as an Administrator. Are you sure you want to continue?';
+            }
+
+            GenSession.confirmDialog(title, msg, function () {
+                elementsToDelete.each(function () {
+                    var row = $(this).parents('tr');
+                    var Roles = [];
+                    data.push({
+                        UserId: $(row).attr("pkid"),
+                        UserNtId: $(row).find("#userNtId").val(),
+                        Roles: Roles
+                    })
+                });
+                ManagePermissionsWidget.saveRequest(
+			    {
+			        type: 'POST',
+			        url: saveURL,
+			        contentType: 'application/json; charset=utf-8',
+			        dataType: 'html',
+			        data: JSON.stringify(data),
+			        success: function () {
+                        if(!attemptingToDeleteYourself) {
+                            ManagePermissionsWidget.ReloadGrid();
+                            ManagePermissionsWidget.refreshModule();
+                            // disable the `Delete` Button since a person(s)/group(s) was just deleted
+                            $("button[name='delete-button']").addClass('disabled');
+                        }
+                        else {
+                            window.location = GenSession.CreateUrl({ controller: '@WebConstants.Controller.HOME', action: '@WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME' });
+                        }
+			        }
+			    }, button);
+                
+            }, function () { }, function () { });
+        };
+
+        function getSaveData() {
+            var dataToSend = [];
+
+            var Roles = [];
+            $('#AddEditPermissionsForm :input[name=Roles]:checked').each(function () {
+                Roles.push($(this).val()); 
+            });
+
+            var ViewerLinesOfBusiness = [];
+            $('#ViewerLinesOfBusiness :selected').each(function () {
+                ViewerLinesOfBusiness.push($(this).val()); 
+            });
+
+            var ProposalSetupAdminLinesOfBusiness = [];
+            $('#ProposalSetupAdminLinesOfBusiness :selected').each(function () {
+                ProposalSetupAdminLinesOfBusiness.push($(this).val()); 
+            });
+
+            var Users = ManagePermissionsWidget.getDialog("AddEditPermissionsDialog").getElement('input[name=EntityIdString]').val().replace(/ /gi, "").replace(/;+/gi, ";").replace(/^;|;$/gi, "").split(";");
+
+            $.each(Users, function () {
+                dataToSend.push({ UserNtId: this, Roles: Roles, ViewerLinesOfBusiness: ViewerLinesOfBusiness, ProposalSetupAdminLinesOfBusiness:  ProposalSetupAdminLinesOfBusiness});
+            });
+            
+            return dataToSend;
+        };
+
+        var saveURL = GenSession.CreateUrl({ controller: '@WebConstants.Controller.ADMIN', action: '@WebConstants.Action.ADMIN_SAVE_SYSTEM_PERMISSIONS' });
+        var dataUrl = GenSession.CreateUrl({ controller: '@WebConstants.Controller.ADMIN', action: '@WebConstants.Action.ADMIN_DISPLAY_SYSTEM_PERMISSIONS_GRID' });
+
+        var FormConfigs = [];
+
+        FormConfigs.push({
+            ElementID: "AddEditPermissionsForm",
+            Buttons: [
+            {
+                ButtonClass: 'ies-action',
+                ButtonText: 'Save',
+                ButtonName: "save-button",
+                ButtonAction: function (buttonPressed) {
+                var continueWithSave = false;
+                if(ManagePermissionsWidget.getDialog("AddEditPermissionsDialog").getElement('input[name=AddOrEdit]').val() == "Add")
+                    {
+                        var userNtIdsToCheck = ManagePermissionsWidget.getElement('input[name=userNtId]');
+
+                        var userExistsInGrid = false;
+                        var userNtIdToSave =  ManagePermissionsWidget.getDialog("AddEditPermissionsDialog").getElement('input[name=EntityIdString]').val();
+
+                        userNtIdsToCheck.each(function () {
+                            if($(this).val() == userNtIdToSave) {
+                                    userExistsInGrid = true;
+                                }
+                            });
+
+                        if(userExistsInGrid) {
+                            title = 'Replace Role Confirmation';
+                            msg = 'This user already exists.  Would you like to replace this user’s current role(s) to the newly selected role(s) ?';
+
+                            GenSession.confirmDialog(title, msg, function () {
+                                ManagePermissionsWidget.saveRequest(
+                                {
+                                    type: 'POST',
+                                    url: saveURL,
+                                    contentType: 'application/json; charset=utf-8',
+                                    dataType: 'html',
+                                    data: JSON.stringify(getSaveData()),
+                                    success: function () {
+                                        ManagePermissionsWidget.getDialog("AddEditPermissionsDialog").closeDialog();
+                                        ManagePermissionsWidget.ReloadGrid();
+                                    }
+                                }, buttonPressed);
+                            });
+                        }else
+                        {
+                            continueWithSave = true;
+                        }
+                    }else
+                    {
+                        continueWithSave = true;
+                    }
+
+                    if(continueWithSave)
+                    {
+                        ManagePermissionsWidget.saveRequest(
+                        {
+                            type: 'POST',
+                            url: saveURL,
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'html',
+                            data: JSON.stringify(getSaveData()),
+                            success: function () {
+                                ManagePermissionsWidget.getDialog("AddEditPermissionsDialog").closeDialog();
+                                ManagePermissionsWidget.ReloadGrid();
+                                // disable the `Delete` Button since all users (check-boxes) were de-selected
+                                $("button[name='delete-button']").addClass('disabled');
+                            }
+                        }, buttonPressed);
+                    }                
+                }
+            }, {
+                ButtonClass: 'ies',
+                ButtonText: 'Cancel',
+                ButtonName: "cancel-button",
+                ButtonAction: function (buttonPressed) {
+                    ManagePermissionsWidget.getDialog("AddEditPermissionsDialog").closeDialog();
+                }
+            }],
+            HideOCI: true
+        });
+        
+        var DialogConfigs = [];
+
+        DialogConfigs.push({
+            ElementID: "AddEditPermissionsDialog",
+            Params: {
+                width: 710,
+                height: 410,
+                title: "Add/Edit Permissions"
+            }
+        });
+
+        var widgetConfig = {};
+        widgetConfig.ContextID = "ManagePermissions";
+        widgetConfig.IsModule = true;
+        widgetConfig.FormConfigs = FormConfigs;
+        widgetConfig.DialogConfigs = DialogConfigs;
+        widgetConfig.isReadOnly = @ViewBag.ReadOnly;
+        widgetConfig.deleteable = onDeletePressed;
+
+        ManagePermissionsWidget = new GenListWidget(widgetConfig);
+
+        ManagePermissionsWidget.getElement("button[name='add-button']").click(function() {
+           //clear check boxes
+           $('#AddEditPermissionsDialog :input[type=checkbox]').each(function () {
+               this.checked = false;
+           });
+
+           // clear lines of business
+           $('#AddEditPermissionsDialog :input[name=ViewerLinesOfBusiness]').find("option").attr("selected", false);
+           $('#AddEditPermissionsDialog :input[name=ProposalSetupAdminLinesOfBusiness]').find("option").attr("selected", false);
+           
+           ManagePermissionsWidget.getDialog("AddEditPermissionsDialog").getElement('input[name=EntityIdString]').val("");
+
+           ManagePermissionsWidget.getDialog("AddEditPermissionsDialog").getElement('input[name=AddOrEdit]').val("Add");
+
+            ManagePermissionsWidget.getDialog("AddEditPermissionsDialog").openDialog();
+        });
+
+        ManagePermissionsWidget.displayEditPermissionsDialog = function (userNtId, userRoles, viewerLinesOfBusiness, proposalSetupAdminLinesOfBusiness) {
+
+            // Set the user Id
+            ManagePermissionsWidget.getDialog("AddEditPermissionsDialog").getElement('input[name=EntityIdString]').val(userNtId);
+
+           // Clear check boxes
+           $('#AddEditPermissionsDialog :input[type=checkbox]').each(function () {
+                this.checked = false;
+           });
+
+           // For each role the user has select that box
+           for (x in userRoles) {
+                $('#AddEditPermissionsDialog :input[name=Roles][value="' + userRoles[x] + '"]').attr('checked', true);
+           }
+
+           $('#AddEditPermissionsDialog :input[name=ViewerLinesOfBusiness]').find("option").attr("selected", false);
+           $('#AddEditPermissionsDialog :input[name=ViewerLinesOfBusiness]').val(viewerLinesOfBusiness);
+
+           $('#AddEditPermissionsDialog :input[name=ProposalSetupAdminLinesOfBusiness]').find("option").attr("selected", false);
+           $('#AddEditPermissionsDialog :input[name=ProposalSetupAdminLinesOfBusiness]').val(proposalSetupAdminLinesOfBusiness);
+           
+           // Open the dialog
+           ManagePermissionsWidget.getDialog("AddEditPermissionsDialog").openDialog();
+        }
+
+        ManagePermissionsWidget.ReloadGrid = function() {
+            var dataToSend;
+
+            $.ajax({
+                type: 'POST',
+                url: dataUrl,
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'html',
+                data: dataToSend,
+                success: function (response) {
+                    ManagePermissionsWidget.getElement('div[name=outerPermissionsGrid]').html(response);
+                    ManagePermissionsWidget.utils.applyDeleteColToTable();
+                    ManagePermissionsWidget.refreshModule();
+                },
+                error: function(Data) {
+                    // bug 18940 - force page reload on authorization error so user sees security error
+                    if (Data.title = "Authorization Error") {
+                        window.location.reload();
+                    }
+                }
+            });
+        };
+
+        ManagePermissionsWidget.on("click", ".userlink", function () {
+            var link = this;
+            // Get the current parent row for the clicked name
+            var parentRow = $(link).parents("tr")[0];
+
+            var userNtId = $(parentRow).find("input[name=userNtId]").val();
+            // This will grab the users ntid and roles and pass to the open edit.
+            var userRolesRow = $(parentRow).find("input[name=userRole]");
+            var userRoles = [];
+
+            userRolesRow.each(function () {
+                userRoles.push($(this).val());
+             });
+
+            var viewerLinesOfBusiness = $(parentRow).find("input[name=viewerLinesOfBusiness]").val().split(',');
+            var proposalSetupAdminLinesOfBusiness = $(parentRow).find("input[name=proposalSetupAdminLinesOfBusiness]").val().split(',');
+
+            ManagePermissionsWidget.getDialog("AddEditPermissionsDialog").getElement('input[name=AddOrEdit]').val("Edit");
+
+            // Open the edit with the user's info
+            ManagePermissionsWidget.displayEditPermissionsDialog(userNtId, userRoles, viewerLinesOfBusiness, proposalSetupAdminLinesOfBusiness);
+        });
+
+        ManagePermissionsWidget.on('mouseenter', 'td[name="GroupName"]', function() {
+            var data = {};
+            var td = $(this);
+            data.groupId = td.closest('tr').attr('pkid');
+            var userList = td.children('[name="UsersList"]');
+            
+            userList.removeClass('display-none');
+
+            if (td.attr('loaded') == 'error') {
+                td.removeAttr('loaded');
+                userList.html('<div class="loader"></div>');
+            }
+
+            if (!td.attr('loaded')) {
+                td.attr('loaded', 'begin');
+
+                $.ajax({
+                    type: 'POST',
+                    url: GenSession.CreateUrl({
+                        controller: '@WebConstants.Controller.ADMIN',
+                        action: '@WebConstants.Action.ADMIN_BREAKDOWN_GROUP' }),
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(data),
+                    dataType: 'html',
+                    success: function (response) {
+                        userList.html(response);
+                        ManagePermissionsWidget.refreshModule();
+                        td.attr('loaded', 'complete');
+                    },
+                    error: function () {
+                        td.attr('loaded', 'error');
+                        userList.html('<div style="margin: 5px;">There was an error finding the users in the group.</br>Please try again.</div>');
+                    },
+                    global: false
+                });
+            }
+            ManagePermissionsWidget.refreshModule();
+        });
+
+        ManagePermissionsWidget.on('mouseleave', 'td[name="GroupName"]', function() {
+            $(this).children('[name="UsersList"]').addClass('display-none');
+            ManagePermissionsWidget.refreshModule();
+        });
+
+        ManagePermissionsWidget.refreshModule();
+    });
+
+    function LookupUserToPermission() {
+        ActiveDirectorySearchDialog(function (results) {
+            var selectedAccountName = results.AccountName;
+            if (selectedAccountName != '') {
+                ManagePermissionsWidget.getDialog("AddEditPermissionsDialog").getElement('input[name=EntityIdString]').val(selectedAccountName);
+            }
+        });
+    };
+</script>
+<div id="ManagePermissions" class="module">
+    <div class="module-header-data">
+        Manage Permissions
+    </div>
+    <div class="module-content-data">
+        <form id="managePermissionsGridForm">
+            <div class="form-row widget-menu">
+                <div class="buttons inline">
+                    <button class="ies" name="add-button" type="button">+ Add</button>
+                </div>
+            </div>
+        </form>
+        <div name="outerPermissionsGrid">
+            @{Html.RenderAction(WebConstants.Action.ADMIN_DISPLAY_SYSTEM_PERMISSIONS_GRID, WebConstants.Controller.ADMIN);}
+        </div>
+    </div>
+
+    <div id="AddEditPermissionsDialog" class="ui-dialog-content ui-widget-content">
+        <input name="AddOrEdit" type="hidden"/>
+        <div class="dialog-text">
+            @using (Html.BeginForm("", "", FormMethod.Post, new { name = "AddEditPermissionsForm", id = "AddEditPermissionsForm", @class = "permission-form" }))
+            {
+                <div class="form-row">
+                    <div class="form-label">
+                        <div class="title">NTID or Active Directory Groups *</div>
+                        <div class="subtext">Separate multiple with a semicolons (Ex. jsmith; jdoe).</div>
+                    </div>
+                    <div class="form-element">
+                            @Html.TextBox("EntityIdString", "", new {maxlength = 50, @class = "ad-lookup-box" })
+                            <a href="#" onclick="LookupUserToPermission(); return false;" title="Lookup">Lookup...</a>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">
+                        <div class="title">Permission *</div>
+                        <div class="subtext">Choose the level of access you want the user(s) to have.</div>
+                    </div>
+                    <div class="form-element">
+                        <div class="role-box"><input name="Roles" type="checkbox" value="@((int)PtmRole.SystemPricer)" id="PricerRole" style="display:inline-block"/><div class="subtext" style="display:inline-block">Estimator - Can create proposal records, manage own proposals and checklists.</div></div>
+                        <div class="role-box"><input name="Roles" type="checkbox" value="@((int)PtmRole.Viewer)" id="ViewerRole"/><div class="subtext">Viewer - Can view all proposals, checklists, approvals, and post-submittal-attachments in read-only mode, under designated line(s) of business.</div></div>
+                        <div>
+                            <div style="display:inline-block; min-width:20px;"></div>
+                            <div style="display:inline-block; min-width:120px; padding-top:10px;">Please select one or<br />more Lines of Business</div>
+                            @Html.ListBox("ViewerLinesOfBusiness", Model.ViewerLinesOfBusinessList, new { id="ViewerLinesOfBusiness", size = "4" })
+                        </div>
+                        <div class="role-box"><input name="Roles" type="checkbox" value="@((int)PtmRole.ProposalSetupAdmin)" id="ProposalSetupAdminRole"/><div class="subtext">Proposal Setup Admin - Can edit the Proposal Setup page for all proposals under designated line(s) of business.</div></div>
+                        <div>
+                            <div style="display:inline-block; min-width:20px;"></div>
+                            <div style="display:inline-block; min-width:120px; padding-top:10px;">Please select one or<br />more Lines of Business</div>
+                            @Html.ListBox("ProposalSetupAdminLinesOfBusiness", Model.ProposalSetupAdminLinesOfBusinessList, new { id="ProposalSetupAdminLinesOfBusiness", size = "4" })
+                        </div>
+                        <div class="role-box"><input name="Roles" type="checkbox" value="@((int)PtmRole.Admin)" id="AdminRole"/><div class="subtext">System Admin - Manage Permissions, modify proposal details, etc.</div></div>
+                    </div>
+                </div>           
+            }
+       </div>
+    </div>
+</div>

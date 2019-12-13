@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>IES</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{27ecaf23-1779-4f74-83cb-ec2a89909729}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql130DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>IES</RootNamespace>
+    <AssemblyName>IES</AssemblyName>
+    <ModelCollation>1033, CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <SccProjectName>SAK</SccProjectName>
+    <SccProvider>SAK</SccProvider>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccLocalPath>SAK</SccLocalPath>
+    <AutoCreateStatistics>False</AutoCreateStatistics>
+    <AutoUpdateStatistics>False</AutoUpdateStatistics>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <SqlCodeAnalysisRules>-Microsoft.Rules.Data.SR0001;-Microsoft.Rules.Data.SR0004;-Microsoft.Rules.Data.SR0005;-Microsoft.Rules.Data.SR0006;-Microsoft.Rules.Data.SR0007;-Microsoft.Rules.Data.SR0008;-Microsoft.Rules.Data.SR0009;-Microsoft.Rules.Data.SR0010;-Microsoft.Rules.Data.SR0011;-Microsoft.Rules.Data.SR0012;-Microsoft.Rules.Data.SR0013;-Microsoft.Rules.Data.SR0014;-Microsoft.Rules.Data.SR0015;-Microsoft.Rules.Data.SR0016</SqlCodeAnalysisRules>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="_Full Script Files For Specific Versions" />
+    <Folder Include="Object Scripts" />
+    <Folder Include="Release Scripts" />
+    <Folder Include="Release Scripts\Release 0.9" />
+    <Folder Include="Object Scripts\Stored Procedures" />
+    <Folder Include="Object Scripts\Views" />
+    <Folder Include="Object Scripts\Table Based Processing" />
+    <Folder Include="Release Scripts\Release 0.9.1" />
+    <Folder Include="Release Scripts\Release 2018.1" />
+    <Folder Include="Release Scripts\Release 2018.2" />
+    <Folder Include="_Other Scripts" />
+    <Folder Include="_Full Script Files For Specific Versions\Older" />
+    <Folder Include="Release Scripts\Release 2018.3" />
+    <Folder Include="Release Scripts\Release 2018.4" />
+    <Folder Include="Object Scripts\X_Data Cleanup" />
+    <Folder Include="Release Scripts\Release 2018.5" />
+    <Folder Include="Release Scripts\Release 2018.6" />
+    <Folder Include="Release Scripts\Release 2018.8" />
+    <Folder Include="Release Scripts\Release 2019.1" />
+    <Folder Include="Release Scripts\Release 2019.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Release Scripts\Release 0.9\1 - DropAndCreateRDMTables.sql" />
+    <Build Include="Release Scripts\Release 0.9\2 - InsertRDMReferenceData.sql" />
+    <Build Include="Release Scripts\Release 0.9\3 - DropAndCreateTempTables.sql" />
+    <Build Include="Release Scripts\Release 0.9\4 - InsertTempRates.sql" />
+    <Build Include="Release Scripts\Release 0.9\5 - InsertTempPPBurdenRates.sql" />
+    <Build Include="Release Scripts\Release 0.9\6 - InsertTempPPDirectRates.sql" />
+    <Build Include="Release Scripts\Release 0.9\7 - PopulateRatesFromTempTables.sql" />
+    <Build Include="Object Scripts\Stored Procedures\ExportCobraRates.sql" />
+    <Build Include="Object Scripts\Stored Procedures\ExportProPricerBurdenRates.sql" />
+    <Build Include="Object Scripts\Stored Procedures\ExportProPricerDirectRates.sql" />
+    <Build Include="Object Scripts\Stored Procedures\GetRateCodeList.sql" />
+    <Build Include="Object Scripts\Stored Procedures\GetProPricerBurdenRateCodes.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteRevision.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertRevision.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteBurdenPoolLU.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertBurdenPoolLU.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteCobraFiscalYear.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertCobraFiscalYear.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteProPricerBurdenRateMap.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteProPricerRateCodeXref.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertProPricerBurdenRateMap.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertProPricerRateCodeXref.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteSection.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertSection.sql" />
+    <Build Include="Object Scripts\Stored Procedures\publishRevision.sql" />
+    <Build Include="Object Scripts\Stored Procedures\copyRevision.sql" />
+    <None Include="Object Scripts\Table Based Processing\ProPricerRateCodeXrefViaTable.sql" />
+    <None Include="Object Scripts\Table Based Processing\RateCodeYearViaTable.sql" />
+    <None Include="Object Scripts\Table Based Processing\RateCodeViaTable.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertUserRole.sql" />
+    <Build Include="Release Scripts\Release 0.9.1\1 - Release 0.9.1 Script.sql" />
+    <Build Include="Release Scripts\Release 2018.1\1 - Release 2018.1 Script.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteFileAttachment.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertFileAttachment.sql" />
+    <Build Include="Release Scripts\Release 2018.2\1 - Release 2018.2 Script.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteRDSBDocumentInformation.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertRDSBDocumentInformation.sql" />
+    <Build Include="_Other Scripts\Burden Pools For Frank.sql" />
+    <Build Include="_Other Scripts\Unmapped Rate Codes For Frank.sql" />
+    <Build Include="Object Scripts\Stored Procedures\remapSectionReferences.sql" />
+    <None Include="Object Scripts\Table Based Processing\RDSBRateCodeXrefViaTable.sql" />
+    <None Include="Object Scripts\Table Based Processing\RDSBSectionXrefViaTable.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 0.9 Generated On 11_6_2017.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 0.9.1 Generated On 12_4_2017.sql" />
+    <None Include="Object Scripts\Table Based Processing\CobraDetailViaTable.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\IES - Sql Script For Release 2018.1 Generated On 1_30_2018.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\IES - Sql Script For Release 2018.2 Generated On 2_19_2018.sql" />
+    <None Include="Release Scripts\Release 2018.4\1 - Release 2018.4 Script.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\IES - Sql Script For Release 2018.3 Generated On 4_1_2018.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteBanner.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertBanner.sql" />
+    <None Include="Object Scripts\X_Data Cleanup\DeleteErrorLogs.sql" />
+    <Build Include="Release Scripts\Release 2018.5\1 - Release 2018.5 Script.sql" />
+    <Build Include="Object Scripts\Stored Procedures\verifyRateCodeReplication.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertReplication.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteReplication.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\IES - Sql Script For Release 2018.4 Generated On 4_29_2018.sql" />
+    <None Include="Release Scripts\Release 2018.6\1 - Release 2018.6 Script.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\IES - Sql Script For Release 2018.5 Generated On 6_12_2018.sql" />
+    <None Include="Release Scripts\Release 2018.8\1 - Release 2018.8 Script.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\IES - Sql Script For Release 2018.6 Generated On 7_23_2018.sql" />
+    <Build Include="Release Scripts\Release 2019.1\1 - Release 2019.1 Script.sql" />
+    <Build Include="Object Scripts\Stored Procedures\updateOfflineApplication.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\IES - Sql Script For Release 2018.8 Generated On 10_29_2018.sql" />
+    <None Include="_Full Script Files For Specific Versions\Older\IES - Sql Script For Release 2019.1.sql" />
+    <Build Include="Release Scripts\Release 2019.5\1 - Release 2019.5 Script.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Release Scripts\Release 0.9\8 - Additional Work.sql" />
+    <None Include="Object Scripts\Stored Procedures\ELMAH_LogError.sql" />
+    <None Include="Object Scripts\Stored Procedures\ELMAH_GetErrorXml.sql" />
+    <None Include="Object Scripts\Stored Procedures\ELMAH_GetErrorsXml.sql" />
+    <None Include="Release Scripts\Release 2018.1\0 - Gregs Long Script.sql" />
+    <None Include="Object Scripts\Stored Procedures\UpdateDbVersion.sql" />
+    <None Include="Release Scripts\Release 2018.3\1 - Release 2018.3 Script.sql" />
+  </ItemGroup>
+</Project>

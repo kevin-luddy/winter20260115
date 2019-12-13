@@ -1,0 +1,27 @@
+﻿@model OfflineApplicationModelView
+@using IES.DataBridge.ModelViews
+<!DOCTYPE html>
+<html class="no-size">
+<head>
+    <meta charset="utf-8" />
+    <title>Application Offline</title>
+    @Styles.Render("~/Content/appOfflineCss")
+    <script type="text/javascript">
+        function display() {
+            parent.postMessage(["appOffline", @(Model != null ? @Model.IsOffline.ToString().ToLower() : "false")], "*");
+        }
+    </script>
+</head>
+<body class="appOfflineBody" onload="display();">
+    @if (Model != null && Model.IsOffline)
+    {
+        <div id="appOfflineContainer" class="appOfflineContainer">
+            <div class="appOfflineMessage">
+                <img src="/Content/images/warning.png" />
+                <br/>
+                <span>The application is offline while undergoing maintenance...</span>
+            </div>
+        </div>
+    }
+</body>
+</html>

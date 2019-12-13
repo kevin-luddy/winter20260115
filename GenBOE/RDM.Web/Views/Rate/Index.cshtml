@@ -1,0 +1,212 @@
+﻿@inherits System.Web.Mvc.WebViewPage<IES.DataBridge.ModelViews.RateGridModelView>
+@using IES.Common
+@using IES.ActionLogic.Common
+@using IES.ActionLogic.Validation
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = "Rates";
+    JsonSerializerSettings microsoftDateFormatSettings = new JsonSerializerSettings
+    {
+        DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
+        DateParseHandling = DateParseHandling.DateTime,
+        DateTimeZoneHandling = DateTimeZoneHandling.Local
+    };
+}
+<br />
+
+<script type="text/javascript">
+    angular.module('RDM').value('RateModel', {
+        controller: '@IESWebConstants.CONTROLLER_RATE',
+        createView: '@IESWebConstants.VIEW_CREATE_RATE',
+        validateRateCodesAction: '@IESWebConstants.ACTION_VALIDATE_RATE_CODES',
+        importRateCodesAction: '@IESWebConstants.ACTION_IMPORT_RATE_CODES',
+        exportRateCodesAction: '@IESWebConstants.ACTION_EXPORT_RATE_CODES',
+        importRatesAction: '@IESWebConstants.ACTION_IMPORT_RATES',
+        saveAction: '@IESWebConstants.ACTION_SAVE_RATE',
+        getRatesByVersionAction: '@IESWebConstants.ACTION_GET_RATES_BY_VERSION',
+        SelectedRevisionId: '@Model.SelectedRevisionId',
+        defaultRateHistory: '@IESWebConstants.DEFAULT_RATE_HISTORY',
+        ZeroedOut: false,
+        RatePrecisionError: '@RateMappingValidationConstants.RATEDETAILS_RATEPRECISION_ERROR',
+        FormattingTarget: '@IES.Common.RateTarget.Rate',
+        Area: @((int)LockArea.RDMRates),
+        DefaultFormatPrecision: '@RateFormatter.DefaultRatePrecision()',
+        ResourceTypeLabor: @((int)DirectRateMappingResourceType.Labor)
+        });
+</script>
+<div data-ng-app="RDM" data-ng-controller="RateController">
+    <div class="row top-margin-2">
+        <div class="col-xs-12">
+            <div class="module">
+                <div class="module-header-data left">
+                    Rates
+                    <span data-ng-cloak data-ng-if="lockInfo.Editing"> -- Currently locked for edit by {{lockInfo.Editing}}</span> &nbsp; &nbsp;
+                    <button id="EnableEditButton-Rates" data-ng-cloak data-ng-click="lock()" data-ng-disabled="isDataLoading" data-ng-if="lockInfo.IsReadOnly && lockInfo.IsLockAllowed && selectedVersion.Label === '@IES.Common.classes.CommonConstants.WorkInProgress'" type="button" class="ies">Enable Editing</button>
+                    <span data-ng-cloak data-ng-if="showEditLockTimeoutExpiration" class="EditLockTimeoutExpiration">Your edit lock has expired.</span>
+                </div>
+                <div class="module-content-data" data-ng-cloak>
+                    <div class="form-row css3pie-position-fix">
+                        <div id="errorMessage" data-ng-cloak></div>
+                        <gen-validation data-errors="$root.errors"></gen-validation>
+                        <div class="notificationMessage" id="notificationMessage" data-ng-show="notificationMessage" data-ng-cloak>{{notificationMessage}}</div>
+                        <div class="form-element black" data-ng-hide="canEdit()">
+                            Version: <select data-ng-options="item.Label for item in versions" data-ng-model="selectedVersion" data-ng-change="reloadGrid()"></select>
+                        </div>
+                    </div>
+                    <div class="form-row css3pie-position-fix last-form-row" style="padding-bottom: 10px">
+                        <div class="buttons inline css3pie-position-fix">
+                            <button id="AddButton-Rate" data-ng-click="addRate()" data-ng-hide="isDataLoading || lockInfo.IsReadOnly" data-ng-disabled="isDataLoading" type="button" class="ies-action">+ Add</button>
+                            &nbsp; <!-- need line-height and nbsp to ensure div still occupies some real estate when button is hidden -->
+                            <button class="ies-action" data-ng-click="showImportRatesModal($event)" data-ng-hide="isDataLoading || lockInfo.IsReadOnly || ReplicationValidationMessages.length > 0">Import Rates</button>
+                            <button class="ies-action" 
+                                    id="Export-Rates"
+                                    type="button"
+                                    data-ng-hide="isDataLoading || (!lockInfo.IsLockAllowed && selectedVersion.Label === '@IES.Common.classes.CommonConstants.WorkInProgress')"
+                                    data-ng-click="exportRates($event)"
+                                    style="min-width: 88px">
+                                <div id="Export-RatesText" data-ng-hide="isExportingRates">Export Rates</div>
+                                <div id="Export-Rates" style="min-height:24px" data-ng-show="isExportingRates" class="loader">&nbsp;</div>
+                            </button>
+                            <button class="ies-action" data-ng-click="showImportRateCodesModal($event)" data-ng-hide="isDataLoading || lockInfo.IsReadOnly">Import Rate Codes</button>
+                            <button class="ies-action"
+                                    id="Export-RateCodes"
+                                    type="button"
+                                    data-ng-hide="isDataLoading || !isRdmAdminUser || (!lockInfo.IsLockAllowed && selectedVersion.Label === '@IES.Common.classes.CommonConstants.WorkInProgress')"
+                                    data-ng-click="exportRateCodes($event)"
+                                    style="min-width: 88px">
+                                <div id="Export-RateCodesText" data-ng-hide="isExportingRateCodes">Export Rate Codes</div>
+                                <div id="Export-RateCodes" style="min-height:24px" data-ng-show="isExportingRateCodes" class="loader">&nbsp;</div>
+                            </button>
+                            <button id="ZeroOut" data-ng-click="showZeroOutModal();" data-ng-hide="isDataLoading || lockInfo.IsReadOnly || ZeroedOut" type="button" class="ies-warning" style="float: right; margin-right:0px">Zero Out</button>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div ui-grid="gridOptions" ui-grid-edit ui-grid-cellNav ui-grid-pinning ui-grid-exporter ui-grid-pagination ui-grid-resize-columns class="rate-grid-ui"></div>
+                    </div>
+                    <div class="form-row css3pie-position-fix last-form-row" data-ng-hide="lockInfo.IsReadOnly">
+                        <div class="inline css3pie-position-fix">
+                            <button id="SaveButton-RateGrid" data-ng-click="saveRateGrid(true)" data-ng-disabled="isDataLoading || !PageIsDirty || !isDataValid" type="button" class="ies-action">Save</button>
+                            <button id="SaveContinueButton-RateGrid" data-ng-click="saveRateGrid(false)" data-ng-disabled="isDataLoading || !PageIsDirty || !isDataValid" type="button" class="ies-action">Save &amp; Continue</button>
+                            <button id="CancelButton-RateGrid" data-ng-click="confirmCancel()" data-ng-disabled="isDataLoading" type="button" class="ies">Cancel</button>
+                            &nbsp; <!-- need line-height and nbsp to ensure div still occupies some real estate when button is hidden -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*Import Rate Codes Modal*@
+    <div style="visibility: hidden">
+        <div class="md-dialog-container" id="importRateCodesDialog">
+            <md-dialog style="width: 680px;">
+                <div class="modal-title-bar modal-header">
+                    <span class="modal-title-text">Import Rate Codes File</span>
+                    <div class="modal-close-box" data-ng-click="closeImportRateCodesModal()">
+                        <i class="glyphicon glyphicon-remove"></i>
+                    </div>
+                </div>
+                <div class="modal-content-area">
+                    <div id="ImportInstructions" data-ng-hide="showImportResults">
+                        <form name="importRateCodes" id="importRateCodesForm" method="post" enctype="multipart/form-data">
+                            <span>Any Rate Codes in the Imported File will overwrite existing rate codes.</span>
+                            <hr class="modal-separator" />
+                            <gen-validation data-errors="$root.importRateCodesModalErrors"></gen-validation>
+                            <input type="file" name="importedRateCodesFileName" id="importRateCodesFile" class="modal-input" style="margin-bottom: 10px;" onchange="importRateCodesFileSelect();" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                            <div>
+                                @Html.ActionLink("Example Rate Codes import file", @IESWebConstants.ACTION_DOWNLOAD_EXAMPLE_RATE_CODES_IMPORT_FILE, @IESWebConstants.CONTROLLER_RATE, new { }, null)
+                            </div>
+                            <div style="font-style: oblique; margin-bottom: 10px;">Note: Rate code data must be in a worksheet named "Rate Codes", and the drop-down menu options in a hidden sheet named "Options Lists".</div>
+                            <div class="modal-footer">
+                                <button id="validateRateCodes" class="ies-action" data-ng-hide="importRateCodesWorking" data-ng-disabled="!importRateCodesFileName" type="submit" data-ng-click="validateRateCodesClick()">Import Rate Codes</button>
+                                <button class="ies" type="button" data-ng-click="closeImportRateCodesModal();">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="ImportResults" class="import-verification" data-ng-show="showImportResults">
+                        <span>
+                            The import file will make the following updates. To continue with the import,
+                            click <i>Complete Import</i>. Otherwise, click <i>Back</i> to import a different
+                            file or close this dialog window to not import a file
+                        </span>
+                        <hr class="modal-separator" />
+                        <div class="container" style="width: 670px;">
+                            <gen-validation data-errors="$root.importRateCodesModalErrors"></gen-validation>
+                            <div class="title">{{insertRateCodes.length}} Rate Codes will be added:</div>
+                            <ul>
+                                <li data-ng-repeat="item in insertRateCodes">
+                                    {{item.RateCode}} - {{item.Description}}
+                                </li>
+                            </ul>
+
+                            <div class="title">{{updateRateCodes.length}} Rate Codes will be updated:</div>
+                            <ul>
+                                <li data-ng-repeat="item in updateRateCodes">
+                                    {{item.RateCode}} - {{item.Description}}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button id="importRateCodes" class="ies-action" data-ng-hide="importRateCodesWorking" data-ng-disabled="!importRateCodesFileName || importRateCodesModalErrors.length > 0" type="submit" data-ng-click="importRateCodesClick()">Complete Import</button>
+                            <button class="ies" type="button" data-ng-click="reshowImport();">Back</button>
+                        </div>
+                    </div>
+                </div>
+            </md-dialog>
+        </div>
+    </div>
+    @*Import Rates Modal*@
+    <div style="visibility: hidden">
+        <div class="md-dialog-container" id="importRatesDialog">
+            <md-dialog style="width: 400px;">
+                <div class="modal-title-bar modal-header">
+                    <span class="modal-title-text">Import Rates File</span>
+                    <div class="modal-close-box" data-ng-click="closeImportRatesModal()">
+                        <i class="glyphicon glyphicon-remove"></i>
+                    </div>
+                </div>
+                <div class="modal-content-area">
+                    <form name="importRates" id="importRatesForm" method="post" enctype="multipart/form-data">
+                        <span>Any Rates in the Imported File will overwrite existing rates.</span>
+                        <hr class="modal-separator" />
+                        <gen-validation data-errors="$root.importRatesModalErrors"></gen-validation>
+                        <input type="file" name="importedRatesFileName" id="importRatesFile" class="modal-input" style="margin-bottom: 10px;" onchange="importRatesFileSelect();" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+                        <div>
+                            @Html.ActionLink("Example Rates import file", @IESWebConstants.ACTION_DOWNLOAD_EXAMPLE_RATES_IMPORT_FILE, @IESWebConstants.CONTROLLER_RATE, new { }, null)
+                        </div>
+                        <div style="font-style: oblique; margin-bottom: 10px;">Note: The application only supports Excel files with a single worksheet, and Rate values should be formatted as Currency with negative numbers formatted like <span style='color: red'>($1,234.10)</span>.</div>
+                        <div class="modal-footer">
+                            <button id="importRates" class="ies-action" data-ng-hide="importRatesWorking" data-ng-disabled="!importRatesFileName" type="submit" data-ng-click="importRatesClick()">Import Rates</button>
+                            <button class="ies" type="button" data-ng-click="closeImportRatesModal();">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </md-dialog>
+        </div>
+    </div>
+    @*Zero Out Modal*@
+    <div style="visibility: hidden">
+        <div class="md-dialog-container" id="ZeroOutDialog">
+            <md-dialog style="width: 450px;">
+                <div class="modal-title-bar modal-header">
+                    <span class="modal-title-text">Zero Out Direct Labor and Service Center Rates</span>
+                    <div class="modal-close-box" data-ng-click="closeZeroOutModal()">
+                        <i class="glyphicon glyphicon-remove"></i>
+                    </div>
+                </div>
+                <div class="modal-content-area">
+                    <span>This action will set all the Direct Labor and Service Center rates in <b>{{zeroYear}}</b> to Zero.<br/>
+                        If you are sure you wish to Zero out these rates, type <b>ZERO</b> into the confirmation box below.</span>
+                    <hr class="modal-separator"/>
+                    <div gen-validation data-errors="$scope.zeroOutModalErrors" data-ng-hide></div>
+                    <div style="text-align: center">
+                        <input type="text" id="zeroOutConfirmInput" class="modal-input" data-ng-model="zeroOutConfirmationText" style="margin-top: auto; width: 50%" md-autofocus/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="ZeroOutButton" class="ies-warning" data-ng-disabled="zeroOutConfirmationText.toUpperCase() != 'ZERO'" data-ng-click="zeroOutClick();">Zero Out Rates</button>
+                    <button class="ies" type="button" data-ng-click="closeZeroOutModal();">Cancel</button>
+                </div>
+            </md-dialog>
+        </div>
+    </div>
+</div>

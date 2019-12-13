@@ -1,0 +1,41 @@
+﻿<div id="publishModal">
+    <div class="ui-widget-header modal-title-bar">Publish New Version<div class="modal-close-box" data-ng-click="$close()"><i class="glyphicon glyphicon-remove"></i></div></div>
+    <div class="modal-content-area">
+        <form name="form">
+            <div class="form-row css3pie-position-fix">
+                <div gen-validation data-errors="$root.modalErrors"></div>
+            </div>
+            <div class="form-row">
+                <span>All PPR&amp;D and Rate changes in <b>{{model.workInProgressName}}</b> version will be saved as version: <b>{{model.revision}}</b> </span>
+            </div>
+            <div class="form-row">
+                <div class="form-label">History *</div>
+                <div class="form-element">
+                    <textarea id="editor1" ui-tinymce="tinyMceOptionsHistory" data-ng-model="model.history" data-ng-required="true" name="historyText"></textarea>
+                    <span class="small">Note: Images can be dragged into the above text area.</span>
+                    <div class="bg-danger">
+                        <span class="error" data-ng-show="form.historyText.$error.required">
+                            History is Required.
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">Release Notes *</div>
+                <div class="form-element">
+                    <textarea id="editor2" ui-tinymce="tinyMceOptionsReleaseNotes" data-ng-model="model.releaseNotes" data-ng-required="true" name="releaseNotesText"></textarea>
+                    <span class="small">Note: Images can be dragged into the above text area.</span>
+                    <div class="bg-danger">
+                        <span class="error" data-ng-show="form.releaseNotesText.$error.required">
+                            Release Notes are Required.
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="publishPPRD" data-ng-disabled="form.$invalid || $root.modalErrors.length > 0" class="ies-action" type="submit" data-ng-click="validateRates()" md-autofocus>Publish</button>
+                <button class="ies" type="button" data-ng-click="$close()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

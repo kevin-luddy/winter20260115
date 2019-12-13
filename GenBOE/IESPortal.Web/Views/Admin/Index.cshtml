@@ -1,0 +1,14 @@
+﻿@using IES.Common;
+@{
+    ViewBag.Title = "IES Admin Area";
+    Layout = "~/Views/Admin/_Layout.cshtml";
+}
+<div class="well">
+    <a href="/@IESWebConstants.CONTROLLER_ADMIN/@IESWebConstants.VIEW_BANNERS">Manage Banners</a>
+    <br />
+    <a href="/@IESWebConstants.CONTROLLER_ADMIN/@IESWebConstants.DISPLAY_SELECT_PICK_LIST_TO_MANAGE">Manage Picklists</a>
+    <br/>
+    <a href="/@IESWebConstants.CONTROLLER_ADMIN/@IESWebConstants.MANAGE_OFFLINE_APPLICATIONS">Manage Offline Applications</a>
+    <br />
+    <a href="/@IESWebConstants.CONTROLLER_ADMIN/@IESWebConstants.ACTION_CLEAR_CACHE">Clear Cache</a>
+</div>

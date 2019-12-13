@@ -1,0 +1,57 @@
+﻿@model GenTRAC.ActionLogic.ModelView.WhosOnlineModelView
+@using GenTRAC.DataBridge.DTO;
+@{
+    string parentWidget = (string)ViewData["parentWidget"];
+    string dialogName = (string)ViewData["dialogName"];
+}
+
+<script type="text/javascript">
+    $(function () {
+        $(".whos-online-button").click(function (response) {
+            var dialog = @(parentWidget).getDialog('@dialogName');
+            dialog.closeDialog();
+        });
+
+    });
+</script>
+
+<div id="UsersOnlineDetails">
+    <div class="whos-online-status">
+        Total Users Online in the last @Model.MinutesToExpireUsers minutes: @Model.UserDetails.Count()<br />
+        Last Cache Wipe at: @Model.LastCacheRefresh
+    </div>
+        <table class="grid readonly">
+            <thead>
+            <tr>
+                <th class="shortfield">NTID</th>
+                <th class="shortfield">Name</th>
+                <th class="longfield">Last Proposal Accessed</th>
+                <th class="shortfield">Time Since Last Activity</th>
+            </tr>
+        </thead>
+        <tbody>
+                @foreach (UserDTO user in Model.UserDetails)
+                {
+                    <tr>
+                        <td>
+                            @user.Ntid
+                        </td>
+                        <td>
+                            @user.DisplayName
+                        </td>
+                        <td>
+                            @user.LastProposalAccessed
+                        </td>
+                        <td>
+                            <div class="center">
+                                @user.TimeSinceLastAccess
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    <div style="text-align:center">
+        <button class="ies whos-online-button" name="ok-button" type="button">OK</button>
+    </div>
+</div>

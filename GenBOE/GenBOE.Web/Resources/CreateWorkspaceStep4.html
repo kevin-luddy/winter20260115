@@ -1,0 +1,69 @@
+﻿<div>
+    Specify if all information within the Workspace can be shared with all genBOE users once the Workspace's status is
+    Complete. This will allow all genBOE users to search and reuse Workspace and BOE data. Sharing information is encouraged
+    to promote efficiency. If the Workspace contains Organizational Conflict of Interest (OCI) information, it cannot be
+    shared and searched.
+</div>
+<br>
+<div class="form-row">
+    <div class="form-label">
+        <span>Contains OCI Information *</span>
+        <div class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);">
+        </div>
+        <!-- This comment is needed for the jquery animation to work in IE8... -->
+        <div class="help-dialog" id="ContainsOCI-HelpDialog">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">
+                Information subject to contractual organization conflict of interest (OCI) limitations.
+                Access must be restricted to authorized employees who have executed non-disclosure
+                agreements. The information is limited for use solely in the performance of the
+                contract on which it was provided or created.
+            </div>
+        </div>
+    </div>
+    <div class="radio">
+        <input name="ContainsOCI" id="ContainsOCI-Yes" type="radio" data-ng-change="updateOCI()" data-ng-model="data.ContainsOCI" data-ng-value="true" text="Yes">
+        <label for="ContainsOCI-Yes">Yes</label>
+        <br>
+        <input name="ContainsOCI" id="ContainsOCI-No" type="radio" data-ng-change="updateOCI()" data-ng-model="data.ContainsOCI" data-ng-value="false" text="No">
+        <label for="ContainsOCI-No">No</label>
+    </div>
+    <br>
+</div>
+<div class="form-row">
+    <div class="form-label">
+        <span>Contains BOE Content Templates. *</span>
+        <div class="help-icon" id="ContainsBOE-Help" onclick="CreateWorkspace.ToggleHelp(this);"></div>
+        <!-- This comment is needed for the jquery animation to work in IE8... -->
+        <div class="help-dialog" id="ContainsBOE-HelpDialog" style="width: 200px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">
+                Select 'No' if the proposal is being delivered to a
+                customer.
+                Select 'Yes' if the workspace is being created
+                with the intent of creating templates to be used
+                in other proposals.
+            </div>
+        </div>
+    </div>
+    <div class="radio">
+        <input name="ContainsContentTemplates" id="ContainsContentTemplates-Yes" type="radio" data-ng-change="updateContainsContentTemplates()" data-ng-disabled="data.ContainsOCI" data-ng-model="data.ContainsContentTemplates" data-ng-value="true" text="Yes">
+        <label for="ContainsContentTemplates-Yes">Yes</label>
+        <br>
+        <input name="ContainsContentTemplates" id="ContainsContentTemplates-No" type="radio" data-ng-change="updateContainsContentTemplates()" data-ng-disabled="data.ContainsOCI" data-ng-model="data.ContainsContentTemplates" data-ng-value="false" text="No">
+        <label for="ContainsContentTemplates-No">No</label>
+    </div>
+    <br>
+</div>
+<div class="form-row">
+    <div class="form-label">
+        <span>Share and Allow Search. *</span>
+    </div>
+    <div class="radio">
+        <input name="ShareAndAllowSearch" id="ShareAndAllowSearch-Yes" type="radio" data-ng-disabled="data.ContainsOCI || data.ContainsContentTemplates" data-ng-model="data.ShareAndAllowSearch" data-ng-value="true" text="Yes">
+        <label for="ShareAndAllowSearch-Yes">Yes, share and allow users to search all Workspace Information when the Workspace's status is Complete</label>
+        <br>
+        <input name="ShareAndAllowSearch" id="ShareAndAllowSearch-No" type="radio" data-ng-disabled="data.ContainsOCI || data.ContainsContentTemplates" data-ng-model="data.ShareAndAllowSearch" data-ng-value="false" text="No">
+        <label for="ShareAndAllowSearch-No">No, do not share and allow users to search this Workspace</label>
+    </div>
+</div>

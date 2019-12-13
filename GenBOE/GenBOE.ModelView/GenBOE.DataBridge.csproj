@@ -1,0 +1,423 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F909CD46-E2D7-4D57-B647-6D93F9DD9618}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GenBOE.DataBridge</RootNamespace>
+    <AssemblyName>GenBOE.DataBridge</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\boe.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+    <DebugSymbols>true</DebugSymbols>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common, Version=5.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=2.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Interception, Version=2.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\Microsoft.Practices.Unity.Interception.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\Delegates.cs" />
+    <Compile Include="Common\Interfaces\ISecurityUserAuthorizationsDataLoader.cs" />
+    <Compile Include="Common\security\SecurityAccessSpaceSystems.cs" />
+    <Compile Include="GenBOE.Dtos\Common\IBOEMembership.cs" />
+    <Compile Include="GenBOE.Dtos\Common\IVariableDTO.cs" />
+    <Compile Include="GenBOE.Dtos\Common\IWorkspaceMembership.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\BoeApproverResponseDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\BOECommentDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\BoeFormClinContractTypeDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\BOEFormDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\BOEFormIBOEDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\BOEFormPBOEDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\BOEHistoryDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\BOEProjectMapSearchDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\BOESearchDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\BOESearchResultDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\ClinDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\CustomFieldDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\CustomFieldValueContainer.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\CustomFieldValueDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\EscalationRatesDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\FindReplaceDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\GenBOEMetricsDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\GenBOEUsersOnlineDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\GroupDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\LocationDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\MetricNameTaskElementMappingDto.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\MileReimbursementRateDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\MiscTravelRateDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\MSTMetricDetailsDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\MSTMetricSearchCriteriaDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\MSTMetricSearchDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\MSTTravelNonzoneFeesAndCostsDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\MSTTravelTripType.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\MSTZoneTravelDestinationDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\MSTZoneTravelOriginDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\MSTZoneTravelResourceDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\OffloadRatesDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\OrdinaryVariableDto.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\OtherDirectCostSpread.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\OtherDirectCostType.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\PerDiemDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\PerformingOrgDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\PerformingOrgListDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\PermissionsDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\ProPricerDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\ProPricerPreview.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\ReportDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\ResourceDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\ResourceListDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\ResourceRateDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\ResourceSpreadDto.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\ResourceTypeDto.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\SelectBOEsToSum.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\SikorskyLegacyResourceDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\SubResourceTypeDto.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\SystemSettingDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\TaskElement\LaborSpreadRequest.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\TaskElement\SpreadCurve.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\TMResourceRateDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\TravelTripType.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\TripData.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\TripDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\UserDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\WbsDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\WorkspaceDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\WorkspaceEmailOverride.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\WorkspaceExportFormatDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\WorkspaceHistoryDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\WorkspaceRMSEscalationRatesDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\WorkspaceRMSTravelNonzoneFeesAndCostsDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\WorkspaceSearchDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\WorkspaceVariableDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\WorkspaceVersionMetaDataDTO.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Admin\ADSyncDeleteUserModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Admin\MSTZoneTravelOriginModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Reporting\BOEActivityReportModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Reporting\BOEStatusReportModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Reporting\WorkspaceActivityReportModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\BOEExportModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\BOEExportTaskElement.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\BOEExportTaskElementLabor.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\BOEExportTaskElementMOQVariableModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\BOESummaryGridModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\ValidationAllBOEModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\ValidationBOELaborType.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\ValidationBOEModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\ValidationBOETaskElementDetails.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\ValidationBOETasks.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Workspace\ProjectMapPageModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Workspace\WorkspaceStatusHistoryModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\BOEStateModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\ElementOfCostTypeModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\EmailModelDomain.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\EnumTypeModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\ExportFormatModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\FieldTypeModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\MOQTypeModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\OtherDirectCostSpreadCurveModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\ProposalClassTypeModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\ProposalStateTypeModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\RateTypeModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\RoleModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\SegmentTypeModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\SortByModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\SpreadCurveModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\SumVariableResourceTypeModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\TravelDataModelView.cs" />
+    <Compile Include="GenBOE.Dtos\Reference\WorkspaceStateModelView.cs" />
+    <Compile Include="DTO\BOEForm\BOEFormIBOEDTODataLoader.cs" />
+    <Compile Include="DTO\BOEForm\BOEFormPBOEDTODataLoader.cs" />
+    <Compile Include="DTO\BOEForm\IBOEFormIBOEDTODataLoader.cs" />
+    <Compile Include="DTO\BOEForm\IBOEFormPBOEDTODataLoader.cs" />
+    <Compile Include="DTO\BOESearch\BOESearchResult.cs" />
+    <Compile Include="DTO\BOETaskElement\BoeTaskElementDTO.cs" />
+    <Compile Include="DTO\Boe\BoeDTO.cs" />
+    <Compile Include="DTO\EscalationRates\EscalationRatesDTOLoader.cs" />
+    <Compile Include="DTO\EscalationRates\IEscalationRatesDTOLoader.cs" />
+    <Compile Include="DTO\FindReplace\FindReplaceDTODataLoader.cs" />
+    <Compile Include="DTO\MSTMetrics\IMSTMetricLoader.cs" />
+    <Compile Include="DTO\MSTMetrics\MSTMetricLoader.cs" />
+    <Compile Include="DTO\Material\MaterialDTO.cs" />
+    <Compile Include="DTO\MSTTravelAdmin\IMSTTravelNonzoneFeesAndCostsDTODataLoader.cs" />
+    <Compile Include="DTO\MSTTravelAdmin\IMSTZoneTravelDestinationDTODataLoader.cs" />
+    <Compile Include="DTO\MSTTravelAdmin\IMSTZoneTravelOriginDTODataLoader.cs" />
+    <Compile Include="DTO\MSTTravelAdmin\IMSTZoneTravelResourceDTODataLoader.cs" />
+    <Compile Include="DTO\MSTTravelAdmin\MSTTravelNonzoneFeesAndCostsDTODataLoader.cs" />
+    <Compile Include="DTO\MSTTravelAdmin\MSTZoneTravelDestinationDTODataLoader.cs" />
+    <Compile Include="DTO\MSTTravelAdmin\MSTZoneTravelOriginDTODataLoader.cs" />
+    <Compile Include="DTO\MSTTravelAdmin\MSTZoneTravelResourceDTODataLoader.cs" />
+    <Compile Include="DTO\OffloadRates\OffloadRatesDTOLoader.cs" />
+    <Compile Include="DTO\OffloadRates\IOffloadRatesDTOLoader.cs" />
+    <Compile Include="DTO\OrdinaryVariable\IOrdinaryVariableLoader.cs" />
+    <Compile Include="DTO\OrdinaryVariable\OrdinaryVariableLoader.cs" />
+    <Compile Include="DTO\OtherDirectCost\OtherDirectCostDTO.cs" />
+    <Compile Include="DTO\Picklists\BoePickListMapper.cs" />
+    <Compile Include="DTO\Picklists\ContractTypeLoader.cs" />
+    <Compile Include="DTO\Picklists\ProposalClassLoader.cs" />
+    <Compile Include="DTO\ProjectMap\IProjectMapSpreadLoader.cs" />
+    <Compile Include="DTO\ProjectMap\ProjectMapSpreadLoader.cs" />
+    <Compile Include="DTO\ProjectMap\ProjectMapDataLoader.cs" />
+    <Compile Include="DTO\ProjectMap\IProjectMapDataLoader.cs" />
+    <Compile Include="DTO\SystemSetting\ISystemSettingDTODataLoader.cs" />
+    <Compile Include="DTO\SystemSetting\SystemSettingDTODataLoader.cs" />
+    <Compile Include="DTO\ResourceSpread\IResourceSpreadLoader.cs" />
+    <Compile Include="DTO\ResourceSpread\ResourceSpreadLoader.cs" />
+    <Compile Include="DTO\ResourceType\IResourceTypeLoader.cs" />
+    <Compile Include="DTO\ResourceType\ResourceTypeLoader.cs" />
+    <Compile Include="DTO\ResourceType\ILaborTypeCustomFieldValueXREFLoader.cs" />
+    <Compile Include="DTO\ResourceType\LaborTypeCustomFieldValueXREFLoader.cs" />
+    <Compile Include="DTO\BoeApproverResponse\BoeApproverResponseDTODataLoader.cs" />
+    <Compile Include="DTO\BoeComment\BOECommentDTODataLoader.cs" />
+    <Compile Include="DTO\Boe\BoeDTODataLoader.cs" />
+    <Compile Include="DTO\BOEHistory\BOEHistoryDTODataLoader.cs" />
+    <Compile Include="DTO\BOESearch\BOESearchDTODataLoader.cs" />
+    <Compile Include="DTO\BOETaskElement\BoeTaskElementCustomFieldValueXREFLoader.cs" />
+    <Compile Include="DTO\BOETaskElement\IBoeTaskElementCustomFieldValueXREFLoader.cs" />
+    <Compile Include="DTO\BOETaskElement\BoeTaskElementDTODataLoader.cs" />
+    <Compile Include="DTO\RMSTravel\RMSZoneTravelRatesFeesDataLoader.cs" />
+    <Compile Include="DTO\GenBOEMetrics\GenBOEMetricsDTODataLoader.cs" />
+    <Compile Include="DTO\BoeApproverResponse\IBoeApproverResponseDTODataLoader.cs" />
+    <Compile Include="DTO\GenBOEMetrics\IGenBOEMetricsDTODataLoader.cs" />
+    <Compile Include="DTO\Clin\ClinDTODataLoader.cs" />
+    <Compile Include="DTO\BOETaskElement\IBoeTaskElementDTODataLoader.cs" />
+    <Compile Include="DTO\FindReplace\IFindReplaceDTODataLoader.cs" />
+    <Compile Include="DTO\Location\ILocationDTODataLoader.cs" />
+    <Compile Include="DTO\MileReimbursement\IMileReimbursementRateDTOLoader.cs" />
+    <Compile Include="DTO\MiscTravelRate\IMiscTravelRateDTOLoader.cs" />
+    <Compile Include="DTO\Material\IMaterialDTODataLoader.cs" />
+    <Compile Include="DTO\OtherDirectCost\IOtherDirectCostDTODataLoader.cs" />
+    <Compile Include="DTO\PerDiem\IPerDiemDTODataLoader.cs" />
+    <Compile Include="DTO\ProPricer\IProPricerDTODataLoader.cs" />
+    <Compile Include="DTO\TMResourceRate\TMResourceRateDTODataLoader.cs" />
+    <Compile Include="DTO\TMResourceRate\ITMResourceRateDTODataLoader.cs" />
+    <Compile Include="DTO\Travel\ITravelTripCustomFieldValueXREFLoader.cs" />
+    <Compile Include="DTO\Travel\ITravelTripTaskElementCustomFieldValueXREFLoader.cs" />
+    <Compile Include="DTO\Travel\MSTTravelDTODataLoader.cs" />
+    <Compile Include="DTO\Travel\TravelDTO.cs" />
+    <Compile Include="DTO\Travel\TravelTripCustomFieldValueXREFLoader.cs" />
+    <Compile Include="DTO\Travel\TravelTripTaskElementCustomFieldValueXREFLoader.cs" />
+    <Compile Include="DTO\Travel\ITravelDTODataLoader.cs" />
+    <Compile Include="DTO\Trip\ITripDTODataLoader.cs" />
+    <Compile Include="DTO\WorkspaceExportFormat\IWorkspaceExportFormatDTODataLoader.cs" />
+    <Compile Include="DTO\WorkspaceVariable\IWorkspaceVariableDTODataLoader.cs" />
+    <Compile Include="DTO\WorkspaceVersionMetaData\IWorkspaceVersionMetaDataDTODataLoader.cs" />
+    <Compile Include="DTO\Location\LocationDTODataLoader.cs" />
+    <Compile Include="DTO\Material\MaterialDTODataLoader.cs" />
+    <Compile Include="DTO\CustomField\CustomFieldDTODataLoader.cs" />
+    <Compile Include="DTO\CustomFieldValue\CustomFieldValueDTODataLoader.cs" />
+    <Compile Include="DTO\BOESearch\IBOESearchDTODataLoader.cs" />
+    <Compile Include="DTO\CustomField\ICustomFieldDTODataLoader.cs" />
+    <Compile Include="DTO\CustomFieldValue\ICustomFieldValueDTODataLoader.cs" />
+    <Compile Include="DTO\PerformingOrg\IPerformingOrgDTODataLoader.cs" />
+    <Compile Include="DTO\PreformingOrgList\IPerformingOrgListDTODataLoader.cs" />
+    <Compile Include="DTO\Resources\IResourceDTODataLoader.cs" />
+    <Compile Include="DTO\ResourceList\IResourceListDTODataLoader.cs" />
+    <Compile Include="DTO\WorkspaceHistory\IWorkspaceHistoryDTODataLoader.cs" />
+    <Compile Include="DTO\WorkspaceSearch\IWorkspaceSearchDTODataLoader.cs" />
+    <Compile Include="DTO\MileReimbursement\MileReimbursementRateDTOLoader.cs" />
+    <Compile Include="DTO\MiscTravelRate\MiscTravelRateDTOLoader.cs" />
+    <Compile Include="DTO\OtherDirectCost\OtherDirectCostDTODataLoader.cs" />
+    <Compile Include="DTO\PerDiem\PerDiemDTODataLoader.cs" />
+    <Compile Include="DTO\PerformingOrg\PerformingOrgDTODataLoader.cs" />
+    <Compile Include="DTO\PreformingOrgList\PerformingOrgListDTODataLoader.cs" />
+    <Compile Include="DTO\ProPricer\ProPricerDTODataLoader.cs" />
+    <Compile Include="DTO\Resources\ResourceDTODataLoader.cs" />
+    <Compile Include="DTO\ResourceList\ResourceListDTODataLoader.cs" />
+    <Compile Include="DTO\Travel\TravelDTODataLoader.cs" />
+    <Compile Include="DTO\Trip\TripDTODataLoader.cs" />
+    <Compile Include="DTO\WorkspaceExportFormat\WorkspaceExportFormatDTODataLoader.cs" />
+    <Compile Include="DTO\WorkspaceHistory\WorkspaceHistoryDTODataLoader.cs" />
+    <Compile Include="DTO\ADGroup\GroupDTODataLoader.cs" />
+    <Compile Include="DTO\BoeComment\IBOECommentDTODataLoader.cs" />
+    <Compile Include="DTO\Boe\IBoeDTODataLoader.cs" />
+    <Compile Include="DTO\BOEHistory\IBOEHistoryDTODataLoader.cs" />
+    <Compile Include="DTO\Clin\IClinDTODataLoader.cs" />
+    <Compile Include="DTO\ADGroup\IGroupDTODataLoader.cs" />
+    <Compile Include="DTO\Permissions\IPermissionsDTODataLoader.cs" />
+    <Compile Include="DTO\User\IUserDTODataLoader.cs" />
+    <Compile Include="DTO\Wbs\IWbsDTODataLoader.cs" />
+    <Compile Include="DTO\Workspace\GenBOEHomepageWorkspaceRowModelView.cs" />
+    <Compile Include="DTO\Workspace\IWorkspaceDTODataLoader.cs" />
+    <Compile Include="DTO\Permissions\PermissionsDTODataLoader.cs" />
+    <Compile Include="DTO\User\UserDTODataLoader.cs" />
+    <Compile Include="DTO\Wbs\WbsDTODataLoader.cs" />
+    <Compile Include="DTO\Workspace\RTEValidationMV.cs" />
+    <Compile Include="DTO\Workspace\WorkspaceDTODataLoader.cs" />
+    <Compile Include="DTO\WorkspaceSearch\WorkspaceSearchDTODataLoader.cs" />
+    <Compile Include="DTO\WorkspaceVariable\WorkspaceVariableDTODataLoader.cs" />
+    <Compile Include="DTO\WorkspaceVersionMetaData\WorkspaceVersionMetaDataDTODataLoader.cs" />
+    <Compile Include="DTO\Picklists\LineOfBusinessDataLoader.cs" />
+    <Compile Include="Common\Interfaces\ISecurityAccess.cs" />
+    <Compile Include="Common\security\SecurityAccess.cs" />
+    <Compile Include="Common\security\SecurityGroupAuthorizationsDataLoader.cs" />
+    <Compile Include="Common\security\SecurityPermissionsRequested.cs" />
+    <Compile Include="Common\security\SecurityPermissionsResponse.cs" />
+    <Compile Include="Common\security\SecurityUserAuthorizationsDataLoader.cs" />
+    <Compile Include="GenBOE.Objects\ConvertedProjectMapDTO.cs" />
+    <Compile Include="GenBOE.Objects\FullObjectFactory.cs" />
+    <Compile Include="GenBOE.Objects\FullObjectHelper.cs" />
+    <Compile Include="GenBOE.Objects\FullObjects\FullBoe.cs" />
+    <Compile Include="GenBOE.Objects\FullObjects\FullClin.cs" />
+    <Compile Include="GenBOE.Objects\FullObjects\FullProjectMapWorkspace.cs" />
+    <Compile Include="GenBOE.Objects\FullObjects\FullWbs.cs" />
+    <Compile Include="GenBOE.Objects\FullObjects\FullWorkspace.cs" />
+    <Compile Include="GenBOE.Objects\FullObjects\ProjectMapConverter.cs" />
+    <Compile Include="GenBOE.Objects\FullWorkspaceHelper.cs" />
+    <Compile Include="GenBOE.Objects\IFullObjectFactory.cs" />
+    <Compile Include="GenBOE.Objects\IRetriever.cs" />
+    <Compile Include="GenBOE.Objects\Retriever.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reference\CommonDataLoader.cs" />
+    <Compile Include="Reference\CommonDataMapper.cs" />
+    <Compile Include="Reference\ICommonDataLoader.cs" />
+    <Compile Include="Reference\ICommonDataMapper.cs" />
+    <Compile Include="Reference\IInUseDataLoader.cs" />
+    <Compile Include="Reference\InUseDataLoader.cs" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="Settings.StyleCop" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4 Client Profile %28AnyCPU and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IES.Common\IES.Common.csproj">
+      <Project>{FADFE985-0AA1-41AF-B7CB-A740673FC0D7}</Project>
+      <Name>IES.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.Models\GenBOE.Models.csproj">
+      <Project>{5E73D211-CFD8-49AC-B164-3ECDDEA9B443}</Project>
+      <Name>GenBOE.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.MSTMetricModel\GenBOE.MSTMetricModel.csproj">
+      <Project>{d9645139-bd1d-474b-8960-ed105bb1a4dc}</Project>
+      <Name>GenBOE.MSTMetricModel</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

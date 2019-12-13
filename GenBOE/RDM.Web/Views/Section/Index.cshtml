@@ -1,0 +1,62 @@
+﻿@inherits System.Web.Mvc.WebViewPage<System.Collections.ObjectModel.Collection<IES.DataBridge.ModelViews.SectionModelView>>
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = "Sections";
+    JsonSerializerSettings microsoftDateFormatSettings = new JsonSerializerSettings
+    {
+        DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
+        DateParseHandling = DateParseHandling.DateTime,
+        DateTimeZoneHandling = DateTimeZoneHandling.Local
+    };
+}
+<br />
+<script type="text/javascript">
+    angular.module('RDM').value('SectionModel', {
+        data: @Html.Raw(JsonConvert.SerializeObject(Model, microsoftDateFormatSettings))
+        });
+</script>
+<div data-ng-controller="SectionController">
+    <div class="row top-margin-2">
+        <div class="col-xs-12">
+            <div class="module">
+                <div class="module-header-data left">Sections</div>
+                <div class="module-content-data" data-ng-cloak>
+                    <div class="form-row css3pie-position-fix last-form-row">
+                        <div id="errorMessage"></div>
+                        <div class="buttons inline css3pie-position-fix" style="line-height: 28px;">
+                            <button id="AddButton-Section" data-ng-click="addSection()" data-ng-disabled="isDataLoading" type="button" class="ies-action">+ Add</button>
+                            &nbsp; <!-- need line-height and nbsp to ensure div still occupies some real estate when button is hidden -->
+                        </div>
+                    </div>
+                    <div class="form-row last-form-row">
+                        <div class="section-grid">
+                            <table id="SectionGrid" class="grid readonly">
+                                <thead>
+                                    <tr>
+                                        <th class="section-level bootstrap">Reference Number</th>
+                                        <th class="section-level bootstrap">Level</th>
+                                        <th class="section-order bootstrap">Order</th>
+                                        <th class="section-title bootstrap">Title</th>
+                                        <th class="section-internal bootstrap center">Internal</th>
+                                        <th>Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr data-ng-show="isDataLoading"><td colspan="3"><div class="loader"></div></td></tr>
+                                    <tr data-ng-repeat="section in data | orderBy:'ReferenceNumber'">
+                                        <td><a title="{{::section.ReferenceNumber}}" href="{{::section.url}}">{{::section.ReferenceNumber}}</a></td>
+                                        <td><a title="{{::section.Level}}" href="{{::section.url}}">{{::section.Level}}</a></td>
+                                        <td><a title="{{::section.Order}}" href="{{::section.url}}">{{::section.Order}}</a></td>
+                                        <td><a title="{{::section.Title}}" href="{{::section.url}}">{{::section.Title}}</a></td>
+                                        <td class="center"><input type="checkbox" data-ng-checked="{{::section.Internal}}" /></td>
+                                        <td><span title="Delete" role="button" data-ng-click="deleteSection(section, $index)" class="glyphicon glyphicon-remove text-danger text-center"></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

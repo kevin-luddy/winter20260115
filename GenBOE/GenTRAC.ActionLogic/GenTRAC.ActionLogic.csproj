@@ -1,0 +1,197 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{43E225DD-557F-45EB-8317-23284A61EC79}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GenTRAC.ActionLogic</RootNamespace>
+    <AssemblyName>GenTRAC.ActionLogic</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+    <DebugSymbols>true</DebugSymbols>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Practices.Unity, Version=1.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.4\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.4\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ControllerLogic\AdminControllerLogic.cs" />
+    <Compile Include="ControllerLogic\ApprovalsControllerLogic.cs" />
+    <Compile Include="ControllerLogic\ChecklistControllerLogic.cs" />
+    <Compile Include="ControllerLogic\GenTRACControllerLogic.cs" />
+    <Compile Include="ControllerLogic\HomeControllerLogic.cs" />
+    <Compile Include="CacheWarming\CacheWarmer.cs" />
+    <Compile Include="CacheWarming\ICacheWarmer.cs" />
+    <Compile Include="ControllerLogic\PostSubmittalAttachmentsControllerLogic.cs" />
+    <Compile Include="Email\ApprovalEmailer.cs" />
+    <Compile Include="Email\PtmEmailer.cs" />
+    <Compile Include="Email\IPtmEmailer.cs" />
+    <Compile Include="GeneralHelper\Helpers.cs" />
+    <Compile Include="GeneralHelper\HtmlHelper.cs" />
+    <Compile Include="GeneralHelper\IHtmlHelper.cs" />
+    <Compile Include="GeneralHelper\SortHelper.cs" />
+    <Compile Include="Mediator\ChecklistMediator.cs" />
+    <Compile Include="Mediator\IChecklistMediator.cs" />
+    <Compile Include="Mediator\IProposalMediator.cs" />
+    <Compile Include="Mediator\IProposalPermissionMediator.cs" />
+    <Compile Include="Mediator\ISystemPermissionMediator.cs" />
+    <Compile Include="Mediator\IUserMediator.cs" />
+    <Compile Include="Mediator\ProposalMediator.cs" />
+    <Compile Include="Mediator\ProposalPermissionMediator.cs" />
+    <Compile Include="Mediator\SystemPermissionMediator.cs" />
+    <Compile Include="Mediator\UserMediator.cs" />
+    <Compile Include="ModelView\PostSubmittalAttachments\PostSubmittalAttachmentModelView.cs" />
+    <Compile Include="ModelView\Proposals\ProposalCertificationTimelineModelView.cs" />
+    <Compile Include="ModelView\Reports\DfarsReportModelView.cs" />
+    <Compile Include="Synchronization\ActiveDirectorySynchronization.cs" />
+    <Compile Include="UrlValidator.cs" />
+    <Compile Include="ModelView\Admin\BulkArchiveModelView.cs" />
+    <Compile Include="ModelView\Admin\ManagePermissionsModelView.cs" />
+    <Compile Include="ModelView\Admin\ManageProposalInfoDetailsView.cs" />
+    <Compile Include="ModelView\Admin\PermissionModelView.cs" />
+    <Compile Include="ModelView\Admin\PermissionsGridModelView.cs" />
+    <Compile Include="ModelView\Approvals\ApprovalsIndexModelView.cs" />
+    <Compile Include="ModelView\Approvals\ApprovalSectionModelView.cs" />
+    <Compile Include="ModelView\Checklist\ChecklistGeneralInformationModelView.cs" />
+    <Compile Include="ModelView\Checklist\ChecklistIndexModelView.cs" />
+    <Compile Include="ModelView\Checklist\ChecklistProposalAdequacyReviewDocumentModelView.cs" />
+    <Compile Include="ModelView\Checklist\ChecklistProposalPricingDataModelView.cs" />
+    <Compile Include="ModelView\Checklist\ChecklistProposalPricingReviewDocumentModelView.cs" />
+    <Compile Include="ModelView\Checklist\ChecklistRowModelView.cs" />
+    <Compile Include="ModelView\Checklist\PARChecklistModelView.cs" />
+    <Compile Include="ModelView\GenTRACMasterModelView.cs" />
+    <Compile Include="ModelView\GenTRACMenuItemModelView.cs" />
+    <Compile Include="ModelView\Home\ExportProposalReportModelView.cs" />
+    <Compile Include="ModelView\Home\HomeProposalFiltersModelView.cs" />
+    <Compile Include="ModelView\Home\HomeProposalGridModelView.cs" />
+    <Compile Include="ModelView\Home\HomeProposalModelView.cs" />
+    <Compile Include="ModelView\Proposals\ProposalApprovalsModelView .cs" />
+    <Compile Include="ModelView\Home\RequiredApprovalsModelView.cs" />
+    <Compile Include="ModelView\WhosOnlineModelView.cs" />
+    <Compile Include="ModelView\PagedResultsModelView.cs" />
+    <Compile Include="ModelView\PersistedDataModelView.cs" />
+    <Compile Include="ModelView\Proposals\ProposalGeneralInformationModelView.cs" />
+    <Compile Include="ModelView\Proposals\ProposalIndexModelView.cs" />
+    <Compile Include="ModelView\Proposals\ProposalInformationModelView.cs" />
+    <Compile Include="ModelView\Proposals\ProposalUserInformationModelView.cs" />
+    <Compile Include="ModelView\Reports\ProposalActivityReportModelView.cs" />
+    <Compile Include="ModelView\Reports\ProposalLogReportModelView.cs" />
+    <Compile Include="ModelView\SortableModelView.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ControllerLogic\ProposalControllerLogic.cs" />
+    <Compile Include="ControllerLogic\ReportsControllerLogic.cs" />
+    <Compile Include="Validation\IValidationMethods.cs" />
+    <Compile Include="Validation\StartEndDateValidationAttribute.cs" />
+    <Compile Include="Validation\ValidationConstants.cs" />
+    <Compile Include="Validation\ValidationMethods.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Settings.StyleCop" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GenBOE.Models\GenBOE.Models.csproj">
+      <Project>{5e73d211-cfd8-49ac-b164-3ecddea9b443}</Project>
+      <Name>GenBOE.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.ModelView\GenBOE.DataBridge.csproj">
+      <Project>{f909cd46-e2d7-4d57-b647-6d93f9dd9618}</Project>
+      <Name>GenBOE.DataBridge</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenTRAC.DataBridge\GenTRAC.DataBridge.csproj">
+      <Project>{6ebd0376-9273-4a2a-9e23-1912418ddba5}</Project>
+      <Name>GenTRAC.DataBridge</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IES.Common\IES.Common.csproj">
+      <Project>{fadfe985-0aa1-41af-b7cb-a740673fc0d7}</Project>
+      <Name>IES.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\Libraries\StyleCop Files\StyleCop.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

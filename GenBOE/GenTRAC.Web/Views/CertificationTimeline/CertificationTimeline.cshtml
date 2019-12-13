@@ -1,0 +1,282 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Proposals.ProposalCertificationTimelineModelView
+@{
+    ViewBag.Title = "Proposal Certification Timeline";
+ }
+
+<script type="text/javascript">
+
+    var CertificationTimelineWidgetConfig;
+
+    $(function () {
+        var readOnly = @Model.IsReadOnly;
+        var ProposalIdWhenPageRendered = @ViewBag.proposalid;
+
+        var CertificationTimelineWidgetConfig = {};
+        CertificationTimelineWidgetConfig.ContextID = "certificationTimelineWidget";
+        CertificationTimelineWidgetConfig.IsModule = true;
+        CertificationTimelineWidgetConfig.isReadOnly = readOnly;
+
+        if (readOnly) {
+            //hide dd/mm/yyyy placeholder
+            $('input[placeholder="mm/dd/yyyy"]').each(function() {
+                $(this).attr('placeholder', '');
+            });
+        }
+
+        var FormConfigs = [];
+        FormConfigs.push({
+            ElementID: "certificationTimelineForm",
+            Buttons: [
+            {
+                ButtonClass: 'ies-action',
+                ButtonText: 'Save',
+                ButtonName: "save-button",
+                ButtonAction: function (buttonPressed) {
+                    ProposalCertificationTimelineWidget.SavePage(buttonPressed);
+                },
+                Stateful: true
+            },
+            {
+                ButtonClass: 'ies-action',
+                ButtonText: 'Complete',
+                ButtonName: "complete-button",
+                ButtonAction: function (buttonPressed) {
+                    ProposalCertificationTimelineWidget.SaveAndCompletePage(buttonPressed);
+                },
+                Stateful: false
+            },
+            {
+                ButtonClass: 'ies',
+                ButtonText: 'Cancel',
+                ButtonName: "cancel-button",
+                ButtonAction: function (buttonPressed) {
+                    if (GenSession.isDirty()) {
+                        GenSession.confirmDialog(
+                         "Unsaved Changes",
+                         "You have selected to leave this tab without saving your current changes.  If you wish to leave the unsaved changes select Yes.  To stay on the page select No.",
+                         ProposalCertificationTimelineWidget.RedirectHomeDirty,
+                         null);
+                    } else {
+                        ProposalCertificationTimelineWidget.RedirectHome();
+                    }
+                }
+            }],
+            ContainsOCI: "true",
+            IsClassEnvironment: isClassEnvironment
+        });
+
+        CertificationTimelineWidgetConfig.FormConfigs = FormConfigs;
+
+        ProposalCertificationTimelineWidget = new GenWidget(CertificationTimelineWidgetConfig);
+        ProposalCertificationTimelineWidget.LoadDataPlaceholderID = 'proposalCertificationTimelineDataPlaceholder';
+
+        ProposalCertificationTimelineWidget.getElement('input[name="AgreementDate"]').data('previousDateText', '@Model.AgreementDate');
+        ProposalCertificationTimelineWidget.getElement('input[name="AgreementDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                ProposalCertificationTimelineWidget.setDirty("certificationTimelineForm");
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+
+            }
+        });
+
+        ProposalCertificationTimelineWidget.getElement('input[name="CertificationDate"]').data('previousDateText', '@Model.CertificationDate');
+        ProposalCertificationTimelineWidget.getElement('input[name="CertificationDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                ProposalCertificationTimelineWidget.setDirty("certificationTimelineForm");
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+                ProposalCertificationTimelineWidget.UpdateCertDays();
+            }
+        });
+
+        ProposalCertificationTimelineWidget.RedirectHome = function () {
+            window.location = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.HOME',
+                action: '@WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME'
+            });
+        };
+
+        // Save the page
+        ProposalCertificationTimelineWidget.SavePage = function (buttonPressed) {
+            var url = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.CERTIFICATION_TIMELINE',
+                action: '@WebConstants.Action.SAVE_CERTIFICATION_TIMELINE',
+                id: ProposalIdWhenPageRendered
+            });
+
+            ProposalCertificationTimelineWidget.Save(buttonPressed, url, false);
+        };
+
+        ProposalCertificationTimelineWidget.SaveAndCompletePage = function (buttonPressed) {
+            var url = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.CERTIFICATION_TIMELINE',
+                action: '@WebConstants.Action.COMPLETE_CERTIFICATION_TIMELINE',
+                id: ProposalIdWhenPageRendered
+            });
+
+            ProposalCertificationTimelineWidget.Save(buttonPressed, url, true);
+        };
+
+        ProposalCertificationTimelineWidget.Save = function(buttonPressed, postUrl, hideButtons){
+            var dataToSend = ProposalCertificationTimelineWidget.getForm("certificationTimelineForm").getData();
+            dataToSend = JSON.stringify(dataToSend);
+
+            // Validate the proposal information.
+            ProposalCertificationTimelineWidget.saveRequest({
+                type: 'POST',
+                url: postUrl,
+                contentType: 'application/json; charset=utf-8',
+                data: dataToSend,
+                performDirtyProcessing: true,
+                success: function (response) {
+                    ProposalCertificationTimelineWidget.cleanDirty();
+                    if (hideButtons){
+                        $("form[name=certificationTimelineForm] div.buttons button[name=save-button]").hide();
+                        $("form[name=certificationTimelineForm] div.buttons button[name=complete-button]").hide();
+                    }
+
+                    GenSession.ShowLoadingBox();
+                    location.reload(true);
+                },
+                error: function () {
+                    ProposalCertificationTimelineWidget.refreshModule();
+                }
+            }, buttonPressed);
+        };
+
+        // Cleans the dirty form then redirects home
+        ProposalCertificationTimelineWidget.RedirectHomeDirty = function () {
+            ProposalCertificationTimelineWidget.cleanDirty();
+            ProposalCertificationTimelineWidget.RedirectHome();
+        };
+
+        // skip datepicker icons when tabbing
+        ProposalCertificationTimelineWidget.getElement('.ui-datepicker-trigger').attr('tabindex', '-1');
+        ProposalCertificationTimelineWidget.getElement('.ui-datepicker-trigger').on('blur', function () {
+            $(this).attr('tabindex', '-1');
+        });
+
+        if (!readOnly) {
+            // Used for print to pdf, display textarea content in a div to preserve textarea overflow text.
+            var CertificationTimelineComment = ProposalCertificationTimelineWidget.getElement('#CertificationTimelineComment').val().replace(/\n/g, '<br/>');
+            ProposalCertificationTimelineWidget.getElement('#PrintCertificationTimelineComment').html(CertificationTimelineComment);
+
+            ProposalCertificationTimelineWidget.getElement('#CertificationTimelineComment').change(function () {
+                var CertificationTimelineComment = ProposalCertificationTimelineWidget.getElement('#CertificationTimelineComment').val().replace(/\n/g, '<br/>');
+                ProposalCertificationTimelineWidget.getElement('#PrintCertificationTimelineComment').html(CertificationTimelineComment);
+            });
+        } else {
+            ProposalCertificationTimelineWidget.getElement('#PrintCertificationTimelineComment').html('');
+        }
+
+        if (readOnly) {
+            // remove calendar link
+            $(".ui-datepicker-trigger").each(function() {
+                $(this).hide();
+            });
+
+            ProposalCertificationTimelineWidget.getElement('select[name=CutOffDateUtilization]').next('.replacedWidgetText').html('@(Model.CutOffDateUtilization.HasValue ? Model.CutOffDateUtilization.GetDescription() : string.Empty)');
+        }
+
+        // update to add/remove the checked attribute for each radio button change, as ie won't detect dynamic changes by the user when printing
+        ProposalCertificationTimelineWidget.getElement('input[type="radio"]').change(function () {
+
+            // set the checked attribute for the checked radio button
+            GenTRAC.SetCheckAttr(this);
+
+            var responseId = this.id;
+            var row = $(this).parent();
+
+            // find all radio buttons in current row and remove its checked attribute, if it doesn't match the current selection
+            $(row).find(".radio").each(function() {
+                if(this.id != responseId)
+                    $(this).removeAttr('checked');
+            });
+        });
+
+        ProposalCertificationTimelineWidget.UpdateCertDays = function() {
+            var agreementDate = $("#AgreementDate").val();
+            var certDate = $("#CertificationDate").val();
+
+            var end = moment(certDate, "MM/DD/YYYY");
+            var start = moment(agreementDate, "MM/DD/YYYY");
+            
+            var diff = "";
+            
+            if (end.isValid() && start.isValid()){
+                start = start.startOf('day');
+                end = end.startOf('day');
+
+                var diffDays = end.diff(start, 'days');
+                if (diffDays >= 0) {
+                    diff = diffDays.toString();
+                }
+            } 
+
+            // Using .text since this is a span
+            $("#daysToCertification").text(diff);
+        };
+
+    });
+</script>
+
+<div id="certificationTimelineWidget" class="module full composite cert-content">
+    <div class="module-header-data">Certification Timeline</div>
+    <div class="module-content-data expanded-content">
+       @using(Html.BeginForm("", "", FormMethod.Post, new { id= "certificationTimelineForm",
+           name = "certificationTimelineForm"
+       }))
+       {
+            <div class="form-row">
+                <div class="form-label">
+                    <span>Date of Agreement on Final Price (Handshake)</span>
+                </div>
+                <div class="form-element">
+                    <input id="AgreementDate" name="AgreementDate" onchange="ProposalCertificationTimelineWidget.UpdateCertDays()" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.AgreementDate" maxlength="10"/>
+                </div>
+            </div>   
+            <div class="form-row">
+                <div class="form-label">
+                    <span>Date that the Certificate of CCoPD and any additional disclosures were delivered to the customer</span>
+                </div>
+                <div class="form-element">
+                    <input id="CertificationDate" name="CertificationDate" onchange="ProposalCertificationTimelineWidget.UpdateCertDays()" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.CertificationDate" maxlength="10"/>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    <span>The number of days between Certification and Agreement</span>
+                </div>
+                <div class="form-element">
+                    <span id="daysToCertification">@Model.DaysToCertification</span><span> Days (calculated)</span>
+                </div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">
+                    Were cut-off dates utilized?
+                </div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.CutOffDateUtilization, Model.CutOffDateUtilizationList, new { maxlength = 50, @class = "selection-width", @name = "CutOffDateUtilization" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    <span>Comments</span> (Explanations for exceeding 5 days)
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-element CertificationTimelineCommentRow">
+                    <div>
+                        <textarea name="Comments" maxlength="2500" class="resize" id="CertificationTimelineComment">@Model.Comments</textarea>
+                    </div>
+                    <div class="comments" id="PrintCertificationTimelineComment">@Model.Comments</div>
+                </div>
+            </div>
+       }
+    </div>
+</div>

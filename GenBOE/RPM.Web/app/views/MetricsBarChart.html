@@ -1,0 +1,16 @@
+﻿<div class="metrics-chart module">
+    <div class="module-header-data">{{caption}}</div>
+    <div class="details metrics-chart-icons">
+        <span class="floatLeft">Excel button</span>
+        <span class="floatRight">$ ?</span>
+        <span class="floatRight padRight">
+            <input type="radio" ng-model="barType" ng-click="PropClicked()" value="Prop" /> <span>Prop </span>
+            <input type="radio" ng-model="barType" ng-click="ContactClicked()" value="Contact" /> <span>Contact </span>
+            <input type="radio" ng-model="barType" ng-click="EstimatorClicked()" value="Estimator" /> <span>Estimator</span>
+        </span>
+    </div>
+    <div class="details-middle metrics-chart-title indent2">{{title}}</div>
+    <canvas class="chart chart-bar chart-xs" chart-series="series" chart-data="data"
+           chart-labels="labels"  chart-options="options" chart-colors="options.colors" ></canvas>
+    <div class="chart-footer" ng-show="showTopXNote">*Note: Only the top 8 are shown</div>
+</div>

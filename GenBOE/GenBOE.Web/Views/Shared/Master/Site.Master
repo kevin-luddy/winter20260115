@@ -1,0 +1,314 @@
+﻿<%@ Master Language="C#" Inherits="System.Web.Mvc.ViewMasterPage<dynamic>" %>
+<%@ Import namespace="IES.Common" %>
+<%@ Import namespace="IES.Common.classes" %>
+<%@ Import namespace="System.Web.Optimization" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <!--  *** DO NOT PLACE ANYTHING ABOVE THIS META STATEMENT, OR YOU WILL BREAK US AGAIN. THIS HAS TO BE THE FIRST THING IN THE HEAD. IF THAT'S AN ISSUE, 
+                TALK TO DUSAN OR MATT. *** 
+        Force Internet Explorer 8 if its available.
+    -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <script type="text/jscript">
+        // The global variables are created/assigned in every master/layout page, so that way our JS libraries (in this solution and in common) don't have to have the URL hardcoded,
+        // but they can use the web.config values instead :)
+
+        // Stores the production URL. This is used to decide whether we are in production or not.
+        var prodGenBoeUrl_Global = "<%: SiteMasterUtilities.ProductionUrl() %>";
+        
+        // Do we disable external links?
+        var disableLinks_Global = "<%: SiteMasterUtilities.DisableExternalHelpLinksForClassifiedInstallations() %>" == "True";
+    </script>
+
+    <title>
+        <asp:ContentPlaceHolder ID="TitleContent" runat="server" />
+    </title>
+    
+    <%: Scripts.Render("~/bundles/jquery") %>
+    <%: Scripts.Render("~/bundles/angularapp") %>
+    <%: Scripts.Render("~/bundles/site") %>
+    <%: Styles.Render("~/Content/siteCss") %>
+
+    <script type="text/javascript">
+            var prefix = '';
+    </script>
+
+    <link rel="shortcut icon" href="<%= this.ResolveClientUrl("~/Resources/css/images/genBOE_16x16_favicon.ico") %>" />
+
+    <% if(!Utilities.DisablePiwik()) { %>
+    <!-- Piwik Statistics -->
+    <script type="text/javascript">
+        var piwikTracker3;
+    window.piwikAsyncInit = function () {
+	    try {
+            var piwikTracker = Piwik.getTracker(pkBaseURL + "piwik.php", 25);                       //<!-- BusApps Rollup -->
+		    piwikTracker.setDocumentTitle(document.domain + "/" + document.title);
+		    piwikTracker.trackPageView();
+		    piwikTracker.enableLinkTracking();
+
+		    var piwikTracker1 = Piwik.getTracker(pkBaseURL + "piwik.php", 91);           //<!-- Space Rollup -->
+		    piwikTracker1.setDocumentTitle(document.domain + "/" + document.title);
+		    piwikTracker1.trackPageView();
+		    piwikTracker1.enableLinkTracking();
+
+		    var piwikTracker2 = Piwik.getTracker(pkBaseURL + "piwik.php", 94);           //<!-- Space Business Systems -->
+		    piwikTracker2.setDocumentTitle(document.domain + "/" + document.title);
+		    piwikTracker2.trackPageView();
+		    piwikTracker2.enableLinkTracking();
+
+		    piwikTracker3 = Piwik.getTracker(pkBaseURL + "piwik.php", <%:Utilities.PiwikId()%>);          //<!-- BOE  -->
+		    var currentUser = '<%: ViewData["CurrentUserName"] %>';
+            // Track each user's visit
+            piwikTracker3.setCustomVariable(1, "User Account", currentUser, "visit");
+            piwikTracker3.setDocumentTitle(document.domain + "/" + document.title);
+		    piwikTracker3.trackPageView();
+		    piwikTracker3.enableLinkTracking();
+	    } catch( err ) {}
+    };
+    </script>
+    <noscript>
+	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=25" style="border:0" alt="Piwik"></p>
+	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=91" style="border:0" alt="Piwik"></p>
+	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=94" style="border:0" alt="Piwik"></p>
+	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=<%:Utilities.PiwikId()%>" style="border:0" alt="Piwik"></p>
+
+    </noscript>
+    <script type="text/javascript">
+        var pkBaseURL = "<%:Utilities.PiwikUrl()%>";
+        document.write(unescape("%3Cscript src='" + pkBaseURL + "piwik.js' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+    <!-- End Piwik Statistics Code -->
+    <% } %>
+
+    <%: Scripts.Render("~/bundles/initialization") %>
+</head>
+<body>
+    <% if (IdentitySwap.IdentitySwappingForTesting.IsIdentitySwappingAllowed("IsIdentitySwappingAllowed", "ActiveDirectoryPath", "ADGroupsAllowedToSwapIdentity")) { %>
+        <div id="IdentitySwappingDiv">
+            <script src="<%= this.ResolveClientUrl("~/Resources/js/IdentitySwappingScript.js")%>" type="text/javascript"></script>
+        </div>        
+    <% } %>
+
+    <%if(ViewData["DateOnWhichTheWorkspaceWillBeDeleted"] != null) 
+      {
+        string dateOfDeletion = ((DateTime)ViewData["DateOnWhichTheWorkspaceWillBeDeleted"]).ToShortDateString(); %>
+        <div id="WorkspaceDeletedBanner">
+            This workspace has been flagged for deletion and will be removed from genBOE on <%:dateOfDeletion%>.  Please contact genBOE Support to prevent permanent deletion.
+        </div>
+    <% } %>
+
+    <%if(ViewData["TimeWhenWorkspaceWasLocked"] != null) 
+      {
+        string timeOfLocking = ((DateTime)ViewData["TimeWhenWorkspaceWasLocked"]).ToShortDateString() + " " + ((DateTime)ViewData["TimeWhenWorkspaceWasLocked"]).ToShortTimeString();  %>
+        <div class="workspaceLocked">
+            Workspace is currently undergoing a decimal precision update.  Saves are currently disabled.  This is a long running process and can take greater than 15 minutes to complete.  
+            Process started at <%:timeOfLocking%>.  Please refresh the page to continue, save will be restricted until this banner is no longer active.
+        </div>
+    <% } %>
+    <div class="page">
+        <div class="header">
+            <div class="lmproprietary">
+                            <% if (Model != null && Model.GetType() == typeof(GenBOEMasterModelView))
+                               { %>
+                                <%: ((GenBOEMasterModelView)Model).HeaderFooter%>
+                            <% }
+                               else
+                               { %>
+                                    Lockheed Martin Proprietary Information
+                            <% } %>
+            </div>
+            <% if (!string.IsNullOrEmpty(SiteMasterUtilities.UnclassifiedBannerText))
+            {%>
+                <div class="unclassifiedbanner">
+                    <%=SiteMasterUtilities.UnclassifiedBannerText%>
+                </div>
+            <%}%>
+
+            <% if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems) { %>
+            <iframe class="iframe" src="<%:ConfigurationUtilities.IESHeaderUrl("BOE")%>"></iframe>
+            <% } %>
+            <div class="title">
+                <div class="site-name">
+                    <a href="/">
+                        <% if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+                            {  %>
+                        <img alt="genBOE" class="logo-header" src="<%: this.ResolveClientUrl("~/Resources/css/images/logo_BOE_wide.jpg")%>"/>
+                        <% } else { %>
+                        <img alt="genBOE" class="logo-header" src="<%: this.ResolveClientUrl("~/Resources/css/images/logo_genBOE_wide.png")%>"/>
+                        <% } %>
+                    </a>
+                    
+                    <% if (Model != null && (Model is GenBOEMasterModelView || Model is DateShiftIndexModelView))
+                        { %>
+                    <div><%: ((GenBOEMasterModelView)Model).ProposalName %>
+                            <div id="StatusDisplay" class="workspace-status">Status: <%: ((GenBOEMasterModelView)Model).WorkspaceState %></div>
+                    </div>
+                    <div class="workspace-status">
+                        <% if (ConfigurationUtilities.GetAppSetting<bool>("ShowUserName", false))
+                        {
+                            Response.Write("Username : " + System.Threading.Thread.CurrentPrincipal.Identity.Name);
+                        }
+                        %>
+                        <% if (ConfigurationUtilities.GetAppSetting<bool>("ShowCompanyConfiguration", false)) 
+                        { %>
+                            <div>Company Mode: <%: SystemConfiguration.Instance().CompanyMode.GetDescription() %></div>
+                        <% } %> 
+                    </div>
+                    <% } else 
+                        { %>
+                            <div>Estimating Transformation Initiative</div>
+                    <% } %>
+                    <div class="lmlogo"></div>
+                </div>
+            </div>
+        </div>
+        <% Html.RenderAction(WebConstants.ACTION_SHARED_DISPLAY_MASTER_MENU, WebConstants.CONTROLLER_GENBOE); %>
+        <div class="bannerContainer">
+            <iframe class="bannerframe" id="bannerIFrame" src="<%:ConfigurationUtilities.IESBannerUrl(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems ? "BOESSC" : "BOERMS")%>"></iframe>
+        </div>
+        <div class="main">
+            <div id="Notification" class="notification-bar display-none">
+                <div class="notification">
+                    <div class="text">Notify Me!</div>
+                    <div id="MessageClose" class="button message-close-button"></div>
+                </div>
+            </div>
+            <asp:ContentPlaceHolder ID="MainContent" runat="server" />
+        </div>
+    </div>
+    <div class="footer">
+        <div class="lmproprietary">
+            <% if (Model != null && Model.GetType() == typeof(GenBOEMasterModelView))
+                { %>
+                <%: ((GenBOEMasterModelView)Model).HeaderFooter%>
+            <% }
+                else
+                { %>
+                    Lockheed Martin Proprietary Information
+            <% } %>
+
+            <div id="footerVersionInfo"><%: Html.Raw(IES.Common.Utilities.VersionAndUpdatedDate)%></div>
+        </div>
+    </div>
+    <div id="ExceptionDialog" style="display: none; text-align: center;">
+        <div id="ErrorText" class="dialog-text">
+            Replace me!
+            <br />
+        </div>
+        <span id="ToggleErrorDetails" class="underline pointer">
+            Error Details
+            <br />
+        </span>
+        <div id="ErrorDetails" class="error-details">
+            Replace me!
+            <br />
+            <br />
+        </div>
+        <div class="error-buttons">
+            <button id="ExceptionDialog-OK" class="ies" onclick="CloseExceptionDialog();" name="ok-button" type="button">OK</button>
+        </div>
+    </div>
+    <div id="CommonDialog" style="display: none; text-align: center;">
+        <div id="CommonDialogBody" class="dialog-text">
+            <br />
+        </div>
+        <div class="buttons">
+        </div>
+    </div>
+    <div id="PageLoading" class="page-loading display-none">
+        <div class="loading-box">
+            <div class="loader white"></div>
+            <span>Loading...</span>
+        </div>
+    </div>
+    <div id="PageValidating" class="page-loading display-none">
+        <div class="loading-box">
+            <div class="loader white"></div>
+            <span>Validating...</span>
+        </div>
+    </div>
+    <div class="display-none">
+        <iframe id="tinymce-image-iframe" name="tinymce-image-iframe"></iframe>
+    </div>
+    <iframe  class="appOfflineFrame" src="<%:ConfigurationUtilities.AppOfflineUrl(SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems ? "BOE SSC" : "BOE RMS")%>"></iframe>
+    <script type="text/javascript">
+        $(function () {
+            $(".nav-bar.left .submenu").each(function () {
+                // Move each submenu directly under its parent tab
+                // the submenu will be aligned with the start of the nav-bar
+                // move it right to the position of its parent menu item.
+                $(this).css("margin-left", $(this).parent().position().left - 1);
+
+                // Set the submenu width the greater of its current size or the tab width + 50px
+                // This will make sure that the submenu is always wider than its parent tab
+                $(this).css("width", Math.max($(this).parent().width() + 50, $(this).width()));
+
+                // Sets the parent of the selected submenu item to selected also.
+                $('.submenu').each(function () {
+                    if ($(this).find('.selected').length > 0) {
+                        $(this).parent().addClass('selected');
+                    }
+                });
+            });
+
+            $(".nav-bar.right .submenu").each(function () {
+                // Set the submenu width the greater of its current size or the tab width + 75px
+                // This will make sure that the submenu is always wider than its parent tab
+                $(this).css("width", Math.max($(this).parent().width() + 75, $(this).width()));
+
+                // the submenu will be aligned with the start of the nav-bar
+                // move it right to the position of its parent menu item.
+                $(this).css("margin-left", $(this).parent().position().left - 1 - ($(this).width() - $(this).parent().width()));
+
+                // Sets the parent of the selected submenu item to selected also.
+                $('.submenu').each(function () {
+                    if ($(this).find('.selected').length > 0) {
+                        $(this).parent().addClass('selected');
+                    }
+                });
+            });
+
+            $(document).bind("UPDATE_STATUS", function (e, newStatus) {
+                $('#StatusDisplay').html('Status: ' + newStatus);
+            });
+
+            $(document).bind('SHOW_LOADING_BOX', function () {
+                $('#PageLoading').removeClass('display-none');
+            });
+
+            $(document).bind('HIDE_LOADING_BOX', function () {
+                $('#PageLoading').addClass('display-none');
+            });
+
+            $(document).bind('DISPLAY_NOTIFICATION', function (event, text) {
+                $('#Notification div.text').html(text);
+                $('#Notification').removeClass('display-none');
+                $('html, body').animate({ scrollTop: $("#Notification").offset().top }, 200);
+            });
+
+            $('#MessageClose').click(function () {
+                $('#Notification').addClass('display-none');
+            });
+
+            /*** This utility is for a browser alert 
+            the session var ensures single prompt per session */
+            var reminder = '<%: SiteMasterUtilities.GetBrowserReminder() %>';
+            if (reminder == "True" && !GenSession.isValidBrowser()) {
+                Session.alertDialog('Browser Warning',
+                  'This is not a supported browser.  Please use Internet Explorer 8.0, Firefox 3.6, '
+                  + 'or higher versions of these recommended browsers for the best experience. '
+                  + 'Select OK to continue with your current browser.  <br/><br/>');
+            }
+        });
+    </script>
+
+    <% 
+        if (ViewData["IsAdmin"] != null && (bool)ViewData["IsAdmin"] == true)
+        {
+            Html.RenderAction(WebConstants.ACTION_DISPLAY_WORKSPACE_UPDATE_RATES_DIALOG, WebConstants.CONTROLLER_WORKSPACE, new { useCookie = true });
+        }
+    %>
+</body>
+</html>

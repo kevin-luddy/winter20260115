@@ -1,0 +1,48 @@
+﻿@using IES.Common
+@{
+    ViewBag.Title = "Rate Code Replication";
+} 
+
+<script>
+    angular.module('RDM').value('RateCodeReplicationModel', {
+        controller: '@IESWebConstants.CONTROLLER_ADMIN',
+        getAction: '@IESWebConstants.ACTION_GET_RATE_CODE_REPLICATION',
+        saveAction: '@IESWebConstants.ACTION_SAVE_RATE_CODE_REPLICATION',
+        Area: @((int)LockArea.RateCodeReplication)
+    });
+</script>
+<br />
+
+<div class="row top-margin-2" data-ng-controller="RateCodeReplicationCtrl">
+    <div class="col-md-12">
+        <div class="module">
+            <div class="module-header-data left">
+                Rate Code Replication
+                <span data-ng-cloak data-ng-if="lockInfo.Editing"> -- Currently locked for edit by {{lockInfo.Editing}}</span> &nbsp; &nbsp;
+                <button data-ng-cloak data-ng-click="lock()" data-ng-disabled="isDataLoading" data-ng-if="lockInfo.IsReadOnly && lockInfo.IsLockAllowed" type="button" class="ies">Enable Editing</button>
+                <span data-ng-cloak data-ng-if="showEditLockTimeoutExpiration" class="EditLockTimeoutExpiration">Your edit lock has expired.</span>
+            </div>
+            <div class="module-content-data black">
+                <div class="form-row css3pie-position-fix">
+                    <div id="errorMessage" data-ng-cloak></div>
+                    <gen-validation data-errors="$root.errors"></gen-validation>
+                    <div class="notificationMessage" id="notificationMessage" data-ng-show="notificationMessage" data-ng-cloak>{{notificationMessage}}</div>
+                    
+                    <button data-ng-click="addReplication()" data-ng-hide="isDataLoading || lockInfo.IsReadOnly" data-ng-disabled="isDataLoading" type="button" class="ies-action">+ Add</button>
+                </div>
+                <div class="form-row">
+                    <form name="replicationForm" id="replicationForm">
+                        <div ui-grid="gridOptions" ui-grid-edit ui-grid-cellNav ui-grid-exporter class="replication-grid-ui" />
+                    </form>
+                </div>
+                <div class="form-row css3pie-position-fix last-form-row" data-ng-hide="lockInfo.IsReadOnly">
+                    <div class="inline css3pie-position-fix">
+                        <button data-ng-click="confirmSave()" data-ng-disabled="isDataLoading || !PageIsDirty" type="button" class="ies-action">Save</button>
+                        <button data-ng-click="confirmCancel()" data-ng-disabled="isDataLoading" type="button" class="ies">Cancel</button>
+                        &nbsp; <!-- need line-height and nbsp to ensure div still occupies some real estate when button is hidden -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

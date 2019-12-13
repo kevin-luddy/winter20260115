@@ -1,0 +1,254 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Proposals.ProposalGeneralInformationModelView
+@{
+    ViewBag.Title = "Proposal General Information";
+ }
+
+<script type="text/javascript">
+
+    var ProposalGeneralInformationWidget;
+
+    $(function () {
+        var readOnly = @Model.IsReadOnly;
+        var GeneralInformationWidgetConfig = {};
+        var isPTMChecklistUIEnabled = ("@Model.IsPTMChecklistUIEnabled".toLowerCase() == "true");
+        GeneralInformationWidgetConfig.ContextID = "proposalGeneralInformationSection";
+        GeneralInformationWidgetConfig.IsModule = true;
+        GeneralInformationWidgetConfig.isReadOnly = readOnly;
+
+        $('select[name="LineOfBusiness"]').val('@(Model.LineOfBusiness)')
+        $('select[name="ProgramArea"]').val(@(Model.ProgramArea))
+        $('select[name="ProposalLocation"]').val(@((int)Model.ProposalLocation))
+        $('select[name="PricingTool"]').val(@((int)Model.PricingTool))
+        $('select[name="BOETool"]').val(@((int)Model.BOETool))
+        $('select[name="ProgramProposalStatus"]').val(@((int)Model.ProgramProposalStatus))
+
+        if ('@(string.IsNullOrWhiteSpace(Model.LineOfBusiness).ToString().ToLower())'.isTrue()) {
+            $('select[name="ProgramArea"]').attr('disabled', 'disabled');
+        }
+
+        ProposalGeneralInformationWidget = new GenWidget(GeneralInformationWidgetConfig);
+
+        ProposalGeneralInformationWidget.getElement('select[name="LineOfBusiness"]').change(function () {
+            var dataToSend = {};
+            dataToSend.lineOfBusiness = ProposalGeneralInformationWidget.getElement('select[name="LineOfBusiness"]').val();
+            dataToSend.proposalId = ProposalInfoWidget.getElement('input[name="ProposalID"]').val();
+
+            if (dataToSend.lineOfBusiness === "") {
+                $('select[name="ProgramArea"]').attr('disabled', 'disabled');
+            } else {
+                $('select[name="ProgramArea"]').removeAttr('disabled');
+            }
+
+            dataToSend = JSON.stringify(dataToSend);
+            $.ajax({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.PROPOSAL',
+                    action: '@WebConstants.Action.PROPOSAL_FILTER_PROGRAM_AREA' }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'html',
+                data: dataToSend,
+                success: function (response) {
+                    var element = ProposalGeneralInformationWidget.getElement('select[name="ProgramArea"]')
+                    element.html(response);
+                    element.focus();
+                }
+            });
+        });
+
+        ProposalGeneralInformationWidget.LoadDataPlaceholderID = 'proposalGeneralInfoDataPlaceholder';
+
+        if (readOnly) {
+            ProposalGeneralInformationWidget.getElement('select[name=LineOfBusiness]').next('.replacedWidgetText').html('@Model.LineOfBusinessSelectedText');
+            ProposalGeneralInformationWidget.getElement('select[name=ProgramArea]').next('.replacedWidgetText').html('@Model.ProgramAreaSelectedText');
+            ProposalGeneralInformationWidget.getElement('select[name=ProposalLocation]').next('.replacedWidgetText').html('@Model.ProposalLocation.GetDescription()');
+            ProposalGeneralInformationWidget.getElement('select[name=PricingTool]').next('.replacedWidgetText').html('@Model.PricingTool.GetDescription()');
+            if ('@Model.PricingTool.GetDescription()' == '@PricingTool.Other') {
+                ProposalGeneralInformationWidget.getElement('#PricingToolName').after('<div class="replacedWidgetText">' + '@Model.PricingToolName' + '</div>');
+            }
+            ProposalGeneralInformationWidget.getElement('select[name=BOETool]').next('.replacedWidgetText').html('@Model.BOETool.GetDescription()');
+            if('@Model.BOETool.GetDescription()' == '@BOETool.Other') {
+                ProposalGeneralInformationWidget.getElement('#BOEToolName').after('<div class="replacedWidgetText">' + '@Model.BOEToolName' + '</div>');
+            }
+            if ('@Model.ProgramProposalStatus' == '@ProgramProposalStatus.NotSet') {
+                ProposalGeneralInformationWidget.getElement('select[name=ProgramProposalStatus]').next('.replacedWidgetText').html('');
+            } else {
+                ProposalGeneralInformationWidget.getElement('select[name=ProgramProposalStatus]').next('.replacedWidgetText').html('@Model.ProgramProposalStatus.GetDescription()');
+            }
+        }
+
+        ProposalGeneralInformationWidget.getElement('.ProgramAreaHelpText .help-dialog').css('max-width', '550px');
+
+        // Initially hide the text boxes
+        $('#ProposalLocationName').hide();
+        $('#PricingToolName').hide();
+        $('#BOEToolName').hide();
+
+
+        // If Other is selected, update the value but do NOT show the textbox as ProposalLocationName
+        //  is now a legacy field.  It is no longer displayed, but we want to retain current values
+        //  in the database where they exist and preserve the functionality where it is cleared if
+        //  the ProposalLocation is changed to a predefined location.
+        if ('@Model.ProposalLocation' == 'Other') {
+            $('#ProposalLocationName').val('@Model.ProposalLocationName');
+        };
+
+        // If Other is selected, update the value and show the text boxes.
+        if ('@Model.PricingTool' == 'Other') {
+            $('#PricingToolName').show();
+            $('#PricingToolName').val('@Model.PricingToolName');
+        };
+
+        if ('@Model.BOETool' == 'Other') {
+            $('#BOEToolName').show();
+            $('#BOEToolName').val('@Model.BOEToolName');
+        };
+
+        // Define functionality based on whether or not we are displaying new (PTM) or old (GenTRAC) checklists
+        if (isPTMChecklistUIEnabled) {
+            // If and only if CCPDRequired question is set to No, hide PPR and PAR Document sections
+            ProposalGeneralInformationWidget.ValidateCCPDRequiredNo = function () {
+                // if CCPDRequired question is No, and are you sure is Yes, then need to trigger to hide PPR and PAR
+                // the actual clearing out the response can happen in the controller logic
+                var DialogBodyText = 'Changing this answer to "No" will set the Proposal Pricing and Proposal Adequacy<br />' +
+                                     'Review Checklists to inactive.<br /> <br />' +
+                                     'Are you sure?';
+                GenSession.confirmDialog('Exempt from Proposal Pricing and Proposal Adequacy Reviews?', DialogBodyText, ProposalGeneralInformationWidget.ConfirmCCPDRequiredQuestionChange, ProposalGeneralInformationWidget.CancelCCPDRequiredQuestionChange, ProposalGeneralInformationWidget.CancelCCPDRequiredQuestionChange);
+            };
+
+            ProposalGeneralInformationWidget.ConfirmCCPDRequiredQuestionChange = function () {
+                $(document).trigger("CCOPD_SET_TO_NO");
+            };
+
+            ProposalGeneralInformationWidget.CancelCCPDRequiredQuestionChange = function () {
+                // if cancelled, change radio button selection back to yes
+                $('#IsCCPDRequired-No').removeAttr('checked');
+                $('#IsCCPDRequired-Yes').attr('checked', true);
+            };
+        } else {
+            // This function is not used with pre-PTM checklists
+            ProposalGeneralInformationWidget.ValidateCCPDRequiredNo = function () {};
+        }
+
+        ProposalGeneralInformationWidget.ValidateCCPDRequiredYes = function () {
+            $(document).trigger("CCOPD_SET_TO_YES");
+        };
+    });
+
+    // Toggle show/hide the text boxes
+    GenTRAC.toggleTextBox(ProposalGeneralInformationWidget);
+
+</script>
+
+<div id="proposalGeneralInformationSection" class="composite module expanded full">
+    <div class="module-header-data">General Information</div>
+    <div class="module-content-data expanded-content">
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_GENERAL_INFO_FORM, name = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_GENERAL_INFO_FORM }))
+        {
+            <input name="ProposalID" value="@Model.ProposalID" type="hidden" />
+            <div class="form-row">
+                <div class="form-label">
+                    Line of Business*
+                </div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.LineOfBusiness, Model.LinesOfBusinessList, new { name = "LineOfBusiness" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label ProgramAreaHelpText">
+                    <span helptext="@Model.ProgramAreaHelpText">Program Area*</span>
+                </div>
+                <div class="form-element" id="ProgramArea">
+                    <select name="ProgramArea">
+                        @Html.Raw(Model.ProgramAreaHtmlOptions)
+                    </select>
+                </div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">
+                    Program Name
+                </div>
+                <div class="form-element">
+                    @Html.TextBoxFor(model => model.ProgramName, new { maxlength = 50, size = 50, style = "width:324px" })
+                </div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">
+                    OMS Opportunity ID
+                </div>
+                <div class="form-element">
+                    @Html.TextBoxFor(model => model.OTISOpportunityID, new { maxlength = 25, style = "width:250px" })
+                </div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">
+                    Where is the proposal team located?
+                </div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.ProposalLocation, Model.ProposalLocationsList, new { maxlength = 50, @name = "ProposalLocation" })
+                </div>
+                <div class="form-element">
+                    <input class="free-text" id="ProposalLocationName" name="ProposalLocationName" type="text" maxlength="50" />
+                </div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">
+                    What pricing tool will be utilized? *
+                </div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.PricingTool, Model.PricingToolsList, new { maxlength = 50, @class = "selection-width", @name = "PricingTool" })
+                </div>
+                <div class="form-element">
+                    <input class="free-text" id="PricingToolName" name="PricingToolName" type="text" maxlength="50" />
+                </div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">
+                    What BOE tool will be utilized? *
+                </div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.BOETool, Model.BOEToolsList, new { maxlength = 50, @class = "selection-width", @name = "BOETool" })
+                </div>
+                <div class="form-element">
+                    <input class="free-text" id="BOEToolName" name="BOEToolName" type="text" maxlength="50" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    <span helptext="Select “Yes” if this proposal requires Certified Cost and Pricing Data. Otherwise, select “No”.">Is Certified Cost and Pricing Data Required?*:</span>
+                </div>
+                <div class="form-element">
+                    <div>
+                        @if (Model.IsCCPDReadOnly)
+                        {
+                            bool ccpdRequired = (Model.ProposalID > 0 && Model.IsCCPDRequired.HasValue && Model.IsCCPDRequired.Value);
+                            string ccpdString = ccpdRequired ? "Yes" : "No";
+                            <input type="hidden" id="IsCCPDRequired" name="IsCCPDRequired" value="@ccpdRequired.ToString().ToLower()" />
+                            <span>@ccpdString</span>
+                        }
+                        else
+                        {
+                            <label for="IsCCPDRequired-Yes">Yes</label>
+                            <input type="radio" class="radio" id="IsCCPDRequired-Yes" value="true" name="IsCCPDRequired" @if (Model.ProposalID > 0 && Model.IsCCPDRequired.HasValue && Model.IsCCPDRequired.Value) { <text> checked</text>} onclick="ProposalGeneralInformationWidget.ValidateCCPDRequiredYes();" />
+                            <label for="IsCCPDRequired-No">No</label>
+                            <input type="radio" class="radio" id="IsCCPDRequired-No" value="false" name="IsCCPDRequired" @if (Model.ProposalID > 0 && Model.IsCCPDRequired.HasValue && !Model.IsCCPDRequired.Value) { <text> checked</text>} onclick="ProposalGeneralInformationWidget.ValidateCCPDRequiredNo();" />
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    <span helptext="Select “Yes” if the Cost Volume is classified for this proposal. Otherwise, select “No”.">Is the Cost Volume for this proposal Classified?*:</span>
+                </div>
+                <div class="form-element">
+                    <div>
+                        <label for="IsCostVolumeClassified-Yes">Yes</label>
+                        <input type="radio" class="radio" id="IsCostVolumeClassified-Yes" value="true" name="IsCostVolumeClassified" @if (Model.ProposalID > 0 && Model.IsCostVolumeClassified.HasValue && Model.IsCostVolumeClassified.Value) { <text> checked</text>} />
+                        <label for="IsCCPDClassified-No">No</label>
+                        <input type="radio" class="radio" id="IsCostVolumeClassified-No" value="false" name="IsCostVolumeClassified" @if (Model.ProposalID > 0 && Model.IsCostVolumeClassified.HasValue && !Model.IsCostVolumeClassified.Value) { <text> checked</text>} />
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

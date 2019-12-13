@@ -1,0 +1,207 @@
+﻿@model GenTRAC.ActionLogic.ModelView.ApprovalsIndexModelView
+@{
+    ViewBag.Title = "Approvals Index";
+}
+
+<script type="text/javascript">
+    var ApprovalsIndexWidget;
+    var isProposalDeletedOrArchived;
+    var widgetCounter = 0;
+    GenSession.ShowLoadingBox();
+
+	$(function () {
+		var readOnly = @Model.IsReadOnly;
+
+        var ApprovalsIndexWidgetConfig = {};
+        ApprovalsIndexWidgetConfig.ContextID = "approvalsIndex";
+        ApprovalsIndexWidgetConfig.IsModule = true;
+        ApprovalsIndexWidgetConfig.isReadOnly = false;
+
+        ApprovalsIndexWidget = new GenWidget(ApprovalsIndexWidgetConfig);
+
+        isProposalDeletedOrArchived = @ViewBag.IsProposalDeletedOrArchived.ToString().ToLower();
+
+        ApprovalsIndexWidget.on("LOAD_LEAD_ESTIMATOR", function () {
+            var data = {};
+            data.role = '@PtmRole.Pricer';
+
+            ApprovalsIndexWidget.DisplayApprovalSection(data, $('#LeadEstimatorApprovalPlaceholder'));
+        });
+
+        ApprovalsIndexWidget.on("LOAD_COVER_SHEET_APPROVER", function () {
+            var data = {};
+            data.role = '@PtmRole.CoverSheetApprover';
+
+            ApprovalsIndexWidget.DisplayApprovalSection(data, $('#CoverSheetApproverApprovalPlaceholder'));
+        });
+
+        ApprovalsIndexWidget.on("LOAD_PRICING_VERIFICATION", function(){
+            var data = {};
+            data.role = '@PtmRole.PricingVerification';
+
+            ApprovalsIndexWidget.DisplayApprovalSection(data, $('#PricingVerificationApprovalPlaceholder'));
+        });
+
+        ApprovalsIndexWidget.on("LOAD_INDEPENDENT_REVIEWER", function () {
+            var data = {};
+            data.role = '@PtmRole.PeerReviewer';
+
+            ApprovalsIndexWidget.DisplayApprovalSection(data, $('#IndependentReviewerApprovalPlaceholder'));
+        });
+
+        ApprovalsIndexWidget.on("LOAD_LOB_ESTIMATING_LEAD", function () {
+            var data = {};
+            data.role = '@PtmRole.LOBEstLead';
+
+            ApprovalsIndexWidget.DisplayApprovalSection(data , $('#LOBEstimatingLeadApprovalPlaceholder'));
+        });
+
+        ApprovalsIndexWidget.DisplayApprovalSection = function(data, placeholder){
+            var dataToSend = JSON.stringify(data);
+
+            $.ajax({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.APPROVALS',
+                    action: '@WebConstants.Action.DISPLAY_APPROVER_SECTION',
+                    id: '@ViewBag.proposalid'
+                }),
+                data: dataToSend,
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'html',
+                success: function (response) {
+                    placeholder.html(response);
+                    ApprovalsIndexWidget.ShouldHideLoadingBox();
+                },
+                error: function () {
+                    ApprovalsIndexWidget.ShouldHideLoadingBox();
+                }
+            });
+        };
+
+        ApprovalsIndexWidget.on("click", "#ResetWorkflow", function() {
+            GenSession.confirmDialog("Confirm Reset Workflow", "@Html.Raw(@WebConstants.ApprovalDescription.RESET_WORKFLOW)", function () { ApprovalsIndexWidget.ResetWorkflow() }, null);
+        });
+
+        ApprovalsIndexWidget.ResetWorkflow = function () {
+            var dataToSend = {};
+
+            $.ajax({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.APPROVALS',
+                    action: '@WebConstants.Action.RESET_WORKFLOW',
+                    id: '@ViewBag.proposalid'
+                }),
+                data: dataToSend,
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'html',
+                success: function () {
+                    GenSession.ShowLoadingBox();
+                    location.reload(true);
+                }
+            });
+        };
+
+		if(@Model.MissingRole.ToString().ToLower()) {
+			$('#Approvals').addClass('display-none');
+			$('#MissingRoleError').removeClass('display-none');
+			$('#MissingRoleError').html("This tab cannot be displayed until all Approval Roles are set.");
+			GenSession.HideLoadingBox();
+		}
+		else{
+				$(document).trigger('LOAD_LEAD_ESTIMATOR');
+				$(document).trigger('LOAD_COVER_SHEET_APPROVER');
+				$(document).trigger('LOAD_PRICING_VERIFICATION');
+				$(document).trigger('LOAD_INDEPENDENT_REVIEWER');
+				$(document).trigger('LOAD_LOB_ESTIMATING_LEAD');
+		}
+
+		ApprovalsIndexWidget.ShouldHideLoadingBox = function(){
+			widgetCounter++;
+			if(widgetCounter == 5)
+			{
+				GenSession.HideLoadingBox();
+			}
+		};
+
+		// Reload the page after saving.
+		ApprovalsIndexWidget.SaveSuccess = function () {
+			GenSession.ShowLoadingBox();
+			location.reload(true);
+		};
+
+		// returns an object with the ProposalId.
+		ApprovalsIndexWidget.GetData = function () {
+			var dataToSave = {};
+			dataToSave.proposalId = @ViewBag.proposalid;
+			return dataToSave;
+		};
+
+		$('#NonPreferredToolOkButton').click(function () {
+			var justification = $("#nonPreferredJustification").val();
+			if (justification === undefined || justification === '') {
+				$("#NonPreferredToolDialog .error").removeClass('display-none');
+			} else {
+				var comments = $("#@PtmRole.LOBEstLead-ApproverComments").val();
+				comments = comments + '\nNon-Preferred Tool Justification: ' + justification;
+				$("#@PtmRole.LOBEstLead-ApproverComments").html(comments);
+
+				ApproverSectionWidget.HideNonPreferredDialog();
+				
+				GenSession.confirmDialog("Confirm Approval", "@Html.Raw(@WebConstants.ApprovalDescription.LOB_ESTIMATING_LEAD)",
+					function () {
+						ApproverSectionWidget.SubmitApproval("@PtmRole.LOBEstLead");
+					}, function () {
+						location.reload(true);
+					});
+			}
+		});
+
+		$('#NonPreferredToolCancelButton').click(function () {
+			GenSession.ShowLoadingBox();
+			ApproverSectionWidget.HideNonPreferredDialog();
+			location.reload(true);
+		});
+
+		ApprovalsIndexWidget.refreshModule();
+	});
+</script>
+
+<div id="approvalsIndex" class="module full">
+    <div class="module-content-data" style="width: 982px">
+        <div style="display: inline-block;">
+            @using (Html.BeginForm("", "", FormMethod.Post, new { id = "approvalIndexForm", name = "approvalIndexForm" }))
+            {
+
+            }
+        </div>
+        <div id="MissingRoleError" class="display-none"></div>
+    </div>
+    <div id="Approvals">
+        <div id="LeadEstimatorApprovalPlaceholder"></div>
+        <div id="CoverSheetApproverApprovalPlaceholder"></div>
+        <div id="PricingVerificationApprovalPlaceholder"></div>
+        <div id="IndependentReviewerApprovalPlaceholder"></div>
+        <div id="LOBEstimatingLeadApprovalPlaceholder"></div>
+    </div>
+</div>
+<div id="NonPreferredToolDialog" class="display-none ui-dialog-content ui-widget-content">
+	<div class="dialog-text">
+		<div class="form-row">
+			<div class="form-element">@Model.LeadEstimatorName has selected a tool other than ProPricer and/or genBOE to price/estimate this proposal.  Please provide adequate justification for using a tool other than ProPricer/genBOE.</div>
+		</div>
+		<div class="form-row">
+			<div class="form-element error display-none">Justification is required.</div>
+		</div>
+		<div class="form-row">
+			<textarea name="nonPreferredJustification" id="nonPreferredJustification" cols="5" maxlength="200" />
+		</div>
+		<div class="form-row itco-btn-row">
+			<div class="form-element">
+				<button id="NonPreferredToolOkButton" name="ok-button" class="ies itco-ok-btn" type="button">Save to Comments</button>
+				<button id="NonPreferredToolCancelButton" name="cancel-button" class="ies itco-cancel-btn" type="button">Cancel</button>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,2790 @@
+﻿/* ELEMENT OVERRIDES
+----------------------------------------------------------*/
+
+*
+{ 
+    margin: 0; 
+} 
+
+html, body
+{ 
+    height: 100%; 
+}
+
+body
+{
+    background-color: #e4e4e4;
+    font-size: 11px;
+    margin: 0;
+    padding: 0;
+    color: #333333;
+    font-family: Arial, Calibri, Verdana, Helvetica, Sans-Serif;
+}
+
+table
+{
+    border-collapse: collapse;
+    margin-bottom: 10px;
+}
+
+table thead th:first-child
+{
+    border-left: 1px solid #b2b2b2;
+}
+
+table thead th
+{
+    border-top : 1px solid #b2b2b2;
+    border-bottom: 1px solid #b2b2b2;
+}
+
+/*
+* IE8 doesn't support :lastchild so this is a class 
+* version that supports it for tables with the class in its last element
+*/
+table thead th.last-child
+{
+    border-right: 1px solid #b2b2b2;
+}
+
+/*
+ * Note: Styling for this rule and the previous rule is the same, but for some wierd reason IE
+ * cannot resolve correctly if the two selectors are combined in a single rule.
+ */
+table thead th:last-child
+{
+    border-right: 1px solid #b2b2b2;
+}
+
+th, tr.subheader td, td.subheader
+{
+    background: transparent url(images/tableHeaderBG.png) repeat-x 0 0;
+    font-weight: normal;
+    line-height: 16px;
+    padding: 5px;
+    text-align: left;
+    white-space:nowrap;
+}
+
+th.sort_ascending {
+    background: transparent url(images/tableHeader_sort_ascending.png) no-repeat;
+    background-position:top right;
+    font-weight: bold;
+    line-height: 16px;
+    padding: 5px;
+    text-align: left;
+    height:42px;
+    white-space:nowrap;
+}
+
+th.sort_descending {
+    background: transparent url(images/tableHeader_sort_descending.png) no-repeat;
+    background-position:top right;
+    font-weight: bold;
+    line-height: 16px;
+    padding: 5px;
+    text-align: left;
+    height:42px;
+    white-space:nowrap;
+}
+
+td
+{
+    padding: 2px 5px;
+}
+
+tr
+{
+    margin: 0px 2px;
+}
+
+a,
+.link
+{
+    text-decoration: none;
+    color: #5297AD;
+}
+
+select,
+input, 
+textarea,
+.ui-widget select,
+.ui-widget input,
+.ui-widget textarea
+{
+    border: 1px solid #b2b2b2;
+    font-family: Arial, Calibri, Verdana, Helvetica, Sans-Serif;
+    font-size: 11px;
+    vertical-align: top;
+}
+
+input[type="checkbox"],
+input[type="radio"],
+input[type="button"]
+{
+    border: none;
+}
+
+input, 
+textarea
+{
+    padding: 2px 5px;
+}
+
+input:disabled
+{
+    color: #838383;
+}
+
+a:hover,
+.link:hover
+{
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+span 
+{
+    word-spacing: normal;
+}
+
+/* PRIMARY LAYOUT ELEMENTS   
+----------------------------------------------------------*/
+
+.page
+{
+    min-height: 100%;
+    margin: 0 auto;
+    position: relative;
+}
+
+.header
+{
+    color: #666666;
+    height: 113px;
+}
+
+.main
+{
+    width: 990px;
+    margin: 0px auto;
+    padding: 0px 0px 100px;
+    word-spacing: -1em;
+}
+
+.test
+{
+     word-spacing: normal;
+}
+
+.title
+{
+    font-weight: bold;
+    padding: 2px 0px;
+}
+
+.ui-tooltip
+{
+    font-size:8pt;
+    font-family:Tahoma;
+}
+
+.notification-bar
+{
+    word-spacing: -1em;
+    display: block;
+    position: absolute;
+    text-align: center;
+    width: 990px;
+    top: 200px;
+    z-index: 940 !important;
+}
+
+.notification
+{    
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    width: auto;
+    margin: 0 auto;    
+    color: #ffffff;
+    background:#505050;
+    border-radius: 7px;
+    box-shadow: 4px 4px 7px grey;
+    padding: 0px 2px 0px 5px;
+    vertical-align: top;
+    line-height: 24px;
+    word-spacing: normal;
+}
+
+.notification > div.text
+{
+    display: inline;
+}
+
+.lmproprietary
+{
+    color: #ccc;
+    font-size: 11.2px;
+    line-height: 1.4285;
+    padding: 5px 0px;
+    text-align: center;
+    width: 100%;
+    background-color: #2f464d;
+}
+
+.beta
+{
+    color: #ff9999;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 0px;
+    margin: 0px;
+    width:100%;
+    height:20px;
+    text-align: center;
+    position: absolute;
+    clear:both;
+    z-index:999;
+    display:none;
+}
+
+.footer .beta {
+    margin-top: -20px;
+}
+
+.header .title
+{
+    /* width plus padding-left should equal 990 for our version of the 960 grid system */
+    width: 990px;
+    margin: 0 auto;
+    margin-top:0px;
+}
+
+.header .title-link
+{
+    position: relative;
+    display: block;
+    float: left;
+    margin-top: 0;
+    margin-left: 3px;
+}
+
+.header .site-name
+{
+    color: #666666;
+    font-weight: bold;
+    height: 60px;
+    margin: auto 0;
+    font-size: 14px;
+}
+
+.header .site-name > div
+{
+    display: inline-block;
+    line-height: 16px;
+    vertical-align: middle;
+    *position: relative;
+    *top: 28px;
+}
+
+.header .site-name .workspace-status
+{
+    font-size: 12px;
+}
+
+div.nav-item a.submenu-header
+{
+    background-image:url('images/menu_arrow.png');
+    background-repeat: no-repeat;
+    background-position: right center;
+}
+
+.nav-container
+{
+    background: #ffffff;
+    width: 985px;
+    margin: auto;
+    *height: 30px;
+}
+
+.nav-shadow
+{
+    height: 10px;
+    background: #e4e4e4 url(images/navShadow.png) repeat-x top;
+    width: 985px;
+    margin: auto;
+}
+
+.nav-bar
+{
+    /* must be positioned for the submenu margin to be calculated correctly using jquery.position*/
+    position: relative;
+    font-size: 12px;
+    width: 495px;
+    margin: auto;
+    padding: 0px;
+    word-spacing: -1em;
+    *word-spacing: -4px;
+    text-align: left;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+.nav-bar.right
+{
+    text-align: right;
+}
+
+.nav-bar > div
+{
+    display: inline;
+    word-spacing: normal;
+}
+
+.nav-bar a
+{
+    padding: 8px 25px;
+    text-decoration: none;
+    line-height: 29px;
+    color: #666666;
+    word-spacing: normal;
+    *margin-left: 1px;
+}
+
+.nav-bar > div.selected > a,
+.nav-bar > div.selected > a:hover
+{
+    background-color: #505050;
+    color: #ffffff;
+    border-top: 7px solid #72abbc;
+}
+
+.nav-bar a.inactive
+{
+    cursor: default;
+    /* Note: This will have to change if we add another inactive menu option with a submenu.
+       It will currently only work for "Workspace Administration" menu option.
+       Follow pattern from the home page, adding another div. */
+    background: transparent url(images/menu_arrow.png) no-repeat right center;
+    color: #666666;
+}
+
+.nav-bar div.submenu
+{
+    position: absolute;
+    display: none;
+    border-left: 1px solid #b2b2b2;
+    border-right: 1px solid #b2b2b2;
+    border-bottom: 1px solid #b2b2b2;
+    *margin-top: 37px;
+}
+
+.nav-bar div.submenu a
+{
+    display: block;
+    padding: 0px 10px;
+    *margin-left: 0px;
+    line-height: 23px;
+}
+
+.nav-bar > div:hover div.submenu
+{
+    display: block;
+}
+
+.nav-bar > div a:hover,
+.nav-bar .submenu div:hover a
+{
+    background-color: #cccccc;
+}
+
+.nav-bar div.submenu
+{
+    background-color: #ebebeb;
+    line-height: 24px;
+    z-index: 950;
+}
+
+.nav-help
+{
+    width: 990px;
+    margin: 0px auto;
+    *position: relative;
+}
+
+.nav-help a
+{
+    background: transparent url(images/help.png) no-repeat right center;
+    float: right;
+    line-height: 30px;
+    padding-right: 21px;
+    *margin-bottom: 6px;
+}
+
+/* MODULE BLOCK
+----------------------------------------------------------*/
+
+.module
+{
+    word-spacing: -1em;
+}
+
+.module > div > div > *
+{
+    word-spacing: normal;
+}
+
+.module-header-left,
+.module-header-center,
+.module-header-right,
+.module-content-left,
+.module-content-center,
+.module-content-right,
+.module-footer-left,
+.module-footer-center,
+.module-footer-right {
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    vertical-align: top;
+}
+
+.module-header-left,
+.module-header-center,
+.module-header-right
+{
+    height: 36px;
+    line-height: 36px;
+}
+
+
+.module-header-left
+{
+    background: transparent url(images/tabLeft.png) no-repeat 0 0;
+    width: 7px;
+}
+
+.module-header-center
+{    
+    background: transparent url(images/tabBG.png) repeat-x 0 0;
+    color: #ffffff;
+    width: 976px; /* 990 - 14 for left and right */
+}
+
+.module-header-right
+{
+    background: transparent url(images/tabRight.png) no-repeat 0 0;
+    width: 7px;
+}
+
+.module-content > div
+{
+    min-height: 15px;
+}
+
+.module-content-left
+{
+    background: transparent url(images/moduleLeftBorder.png) repeat-y 0 0;
+    width: 4px;
+}
+
+.module-content-center
+{
+    background-color: #ffffff;
+    max-width: 982px; /* 990 - 8 for left and right */
+}
+
+.module-content-right
+{
+    background: transparent url(images/moduleRightBorder.png) repeat-y 0 0;
+    width: 4px;
+}
+
+.module-footer
+{
+    height: 8px;
+}
+
+.module-footer-left
+{
+    background: transparent url(images/moduleLeftBottom.png) no-repeat left 0;
+    width: 6px;
+    height: 8px;
+}
+
+.module-footer-center
+{
+    background: transparent url(images/moduleBottomBorder.png) repeat-x 0 0;
+    height: 8px;
+}
+
+.module-footer-right
+{
+    background: transparent url(images/moduleRightBottom.png) no-repeat right 0;
+    width: 6px;
+    height: 8px;
+}
+
+.module-content-data
+{
+    padding: 10px 10px 0px;
+    max-width: 962px;
+}
+
+.module-ws-content-data
+{
+    background-color: #ffffff;
+   
+}
+
+.module-header-data
+{
+    padding: 0px 10px;
+    font-weight: bold;
+    font-size: 14px;
+    height:40px;
+}
+
+.collapsed .module-header-data,
+.expanded .module-header-data
+{
+    margin-left: 8px;
+    padding-left: 32px;
+}
+
+.collapsed .module-content-data,
+.expanded .module-content-data
+{
+    margin-left: 11px;
+    padding-left: 32px;
+}
+
+.collapsed .module-header-data, .collapsible-header-image.expanded
+{
+    background: transparent url(images/expand.png) no-repeat 0 center;
+}
+
+.expanded .module-header-data, .collapsible-header-image.collapsed
+{
+    background: transparent url(images/collaspe.png) no-repeat 0 center;
+}
+
+.collapsible-header-bar
+{
+    display: inline-block;
+    width: 984px;
+    margin-left: -10px;
+    height: 36px;
+    font-size: 14px;
+    font-weight: bold;
+    border-top: 1px solid #D9D9D9;
+}
+.collapsible-header-image
+{
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin-left: 8px;
+    margin-top: 9px;
+}
+.collapsible-header-label
+{
+    display: inline-block;
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 36px;
+    margin-left: 10px;
+    vertical-align: top;
+    word-spacing: normal;
+}
+
+.module-content-data.outer .collapsed .module-header-data,
+.boe-details .collapsed .module-header-data,
+.TaskElementsToCopy.collapsed
+{
+    background: transparent url(images/expand_light.png) no-repeat 0 center;
+}
+
+.module-content-data.outer .expanded .module-header-data,
+.boe-details .expanded .module-header-data,
+.TaskElementsToCopy.expanded
+{
+    background: transparent url(images/collaspe_light.png) no-repeat 0 center;
+}
+
+.full.module .module-header-data
+{
+    width: 976px;
+}
+
+.module-content-data.wide
+{
+    padding-left: 40px;
+}
+
+.module-content.outer > .module-content-left,
+.module-content.outer > .module-content-right
+{
+    display: none;
+}
+
+.module-content.outer > .module-content-center
+{
+    max-width: 990px;
+    background-color: transparent;
+}
+
+.module-content-data.outer
+{
+    max-width: 990px;
+    padding: 0px;
+}
+
+/* TABS
+----------------------------------------------------------*/
+.tabs-left,
+.tabs-center,
+.tabs-right
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    vertical-align: top;
+    float: left; /* This fixes issue with overlapping tabs in Chrome */
+}
+
+.tabs-left
+{
+    background: transparent url(images/tabLeft.png) no-repeat 0 0;
+    width: 7px;
+    height: 42px;
+}
+
+.tabs-center
+{    
+    background: transparent url(images/tabBG.png) repeat-x 0 0;
+    color: #ffffff;
+    height: 42px;
+}
+
+.tabs-right
+{
+    background: transparent url(images/tabRight.png) no-repeat 0 0;
+    width: 7px;
+    height: 42px;
+}
+
+.tabs ul
+{
+    line-height: 42px;
+    margin: 0px 0px 0px 7px;
+    padding: 0px;
+    word-spacing: normal;
+}
+
+.tabs li
+{
+    list-style-type: none;
+    display: inline;
+    *position: relative;
+    *top: 5px;
+}
+
+.tabs a
+{
+    background: transparent url(images/tabButtonRepeat.png) repeat-x 0px 7px;
+    display: inline-block;
+    height: 30px;
+    vertical-align: bottom;
+    text-align: center;
+    padding-bottom: 7px;
+    color: #ffffff;
+    font-weight: normal;
+    text-decoration: none;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.tabs .tab-left
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    background: transparent url(images/tabButtonLeft.png) repeat-x 0px 7px;
+    height: 30px;
+    width: 2px;
+    vertical-align: bottom;
+    padding-bottom: 7px;
+}
+
+.tabs .tab-right
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    background: transparent url(images/tabButtonRight.png) repeat-x 0px 7px;
+    height: 30px;
+    width: 2px;
+    vertical-align: bottom;
+    margin-right: 5px;
+    padding-bottom: 7px;
+}
+
+.tabs li.active a, 
+.tabs li.active:hover a
+{
+    background: transparent url(images/tabButtonActiveRepeat.png) repeat-x 0px 7px;
+    font-weight: bold;
+    color: #333333;
+}
+
+.tabs li.active .tab-left,
+.tabs li.active:hover .tab-left
+{
+    background: transparent url(images/tabButtonActiveLeft.png) repeat-x 0px 7px;
+}
+
+.tabs li.active .tab-right,
+.tabs li.active:hover .tab-right
+{
+    background: transparent url(images/tabButtonActiveRight.png) repeat-x 0px 7px;
+}
+
+.tabs li:hover a
+{
+    background: transparent url(images/tabButtonHoverRepeat.png) repeat-x 0px 7px;
+}
+
+.tabs li:hover .tab-left
+{
+    background: transparent url(images/tabButtonHoverLeft.png) repeat-x 0px 7px;
+}
+
+.tabs li:hover .tab-right
+{
+    background: transparent url(images/tabButtonHoverRight.png) repeat-x 0px 7px;
+}
+
+.ui-autocomplete {
+		max-height: 150px;
+		overflow-y: auto;
+		/* prevent horizontal scrollbar */
+		overflow-x: hidden;
+		/* add padding to account for vertical scrollbar */
+		padding-right: 20px;
+	}
+
+
+ *html .ui-autocomplete {
+		max-height: 150px;
+	}
+
+/* FORM LAYOUT
+----------------------------------------------------------*/
+
+button.generation
+{
+    border-radius: 3px;
+    border: 1px solid #A6A6A6;
+    padding: 0px 10px;
+    line-height: 24px;
+    background: linear-gradient(to bottom, #EEEEEE, #D6D6D6 1px, #E6E6E6);
+    -pie-background: linear-gradient(to bottom, #EEEEEE, #D6D6D6 1px, #E6E6E6);
+    background-color: #E6E6E6;
+    margin-right: 10px;
+    font-weight: bold;
+    font-size: 12px;
+    font-family: Arial;
+    color: #0E2314;
+    cursor: pointer;
+    behavior: url('pie/pie.htc');
+    word-spacing: normal;
+    text-shadow: 0 0 2px rgba(14,35,20,0.25);
+    position: relative;
+}
+
+button.generation.persist
+{
+    border: 1px solid #639873;
+    background: linear-gradient(to bottom, #32DE68, #7BB98F 1px, #558E65);
+    -pie-background: linear-gradient(to bottom, #32DE68, #7BB98F 1px, #558E65);
+    background-color: #6BA77D;
+    behavior: url('pie/pie.htc');
+}
+
+button.generation[disabled]
+{
+    border: 1px solid #D9D9D9;
+    background: linear-gradient(to bottom, #F8F8F8, #EDEDED 1px, #F4F4F4);
+    -pie-background: linear-gradient(to bottom, #F8F8F8, #EDEDED 1px, #F4F4F4);
+    background-color: #EEEEEE;
+    color: #B9B9B9;
+    text-shadow: 0 0 2px rgba(185,185,185,0.25);
+    cursor: default;
+    behavior: url('pie/pie.htc');
+}
+
+button.generation.loader,
+button.ies.loader,
+button.ies-action.loader,
+button.ies-warning.loader,
+button.ies-danger.loader
+{
+    border: 1px solid #FFFFFF;
+    background-color: #FFFFFF;
+    -pie-background: linear-gradient(to bottom, #FFFFFF, #FFFFFF);
+    color: transparent;
+    color: white\0/; /* IE 8 only because it can't handle color: transparent; */
+    text-shadow: none;
+    behavior: url('pie/pie.htc');
+}
+
+.buttons
+{
+    word-spacing: -1em;
+    margin-bottom: 10px;
+    height: 28px;
+}
+
+
+.buttons > div
+{
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.cog-button
+{
+    background: transparent url(images/cog.png) 0 0 no-repeat;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    width: 28px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.magnifier-button
+{
+    background: transparent url(images/magnifier.png) 0 0 no-repeat;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    width: 22px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.magnifier-no-arrow-button
+{
+    background: transparent url(images/magnifier_no_arrow.png) 0 0 no-repeat;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.copy-pages-button
+{
+    background: transparent url(images/copy_pages.png) 0 0 no-repeat;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.button
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    width: 25px;
+    height: 28px;
+    cursor: pointer;
+    word-spacing: normal;  
+}
+
+.comment-icon
+{
+    background: transparent url(images/comment_icon.png) 0 0 no-repeat;
+    height: 16px;
+    width: 16px;
+}
+
+.disabled
+{
+    cursor: default;
+}
+
+.copy-from-catalog-button
+{
+    background: transparent url(images/btn_copyfromcatalog_grey.png) 0 0 no-repeat;
+    width: 121px;
+}
+
+.calculate-button
+{
+    width: 97px; 
+    background: transparent url(images/btn_calculate.png) 0 0 no-repeat;    
+}
+
+.calculate-button.disabled
+{
+    background: transparent url(images/btn_calculate_disabled.png) 0 0 no-repeat;    
+}
+
+.send-request-button
+{
+    background: transparent url(images/btn_send_request_enabled.png) 0 0 no-repeat;    
+    width: 100px;
+}
+
+.send-request-button.disabled
+{
+    background: transparent url(images/btn_send_request.png) 0 0 no-repeat;
+}
+
+.add-wbs-elements-button
+{
+    background: transparent url(images/btn_add_wbs_elements.png) 0 0 no-repeat;
+    width: 134px;
+    cursor: pointer;
+}
+
+div.create-workspace.buttons.full
+{
+    width: 100%;
+    text-align: right;
+}
+
+.create-workspace button[name="cancel-button"].left-margin
+{
+    margin-left: 40px;
+    margin-right: 0px;
+}
+
+.go-button
+{
+    width: 38px;
+    height: 24px;
+    vertical-align: top;
+}
+
+.search-magnify-glass-button
+{
+    background: transparent url(images/searchBtn.png) 0 0 no-repeat;
+    width: 29px;
+    height: 24px;
+    vertical-align: middle;
+}
+
+.buttons > form
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+.form-header
+{
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.form-row
+{
+    display: block;
+    margin-bottom: 10px;
+}
+
+.form-label
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    font-weight: bold;
+    min-width: 100px;
+    margin-right: 10px;
+    vertical-align: top;
+    margin-top: 3px;
+}
+
+div.psa-content div.form-label {
+    min-width: 240px;
+}
+
+.form-label span
+{
+    display: inline;
+}
+
+.form-label .help-icon,
+.form-element .help-icon
+{
+    margin: -3px 0px 0px 5px;
+    *margin-right: 3px;
+}
+
+.form-label .calendar,
+.form-element .calendar
+{
+    background: transparent url(images/calendar.gif) no-repeat 0 0;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    margin-left: -5px;
+    vertical-align: top;
+    cursor: pointer;
+}
+
+.form-label .subtext
+{
+    font-weight: normal;
+}
+
+.form-element
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+.form-element input
+{
+    vertical-align: middle;
+}
+
+.form-element input.100
+{
+    width: 100%;
+}
+
+.form-element textarea
+{
+    width: 400px;
+    height: 100px;
+}
+
+.loader
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    background: transparent url(images/ajax-loader.gif) center center no-repeat !important;
+    min-height: 28px;
+    min-width: 41px;
+    cursor:auto;
+}
+
+.loader.white
+{
+    background: transparent url(images/in_progress_white.gif) center center no-repeat !important;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 41px;
+    height: 28px;
+    padding: 10px 5px 7px;
+}
+
+select.customField
+{
+    width:250px;
+}
+
+.search-box
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    text-align: right;
+    width: 350px;
+    word-spacing: -1em;
+    margin-top: 4px;
+}
+
+.readonly .search-box
+{
+    margin-top: -23px;
+}
+
+.readonly.widget-menu
+{
+    height: 1px;
+}
+
+.search-box input
+{
+    background: transparent url(images/searchBox2.png) no-repeat center center;
+    border: none;
+    height: 14px;
+    width: 133px;
+    padding: 5px;
+}
+
+.manage-trips-for-travel
+{
+    width: 1150px;
+    background-color: #ffffff;
+    padding-right: 20px;
+}
+
+.manage-trips-for-travel-grid .search-box
+{   
+    width: 104px;
+}
+
+.manage-trips-for-travel-grid .trip-id .search-box
+{
+    width: 75px;
+}
+
+.manage-trips-for-travel-grid .trip-id .search-box input
+{
+    width: 36px;
+}
+
+.manage-trips-for-travel-grid .departure-code .search-box,
+.manage-trips-for-travel-grid .destination-code .search-box
+{
+    width: 37px;
+}
+
+.manage-trips-for-travel-grid .departure-code .search-box input,
+.manage-trips-for-travel-grid .destination-code .search-box input
+{
+    width: 25px;
+}
+
+.manage-trips-for-travel-grid .search-box input
+{
+    background: transparent url(images/searchBox96px.png) no-repeat left center;
+    width: 65px;
+}
+
+.form.dialog a
+{
+    text-decoration: none;
+}
+
+.form.module .step .title,
+.form.dialog .step .title
+{
+    font-weight: bold;
+    padding: 2px 0px;
+}
+
+.form.module .step,
+.form.dialog .step
+{
+    margin-top: 10px;
+    margin-bottom: 5px;
+    border-top: 1px solid #b2b2b2;
+    padding-top: 10px;
+}
+
+.form.module .step > div,
+.form.module .step > form > div,
+.form.dialog .step > div,
+.form.dialog .step > form > div
+{
+    padding: 4px 0px;
+}
+
+input.radio, input.checkbox
+{
+    vertical-align: middle;
+    margin: 0px 5px;
+}
+
+.form.module .important,
+.form.dialog .important
+{
+    color: #ff0000;
+}
+
+/* MISC  
+----------------------------------------------------------*/
+
+.clear
+{
+    clear: both;
+}
+
+.float-right
+{
+    float: right;
+}
+
+.float-left
+{
+    float: left;
+}
+
+.error
+{
+    color:Red;
+    
+}
+.securityerror
+{
+    margin: 50px 20px 500px 20px;
+  background-color: #e5e5e5;
+}
+
+.display-none
+{
+    display: none !important;
+}
+
+.hidden
+{
+    visibility: hidden !important;
+}
+
+.pointer
+{
+    cursor: pointer;
+}
+
+.underline
+{
+    text-decoration: underline;
+}
+
+.bold
+{
+    font-weight: bold;
+}
+
+.normal
+{
+    font-weight: normal;
+}
+
+.text-right
+{
+    text-align: right;
+}
+
+.divider
+{
+    clear: both;
+    line-height: 1px;
+    border-top: 1px solid #ababab;
+    border-bottom: 1px solid #f8f8f8;
+    display: block;
+    margin: 20px 0px;
+}
+
+img.ui-datepicker-trigger { position: relative; top: 2px; padding-left:2px; }
+
+button.ui-datepicker-trigger
+{
+    background-color: transparent;
+    background-image: url("images/calendar.gif");
+    background-repeat: no-repeat;
+    border: medium none;
+    height: 18px;
+    vertical-align:bottom;
+    margin-left: 2px;
+    width: 17px;
+    cursor: pointer;
+}
+
+.calendar
+{
+    background: transparent url(images/calendar.gif) no-repeat 0 0;
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    margin-left: -5px;
+    vertical-align: top;
+    cursor: pointer;
+}
+
+.help-icon
+{
+    background: transparent url(images/helpSmall.png) no-repeat 0 0;
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    margin-left: -5px;
+    vertical-align: top;
+    cursor: pointer;
+}
+
+.help-dialog
+{
+    display: none;
+    position: absolute;
+    border: solid 1px #666666;
+    background: White;
+    white-space:normal;
+    overflow: visible;
+    z-index: 10000 !important;
+}
+
+.help-dialog-text
+{
+    font-weight: normal;
+    padding: 5px;
+}
+
+.help-dialog-close
+{
+    height: 17px;
+    width: 17px;
+    background: transparent url(images/ui-icons_222222_256x240.png) no-repeat -96px -128px;
+    float: right;
+    cursor: pointer;
+}
+
+.dialog-text
+{
+    margin: 10px;
+    font-size:11px;
+}
+
+.error-details
+{
+    margin: 10px;
+    font-size:11px;
+    text-align:left;
+    padding:10px;
+    border:2px solid red;   
+    word-wrap: break-word; 
+}
+
+[placeholder],
+.placeholder,
+.default-text
+{
+    color: #838383;
+    font-style: italic;
+}
+
+.ChecklistPricerComment[placeholder]::-webkit-input-placeholder {
+    color: darkorange;
+    font-style: italic;
+}
+.ChecklistPricerComment[placeholder]:-ms-input-placeholder {
+    color: darkorange;
+    font-style: italic;
+}
+.ChecklistPricerComment[placeholder]:-moz-placeholder {
+    color: darkorange;
+    font-style: italic;
+}
+.ChecklistPricerComment[placeholder]::-moz-placeholder 
+{
+    color: darkorange;
+    font-style: italic;
+}
+
+.ChecklistPricerComment[placeholder],
+[placeholder].not-placeholder-value {
+    color: inherit;
+    font-style: normal;
+}
+
+[placeholder].not-placeholder-value[disabled]
+{
+    color: #838383;
+}
+
+[placeholder]::-webkit-input-placeholder { /* WebKit browsers */
+    color:    #838383;
+    font-style: italic;
+}
+[placeholder]:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    #838383;
+    font-style: italic;
+}
+[placeholder]::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    #000000;
+    font-style: italic;
+}
+[placeholder]:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:    #838383;
+    font-style: italic;
+}
+
+.checkmark
+{
+    display: block;
+    width: 18px;
+    height: 15px;
+    background: transparent url(images/checkMark.png) no-repeat 0 0;
+    margin: auto;
+}
+
+.next-arrow
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    background: transparent url(images/btn_next_arrow.png) no-repeat 0 0;
+    height: 15px;
+    width: 9px;
+    cursor: pointer;
+}
+
+.previous-arrow
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    background: transparent url(images/btn_prev_arrow.png) no-repeat 0 0;
+    height: 15px;
+    width: 9px;
+    cursor: pointer;
+}
+
+.inline-block
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+.oci-note
+{
+    margin-bottom: 10px;
+}
+
+.read-only-applied .oci-note
+{
+    display: none;
+}
+
+.required-note 
+{
+    font-size: 11px;
+    margin-bottom: 10px;
+}
+
+.import-results-area
+{
+    height:400px;
+    overflow:auto;
+}
+
+.page-loading
+{
+    position: fixed;
+    left:0px;
+    top:0px;
+    display: block;
+    width: 100%;
+    height:100%;
+    text-align:center;
+    z-index: 1010 !important;
+    background: transparent url(images/clear_transparent_img.png) repeat 0 0;
+
+}
+
+.full-screen-overlay
+{
+    position: fixed;
+    left:0px;
+    top:0px;
+    display: block;
+    width: 100%;
+    height:100%;
+    text-align:center;
+    z-index: 1500 !important;
+}
+
+.loading-box
+{
+    display: block;
+    height: 74px;
+    width: 110px;
+    margin: 300px auto;
+    background: transparent url(images/message_large_gray.png) no-repeat 0 0;
+    text-align: center;
+}
+
+.loading-box span
+{
+    color: #ffffff;
+    font-size: 12px;
+}
+
+.word-wrap
+{
+    word-wrap: break-word;
+}
+
+.full-width
+{
+    width: 100%;
+}
+
+.centered
+{
+    text-align: center;
+}
+
+/* GRID
+----------------------------------------------------------*/
+
+.grid 
+{
+    table-layout: fixed;
+}
+
+.grid div.delete
+{
+    background: transparent url(images/delete.png) no-repeat 0 0;
+    width: 13px;
+    height: 13px;
+    padding-left: 0px;
+    margin: auto;
+}
+
+.grid div.delete:hover
+{
+    background: transparent url(images/deletehover.png) no-repeat 0 0;
+    cursor: pointer;
+}
+
+.grid th.delete
+{
+    padding: 5px;
+    width: 13px;
+    vertical-align: bottom;
+}
+
+.grid th
+{
+    overflow: hidden;
+}
+
+.grid td
+{
+    vertical-align: middle;
+    width: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-left: none;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+.grid td > *
+{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    display: block;
+}
+
+.grid th > input[type="checkbox"], 
+.grid td > input[type="checkbox"]
+{
+    width: auto;
+    display: inline;
+    padding: 0;
+}
+
+.grid td .checkmark
+{
+    width: 18px;
+}
+
+.grid .filter-textbox 
+{
+    width: 10px;
+}
+
+.grid .filter-left,
+.grid .filter-right,
+.grid .filter-middle
+{
+    display:inline-block;
+    *display: inline;
+    *zoom: 1;
+    width: 4px;
+    height: 24px;
+}
+
+.grid .filter-left
+{
+    background: transparent url(images/filter_left.png) no-repeat 0 0; 
+}
+
+.grid .filter-right
+{
+    background: transparent url(images/filter_right.png) no-repeat 0 0;
+}
+
+.grid .filter-middle
+{
+    width: auto;
+    background: transparent url(images/filter_middle.png) repeat-x 0 0;
+    border: none;
+    vertical-align: top;
+}
+
+.grid .filter-middle input
+{
+    border: none;
+    background: transparent;
+    margin-top: 4px;
+}
+
+.grid.editable tbody input,
+.grid.editable tbody textarea
+{
+    border: 0px;
+    vertical-align: middle;
+    padding: 0px;
+}
+
+.grid.editable tbody select
+{
+    border: none;
+    width: 100%;
+}
+
+.grid.editable
+{
+    border: none;
+}
+
+.grid.editable td
+{
+    border: 1px solid #b2b2b2;
+}
+
+.grid.editable td.selected
+{
+    border: 2px solid #505050;
+}
+
+.grid.readonly tr:hover
+{
+    background-color: #E2F0F5;
+}
+
+.grid.readonly td
+{
+    border-bottom: 1px solid #b2b2b2;
+    padding: 4px 5px;
+}
+
+.grid.readonly tbody a
+{
+    text-decoration: none;
+}
+
+.grid.readonly tbody td:hover a
+{
+    text-decoration: underline;
+}
+
+.grid.readonly tbody div.delete
+{
+    padding-left: 2px;
+}
+
+.grid .empty-grid-text,
+.grid .in-use
+{
+    color: #838383;
+}
+
+.column-sort-header
+{
+    color:#5297AD;
+    cursor: pointer;
+}
+
+/* TABLE AND COLUMN WIDTHS
+----------------------------------------------------------*/
+
+.permissions .grid
+{
+    width: 800px;
+}
+
+
+
+
+
+.import-results-dialog div
+{
+    margin-bottom: 10px;
+}
+
+.import-results-dialog .buttons,
+.import-verification .buttons
+{
+    text-align: center;
+}
+
+
+.import-results-dialog .container
+{
+    height: 400px;
+    overflow: auto;
+}
+
+.import-results-dialog ul
+{
+    margin-left: 25px;
+}
+
+/* JQUERY UI OVERRIDES
+----------------------------------------------------------*/
+
+.ImportInProgress-Dialog .ui-dialog-titlebar,
+.AddInProgressDialog .ui-dialog-titlebar
+{
+    display: none;
+}
+
+.ui-dialog
+{
+    color: #333333;
+    font-family: Arial,Calibri,Verdana,Helvetica,Sans-Serif;
+    font-size: 11px;
+    overflow: visible;
+}
+
+.ui-dialog.ui-widget {
+	font-family: Arial,Calibri,Verdana,Helvetica,Sans-Serif;
+	font-size: 11px;
+}
+
+.ui-widget-content a
+{
+    color: #5297AD !important;
+    text-decoration: none;
+}
+
+.ui-widget-content a:hover
+{
+    text-decoration: underline;
+}
+
+.ui-dialog .ui-dialog-content .form-element .buttons
+{
+    width: auto;
+}
+
+/* WIDGET
+----------------------------------------------------------*/
+.replacedWidgetText
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    margin-top: 3px;
+}
+
+/*Default MS class we are not using */
+/**.field-validation-valid
+{
+    display: none;
+}
+
+.input-validation-error 
+{
+     display: none; 
+}*/
+
+
+/*Default MS class we are not using */
+.field-validation-error
+{
+   display: none; 
+}
+
+.validation-summary-errors
+{
+    font-weight: bold;
+    color: #ff0000;
+    border: 2px solid #ff0000;
+    background: #ffffff url(images/warning.png) no-repeat 10px 10px;
+    display:inline-block;
+    margin-bottom:10px;
+    min-height: 36px;
+    padding: 10px 55px;
+}
+
+.validation-summary-valid
+{
+    display: none;
+}
+
+li.acknowledgement-item
+{
+    text-align: right;
+}
+
+.validation-box
+{
+    border: 2px solid #ff0000;
+    background: #ffffff url(images/warning.png) no-repeat 10px 10px;
+    display:inline-block;
+    margin-bottom:10px;
+    display: none;
+    min-height: 36px;
+    padding: 10px 10px 10px 55px;
+}
+
+.validation-row-icon
+{
+    background: #ffffff url(images/warning_small.png) no-repeat 0px 0px;
+    display:inline-block;
+    height: 16px;
+    width: 16px;
+    position: absolute;
+    margin-left: -20px;
+    margin-top: 3px;
+}
+
+.warning-box, .ack-message-box
+{
+    border: 2px solid #D58351;
+    background: #ffffff url(images/warning_orange.png) no-repeat 10px 10px;
+    display:inline-block;
+    margin-bottom:10px;
+}
+
+.warning-box {
+    min-height: 36px;
+    display: none;
+}
+
+.yellow-warning-box
+{
+    background: #ffff00 url(images/warning.png) no-repeat 10px 10px;
+    display:inline-block;
+    margin: 0 120px 10px 100px;
+    display: none;
+    min-height: 36px;
+    padding: 10px 10px 10px 55px;
+}
+
+.ack-message-box {
+    min-height: 50px;
+}
+
+.warning-box li
+{
+    margin-left:-20px;
+}
+
+.warning-message, .ack-message-text
+{
+    padding:10px 265px 10px 55px;
+    display:inline-block;
+}
+
+div#LaborTypeWarningFlag .warning-message
+{
+    padding: 10px 268px 10px 55px;
+}
+
+.warning-box .small-close-button, .ack-messages .small-close-button
+{
+    background:url("images/btn_close_orange.png") repeat scroll 9px 9px #FFFFFF;
+    cursor:pointer;
+    display:inline-block;
+    height:9px;
+    margin:2px;
+    vertical-align:top;
+    width:9px;
+}
+
+.ack-messages .small-close-button {
+    float: right;
+}
+
+#approvalsSection .warning-box {
+    width: 400px;
+    min-height: 50px;
+    margin-top: 5px;
+    margin-left: 345px;
+}
+
+#approvalsSection .warning-message {
+    padding: 10px 0 10px 55px;
+    width: 325px;
+}
+
+.validation-box li
+{
+    color: #333333;
+    list-style-type: none;
+}
+
+.warning-div
+{
+    background: url(images/warning_orange.png) no-repeat 10px 10px;
+    display:inline-block;
+    min-height: 36px;
+    padding: 10px 10px 10px 55px;
+}
+
+/* JQUERY UI AutoComplete Combo Box
+----------------------------------------------------------*/
+
+.grid .autocomplete-button
+    {
+    display: none;
+}
+
+.autocomplete-button
+{
+    margin-left: -1px;
+}
+
+.autocomplete-button .ui-button-text
+{
+    padding: 0.35em;
+}
+ 
+.ui-autocomplete-input
+{
+    margin: 0;
+    padding: 2px 5px;
+}
+
+/* HOME PAGE
+----------------------------------------------------------*/
+
+.section .title
+{
+    border-bottom: 5px solid #5f8e9d;
+    padding-bottom: 10px;
+    margin-bottom: 5px;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: Georgia,Arial,Calibri,Verdana,Helvetica,Sans-Serif;
+    color: #333333;
+}
+
+.all-usage
+{
+    width: 235px;
+}
+
+.usageMetrics
+{
+    display: inline-block;
+    width: 235px;
+    vertical-align: top;
+    *display: inline;
+    *zoom: 1;
+    background-color: #f0f0f0;
+    
+}
+
+.get-started
+{
+    width: 305px;
+    display: inline-block;
+    vertical-align: top;
+    *display: inline;
+    *zoom: 1;
+}
+
+.delete-checkbox
+{
+    width: 35px;
+    *padding-left: 0px;
+    text-align: center;
+}
+
+.buttons.inline
+{
+    display: inline;
+}
+
+.buttons.inline > div
+{
+    margin-right: 5px;
+}
+
+.system-admin-jump.section,
+.system-admin-permissions.section,
+{
+    margin-top: 20px;
+}
+
+.system-admin-jump .title,
+.system-admin-permissions .title,
+{
+    margin-bottom: 20px;
+}
+
+/* VIEW SPECIFIC ELEMENTS
+----------------------------------------------------------*/
+
+/***************PERMISSIONS*********************/
+
+.Add-Permissions-Dialog-Description-Column
+{
+    text-align: left;
+    display:inline-block;
+    *display:inline;
+    *zoom:1;
+    width:150px;
+}
+
+.Add-Permissions-Dialog-Description-Column .title
+{
+    font-weight:bold;
+}
+
+.Add-Permissions-Dialog-input-Column
+{
+    display:inline-block;
+    *display:inline;
+    *zoom:1;
+    vertical-align:top;
+    width:450px;
+}
+
+.Add-Permissions-Dialog-input-Column .ad-lookup-box
+{
+    width:75%;
+}
+
+.Add-Permissions-Dialog-input-Column .roleBox
+{
+    padding: 0 0 5px;
+}
+
+.Add-Permissions-Dialog-input-Column .roleBox input
+{ 
+    border:0px;
+}
+
+.Add-Permissions-Dialog-input-Column .roleBox .subtext
+{
+    display:inline-block;
+    *display:inline;
+    *zoom:1;
+    padding-left:2px;
+    vertical-align:top;
+    width:400px;
+}
+
+.Add-Permissions-Dialog-input-Column .half
+{
+    width: 356px;
+}
+
+
+/***************END*PERMISSIONS****************/
+
+.not-found-control
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    vertical-align: top;
+}
+
+
+.reports .module-header-center,
+.permissions .module-header-center
+{
+    width: 976px; /* 990 px - 14 for the left and right combined */
+}
+
+.reports .module-footer-center
+{
+    width: 978px;
+}
+
+#dfarsReportParameterSection select 
+{
+    max-width: 350px;
+    min-width: 195px;
+}
+
+.dfars-report-label {
+    width: 150px;
+}
+
+.dfars-date-element {
+    padding-top: 6px;
+}
+
+.composite .collapsed .module-header-center,
+.composite.collapsed .module-header-center {
+    background-color: #ebebeb;
+}
+
+.composite .module-header-left
+{
+    background: transparent url(images/moduleLeftBorder.png) repeat-y 0 0;
+    width: 4px;
+}
+
+.composite .module-header-center
+{
+    background: #ffffff none;
+    color: #333333;    
+    width: 982px;
+}
+
+.composite .module-header-right
+{
+    background: transparent url(images/moduleRightBorder.png) repeat-y 0 0;
+    width: 4px;
+}
+
+.collapsed .inner-collapsible .module-header-center 
+{
+    background-color: #ebebeb;
+}
+
+.inner-collapsible .module-header-left
+{
+    background: transparent url(images/moduleLeftBorder.png) repeat-y 0 0;
+    width: 4px;
+}
+
+.inner-collapsible .module-header-center
+{
+    background: #ffffff none;
+    color: #333333;    
+    max-width: 982px;
+    padding: 0px 3px;
+}
+
+.inner-collapsible .module-header-right
+{
+    background: transparent url(images/moduleRightBorder.png) repeat-y 0 0;
+    width: 4px;
+}
+
+.inner-collapsible .module-footer,
+.inner-collapsible .module-footer > div
+{
+    height: 1px;
+    margin-top: 0px;
+    vertical-align: top;
+    line-height: 1px;
+    font-size: 1px;
+}
+
+.inner-collapsible .module-footer-left
+{
+    background: transparent url(images/moduleLeftBorder.png) repeat-y 0 0;
+    width: 4px;
+}
+
+.inner-collapsible .module-footer .module-footer-center
+{
+    border-bottom: solid 1px #d9d9d9;
+    padding: 0px 2px;
+    height: 0px;
+    background: #ffffff none;
+}
+
+.inner-collapsible .module-footer-right
+{
+    background: transparent url(images/moduleRightBorder.png) repeat-y 0 0;
+    width: 4px;
+}
+
+.composite .buttons-left,
+.composite .buttons-right
+{    
+    width: 4px;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    vertical-align: top;
+}
+
+.composite .buttons-left
+{
+    background: transparent url(images/moduleLeftBorder.png) repeat-y 0 0;
+}
+
+.composite .buttons-right
+{
+    background: transparent url(images/moduleRightBorder.png) repeat-y 0 0;
+}
+
+.boe-details .composite .buttons
+{
+    height: 92px;
+    padding: 10px 40px;
+    margin: 0px;
+}
+
+.composite .buttons
+{
+    background: #ffffff none;
+    color: #333333;    
+    width: 902px;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    vertical-align: top;
+    word-spacing: normal;
+}
+
+.composite.full.module .module-header-data 
+{
+    width: 932px;
+}
+
+.composite .module-footer,
+.composite .module-footer > div
+{
+    height: 1px;
+    margin-top: 0px;
+    vertical-align: top;
+    line-height: 1px;
+    font-size: 1px;
+}
+
+.composite .module-footer-left
+{
+    background: transparent url(images/moduleLeftBorder.png) repeat-y 0 0;
+    width: 4px;
+}
+
+.composite .module-footer .module-footer-center
+{
+    border-bottom: solid 1px #d9d9d9;
+    padding: 0px 2px;
+    height: 0px;
+    background: #ffffff none;
+}
+
+.composite > .module-footer > .module-footer-center
+{
+    max-width: 982px;
+    padding: 0px;   
+}
+
+.composite .module-footer-right
+{
+    background: transparent url(images/moduleRightBorder.png) repeat-y 0 0;
+    width: 4px;
+}
+
+.grid thead th.select-checkbox
+{
+    width: 14px;
+}
+
+.static-comment-row,
+.static-response-row
+{
+    color: #999;
+}
+
+.response-header,
+.response-header-new,
+.comment-header,
+.comment-header-new,
+.comment-header-add
+{
+    font-style: italic;
+    margin-bottom: 5px;
+}
+
+.comment-header-add
+{
+    margin-bottom: 0px;
+}
+
+.response-header,
+.comment-header
+{
+    font-weight: bold;
+}
+
+.right-header
+{
+    color: #999A95;
+    font-size:12px;
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+.proposal-submittal input.active
+{
+    *margin-left: -10px;
+    *margin-right: -10px;
+}
+
+
+.system-admin .left-column,
+.system-admin .right-column
+{
+    width: 50%;
+    float: left;
+}
+
+.system-admin .left-column > div,
+.system-admin .right-column > div
+{
+    margin-bottom: 10px;
+}
+
+.system-admin .left-column a,
+.system-admin .right-column a
+{
+    text-decoration: none;
+    font-weight: bold;
+}
+.system-admin-content-data
+{
+    padding: 10px 10px 0px;
+    max-width: 962px;
+}
+
+.ui-dialog .ui-dialog-content.boe-search
+{
+    padding-top: 10px;
+}
+
+.form-element .buttons
+{
+    width: 300px;
+    margin-bottom: 0px;
+}
+
+.paging
+{
+    float: right;
+    display: block;
+}
+
+.paging-area
+{
+     padding:0px; 
+     margin:0px;
+}
+.grid .paging
+{
+    margin-top: -16px;
+}
+
+.paging a.page
+{
+    border: 1px solid #5297AD;
+    padding: 2px 4px;
+    margin: 3px 2px;
+    min-height: 0px;
+}
+
+.paging .current-page
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    color: #ffffff;
+    background-color: #5297AD;
+    border: 1px solid #5297AD;
+    padding: 2px 4px 3px 4px;
+    margin: 3px 2px;
+    position: relative;
+    top: -1px;
+    *margin: 3px 1px;
+    *position: relative;
+    *top: 3px;
+    *left: 1px;
+}
+
+.paging .elipsis
+{
+    *margin-right: 4px;
+    *vertical-align: middle;
+}
+
+.paging-control
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    word-spacing: normal;
+    margin-right: 10px;
+    vertical-align: top;
+    margin-top: 5px;
+}
+
+.module-content-data .paging-control.page-number
+{
+    margin-top: -1px;
+}
+
+.pages
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    margin-right: 5px;
+    position: relative;
+    top: -3px;
+    *top: 0px;
+}
+
+.ui-dialog .ui-dialog-content .buttons.boe-conflict-buttons
+{
+    height: auto;
+    margin-bottom: 0px;
+    width: 300px;
+    margin-top: 10px;
+    margin-left:200px;
+}
+
+.boe-search-results .buttons > div
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    vertical-align: top;
+}
+
+.approver-selection-box
+{
+    height: 100px;
+    overflow: auto;
+    width: 262px;
+    border: 1px solid #b2b2b2;
+}
+
+.approver-selection-box > div
+{
+    margin: 5px;
+}
+
+.approver-selection-box input
+{
+    border: none;
+}
+
+.import-results
+{
+    height: 531px;
+    overflow: auto;
+    margin-bottom: 10px;
+}
+
+.dialog.form .step.one
+{
+    padding-top: 0px;
+    border-top: 0px;
+}
+
+.import-wbs.dialog.form .buttons
+{
+    padding-bottom: 0px;
+    text-align: center;
+    margin-bottom: 0px;
+}
+
+.import-verification .title
+{
+    font-weight: bold;
+    padding: 2px 0px;
+    margin-top: 10px;
+}
+
+.ui-autocomplete.ui-corner-all { -moz-border-radius: 0px; -webkit-border-radius: 0px; border-radius: 0px; }
+.ui-autocomplete .ui-menu-item .ui-corner-all { -moz-border-radius: 0px; -webkit-border-radius: 0px; border-radius: 0px; }
+.ui-autocomplete.ui-menu .ui-menu-item a {
+	color: #000000;
+}
+
+.ui-autocomplete.ui-menu .ui-menu-item a.ui-state-hover 
+{ border: 1px solid #000000; background: none; font-weight: normal; }
+
+.inline
+{
+    display:inline;
+}
+
+.tooLongWarning
+{
+    color: #ff0000;
+    background: #ffffff url(images/warning.png) no-repeat 5px 5px;
+    margin-bottom:5px;
+    padding: 10px 55px;
+}
+
+.help-module .module-header-left
+{
+    background: transparent url(images/tab_green_left.png) no-repeat 3px 0;
+
+}
+
+.help-module .module-header-center
+{    
+    background: transparent url(images/tab_green_middle.png) repeat-x 0 0;
+
+}
+
+.help-module .module-header-right
+{
+    background: transparent url(images/tab_green_right.png) no-repeat 0 0;
+    margin: 0 0 0 -3px;
+
+}
+
+.help-module .small-close-button
+{
+    background:url("images/btn_message_close.png") no-repeat scroll 35px 14px;
+    cursor:pointer;
+    display:inline-block;
+    height:31px;
+    margin-left: 658px;
+    vertical-align:top;
+    width:45px;
+}
+
+.psa-content .help-icon,
+.grid .help-icon {
+    margin-left: 3px;
+}
+
+.mission-resource-header
+{
+    line-height: 18px;
+}
+
+.import-note
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    margin-left: 10px;
+    position: relative;
+    top: -3px;
+}
+
+span.currency
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    left: -3px;
+    margin-right: -6px;
+    position: relative;
+    vertical-align: middle;
+    width: 5px;
+}
+
+span.currency + .LSDateinput,
+span.currency + div
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    vertical-align: middle;
+}
+
+.import-elements-of-cost .form-label
+{
+    min-width: 150px;
+    margin-bottom: 20px;
+}
+
+.import-elements-of-cost label
+{
+    margin-right: 20px;
+}
+
+.permission-form .form-label
+{
+    width: 150px;
+}
+
+.permission-form .form-element
+{
+    width: 480px;
+}
+
+.permission-form .ad-lookup-box
+{
+    width: 350px;
+    margin-right: 3px;
+}
+
+.permission-form .buttons
+{
+    margin-left: 163px;
+}
+
+.permission-form .role-box
+{
+    padding: 0 0 5px;
+}
+
+.permission-form .role-box input
+{
+    margin-right: 3px;
+    margin-top: 1px;
+}
+
+.permission-form .role-box .subtext
+{
+    display:inline-block;
+    *display:inline;
+    *zoom:1;
+    padding-left:2px;
+    vertical-align:top;
+    width: 395px;
+}
+
+.collapsible-header
+{
+    display: block;
+    height: 16px;
+    position: absolute;
+    width: 16px;
+    margin-top: 12px;
+    margin-left: -32px;
+    cursor: pointer;
+}
+
+.form-element .buttons
+{
+    margin-bottom: 5px;
+}
+
+.widget-menu.form-element
+{
+    width:100%;
+}
+
+.widget-menu .search-box
+{
+        float: right;
+}
+
+div.inline-validation div.validation-status
+{
+    display: inline-block;
+    height: 20px;
+    min-width: 20px;
+    vertical-align: bottom;
+    width: 20px;
+}
+
+div.inline-validation div.validation-status.inline-validation-valid
+{
+    background-color:Green;
+}
+
+div.inline-validation div.validation-status.inline-validation-invalid
+{
+    background-color:Red;
+}
+
+
+table#BOEMaterialGrid
+{
+    width:100%;
+}
+
+div.popup-div
+{
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 1px solid grey;
+    margin: 1px;
+    padding: 2px;
+    position: absolute;
+}
+
+.contains-comment
+{
+    background: transparent url(images/commentsTriangle.png) no-repeat top right;
+}
+
+.revert-to-baseline
+{
+    background: transparent url(images/btn_revert_to_baseline.png) 0 0 no-repeat;
+    width: 130px;
+}
+
+.generation-product-links {
+    text-align:center;
+}
+
+div.breadcrumb
+{
+    word-spacing: normal;
+    margin-left: 5px;
+    margin-bottom: 2px;
+    font-size: 12px;
+}
+
+.even {
+    background: #e2f0f5;
+}
+
+div.fake-table
+{
+    word-spacing: -3px;
+}
+
+div.fake-header
+{
+    background: url("images/tableHeaderBG.png") repeat-x scroll 0 0 transparent;
+    display: inline-block;
+    padding: 5px;
+    border-right: 1px solid #B2B2B2;
+    border-bottom: 1px solid #B2B2B2;
+    word-spacing: normal;
+    height: 16px;
+    text-align: center;
+}
+
+div.fake-header:first-child,
+div.fake-cell:first-child
+{
+    border-left: 1px solid #B2B2B2;
+}
+
+div.fake-cell
+{
+    padding: 4px 5px;
+    display: inline-block;
+    border-right: 1px solid #B2B2B2;
+    border-bottom: 1px solid #B2B2B2;
+    word-spacing: normal;
+    height: 14px;
+}
+
+.css3pie-position-fix
+{
+    position: relative;
+}
+
+#footerVersionInfo {
+    font-size: 75%;
+    width: 100%;
+    text-align: center;
+    margin-top: 5px;
+}

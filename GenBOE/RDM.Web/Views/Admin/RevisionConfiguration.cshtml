@@ -1,0 +1,95 @@
+﻿@using IES.Common
+@{
+    ViewBag.Title = "Revision Configuration";
+} 
+@Styles.Render("~/Content/datepicker");
+@Scripts.Render("~/bundles/datepicker")
+
+<script>
+    angular.module('RDM').value('RevisionConfigurationModel', {
+        controller: '@IESWebConstants.CONTROLLER_ADMIN',
+        getAction: '@IESWebConstants.ACTION_GET_REVISION_CONFIGURATION',
+        saveAction: '@IESWebConstants.ACTION_SAVE_REVISION_CONFIGURATION'
+    });
+</script>
+<br />
+
+<div class="row top-margin-2" data-ng-controller="RevisionConfigurationCtrl">
+    <div class="col-md-12">
+        <div class="module">
+            <div class="module-header-data left">
+                Revision Configuration
+            </div>
+            <div class="module-content-data black RevisionConfiguration">
+                <form name="inputForm" id="inputForm" data-ng-cloak>
+                    <gen-validation data-errors="$root.errors"></gen-validation>
+                    Define the start and end years for the Work in Progress version.<br /><br />
+
+                    <div class="form-row row">
+                        <div class="col-md-1 topButtons">
+                            <div class="form-label">Start Year *</div>
+                        </div>
+                        <div class="col-md-2 topButtons">
+                            <p class="input-group">
+                                <input type="text" name="startYear" class="form-control" uib-datepicker-popup="yyyy"
+                                       data-ng-model="start" is-open="popupDatePickerStart.opened"
+                                       datepicker-options="dateOptions" date-disabled="disabled(date, mode)" data-ng-required="true" close-text="Close" />
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" data-ng-click="openDatePickerStart()"><i class="glyphicon glyphicon-calendar"></i></button>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md-3 pull-left">
+                            <div class="input-group">
+                                <span style="background-color:red;color:white;width:150px" class="form-control"
+                                      ng-show="!inputForm.startYear.$valid">Invalid Start Year</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row row">
+                        <div class="col-md-1 topButtons">
+                            <div class="form-label">End Year *</div>
+                        </div>
+                        <div class="col-md-2 topButtons">
+                            <p class="input-group">
+                                <input type="text" name="endYear" class="form-control" uib-datepicker-popup="yyyy"
+                                       data-ng-model="end" is-open="popupDatePickerEnd.opened"
+                                       datepicker-options="dateOptions" date-disabled="disabled(date, mode)" data-ng-required="true" close-text="Close" />
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" data-ng-click="openDatePickerEnd()"><i class="glyphicon glyphicon-calendar"></i></button>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="col-md-3 pull-left">
+                            <div class="input-group">
+                                <span style="background-color:red;color:white;width:150px" class="form-control"
+                                      ng-show="!inputForm.endYear.$valid">Invalid End Year</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row row">
+                        <div class="col-md-1 topButtons">
+                            <div class="form-label">History</div>
+                        </div>
+                        <div class="col-md-11 form-element">
+                            <textarea id="editor1" ui-tinymce="tinyMceOptionsHistory" data-ng-model="history" name="historyText"></textarea>
+                            <span class="small">Note: Images can be dragged into the above text area.</span>
+                        </div>
+                    </div>
+                    <div class="form-row row">
+                        <div class="col-md-1 topButtons">
+                            <div class="form-label">Release Notes</div>
+                        </div>
+                        <div class="col-md-11 form-element">
+                            <textarea id="editor2" ui-tinymce="tinyMceOptionsReleaseNotes" data-ng-model="releaseNotes" name="releaseNotesText"></textarea>
+                            <span class="small">Note: Images can be dragged into the above text area.</span>
+                        </div>
+                    </div>
+                    <hr style="margin:10px 0px" />
+                    <button id="SaveButton-Revision" type="button" class="ies-action" data-ng-click="saveRevisionConfigurations()" data-ng-disabled="isDataLoading || !inputForm.$valid || !inputForm.$dirty">Save</button>
+                    <button id="CancelButton-Revision" type="button" class="ies" data-ng-click="cancel()" data-ng-disabled="isDataLoading || !inputForm.$dirty">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

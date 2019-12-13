@@ -1,0 +1,264 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Admin.BulkArchiveModelView
+@{
+    ViewBag.Title = "Bulk Archive";
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+}
+
+<script type="text/javascript">
+    var BulkArchiveWidget;
+
+    $(function () {
+        var BulkArchiveWidgetConfig = {};
+        BulkArchiveWidgetConfig.ContextID = "bulkArchive";
+        BulkArchiveWidgetConfig.IsModule = true;
+
+        var FormConfigs = []; 
+        FormConfigs.push({ 
+            ElementID: "BulkArchiveForm", 
+            Buttons: [
+            {
+                ButtonClass: 'ies',
+                ButtonText: 'Search',
+                ButtonName: "search-bulk-archive-button",                
+                ButtonAction: function (buttonPressed) {
+                    BulkArchiveWidget.SearchBulkArchive();
+                },
+                Stateful: false
+            },
+            {
+                ButtonClass: 'ies-action',
+                ButtonText: 'Apply',
+                ButtonName: "apply-bulk-archive-button",
+                ButtonAction: function () {
+                    BulkArchiveWidget.ApplyBulkArchive();
+                },
+                Stateful: false
+            }],
+            HideOCI: "true" 
+        });  
+        BulkArchiveWidgetConfig.FormConfigs = FormConfigs;
+
+        BulkArchiveWidget = new GenWidget(BulkArchiveWidgetConfig);
+
+        var applyButton = BulkArchiveWidget.getElement("button[name='apply-bulk-archive-button']");
+
+        // Disable button by default, making it visible when 'Search' results are > 0
+        applyButton.addClass("disabled");
+
+        // Set up Start Date
+        BulkArchiveWidget.getElement('input[name="StartDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                BulkArchiveWidget.setDirty("BulkArchiveForm");
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
+        // Set up Start Date
+        BulkArchiveWidget.getElement('input[name="EndDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                BulkArchiveWidget.setDirty("BulkArchiveForm");
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
+        // skip datepicker icons when tabbing
+        BulkArchiveWidget.getElement('.ui-datepicker-trigger').attr('tabindex', '-1');
+        BulkArchiveWidget.getElement('.ui-datepicker-trigger').on('blur', function () {
+            $(this).attr('tabindex', '-1');
+        });
+
+        // Set up the Program Areas drop-down
+        // Line of Business was the previous name for the Program Area organization level, only items visible to the user were updated with the new name.
+        // Set 'All' to the default selection in the drop-down
+        BulkArchiveWidget.getElement('select[name="LineOfBusiness"] option:contains("All")').prop('selected', true);
+
+        BulkArchiveWidget.getElement('select[name="LineOfBusiness"]').change(function () {
+            var lineOfBusinessText = BulkArchiveWidget.getElement('select[name="LineOfBusiness"] option:selected').text();
+
+            var data = {};
+            var dataToSend = {};
+
+            if (lineOfBusinessText == "All") {
+                data.lineOfBusiness = lineOfBusinessText;
+                dataToSend = JSON.stringify(data);
+            }
+            else {
+                data.lineOfBusiness = BulkArchiveWidget.getElement('select[name="LineOfBusiness"] option:selected').val();
+                dataToSend = JSON.stringify(data);
+            }
+            $.ajax({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.ADMIN',
+                    action: '@WebConstants.Action.BULK_ARCHIVE_FILTER_PROGRAM_AREAS'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'html',
+                data: dataToSend,
+                success: function (response) {
+                    var element = BulkArchiveWidget.getElement('select[name="ProgramArea"]')
+                    element.html(response);
+                    element.focus();
+                }
+            });
+        });
+
+        // Get the form data that populates the model view on the controller
+        BulkArchiveWidget.GetData = function () {
+            var dataToSearch= {};
+            dataToSearch.bulkArchiveModelView = BulkArchiveWidget.getForm("BulkArchiveForm").getData();
+            return dataToSearch;
+        };
+
+        // add functionality for buttons : (1) search (2) apply
+        BulkArchiveWidget.SearchBulkArchive = function searchBulkArchive() {
+
+            // clear Results area of page
+            $('#results-text').text();
+            $('#results-text').addClass('hidden-span');
+
+            var data = BulkArchiveWidget.GetData();
+
+            // Replace LineOfBusiness data with 'All' if the drop-down is put to that value
+            var lineOfBusinessText = $('select[name="LineOfBusiness"] option:selected').text();
+            if (lineOfBusinessText == 'All') {
+                data.bulkArchiveModelView["LineOfBusiness"] = 'All';
+            }
+
+            // Replace Program Area data with 'All' if the drop-down is put to that value
+            var programAreaText = $('select[name="ProgramArea"] option:selected').text();
+            if (programAreaText == 'All') {
+                data.bulkArchiveModelView["ProgramArea"] = 'All';
+            }
+
+            var dataToSend = JSON.stringify(data);
+
+            BulkArchiveWidget.saveRequest({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.ADMIN',
+                    action: '@WebConstants.Action.SEARCH_BULK_ARCHIVE'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'html',
+                data: dataToSend,
+                success: function (response) {                  
+                    // convert response (a string of the number of search results) into a number
+                    var numResults = +response; 
+
+                    if (numResults > 0) {
+                        BulkArchiveWidget.setDirty("BulkArchiveForm");
+                        resultsText = numberWithCommas(numResults) + ' proposals found. Click "Apply" to archive these proposals.';
+                        applyButton.removeClass('disabled');
+                    }
+                    else {
+                        resultsText = 'No proposals found.';
+                        applyButton.addClass('disabled');
+                    }
+
+                    $('#results-text').text(resultsText);
+                    $('#results-text').removeClass('hidden-span');
+                },
+            });
+        }
+
+        BulkArchiveWidget.ApplyBulkArchive = function applyBulkArchive() {
+
+            var title = 'Bulk Archive Confirmation';
+            var msg = 'Are you sure you want to Archive these Proposals? </br></br> This CANNOT be undone.'; 
+
+            GenSession.confirmDialog(title, msg, function () {
+                var data = BulkArchiveWidget.GetData();
+
+                // Replace LineOfBusiness data with 'All' if the drop-down is put to that value
+                var lineOfBusinessText = $('select[name="LineOfBusiness"] option:selected').text();
+                if (lineOfBusinessText == 'All') {
+                    data.bulkArchiveModelView["LineOfBusiness"] = 'All';
+                }
+
+                // Replace Program Area data with 'All' if the drop-down is put to that value
+                var programAreaText = $('select[name="ProgramArea"] option:selected').text();
+                if (programAreaText == 'All') {
+                    data.bulkArchiveModelView["ProgramArea"] = 'All';
+                }
+
+                var dataToSend = JSON.stringify(data);
+
+                BulkArchiveWidget.saveRequest({
+                    type: 'POST',
+                    url: GenSession.CreateUrl({
+                        controller: '@WebConstants.Controller.ADMIN',
+                        action: '@WebConstants.Action.APPLY_BULK_ARCHIVE'
+                    }),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'html',
+                    data: dataToSend,
+                    success: function (response) {
+                        // convert response (a string of the number of search results) into a number
+                        var numResults = +response;
+
+                        if (numResults > 0) {
+                            resultsText = numberWithCommas(numResults) + ' proposals archived.';
+                            applyButton.removeClass('disabled');
+                        }
+
+                        $('#results-text').text(resultsText);
+                        $('#results-text').removeClass('hidden-span');
+                    },
+                });
+            });
+        }
+
+        // Do comma separation per 1,000 for numbers of type string
+        function numberWithCommas(x) {
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+    });
+</script>
+
+<div id="bulkArchive" class="module full">
+    <div class="module-header-data">Bulk Archive</div>
+    <div class="module-content-data">
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.AdminControllerLogic.BULK_ARCHIVE_FORM, 
+            name = GenTRAC.ActionLogic.AdminControllerLogic.BULK_ARCHIVE_FORM, @class= "BulkArchiveForm"}))
+        {
+            <div class="form-row">
+                <div class="form-element created-between">Created Between:</div>
+                <div class="form-element startDate">
+                    <input id="BulkArchiveStartDate" name="StartDate" type="text" placeholder="mm/dd/yyyy" class="date"  maxlength="10" size="12"/> 
+                </div>
+                    <span class="bulk">and</span> 
+                <div class="form-element endDate">
+                    <input id="BulkArchiveEndDate" name="EndDate" type="text" placeholder="mm/dd/yyyy" class="date" maxlength="10" size="12"/>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">Line of Business:</div>
+                <div class="form-element lineOfBusiness">
+                    @Html.DropDownListFor(model => model.LineOfBusiness, Model.LineOfBusinessOptions, new { name = "LineOfBusiness" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">Program Areas:</div>
+                <div class="form-element ProgramArea">
+                    @Html.DropDownListFor(model => model.ProgramArea, Model.ProgramAreaOptions, new { name = "ProgramArea" })
+                </div>
+            </div>
+            <br />
+            <br />
+            <div class="button-container"></div>
+        }
+    </div>
+    <div class="module-content-data" style="height:44px;">
+        <hr style="width:100%; margin-left:0px;"/>
+        <br />
+        <div><span id="results-text" class="hidden-span"></span></div>
+        <br />
+    </div>
+</div>

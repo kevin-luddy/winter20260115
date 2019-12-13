@@ -1,0 +1,407 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Proposals.ProposalIndexModelView
+@{
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+    ViewBag.Title = "Proposal Details";
+    string proposalLinkText = string.IsNullOrWhiteSpace(Model.ProposalTrackingNumber) ? Model.ForecastedTrackingNumber : Model.ProposalTrackingNumber;
+    string proposalTabsCss = string.IsNullOrWhiteSpace(Model.ProposalTrackingNumber) ? "display: none;" : string.Empty;
+}
+
+<script type="text/javascript">
+
+    // tabs class will stop float after breadcrumb
+    $('div[name=stop_float]').css('clear', 'none');
+
+    var ProposalDetailsWidget = {};
+
+    ProposalDetailsWidget.LoadingHtml = '<div class="module-content-left" style="height: 44px"></div>' +
+                        '<div class="module-content-center" style="width: 982px; padding-bottom: 3px;">' +
+                            '<div class="module-content-data">' +
+                                '<div class="loader" />' +
+                             '</div>' +
+                        '</div>' +
+                        '<div class="module-content-right" style="height: 44px"></div>';
+
+    // Hide tab elements that are associated with standard proposals.
+    $(document).on('HIDE_STANDARD_PROPOSAL_FIELDS', function () {
+        $('li[data-proposal-type="standard"]').each(function() {
+            $(this).hide();
+        });
+
+        ProposalDetailsWidget.refreshModule();
+    });
+
+    // Show tab elements that are associated with standard proposals.
+    $(document).on('SHOW_STANDARD_PROPOSAL_FIELDS', function () {
+        $('li[data-proposal-type="standard"]').each(function() {
+            $(this).show();
+        });
+
+        ProposalDetailsWidget.refreshModule();
+    });
+
+    $(function () {
+
+        var DetailWidget = {};
+        DetailWidget.ContextID = "proposalsetup-details";
+        DetailWidget.IsModule = true;
+
+        ProposalDetailsWidget = new GenWidget(DetailWidget);
+
+        $('#ProposalTabs .tabs a').click(function (event) {
+            event.preventDefault();
+            ProposalDetailsWidget.href = $(this).attr('href');
+            ProposalDetailsWidget.currentLocation = window.location;
+
+            if (GenSession.isDirty()) {
+                GenSession.confirmDialog(
+                 "Unsaved Changes",
+                 "You have selected to leave this tab without saving your current changes.  If you wish to leave the unsaved changes select Yes.  To stay on the page select No.",
+                 ProposalDetailsWidget.FinishTabClicked,
+                 null);
+            } else {
+                ProposalDetailsWidget.FinishTabClicked();
+            }
+        });
+
+        ProposalDetailsWidget.FinishTabClicked = function () {
+
+            // change tabs
+            window.location = window.location.protocol + "//" + window.location.host + window.location.pathname + ProposalDetailsWidget.href;
+            ProposalDetailsWidget.cleanDirty("proposalInfoForm");
+            ProposalDetailsWidget.cleanDirty("proposalGeneralInfoForm");
+            ProposalDetailsWidget.cleanDirty("proposalUserInfoForm");
+            ProposalDetailsWidget.cleanDirty("checklistGeneralInfoForm");
+            ProposalDetailsWidget.cleanDirty("checklistProposalPricingDataForm");
+            ProposalDetailsWidget.cleanDirty("checklistPPRDocumentForm");
+            ProposalDetailsWidget.cleanDirty("checklistPARDocumentForm");
+            ProposalDetailsWidget.cleanDirty("ApprovalForm");
+            ProposalDetailsWidget.cleanDirty("certificationTimelineForm");
+        };
+
+        ProposalDetailsWidget.RevertLoadTab = function () {
+            window.location.hash = ProposalDetailsWidget.currentHash;
+        };
+
+        ProposalDetailsWidget.LoadTab = function () {
+
+            if (window.location.hash != ProposalDetailsWidget.currentHash && window.location.hash != '#users') {
+                $('div[tab*=Proposal]').hide();
+                $('div[tab*=Checklist]').hide();
+                $('div[tab*=Approvals]').hide();
+                $('div[tab*=PSA]').hide();
+                $('div[tab*=CertificationTimeline]').hide();
+
+                var urlHash = window.location.hash.substring(1).split('/');
+                var currentTab = urlHash[0];
+                if (currentTab == '') {
+                    currentTab = 'Proposal';
+                }
+
+                // Load the detail pages if needed.
+                if (currentTab == 'Proposal') {
+
+                    var data = {};
+                    data.proposalid = @ViewBag.proposalid;
+                    $(document).trigger('LOAD_PROPOSAL_TAB', data);
+
+                }
+                else if (currentTab == 'Checklist') {
+                    var data = {};
+                    $(document).trigger('LOAD_CHECKLIST_TAB', data);
+                }
+                else if (currentTab == 'Approvals') {
+                    var data = {};
+                    $(document).trigger('LOAD_APPROVALS_TAB', data);
+                }
+                else if (currentTab == 'PSA') {
+                    var data = {};
+                    $(document).trigger('LOAD_PSA_TAB', data);
+                }
+                else if (currentTab == 'CertificationTimeline') {
+                    var data = {};
+                    $(document).trigger('LOAD_CERTIFICATION_TIMELINE_TAB', data);
+                }
+
+                var currentTabDiv = $('div[tab*=' + currentTab + ']');
+                $(currentTabDiv).parent().find('li.active').removeClass('active');
+                $(currentTabDiv).parent().find('.tabs a[tab*=' + currentTab + ']').parent().addClass('active');
+                $(currentTabDiv).show();
+
+                ProposalDetailsWidget.currentHash = window.location.hash;
+
+                $('div[tab*=' + currentTab + '] .module').each(function () {
+                    if ($(this).find('.module-header').length == 0) {
+                        createModule($(this));
+                    }
+                    refreshModule(this);
+                });
+
+                // if this is a new proposal, do not show the checklist or approvals tabs
+                var proposalID = @ViewBag.proposalid;
+                if (proposalID == null)
+                {
+                    $('[tab*=Checklist]').parents("li").addClass('display-none');
+                    $('[tab*=Approvals]').parents("li").addClass('display-none');
+                }
+
+                if (proposalID == null || @Json.Encode(Model.PsaVisibility == SecurityAuthorization.None)) {
+                    $('[tab*=PSA]').parents("li").addClass('display-none');
+                }
+
+                if (proposalID == null || @Json.Encode(Model.CertificationTimelineVisibility == SecurityAuthorization.None)) {
+                    $('[tab*=CertificationTimeline]').parents("li").addClass('display-none');
+                }
+            }
+        };
+
+        window.onhashchange = ProposalDetailsWidget.LoadTab;
+        ProposalDetailsWidget.on('LOAD_PROPOSAL_TAB', function (e, params) {
+            var proposalID = params.proposalid;
+            if (proposalID == null)
+            {
+                proposalID = -1;
+            }
+
+            $("div[tab*=Proposal] .proposal-details").children().remove();
+            $("div[tab*=Proposal] .proposal-details").html(ProposalDetailsWidget.LoadingHtml);
+            $("div[tab*=Proposal] .proposal-details").removeClass("display-none");
+            var proposalURL = "";
+            if (proposalID < 0 ) {
+
+                proposalURL =  GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.PROPOSAL',
+                    action: '@WebConstants.Action.DISPLAY_PROPOSAL_INDEX'
+                });
+
+            }
+            else {
+
+                proposalURL = GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.PROPOSAL',
+                    action: '@WebConstants.Action.DISPLAY_PROPOSAL_INDEX',
+                    id: JSON.stringify(proposalID)
+                });
+
+            }
+
+            var data = {};
+
+            $.ajax({
+                type: "POST",
+                url: proposalURL,
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    $('div[tab*=Proposal] .proposal-details').html(response);
+
+                }
+            });
+
+        });
+
+        ProposalDetailsWidget.on('LOAD_CHECKLIST_TAB', function (e, params) {
+
+            $("div[tab*=Checklist] .checklist-details").children().remove();
+            $("div[tab*=Checklist] .checklist-details").html(ProposalDetailsWidget.LoadingHtml);
+            $("div[tab*=Checklist] .checklist-details").removeClass("display-none");
+            var checklistURL =  GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.CHECKLIST',
+                action: '@WebConstants.Action.DISPLAY_CHECKLIST_INDEX',
+                id: '@ViewBag.proposalid'
+            });
+
+            var data = {};
+
+            $.ajax({
+                type: "POST",
+                url: checklistURL,
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    $('div[tab*=Checklist] .checklist-details').html(response);
+
+                }
+            });
+
+        });
+
+        ProposalDetailsWidget.on('LOAD_APPROVALS_TAB', function (e, params) {
+
+            $("div[tab*=Approvals] .approvals-details").children().remove();
+            $("div[tab*=Approvals] .approvals-details").html(ProposalDetailsWidget.LoadingHtml);
+            $("div[tab*=Approvals] .approvals-details").removeClass("display-none");
+            var approvalsURL =  GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.APPROVALS',
+                action: '@WebConstants.Action.DISPLAY_APPROVALS_INDEX',
+                id: '@ViewBag.proposalid'
+            });
+
+            var data = {};
+
+            $.ajax({
+                type: "POST",
+                url: approvalsURL,
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    $('div[tab*=Approvals] .approvals-details').html(response);
+
+                }
+            });
+
+        });
+
+        ProposalDetailsWidget.on('LOAD_PSA_TAB', function (e, params) {
+            $("div[tab*=PSA] .psa-details").children().remove();
+            $("div[tab*=PSA] .psa-details").html(ProposalDetailsWidget.LoadingHtml);
+            $("div[tab*=PSA] .psa-details").removeClass("display-none");
+            var psaUrl =  GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PSA',
+                action: '@WebConstants.Action.DISPLAY_POST_SUBMITTAL_ATTACHMENTS',
+                id: '@ViewBag.proposalid'
+            });
+
+            var data = {psaVisibility: '@Model.PsaVisibility'};
+
+            $.ajax({
+                type: "POST",
+                url: psaUrl,
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    $('div[tab*=PSA] .psa-details').html(response);
+
+                }
+            });
+
+        });
+
+        ProposalDetailsWidget.on('LOAD_CERTIFICATION_TIMELINE_TAB', function (e, params) {
+            $("div[tab*=CertificationTimeline] .ct-details").children().remove();
+            $("div[tab*=CertificationTimeline] .ct-details").html(ProposalDetailsWidget.LoadingHtml);
+            $("div[tab*=CertificationTimeline] .ct-details").removeClass("display-none");
+            var psaUrl =  GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.CERTIFICATION_TIMELINE',
+                action: '@WebConstants.Action.DISPLAY_CERTIFICATION_TIMELINE',
+                id: '@ViewBag.proposalid'
+            });
+
+            $.ajax({
+                type: "POST",
+                url: psaUrl,
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+                    $('div[tab*=CertificationTimeline] .ct-details').html(response);
+
+                }
+            });
+
+        });
+
+        ProposalDetailsWidget.LoadTab();
+
+    });
+</script>
+
+<div class="proposalsetup-details module full">
+    <div id="ProposalTabs">
+        <div class="breadcrumb">
+            @Html.RouteLink("Proposals", WebConstants.Route.Name.HOME, new { action = WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME, controller = WebConstants.Controller.HOME })
+            @if (ViewBag.proposalid == "null")
+            {
+                <text>
+                > New Proposal
+                </text>
+            }
+            else
+            {
+                <text>
+                > @proposalLinkText
+                </text>
+            }
+        </div>
+        <div class="tabs">
+            <div class="tabs-left"></div>
+            <div class="tabs-center" style="width: 976px">
+                <div class="proposal-text" style="text-align:left;padding:5px;">
+                    @if (ViewBag.proposalid == "null")
+                    {
+                        <text>
+                            <div style="color: #FFFFFF">New Proposal</div>
+                        </text>
+                    }
+                    else
+                    {
+                        <text>
+                            <div class="proposalTitle">@proposalLinkText - @Model.ProposalTitle</div>
+                            <div class="proposalStatusDates">
+                                <p style="padding-bottom: 2px;">
+                                    @if (Model.ProposalStatus == ProposalStatus.InProgress)
+                                    {
+                                        <text>
+                                            Due: @Model.AnticipatedDeliveryDate
+                                        </text>
+                                    }
+                                    else if (Model.ProposalStatus == ProposalStatus.Completed || Model.ProposalStatus == ProposalStatus.Submitted)
+                                    {
+                                        <text>
+                                            Approval Workflow Completed: @Model.CompletedDate
+                                        </text>
+                                    }
+                                    else if (Model.ProposalStatus == ProposalStatus.Revision || Model.ProposalStatus == ProposalStatus.Archived || Model.ProposalStatus == ProposalStatus.Deleted)
+                                    {
+                                        @Model.ProposalStatus.GetDescription();
+                                    }
+                                </p>
+                                <p>
+                                    @if (Model.IsCCoPD)
+                                    {
+                                        if (Model.ProposalStatus == ProposalStatus.Submitted)
+                                        {
+                                            <text>
+                                                Certification In Progress
+                                            </text>
+                                        }
+                                        else if (Model.ProposalStatus == ProposalStatus.Completed)
+                                        {
+                                            <text>
+                                                Certification Completed: @Model.CertificationCompletedDate
+                                            </text>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <text>&nbsp;</text>
+                                    }
+                                </p>
+                            </div>
+                        </text>
+                    }
+               </div>
+               <ul class="inline-block proposalTabMenu">
+                    <li class="active"><div class="tab-left"></div><a href="#Proposal" tab="Proposal">Proposal Setup</a><div class="tab-right"></div></li>
+                    <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Checklist" tab="Checklist">Checklist</a><div class="tab-right"></div></li>
+                    <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#PSA" tab="PSA">Post Submittal Attachments</a><div class="tab-right"></div></li>
+                    <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Approvals" tab="Approvals">Approvals</a><div class="tab-right"></div></li>
+                    <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#CertificationTimeline" tab="CertificationTimeline">Certification Timeline</a><div class="tab-right"></div></li>
+                </ul>  
+            </div>
+            <div class="tabs-right"></div>
+        </div>
+    </div>
+    <div tab="Proposal">
+        <div class="proposal-details"></div>
+    </div>
+    <div tab="Checklist">
+        <div class="checklist-details"></div>
+    </div>
+    <div tab="PSA">
+        <div class="psa-details"></div>
+    </div>
+    <div tab="Approvals">
+        <div class="approvals-details"></div>
+    </div>
+    <div tab="CertificationTimeline">
+        <div class="ct-details"></div>
+    </div>
+</div>

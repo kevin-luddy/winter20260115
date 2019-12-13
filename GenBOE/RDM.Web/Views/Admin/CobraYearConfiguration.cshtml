@@ -1,0 +1,32 @@
+﻿@using IES.Common
+@{
+    ViewBag.Title = "Cobra Year Configuration";
+}
+<script type="text/javascript">
+    angular.module('RDM').value('CobraYearConfigurationModel', {
+        controller: '@IESWebConstants.CONTROLLER_ADMIN',
+        getAction: '@IESWebConstants.ACTION_GET_COBRA_YEAR_CONFIGURATION',
+        saveAction: '@IESWebConstants.ACTION_SAVE_COBRA_YEAR_CONFIGURATION'
+        });
+</script>
+<br />
+
+<div class="row top-margin-2" data-ng-controller="CobraYearConfigurationController">
+    <div class="col-xs-12">
+        <div class="module">
+            <div class="module-header-data left">
+                Cobra Year Configuration
+            </div>
+            <div class="module-content-data" data-ng-cloak>
+                <gen-validation data-errors="$root.errors"></gen-validation>
+                <button id="AddButton-CobraYear" data-ng-click="addCobraYearConfiguration()" data-ng-disabled="isDataLoading" type="button" class="ies-action">+ Add Year</button>
+                <button id="DeleteButton-CobraYear" data-ng-click="showDeleteYearModal()" type="button" class="ies-warning">Delete Last Year ({{cobraYearMappings[cobraYearMappings.length-1].Year}})</button>
+                <form name="cobraYearForm" id="cobraYearForm">
+                    <div ui-grid="gridOptions" data-ng-click="gridChanged()" ui-grid-edit ui-grid-cellNav class="cobra-grid-ui"></div>
+                </form>
+                <button id="SaveButton-CobraYear" data-ng-click="saveCobraYearConfigurations()" data-ng-disabled="isDataLoading || !cobraYearForm.$dirty || !cobraYearForm.$valid" type="button" class="ies-action">Save</button>
+                <button id="CancelButton-CobraYear" data-ng-click="confirmCancel()" data-ng-disabled="isDataLoading || !cobraYearForm.$dirty" type="button" class="ies">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

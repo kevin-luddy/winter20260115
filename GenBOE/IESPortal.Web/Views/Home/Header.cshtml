@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <title>IES - Header</title>
+    <style>
+        body {background-color: #6a95a0 !important; background:none !important;}
+        .container {background: none; max-width: 2000px !important; height: 30px;}
+        .navbar {border-radius: 0 !important; min-height: 30px !important; height: 30px; margin-bottom:0 !important; border: none !important;}
+        .ies-nav {margin-bottom: 0 !important;}
+        .navbar-nav > li > a { padding-top: 5px !important; padding-bottom: 5px !important; }
+        #ies-logo-nav { width: 42px !important; margin-top: -2px !important;}
+        #ies-li-a { padding-bottom: 2px !important; }
+        #navbar { margin-top: 0 !important}
+    </style>
+    @Styles.Render("~/Content/css")
+</head>
+<body>
+    @{Html.RenderAction("HeaderInternal", "Home");}
+</body>
+</html>

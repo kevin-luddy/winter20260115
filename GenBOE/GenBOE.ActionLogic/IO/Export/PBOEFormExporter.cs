@@ -1,0 +1,406 @@
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace GenBOE.ActionLogic.IO.Export
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using DocumentFormat.OpenXml.Packaging;
+    using DocumentFormat.OpenXml.Wordprocessing;
+    using GenBOE.ActionLogic.Common.Calculations;
+    using GenBOE.DataBridge.DTO;
+    using GenBOE.Dtos;
+    using GenBOE.Objects;
+    using IES.Common;
+    using IES.Common.OfficeUtilities;
+    using IES.Common.PickList;
+
+    /// <summary>
+    /// Rolled-up Table-Row.
+    /// </summary>
+    public class PBOETableRow : ITableRow
+    {
+        /// <summary>
+        /// The Contract type.
+        /// </summary>
+        public string ContractType { get; set; }
+
+        /// <summary>
+        /// The Supplier Contract Type.
+        /// </summary>
+        public string SupplierContractType { get; set; }
+
+        /// <summary>
+        /// The WBS Number.
+        /// </summary>
+        public string WBS { get; set; }
+
+        /// <summary>
+        /// The WBS Padded Number.
+        /// </summary>
+        public string WbsPaddedNumber { get; set; }
+
+        /// <summary>
+        /// The CLIN Name
+        /// </summary>
+        public string CLIN { get; set; }
+
+        /// <summary>
+        /// The rolled-up Value for this WBS/CLIN Combo.
+        /// </summary>
+        public decimal Value { get; set; }
+    }
+
+
+    /// <summary>
+    /// Used for exporting an PBOE Custom Form to a pre-formatted Work template.
+    /// </summary>
+    [ExcludeFromCodeCoverage]
+    public class PBOEFormExporter : BOEFormExporter<BOEFormPBOEDTO, PBOETableRow>
+    {
+        #region Constants
+
+        private const string SUPPLIER_CONTRACT_TYPE = "SupplierContractType";
+        private const string SUPPLIER = "Supplier";
+        private const string RFP = "RFP";
+        private const string PROPOSAL_NUMBER = "ProposalNumber";
+        private const string VALIDITY_DATE = "ValidityDate";
+        private const string COMPETITIVE = "Competitive";
+        private const string NON_COMPETITIVE = "NonCompetitive";
+        private const string SOURCE_NOT_SELECTED = "SourceNotSelected";
+        private const string CCOPD = "ccopd";
+        private const string CCOPD_COMMERCIAL = "ccopd_commercial"; 
+        private const string CCOPD_COMPETITION = "ccopd_competition";
+        private const string CCOPD_OTHER = "ccopd_other";
+        private const string CCOPD_OTHER_TEXT = "ccopd_other_text";
+        // Schedule of Events
+        private const string SHOULD_COST_ESTIMATE = "ShouldCostEstimate";
+        private const string SOW_WRITTEN = "SowWritten";
+        private const string RFP_RELEASE = "RFPRelease";
+        private const string FIRM_SUPPLIER = "FirmSupplier";
+        private const string SOURCE_SELECTION = "SourceSelection";
+        private const string CID = "CID";
+        private const string GOVT_REVIEW = "GovtReview";
+        private const string PRICE_ANALYSIS = "PriceAnalysis";
+        private const string TECHNICAL_EVALUATION = "TechnicalEvaluation";
+        private const string FACT_FINDING = "FactFinding";
+        private const string COST_ANALYSIS = "CostAnalysis";
+        private const string GOVT_PRICING_CCOPD = "GovtPricingCCOPD";
+        private const string SUPPLIER_NEGOTIATIONS = "SupplierNegotiations";
+        private const string MOU = "MOU";
+        private const string PROCUREMENT = "Procurement";
+        private const string PLANNED_DATE_A = "PlannedDate_A";
+        private const string PLANNED_DATE_B = "PlannedDate_B";
+        // Status Of Supporting Data
+        private const string SSD_A_YES = "SSD_A_YES";
+        private const string SSD_A_NA = "SSD_A_NA";
+        private const string SSD_B_YES = "SSD_B_YES";
+        private const string SSD_B_NA = "SSD_B_NA";
+        private const string SSD_C_YES = "SSD_C_YES";
+        private const string SSD_C_NA = "SSD_C_NA";
+        private const string SSD_C_NO = "SSD_C_NO";
+        private const string SSD_D_YES = "SSD_D_YES";
+        private const string SSD_D_NA = "SSD_D_NA";
+        private const string SSD_D_NO = "SSD_D_NO";
+
+        #endregion
+
+
+        #region Fields
+        /// <summary>
+        /// The location of the Template
+        /// </summary>
+        protected override string TemplateLocation { get { return "~/Templates/Export/PBOE_{0}.docx"; } }
+
+        /// <summary>
+        /// The location of the Template with portion markings enabled
+        /// </summary>
+        protected override string TemplateLocationPortionMarking { get { return "~/Templates/Export/PBOE_withPortionMarkings_{0}.docx"; } }
+
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Default constructor for PBOE Form Exporter
+        /// </summary>
+        /// <param name="userDTODataLoader">The user dataloader.</param>
+        /// <param name="resourceDTODataLoader">The resource dataloader.</param>
+        /// <param name="tmCalculator">The T&amp;M Calculator.</param>
+        public PBOEFormExporter(IUserDTODataLoader userDTODataLoader, IResourceDTODataLoader resourceDTODataLoader, TMCalculator tmCalculator)
+            : base(userDTODataLoader, resourceDTODataLoader, tmCalculator)
+        {
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Populates the data export.
+        /// </summary>
+        /// <param name="workspace">The workspace.</param>
+        /// <param name="document">The document.</param>
+        /// <param name="boeForm">The boe form.</param>
+        /// <param name="isPortionMarkingEnabled">True if portion marking is enabled; False otherwise.</param>
+        /// <param name="proposalTitleAndRfpNumber">Proposal Title And RFP Number from the workspace.</param>
+        /// <param name="contractTypes">The contract types.</param>
+        /// <exception cref="System.ArgumentNullException">workspace or document or boeForm</exception>
+        protected override void PopulateDataExport(FullWorkspace workspace, WordprocessingDocument document, BOEFormPBOEDTO boeForm, bool isPortionMarkingEnabled, string proposalTitleAndRfpNumber, ICollection<PickListDto> contractTypes)
+        {
+            if (ReferenceEquals(workspace, null))
+            {
+                throw new ArgumentNullException(nameof(workspace));
+            }
+            if (ReferenceEquals(document, null))
+            {
+                throw new ArgumentNullException(nameof(document));
+            }
+            if (ReferenceEquals(boeForm, null))
+            {
+                throw new ArgumentNullException(nameof(boeForm));
+            }
+
+            ChunkCounter counters = new ChunkCounter();
+            this.SetProprietaryLabels(document, workspace.ContainsOCI);
+
+            ICollection<PBOETableRow> rows = this.PullRowsFromWorkspace(workspace, boeForm, boeForm.ResourceIds, contractTypes);
+
+            // Set the fields that are displayed once
+            this.SetField(document, EXPORT_DATE, boeForm.UpdateDate.ToString(BOEExporterConstants.DATE_FORMAT_STANDARD));
+            this.SetField(document, REV, boeForm.Revision.ToString());
+            this.SetField(document, SUPPLIER, boeForm.SupplierName);
+            this.SetField(document, RFP, boeForm.RFP);
+            this.SetField(document, PERIOD_OF_PERFORMANCE, this.PeriodOfPerformance);
+            this.SetField(document, PROPOSAL_NUMBER, boeForm.ProposalNumber);
+            this.SetField(document, PROPOSAL_DATE, boeForm.ProposalDate);
+            this.SetField(document, VALIDITY_DATE, boeForm.ValidityDate);
+            this.SetField(document, PROPOSAL_TITLE, string.IsNullOrWhiteSpace(proposalTitleAndRfpNumber) ? boeForm.ProposalTitle : proposalTitleAndRfpNumber);
+            this.SetHtmlField(document, DESCRIPTION, boeForm.Description, ref counters);
+            this.SetHtmlField(document, BASIS_RATIONALE, boeForm.BasisAndRationale, ref counters);
+            this.SetField(document, POC, boeForm.Poc);
+            this.SetField(document, PHONE, boeForm.PocPhone);
+            this.SetField(document, MANAGER, boeForm.Approver);
+            this.SetField(document, MANAGER_PHONE, boeForm.ApproverPhone);
+
+            // degree of completion checkboxes
+            this.SetCheckbox(document, COMPETITIVE, boeForm.DegreeOfCompetition == DegreeOfCompetition.Competitive);
+            this.SetCheckbox(document, NON_COMPETITIVE, boeForm.DegreeOfCompetition == DegreeOfCompetition.NonCompetitive);
+            this.SetCheckbox(document, SOURCE_NOT_SELECTED, boeForm.DegreeOfCompetition == DegreeOfCompetition.SourceNotSelected);
+
+            // ccopd checkboxes
+            this.SetCheckbox(document, CCOPD, boeForm.CCoPDApplies);
+            this.SetCheckbox(document, CCOPD_COMMERCIAL, boeForm.CommercialItemExceptionApplies);
+            this.SetCheckbox(document, CCOPD_COMPETITION, boeForm.CompetitionExceptionApplies);
+            this.SetCheckbox(document, CCOPD_OTHER, boeForm.OtherExceptionApplies);
+            this.SetField(document, CCOPD_OTHER_TEXT, boeForm.OtherExceptionApplies ? boeForm.OtherText : string.Empty);
+
+            // Status Of Supporting Data checkboxes
+            this.SetCheckbox(document, SSD_A_YES, boeForm.SupplierProposalSupportingDataIncluded == TripleBooleanState.Yes);
+            this.SetCheckbox(document, SSD_A_NA, boeForm.SupplierProposalSupportingDataIncluded == TripleBooleanState.NA);
+            this.SetCheckbox(document, SSD_B_YES, boeForm.PriceAnalysisIncluded == TripleBooleanState.Yes);
+            this.SetCheckbox(document, SSD_B_NA, boeForm.PriceAnalysisIncluded == TripleBooleanState.NA);
+            this.SetCheckbox(document, SSD_C_YES, boeForm.CommercialItemDocIncluded == TripleBooleanState.Yes);
+            this.SetCheckbox(document, SSD_C_NO, boeForm.CommercialItemDocIncluded == TripleBooleanState.No);
+            this.SetCheckbox(document, SSD_C_NA, boeForm.CommercialItemDocIncluded == TripleBooleanState.NA);
+            this.SetCheckbox(document, SSD_D_YES, boeForm.CostAnalysisIncluded == TripleBooleanState.Yes);
+            this.SetCheckbox(document, SSD_D_NO, boeForm.CostAnalysisIncluded == TripleBooleanState.No);
+            this.SetCheckbox(document, SSD_D_NA, boeForm.CostAnalysisIncluded == TripleBooleanState.NA);
+
+            // Schedule of events
+            this.SetScheduleEventDateField(document, SHOULD_COST_ESTIMATE, boeForm.ShouldCostEstimate, boeForm.ShouldCostEstimateDate, boeForm.ShouldCostEstimateText);
+            this.SetScheduleEventDateField(document, SOW_WRITTEN, boeForm.SowWritten, boeForm.SowWrittenDate, boeForm.SowWrittenText);
+            this.SetScheduleEventDateField(document, RFP_RELEASE, boeForm.RFPRelease, boeForm.RFPReleaseDate, boeForm.RFPReleaseText);
+            this.SetScheduleEventDateField(document, FIRM_SUPPLIER, boeForm.FirmSupplierReceipt, boeForm.FirmSupplierReceiptDate, boeForm.FirmSupplierReceiptText);
+            this.SetScheduleEventDateField(document, SOURCE_SELECTION, boeForm.SourceSelection, boeForm.SourceSelectionDate, boeForm.SourceSelectionText);
+            this.SetScheduleEventDateField(document, CID, boeForm.CID, boeForm.CIDDate, boeForm.CIDText);
+            this.SetScheduleEventDateField(document, GOVT_REVIEW, boeForm.GovtReview, boeForm.GovtReviewDate, boeForm.GovtReviewText);
+            this.SetScheduleEventDateField(document, PRICE_ANALYSIS, boeForm.PriceAnalysis, boeForm.PriceAnalysisDate, boeForm.PriceAnalysisText);
+            this.SetScheduleEventDateField(document, TECHNICAL_EVALUATION, boeForm.TechnicalEvaluation, boeForm.TechnicalEvaluationDate, boeForm.TechnicalEvaluationText);
+            this.SetScheduleEventDateField(document, FACT_FINDING, boeForm.FactFinding, boeForm.FactFindingDate, boeForm.FactFindingText);
+            this.SetScheduleEventDateField(document, COST_ANALYSIS, boeForm.CostAnalysis, boeForm.CostAnalysisDate, boeForm.CostAnalysisText);
+            this.SetScheduleEventDateField(document, GOVT_PRICING_CCOPD, boeForm.GovtPricing, boeForm.GovtPricingDate, boeForm.GovtPricingText);
+            this.SetScheduleEventDateField(document, SUPPLIER_NEGOTIATIONS, boeForm.SupplierNegotiations, boeForm.SupplierNegotiationsDate, boeForm.SupplierNegotiationsText);
+            this.SetScheduleEventDateField(document, MOU, boeForm.MOU, boeForm.MOUDate, boeForm.MOUText);
+            this.SetScheduleEventDateField(document, PROCUREMENT, boeForm.Procurement, boeForm.ProcurementDate, boeForm.ProcurementText);
+            this.SetDateField(document, PLANNED_DATE_A, boeForm.PlannedDate_WrittenApproval);
+            this.SetDateField(document, PLANNED_DATE_B, boeForm.PlannedDate_ApprovedSubmission);
+
+            IOrderedEnumerable<string> distinctCLINs = rows.Select<PBOETableRow, string>(tr => tr.CLIN).Distinct().OrderBy(c => c);
+
+            // locate the table markers
+            TableRow templateDataRow = this.GetTemplateDataRow(document, BOEExporterConstants.Marker_DataRow);
+            TableRow templateSubtotalDataRow = this.GetTemplateDataRow(document, BOEExporterConstants.Marker_SubTotalsRow);
+            TableRow templateTotalDataRow = this.GetTemplateDataRow(document, BOEExporterConstants.Marker_TotalsRow);
+
+            // initialize the "insertion" row
+            TableRow currentInsertionRow = templateDataRow;
+            decimal total = 0m;
+            foreach (string clin in distinctCLINs)
+            {
+                decimal subtotal = 0m;
+                foreach (PBOETableRow row in rows.Where(r => r.CLIN == clin).OrderBy(r => r.WbsPaddedNumber))
+                {
+                    subtotal += Convert.ToDecimal(row.Value);
+                    // create a new data row in the table
+                    TableRow tableRow = this.CloneMarkedTemplateRow(templateDataRow);
+
+                    // populate the row
+                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, CONTRACT_TYPE), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.ContractType);
+                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, SUPPLIER_CONTRACT_TYPE), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.SupplierContractType);
+                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, WBS), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.WBS);
+                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, CLIN), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.CLIN);
+                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, VALUE), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.Value.ToString(this.DefaultCurrencyFormat, this._CurrencyFormatter));
+
+                    // add the row to the table
+                    currentInsertionRow.InsertAfterSelf(tableRow);
+                    currentInsertionRow = tableRow;
+                }
+
+                // populate the sub-total (for the group)
+                TableRow subtotalRow = this.CloneMarkedTemplateRow(templateSubtotalDataRow);
+                WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(subtotalRow, CLIN), this.GenPortionMarkingText(isPortionMarkingEnabled) + "Subtotal " + clin);
+                WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(subtotalRow, VALUE), this.GenPortionMarkingText(isPortionMarkingEnabled) + subtotal.ToString(this.DefaultCurrencyFormat, this._CurrencyFormatter));
+
+                total += subtotal;
+
+                // add the row to the table
+                currentInsertionRow.InsertAfterSelf(subtotalRow);
+                currentInsertionRow = subtotalRow;
+            }
+
+            // populate the total row
+            TableRow totalRow = this.CloneMarkedTemplateRow(templateTotalDataRow);
+            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, CLIN), this.GenPortionMarkingText(isPortionMarkingEnabled) + "Total");
+            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(totalRow, VALUE), this.GenPortionMarkingText(isPortionMarkingEnabled) + total.ToString(this.DefaultCurrencyFormat, this._CurrencyFormatter));
+
+            // add the row to the table
+            currentInsertionRow.InsertAfterSelf(totalRow);
+
+            this.RemoveElement(templateDataRow);
+            this.RemoveElement(templateSubtotalDataRow);
+            this.RemoveElement(templateTotalDataRow);
+
+            this.DocumentCleanup(document);
+        }
+
+        /// <summary>
+        /// Creates a Table Row rollup for wbs/clin.
+        /// </summary>
+        /// <param name="boeForm">The boe form to pull information for the rollup row.</param>
+        /// <param name="wbs">The wbs for the row.</param>
+        /// <param name="clin">The Clin for the row.</param>
+        /// <param name="contractTypes">The contract types.</param>
+        /// <returns>
+        /// New ITableRow for this wbs/clin combo.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException">boeForm</exception>
+        protected override PBOETableRow CreateRow(BOEFormPBOEDTO boeForm, WbsDTO wbs, ClinDTO clin, ICollection<PickListDto> contractTypes)
+        {
+            if (ReferenceEquals(boeForm, null))
+            {
+                throw new ArgumentNullException(nameof(boeForm));
+            }
+
+            string supplierContractType = Constants.CONTRACT_TYPE_NOT_SET_STRING;
+
+            if(clin != null && boeForm.ClinContractTypes.Any(c => c.ClinId == clin.Id))
+            {
+                supplierContractType = Utilities.GetPickListText(boeForm.ClinContractTypes.First(c => c.ClinId == clin.Id).ContractType, contractTypes, Constants.CONTRACT_TYPE_NOT_SET_STRING);
+            }
+
+            return new PBOETableRow
+            {
+                CLIN = clin == null ? "N/A" : clin.ClinString,
+                WBS = wbs == null ? "N/A" : wbs.WbsNumber,
+                WbsPaddedNumber = wbs == null ? "N/A" : wbs.WbsPaddedNumber,
+                ContractType = clin == null ? "N/A" : Utilities.GetPickListText(clin.ContractType, contractTypes, Constants.CONTRACT_TYPE_NOT_SET_STRING),
+                SupplierContractType = supplierContractType
+            };
+        }
+
+        /// <summary>
+        /// Sets a checkbox to be selected or unselected.
+        /// </summary>
+        /// <param name="document">The word document edited via openxml.</param>
+        /// <param name="field">Name of the Content Control in Word Document.</param>
+        /// <param name="isChecked">Whether the checkbox should be selected.</param>
+        private void SetCheckbox(WordprocessingDocument document, string field, bool isChecked)
+        {
+            if (!isChecked)
+            {
+                BookmarkStart bookmark = document.MainDocumentPart.Document.Descendants<BookmarkStart>().FirstOrDefault(s => s.Name == field);
+                if (bookmark != null)
+                {
+                    DefaultCheckBoxFormFieldState checkbox = bookmark.PreviousSibling().Descendants<DefaultCheckBoxFormFieldState>().First();
+                    checkbox.Val.Value = false;
+                    checkbox.Val.InnerText = "0";
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets a schedule of event date field.
+        /// </summary>
+        /// <param name="document">The word document edited via openxml.</param>
+        /// <param name="field">Name of the Content Control in Word Document.</param>
+        /// <param name="scheduleEvent">The schedule event type.</param>
+        /// <param name="scheduleEventDate">The date for the scheduled event.</param>
+        private void SetScheduleEventDateField(WordprocessingDocument document, string field, ScheduleEvent scheduleEvent, DateTime? scheduleEventDate, string scheduleEventPlannedText)
+        {
+            SdtElement dataElement = WordUtilities.GetTaggedElement(document, field);
+
+            if (dataElement != null)
+            {
+                string value = string.Empty;
+                if (scheduleEvent == ScheduleEvent.NA)
+                {
+                    value = "NA";
+                }
+                else 
+                {
+                    if (scheduleEvent == ScheduleEvent.Actual && scheduleEventDate.HasValue)
+                    {
+                        value = scheduleEventDate.Value.ToString(BOEExporterConstants.DATE_FORMAT_STANDARD) + " (a)";
+                    }
+                    else if (scheduleEvent == ScheduleEvent.Planned)
+                    {
+                        if (scheduleEventDate.HasValue)
+                        {
+                            value = scheduleEventDate.Value.ToString(BOEExporterConstants.DATE_FORMAT_STANDARD) + " (p)";
+                        }
+                        else if (!string.IsNullOrWhiteSpace(scheduleEventPlannedText))
+                        {
+                            value = scheduleEventPlannedText + " (p)";
+                        }
+                    }
+                }
+                WordUtilities.SetElementText(dataElement, value);
+            }
+        }
+
+        /// <summary>
+        /// Sets a date field.
+        /// </summary>
+        /// <param name="document">The word document edited via openxml.</param>
+        /// <param name="field">Name of the Content Control in Word Document.</param>
+        /// <param name="dateValue">The date for the template.</param>
+        private void SetDateField(WordprocessingDocument document, string field, DateTime? dateValue)
+        {
+            SdtElement dataElement = WordUtilities.GetTaggedElement(document, field);
+
+            if (dataElement != null)
+            {
+                string value = string.Empty;
+                if (dateValue.HasValue)
+                {
+                    value = dateValue.Value.ToString(BOEExporterConstants.DATE_FORMAT_STANDARD);
+                }
+                WordUtilities.SetElementText(dataElement, value);
+            }
+        }
+    }
+}

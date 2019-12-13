@@ -1,0 +1,389 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Checklist.ChecklistIndexModelView
+@{
+    ViewBag.Title = "Checklist Index";
+}
+
+<script type="text/javascript">
+    var ChecklistIndexWidget;
+
+    $(function () {
+        var readOnly = @Model.IsReadOnly;
+        var widgetConfig = {};
+        widgetConfig.ContextID = "checklist";
+        widgetConfig.IsModule = true;
+        widgetConfig.isReadOnly = readOnly;
+
+        var FormConfigs = [];
+        FormConfigs.push({
+            ElementID: "checklistForm",
+            Buttons: [
+            {
+                ButtonClass: 'ies-action',
+                ButtonText: 'Save',
+                ButtonName: "save-button",
+                ButtonAction: function (buttonPressed) {
+                    ChecklistIndexWidget.SaveFullPage(buttonPressed);
+                },
+                Stateful: true
+            },
+            {
+                ButtonClass: 'ies',
+                ButtonText: 'Cancel',
+                ButtonName: "cancel-button",
+                ButtonAction: function (buttonPressed) {
+                    if (GenSession.isDirty()) {
+                        GenSession.confirmDialog(
+                         "Unsaved Changes",
+                         "You have selected to leave this tab without saving your current changes.  If you wish to leave the unsaved changes select Yes.  To stay on the page select No.",
+                         ChecklistIndexWidget.RedirectHomeDirty,
+                         null);
+                    } else {
+                        ChecklistIndexWidget.RedirectHome();
+                    }
+                }
+            },
+            {
+                ButtonClass: 'ies',
+                ButtonText: 'Validate',
+                ButtonName: "validate-button",
+                ButtonAction: function (buttonPressed) {
+                    ChecklistIndexWidget.ValidateChecklistInformation(buttonPressed);
+                },
+                Stateful: false
+            },
+            {
+                ButtonClass: 'ies-action',
+                ButtonText: 'Export',
+                ButtonName: "export-button-checklist",
+                ButtonAction: function (buttonPressed) {
+                    ChecklistIndexWidget.ExportPARChecklistReport(buttonPressed);
+                },
+                Stateful: false
+            }],
+            ContainsOCI: "true",
+            IsClassEnvironment: isClassEnvironment
+        });
+
+        widgetConfig.FormConfigs = FormConfigs;
+
+        ChecklistIndexWidget = new GenWidget(widgetConfig);
+
+        // only grab the composite widgets if we should show them
+        var shouldDisplayChecklist = @Model.ShouldDisplayChecklist.ToString().ToLower();
+        if (shouldDisplayChecklist)
+        {
+            $('#MigratedChecklistWarning').hide();
+            var widgetCounter = 0;
+            GenSession.ShowLoadingBox();
+
+            // create the composite widgets
+            $.ajax({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.CHECKLIST',
+                    action: '@WebConstants.Action.DISPLAY_CHECKLIST_GENERAL_INFORMATION',
+                    id: '@ViewBag.proposalid'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'html',
+                success: function (response) {
+                    $('#checklistGeneralInfoDataPlaceholder').html(response);
+                    ChecklistIndexWidget.ShouldHideLoadingBox();
+                    ChecklistIndexWidget.refreshModule();
+                },
+                error: function () {
+                    ChecklistIndexWidget.ShouldHideLoadingBox();
+                }
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.CHECKLIST',
+                    action: '@WebConstants.Action.DISPLAY_CHECKLIST_PROPOSAL_PRICING_DATA',
+                    id: '@ViewBag.proposalid'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'html',
+                success: function (response) {
+                    $('#checklistProposalPricingDataPlaceholder').html(response);
+                    ChecklistIndexWidget.ShouldHideLoadingBox();
+                    ChecklistIndexWidget.refreshModule();
+                },
+                error: function () {
+                    ChecklistIndexWidget.ShouldHideLoadingBox();
+                }
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.CHECKLIST',
+                    action: '@WebConstants.Action.DISPLAY_CHECKLIST_PPR_DOCUMENT',
+                    id: '@ViewBag.proposalid'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'html',
+                success: function (response) {
+                    $('#checklistPPRDocumentPlaceholder').html(response);
+                    ChecklistIndexWidget.ShouldHideLoadingBox();
+                    ChecklistIndexWidget.refreshModule();
+                },
+                error: function () {
+                    ChecklistIndexWidget.ShouldHideLoadingBox();
+                }
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.CHECKLIST',
+                    action: '@WebConstants.Action.DISPLAY_CHECKLIST_PAR_DOCUMENT',
+                    id: '@ViewBag.proposalid'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'html',
+                success: function (response) {
+                    $('#checklistPARDocumentPlaceholder').html(response);
+
+                    ChecklistIndexWidget.ShouldHideLoadingBox();
+                    ChecklistIndexWidget.refreshModule();
+                },
+                error: function () {
+                    ChecklistIndexWidget.ShouldHideLoadingBox();
+                }
+            });
+        }
+        else
+        {
+             $('#MigratedChecklistWarning').show();
+        }
+
+        // Hide the Loading Box after all 4 composite widgets have loaded (on success or error)
+        ChecklistIndexWidget.ShouldHideLoadingBox = function () {
+            widgetCounter++;
+            if (widgetCounter == 4) {
+                // If any of the widgets need to keep certain fields editable due to the user's role, show all of the buttons.
+                if (ChecklistGeneralInformationWidget.keepSpecialFieldsEditable || ChecklistProposalPricingDataWidget.keepSpecialFieldsEditable ||
+                    ChecklistPARDocumentDataWidget.keepSpecialFieldsEditable || ChecklistPPRDocumentDataWidget.keepSpecialFieldsEditable) {
+                    ChecklistGeneralInformationWidget.showButtons();
+                }
+
+                GenSession.HideLoadingBox();
+            }
+        };
+
+        // Cleans all the dirty forms then redirects home
+        ChecklistIndexWidget.RedirectHomeDirty = function () {
+            ChecklistIndexWidget.cleanDirty();
+            ChecklistGeneralInformationWidget.cleanDirty();
+            ChecklistProposalPricingDataWidget.cleanDirty();
+            ChecklistPARDocumentDataWidget.cleanDirty();
+            ChecklistPPRDocumentDataWidget.cleanDirty();
+            ChecklistIndexWidget.RedirectHome();
+        };
+
+        // override refreshModule
+        ChecklistIndexWidget.refreshModule = function () {
+
+            if (typeof (ChecklistGeneralInformationWidget) != 'undefined') {
+                ChecklistGeneralInformationWidget.refreshModule();
+            }
+
+            if (typeof (ChecklistProposalPricingDataWidget) != 'undefined') {
+                ChecklistProposalPricingDataWidget.refreshModule();
+            }
+
+            if (typeof (ChecklistPPRDocumentDataWidget) != 'undefined') {
+                ChecklistPPRDocumentDataWidget.refreshModule();
+            }
+
+            if (typeof (ChecklistPARDocumentDataWidget) != 'undefined') {
+                ChecklistPARDocumentDataWidget.refreshModule();
+            }
+        };
+
+        ChecklistIndexWidget.on('SAVE_CHECKLIST', function (e, params) {
+            ChecklistIndexWidget.SaveFullPage(params.buttonPressed);
+        });
+
+        // returns all of the data from the child widgets.
+        ChecklistIndexWidget.GetData = function () {
+            var dataToSave = {};
+            ChecklistPARDocumentDataWidget.updateInputValuesOnSave();
+            dataToSave.proposalId = @ViewBag.proposalid;
+            dataToSave.ChecklistGeneralInfo = ChecklistGeneralInformationWidget.getForm("checklistGeneralInfoForm").getData();
+            dataToSave.ChecklistProposalPricingData = ChecklistProposalPricingDataWidget.getForm("checklistProposalPricingDataForm").getData();
+            dataToSave.ChecklistPPRDocumentData = ChecklistPPRDocumentDataWidget.getForm("checklistPPRDocumentForm").getData();
+            dataToSave.ChecklistPARDocumentData = ChecklistPARDocumentDataWidget.getForm("checklistPARDocumentForm").getData();
+            ChecklistIndexWidget.FixPlaceholdersAfterValidate(dataToSave.ChecklistPARDocumentData.ChecklistRows);
+            return dataToSave;
+        };
+
+        // Clear placeholder text that gets placed into the textarea value
+        ChecklistIndexWidget.FixPlaceholdersAfterValidate = function (data) {
+            var i;
+            for (i = 0; i < data.length; i++) {
+                if (data[i].PricerRowComment === '' || data[i].PricerRowComment === undefined) {
+                    var id = data[i].ChecklistContentId;
+                    var comment = "textarea[name=\"" + "PricerRowComment.".concat(id) + "\"]";
+                    $(comment).val('');
+                }
+            };
+        }
+
+        ChecklistIndexWidget.SaveFullPage = function (buttonPressed) {
+            GenSession.ShowLoadingBox();
+            var dataToSend = ChecklistIndexWidget.GetData();
+            dataToSend = JSON.stringify(dataToSend);
+
+            // Make the call
+            ChecklistIndexWidget.saveRequest({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.CHECKLIST',
+                    action: '@WebConstants.Action.SAVE_CHECKLIST_INFORMATION'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                data: dataToSend,
+                success: function (response) {
+                    if ( response.message == "PricerSaved" ) {
+                        GenSession.alertDialog('Checklist Updated by Lead Estimator',
+                            'The checklist document has been updated by the Lead Estimator since the time you opened the checklist. ' +
+                            'Once the save is complete, the checklist will be refreshed with the latest updates.', function () {
+
+                                // re-enable close button
+                                $('.ui-dialog-titlebar-close').show();
+
+                                ChecklistIndexWidget.SaveSuccess(response.proposalId);
+                                ChecklistIndexWidget.ShouldHideLoadingBox();
+                            });
+                    }
+                    else {
+                        ChecklistIndexWidget.SaveSuccess(response.proposalId);
+                        ChecklistIndexWidget.ShouldHideLoadingBox();
+                    }
+                },
+                error: function () {
+                    ChecklistIndexWidget.ShouldHideLoadingBox();
+                    ChecklistIndexWidget.refreshModule();
+                }
+            }, buttonPressed);
+        };
+
+        ChecklistIndexWidget.ValidateChecklistInformation = function (buttonPressed) {
+            GenSession.ShowLoadingBox();
+            var dataToSend = ChecklistIndexWidget.GetData();
+            dataToSend = JSON.stringify(dataToSend);
+
+            // Make the call
+            ChecklistIndexWidget.saveRequest({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.CHECKLIST',
+                    action: '@WebConstants.Action.VALIDATE_CHECKLIST_INFORMATION'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                data: dataToSend,
+                //Don't clear dirty bit on success since no data is saved on validation
+                performDirtyProcessing: false,
+                success: function (response) {
+                    GenSession.HideLoadingBox();
+                    GenSession.alertDialog('Checklist Validation', 'Checklist validation was successful.  No errors were detected.');
+                },
+                error: function () {
+                    GenSession.HideLoadingBox();
+                }
+            }, buttonPressed);
+        };
+
+        ChecklistIndexWidget.ExportPARChecklistReport = function (buttonPressed) {
+            var data = ChecklistIndexWidget.GetData();
+            data.reportParameters = {
+                proposalID: ChecklistPARDocumentDataWidget.getElement('input[name=ProposalID]').val(),
+                checklistVersion: ChecklistPARDocumentDataWidget.getElement('input[name=ParID]').val()
+            };
+            var dataToSend = JSON.stringify(data);
+
+            ChecklistIndexWidget.saveRequest({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.CHECKLIST',
+                    action: '@WebConstants.Action.EXPORT_PAR_CHECKLIST'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                data: dataToSend,
+                success: function (response) {
+                    ChecklistIndexWidget.CallSSRS(response);
+                },
+                error: function () {
+                    ChecklistIndexWidget.refreshModule();
+                }
+            }, buttonPressed);
+        };
+
+        ChecklistIndexWidget.SaveSuccess = function (proposalId) {
+            ChecklistIndexWidget.cleanDirty();
+            ChecklistGeneralInformationWidget.cleanDirty();
+            ChecklistProposalPricingDataWidget.cleanDirty();
+            ChecklistPARDocumentDataWidget.cleanDirty();
+            ChecklistPPRDocumentDataWidget.cleanDirty();
+
+
+            var url =  GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PROPOSAL',
+                action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
+                id: proposalId
+            })
+            window.location = url + '#Checklist';
+
+            window.location.reload();
+        };
+
+        ChecklistIndexWidget.RedirectHome = function () {
+            window.location = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.HOME',
+                action: '@WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME'
+            });
+        };
+
+        ChecklistIndexWidget.CallSSRS = function (data) {
+            if (data.Url.length > 2083) {
+                GenSession.alertDialog('URL Limit Warning', 'If using IE, the url limit is 2083 chars. You have exceeded that which may limit the report results');
+            }
+            var report = window.open(data.Url, '_blank', 'resizable=yes, location=yes, titlebar=no');
+            report.focus();
+        };
+
+    });
+</script>
+
+<div id="checklist" class="module full">
+    <div class="composite module full link-header">
+        <div class="module-header-data" style="width: 962px; display: inline-block;">
+            @if (Model.ShouldDisplayChecklist)
+            {
+                <div style="float: left;"><a href="https://space.p.external.lmco.com/sites/fbo/CCDME/Estimating/Checklist%20Reference%20Documents/PPR-PAR%20Reference%20Guide.docx" target="_blank">Proposal Pricing Review (PPR) and Proposal Adequacy Review (PAR) Reference Guide</a></div>
+                <div id="checklistVersion" style="float: right;">Checklist Version: @Model.Version</div>
+            }
+        </div>
+    </div>
+    <div id="checklistGeneralInfoDataPlaceholder"></div>
+    <div id="checklistProposalPricingDataPlaceholder"></div>
+    <div id="checklistPPRDocumentPlaceholder"></div>
+    <div id="checklistPARDocumentPlaceholder"></div>
+    <div class="module-content-data" style="width: 982px; height: 60px;">
+        <div style="display: inline-block;">
+            @using (Html.BeginForm("", "", FormMethod.Post, new { id = "checklistForm", name = "checklistForm" }))
+            {
+
+            }           
+        </div>
+        @if (!Model.ShouldDisplayChecklist)
+        {
+            <div id="MigratedChecklistWarning" class="warning-box" style="margin-top: -30px;">
+                <div class="warning-message" style="padding: 20px 117px 10px 55px;">Checklist data was NOT migrated from PROFIT (refer to your Line of Business electronic proposal folder).  A subset of the data can be found in the Proposal Log report. </div>
+            </div>
+        }
+    </div>
+</div>

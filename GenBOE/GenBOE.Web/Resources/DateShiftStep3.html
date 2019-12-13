@@ -1,0 +1,31 @@
+﻿<div class="bootstrap">
+	<div class="form-row">
+		<hr />
+		<h2>Discrete Spread Handling</h2>
+		<span>Discrete Spread Curve exists.  Please select an option to adjust Discrete Resource Spreads.</span>
+	</div>
+	<div class="form-row">
+		<div class="form-element row">
+			<div class="col-md-5 col-sm-5 bold"><span helptext="The following options are the options for the Discrete Spread:<ul><li>Discard the truncated value(s) for the months that are outside the new period. Any extra months will be blank.</li><li>Adds the value(s) for the truncated periods (if any) to the first month of the new period.</li><li>Adds the value(s) for the truncated periods (if any) to the last month of the new period.</li><li>Applies A new Spread Curve (to be selected). {{model.hoursLabel}}/Cost will be spread according to the new curve across the months for the new period.</li></ul>">Spread Handling</span></div>
+			<div data-ng-show="discrete.spreadHandling === constants.NEW_CURVE_SPREAD" class="col-md-3 col-sm-3 bold">New Curve (<a href="#" data-ng-click="showCurves()">View</a>)</div>
+		</div>
+	</div>
+	<div class="form-row">
+		<div class="form-element row">
+			<div class="col-md=5 col-sm-5">
+				<select data-ng-model="discrete.spreadHandling" data-ng-change="clearErrors()">
+					<option data-ng-value="0"></option>
+					<option data-ng-value="4">Discard truncated values (if any)</option>
+					<option data-ng-value="2">Add truncated values (if any) to first month</option>
+					<option data-ng-value="3">Add truncated values (if any) to last month</option>
+					<option data-ng-value="1">New Curve for Discrete</option>
+				</select>
+			</div>
+			<div data-ng-show="discrete.spreadHandling === constants.NEW_CURVE_SPREAD" class="col-md-3 col-sm-3">
+				<select data-ng-model="discrete.newCurve" data-ng-change="clearErrors()">
+					<option data-ng-repeat="spread in model.spreadCurves" data-ng-value="spread.Value">{{spread.Text}}</option>
+				</select>
+			</div>
+		</div>
+	</div>
+</div>

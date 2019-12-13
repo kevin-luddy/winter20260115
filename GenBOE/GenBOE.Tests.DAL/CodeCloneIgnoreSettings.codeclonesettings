@@ -1,0 +1,6 @@
+﻿<CodeCloneSettings>
+  <Exclusions>
+    <!-- We do not want to check any tests for cloned code. -->
+    <File>*.*</File>
+  </Exclusions>
+</CodeCloneSettings>

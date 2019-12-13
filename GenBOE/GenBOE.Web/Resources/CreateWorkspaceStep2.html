@@ -1,0 +1,49 @@
+﻿<div class="form-row">
+    <div class="form-label" style="max-width: 20%">
+        Workspace to Copy *
+    </div>
+    <div class="form-element" style="max-width: 80%">
+        <input type="text" class="half" maxlength="100" disabled="disabled" data-ng-model="model.workspaceToCopy.WorkspaceName" id="WorkspaceToCopy" />
+        <a id="CreateWorkspace-Search" data-ng-click="searchForWorkspace()">Search...</a>
+    </div>
+</div>
+<div class="form-row" data-ng-hide="!model.isPTMIntegrated || model.workspaceToCopy.WorkspaceName === ''">
+    <div class="form-label" style="max-width: 20%">
+        PTM Tracking Number: *
+        <div class="help-icon" style="margin-top:3px; margin-left:0;" onclick="CreateWorkspace.ToggleHelp(this);"></div>
+        <!-- This comment is needed for the jquery animation to work in IE8... -->
+        <div class="help-dialog" style="width: 130px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">If you are unable to locate a newly created PTM record, please refresh this page.</div>
+        </div>
+    </div>
+    <div class="form-element" style="max-width: 80%">
+        <input id="proposalSelect" list="proposalList" type="text" autocomplete="on" data-ng-model="model.selectedPtmTrackingNumber" data-ng-trim="false" data-ng-change="setProposalId()">
+        <datalist id="proposalList">
+            <option ng-repeat="proposal in model.copyTrackingNumbers" propId="{{proposal.Value}}" value="{{proposal.Text}}"></option>
+        </datalist>
+    </div>
+</div>
+<div class="form-row" data-ng-hide="model.workspaceToCopy.WorkspaceName === ''">
+    <div class="form-label" style="max-width: 20%">
+        Copy
+    </div>
+    <div class="form-element radio" style="max-width: 78%">
+        <input type="radio" id="CopyRadio1" name="WSExactCopy" data-ng-change="updateCopy()" data-ng-model="data.WSExactCopy" data-ng-value="true" text="Create an exact duplicate" />
+        <label for="CopyRadio1">Create an exact duplicate of the workspace. Authors, Approvers, BOE Statuses and Workspace Status will remain the same.</label>
+        <br />
+        <input type="radio" id="CopyRadio2" name="WSExactCopy" data-ng-change="updateCopy()" data-ng-hide="model.hideCopyNonExactButton" data-ng-model="data.WSExactCopy" data-ng-value="false" text="Create a starting point" />
+        <label for="CopyRadio2" data-ng-hide="model.hideCopyNonExactButton" >Create a copy of the workspace to use as a starting point and only copy the selected items below.  Authors and Approvers will be removed from BOEs. BOE Statuses will be changed to Unassigned.  The Workspace Status will be changed to Initialization.</label>
+        <div id="checkbox-div" data-ng-show="data.WSExactCopy === false && !model.hideCopyNonExactButton" class="form-element radio" style="max-width: 100%; margin-left:20px">
+            <input id="CopyPermissions" name="CopyPermissions" data-ng-model="data.CopyPermissions" type="checkbox" data-ng-value="true"> 
+            Permissions
+            <br />
+            <input id="CopyTasks" name="CopyTasks" data-ng-model="data.CopyTasks" type="checkbox" data-ng-value="true"> 
+            Tasks of selected BOEs
+            <br />
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input id="CopyLaborSpreads" name="CopyLaborSpreads" data-ng-model="data.CopyLaborSpreads" type="checkbox" data-ng-value="true">
+            Labor Spreads of selected BOEs
+        </div>
+    </div>
+</div>

@@ -1,0 +1,171 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Proposals.ProposalApprovalsModelView
+@{
+    ViewBag.Title = "Proposal Approvals";
+}
+
+<script type="text/javascript">
+    var ProposalApprovalsWidget;
+    $(function () {
+        var readOnly = @Model.IsReadOnly;
+
+        var ApprovalsWidgetConfig = {};
+        ApprovalsWidgetConfig.ContextID = "approvalsSection";
+        ApprovalsWidgetConfig.IsModule = true;
+        ApprovalsWidgetConfig.isReadOnly = readOnly;
+        ProposalApprovalsWidget = new GenWidget(ApprovalsWidgetConfig);
+
+        $(document).bind('CCOPD_SET_TO_YES', function () {
+            $('#CoverSheetApproverRow').removeClass('display-none');
+
+            $('.LOBEstimatingMgr').removeClass('display-none')
+                .attr('id', 'LOBEstimatingLeadMgrNtid')
+                .attr('name', 'LOBEstimatingLeadMgrNtid');
+            $('.LOBEstimatingApprover').addClass('display-none')
+                .attr('id', 'IGNORE_LOBEstimatingLeadMgrNtid')
+                .attr('name', 'IGNORE_LOBEstimatingLeadMgrNtid').val('');
+        });
+
+        $(document).bind('CCOPD_SET_TO_NO', function () {
+            @if (Model.IsLeadEstimatorReadOnly)
+           {
+            <text>
+            $('#CoverSheetApproverDisplayName').val('');
+            </text>
+           }
+
+            $('#CoverSheetApproverNtid').val('');
+            $('#CoverSheetApproverRow').addClass('display-none');
+
+            $('.LOBEstimatingMgr').addClass('display-none')
+                .attr('id', 'IGNORE_LOBEstimatingLeadMgrNtid')
+                .attr('name', 'IGNORE_LOBEstimatingLeadMgrNtid')
+                .val('');
+            $('.LOBEstimatingApprover').removeClass('display-none')
+                .attr('id', 'LOBEstimatingLeadMgrNtid')
+                .attr('name', 'LOBEstimatingLeadMgrNtid');
+        });
+
+         @if (Model.IsCCPDRequired.HasValue && !Model.IsCCPDRequired.Value)
+         {
+             <text>
+             $(document).trigger("CCOPD_SET_TO_NO");
+             </text>
+         }
+         else
+         {
+             <text>
+             $(document).trigger("CCOPD_SET_TO_YES");
+             </text>
+         }
+
+         var pricingVerification = ProposalApprovalsWidget.getElement('select[name="PricingVerificationNtid"]');
+        pricingVerification.change(function () {
+            if (pricingVerification.val() !== '' && pricingVerification.val() !== undefined && $('#IsCCPDRequired-No').attr('checked')){
+                $('#PricingVerificationWarning').show();
+            } else {
+                $('#PricingVerificationWarning').hide();
+            }
+        });
+
+        var indpReviewer = ProposalApprovalsWidget.getElement('select[name="IndependentReviewerNtid"]');
+        indpReviewer.change(function () {
+            if (indpReviewer.val() !== '' && indpReviewer.val() !== undefined && $('#IsCCPDRequired-No').attr('checked')){
+                $('#IndependentReviewerWarning').show();
+            } else {
+                $('#IndependentReviewerWarning').hide();
+            }
+        });
+    });
+</script>
+
+<div id="approvalsSection" class="composite module expanded full">
+    <div class="module-header-data">Approvals</div>
+    <div class="module-content-data expanded-content">
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_APPROVALS_FORM, name = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_APPROVALS_FORM }))
+        {
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">@Html.LabelFor(m => m.LeadEstimatorNtid) *</div>
+                <div class="form-element">
+                    @if (Model.IsLeadEstimatorReadOnly)
+                    {
+                        <input type="hidden" id="LeadEstimatorNtid" name="LeadEstimatorNtid" value="@Model.LeadEstimatorNtid" />
+                        <span>@Model.LeadEstimatorDisplayName</span>
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(model => model.LeadEstimatorNtid, new SelectList(Model.LeadEstimatorList, "Ntid", "DisplayName", User.Identity.Name.GetObjectName()).OrderBy(u => u.Text), string.Empty, new { name = "LeadEstimator" })
+                    }
+                </div>
+            </div>
+            <div class="form-row" id="CoverSheetApproverRow" data-proposal-type="standard">
+                <div class="form-label">@Html.LabelFor(m => m.CoverSheetApproverNtid) *</div>
+                <div class="form-element">
+                    @if (Model.IsCoverSheetApproverReadOnly)
+                    {
+                        <input type="hidden" id="CoverSheetApproverNtid" name="CoverSheetApproverNtid" value="@Model.CoverSheetApproverNtid" />
+                        <span id="CoverSheetApproverDisplayName">@Model.CoverSheetApproverDisplayName</span>
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(model => model.CoverSheetApproverNtid, new SelectList(Model.CoverSheetApproverList, "Ntid", "DisplayName").OrderBy(u => u.Text), string.Empty, new { name = "CoverSheetApprover" })
+                    }
+                </div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label"><span helptext="Pricing Verifier is required if CCOPD is set to Yes.">@Html.LabelFor(m => m.PricingVerificationNtid) *</span></div>
+                <div class="form-element">
+                    @if (Model.IsPricingVerificationReadOnly)
+                    {
+                        <input type="hidden" id="PricingVerificationNtid" name="PricingVerificationNtid" value="@Model.PricingVerificationNtid" />
+                        <span>@Model.PricingVerificationDisplayName</span>
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(model => model.PricingVerificationNtid, new SelectList(Model.PricingVerificationList, "Ntid", "DisplayName").OrderBy(u => u.Text), string.Empty, new { name = "PricingVerification" })
+                    }
+                </div>
+            </div>
+            <div id="PricingVerificationWarning" class="warning-box">
+                <div class="warning-message">
+                    This field is not required when CCOPD is set to No.  Selecting an individual will require their approval during the Workflow process.
+                </div>
+                <div class="small-close-button" onclick="$('#PricingVerificationWarning').hide()"></div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label"><span helptext="Independent Reviewer is required if CCOPD is set to Yes and the Cover Sheet Approver and Lead Estimator are the same; otherwise, it is optional."> @Html.LabelFor(m => m.IndependentReviewerNtid) *</span></div>
+                <div class="form-element">
+                    @if (Model.IsIndependentReviewerReadOnly)
+                    {
+                        <input type="hidden" id="IndependentReviewerNtid" name="IndependentReviewerNtid" value="@Model.IndependentReviewerNtid" />
+                        <span>@Model.IndependentReviewerDisplayName</span>
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(model => model.IndependentReviewerNtid, new SelectList(Model.IndependentReviewerList, "Ntid", "DisplayName").OrderBy(u => u.Text), string.Empty, new { name = "IndependentReviewer" })
+                    }
+                </div>
+            </div>
+            <div id="IndependentReviewerWarning" class="warning-box">
+                <div class="warning-message">
+                    This field is not required when CCOPD is set to No.  Selecting an individual will require their approval during the Workflow process.
+                </div>
+                <div class="small-close-button" onclick="$('#IndependentReviewerWarning').hide()"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(m => m.LOBEstimatingLeadMgrNtid) *</div>
+                <div class="form-element">
+                    @if (Model.IsLOBEstimatingLeadMgrReadOnly)
+                    {
+                        <input type="hidden" id="LOBEstimatingLeadMgrNtid" name="LOBEstimatingLeadMgrNtid" value="@Model.LOBEstimatingLeadMgrNtid" />
+                        <span>@Model.LOBEstimatingLeadMgrDisplayName</span>
+                    }
+                    else
+                    {
+                        @Html.DropDownListFor(model => model.LOBEstimatingLeadMgrNtid, new SelectList(Model.LOBEstimatingLeadList, "Ntid", "DisplayName").OrderBy(u => u.Text), string.Empty, new { @class = "LOBEstimatingApprover" })
+                        @Html.DropDownListFor(model => model.LOBEstimatingLeadMgrNtid, new SelectList(Model.LOBEstimatingMgrList, "Ntid", "DisplayName").OrderBy(u => u.Text), string.Empty, new { @class = "LOBEstimatingMgr" })
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{F14B399A-7131-4C87-9E4B-1186C45EF12D}") = "genBOE_ReportingServices", "genBOE_ReportingServices\genBOE_ReportingServices.rptproj", "{0D54E5D7-3720-48DB-BF0B-04A1D204F9C5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Default = Debug|Default
+		DebugLocal|Default = DebugLocal|Default
+		Release|Default = Release|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0D54E5D7-3720-48DB-BF0B-04A1D204F9C5}.Debug|Default.ActiveCfg = Debug
+		{0D54E5D7-3720-48DB-BF0B-04A1D204F9C5}.Debug|Default.Build.0 = Debug
+		{0D54E5D7-3720-48DB-BF0B-04A1D204F9C5}.Debug|Default.Deploy.0 = Debug
+		{0D54E5D7-3720-48DB-BF0B-04A1D204F9C5}.DebugLocal|Default.ActiveCfg = DebugLocal
+		{0D54E5D7-3720-48DB-BF0B-04A1D204F9C5}.DebugLocal|Default.Build.0 = DebugLocal
+		{0D54E5D7-3720-48DB-BF0B-04A1D204F9C5}.Release|Default.ActiveCfg = Release
+		{0D54E5D7-3720-48DB-BF0B-04A1D204F9C5}.Release|Default.Build.0 = Release
+		{0D54E5D7-3720-48DB-BF0B-04A1D204F9C5}.Release|Default.Deploy.0 = Release
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 2
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://idetfs01d.ast.lmco.com:8443/tfs/estimating
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = genBOE_ReportingServices\\genBOE_ReportingServices.rptproj
+		SccProjectName1 = genBOE_ReportingServices
+		SccLocalPath1 = genBOE_ReportingServices
+	EndGlobalSection
+EndGlobal

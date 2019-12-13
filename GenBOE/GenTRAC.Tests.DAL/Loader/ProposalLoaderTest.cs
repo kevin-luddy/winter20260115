@@ -1,0 +1,882 @@
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace GenTRAC.Tests.DAL.Loader
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using System.Transactions;
+    using ActionLogic;
+    using ActionLogic.Email;
+    using ActionLogic.Mediator;
+    using DataBridge.Common.Security;
+    using GenTRAC.DataBridge.DTO;
+    using IES.Common;
+    using Microsoft.Practices.Unity;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Moq;
+    using Objects;
+
+    /// <summary>
+    /// Test class for the ProposalLoaderTest
+    /// </summary>
+    [TestClass]
+    public class ProposalLoaderTest
+    {
+        /// <summary>
+        /// Test data
+        /// </summary>
+        private TestData testData = TestData.GetInstance();
+
+        /// <summary>
+        /// Proposal loader
+        /// </summary>
+        /// <returns>loader</returns>
+        private ProposalLoader CreateSystem()
+        {
+            return new ProposalLoader(new ProposalPermissionLoader());
+        }
+
+        /// <summary>
+        /// Get all proposal IDs
+        /// </summary>
+        [TestMethod]
+        public void L_GetAllProposalIDs()
+        {
+            var sut = this.CreateSystem();
+
+            ICollection<int> beforeProposalIds = sut.GetAllIds();
+            this.testData.GetProposal(true);
+            ICollection<int> afterProposalIds = sut.GetAllIds();
+
+            Assert.AreEqual(beforeProposalIds.Count + 1, afterProposalIds.Count);
+        }
+
+        /// <summary>
+        /// Get Proposal Id by Tracking Id test - Forecast Version
+        /// </summary>
+        [TestMethod]
+        public void L_GetProposalIdByTrackingIdForecastTest()
+        {
+            var sut = this.CreateSystem();
+            ProposalDto p = TestData.GetInstance().GetProposal(true, null, null, true);
+            int fid = sut.GetIdByTrackingNumber(p.ForecastedTrackingNumber);
+
+            Assert.AreEqual(p.Id, fid);
+
+            fid = sut.GetIdByTrackingNumber(p.ForecastedTrackingNumber.ToLower());
+
+            Assert.AreEqual(p.Id, fid);
+
+            fid = sut.GetIdByTrackingNumber(p.ForecastedTrackingNumber.ToUpper());
+
+            Assert.AreEqual(p.Id, fid);
+        }
+
+        /// <summary>
+        /// Save proposal, then get by id
+        /// </summary>
+        [TestMethod]
+        public void L_SaveProposalAndGetProposalByID()
+        {
+            var sut = this.CreateSystem();
+
+            string proposalIdentifier = TestData.CreateRandomWord(6);
+            ProposalDto newProposal = new ProposalDto()
+            {
+                Id = -1,
+                ProposalStatus = ProposalStatus.InProgress,
+                ProposalTitle = "Mock" + proposalIdentifier,
+                OTISOpportunityID = proposalIdentifier,
+                UpdateDate = DateTime.Now,
+                Updateable = UpdateType.Upsert,
+                BoeTool = BOETool.Excel,
+                ContractTypeGroup = 1, // ContractTypeGroup.CP,
+                ContractTypeIds = new List<int>() { 1, 4 }, // CostPlusAwardFee, FirmFixedPrice
+                CostElementTypeIds = new List<int> { (int)CostElementType.Labor},
+                Customer = proposalIdentifier,
+                CustomerType = CustomerType.InternationalForeignMilitarySaleUSGovt,
+                DeliveryDate = new DateTime(2013, 6, 1),
+                EstimatedProposalValue = 0,
+                ISGSRole = ISGSRole.Prime,
+                ProgramAreaId = 46,
+                ProposalLocation = ProposalLocation.ValleyForgePA,
+                PricingTool = PricingTool.Excel,
+                LineOfBusinessID = 10,
+                ProgramName = proposalIdentifier,
+                ProposalType = 3,
+                Request = 1,
+                ProposalClass = 1,
+                RFPNumber = proposalIdentifier,
+                IsScheduleProposal = false,
+                DateAssigned = DateTime.Now, 
+                DateCreated = DateTime.Now,
+                RFPIssuedDate = new DateTime(2013, 4, 4),
+                RFPReceivedDate = new DateTime(2013, 5, 5),
+                Comments = "my comment",
+                ChangeChecklist = false,
+                ProgramProposalStatus = ProgramProposalStatus.UnderStrategicReviewISGS,
+                ApprovalEmailText = "This is extra text for the approval email",
+                IsCCPDRequired = true,
+                IsCostVolumeClassified = false,
+                DocumentId = 5,
+                AgreementDate = new DateTime(2013, 6, 6),
+                CutOffDateUtilization = CutOffDateUtilization.NoRequestDenied,
+                CertificationDate = new DateTime(2013, 6, 7),
+                CertificationLastEmailed = new DateTime(2013, 6, 8),
+                CertificationTimelineCompleted = new DateTime(2013, 6, 9)
+            };
+
+            int? newProposalID;
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                newProposalID = sut.Save(newProposal);
+                scope.Complete();
+            }
+
+            ProposalDto toTest = sut.GetById(newProposalID.Value);
+
+            DtoAssertHelpers.AssertDtos(newProposal, toTest);
+
+            // Test update Forecast Email Sent
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                sut.UpdateProposalForecastEmailSent(toTest.Id, toTest.UpdateDate);
+                scope.Complete();
+            }
+
+            newProposal.ForecastEmailSent = true;
+            toTest = sut.GetById(newProposalID.Value);
+            DtoAssertHelpers.AssertDtos(newProposal, toTest);
+
+            // test delete
+            toTest.Updateable = UpdateType.Deleted;
+            int? deletedProposalId;
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                deletedProposalId = sut.Save(toTest);
+                scope.Complete();
+            }
+
+            Assert.AreEqual(newProposalID, deletedProposalId);
+        }
+
+        /// <summary>
+        /// Verify the correct behavior for ProposalLocationName, PricingToolName and BOEToolName fields during save and retrieve
+        /// </summary>
+        [TestMethod]
+        public void L_SaveProposalTestOtherFieldHandling()
+        {
+            var sut = this.CreateSystem();
+            string boeToolName = "Big BOE";
+            string pricingToolName = "Big Pricer";
+            string proposalLocationName = "Kansas City, MO";
+
+            string proposalIdentifier = TestData.CreateRandomWord(6);
+            ProposalDto newProposal = new ProposalDto()
+            {
+                Id = -1,
+                ProposalStatus = ProposalStatus.InProgress,
+                ProposalTitle = "Mock" + proposalIdentifier,
+                OTISOpportunityID = proposalIdentifier,
+                UpdateDate = DateTime.Now,
+                Updateable = UpdateType.Upsert,
+                BoeTool = BOETool.Other,
+                BoeToolName = boeToolName,
+                ContractTypeGroup = 1, // ContractTypeGroup.CP,
+                ContractTypeIds = new List<int>() { 1, 4 }, // CostPlusAwardFee, FirmFixedPrice
+                CostElementTypeIds = new List<int> { (int)CostElementType.Labor },
+                Customer = proposalIdentifier,
+                CustomerType = CustomerType.InternationalForeignMilitarySaleUSGovt,
+                DeliveryDate = new DateTime(2013, 6, 1),
+                EstimatedProposalValue = 0,
+                ISGSRole = ISGSRole.Prime,
+                ProgramAreaId = 46,
+                ProposalLocation = ProposalLocation.Other,
+                ProposalLocationName = proposalLocationName,
+                PricingTool = PricingTool.Other,
+                PricingToolName = pricingToolName,
+                LineOfBusinessID = 10,
+                ProgramName = proposalIdentifier,
+                ProposalType = 3,
+                Request = 1,
+                ProposalClass = 2,
+                RFPNumber = proposalIdentifier,
+                IsScheduleProposal = false,
+                DateAssigned = DateTime.Now,
+                DateCreated = DateTime.Now,
+                RFPIssuedDate = new DateTime(2013, 4, 4),
+                RFPReceivedDate = new DateTime(2013, 5, 5),
+                Comments = "my comment",
+                ProgramProposalStatus = ProgramProposalStatus.UnderStrategicReviewISGS,
+                IsCostVolumeClassified = false
+            };
+
+            int? newProposalID;
+
+            // Save the proposal
+            using (TransactionScope scope = new TransactionScope())
+            {
+                newProposalID = sut.Save(newProposal);
+                scope.Complete();
+            }
+
+            // Verify that the Name fields are populated with the expected value
+            Assert.AreEqual(ProposalLocation.Other, newProposal.ProposalLocation);
+            Assert.AreEqual(proposalLocationName, newProposal.ProposalLocationName);
+            Assert.AreEqual(PricingTool.Other, newProposal.PricingTool);
+            Assert.AreEqual(pricingToolName, newProposal.PricingToolName);
+            Assert.AreEqual(BOETool.Other, newProposal.BoeTool);
+            Assert.AreEqual(boeToolName, newProposal.BoeToolName);
+
+            // Make the proposal updateable
+            newProposal.Id = (int)newProposalID;
+            ProposalDto updatedProposal = sut.GetById((int)newProposalID);
+            newProposal.UpdateDate = updatedProposal.UpdateDate;
+
+            // Update the proposal to non-Other fields
+            newProposal.ProposalLocation = ProposalLocation.ValleyForgePA;
+            newProposal.PricingTool = PricingTool.Excel;
+            newProposal.BoeTool = BOETool.ABE;
+ 
+            // Save the proposal
+            using (TransactionScope scope = new TransactionScope())
+            {
+                newProposalID = sut.Save(newProposal);
+                scope.Complete();
+            }
+
+            // Verify that the Name fields are now unpopulated
+            Assert.AreEqual(ProposalLocation.ValleyForgePA, newProposal.ProposalLocation);
+            Assert.IsTrue(string.IsNullOrEmpty(newProposal.ProposalLocationName));
+            Assert.AreEqual(PricingTool.Excel, newProposal.PricingTool);
+            Assert.IsTrue(string.IsNullOrEmpty(newProposal.PricingToolName));
+            Assert.AreEqual(BOETool.ABE, newProposal.BoeTool);
+            Assert.IsTrue(string.IsNullOrEmpty(newProposal.BoeToolName));
+
+            // add the created proposal to TestData so it is cleaned up
+            this.testData.AddProposal(newProposal);
+        }
+
+        /// <summary>
+        /// Get proposal ID by tracking number
+        /// </summary>
+        [TestMethod]
+        public void L_GetProposalIDByTrackingNumber()
+        {
+            var sut = this.CreateSystem();
+
+            ProposalDto testProposal = this.testData.GetProposal();
+
+            int toTest = sut.GetIdByTrackingNumber(testProposal.TrackingNumber);
+
+            Assert.AreEqual(testProposal.Id, toTest);
+
+            // Test one that doesn't exist, and make sure that it doesn't start with F
+            Assert.AreEqual(-1, sut.GetIdByTrackingNumber("1" + TestData.CreateRandomWord(9))); 
+        }
+
+        /// <summary>
+        /// Test Get Proposal Ids by user
+        /// </summary>
+        [TestMethod]
+        public void L_GetProposalIdsByUser()
+        {
+            var sut = this.CreateSystem();
+
+            ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
+            UserDTO user = this.testData.GetUser(inCreateNew: true);
+            this.testData.GetProposalPermission(true, new ProposalPermissionDto()
+            {
+                ProposalID = proposal.Id,
+                Role = PtmRole.BackupPricer,
+                UserId = user.Id,
+                Updateable = UpdateType.Upsert
+            });
+
+            ICollection<int> proposalIds = sut.GetProposalIdsByUser(new List<int>() { user.Id });
+            Assert.AreEqual(1, proposalIds.Count);
+            Assert.IsTrue(proposalIds.Contains(proposal.Id));
+        }
+
+        /// <summary>
+        /// Test Get Proposals by user
+        /// </summary>
+        [TestMethod]
+        public void L_GetProposalsByUser()
+        {
+            var sut = this.CreateSystem();
+
+            ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
+            UserDTO user = this.testData.GetUser(inCreateNew: true);
+            this.testData.GetProposalPermission(true, new ProposalPermissionDto()
+            {
+                ProposalID = proposal.Id,
+                Role = PtmRole.BackupPricer,
+                UserId = user.Id,
+                Updateable = UpdateType.Upsert
+            });
+
+            ICollection<HomeProposalViewDto> proposals = sut.GetProposalsByUser(null, null, null, null, user.Ntid, false, null, null);
+            Assert.AreEqual(1, proposals.Count);
+            Assert.IsTrue(proposals.Any(p => p.ProposalId == proposal.Id));
+        }
+
+        /// <summary>
+        /// Test Get Proposals by user with/without showProposalsForMyOrganization flag set
+        /// </summary>
+        [TestMethod]
+        public void L_GetProposalsByUser_ShowProposalsForMyOrganization()
+        {
+            var sut = this.CreateSystem();
+
+            ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
+
+            UserDTO user0 = this.testData.GetUser(inCreateNew: true);
+            this.testData.GetProposalPermission(true, new ProposalPermissionDto()
+            {
+                ProposalID = proposal.Id,
+                Role = PtmRole.BackupPricer,
+                UserId = user0.Id,
+                Updateable = UpdateType.Upsert
+            });
+
+            UserDTO user1 = this.testData.GetUser(true, new UserDTO()
+            {
+                Id = -1,
+                Ntid = "securityusertest" + TestData.CreateRandomWord(3),
+                Updateable = UpdateType.Upsert
+            });
+
+            UserDTO user2 = this.testData.GetUser(true, new UserDTO()
+            {
+                Id = -1,
+                Ntid = "securityusertest" + TestData.CreateRandomWord(3),
+                Updateable = UpdateType.Upsert
+            });
+
+            this.testData.GetPermission(true, new SystemPermissionDto()
+            {
+                Id = -1,
+                Role = PtmRole.Viewer,
+                Updateable = UpdateType.Upsert,
+                UserId = user0.Id,
+                LineOfBusinessIDs = new Collection<int>() { 9 }
+            });
+
+            this.testData.GetPermission(true, new SystemPermissionDto()
+            {
+                Id = -1,
+                Role = PtmRole.Viewer,
+                Updateable = UpdateType.Upsert,
+                UserId = user1.Id,
+                LineOfBusinessIDs = new Collection<int>() { 9 }     // Give Viewer access to LOB 9 (does not match LOB in proposal)
+            });
+
+            this.testData.GetPermission(true, new SystemPermissionDto()
+            {
+                Id = -1,
+                Role = PtmRole.Viewer,
+                Updateable = UpdateType.Upsert,
+                UserId = user2.Id,
+                LineOfBusinessIDs = new Collection<int>() { 10 }    // Give Viewer access to LOB 10 (matches LOB in proposal)
+            });
+
+            string userAndGroupXml = "<ROOT><id>{0}</id></ROOT>";
+            string userAndGroupIds0 = string.Format(userAndGroupXml, user0.Ntid);
+            string userAndGroupIds1 = string.Format(userAndGroupXml, user1.Ntid);
+            string userAndGroupIds2 = string.Format(userAndGroupXml, user2.Ntid);
+
+            // Test user0 with ShowMyOwnProposals - Should find proposal because user is Backup Pricer
+            ICollection<HomeProposalViewDto> proposals = sut.GetProposalsByUser(null, null, null, null, user0.Ntid, false, null, null);
+            Assert.AreEqual(1, proposals.Count);
+            Assert.IsTrue(proposals.Any(p => p.ProposalId == proposal.Id));
+
+            // Test user0 with showProposalsForMyOrganization - Should find proposal because user is Backup Pricer
+            proposals = sut.GetProposalsByUser(null, null, null, null, user0.Ntid, true, userAndGroupIds0, null);
+            Assert.IsTrue(proposals.Count >= 1);
+            Assert.IsTrue(proposals.Any(p => p.ProposalId == proposal.Id));
+
+            // Test user1 with ShowMyOwnProposals - Should not find proposal
+            proposals = sut.GetProposalsByUser(null, null, null, null, user1.Ntid, false, null, null);
+            Assert.AreEqual(0, proposals.Count);
+
+            // Test user1 with showProposalsForMyOrganization - Should not find proposal (user is Viewer, but wrong LOB)
+            proposals = sut.GetProposalsByUser(null, null, null, null, user1.Ntid, true, userAndGroupIds1, null);
+            Assert.AreEqual(0, proposals.Where(p => p.ProposalId == proposal.Id).ToCollection().Count);
+
+            // Test user2 with ShowMyOwnProposals - Should not find proposal
+            proposals = sut.GetProposalsByUser(null, null, null, null, user2.Ntid, false, null, null);
+            Assert.AreEqual(0, proposals.Where(p => p.ProposalId == proposal.Id).ToCollection().Count);
+
+            // Test user2 with showProposalsForMyOrganization - Should find proposal (user is Viewer for LOB 10)
+            proposals = sut.GetProposalsByUser(null, null, null, null, user2.Ntid, true, userAndGroupIds2, null);
+            Assert.IsTrue(proposals.Count >= 1);
+            Assert.IsTrue(proposals.Any(p => p.ProposalId == proposal.Id));
+        }
+
+        /// <summary>
+        /// Test the Proposal Class Filter option for Forecasted.
+        /// </summary>
+        [TestMethod]
+        public void L_GetProposals_Forecasted()
+        {
+            var sut = this.CreateSystem();
+            
+            ProposalDto proposal = this.testData.GetProposal(inCreateNew: true, isForecasted: true);
+            UserDTO user = this.testData.GetUser(inCreateNew: true);
+            this.testData.GetProposalPermission(true, new ProposalPermissionDto()
+            {
+                ProposalID = proposal.Id,
+                Role = PtmRole.LOBEstLead,
+                UserId = user.Id,
+                Updateable = UpdateType.Upsert
+            });
+
+            // Ensure proposal comes back with 'Forecasted' filter.
+            ICollection<HomeProposalViewDto> proposals = sut.GetProposalsByUser(null, null, null, null, user.Ntid, false, null, (int)ProposalClassFilterOption.Forecasted);
+            Assert.AreEqual(proposals.Count, 1);
+            Assert.IsTrue(proposals.Any(p => p.ProposalId == proposal.Id));
+
+            // Ensure proposal comes back with 'All' filter.
+            proposals = sut.GetProposalsByUser(null, null, null, null, user.Ntid, false, null, (int)ProposalClassFilterOption.All);
+            Assert.AreEqual(proposals.Count, 1);
+            Assert.IsTrue(proposals.Any(p => p.ProposalId == proposal.Id));
+
+            // Ensure proposal comes back with null filter (which is treated as 'All').
+            proposals = sut.GetProposalsByUser(null, null, null, null, user.Ntid, false, null, null);
+            Assert.AreEqual(proposals.Count, 1);
+            Assert.IsTrue(proposals.Any(p => p.ProposalId == proposal.Id));
+
+            // Ensure proposal does NOT come back with 'NonForecasted' filter.
+            proposals = sut.GetProposalsByUser(null, null, null, null, user.Ntid, false, null, (int)ProposalClassFilterOption.NonForecasted);
+            Assert.AreEqual(proposals.Count, 0);
+            Assert.IsFalse(proposals.Any(p => p.ProposalId == proposal.Id));
+        }
+
+        /// <summary>
+        /// Test the Proposal Class Filter option for NonForecasted.
+        /// </summary>
+        [TestMethod]
+        public void L_GetProposals_NonForecasted()
+        {
+            var sut = this.CreateSystem();
+
+            ProposalDto proposal = this.testData.GetProposal(inCreateNew: true, isForecasted: false);
+            UserDTO user = this.testData.GetUser(inCreateNew: true);
+            this.testData.GetProposalPermission(true, new ProposalPermissionDto()
+            {
+                ProposalID = proposal.Id,
+                Role = PtmRole.LOBEstLead,
+                UserId = user.Id,
+                Updateable = UpdateType.Upsert
+            });
+
+            // Ensure proposal comes back with 'NonForecasted' filter.
+            ICollection<HomeProposalViewDto> proposals = sut.GetProposalsByUser(null, null, null, null, user.Ntid, false, null, (int)ProposalClassFilterOption.NonForecasted);
+            Assert.AreEqual(proposals.Count, 1);
+            Assert.IsTrue(proposals.Any(p => p.ProposalId == proposal.Id));
+
+            // Ensure proposal comes back with 'All' filter.
+            proposals = sut.GetProposalsByUser(null, null, null, null, user.Ntid, false, null, (int)ProposalClassFilterOption.All);
+            Assert.AreEqual(proposals.Count, 1);
+            Assert.IsTrue(proposals.Any(p => p.ProposalId == proposal.Id));
+
+            // Ensure proposal comes back with null filter (which is treated as 'All').
+            proposals = sut.GetProposalsByUser(null, null, null, null, user.Ntid, false, null, null);
+            Assert.AreEqual(proposals.Count, 1);
+            Assert.IsTrue(proposals.Any(p => p.ProposalId == proposal.Id));
+
+            // Ensure proposal does NOT come back with 'Forecasted' filter.
+            proposals = sut.GetProposalsByUser(null, null, null, null, user.Ntid, false, null, (int)ProposalClassFilterOption.Forecasted);
+            Assert.AreEqual(proposals.Count, 0);
+            Assert.IsFalse(proposals.Any(p => p.ProposalId == proposal.Id));
+        }
+
+        /// <summary>
+        /// Tests for Date Assigned behavior
+        /// </summary>
+        [TestMethod]
+        public void L_DateAssignedTest()
+        {
+            var sut = this.CreateSystem();
+
+            ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
+
+            // get original date assigned
+            ProposalDto toTest = sut.GetById(proposal.Id);
+            DateTime originalTimestamp = toTest.DateAssigned.Value;
+
+            // save with flag=false
+            toTest.UpdateDateAssigned = false;
+            toTest.Updateable = UpdateType.Upsert;
+            using (TransactionScope scope = new TransactionScope())
+            {
+                sut.Save(toTest);
+                scope.Complete();
+            }
+
+            // get proposal, verify Date Assigned hasn't changed
+            toTest = sut.GetById(proposal.Id);
+            Assert.AreEqual(originalTimestamp, toTest.DateAssigned);
+
+            // save with flag=true
+            toTest.UpdateDateAssigned = true;
+            toTest.Updateable = UpdateType.Upsert;
+            using (TransactionScope scope = new TransactionScope())
+            {
+                sut.Save(toTest);
+                scope.Complete();
+            }
+
+            // get proposal, verify Date Assigned has been updated
+            toTest = sut.GetById(proposal.Id);
+            Assert.IsTrue(toTest.DateAssigned > originalTimestamp);
+        }
+
+        /// <summary>
+        /// Tests for GetProposalCompletedDate 
+        /// </summary>
+        [TestMethod]
+        public void L_GetProposalCompletedDateTest()
+        {
+            var sut = this.CreateSystem();
+
+            ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
+
+            // proposal is InProgress, so completed date should be null
+            DateTime? completedDate = sut.GetProposalCompletedDate(proposal.Id);
+            Assert.IsFalse(completedDate.HasValue);
+
+            // save as pricer and move to completed
+            this.testData.SaveChecklistAsPricer(proposal.Id, isSubmit: true);
+            this.testData.SetProposalStatus(proposal.Id, ProposalStatus.Completed);
+
+            // completed date should be pricer's max date
+            ProposalChecklistLoader checklistLoader = new ProposalChecklistLoader();
+            DateTime pricerDate = checklistLoader.GetAllChecklistSaveInfo(proposal.Id).Where(x => x.ResponseType == ChecklistResponseType.Pricer).Select(x => x.SubmitDate).Max().Value;
+            completedDate = sut.GetProposalCompletedDate(proposal.Id);
+            Assert.IsTrue(completedDate.HasValue);
+            Assert.AreEqual(pricerDate, completedDate);
+
+            // save as peer
+            this.testData.SaveChecklistAsPeer(proposal.Id, isSubmit: true);
+
+            // completed date should be peer's date
+            DateTime peerDate = checklistLoader.GetAllChecklistSaveInfo(proposal.Id).Where(x => x.ResponseType == ChecklistResponseType.Peer).Select(x => x.SubmitDate).First().Value;
+            completedDate = sut.GetProposalCompletedDate(proposal.Id);
+            Assert.IsTrue(peerDate > pricerDate);
+            Assert.IsTrue(completedDate.HasValue);
+            Assert.AreEqual(peerDate, completedDate);
+        }
+
+        /// <summary>
+        /// Tests for GetProposalStatus 
+        /// </summary>
+        [TestMethod]
+        public void L_GetProposalStatusTest()
+        {
+            var sut = this.CreateSystem();
+
+            // new proposal is In Progress
+            ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
+            ProposalStatus? result = sut.GetProposalStatus(proposal.Id);
+            Assert.AreEqual(ProposalStatus.InProgress, result);
+
+            // deleted
+            this.testData.SetProposalStatus(proposal.Id, ProposalStatus.Deleted);
+            result = sut.GetProposalStatus(proposal.Id);
+            Assert.AreEqual(ProposalStatus.Deleted, result);
+        }
+
+        /// <summary>
+        /// Tests for UpdateProposalStatus
+        /// </summary>
+        [TestMethod]
+        public void L_UpdateProposalStatusTest()
+        {
+            var sut = this.CreateSystem();
+
+            ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
+
+            Assert.AreEqual(proposal.ProposalStatus, ProposalStatus.InProgress);
+
+            // change the proposal status to completed
+            int? proposalId = sut.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Completed);
+
+            Assert.IsTrue(proposalId.HasValue);
+            proposal = sut.GetById(proposalId.Value);
+            Assert.AreEqual(proposal.ProposalStatus, ProposalStatus.Completed);
+
+            // change the proposal status to archived
+            proposalId = sut.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Archived);
+
+            Assert.IsTrue(proposalId.HasValue);
+            proposal = sut.GetById(proposalId.Value);
+            Assert.AreEqual(proposal.ProposalStatus, ProposalStatus.Archived);
+
+            // change the proposal status to deleted
+            proposalId = sut.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Deleted);
+
+            Assert.IsTrue(proposalId.HasValue);
+            proposal = sut.GetById(proposalId.Value);
+            Assert.AreEqual(proposal.ProposalStatus, ProposalStatus.Deleted);
+        }
+
+        /// <summary>
+        /// Tests for IsProposalTitleUnique
+        /// </summary>
+        [TestMethod]
+        public void L_IsProposalTitleUnique()
+        {
+            var sut = this.CreateSystem();
+
+            ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
+
+            // Find a Proposal Title that isn't yet used
+            string randomProposalTitleExpectedToBeUnique = "Mock" + Guid.NewGuid().ToString();
+
+            Assert.IsTrue(sut.IsProposalTitleUnique(proposal.Id, randomProposalTitleExpectedToBeUnique));
+            Assert.IsFalse(sut.IsProposalTitleUnique(proposal.Id + 1, proposal.ProposalTitle));
+        }
+
+        /// <summary>
+        /// Test for retrieval of proposals by workflow status.
+        /// </summary>
+        [TestMethod]
+        public void L_GetProposalsByWorkflowStatus()
+        {
+            var sut = this.CreateSystem();
+
+            ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
+            proposal.WorkflowStatus = WorkflowStatus.InitialLOBLeadEmail;
+            proposal.WorkflowStatusLastUpdated = DateTime.Now;
+            proposal.Updateable = UpdateType.Upsert;
+            using (TransactionScope scope = new TransactionScope())
+            {
+                sut.Save(proposal);
+                scope.Complete();
+            }
+
+            ICollection<ProposalDto> proposals = sut.GetProposalsByWorkflowStatus(WorkflowStatus.InitialLOBLeadEmail);
+            Assert.IsTrue(proposals.Any(p => p.Id == proposal.Id));
+
+            proposal = sut.GetById(proposal.Id);
+            proposal.WorkflowStatus = WorkflowStatus.ProposalLocked;
+            proposal.Updateable = UpdateType.Upsert;
+            using (TransactionScope scope = new TransactionScope())
+            {
+                sut.Save(proposal);
+                scope.Complete();
+            }
+
+            proposals = sut.GetProposalsByWorkflowStatus(WorkflowStatus.ProposalLocked);
+
+            Assert.IsTrue(proposals.Any(p => p.Id == proposal.Id));
+        }
+
+        /// <summary>
+        /// Test for retrieval of proposals by workflow status and cutoff date.
+        /// </summary>
+        [TestMethod]
+        public void L_GetProposalsByWorkflowStatusAndCutoffDate()
+        {
+            var sut = this.CreateSystem();
+
+            DateTime cutoffDate = DateTime.Now.AddHours(-1);
+
+            ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
+            proposal.WorkflowStatus = WorkflowStatus.ProposalLocked;
+            proposal.WorkflowStatusLastUpdated = cutoffDate.AddHours(-2);
+            proposal.Updateable = UpdateType.Upsert;
+            using (TransactionScope scope = new TransactionScope())
+            {
+                sut.Save(proposal);
+                scope.Complete();
+            }
+
+            ICollection<ProposalDto> proposals = sut.GetProposalsByWorkflowStatusAndCutoffDate(WorkflowStatus.ProposalLocked, cutoffDate);
+
+            Assert.IsTrue(proposals.Any(p => p.Id == proposal.Id));
+
+            proposal = sut.GetById(proposal.Id);
+            proposal.WorkflowStatusLastUpdated = cutoffDate.AddHours(1);
+            proposal.Updateable = UpdateType.Upsert;
+            using (TransactionScope scope = new TransactionScope())
+            {
+                sut.Save(proposal);
+                scope.Complete();
+            }
+
+            proposals = sut.GetProposalsByWorkflowStatusAndCutoffDate(WorkflowStatus.ProposalLocked, cutoffDate);
+
+            Assert.IsFalse(proposals.Any(p => p.Id == proposal.Id));
+        }
+
+        /// <summary>
+        /// Tests the ResetWorkflow method.
+        /// </summary>
+        [TestMethod]
+        public void L_ResetWorkflowTest()
+        {
+            ProposalLoader sut = this.CreateSystem();
+            ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
+            proposal = sut.GetById(proposal.Id);
+            proposal.WorkflowStatus = WorkflowStatus.ProposalLocked;
+            proposal.WorkflowStatusLastUpdated = DateTime.Now;
+            proposal.LeadEstimatorSignatureComment = "lead comment";
+            proposal.LeadEstimatorSignedDate = DateTime.Now;
+            proposal.ApprovalEmailText = "email text";
+            proposal.CoverSheetApproverSignatureComment = "cv comment";
+            proposal.CoverSheetApproverSignedDate = DateTime.Now;
+            proposal.PricingVerifierSignatureComment = "pv comment";
+            proposal.PricingVerifierSignedDate = DateTime.Now;
+            proposal.IndependentReviewerSignatureComment = "indp comment";
+            proposal.IndependentReviewerSignedDate = DateTime.Now;
+            proposal.LOBEstimatingLeadSignatureComment = "lob comment";
+            proposal.LOBEstimatingLeadSignedDate = DateTime.Now;
+
+            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot}))
+            {
+                proposal.Updateable = UpdateType.Upsert;
+                sut.Save(proposal);
+
+                scope.Complete();
+            }
+
+            ProposalDto actual = sut.GetById(proposal.Id);
+            Assert.AreEqual(proposal.WorkflowStatus, actual.WorkflowStatus);
+            Assert.AreEqual(proposal.WorkflowStatusLastUpdated, actual.WorkflowStatusLastUpdated);
+            Assert.AreEqual(proposal.LeadEstimatorSignatureComment, actual.LeadEstimatorSignatureComment);
+            Assert.AreEqual(proposal.LeadEstimatorSignedDate, actual.LeadEstimatorSignedDate);
+            Assert.AreEqual(proposal.ApprovalEmailText, actual.ApprovalEmailText);
+            Assert.AreEqual(proposal.CoverSheetApproverSignatureComment, actual.CoverSheetApproverSignatureComment);
+            Assert.AreEqual(proposal.CoverSheetApproverSignedDate, actual.CoverSheetApproverSignedDate);
+            Assert.AreEqual(proposal.PricingVerifierSignatureComment, actual.PricingVerifierSignatureComment);
+            Assert.AreEqual(proposal.PricingVerifierSignedDate, actual.PricingVerifierSignedDate);
+            Assert.AreEqual(proposal.IndependentReviewerSignatureComment, actual.IndependentReviewerSignatureComment);
+            Assert.AreEqual(proposal.IndependentReviewerSignedDate, actual.IndependentReviewerSignedDate);
+            Assert.AreEqual(proposal.LOBEstimatingLeadSignatureComment, actual.LOBEstimatingLeadSignatureComment);
+            Assert.AreEqual(proposal.LOBEstimatingLeadSignedDate, actual.LOBEstimatingLeadSignedDate);
+
+            Mock<IChecklistMediator> checklistMediator;
+            ApprovalsControllerLogic approvalsControllerLogic = this.CreateControllerLogicSystem(sut, out checklistMediator);
+            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+            {
+                approvalsControllerLogic.ResetWorkflow(proposal.Id);
+                scope.Complete();
+            }
+
+            actual = sut.GetById(proposal.Id);
+            checklistMediator.Verify(x => x.UnlockChecklist(proposal.Id, It.IsAny<DateTime>(), UnlockChecklistOption.UnlockPricer), Times.Once());
+
+            Assert.AreEqual(WorkflowStatus.NotStarted, actual.WorkflowStatus);
+            Assert.IsNull(actual.WorkflowStatusLastUpdated);
+            Assert.IsNotNull(actual.LeadEstimatorSignatureComment);
+            Assert.IsNull(actual.LeadEstimatorSignedDate);
+            Assert.IsNotNull(actual.ApprovalEmailText);
+            Assert.IsNotNull(actual.CoverSheetApproverSignatureComment);
+            Assert.IsNull(actual.CoverSheetApproverSignedDate);
+            Assert.IsNotNull(actual.PricingVerifierSignatureComment);
+            Assert.IsNull(actual.PricingVerifierSignedDate);
+            Assert.IsNotNull(actual.IndependentReviewerSignatureComment);
+            Assert.IsNull(actual.IndependentReviewerSignedDate);
+            Assert.IsNotNull(actual.LOBEstimatingLeadSignatureComment);
+            Assert.IsNull(actual.LOBEstimatingLeadSignedDate);
+        }
+
+        /// <summary>
+        /// Creates ApprovalsControllerLogic for testing
+        /// </summary>
+        /// <param name="proposalLoader">The proposal loader.</param>
+        /// <param name="checklistMediator">The mock object created for the checklist mediator.</param>
+        /// <returns>ApprovalsControllerLogic</returns>
+        private ApprovalsControllerLogic CreateControllerLogicSystem(ProposalLoader proposalLoader, out Mock<IChecklistMediator> checklistMediator)
+        {
+            var securityAccess = new Mock<ISecurityAccess>();
+            var userMapper = new Mock<IUserMapper>();
+            var userLoader = new Mock<IUserLoader>();
+            var emailer = new Mock<IPtmEmailer>();
+            var approvalsLoader = new Mock<ApprovalsLoader>();
+            var proposalChecklistLoader = new Mock<IProposalChecklistLoader>();
+            checklistMediator = new Mock<IChecklistMediator>();
+            var approvalEmailer = new Mock<ApprovalEmailer>();
+
+            var retriever = new Mock<IRetriever>();
+            IES.Common.classes.GenBOEUnityContainer.Container.RegisterInstance(retriever.Object);
+
+            return new ApprovalsControllerLogic(securityAccess.Object, proposalLoader, userMapper.Object, userLoader.Object, emailer.Object, new FullObjectFactory(), approvalsLoader.Object, new ProposalMediator(proposalLoader), proposalChecklistLoader.Object, checklistMediator.Object, approvalEmailer.Object, null, null);
+        }
+
+        #region Exception Test
+
+        /// <summary>
+        /// Save proposal with exception (null argument)
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void L_SaveProposalException1()
+        {
+            var sut = this.CreateSystem();
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                ProposalDto dto = null;
+                sut.Save(dto);
+                scope.Complete();
+            }
+        }
+
+        /// <summary>
+        /// Save proposal with exception (invalid argument)
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void L_SaveProposalException2()
+        {
+            var sut = this.CreateSystem();
+
+            ProposalDto toSave = new ProposalDto();
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                sut.Save(toSave);
+                scope.Complete();
+            }
+        }
+
+        /// <summary>
+        /// Check if Proposal Title is Unique with null input (invalid argument)
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void L_IsProposalTitleUnique2()
+        {
+            var sut = this.CreateSystem();
+
+            sut.IsProposalTitleUnique(1, null);
+        }
+
+        #endregion Exception Test
+
+        /// <summary>
+        /// Checks the retrieval of proposals with certification timeline past due.
+        /// </summary>
+        [TestMethod]
+        public void GetProposalsCertificationTimelinePastDue()
+        {
+            var sut = this.CreateSystem();
+            ICollection<ProposalDto> proposals = sut.GetProposalsCertificationTimelinePastDue();
+
+            Assert.IsNotNull(proposals);
+        }
+    }
+}

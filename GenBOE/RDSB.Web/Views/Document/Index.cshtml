@@ -1,0 +1,37 @@
+﻿@inherits System.Web.Mvc.WebViewPage<System.Collections.Generic.ICollection<IES.DataBridge.ModelViews.DocumentGridModelView>>
+@{
+    ViewBag.Title = "Document";
+}
+<script type="text/javascript">
+    angular.module('rdsb').value('DocumentGridModel',
+    {
+        controller: '@IESWebConstants.CONTROLLER_DOCUMENT',
+        editAction: '@IESWebConstants.ACTION_EDIT_DOCUMENT',
+        deleteAction: '@IESWebConstants.ACTION_DELETE_DOCUMENT',
+        publishAction: '@IESWebConstants.ACTION_PUBLISH_DOCUMENT',
+        showWhosOnlineAction: '@IESWebConstants.ACTION_SHOW_WHOS_ONLINE',
+        getWhosOnlineAction: '@IESWebConstants.ACTION_GET_WHOS_ONLINE',
+        getProposalsForNewDocAction: '@IESWebConstants.ACTION_GET_PROPOSALS_FOR_NEW_DOCUMENT',
+        saveNewDocumentAction: '@IESWebConstants.ACTION_SAVE_NEW_DOCUMENT',
+        PTMUrl: '@Utilities.PTMUrl().ToString()',
+        baseUrl: '@Url.Content("~/")',
+        data: @Html.Raw(JsonConvert.SerializeObject(Model))
+    });
+</script>
+<div data-ng-app="rdsb" ng-controller="documentController">
+    <div class="row top-margin-2">
+        <div class="col-xs-12">
+            <div class="module">
+                <div class="module-header-data left hiddenOverflow">
+                    <span class="documentPageHeader">Document</span>
+                    <button id="WhosOnlineButton-Document" class="ies floatRight inline" data-ng-click="openWhosOnlineModal()" data-ng-show="showWhosOnlineButton" data-ng-cloak type="button">Who's Online?</button>
+                </div>
+                <div class="module-content-data">
+                    <button data-ng-hide="isAdding" id="AddButton-NewDocument" class="ies-action buttons" data-ng-click="openAddDocumentModal()" data-ng-cloak type="button">+ Add</button>
+                    <button data-ng-show="isAdding" class="loader ies-action"></button>
+                    <div id="uiGrid" ui-grid="gridOptions"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,204 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{6EBD0376-9273-4A2A-9E23-1912418DDBA5}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GenTRAC.DataBridge</RootNamespace>
+    <AssemblyName>GenTRAC.DataBridge</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+    <DebugSymbols>true</DebugSymbols>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Interception">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Microsoft.Practices.Unity.Interception.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.4\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.4\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Common\Delegates.cs" />
+    <Compile Include="Common\LoadersAndMappers\DataMapper.cs" />
+    <Compile Include="Common\LoadersAndMappers\ICacheWarmingMapper.cs" />
+    <Compile Include="Common\LoadersAndMappers\IDataMapper.cs" />
+    <Compile Include="Common\Security\ISecurityAccess.cs" />
+    <Compile Include="Common\Security\ISecurityUserAuthorizationsDataLoader.cs" />
+    <Compile Include="Common\Security\ISecurityMapper.cs" />
+    <Compile Include="Common\Security\SecurityAccess.cs" />
+    <Compile Include="Common\Security\SecurityMapper.cs" />
+    <Compile Include="Common\Security\SecurityPermissionsRequested.cs" />
+    <Compile Include="Common\Security\SecurityPermissionsResponse.cs" />
+    <Compile Include="Common\Security\SecurityUserAuthorizationsDataLoader.cs" />
+    <Compile Include="DTO\Approvals\ApprovalsDto.cs" />
+    <Compile Include="DTO\Approvals\ApprovalsLoader.cs" />
+    <Compile Include="DTO\Approvals\IApprovalsLoader.cs" />
+    <Compile Include="DTO\Attachment\AttachmentDto.cs" />
+    <Compile Include="DTO\Attachment\AttachmentLoader.cs" />
+    <Compile Include="DTO\Attachment\IAttachmentLoader.cs" />
+    <Compile Include="DTO\BulkArchive\BulkArchiveDto.cs" />
+    <Compile Include="DTO\BulkArchive\BulkArchiveLoader.cs" />
+    <Compile Include="DTO\BulkArchive\IBulkArchiveLoader.cs" />
+    <Compile Include="DTO\Checklist\ChecklistContentItem.cs" />
+    <Compile Include="DTO\Checklist\ChecklistContentDto.cs" />
+    <Compile Include="DTO\Checklist\PARChecklistContentLoader.cs" />
+    <Compile Include="DTO\Checklist\PARChecklistContentMapper.cs" />
+    <Compile Include="DTO\Checklist\PPRChecklistContentLoader.cs" />
+    <Compile Include="DTO\Checklist\PPRChecklistContentMapper.cs" />
+    <Compile Include="DTO\Checklist\IChecklistContentLoader.cs" />
+    <Compile Include="DTO\Checklist\IChecklistContentMapper.cs" />
+    <Compile Include="DTO\Checklist\ProposalChecklistDto.cs" />
+    <Compile Include="DTO\Checklist\ProposalChecklistLoader.cs" />
+    <Compile Include="DTO\Checklist\ChecklistResponseItem.cs" />
+    <Compile Include="DTO\Checklist\IProposalChecklistLoader.cs" />
+    <Compile Include="DTO\Checklist\ProposalChecklistSaveInfo.cs" />
+    <Compile Include="DTO\Email\EmailInformationDto.cs" />
+    <Compile Include="DTO\Email\EmailInformationLoader.cs" />
+    <Compile Include="DTO\Email\IEmailInformationLoader.cs" />
+    <Compile Include="DTO\ManageProposalInfo\IManageProposalInfoLoader.cs" />
+    <Compile Include="DTO\ManageProposalInfo\ManageProposalInfoDto.cs" />
+    <Compile Include="DTO\ManageProposalInfo\ManageProposalInfoLoader.cs" />
+    <Compile Include="DTO\OrgData\IOrgStructureDataMapper.cs" />
+    <Compile Include="DTO\OrgData\OrgStructureDataMapper.cs" />
+    <Compile Include="DTO\Permission\ISystemPermissionMapper.cs" />
+    <Compile Include="DTO\Permission\IProposalPermissionLoader.cs" />
+    <Compile Include="DTO\Permission\IProposalPermissionMapper.cs" />
+    <Compile Include="DTO\Permission\ISystemPermissionLoader.cs" />
+    <Compile Include="DTO\Permission\PermissionDto.cs" />
+    <Compile Include="DTO\Permission\SystemPermissionDto.cs" />
+    <Compile Include="DTO\Permission\SystemPermissionMapper.cs" />
+    <Compile Include="DTO\Permission\ProposalPermissionDto.cs" />
+    <Compile Include="DTO\Permission\ProposalPermissionLoader.cs" />
+    <Compile Include="DTO\Permission\ProposalPermissionMapper.cs" />
+    <Compile Include="DTO\Permission\SystemPermissionLoader.cs" />
+    <Compile Include="DTO\PickLists\Common\PtmPickListMapper.cs" />
+    <Compile Include="DTO\PickLists\ContractTypeGroupLULoader.cs" />
+    <Compile Include="DTO\PickLists\ContractTypeLULoader.cs" />
+    <Compile Include="DTO\PickLists\ProposalClassLULoader.cs" />
+    <Compile Include="DTO\PickLists\TypeOfRequestLULoader.cs" />
+    <Compile Include="DTO\PickLists\ProposalTypeLULoader.cs" />
+    <Compile Include="DTO\Proposal\HomeProposalViewDto.cs" />
+    <Compile Include="DTO\Proposal\IProposalLoader.cs" />
+    <Compile Include="DTO\Proposal\ProposalDto.cs" />
+    <Compile Include="DTO\Proposal\ProposalLoader.cs" />
+    <Compile Include="DTO\Reports\IReportsLoader.cs" />
+    <Compile Include="DTO\Reports\ReportsLoader.cs" />
+    <Compile Include="DTO\User\CacheWarmingUserMapper.cs" />
+    <Compile Include="DTO\User\IUserLoader.cs" />
+    <Compile Include="DTO\User\IUserMapper.cs" />
+    <Compile Include="DTO\User\UserDTO.cs" />
+    <Compile Include="DTO\User\UserLoader.cs" />
+    <Compile Include="DTO\User\UserMapper.cs" />
+    <Compile Include="DTO\OrgData\ProgramAreaDataLoader.cs" />
+    <Compile Include="DTO\OrgData\LineOfBusinessDataLoader.cs" />
+    <Compile Include="DTO\User\UsersOnlineDTO.cs" />
+    <Compile Include="DTO\User\UsersOnlineDetailDescriptor.cs" />
+    <Compile Include="GenTRAC.Objects\FullObjectFactory.cs" />
+    <Compile Include="GenTRAC.Objects\FullObject\FullProposal.cs" />
+    <Compile Include="GenTRAC.Objects\IFullObjectFactory.cs" />
+    <Compile Include="GenTRAC.Objects\IRetriever.cs" />
+    <Compile Include="GenTRAC.Objects\Retriever.cs" />
+    <Compile Include="Lookup Table\LookUpDataDTO.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GenTRAC.Models\GenTRAC.Models.csproj">
+      <Project>{2802b2b5-80b1-4447-88d4-caad5fc36ba1}</Project>
+      <Name>GenTRAC.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IES.Common\IES.Common.csproj">
+      <Project>{fadfe985-0aa1-41af-b7cb-a740673fc0d7}</Project>
+      <Name>IES.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

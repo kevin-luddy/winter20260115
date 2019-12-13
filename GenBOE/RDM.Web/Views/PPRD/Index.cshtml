@@ -1,0 +1,140 @@
+﻿@using IES.Common
+@using Newtonsoft.Json;
+@{
+    ViewBag.Title = "PPR&D";
+    JsonSerializerSettings microsoftDateFormatSettings = new JsonSerializerSettings
+    {
+        DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
+        DateParseHandling = DateParseHandling.DateTime,
+        DateTimeZoneHandling = DateTimeZoneHandling.Local
+    };
+}
+<script type="text/javascript">
+    angular.module('RDM').value('PPRDModel', {
+        controller: '@IESWebConstants.CONTROLLER_PPRD',
+        getAction: '@IESWebConstants.ACTION_GET_PPRD',
+        saveAction: '@IESWebConstants.ACTION_SAVE_PPRD',
+        validateDeleteAction: '@IESWebConstants.ACTION_VALIDATE_DELETE_SECTION',
+        rateController: '@IESWebConstants.CONTROLLER_RATE',
+        getRatesAction: '@IESWebConstants.ACTION_GET_WIP_RATE_SECTIONS',
+        reportsController: '@IESWebConstants.CONTROLLER_REPORTS',
+        generateFullPPRDAction: '@IESWebConstants.ACTION_GENERATE_FULL_PPRD',
+        baseUrl: '@Url.Content("~/")',
+        Area: @((int)LockArea.RDMSections),
+        SectionContentTypeSection: @((int)IES.Common.SectionContentType.Section),
+        SectionContentTypeText: @((int)IES.Common.SectionContentType.Text),
+        SectionContentTypeRateTable: @((int)IES.Common.SectionContentType.RateTable),
+        SectionContentTypeNone: @((int)IES.Common.SectionContentType.None),
+        SectionContentTypeOptions: @Html.Raw(JsonConvert.SerializeObject(Model.SectionContentTypeOptions, microsoftDateFormatSettings))
+    });
+</script>
+<br />
+
+<div data-ng-app="RDM" data-ng-controller="PPRDController">
+    <!-- Nested node template -->
+    <script type="text/ng-template" id="text_content_renderer.html">
+        <span class="glyphicon glyphicon-edit">{{node.Title}}</span>
+        <div>{{node.TextContent}}</div>
+    </script>
+    <script type="text/ng-template" id="table_content_renderer.html">
+        <span class="glyphicon glyphicon-list-alt">{{node.Title}}</span>
+        <div>Display Resource Code = {{node.DisplayRateCode}}</div>
+    </script>
+    <script type="text/ng-template" id="price_codes_table_content_renderer.html">
+        <span class="glyphicon glyphicon-th-list">{{node.Title}}</span>
+        <div>Pricing Codes Table</div>
+    </script>
+    <script type="text/ng-template" id="nodes_renderer.html">
+        <div ui-tree-handle class="tree-node tree-node-content" data-ng-class="{'section-node' : !IsSectionContent(node), 'section-content-node' : IsSectionContent(node)}">
+            <a class="btn btn-success btn-xs" data-ng-if="node.ChildNodes && node.ChildNodes.length > 0" data-nodrag data-ng-click="toggle(this)">
+                <span class="glyphicon"
+                      data-ng-class="{
+          'glyphicon-chevron-right': collapsed,
+          'glyphicon-chevron-down': !collapsed
+        }"></span>
+            </a>
+            <span data-ng-if="!IsSectionContent(node)">{{node.ReferenceNumber}}</span>
+            <span class="glyphicon" data-ng-if="IsSectionContent(node)" data-ng-class="{
+                      'glyphicon-edit':node.ContentType == @((int)IES.Common.SectionContentType.Text),
+                      'glyphicon-list-alt':node.ContentType == @((int)IES.Common.SectionContentType.RateTable)
+                      }" title="Move">
+            </span>
+            {{node.Title}}
+            <a class="pull-right btn btn-danger btn-xs" data-nodrag data-ng-if="!pprd.LockInfo.IsReadOnly" data-ng-click="showConfirmDelete(this, $event)">
+                <span class="glyphicon glyphicon-remove" title="Delete"></span>
+            </a>
+            <a class="pull-right btn btn-primary btn-xs" data-nodrag data-ng-if="!pprd.LockInfo.IsReadOnly && IsSectionContent(node)" data-ng-click="modifyContent(this)">
+                <span class="glyphicon glyphicon-pencil" title="Edit"></span>
+            </a>
+            <a class="pull-right btn btn-primary btn-xs" data-nodrag data-ng-if="!pprd.LockInfo.IsReadOnly && !IsSectionContent(node)" data-ng-click="modifySection(this)">
+                <span class="glyphicon glyphicon-pencil" title="Edit"></span>
+            </a>
+            <a class="pull-right btn btn-primary btn-xs" data-nodrag data-ng-if="!pprd.LockInfo.IsReadOnly && !IsSectionContent(node)" data-ng-click="addContent(this)" style="margin-right: 8px;">
+                <span class="glyphicon glyphicon-plus">Content</span>
+            </a>
+            <a class="pull-right btn btn-primary btn-xs" data-nodrag data-ng-if="!pprd.LockInfo.IsReadOnly && !IsSectionContent(node)" data-ng-click="addSubSection(this)" style="margin-right: 8px;">
+                <span class="glyphicon glyphicon-plus">Sub-section</span>
+            </a>
+            <a class="pull-right btn btn-primary btn-xs" data-nodrag data-ng-if="!pprd.LockInfo.IsReadOnly && !IsSectionContent(node)" data-ng-click="addSection(this)" style="margin-right: 8px;">
+                <span class="glyphicon glyphicon-plus">Section</span>
+            </a>
+            <!-- Render content -->
+            <span data-ng-if="IsSectionContent(node) && node.ContentType === @((int)IES.Common.SectionContentType.Text)" class="section-content" data-ng-bind-html="trustedHtml(node.TextContent)"></span>
+            <span data-ng-if="IsSectionContent(node) && node.ContentType === @((int)IES.Common.SectionContentType.RateTable)" class="section-content"><br />Display Resource Code = {{node.DisplayRateCode}}<br /></span>
+        </div>
+        <ol ui-tree-nodes="" data-ng-model="node.ChildNodes" data-ng-class="{hidden: collapsed}">
+            <li data-ng-repeat="node in node.ChildNodes" ui-tree-node data-ng-include="'nodes_renderer.html'">
+            </li>
+        </ol>
+    </script>
+    <div class="row top-margin-2">
+        <div class="col-sm-12">
+            <div class="module" data-ng-cloak>
+                <div class="module-header-data left">
+                    <span data-ng-cloak>PPR&amp;D<span data-ng-hide="isDataLoading"> -- Work in Progress (Rev. {{pprd.Revision.Revision}})</span></span> 
+                    <span data-ng-cloak data-ng-if="pprd.LockInfo.Editing"> -- Currently locked for edit by {{pprd.LockInfo.Editing}}</span> &nbsp; &nbsp;
+                    <button id="EnableEditButton-PPRD" data-ng-cloak data-ng-click="lock()" data-ng-disabled="isDataLoading" data-ng-if="pprd.LockInfo.IsReadOnly && pprd.LockInfo.IsLockAllowed" type="button" class="ies">Enable Editing</button>
+                    <span data-ng-cloak data-ng-if="showEditLockTimeoutExpiration" class="EditLockTimeoutExpiration">Your edit lock has expired.</span>
+                </div>
+                <div class="form-row css3pie-position-fix">
+                    <gen-validation data-errors="$root.errors"></gen-validation>
+                </div>
+                <div class="row" data-ng-hide="isDataLoading">
+                    <div class="col-sm-12" data-ng-cloak>
+                        <div class="form-row css3pie-position-fix" data-ng-cloak>
+                            <div class="inline css3pie-position-fix" style="line-height: 32px;" data-ng-cloak>
+                                <button id="ExpandAllButton-PPRD" data-ng-click="expandAll()" data-ng-disabled="isDataLoading" type="button" class="ies">Expand All</button>
+                                <button id="CollapseAllButton-PPRD" data-ng-click="collapseAll()" data-ng-disabled="isDataLoading" type="button" class="ies">Collapse All</button>
+                                <button class="ies-action"
+                                        id="GeneratePPRDButton-PPRD"
+                                        type="button"
+                                        data-ng-disabled="isDataLoading || isGeneratingPPRD"
+                                        data-ng-click="generatePPRDClick()"
+                                        style="min-width: 118px" >
+                                    <div id="Generate-PPRDText" data-ng-hide="isGeneratingPPRD" >Preview Full PPR&amp;D</div>
+                                    <div id="Generate-PPRD" style="min-width: 116px" data-ng-show="isGeneratingPPRD" class="loader"></div>
+                                </button>
+                                <button id="SaveButton-PPRD" data-ng-click="savePPRD(true)" data-ng-disabled="isDataLoading || !PageIsDirty" data-ng-if="!pprd.LockInfo.IsReadOnly" type="button" class="ies-action">Save</button>
+                                <button id="SaveContinueButton-PPRD" data-ng-click="savePPRD(false)" data-ng-disabled="isDataLoading || !PageIsDirty" data-ng-if="!pprd.LockInfo.IsReadOnly" type="button" class="ies-action">Save &amp; Continue</button>
+                                <button id="CancelButton-PPRD" data-ng-click="confirmCancel()" data-ng-disabled="isDataLoading" data-ng-if="!pprd.LockInfo.IsReadOnly" type="button" class="ies">Cancel</button>
+                                <span data-nodrag data-ng-click="openHelpModal()" class="help-icon glyphicon glyphicon-question-sign"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" scrollable-element data-trailing-elements-height="50">
+                    <div class="col-sm-12">
+                        <div data-ui-tree="treeOptions" id="tree-root" data-drag-enabled="!pprd.LockInfo.IsReadOnly" data-ng-class="{'drag-disabled' : pprd.LockInfo.IsReadOnly}">
+                            <ol ui-tree-nodes data-ng-model="pprd.ChildNodes">
+                                <li data-ng-repeat="node in pprd.ChildNodes" ui-tree-node data-ng-include="'nodes_renderer.html'" collapsed="true"></li>
+                                <a class="pull-right btn btn-primary btn-xs" data-ng-if="!pprd.LockInfo.IsReadOnly && pprd.ChildNodes.length === 0" data-nodrag data-ng-click="addFirstSection(this)" style="margin-right: 8px;">
+                                    <span class="glyphicon glyphicon-plus">Section</span>
+                                </a>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

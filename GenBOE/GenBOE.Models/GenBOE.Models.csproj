@@ -1,0 +1,575 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5E73D211-CFD8-49AC-B164-3ECDDEA9B443}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GenBOE.Models</RootNamespace>
+    <AssemblyName>GenBOE.Models</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\boe.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+    <DebugSymbols>true</DebugSymbols>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.ApplicationServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BOE.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEApproval.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEApprovalHistory.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEComment.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOECommentHistory.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOECopyMetric.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOECopySource.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOECopyTarget.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOECustomFieldValueXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BoeDatabaseVersion.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEEntityModel.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BOEEntityModel.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEEntityModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEEntityModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BOEEntityModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="BOEFormIBOE.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEFormIBOECLINsXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEFormIBOEResourcesXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEFormPBOE.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEFormPBOECLINsXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEFormPBOEResourcesXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOELaborSpread.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOELaborType.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOELaborTypeCustomFieldValueXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEPotentialRole.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEStateHistory.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEStateLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOETaskElement.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOETaskElementCustomFieldValueXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOETaskElementMetricDetailXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOETaskElementWorkspaceVariableXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEUserRole.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BOEUserRoleHistory.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CLIN.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ContractTypeLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CostElementLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CustomField.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CustomFieldDisplayLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CustomFieldValue.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ELMAH_Error.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EmailLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ETIGroup.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ETIuser.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="FieldLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getBOEForFindReplace_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getBOEHistoryLog_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getBOEIDByWorkspaceAdvancedSearch_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getBOEIDByWorkspaceQuickSearch_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getBOEIDForProjectMapAdvancedSearch_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getBOEIDForProjectMapQuickSearch_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getBOEPermissions_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getLaborSpread_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getLaborType_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getOrdinaryVariableByTaskElementID_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getProjectMapIDForProjectMapAdvancedSearch_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getProjectMapIDForProjectMapQuickSearch_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getWorkspaceHistoryLog_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getWorkspacePermissions_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="getWorkspaceVariableByTaskElementID_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="LineOfBusiness.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Location.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MaterialTaskElement.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MetricDetail.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MileageReimbursementRate.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MOQTypeLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MSTTravelModeLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MSTTravelNonzoneFeesAndCost.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MSTTravelTrip.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MSTTravelTripCustomFieldValueXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MSTZoneTravelDestination.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MSTZoneTravelOrigin.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MSTZoneTravelResource.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ODCSpread.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ODCTaskElement.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ODCType.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OrdinaryVariable.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OrdinaryVariableSumVariableResourceTypeXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OutputFormatTemplate.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="OutputFormatTemplateWorkspaceXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PerDiem.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PerformingOrganization.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="PerformingOrganizationList.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectMap.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectMapSpread.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProjectMapTypeLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProposalClassLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProposalStatusLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProPricerCompanyLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProPricerCustomFieldSelectionLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProPricerCustomFieldXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProPricerExport.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProPricerFieldLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProPricerFieldXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ProPricerTypeLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RateTypeLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RealignedWorkspaceXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ReportLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Resource.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ResourceList.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RoleLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SearchCategoryLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SegmentLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SikorskyLegacyResource.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SortByLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SplitString_Result.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SpreadCurveLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SpreadTypeLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SumOfBOE_OrdinaryVariableXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SumOfBOE_WorkspaceVariableXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SumVariableResourceTypeLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SystemOffloadRate.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SystemProPricerCustomFieldXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SystemProPricerExport.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SystemProPricerFieldXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SystemSetting.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SystemUserRole.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TaskElementTypeLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TMResourceRate.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TravelEscalationRate.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TravelMiscRate.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TravelTrip.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TravelTripCustomFieldValueXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TravelTripTaskElement.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="TravelTripTaskElementCustomFieldValueXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Trip.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UserAccessReport.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="UserLog.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ValueTypeLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WBS_CLIN_BOE_XREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkBreakdownStructure.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Workspace.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceContractTypeXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceCopyMetric.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceEmailXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceLockedPerDiem.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceLockedTravelEscalationRate.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceLockedTravelMiscRate.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceLockedTrip.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceOffloadRate.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspacePerformingOrganization.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceResource.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceRestoreLog.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceRMSTravelEscalationRate.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceRMSTravelNonzoneFeesAndCost.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceStateHistory.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceStateLU.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceUserRole.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceUserXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceVariable.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceVariableSumVariableResourceTypeXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkspaceVersion.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.Config">
+      <SubType>Designer</SubType>
+    </None>
+    <EntityDeploy Include="BOEEntityModel.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>BOEEntityModel.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <None Include="BOEEntityModel.edmx.diagram">
+      <DependentUpon>BOEEntityModel.edmx</DependentUpon>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Settings.StyleCop" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="BOEEntityModel.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>BOEEntityModel.edmx</DependentUpon>
+      <LastGenOutput>BOEEntityModel.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="BOEEntityModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>BOEEntityModel.edmx</DependentUpon>
+      <LastGenOutput>BOEEntityModel.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IES.Common\IES.Common.csproj">
+      <Project>{fadfe985-0aa1-41af-b7cb-a740673fc0d7}</Project>
+      <Name>IES.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

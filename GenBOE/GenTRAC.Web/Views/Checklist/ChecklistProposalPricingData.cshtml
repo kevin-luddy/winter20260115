@@ -1,0 +1,205 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Checklist.ChecklistProposalPricingDataModelView
+@{
+    ViewBag.Title = "Proposal Pricing Data";
+    string LMLaborHrsHelpText = "Enter the total LM direct labor hours for the Space bidding entity.  Note that this value should exclude any LM IWTA values.";
+    string LMLaborCostHelpText = "Enter the total LM direct labor cost for the Space bidding entity.  Note that this value should exclude any LM IWTA values.";
+    string SubcontractorHelpText = "Enter the total cost for all direct subcontractors included in the proposal.";
+    string MaterialCostHelpText = "Enter the total cost of all direct material included in the proposal.";
+    string IWTAHelpText = "Enter the total cost of all direct IWTAs included in the proposal.";
+    string TravelCostHelpText = "Enter the total cost of all direct travel included in the proposal.";
+    string OtherDirectCostsHelpText = "Enter the total cost of all direct other direct costs included in the proposal (For LMSI, enter IWTA values in the \"IWTA Cost\" field, not as an ODC).";
+    string ProfitComFeeHelpText = "Enter the total Profit/Fee and COM (if applicable) dollars included in the proposal for the LM bidding entity.";
+    string ROSHelpText = "For Space Dev, ROS% = ((Profit or Fee + COM) / Total Price).<br />" +
+        "ROS % may be entered up to two decimal places (e.g., 12.55)";
+}
+
+
+<script type="text/javascript">
+
+    var ChecklistProposalPricingDataWidget;
+
+    $(function () {
+        var readOnly = @Model.IsReadOnly;
+        var ProposalPricingDataWidgetConfig = {};
+        ProposalPricingDataWidgetConfig.ContextID = "checklistProposalPricingDataSection";
+        ProposalPricingDataWidgetConfig.IsModule = true;
+        ProposalPricingDataWidgetConfig.isReadOnly = readOnly;
+        ChecklistProposalPricingDataWidget = new GenWidget(ProposalPricingDataWidgetConfig);
+
+        GenTRAC.applyMaxLengthFilter(ChecklistProposalPricingDataWidget);
+
+        ChecklistProposalPricingDataWidget.LoadDataPlaceholderID = 'checklistProposalPricingDataPlaceholder';
+
+        // Formats dollar amount value by adding comma separator, when applicable. 
+        ChecklistProposalPricingDataWidget.CommaSeparator = function (dollarAmount, element) { 
+            GenTRAC.numericCommaSeparator(ChecklistProposalPricingDataWidget, dollarAmount, element, readOnly);
+        }
+     
+        //On lose focus, adds thousand comma separator for dollar amount input field.
+        ChecklistProposalPricingDataWidget.getElement('input[name="ProfitFeeComTotal"]').focusout(function () {
+            var dollarAmount = ChecklistProposalPricingDataWidget.getElement('input[name="ProfitFeeComTotal"]').val().replace(/\,/g, "");
+            ChecklistProposalPricingDataWidget.CommaSeparator(dollarAmount, 'input[name="ProfitFeeComTotal"]');
+        });
+
+        //On lose focus, adds thousand comma separator for dollar amount input field.
+        ChecklistProposalPricingDataWidget.getElement('input[name="LMLaborCost"]').focusout(function () {
+            var dollarAmount = ChecklistProposalPricingDataWidget.getElement('input[name="LMLaborCost"]').val().replace(/\,/g, "");
+            ChecklistProposalPricingDataWidget.CommaSeparator(dollarAmount, 'input[name="LMLaborCost"]');
+        });
+
+        //On lose focus, adds thousand comma separator for dollar amount input field.
+        ChecklistProposalPricingDataWidget.getElement('input[name="LMLaborHrs"]').focusout(function () {
+            var dollarAmount = ChecklistProposalPricingDataWidget.getElement('input[name="LMLaborHrs"]').val().replace(/\,/g, "");
+            ChecklistProposalPricingDataWidget.CommaSeparator(dollarAmount, 'input[name="LMLaborHrs"]');
+        });
+
+        //On lose focus, adds thousand comma separator for dollar amount input field.
+        ChecklistProposalPricingDataWidget.getElement('input[name="SubcontractorCost"]').focusout(function () {
+            var dollarAmount = ChecklistProposalPricingDataWidget.getElement('input[name="SubcontractorCost"]').val().replace(/\,/g, "");
+            ChecklistProposalPricingDataWidget.CommaSeparator(dollarAmount, 'input[name="SubcontractorCost"]');
+        });
+
+        //On lose focus, adds thousand comma separator for dollar amount input field.
+        ChecklistProposalPricingDataWidget.getElement('input[name="MaterialCost"]').focusout(function () {
+            var dollarAmount = ChecklistProposalPricingDataWidget.getElement('input[name="MaterialCost"]').val().replace(/\,/g, "");
+            ChecklistProposalPricingDataWidget.CommaSeparator(dollarAmount, 'input[name="MaterialCost"]');
+        });
+
+        //On lose focus, adds thousand comma separator for dollar amount input field.
+        ChecklistProposalPricingDataWidget.getElement('input[name="IWTACost"]').focusout(function () {
+            var dollarAmount = ChecklistProposalPricingDataWidget.getElement('input[name="IWTACost"]').val().replace(/\,/g, "");
+            ChecklistProposalPricingDataWidget.CommaSeparator(dollarAmount, 'input[name="IWTACost"]');
+        });
+
+        //On lose focus, adds thousand comma separator for dollar amount input field.
+        ChecklistProposalPricingDataWidget.getElement('input[name="TravelCost"]').focusout(function () {
+            var dollarAmount = ChecklistProposalPricingDataWidget.getElement('input[name="TravelCost"]').val().replace(/\,/g, "");
+            ChecklistProposalPricingDataWidget.CommaSeparator(dollarAmount, 'input[name="TravelCost"]');
+        });
+
+        //On lose focus, adds thousand comma separator for dollar amount input field.
+        ChecklistProposalPricingDataWidget.getElement('input[name="OtherDirectCosts"]').focusout(function () {
+            var dollarAmount = ChecklistProposalPricingDataWidget.getElement('input[name="OtherDirectCosts"]').val().replace(/\,/g, "");
+            ChecklistProposalPricingDataWidget.CommaSeparator(dollarAmount, 'input[name="OtherDirectCosts"]');
+        });
+    });
+</script>
+<div id="checklistProposalPricingDataSection" class="composite module expanded full">
+    <div class="module-header-data"><span>Proposal Pricing Data</span></div>
+    <div class="module-content-data expanded-content">
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ChecklistControllerLogic.CHECKLIST_PROPOSAL_PRICING_DATA_FORM, name = GenTRAC.ActionLogic.ChecklistControllerLogic.CHECKLIST_PROPOSAL_PRICING_DATA_FORM }))
+        {
+            <input name="ProposalID" value="@Model.ProposalID" type="hidden"/>
+            <input name="ProposalChecklistID" value="@Model.ProposalChecklistID" type="hidden" />
+            <input name="ShowChecklistResponse" value="@Model.ShowChecklistResponse" type="hidden" />
+            <div id="ProposalPriceDataHeaderText" class="proposalPriceDataText">Pricing data should reflect Customer <u>Submitted</u> Values in Whole U.S. Dollars (e.g., $1,000,000).<br /><span style="color: red">For International proposals, enter the U.S. dollar equivalent. Hours may be entered up to two decimal places (e.g., 1,500.05).</span></div><br />
+            <table id="PriceTableOne" style="display: inline-block;">
+                <colgroup>
+                    <col style="width: 132px" />
+                    <col style="width: 132px" />
+                    <col style="width: 132px" />
+                    <col style="width: 132px" />
+                    <col style="width: 132px" />
+                    <col style="width: 132px" />
+                    <col style="width: 136px" />
+                </colgroup>
+                <thead>
+                    <tr style="height: 25px;">
+                        <th>
+                            <div> <span helptext="@LMLaborHrsHelpText">LM Labor Hrs</span></div>
+                        </th>
+                        <th>
+                            <div> <span helptext="@LMLaborCostHelpText">LM Labor Cost</span></div>
+                        </th>
+                        <th>
+                            <div> <span helptext="@SubcontractorHelpText">Subcontractor Cost</span></div>
+                        </th>
+                        <th>
+                            <div> <span helptext="@MaterialCostHelpText">Material Cost</span></div>
+                        </th>
+                        <th>
+                            <div> <span helptext="@IWTAHelpText">IWTA Cost</span></div>
+                        </th>
+                        <th>
+                            <div> <span helptext="@TravelCostHelpText">Travel Cost</span></div>
+                        </th>
+                        <th>
+                            <div> <span helptext="@OtherDirectCostsHelpText">Other Direct Costs</span></div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                             @Html.TextBoxFor(model => model.LMLaborHrs, new { size = 15, name="LMLaborHrs", maxInt = 9, numDecimals = 2 })
+                        </td>
+                        <td>
+                             @Html.TextBoxFor(model => model.LMLaborCost, new { size = 15, name="LMLaborCost", maxInt = 12, numDecimals = 0 })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.SubcontractorCost, new { size = 15, name="SubcontractorCost", maxInt = 12, numDecimals = 0 })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.MaterialCost, new { size = 15, name="MaterialCost", maxInt = 12, numDecimals = 0 })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.IWTACost, new { size = 15, name="IWTACost", maxInt = 12, numDecimals = 0 })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.TravelCost, new { size = 15, name="TravelCost", maxInt = 12, numDecimals = 0 })
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.OtherDirectCosts, new { size = 15, name="OtherDirectCosts", maxInt = 12, numDecimals = 0 })
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+           <br />
+           <table id="PriceTableTwo" style="display: inline-block;">
+                <colgroup>
+                    <col style="width: 132px" />
+                    <col style="width: 132px" />
+                    <col style="width: 132px" />
+                    <col style="width: 132px" />
+                    <col style="width: 132px" />
+                    <col style="width: 132px" />
+                    <col style="width: 136px" />
+                </colgroup>
+                <thead>
+                    <tr style="height: 25px;">
+                        <th>
+                            <div style="width: 100px"> <span helptext="@ProfitComFeeHelpText">Profit/Fee + COM</span></div>
+                        </th>
+                        <th>
+                            <div style="width: 100px"> <span>Space Total Price</span></div>
+                        </th>
+                        <th>
+                            <div style="width: 100px"> <span helptext="@ROSHelpText">ROS %</span></div>
+                        </th>
+                        <th class="hiddenColumn" />
+                        <th class="hiddenColumn" />
+                        <th class="hiddenColumn" />
+                        <th class="hiddenColumn" />
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                             @Html.TextBoxFor(model => model.ProfitFeeComTotal, new { size = 15, name = "ProfitFeeComTotal", maxInt = 12, numDecimals = 0 })
+                        </td>
+                        <td>
+                             <div name="SSCTotalPrice">@Html.DisplayTextFor(model => model.SubmittedValue )</div>
+                        </td>
+                        <td>
+                             @Html.TextBoxFor(model => model.ROSPercent, new { maxlength = 6, size = 6, name="ROSPercent", maxInt = 2, numDecimals = 2 })
+                        </td>
+                        <td class="hiddenColumn"></td>
+                        <td class="hiddenColumn"></td>
+                        <td class="hiddenColumn"></td>
+                        <td class="hiddenColumn"></td>
+                    </tr>
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

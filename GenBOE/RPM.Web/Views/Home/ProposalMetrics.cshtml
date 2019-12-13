@@ -1,0 +1,47 @@
+﻿@{
+    ViewBag.Title = "RPM - Proposal Metrics";
+}
+<br />
+<div ng-app="RPM" ng-controller="MetricsController">
+    <div class="row">
+        <div class="col-xs-1">Year: <select ng-model="model.selectedYear" ng-change="SaveSettings();loadMetricsData();" ng-options="x for x in years"></select></div>
+        <div class="org-list col-xs-11">
+            <div ng-repeat="n in Orgs">
+                <input type="radio" ng-model="model.selectedOrg" ng-value="n" ng-click="OrgClicked()" /><span>{{n}}</span>
+            </div>
+        </div>
+    </div>
+    <div data-ng-show="isMetricsError" class="row">
+        <div class="col-xs-12 alert alert-danger">Error retrieving PTM Information, retry by refreshing the page.</div>
+    </div>
+    <div class="row">
+        <div class="col-xs-12">
+            <div data-ng-show="isMetricsLoading" class="loader"></div>
+        </div>
+    </div>
+    <div ng-cloak data-ng-hide="isMetricsLoading || isMetricsError">
+        <div class="row">
+            <div class="col-xs-1"></div>
+            <div class="col-xs-5"><metrics-pie-chart model="model" type="Value"></metrics-pie-chart></div>
+			<div class="col-xs-5"><metrics-bar-chart model="model"></metrics-bar-chart></div>
+            <div class="col-xs-1"></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-1"></div>
+			<div class="col-xs-5"><metrics-pie-chart model="model" type="Org"></metrics-pie-chart></div>
+			<div class="col-xs-5"><metrics-pie-chart model="model" type="OrgNum"></metrics-pie-chart></div>
+            <div class="col-xs-1"></div>
+        </div>
+		<div class="row">
+			<div class="col-xs-1"></div>
+			<div class="col-xs-5"><metrics-pie-chart model="model" type="Contract"></metrics-pie-chart></div>
+			<div class="col-xs-5"><metrics-pie-chart model="model" type="ContractNum"></metrics-pie-chart></div>
+			<div class="col-xs-1"></div>
+		</div>
+		<div class="row">
+			<div class="col-xs-1"></div>
+			<div class="col-xs-5"><metrics-ros-bar-chart model="model"></metrics-ros-bar-chart></div>
+			<div class="col-xs-6"></div>
+		</div>
+    </div>
+</div>

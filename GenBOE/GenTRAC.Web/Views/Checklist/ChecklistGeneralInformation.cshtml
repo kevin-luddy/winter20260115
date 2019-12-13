@@ -1,0 +1,261 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Checklist.ChecklistGeneralInformationModelView
+@{
+    ViewBag.Title = "Checklist General Information";
+    string SubmittedValueHelpText = "Enter the total Submitted Price inclusive of all Burdens, Fees and Profit.";
+    string AbsoluteValueHelpText = "Enter the sum of the absolute values of the increases and decreases, not the net amount. For example, a debit/credit proposal which includes a price increase of $3M, and a decrease of $2M, would result in an absolute value of $5M. (Optional)";
+ }
+
+<script type="text/javascript">
+
+    var ChecklistGeneralInformationWidget;
+
+    $(function () {
+        var readOnly = @Model.IsReadOnly;
+        var keepSpecialFieldsEditable = @ViewBag.KeepSpecialFieldsEditable;
+        var deliverChecklistDFARS = ("@Model.DeliverChecklistDFARS".toLowerCase() == "true");
+        var showDFARChecklistQuestion = ("@Model.ShowDFARQuestion".toLowerCase() == "true");
+        var isPTMChecklistUIEnabled = ("@Model.IsPTMChecklistUIEnabled".toLowerCase() == "true");
+        var GeneralInformationWidgetConfig = {};
+        GeneralInformationWidgetConfig.ContextID = "checklistGeneralInformationSection";
+        GeneralInformationWidgetConfig.IsModule = true;
+        GeneralInformationWidgetConfig.isReadOnly = readOnly;
+        GeneralInformationWidgetConfig.KeepSpecialFieldsEditable = keepSpecialFieldsEditable;
+        GeneralInformationWidgetConfig.EditableSpecialFieldNames = ['SubmittalDate'];
+
+        if (readOnly) {
+
+            // hide Check Names and Lookup links
+            $(".userlinks").each(function() {
+                $(this).hide();
+            });
+
+            // hide NTID placeholder
+            $('input[placeholder="NTID"]').each(function() {
+                $(this).attr('placeholder', '');
+            });
+
+            // The placeholder (mm/dd/yyyy format) for SubmittalDate should be visible for valid user roles even if the proposal is locked.
+            if (!keepSpecialFieldsEditable) {
+                $('input[placeholder="mm/dd/yyyy"]').each(function() {
+                    $(this).attr('placeholder', '');
+                });
+            }
+        }
+
+        var FormConfigs = [];
+
+        FormConfigs.push({
+            ElementID: "deliverChecklistDFARForm",
+            Buttons: [
+            {
+                ButtonClass: 'ies-action',
+                ButtonText: 'Save',
+                ButtonName: "save-button",
+                ButtonAction: function(buttonPressed) {
+                    var data = {};
+                    data.proposalid = @ViewBag.proposalid;
+                    data.buttonPressed = buttonPressed;
+                    $(document).trigger('SAVE_CHECKLIST', data);
+                    if (deliverChecklistDFARS)
+                    {
+                        $("#DeliverChecklistDFARS").prop("checked", true);
+                    }
+                    else
+                    {
+                        $("#DeliverChecklistDFARS").prop("checked", false);
+                    }
+                    ChecklistGeneralInformationWidget.getDialog("UpdateDeliverChecklistDFARDialog").closeDialog();
+                    GenSession.ShowLoadingBox();
+                },
+                Stateful: false
+            },
+            {
+                ButtonClass: 'ies',
+                ButtonText: 'Cancel',
+                ButtonName: "cancel-button",
+                ButtonAction: function(buttonPressed) {
+                    if (deliverChecklistDFARS)
+                    {
+                        $("#DeliverChecklistDFARS").prop("checked", true);
+                    }
+                    else
+                    {
+                        $("#DeliverChecklistDFARS").prop("checked", false);
+                    }
+
+                    ChecklistGeneralInformationWidget.getDialog("UpdateDeliverChecklistDFARDialog").closeDialog();
+                },
+                Stateful: false
+            }],
+            HideOCI: "true"
+        });
+
+        GeneralInformationWidgetConfig.FormConfigs = FormConfigs;
+
+        var DialogConfigs = [];
+
+        DialogConfigs.push({
+            ElementID: "UpdateDeliverChecklistDFARDialog",
+            Params: {
+                width: 425,
+                height: 180,
+                title: "DFARS Checklist is Deliverable to Customer",
+                modal: true,
+                open: function (even, ui)
+                {
+                    $(".ui-dialog-titlebar-close").hide();
+                }
+            }
+        });
+        GeneralInformationWidgetConfig.DialogConfigs = DialogConfigs;
+
+        ChecklistGeneralInformationWidget = new GenWidget(GeneralInformationWidgetConfig);
+
+        ChecklistGeneralInformationWidget.getElement('input[name="SubmittalDate"]').data('previousDateText', '@Model.SubmittalDate');
+        ChecklistGeneralInformationWidget.getElement('input[name="SubmittalDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                ChecklistIndexWidget.setDirty("checklistForm");
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();            }
+        });
+
+        // skip datepicker icons when tabbing
+        ChecklistGeneralInformationWidget.getElement('.ui-datepicker-trigger').attr('tabindex', '-1');
+        ChecklistGeneralInformationWidget.getElement('.ui-datepicker-trigger').on('blur', function () {
+            $(this).attr('tabindex', '-1');
+        });
+
+        // The DatePicker for SubmittalDate should be editable for valid user roles even if the proposal is locked.
+        if (readOnly && !keepSpecialFieldsEditable) {
+            // remove calendar link
+            $(".ui-datepicker-trigger").each(function() {
+                $(this).hide();
+            });
+        }
+
+        //On lose focus, adds thousand comma separator for dollar amount input field.
+        ChecklistGeneralInformationWidget.getElement('input[name="SubmittedValue"]').focusout(function () {
+            ChecklistGeneralInformationWidget.CommaSeparator();
+        });
+
+        //On lose focus, adds thousand comma separator for dollar amount input field.
+        ChecklistGeneralInformationWidget.getElement('input[name="AbsoluteValue"]').focusout(function () {
+            ChecklistGeneralInformationWidget.CommaSeparator();
+        });
+
+        ChecklistGeneralInformationWidget.LoadDataPlaceholderID = 'checklistGeneralInfoDataPlaceholder';
+
+        // Formats dollar amount value by adding comma separator, when applicable.
+        ChecklistGeneralInformationWidget.CommaSeparator = function () {
+            var dollarAmount = ChecklistGeneralInformationWidget.getElement('input[name="SubmittedValue"]').val().replace(/\,/g, "");
+            GenTRAC.numericCommaSeparator(ChecklistGeneralInformationWidget, dollarAmount, 'input[name="SubmittedValue"]', readOnly);
+
+            if (!isNaN(parseFloat(dollarAmount)) && isFinite(dollarAmount)) {
+                dollarAmount = String(dollarAmount).replace(/\B(?=(\d{3})+(?!\d))/g, ","); // add comma separator for every three numerical digits
+            }
+            $('div[name="SSCTotalPrice"]').text(dollarAmount);
+
+            dollarAmount = ChecklistGeneralInformationWidget.getElement('input[name="AbsoluteValue"]').val().replace(/\,/g, "");
+            GenTRAC.numericCommaSeparator(ChecklistGeneralInformationWidget, dollarAmount, 'input[name="AbsoluteValue"]', readOnly);
+        }
+
+        ChecklistGeneralInformationWidget.CommaSeparator();
+
+        // Set the deliverChecklistDFARS checkbox
+        if (deliverChecklistDFARS)
+        {
+            $("#DeliverChecklistDFARS").prop("checked", true);
+        }
+        else
+        {
+            $("#DeliverChecklistDFARS").prop("checked", false);
+        }
+
+        if (readOnly) {
+            $("#DeliverChecklistDFARS").removeClass("display-none");
+            $("#DeliverChecklistDFARS").prop("disabled", true);
+        }
+
+        ChecklistGeneralInformationWidget.UpdateDeliverChecklistDFAR = function ( isChecked ) {
+            ChecklistGeneralInformationWidget.getDialog('UpdateDeliverChecklistDFARDialog').openDialog();
+        }
+
+        if (showDFARChecklistQuestion) {
+            $('#deliverChecklistDFARQuestion').removeClass('display-none');
+            $('#deliverChecklistDFARRadio').removeClass('display-none');
+        }
+        else {
+            $('#deliverChecklistDFARQuestion').addClass('display-none');
+            $('#deliverChecklistDFARRadio').addClass('display-none');
+        }
+    });
+</script>
+
+<div id="checklistGeneralInformationSection" class="composite module expanded full">
+    <div class="module-header-data">General Information</div>
+    <div class="module-content-data expanded-content">
+       @using(Html.BeginForm("", "", FormMethod.Post, new { id=GenTRAC.ActionLogic.ChecklistControllerLogic.CHECKLIST_GENERAL_INFO_FORM, name=GenTRAC.ActionLogic.ChecklistControllerLogic.CHECKLIST_GENERAL_INFO_FORM}))
+        {
+            <input name="ProposalID" value="@Model.ProposalID" type="hidden"/>
+            <input name="ProposalChecklistID" value="@Model.ProposalChecklistID" type="hidden" />
+            <input name="UpdateDateLong" value="@Model.UpdateDateLong" type="hidden" />
+            <input name="PricerId" value="@Model.PricerId" type="hidden" />
+            <input name="ShowChecklistResponse" value="@Model.ShowChecklistResponse" type="hidden" />
+
+            <div class="form-row">
+                <div class="form-label">
+                    <span helptext="@SubmittedValueHelpText">Submitted Value ($)*:</span>
+                </div>
+                <div class="form-element" style="max-width:177px;">
+                     <div>@Html.TextBoxFor(model => model.SubmittedValue, new { size = 15, name = "SubmittedValue", maxInt = 12, numDecimals = 0 })</div>
+                </div>
+
+                 <div class="second-form-label">
+                    <span helptext="Lead Estimator is set on the Proposal Setup Tab (Approvals section).">Lead Estimator:</span>
+                </div>
+                <div class="form-element">
+                  <div id="ChecklistGeneralInfoPricerDisplayName">@Html.DisplayTextFor(model => model.PricerDisplayName)</div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    <span helptext="@AbsoluteValueHelpText">Absolute Value ($):</span>
+                </div>
+                <div class="form-element" style="max-width:177px;">
+                    <div>@Html.TextBoxFor(model => model.AbsoluteValue, new { size = 15, name = "AbsoluteValue", maxInt = 12, numDecimals = 0 })</div>
+                </div>
+            </div>
+
+                <div class="form-row">
+                    <div class="form-label">
+                        <span helptext="Actual Submittal Date is the date the proposal was shipped to the customer.">Actual Submittal Date*:</span>
+                    </div>
+                    <div class="form-element">
+                        <input name="SubmittalDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.SubmittalDate" />
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div id="deliverChecklistDFARQuestion" class="form-label">
+                        DFARS Checklist is Deliverable to Customer:
+                        <span helptext="Selecting will enable page number validation, requiring the DFARS page number field to be populated. Failing to populate the page number field will trigger an error message."></span>
+                    </div>
+                    <div id="deliverChecklistDFARRadio" class="form-element">
+                        <input id="DeliverChecklistDFARS" name="DeliverChecklistDFARS" type="checkbox" style="margin-top:3px" value="true" onclick="ChecklistGeneralInformationWidget.UpdateDeliverChecklistDFAR(this);" />
+                    </div>
+                </div>
+                }
+            </div>
+    <div id="UpdateDeliverChecklistDFARDialog" class="ui-dialog-content ui-widget-content">
+         @using (Html.BeginForm("", "", FormMethod.Post, new { name = "deliverChecklistDFARForm", id = "deliverChecklistDFARForm" }))
+        {       
+        <div id="DFARDialogText" class="dialog-text" style="text-align: center">
+            In order for this update to take effect the checklist must be saved.<br />** All PAR checklist responses currently set to N/A will be lost.  <br /><br /> How would you like to proceed?
+        </div>
+        <br />
+        <br />
+        <div class="button-container" style="text-align: center"></div>
+        }   
+    </div>
+</div>

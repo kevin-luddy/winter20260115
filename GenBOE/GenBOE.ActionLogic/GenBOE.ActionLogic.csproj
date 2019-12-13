@@ -1,0 +1,542 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ProjectGuid>{8B23113C-48A0-4F65-8ED5-0F725AC170E7}</ProjectGuid>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+    <SccProjectName>%24/genBOE/uat/GenBOE/GenBOE.ActionLogic</SccProjectName>
+    <SccLocalPath>.</SccLocalPath>
+    <SccAuxPath>https://idetfs01/estimating</SccAuxPath>
+    <SccProvider>{4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+    <DebugSymbols>true</DebugSymbols>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>GenBOE.ActionLogic</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DocumentFormat.OpenXml">
+      <HintPath>..\libraries\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>..\libraries\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity">
+      <HintPath>..\libraries\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.4\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.4\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BLL\BoeMediator.cs" />
+    <Compile Include="BLL\BoeTaskElementMediator.cs" />
+    <Compile Include="BLL\IBoeMediator.cs" />
+    <Compile Include="BLL\IBoeTaskElementMediator.cs" />
+    <Compile Include="BOETransitions\ApprovedToDraftTransition.cs" />
+    <Compile Include="BOETransitions\AwaitingApprovalToDraftTransition.cs" />
+    <Compile Include="BOETransitions\BOEStateMachine.cs" />
+    <Compile Include="BOETransitions\DefaultBOETransition.cs" />
+    <Compile Include="BOETransitions\DraftLockedToAwaitingApprovalTransition.cs" />
+    <Compile Include="BOETransitions\DraftLockedToAwaitingApprovalTransitionSpaceSystems.cs" />
+    <Compile Include="BOETransitions\DraftLockedToDraftTransition.cs" />
+    <Compile Include="BOETransitions\DraftToAwaitingApprovalTransition.cs" />
+    <Compile Include="BOETransitions\DraftToAwaitingApprovalTransitionSpaceSystems.cs" />
+    <Compile Include="BOETransitions\DraftToDraftLockedTransition.cs" />
+    <Compile Include="BOETransitions\IBOEStateMachine.cs" />
+    <Compile Include="BOETransitions\IBOEStateTransition.cs" />
+    <Compile Include="Common\Calculations\BoeTaskElementRecalculation.cs" />
+    <Compile Include="Common\Calculations\FullWorkspaceRecalculation.cs" />
+    <Compile Include="Common\Calculations\IBoeTaskElementRecalculation.cs" />
+    <Compile Include="Common\Calculations\IFullWorkspaceRecalculation.cs" />
+    <Compile Include="Common\Calculations\IVariableSelectBOEtoSumCalculation.cs" />
+    <Compile Include="Common\Calculations\TMCalculator.cs" />
+    <Compile Include="Common\Calculations\TravelTripCostCalculation.cs" />
+    <Compile Include="Common\Calculations\VariableSelectBOEtoSumCalculation.cs" />
+    <Compile Include="Common\Calculations\VariableSelectBOEtoSumCalculationMST.cs" />
+    <Compile Include="Common\Calculations\VariableSelectBOEtoSumCalculationSpaceSystems.cs" />
+    <Compile Include="Common\DataRelationshipVerifier.cs" />
+    <Compile Include="Common\Email\BoeEmailer.cs" />
+    <Compile Include="Common\Email\IBoeEmailer.cs" />
+    <Compile Include="Common\ImportExportConstants.cs" />
+    <Compile Include="Common\MOQ\MOQParsing.cs" />
+    <Compile Include="Common\MOQ\MOQParsingExceptions.cs" />
+    <Compile Include="Common\MOQ\MOQVariable.cs" />
+    <Compile Include="Common\Offload\OffloadLaborRates.cs" />
+    <Compile Include="Common\Offload\OffloadLaborRatesValidationResults.cs" />
+    <Compile Include="Common\Offload\OffloadLaborRatesResults.cs" />
+    <Compile Include="Common\Search\PerfOrgSearch.cs" />
+    <Compile Include="Common\WBSOrCLINValidationAttribute.cs" />
+    <Compile Include="Common\SystemSettingConstants.cs" />
+    <Compile Include="DateShift\DateShiftable.cs" />
+    <Compile Include="DateShift\DateShiftCalculation.cs" />
+    <Compile Include="DateShift\DateShiftErrors.cs" />
+    <Compile Include="DateShift\DateShiftDetailModelView.cs" />
+    <Compile Include="DateShift\DateShiftModelView.cs" />
+    <Compile Include="DateShift\ChildModificationType.cs" />
+    <Compile Include="DateShift\EmailOption.cs" />
+    <Compile Include="DateShift\SpreadHandling.cs" />
+    <Compile Include="DateShift\Operation.cs" />
+    <Compile Include="IO\Export\BOE\BOEExportConverter.cs" />
+    <Compile Include="IO\Export\BOE\BOEExportInputs.cs" />
+    <Compile Include="IO\Export\BOE\BOEExportConverterRMS.cs" />
+    <Compile Include="IO\Export\TMResourceRatesExporter.cs" />
+    <Compile Include="IO\Import\TMResourceRatesImporter.cs" />
+    <Compile Include="IO\Import\TrainingImporter.cs" />
+    <Compile Include="Validation\SystemExportToProPricerFormatValidator.cs" />
+    <Compile Include="Workspace\ProjectMapSorter.cs" />
+    <Compile Include="_ControllerLogic\AdminControllerLogicMST.cs" />
+    <Compile Include="_ControllerLogic\BOECommentsControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\BOEControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\BOEControllerLogicSpaceSystems.cs" />
+    <Compile Include="_ControllerLogic\BOEControllerLogicMST.cs" />
+    <Compile Include="_ControllerLogic\BOEFormControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\BOELaborControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\BOELaborControllerLogicSpace.cs" />
+    <Compile Include="_ControllerLogic\BOELaborControllerLogicMST.cs" />
+    <Compile Include="_ControllerLogic\BOEMaterialControllerLogicSpaceSystems.cs" />
+    <Compile Include="_ControllerLogic\BOEMaterialControllerLogicMST.cs" />
+    <Compile Include="_ControllerLogic\BOEOtherDirectCostControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\AdminControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\AdminControllerLogicSpaceSystems.cs" />
+    <Compile Include="_ControllerLogic\BOEMaterialControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\BOEOtherDirectCostControllerLogicMST.cs" />
+    <Compile Include="_ControllerLogic\IBOEFormControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\BOEZoneTravelControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\ISSRSControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\IWBSControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\ReportsControllerLogicMST.cs" />
+    <Compile Include="_ControllerLogic\SSRSControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\TravelControllerLogicMST.cs" />
+    <Compile Include="_ControllerLogic\TravelControllerLogicSpaceSystems.cs" />
+    <Compile Include="_ControllerLogic\TravelControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\ITravelControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\GenBOEControllerLogicMST.cs" />
+    <Compile Include="_ControllerLogic\HomeControllerLogicMST.cs" />
+    <Compile Include="_ControllerLogic\HomeControllerLogicSpaceSystems.cs" />
+    <Compile Include="_ControllerLogic\IAdminControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\IBOEMaterialControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\IHomeControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\ReportsControllerLogicSpaceSystems.cs" />
+    <Compile Include="_ControllerLogic\IReportsControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\GenBOEControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\WBSControllerLogic.cs" />
+    <Compile Include="CopyBOE\BOECopier.cs" />
+    <Compile Include="CopyBOE\BOECopierCompanyMST.cs" />
+    <Compile Include="CopyBOE\BOECopierCompanySpace.cs" />
+    <Compile Include="CopyBOE\ConflictBOE.cs" />
+    <Compile Include="CopyBOE\IBOECopierCompany.cs" />
+    <Compile Include="CopyBOE\IConflictBOE.cs" />
+    <Compile Include="CustomFields\RestoreDefaultOptions.cs" />
+    <Compile Include="CustomFields\RestoreOptionData.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="IO\Export\BOECustomExporter.cs" />
+    <Compile Include="IO\Export\BOECustomExporterMST.cs" />
+    <Compile Include="IO\Export\BOECustomExporterSSC.cs" />
+    <Compile Include="IO\Export\BOEExporter.cs" />
+    <Compile Include="IO\Export\BOEExporterConstants.cs" />
+    <Compile Include="IO\Export\BOEExporterData.cs" />
+    <Compile Include="IO\Export\BOEExporterMST.cs" />
+    <Compile Include="IO\Export\BOEExporterMSTDecorator.cs" />
+    <Compile Include="IO\Export\BOEFormExporter.cs" />
+    <Compile Include="IO\Export\CLINExporter.cs" />
+    <Compile Include="IO\Export\CLINExporterSSC.cs" />
+    <Compile Include="IO\Export\CustomFieldExporter.cs" />
+    <Compile Include="IO\Export\IBOECustomExporter.cs" />
+    <Compile Include="IO\Export\IBOEExporter.cs" />
+    <Compile Include="IO\Export\IBOEFormExporter.cs" />
+    <Compile Include="IO\Export\ICLINExporter.cs" />
+    <Compile Include="IO\Export\ITravelExtendedCostExporter.cs" />
+    <Compile Include="IO\Export\ITravelUnitCostExporter.cs" />
+    <Compile Include="IO\Export\IWorkspaceExporter.cs" />
+    <Compile Include="IO\Export\LaborTypeAndSpreadExporter.cs" />
+    <Compile Include="IO\Export\ODCSpreadExporter.cs" />
+    <Compile Include="IO\Export\ODCTypeExporter.cs" />
+    <Compile Include="IO\Export\PBOEFormExporter.cs" />
+    <Compile Include="IO\Export\PerformingOrgsExporter.cs" />
+    <Compile Include="IO\Export\ProjectMapExporter.cs" />
+    <Compile Include="IO\Export\ProPricerExporter.cs" />
+    <Compile Include="IO\Export\ResourcesExporter.cs" />
+    <Compile Include="IO\Export\SystemEscalationRatesExporterRMS.cs" />
+    <Compile Include="IO\Export\SystemOffloadRatesExporterRMS.cs" />
+    <Compile Include="IO\Export\SystemResourceRatesExporter.cs" />
+    <Compile Include="IO\Export\TravelExtendedCostExporter.cs" />
+    <Compile Include="IO\Export\TravelExtendedCostExporterRMS.cs" />
+    <Compile Include="IO\Export\TravelUnitCostExporter.cs" />
+    <Compile Include="IO\Export\TravelUnitCostExporterRMS.cs" />
+    <Compile Include="IO\Export\TripsExporter.cs" />
+    <Compile Include="IO\Export\WbsExporter.cs" />
+    <Compile Include="IO\Export\WordExporter.cs" />
+    <Compile Include="IO\Export\WorkofflineExporter.cs" />
+    <Compile Include="IO\Export\WorkspaceExporter.cs" />
+    <Compile Include="IO\Export\WorkspaceExporterMST.cs" />
+    <Compile Include="IO\Export\WorkspaceExporterSpaceSystems.cs" />
+    <Compile Include="IO\Export\WorkspaceResourceRatesExporter.cs" />
+    <Compile Include="IO\Export\ZoneTravelOriginExporter.cs" />
+    <Compile Include="IO\Import\ArtemisImport.cs" />
+    <Compile Include="IO\Import\ArtemisImporter.cs" />
+    <Compile Include="IO\Import\BOEImporter.cs" />
+    <Compile Include="IO\Import\BOEImportMerge.cs" />
+    <Compile Include="IO\Import\BoeTaskElementImportMerge.cs" />
+    <Compile Include="IO\Import\CLINImporter.cs" />
+    <Compile Include="IO\Import\CLINImporterSSC.cs" />
+    <Compile Include="IO\Import\CustomFieldImporter.cs" />
+    <Compile Include="IO\Import\FullBoeDataImporter.cs" />
+    <Compile Include="IO\Import\IBOEImporter.cs" />
+    <Compile Include="IO\Import\ICLINImporter.cs" />
+    <Compile Include="IO\Import\ImportErrorMessage.cs" />
+    <Compile Include="IO\Import\ImportUtils.cs" />
+    <Compile Include="IO\Import\IWorkOfflineImporter.cs" />
+    <Compile Include="IO\Import\LaborSpreadImporter.cs" />
+    <Compile Include="IO\Import\LaborTypeAndSpreadImporter.cs" />
+    <Compile Include="IO\Import\PerformingOrgImporter.cs" />
+    <Compile Include="IO\Import\ProjectImport.cs" />
+    <Compile Include="IO\Import\ProjectIMSImporter.cs" />
+    <Compile Include="IO\Import\ProjectMapImporter.cs" />
+    <Compile Include="IO\Import\ResourceRateImporter.cs" />
+    <Compile Include="IO\Import\ResourcesImporter.cs" />
+    <Compile Include="IO\Import\ResourceTypeImportMerge.cs" />
+    <Compile Include="IO\Import\SystemEscalationRateImporterRMS.cs" />
+    <Compile Include="IO\Import\SystemOffloadRateImporterRMS.cs" />
+    <Compile Include="IO\Import\TripsImporter.cs" />
+    <Compile Include="IO\Import\WBSImporter.cs" />
+    <Compile Include="IO\Import\WorkOfflineImporter.cs" />
+    <Compile Include="IO\Import\WorkOfflineImporterSpaceSystems.cs" />
+    <Compile Include="IO\Import\ZoneTravelOriginImporter.cs" />
+    <Compile Include="Metrics\SystemMetrics.cs" />
+    <Compile Include="Misc\DataClassForSumOfBOEsCalculation.cs" />
+    <Compile Include="_ModelView\Admin\DefaultResourcesModelView.cs" />
+    <Compile Include="_ModelView\Admin\OffloadRatesModelView.cs" />
+    <Compile Include="_ModelView\Admin\OffloadRateModelView.cs" />
+    <Compile Include="_ModelView\Admin\ManageMSTZoneTravelDestinationsGridModelView.cs" />
+    <Compile Include="_ModelView\Admin\ManageMSTZoneTravelOriginsGridModelView.cs" />
+    <Compile Include="_ModelView\Admin\NonzoneFeesAndCostsGridModelView.cs" />
+    <Compile Include="_ModelView\Admin\NonzoneFeesAndCostsModelView.cs" />
+    <Compile Include="_ModelView\Admin\MSTZoneTravelDestinationModelView.cs" />
+    <Compile Include="_ModelView\Admin\TrainingCourseGroupModelView.cs" />
+    <Compile Include="_ModelView\Admin\TrainingCourseModelView.cs" />
+    <Compile Include="_ModelView\BOECopyConflictModelView.cs" />
+    <Compile Include="_ModelView\BOECopyConflictsModelView.cs" />
+    <Compile Include="_ModelView\BOE\BOEProjectMapAdvancedSearchModelView.cs" />
+    <Compile Include="_ModelView\BOE\BoeOffloadModelView.cs" />
+    <Compile Include="_ModelView\BOETravelElementDetailsModelView.cs" />
+    <Compile Include="_ModelView\BOETravelGridModelView.cs" />
+    <Compile Include="_ModelView\BOE\BOEFormIBOEModelView.cs" />
+    <Compile Include="_ModelView\BOE\BOEFormModelView.cs" />
+    <Compile Include="_ModelView\BOE\BOEFormPBOEModelView.cs" />
+    <Compile Include="_ModelView\BOE\BoeOffloadResourceModelView.cs" />
+    <Compile Include="_ModelView\BOE\BOEZoneTravelTripsGridModelView.cs" />
+    <Compile Include="_ModelView\Admin\EscalationRateModelView.cs" />
+    <Compile Include="_ModelView\DownloadReportModelView.cs" />
+    <Compile Include="_ModelView\ExportsModelView.cs" />
+    <Compile Include="_ModelView\GenBOEHomepageModelView.cs" />
+    <Compile Include="_ModelView\LaborTabDataModelView.cs" />
+    <Compile Include="_ModelView\AdjacentItems.cs" />
+    <Compile Include="_ModelView\Task\LaborTaskDataModelView.cs" />
+    <Compile Include="_ModelView\Task\LaborTaskModelView.cs" />
+    <Compile Include="_ModelView\SSRS\CostByPriceCodeResourceModelView.cs" />
+    <Compile Include="_ModelView\SSRS\PreVsPostOffloadTotalsModelView.cs" />
+    <Compile Include="_ModelView\SSRS\PRPModelView.cs" />
+    <Compile Include="_ModelView\SSRS\WorkbenchOffloadModelView.cs" />
+    <Compile Include="_ModelView\SSRS\RAMReportModelView.cs" />
+    <Compile Include="_ModelView\SSRS\ProjectWBSCostSummaryByCLINModelView.cs" />
+    <Compile Include="_ModelView\SSRS\RPSReportModelView.cs" />
+    <Compile Include="_ModelView\SSRS\StaffingCurvesReportModelView.cs" />
+    <Compile Include="_ModelView\SSRS\BOESummaryReportModelView.cs" />
+    <Compile Include="_ModelView\SSRSReportsModelView.cs" />
+    <Compile Include="_ModelView\SSRS\CostAnalysisReportRMSModelView.cs" />
+    <Compile Include="_ModelView\SSRS\OffloadCostSummaryReportRMSModelView.cs" />
+    <Compile Include="_ModelView\SSRS\SummaryReportRMSModelView.cs" />
+    <Compile Include="_ModelView\BOEHeaderDescriptionModelView.cs" />
+    <Compile Include="_ModelView\BOEQuickSearchModelView.cs" />
+    <Compile Include="_ModelView\BOESummaryTableChanges.cs" />
+    <Compile Include="_ModelView\BOE\BOEAdvancedSearchModelView.cs" />
+    <Compile Include="_ControllerLogic\IGenBOEControllerLogic.cs" />
+    <Compile Include="_ModelView\BOE\BOECommentsModelView.cs" />
+    <Compile Include="_ModelView\BOE\BOETravelTripsGridModelView.cs" />
+    <Compile Include="_ModelView\BOE\ManageBOEWidgetModelView.cs" />
+    <Compile Include="_ModelView\BOE\MaterialDetailsModelView.cs" />
+    <Compile Include="_ModelView\BOE\MOQEquationModelView.cs" />
+    <Compile Include="_ModelView\CustomFieldModelView.cs" />
+    <Compile Include="_ModelView\Clin\ManageCLINModelView.cs" />
+    <Compile Include="_ModelView\GenBOEMasterMenuItemModelView.cs" />
+    <Compile Include="_ModelView\GenBOEMetricsModelView.cs" />
+    <Compile Include="_ModelView\GenericTaskElementGridModelView.cs" />
+    <Compile Include="_ModelView\HistoricalMetricsFromMSTModelView.cs" />
+    <Compile Include="_ModelView\ImportBoeResultsModelView.cs" />
+    <Compile Include="_ModelView\IValidateForSave.cs" />
+    <Compile Include="_ModelView\ManageBOEModelView.cs" />
+    <Compile Include="_ModelView\ManageWBSModelView.cs" />
+    <Compile Include="_ModelView\ODCElementDetailsModelView.cs" />
+    <Compile Include="_ModelView\PerformingOrgModelView.cs" />
+    <Compile Include="_ModelView\ResourceModelView.cs" />
+    <Compile Include="_ModelView\SavePermissionModelView.cs" />
+    <Compile Include="_ModelView\SearchResultsModelView.cs" />
+    <Compile Include="_ModelView\SpreadValueTableChanges.cs" />
+    <Compile Include="_ModelView\TaskElementDependencyData.cs" />
+    <Compile Include="_ModelView\MetricsSearchDialogParametersModelView.cs" />
+    <Compile Include="_ModelView\Task\LaborSpreadDataModelView.cs" />
+    <Compile Include="_ModelView\Task\LaborTypeDataModelView.cs" />
+    <Compile Include="_ModelView\Task\LaborTypeOrder.cs" />
+    <Compile Include="_ModelView\Task\LaborTypeOrderCollection.cs" />
+    <Compile Include="_ModelView\Task\RecalcSpreadModelView.cs" />
+    <Compile Include="_ModelView\Task\TaskElementDuplicateFormCollection.cs" />
+    <Compile Include="_ModelView\Task\TaskElementDuplicateFormModelView.cs" />
+    <Compile Include="_ModelView\TrainingModelView.cs" />
+    <Compile Include="_ModelView\VariableDependencyData.cs" />
+    <Compile Include="_ModelView\VariableDependencyNode.cs" />
+    <Compile Include="_ModelView\VariableDependencyResolutionData.cs" />
+    <Compile Include="_ModelView\Task\TaskElementOrder.cs" />
+    <Compile Include="_ModelView\Task\TaskElementOrderCollection.cs" />
+    <Compile Include="_ModelView\UsageMetricsModelView.cs" />
+    <Compile Include="_ModelView\WorkspaceVariableModelView.cs" />
+    <Compile Include="_ModelView\Workspace\CreateWorkspacePageModelView.cs" />
+    <Compile Include="_ModelView\Workspace\HomeWorkspaceGridApproverModelView.cs" />
+    <Compile Include="_ModelView\Workspace\HomeWorkspaceGridModelView.cs" />
+    <Compile Include="_ModelView\Workspace\HomeWorkspaceModelView.cs" />
+    <Compile Include="_ModelView\Workspace\WorkspaceEmailOverrideModelView.cs" />
+    <Compile Include="_ModelView\Workspace\WorkspaceIdentificationMSTModelView.cs" />
+    <Compile Include="_ModelView\Workspace\WorkspaceResourceRateGridTMModelView.cs" />
+    <Compile Include="_ModelView\Workspace\WorkspaceResourceRateTMModelView.cs" />
+    <Compile Include="_ModelView\Workspace\WorkspaceSearchResultModelView.cs" />
+    <Compile Include="_ModelView\Workspace\CreateWorkspaceMSTModelView.cs" />
+    <Compile Include="_ModelView\Workspace\CreateWorkspaceStepOneMSTModelView.cs" />
+    <Compile Include="_ModelView\Workspace\ExportBOEModelView.cs" />
+    <Compile Include="_ControllerLogic\IBOELaborControllerLogic.cs" />
+    <Compile Include="_ModelView\Workspace\ImportWorkofflineResultsModelView.cs" />
+    <Compile Include="_ControllerLogic\PermissionControllerLogic.cs" />
+    <Compile Include="NewValidation\IMSTZoneTravelValidator.cs" />
+    <Compile Include="NewValidation\MSTZoneTravelValidator.cs" />
+    <Compile Include="NewValidation\ProjectMapValidator.cs" />
+    <Compile Include="Permissions\PermissionsDelete.cs" />
+    <Compile Include="Permissions\PermissionsWorkspaceAdminValidation.cs" />
+    <Compile Include="Reporting\BOEActivityReport.cs" />
+    <Compile Include="Reporting\BOEDiscrepancyReport.cs" />
+    <Compile Include="Reporting\BoeDiscrepancyReportModelView.cs" />
+    <Compile Include="Reporting\BOEStatusReport.cs" />
+    <Compile Include="Reporting\BOEStatusReportMST.cs" />
+    <Compile Include="Reporting\BOEStatusReportSpaceSystems.cs" />
+    <Compile Include="Reporting\IBOEStatusReport.cs" />
+    <Compile Include="Reporting\WorkspaceActivityReport.cs" />
+    <Compile Include="Synchronization\ActiveDirectorySynchronization.cs" />
+    <Compile Include="ValidationAttributes\ContractTypesValidationAttribute.cs" />
+    <Compile Include="ValidationAttributes\RangeIfAttribute.cs" />
+    <Compile Include="ValidationAttributes\ResourceTypeSpreadHoursValidationAttribute.cs" />
+    <Compile Include="ValidationAttributes\HtmlTextLengthAttribute.cs" />
+    <Compile Include="Common\WebConstants.cs" />
+    <Compile Include="_ControllerLogic\BOEOtherDirectCostControllerLogicSpaceSystems.cs" />
+    <Compile Include="_ControllerLogic\IBOEOtherDirectCostControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\HomeControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\IBOEControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\IWorkspaceControllerLogic.cs" />
+    <Compile Include="_ModelView\BOECustomFieldModelView.cs" />
+    <Compile Include="_ModelView\BOECustomFieldOptionModelView.cs" />
+    <Compile Include="_ModelView\BOECustomFieldsGridModelView.cs" />
+    <Compile Include="_ModelView\BoeTaskOrdinaryVariableModelView.cs" />
+    <Compile Include="_ModelView\BOE\BOEHeaderISGSModelView.cs" />
+    <Compile Include="_ModelView\BOE\BOEHeaderModelView.cs" />
+    <Compile Include="_ModelView\BOE\BOEHeaderSpaceModelView.cs" />
+    <Compile Include="_ModelView\BOE\IBOEHeaderModelView.cs" />
+    <Compile Include="_ModelView\CustomFieldSelectionModelView.cs" />
+    <Compile Include="_ModelView\PagedResultsModelView.cs" />
+    <Compile Include="_ModelView\PersistedDataModelView.cs" />
+    <Compile Include="_ModelView\SortablePagedResultsModelView.cs" />
+    <Compile Include="_ModelView\TaskElementDetailModelView.cs" />
+    <Compile Include="_ModelView\Workspace\CreateWorkspaceModelView.cs" />
+    <Compile Include="_ModelView\Workspace\CreateWorkspaceSpaceModelView.cs" />
+    <Compile Include="_ModelView\Workspace\CreateWorkspaceStepOneModelView.cs" />
+    <Compile Include="_ModelView\Workspace\CreateWorkspaceStepOneSpaceModelView.cs" />
+    <Compile Include="_ModelView\Workspace\ICreateWorkspaceModelView.cs" />
+    <Compile Include="_ModelView\Workspace\ICreateWorkspaceStepOneModelView.cs" />
+    <Compile Include="_ModelView\Workspace\IWorkspaceIdentificationModelView.cs" />
+    <Compile Include="_ModelView\Workspace\WorkspaceIdentificationModelView.cs" />
+    <Compile Include="_ModelView\Workspace\WorkspaceIdentificationSpaceModelView.cs" />
+    <Compile Include="_ModelView\Workspace\WorkspaceSearchModelView.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="_ControllerLogic\ReportsControllerLogic.cs" />
+    <Compile Include="ValidationAttributes\ServerValidationAttribute.cs" />
+    <Compile Include="ValidationAttributes\ServerValidator.cs" />
+    <Compile Include="ValidationAttributes\LaborSpreadCostValidationAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ValidationAttributes\LaborSpreadHoursValidationAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="_ControllerLogic\WorkspaceControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\WorkspaceControllerLogicMST.cs" />
+    <Compile Include="_ControllerLogic\WorkspaceControllerLogicSpaceSystems.cs" />
+    <Compile Include="Misc\ViewResultData.cs" />
+    <Compile Include="Validation\BOECLINMoveValidator.cs" />
+    <Compile Include="Validation\BOECommentsResponsesValidator.cs" />
+    <Compile Include="Validation\BOEDateValidator.cs" />
+    <Compile Include="Validation\BoeLaborCostElementExistsValidator.cs" />
+    <Compile Include="Validation\BOEMaterialElementExistsValidator.cs" />
+    <Compile Include="Validation\BOEMaterialExistsForWBSValidator.cs" />
+    <Compile Include="Validation\BoeTaskIDUniqueValidator.cs" />
+    <Compile Include="Validation\BOEWBSMoveValidator.cs" />
+    <Compile Include="Validation\CLINValidator.cs" />
+    <Compile Include="Validation\DateRangeValidator.cs" />
+    <Compile Include="Validation\ExportToProPricerFormatValidator.cs" />
+    <Compile Include="Validation\IsNumericValidation.cs" />
+    <Compile Include="Validation\IsUserNotGroupValidator.cs" />
+    <Compile Include="Validation\IsUserNotSubcontractorValidator.cs" />
+    <Compile Include="Validation\IValidationHelper.cs" />
+    <Compile Include="Validation\IVariableCircularReferenceChecker.cs" />
+    <Compile Include="Validation\LaborValidationClass.cs" />
+    <Compile Include="Validation\LaborValidationErrorTypeEnum.cs" />
+    <Compile Include="Validation\PerformingOrgUniqueIDValidator.cs" />
+    <Compile Include="Validation\ResourceUniqueDescValidator.cs" />
+    <Compile Include="Validation\ResourceUniqueIDValidator.cs" />
+    <Compile Include="Validation\StartEndDateTypeValidator.cs" />
+    <Compile Include="Validation\TaskElementValidation.cs" />
+    <Compile Include="Validation\UniqueStringValidator.cs" />
+    <Compile Include="Validation\ValidationConstants.cs" />
+    <Compile Include="Validation\ValidationFactory.cs" />
+    <Compile Include="Validation\ValidationHelper.cs" />
+    <Compile Include="Validation\Validator.cs" />
+    <Compile Include="Validation\VariableCircularReferenceChecker.cs" />
+    <Compile Include="Validation\WBSRenumberValidator.cs" />
+    <Compile Include="Validation\WBSUniqueNumberValidator.cs" />
+    <Compile Include="Validation\WorkspaceUniqueNameValidator.cs" />
+    <Compile Include="Validation\WorkspaceUniqueShortnameValidator.cs" />
+    <Compile Include="Validation\WorkspaceVariableUniqueNameValidator.cs" />
+    <Compile Include="WBS\BOE\BOESummary.cs" />
+    <Compile Include="WBS\BOE\IBOESummary.cs" />
+    <Compile Include="WBS\BOE\IValidateBOE.cs" />
+    <Compile Include="WBS\BOE\ValidateBOE.cs" />
+    <Compile Include="WBS\BOE\ValidateBOEMst.cs" />
+    <Compile Include="WBS\BOE\ValidateBOESpaceSystems.cs" />
+    <Compile Include="WBS\INestedWBSUtilities.cs" />
+    <Compile Include="WBS\NestedWBSUtilities.cs" />
+    <Compile Include="WorkspaceTransitions\ClosedToInitializationTransition.cs" />
+    <Compile Include="WorkspaceTransitions\CompleteToLockedTransition.cs" />
+    <Compile Include="WorkspaceTransitions\CompleteToWorkingTransition.cs" />
+    <Compile Include="WorkspaceTransitions\DefaultWorkspaceTransition.cs" />
+    <Compile Include="WorkspaceTransitions\InitializationToClosedTransition.cs" />
+    <Compile Include="WorkspaceTransitions\InitializationToWorkingTransition.cs" />
+    <Compile Include="WorkspaceTransitions\IWorkspaceStateMachine.cs" />
+    <Compile Include="WorkspaceTransitions\IWorkspaceStateTransition.cs" />
+    <Compile Include="WorkspaceTransitions\LockedToClosedTransition.cs" />
+    <Compile Include="WorkspaceTransitions\LockedToCompleteTransitiion.cs" />
+    <Compile Include="WorkspaceTransitions\LockedToWorkingTransition.cs" />
+    <Compile Include="WorkspaceTransitions\NoneToInitializationTransition.cs" />
+    <Compile Include="WorkspaceTransitions\WorkingToClosedTransition.cs" />
+    <Compile Include="WorkspaceTransitions\WorkingToInitTransition.cs" />
+    <Compile Include="WorkspaceTransitions\WorkingToLockedTransition.cs" />
+    <Compile Include="WorkspaceTransitions\WorkspaceStateMachine.cs" />
+    <Compile Include="Workspace\Creation\WorkspaceCopier.cs" />
+    <Compile Include="Workspace\ProjectMapOffloadConverter.cs" />
+    <Compile Include="Workspace\UserDateChangeInfo.cs" />
+    <Compile Include="ZoneTravel\NonZoneTravelCalculation.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GenTRAC.DataBridge\GenTRAC.DataBridge.csproj">
+      <Project>{6EBD0376-9273-4A2A-9E23-1912418DDBA5}</Project>
+      <Name>GenTRAC.DataBridge</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IES.Common\IES.Common.csproj">
+      <Project>{FADFE985-0AA1-41AF-B7CB-A740673FC0D7}</Project>
+      <Name>IES.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.Models\GenBOE.Models.csproj">
+      <Project>{5e73d211-cfd8-49ac-b164-3ecddea9b443}</Project>
+      <Name>GenBOE.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.ModelView\GenBOE.DataBridge.csproj">
+      <Project>{F909CD46-E2D7-4D57-B647-6D93F9DD9618}</Project>
+      <Name>GenBOE.DataBridge</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Settings.StyleCop" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Validation\TaskElementValidation\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

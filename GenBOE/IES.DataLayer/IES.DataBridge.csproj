@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4CD6748E-9B1D-4768-84D9-0164CD89BB69}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>IES.DataBridge</RootNamespace>
+    <AssemblyName>IES.DataBridge</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.4\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.4\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Loaders\IOfflineApplicationLoader.cs" />
+    <Compile Include="Loaders\IRateCodeReplicationLoader.cs" />
+    <Compile Include="Loaders\OfflineApplicationLoader.cs" />
+    <Compile Include="Loaders\RateCodeReplicationLoader.cs" />
+    <Compile Include="Loaders\BurdenPoolLoader.cs" />
+    <Compile Include="Loaders\DocumentDetailLoader.cs" />
+    <Compile Include="Loaders\DocumentLoader.cs" />
+    <Compile Include="Loaders\BannerLoader.cs" />
+    <Compile Include="Loaders\FileAttachmentLoader.cs" />
+    <Compile Include="Loaders\CobraYearsLoader.cs" />
+    <Compile Include="Loaders\IAreaLockingLoader.cs" />
+    <Compile Include="Loaders\IBurdenPoolLoader.cs" />
+    <Compile Include="Loaders\IDocumentDetailLoader.cs" />
+    <Compile Include="Loaders\IDocumentLoader.cs" />
+    <Compile Include="Loaders\IBannerLoader.cs" />
+    <Compile Include="Loaders\IFileAttachmentLoader.cs" />
+    <Compile Include="Loaders\ICobraYearsLoader.cs" />
+    <Compile Include="Loaders\IProPricerRateCodeXrefLoader.cs" />
+    <Compile Include="Loaders\IRateConfigLoader.cs" />
+    <Compile Include="Loaders\IRateCodeYearLoader.cs" />
+    <Compile Include="Loaders\ICobraDetailLoader.cs" />
+    <Compile Include="Loaders\IRdsbRateCodeXrefLoader.cs" />
+    <Compile Include="Loaders\IRdsbSectionXrefLoader.cs" />
+    <Compile Include="Loaders\IRevisionLoader.cs" />
+    <Compile Include="Loaders\ISectionLoader.cs" />
+    <Compile Include="Loaders\IWhosOnlineLoader.cs" />
+    <Compile Include="Loaders\ProPricerRateCodeXrefLoader.cs" />
+    <Compile Include="Loaders\IRateDetailLoader.cs" />
+    <Compile Include="Loaders\CobraDetailLoader.cs" />
+    <Compile Include="Loaders\RateConfigLoader.cs" />
+    <Compile Include="Loaders\RateDetailLoader.cs" />
+    <Compile Include="Loaders\RateCodeYearLoader.cs" />
+    <Compile Include="Loaders\AreaLockingLoader.cs" />
+    <Compile Include="Loaders\RdsbRateCodeXrefLoader.cs" />
+    <Compile Include="Loaders\RdsbSectionXrefLoader.cs" />
+    <Compile Include="Loaders\RevisionLoader.cs" />
+    <Compile Include="Loaders\SectionLoader.cs" />
+    <Compile Include="Loaders\WhosOnlineLoader.cs" />
+    <Compile Include="_Common\CommonDataMapper.cs" />
+    <Compile Include="_Common\ICommonDataMapper.cs" />
+    <Compile Include="_ModelView\BurdenElementIdToRateCodeModelView.cs" />
+    <Compile Include="_ModelView\BurdenElementModelView.cs" />
+    <Compile Include="_ModelView\BurdenElementRateCodeMappingModelView.cs" />
+    <Compile Include="_ModelView\BurdenPoolDetailModelView.cs" />
+    <Compile Include="_ModelView\DocumentDetailModelView.cs" />
+    <Compile Include="_ModelView\FileAttachmentGridModelView.cs" />
+    <Compile Include="_ModelView\BannerModelView.cs" />
+    <Compile Include="_ModelView\FileAttachmentRowModelView.cs" />
+    <Compile Include="_ModelView\CobraGridModelView.cs" />
+    <Compile Include="_ModelView\CobraDetailModelView.cs" />
+    <Compile Include="_ModelView\OfflineApplicationModelView.cs" />
+    <Compile Include="_ModelView\RateCodeModelView.cs" />
+    <Compile Include="_ModelView\RateCodeReplicationModelView.cs" />
+    <Compile Include="_ModelView\RateDto.cs" />
+    <Compile Include="_ModelView\RevisionImportExportModelView.cs" />
+    <Compile Include="_ModelView\RateConfigModelView.cs" />
+    <Compile Include="_ModelView\RdsbRateCodeXrefModelView.cs" />
+    <Compile Include="_ModelView\RdsbRateDetailModelView.cs" />
+    <Compile Include="_ModelView\RdsbSectionXrefModelView.cs" />
+    <Compile Include="_ModelView\RevisionGridModelView.cs" />
+    <Compile Include="_ModelView\BurdenPoolGridModelView.cs" />
+    <Compile Include="_ModelView\CobraExportRowModelView.cs" />
+    <Compile Include="_ModelView\CobraYearGridModelView.cs" />
+    <Compile Include="_ModelView\DocumentGridModelView.cs" />
+    <Compile Include="_ModelView\IProPricerExportModelView.cs" />
+    <Compile Include="_ModelView\LockModelView.cs" />
+    <Compile Include="_ModelView\MenuOptionModelView.cs" />
+    <Compile Include="_ModelView\RateSectionModelView.cs" />
+    <Compile Include="_ModelView\RevisionModelView.cs" />
+    <Compile Include="_ModelView\PPRDModelView.cs" />
+    <Compile Include="_ModelView\ProPricerBurdenRateExportRowModelView.cs" />
+    <Compile Include="_ModelView\ProPricerDirectRateExportRowModelView.cs" />
+    <Compile Include="_ModelView\ProPricerExportModelView.cs" />
+    <Compile Include="_ModelView\ProPricerRateCodeXrefModelView.cs" />
+    <Compile Include="_ModelView\RateDetailModelView.cs" />
+    <Compile Include="_ModelView\RateGridModelView.cs" />
+    <Compile Include="_ModelView\RateYearModelView.cs" />
+    <Compile Include="_ModelView\IESModelView.cs" />
+    <Compile Include="_ModelView\IESUpdateableModelView.cs" />
+    <Compile Include="_ModelView\ReportsModelView.cs" />
+    <Compile Include="_ModelView\RevisionOptionModelView.cs" />
+    <Compile Include="_ModelView\SectionDetailModelView.cs" />
+    <Compile Include="_ModelView\SectionModelView.cs" />
+    <Compile Include="_ModelView\VersionComparisonGridRowModelView.cs" />
+    <Compile Include="_ModelView\VersionComparisonModelView.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="_ModelView\WhosOnlineModelView.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IES.Common\IES.Common.csproj">
+      <Project>{fadfe985-0aa1-41af-b7cb-a740673fc0d7}</Project>
+      <Name>IES.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IES.Models\IES.Models.csproj">
+      <Project>{971c1194-1ead-43a4-93ca-70b74327ed44}</Project>
+      <Name>IES.Models</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Settings.StyleCop" />
+  </ItemGroup>
+  <ItemGroup>
+    <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
+      <Link>CustomDictionary.xml</Link>
+    </CodeAnalysisDictionary>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\libraries\StyleCop Files\StyleCop.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

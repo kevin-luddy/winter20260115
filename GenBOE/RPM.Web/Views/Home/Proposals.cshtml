@@ -1,0 +1,388 @@
+﻿@{
+    ViewBag.Title = "RPM - Proposals";
+}
+<br />
+<div ng-app="RPM" ng-controller="PTMController">
+    <div class="row top-margin-2">
+        <div class="col-xs-7">
+            <div id="ptmGantSearchModule" class="module">
+				<div class="module-header-data">
+					<span style="font-size:large; font-weight:bold">PTM&nbsp;</span> <span>&nbsp;Proposal Activity Gantt</span>
+					<div class="navbar-right pointer refreshData" ng-click="refreshPTMProposals()" title="Refresh Data"><i class="right glyphicon glyphicon-repeat"></i></div>
+					<div class="navbar-right clearAllFilter icon-stack" ng-click="clearAllPTMFilters()" title="Clear Selected Filters">
+						<i class="glyphicon glyphicon-filter"></i>
+						<i class="glyphicon glyphicon-stack-big glyphicon-ban-circle"></i>
+					</div>
+					<div class="navbar-right loadFilter icon-stack" ng-click="loadFiltersFromCookiePTM();refreshPTMData(true)" title="Load Saved Filters">
+						<i class="glyphicon glyphicon-filter"></i>
+						<i class="glyphicon glyphicon-stack-big glyphicon-refresh"></i>
+					</div>
+					<div class="navbar-right saveFilter icon-stack" ng-click="saveFiltersIntoCookiePTM()" title="Save Selected Filters">
+						<i class="glyphicon glyphicon-filter"></i>
+						<i class="glyphicon glyphicon-stack-big glyphicon-ok"></i>
+					</div>
+					<div class="navbar-right downloadIcon" ng-click="exportCSV()" title="Export Data to CSV">
+						<i class="glyphicon glyphicon-download-alt glyphicon-ok"></i>
+					</div>
+				</div>
+                <div class="row">
+                    <div class="col-xs-3">
+                        Year&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(YearFilter.selectedIndex, 'YearFilterClear');" id="YearFilter" class="year" ng-model="selectedPTMFilters.year" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.year track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'YearFilterClear');" id="YearFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.year=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Status&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(StatusFilter.selectedIndex, 'StatusFilterClear');" id="StatusFilter" class="status" ng-model="selectedPTMFilters.status" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.status track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'StatusFilterClear');" id="StatusFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.status=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Prop Type&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(PropTypeFilter.selectedIndex, 'PropTypeFilterClear');" id="PropTypeFilter" class="proposalType" ng-model="selectedPTMFilters.proposalType" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.proposalType track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'PropTypeFilterClear');" id="PropTypeFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.proposalType=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Pricing Tool&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(PricingToolFilter.selectedIndex, 'PricingToolFilterClear');" id="PricingToolFilter" class="pricingTool" ng-model="selectedPTMFilters.pricingTool" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.pricingTool track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'PricingToolFilterClear');" id="PricingToolFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.pricingTool=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-3">
+                        LOB&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(LOBFilter.selectedIndex, 'LOBFilterClear');" id="LOBFilter" class="lob" ng-model="selectedPTMFilters.lob" ng-change="refreshPTMData(true);" ng-options="x for x in filterPTM.lob"></select>
+                        <span onclick="filterObjectChange(0, 'LOBFilterClear');" id="LOBFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.lob=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Customer&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(CustomerFilter.selectedIndex, 'CustomerFilterClear');" id="CustomerFilter" class="customer" ng-model="selectedPTMFilters.customer" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.customer track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'CustomerFilterClear');" id="CustomerFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.customer=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        BOE Tool&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(BOEFilter.selectedIndex, 'BOEFilterClear');" id="BOEFilter" class="boeTool" ng-model="selectedPTMFilters.boeTool" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.boeTool track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'BOEFilterClear');" id="BOEFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.boeTool=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Name Contains&nbsp;
+                        <input class="nameContains" type="text" onkeyup="filterObjectChange(document.getElementById('NameFilter').value, 'NameFilterClear');" id="NameFilter" ng-model="selectedPTMFilters.nameContains" ng-change="refreshPTMData(true)" />
+                        <span onclick="filterObjectChange('', 'NameFilterClear');" id="NameFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.nameContains='';refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-3">
+                        PA&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(PAFilter.selectedIndex, 'PAFilterClear');" id="PAFilter" class="pa" ng-model="selectedPTMFilters.programArea" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.programArea track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'PAFilterClear');" id="PAFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.programArea=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Capt Mgr&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(ManagerFilter.selectedIndex, 'ManagerFilterClear');" id="ManagerFilter" class="mgr" ng-model="selectedPTMFilters.manager" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.manager track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'ManagerFilterClear');" id="ManagerFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.manager=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Sub Date&nbsp;
+                        <input onblur="filterObjectRangeChange(document.getElementById('endDate').value, document.getElementById('startDate').value, 'DateFilterClear');" id="startDate" jqdatepicker class="range" type="text" placeholder="dd/mm/yyyy" ng-model="selectedPTMFilters.startDate" ng-change="daterangePTMUpdate()" />
+                        <input onblur="filterObjectRangeChange(document.getElementById('endDate').value, document.getElementById('startDate').value, 'DateFilterClear');" id="endDate" jqdatepicker class="range" type="text" placeholder="dd/mm/yyyy" ng-model="selectedPTMFilters.endDate" ng-change="daterangePTMUpdate()" />
+                        <span onclick="filterObjectRangeChange('','','DateFilterClear');" id="DateFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.startDate='';selectedPTMFilters.endDate='';daterangePTMUpdate()">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Cont Type&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(ContFilter.selectedIndex, 'ContFilterClear');" id="ContFilter" class="contractType" ng-model="selectedPTMFilters.contractType" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.contractType track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'ContFilterClear');" id="ContFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.contractType=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-3">
+                        PGM&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(PGMFilter.selectedIndex, 'PGMFilterClear');" id="PGMFilter" class="pgm" ng-model="selectedPTMFilters.pgm" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.pgm track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'PGMFilterClear');" id="PGMFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.pgm=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Estimator&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(PricerFilter.selectedIndex, 'PricerFilterClear');" id="PricerFilter" class="pricer" ng-model="selectedPTMFilters.pricer" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.pricer track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'PricerFilterClear');" id="PricerFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.pricer=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Duration&nbsp;
+                        <input class="range" type="text" onkeyup="filterObjectRangeChange(document.getElementById('DurationFilter1').value, document.getElementById('DurationFilter2').value, 'DurationFilterClear');" id="DurationFilter1" ng-model="selectedPTMFilters.startDuration" ng-change="refreshPTMData(true)" />
+                        <input class="range" type="text" onkeyup="filterObjectRangeChange(document.getElementById('DurationFilter1').value, document.getElementById('DurationFilter2').value, 'DurationFilterClear');" id="DurationFilter2" ng-model="selectedPTMFilters.endDuration" ng-change="refreshPTMData(true)" />
+                        <span onclick="filterObjectRangeChange('','','DurationFilterClear');" id="DurationFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.startDuration='';selectedPTMFilters.endDuration='';refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        IWTA&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(IwtaFilter.selectedIndex, 'IwtaFilterClear');" id="IwtaFilter" ng-model="selectedPTMFilters.iwta" ng-change="refreshPTMData(true)" ng-options="boolToYesOrNo(x.display) for x in filterPTM.iwta track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'IwtaFilterClear');" id="IwtaFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.iwta=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-3">
+                        Ref#&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(REFFilter.selectedIndex, 'REFFilterClear');" id="REFFilter" class="ref" ng-model="selectedPTMFilters.referenceNumber" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.referenceNumber track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'REFFilterClear');" id="REFFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.referenceNumber=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Prime/Sub&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(PrimeFilter.selectedIndex, 'PrimeFilterClear');" id="PrimeFilter" class="primeSub" ng-model="selectedPTMFilters.primeSub" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.primeSub track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'PrimeFilterClear');" id="PrimeFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.primeSub=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Pricing Veri&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(PricingVerifierFilter.selectedIndex, 'PricingVerifierFilterClear');" id="PricingVerifierFilter" class="pricingVerifier" ng-model="selectedPTMFilters.pricingVerifier" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.pricingVerifier track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'PricingVerifierFilterClear');" id="PricingVerifierFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.pricingVerifier=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Value M$&nbsp;
+                        <input id="minValue" onkeyup="filterObjectRangeChange(document.getElementById('minValue').value, document.getElementById('maxValue').value, 'ValueFilterClear');" class="range" type="text" ng-model="selectedPTMFilters.minValue" ng-change="refreshPTMData(true)" />
+                        <input id="maxValue" onkeyup="filterObjectRangeChange(document.getElementById('minValue').value, document.getElementById('maxValue').value, 'ValueFilterClear');" class="range" type="text" ng-model="selectedPTMFilters.maxValue" ng-change="refreshPTMData(true)" />
+                        <span onclick="filterObjectRangeChange('','','ValueFilterClear');" id="ValueFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.minValue='';selectedPTMFilters.maxValue='';refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-3">
+                        Cover Sheet&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(CoverSheetFilter.selectedIndex, 'CoverSheetFilterClear');" id="CoverSheetFilter" class="coverSheet" ng-model="selectedPTMFilters.coverSheet" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.coverSheet track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'CoverSheetFilterClear');" id="CoverSheetFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.coverSheet=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Ind. Rev&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(IndpReviewerFilter.selectedIndex, 'IndpReviewerFilterClear');" id="IndpReviewerFilter" class="indpReviewer" ng-model="selectedPTMFilters.indpReviewer" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.indpReviewer track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'IndpReviewerFilterClear');" id="IndpReviewerFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.indpReviewer=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Cost Lead&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(CostLeadFilter.selectedIndex, 'CostLeadFilterClear');" id="CostLeadFilter" class="costLead" ng-model="selectedPTMFilters.costLead" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.costLead track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'CostLeadFilterClear');" id="CostLeadFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.costLead=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-3">
+                        Mat Lead&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(MaterialLeadFilter.selectedIndex, 'MaterialLeadFilterClear');" id="MaterialLeadFilter" class="materialLead" ng-model="selectedPTMFilters.materialLead" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.materialLead track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'MaterialLeadFilterClear');" id="MaterialLeadFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.materialLead=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-3">
+                        Sub Lead&nbsp;
+                        <select multiselectpicker multiple="multiple" onchange="filterObjectChange(SubcontractLeadFilter.selectedIndex, 'SubcontractLeadFilterClear');" id="SubcontractLeadFilter" class="subcontractLead" ng-model="selectedPTMFilters.subcontractLead" ng-change="refreshPTMData(true)" ng-options="x.display for x in filterPTM.subcontractLead track by x.value"></select>
+                        <span onclick="filterObjectChange(0, 'SubcontractLeadFilterClear');" id="SubcontractLeadFilterClear" hidden="hidden" class="icon-stack" ng-click="selectedPTMFilters.subcontractLead=[];refreshPTMData(true)">
+                            <i class="glyphicon glyphicon-filter"></i>
+                            <i class="glyphicon glyphicon-stack glyphicon-ban-circle"></i>
+                        </span>
+                    </div>
+                    <div class="col-xs-6"><b>Annotation:</b>&nbsp;<input type="checkbox" ng-model="selectedPTMFilters.includeSupport" ng-change="annotationPTMUpdate()" /> Support Team</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-5">
+            <div ng-cloak class="row" style="margin-top:0">
+                <div class="col-xs-12" style="padding-left:15px;padding-right:15px">
+                    <div id="proposalDetails" class="module proposal-details" ng-hide="hidePTMDetails">
+                        <div class="module-header-data left">Proposal Details: PTM</div>
+                        <div class="details">
+                            <div class="row">
+                                <div class="col-xs-2 indent">Tracking#:&nbsp;</div>
+                                <div class="col-xs-1 bold">{{selectedPTM.model.Ref}}</div>
+                                <div class="col-xs-3">Status:&nbsp;<b>{{selectedPTM.model.Status}}</b></div>
+                                <div class="col-xs-6">IWTA:&nbsp;<b>{{selectedPTM.model.IWTA | true_false}}</b></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2 indent">Program Title:&nbsp;</div>
+                                <div class="col-xs-10 bold">{{selectedPTM.model.Title}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2 indent">Prop Type:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.PropType}}</div>
+                                <div class="col-xs-2">Capture Manager:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.Mgr}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2 indent">LOB:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.LOB}}</div>
+                                <div class="col-xs-2 ">Program Area:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.PA}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2 indent">Contract Type:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.ContType}}</div>
+                                <div class="col-xs-2">Program:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.PrgName}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2 indent">Customer Type:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.CusType}}</div>
+                                <div class="col-xs-2">Prm/Sub:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.PrmSub}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2 indent">Customer:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.Cust}}</div>
+                                <div class="col-xs-2 ">Contract Ldr:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.ContLdr}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2 indent">RFP/Mod:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.RFP}}</div>
+                                <div class="col-xs-2">Pricing Verifier:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.PV}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2 indent">EOC:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.EoC}}</div>
+                                <div class="col-xs-2 ">Cover Sheet Approver:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.CSA}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2 indent">Subcontract Lead:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.SL}}</div>
+                                <div class="col-xs-2 ">Material Lead:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.ML}}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2 indent">Additional Pricers:</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.Price1}}<br ng-if="selectedPTM.model.Price1 != '' && selectedPTM.model.Price2 != ''" />{{selectedPTM.model.Price2}}</div>
+                                <div class="col-xs-2 ">Independent Reviewer:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.model.IndpRev}}</div>
+                            </div>
+                        </div>
+                        <div class="details-middle">
+                            <div class="row">
+                                <div class="col-xs-2 indent">Prop Dates:&nbsp;</div>
+                                <div class="col-xs-4 bold">{{selectedPTM.from | amDateFormat: 'MM/DD/YYYY' }} - {{selectedPTM.to | amDateFormat: 'MM/DD/YYYY' }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-2 indent">Estimate $M:&nbsp;</div>
+                                <div class="col-xs-2 bold">{{selectedPTM.model.EVal | currency : '' : 1}}</div>
+                                <div class="col-xs-4">Create/Submit:&nbsp;<b>{{selectedPTM.model.CrDate}} - {{selectedPTM.model.SubDate}}</b></div>
+                                <div class="col-xs-4">Submit $M:&nbsp;<b>{{selectedPTM.model.SVal | currency : '' : 1}}</b></div>
+                            </div>
+                        </div>
+                        <div class="details">
+                            <div class="row">
+                                <div class="col-xs-2 indent">Lead Estimator:&nbsp;</div>
+                                <div class="col-xs-2 bold">{{selectedPTM.model.Lead}}</div>
+                                <div class="col-xs-4">Cost Volume:&nbsp;<b>{{selectedPTM.model.Cost}}</b></div>
+                                <div class="col-xs-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="module">
+        <div class="row no-top-margin">
+            <div class="col-xs-12 no-padding">
+                <div ng-cloak data-ng-show="isPTMError" class="row">
+                    <div class="alert alert-danger">Error retrieving PTM Information, retry using refresh button above.</div>
+                </div>
+                <div data-ng-show="isPTMLoading" class="loader"></div>
+                <div ng-cloak
+                     data-ng-hide="isPTMLoading || isPTMError"
+                     gantt
+                     auto-expand="false"
+                     column-width="40"
+                     data="ganttPTMData"
+                     from-date="optionsPTM.fromDate"
+                     to-date="optionsPTM.toDate"
+                     headers="['month', 'week']" @*This has to be here since it was horribly broken when moved into optionsPTM*@
+                     task-content="optionsPTM.taskContent"
+                     view-scale="optionsPTM.scale"
+                     api="optionsPTM.api"
+                     sort-mode="optionsPTM.sortMode"
+                     max-height="550"
+                     min-height="550"
+                     allow-side-resizing="optionsPTM.allowSideResizing">
+                    <gantt-table enabled="true"
+                                 columns="optionsPTM.columns"
+                                 headers="optionsPTM.columnsHeaders"
+                                 classes="optionsPTM.columnsClasses"
+                                 header-contents="optionsPTM.columnsHeaderContents">
+                    </gantt-table>
+                </div>
+            </div>
+        </div>
+        <div class="row" ng-cloak>
+            <div class="col-xs-6">
+                <div class="paging-control" genpaging data-num-pages="{{numberOfPages(filteredPTMCount, pageSizePTM)}}" data-current-page="currentPTMPage"></div>
+                <div data-ng-show="!isPTMLoading && !isPTMError && (filteredPTMCount === 0)">There are no Proposals for the current filter(s).</div>
+            </div>
+            <div class="col-xs-3">Count:&nbsp;<span class="bold">{{filteredPTMCount}}</span></div>
+            <div class="col-xs-3 left">Est. Value ($M):&nbsp;<span class="bold">{{filteredPTMValue | currency : '$' : 1}}M</span></div>
+        </div>
+    </div>
+</div>

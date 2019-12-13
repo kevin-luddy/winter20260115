@@ -1,0 +1,240 @@
+﻿.module
+{
+    width: 1400px;
+    text-align: left;
+    margin: auto;
+    box-shadow: 0px 0px 3px #999999;
+    border-radius: 3px;
+    behavior: url('/Resources/pie/pie.htc');
+    word-spacing: normal;
+    margin-bottom: 8px;
+}
+
+.module-header-data
+{
+    height: 16px;
+    line-height: 16px;
+    background: linear-gradient(to bottom, #929292, #696969 1px, #404040);
+    -pie-background: linear-gradient(to bottom, #929292, #696969 1px, #404040);
+    background-color: #444444;
+    border: 1px solid #2F2F2F;
+    border-radius: 3px 3px 0px 0px;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: Arial,Calibri,Verdana,Helvetica,Sans-Serif;
+    vertical-align: middle;
+    padding: 9px 10px;
+    max-width: 1400px;
+    behavior: url('/Resources/pie/pie.htc');
+}
+
+.module-content-data
+{
+    padding: 10px;
+    border-radius: 0px 0px 3px 3px;
+    background-color: #FFFFFF;
+    border: 1px solid #8C8C8C;
+    border-top: 0;
+    max-width: 1400px;
+    behavior: url('/Resources/pie/pie.htc');
+}
+
+.help-module .module-header-data
+{
+    background: #7ab88f;
+    border-bottom: none;
+    border-color: #7ab88f;
+}
+
+.help-module .small-close-button
+{
+    margin-left: 0px;
+    float: right;
+    background-position-y: 4px;
+}
+
+.workspace-home, .workspace-home .grid
+{
+    width: 100%;
+}
+
+.workspace-home .paging-control,
+.manage-wbs .paging-control,
+.manage-boe .paging-control
+{
+    margin-top: 1px;
+}
+
+#exportboesmodule
+{
+    box-shadow: none;
+    margin-bottom: 0px;
+}
+
+#exportboesmodule .module-content-data
+{
+    border: none;
+    padding-bottom: 0px;
+}
+
+button
+{
+    border-radius: 3px;
+    border: 1px solid #A6A6A6;
+    padding: 0px 10px;
+    line-height: 24px;
+    background: linear-gradient(to bottom, #EEEEEE, #D6D6D6 1px, #E6E6E6);
+    -pie-background: linear-gradient(to bottom, #EEEEEE, #D6D6D6 1px, #E6E6E6);
+    background-color: #E6E6E6;
+    margin-right: 7px;
+    font-weight: bold;
+    font-size: 12px;
+    font-family: Arial;
+    color: #0E2314;
+    cursor: pointer;
+    behavior: url('/Resources/pie/pie.htc');
+}
+
+button *
+{
+    vertical-align: top;
+    text-shadow: 0 0 1px rgba(0,0,0,0.2);
+    behavior: url('/Resources/pie/pie.htc');
+}
+
+button i
+{
+    font-size: 16px;
+    margin-right: 5px;
+    margin-left: -5px;
+}
+
+button.disabled
+{
+    border: 1px solid #D9D9D9;
+    background: linear-gradient(to bottom, #F8F8F8, #EDEDED 1px, #F4F4F4);
+    -pie-background: linear-gradient(to bottom, #F8F8F8, #EDEDED 1px, #F4F4F4);
+    background-color: #EEEEEE;
+    color: #B9B9B9;
+    cursor: default;
+    behavior: url('/Resources/pie/pie.htc');
+}
+
+button.persist
+{
+    border: 1px solid #639873;
+    background: linear-gradient(to bottom, #32DE68, #7BB98F 1px, #558E65);
+    -pie-background: linear-gradient(to bottom, #32DE68, #7BB98F 1px, #558E65);
+    background-color: #6BA77D;
+    behavior: url('/Resources/pie/pie.htc');
+}
+
+button.loader
+{
+    border: 1px solid #E4E4E4;
+}
+
+.module button.loader, 
+.ui-dialog button.loader
+{
+    border: 1px solid #FFFFFF;
+}
+
+button.loader *
+{
+    visibility: hidden;
+}
+
+input.filter
+{
+    border-top: 1px solid #575757;
+    border-bottom: 1px solid #F2F2F2;
+    border-left: 1px solid #BFBFBF;
+    border-right: 1px solid #DCDCDC;
+    box-shadow: 1px 0 0 0px #BCBCBC;
+    background-color: #E3E3E3;
+    background: linear-gradient(to bottom, #B5B5B5, #E3E3E3 1px, #FAFAFA);
+    -pie-background: linear-gradient(to bottom, #B5B5B5, #E3E3E3 1px, #FAFAFA);
+    border-radius: 4px;
+    padding: 6px 5px 2px;
+    margin-bottom: 5px;
+    behavior: url('/Resources/pie/pie.htc');
+}
+
+a.inactive
+{
+    cursor: default;
+    color: #000000;
+}
+
+.css3pie-position-fix
+{
+    position: relative;
+}
+
+#ManagePermissions input.filter
+{
+    width: 217px;
+}
+
+.permissions-module
+{
+    width:1386px;
+    box-shadow:none;
+}
+
+#WorkspaceHomeGrid th a,
+#ManageWBSGrid th a,
+#ManageBOEGrid th a
+{
+    display: block;
+}
+
+#WorkspaceHomeGrid th a:first-child,
+#ManageWBSGrid th a:first-child,
+#ManageBOEGrid th a:first-child
+{
+    font-size: 12px;
+}
+
+#WorkspaceHomeGrid th.wbs-title,
+#WorkspaceHomeGrid th.clin-title,
+#WorkspaceHomeGrid th.boe-title
+{
+    width: 21.5%;
+}
+
+#WorkspaceHomeGrid th .glyphicon-filter,
+#ManageWBSGrid th .glyphicon-filter,
+#ManageBOEGrid th .glyphicon-filter
+{
+    padding-left: 10px;
+}
+
+#WorkspaceHomeGrid .approve-reject
+{
+    color: #e60000;
+}
+
+#WorkspaceHomeGrid .approve-reject:before
+{
+   font-family: "Glyphicons Halflings";
+   content: "\e083";
+}
+
+#WorkspaceHomeGrid .approve-accept
+{
+    color: #008000;
+}
+
+#WorkspaceHomeGrid .approve-accept:before
+{
+   font-family: "Glyphicons Halflings";
+   content: "\e084";
+}
+
+.manage-wbs .buttons,
+.manage-boe .buttons {
+    word-spacing: -1em !important;
+}

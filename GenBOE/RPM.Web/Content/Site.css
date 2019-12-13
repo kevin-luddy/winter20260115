@@ -1,0 +1,643 @@
+﻿/* Site Layout */
+.home{
+    background-color: #e4e4e4;
+}
+
+.navbar a{
+    color: white !important;
+}
+
+.lmproprietary
+{
+    color: #ccc;
+    text-align: center;
+    background-color: #2f464d;
+    width: 100%;
+    font-size: 11.2px;
+    line-height: 1.4285;
+    padding: 5px 0px;
+}
+
+.footerVersionInfo{
+    font-size: 75%;
+}
+
+body {
+    padding-top: 50px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 1600px;
+    position: relative;
+    margin: 0 auto;
+    background-color: #ffffff;
+    color: #666666;
+    font-size: 12px;
+    font-family: Arial;
+    min-height: 200px;
+    margin-top: 24px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Override the default bootstrap behavior */
+.col-xs-2,
+.col-xs-3,
+.col-xs-4,
+.col-xs-5 {
+    text-align:right
+}
+
+/* Override the default bootstrap behavior */
+.row {
+    margin-top: 5px;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+footer {
+    margin: auto !important;
+    display: table !important;
+}
+
+/*  GANTT Chart */
+.gantt-column-sortable-header{
+    cursor: pointer;
+    text-decoration: underline !important;
+}
+
+.gantt-column-name,
+.gantt-column-pricer{
+    width: 140px;
+}
+
+.gantt-column-name-wide{
+    width: auto;
+}
+
+.gantt-column-pa {
+    width:140px;
+}
+
+.gantt-column-value {
+    width:75px;
+}
+
+.gantt-task-content {
+    overflow: visible !important;
+}
+
+.gantt-side-background-header,
+.gantt-header {
+    background-color: #e4e4e4;
+    border: rgb(178, 178, 178) solid 1px;
+    border-right: none;
+}
+
+.gantt-header {
+    border-top: none !important;
+}
+
+.gantt-column-header {
+    border-right: rgb(178, 178, 178) solid 1px !important;
+}
+
+.gantt-header-row {
+    border-top: rgb(178, 178, 178) solid 1px !important;
+}
+
+.gantt-side-background-body {
+    border-left: rgb(178, 178, 178) solid 1px !important;
+    border-bottom: rgb(178, 178, 178) solid 1px !important;
+}
+
+.gantt-body {
+    border-left: rgb(178, 178, 178) solid 1px !important;
+    border-bottom: rgb(178, 178, 178) solid 1px !important;
+}
+
+.gantt-side-content,
+.gantt-body {
+    pointer-events: visiblePainted !important;
+}
+
+/* Annotation text within the Gantt Chart */
+.annotation {
+    margin-left: 100%;
+    vertical-align: sub;
+}
+
+/* PTM Filters*/
+/* Icon stacking for clear filter icon(s) */
+.icon-stack {
+    position: relative;
+    cursor: pointer;
+    left: -2px;
+}
+.icon-stack .glyphicon {
+    position: absolute; 
+    cursor: pointer;
+}
+
+.glyphicon-stack {
+    color: red;
+    top: -1px;
+    font-size: 10px;
+    left: 4px;
+}
+
+.glyphicon-stack-big {
+    color: red;
+    top: -5px;
+    font-size: 14px;
+    left: 5px;
+}
+
+.lob{
+    width:219px;
+}
+
+.primeSub{
+    width:47px;
+}
+
+.year {
+    width:50px;
+}
+
+.status,
+.seg {
+    width:55px;
+}
+
+.proposalType,
+.customer,
+.mgr,
+.costLead
+ {
+    width:219px;
+}
+
+.ref {
+    width:126px;
+}
+
+.contractType {
+    width:97px;
+}
+
+.pa,
+.pgm {
+    width:190px;
+}
+
+.pricingTool,
+.boeTool {
+    width:88px;
+}
+
+.pricer {
+    width:122px;
+}
+
+.range {
+    width: 65px;
+}
+
+.nameContains {
+    width:102px;
+}
+
+/* otis filter objects*/
+.otiswide{ width: 180px}
+.otissingle{ width: 30px}
+.otisnarrow{ width: 60px}
+.otismedium{ width: 120px}
+
+/* General Css */
+
+.no-left-padding {
+    padding-left: 0 !important;
+}
+
+.loader
+{
+    *zoom: 1;
+    background: transparent url(images/ajax-loader.gif) center center no-repeat !important;
+    min-height: 28px;
+    min-width: 41px;
+    cursor:auto;
+}
+
+.right{
+    text-align: right !important;
+}
+
+.left{
+    text-align: left !important;
+}
+
+.details,
+.details-middle{
+    font-size: 11px;
+    background-color:#ADD3FF;
+    border-top: solid #47A8BF 2pt;
+}
+
+.details div,
+.details-middle div{
+    text-align: left;
+    padding: 0 0;
+    margin-left: 0;
+    margin-right: 0;
+    color: #3D3668;
+}
+
+.details-middle{
+    background-color:#D6EBFF;
+}
+
+#opportunityDetails .details:nth-child(2)
+ {
+    overflow-y: auto; 
+    max-height: 67px;
+}
+
+#proposalDetails .details:nth-child(2) {
+    overflow-y: auto; 
+    max-height: 146px;
+}
+#otisGantSearchModule {
+    height: 187px;
+}
+#ptmGantSearchModule {
+    height: 246px;
+}
+#ptmGantSearchModule button.multiselectpicker, #otisGantSearchModule button.multiselectpicker {
+    width: 120px !important;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.multiselectpicker,  .multiselectpicker {
+    width: 240px !important;
+}
+#ptmGantSearchModule .col-xs-3, #otisGantSearchModule .col-xs-3 {
+    padding-left: 12px;
+    padding-right: 12px;
+}
+
+.bold {
+    font-weight:bold;
+    color: black !important;
+}
+
+input[type="checkbox"] {
+    margin: 0;
+    vertical-align: sub;
+}
+
+.module
+{
+    margin: auto;
+    box-shadow: 0px 0px 3px #999999;
+    border-radius: 3px;
+    behavior: url('/Resources/pie/pie.htc');
+    word-spacing: normal;
+    margin-bottom: 6px;
+}
+
+.module-header-data
+{
+    line-height: 16px;
+    background: linear-gradient(to bottom, #929292, #696969 1px, #404040);
+    -pie-background: linear-gradient(to bottom, #929292, #696969 1px, #404040);
+    background-color: #444444;
+    border: 1px solid #2F2F2F;
+    border-radius: 3px 3px 0px 0px;
+    color: #FFFFFF;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: Arial,Calibri,Verdana,Helvetica,Sans-Serif;
+    vertical-align: middle;
+    padding: 9px 10px;
+    max-width: 1400px;
+    behavior: url('/Content/pie/pie.htc');
+}
+
+.module-content-data
+{
+    padding: 2px;
+    border-radius: 0px 0px 3px 3px;
+    background-color: #FFFFFF;
+    border: 1px solid #8C8C8C;
+    border-top: 0;
+    max-width: 1400px;
+    behavior: url('/Resources/pie/pie.htc');
+}
+
+.module .row{
+    margin-left:0;
+    margin-right:0;
+}
+
+.indent {
+    padding-left: 15px !important;
+}
+
+.indent2 {
+    padding-left: 5px !important;
+}
+
+.indentLeft {
+    margin-left: -25px !important;
+}
+
+.floatRight {
+    float: right;
+}
+
+.floatLeft {
+    float: left;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.clearAllFilter {
+    width: 20px;
+    margin-right: 10px !important;
+    cursor: pointer;
+}
+
+.loadFilter {
+    width: 20px;
+    margin-right: 40px !important;
+    cursor: pointer;
+}
+
+.saveFilter {
+    width: 20px;
+    margin-right: 70px !important;
+    cursor: pointer;
+}
+
+.downloadIcon {
+    width: 20px;
+    margin-right: 100px !important;
+    cursor: pointer;
+}
+
+.refreshData {
+    margin-right: 0px !important;
+}
+
+/* Paging */
+.paging a.current-page,
+.paging a.page {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.paging
+{
+    float: left;
+    display: block;
+}
+
+.paging-area
+{
+     padding:0px; 
+     margin:0px;
+}
+.grid .paging
+{
+    margin-top: -16px;
+}
+
+.paging a.page
+{
+    border: 1px solid #5297AD;
+    padding: 2px 4px;
+    margin: 3px 2px;
+    min-height: 0px;
+}
+
+.paging .current-page
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    color: #ffffff;
+    background-color: #5297AD;
+    border: 1px solid #5297AD;
+    padding: 2px 4px;
+    margin: -1px 2px 3px 2px;
+    position: relative;
+}
+
+.paging .elipsis
+{
+    *margin-right: 4px;
+    *vertical-align: middle;
+}
+
+.paging-control
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    word-spacing: normal;
+    vertical-align: top;
+}
+
+.module-content-data .paging-control.page-number
+{
+    margin-top: -1px;
+}
+
+.pages
+{
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+    margin-right: 5px;
+    position: relative;
+    top: -3px;
+    *top: 0px;
+}
+
+.iframe {
+    width: 100%;
+    height: 30px;
+    border: none;
+}
+
+.metrics-chart {
+    text-align: left;
+    font-weight: bold;
+}
+
+.metrics-chart-title {
+    margin-bottom: 10px;
+}
+
+.metrics-chart-icons {
+    padding-left: 15px;
+    padding-right: 15px;
+    display: inline-block;
+    width: 100%;
+    vertical-align: middle;
+    height: 25px;
+}
+.metrics-chart-icons span span {
+    vertical-align: text-bottom;
+    padding-right: 5px;
+}
+
+.metrics-chart-icons input {
+    padding-top: 2px;
+}
+
+.padRight {
+    padding-right: 15px;
+}
+
+.org-list {
+    display: inline-flex;
+}
+
+.org-list div {
+    padding-right: 15px;
+}
+
+.org-list div span {
+    padding-left: 5px;
+    vertical-align: text-bottom;
+}
+
+.chart-footer {
+    font-size: 90%;
+    padding-left: 15px;
+    color: red;
+}
+
+li.dropdown {position: static;}
+
+#rpmMenu {
+    width: 690px !important; 
+    background-color: #424242;
+    text-align: center;
+    border: none;
+    padding: 0;
+    padding-top: 0;
+    font-size: 85%;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+}
+
+.list-inline > li {
+    padding: 0 10px !important;
+}
+
+.dropdown-menu > .disabled > a,
+.dropdown-menu > .disabled > a:hover,
+.dropdown-menu > .disabled > a:focus
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus {
+  background-color: #424242 !important;
+  outline: 0;
+}
+
+.navbar-nav > li > .dropdown-menu {
+    margin-top: -6px !important;
+}
+
+.navbar-header {
+    float: none !important;
+    margin: 0px auto !important;
+    display: table !important;
+}
+
+.rpm-logo {
+    height: 68px;
+    border-radius: 5px;
+    vertical-align: top;
+}
+
+.rpm-logo-div {
+    height: 55px;
+    padding-top: 2px;
+    margin-bottom: 19px;
+    display:inline-block;
+    width:100%;
+}
+
+.lmlogo {
+    float: right;
+    padding-top: 5px;
+    width: 200px;
+}
+
+
+.multiselectpicker span {
+    font-size: 11px;
+    font-weight: normal;
+}
+
+.estimator {
+    display: inline-block;
+    vertical-align: super;
+}
+
+.ui-widget-header .ui-icon {
+    background-image: url(images/ui-icons_2e83ff_256x240.png) !important;
+}
+
+.proposal-details b,
+.opp-details-padding b {
+    color: black !important;
+}
+
+.no-padding {
+    padding: 0 !important;
+}
+
+.no-top-margin {
+    margin-top: 0 !important;
+}
+
+.top-margin-2 {
+    margin-top: 2px !important;
+}
+
+.bannerframe {
+    border: none;
+    height: 0;
+    width: 100%;
+}
+
+.appOfflineFrame {
+    width: 100%;
+    top: 0;
+    left: 0;
+    height: 0px;
+    border: 0px;
+}

@@ -1,0 +1,379 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{AA84EB3D-E855-41E8-85BD-E98DBAAB0CA0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GenBOE.Tests</RootNamespace>
+    <AssemblyName>GenBOE.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\boe.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+    <DebugSymbols>true</DebugSymbols>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.0.5022.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>..\libraries\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.6.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Logging, Version=5.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\Microsoft.Practices.EnterpriseLibrary.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\libraries\Microsoft.Practices.ServiceLocation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=2.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\libraries\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Interception, Version=2.0.414.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\Microsoft.Practices.Unity.Interception.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Moq, Version=4.0.10531.7, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libraries\Moq.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.Web.Extensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.4\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.4\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ActionLogic\ControllerLogic\AdminControllerLogicTests.cs" />
+    <Compile Include="ActionLogic\ControllerLogic\BOEFormControllerLogicTest.cs" />
+    <Compile Include="ActionLogic\ControllerLogic\BOEControllerLogicTest.cs" />
+    <Compile Include="ActionLogic\ControllerLogic\BoeCommentsControllerLogicTests.cs" />
+    <Compile Include="ActionLogic\ControllerLogic\BOEOtherDirectCostControllerLogicTest.cs" />
+    <Compile Include="ActionLogic\ControllerLogic\BOETravelCostControllerLogicTest.cs" />
+    <Compile Include="ActionLogic\ControllerLogic\BOEZoneTravelControllerLogicTest.cs" />
+    <Compile Include="ActionLogic\ControllerLogic\PermissionControllerLogicTest.cs" />
+    <Compile Include="ActionLogic\ControllerLogic\ReportsControllerLogicMSTTest.cs" />
+    <Compile Include="ActionLogic\ControllerLogic\ReportsControllerLogicSpaceSystemsTest.cs" />
+    <Compile Include="ActionLogic\ControllerLogic\ReportsControllerLogicTest.cs" />
+    <Compile Include="ActionLogic\ControllerLogic\SSRSControllerLogicTest.cs" />
+    <Compile Include="ActionLogic\DateShift\DateShiftTest.cs" />
+    <Compile Include="ActionLogic\IO\TrainingImporterTests.cs" />
+    <Compile Include="AssertHelpers.cs" />
+    <Compile Include="ActionLogic\BLL\BoeMediatorTest.cs" />
+    <Compile Include="ActionLogic\BOESummaryTest.cs" />
+    <Compile Include="ActionLogic\BoeTaskElementRecalculationTest.cs" />
+    <Compile Include="ActionLogic\BOETransitions\ApprovedToDraftTransitionTest.cs" />
+    <Compile Include="ActionLogic\BOETransitions\AwaitingApprovalToDraftTransitionTest.cs" />
+    <Compile Include="ActionLogic\BOETransitions\DraftToAwaitingApprovalSpaceSystemsTest.cs" />
+    <Compile Include="ActionLogic\BOETransitions\DefaultBOETransitionTest.cs" />
+    <Compile Include="ActionLogic\BOETransitions\DraftToAwaitingApprovalTest.cs" />
+    <Compile Include="ActionLogic\BOETransitions\DraftToDraftLockedTransitionTest.cs" />
+    <Compile Include="ActionLogic\CustomFields\RestoreDefaultOptionsTestCase.cs" />
+    <Compile Include="ActionLogic\Export\BOEExporterDataTests.cs" />
+    <Compile Include="ActionLogic\Export\LaborExporterTest.cs" />
+    <Compile Include="ActionLogic\Export\WorkofflineExporter_WorkofflineTemplateTest.cs" />
+    <Compile Include="ActionLogic\Import\BOEImporterTest.cs" />
+    <Compile Include="ActionLogic\Import\BOEImportMergeTests.cs" />
+    <Compile Include="ActionLogic\Import\BoeTaskElementImportMergeTests.cs" />
+    <Compile Include="ActionLogic\Import\Labor\LaborImporterTest.cs" />
+    <Compile Include="ActionLogic\Import\WorkOfflineImportTests.cs" />
+    <Compile Include="ActionLogic\IO\ProjectMapImportExportTest.cs" />
+    <Compile Include="ActionLogic\IO\LaborTypeAndSpreadImporterTest.cs" />
+    <Compile Include="ActionLogic\IO\RTEUtilitiesTest.cs" />
+    <Compile Include="ActionLogic\NewValidation\ValidateProjectMapImportTest.cs" />
+    <Compile Include="ActionLogic\PerfOrgSearchTest.cs" />
+    <Compile Include="ActionLogic\Permissions\PermissionsWorkspaceAdminValidationTest.cs" />
+    <Compile Include="ActionLogic\ProjectMapSorterTest.cs" />
+    <Compile Include="ActionLogic\ProjectMapConverterTest.cs" />
+    <Compile Include="ActionLogic\ProPricerExportTest.cs" />
+    <Compile Include="ActionLogic\Reporting\BOEActivityReportTest.cs" />
+    <Compile Include="ActionLogic\Reporting\BoeDiscrepancyReportTest.cs" />
+    <Compile Include="ActionLogic\Reporting\BOEStatusReportTest.cs" />
+    <Compile Include="ActionLogic\Reporting\WorkspaceActivityReportTest.cs" />
+    <Compile Include="ActionLogic\ExcelExportWorksheetTest.cs" />
+    <Compile Include="ActionLogic\TravelTripCostCalculationTest.cs" />
+    <Compile Include="ActionLogic\TableRangeTest.cs" />
+    <Compile Include="ActionLogic\TMCalculatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\BOECLINMoveValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\BOECommentsResponsesValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\BoeLaborCostElementExistsValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\BOEMaterialElementExistsValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\BOEMaterialExistsForWBSValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\BoeTaskIdUniqueValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\BOEDateValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\BOELaborTypeValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\BOEWBSMoveValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\ClinValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\DateRangeValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\ExportToProPricerFormatValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\IsUserNotSubcontractorValidtorTest.cs" />
+    <Compile Include="ActionLogic\Validation\IsNumericValidationTests.cs" />
+    <Compile Include="ActionLogic\Validation\PerformingOrgUniqueIDValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\RegularExpressionTest.cs" />
+    <Compile Include="ActionLogic\Validation\ResourceUniqueDescValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\ResourceUniqueIDValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\StartEndDateTypeValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\StringValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\TaskElementValidationTest.cs" />
+    <Compile Include="ActionLogic\Validation\WBSRenumberValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\WBSUniqueNumberValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\WorkspaceVariableUniqueNameValidatorTest.cs" />
+    <Compile Include="ActionLogic\VariableSelectBOEToSumCalcTest.cs" />
+    <Compile Include="ActionLogic\WBS\NestedWBSUtilitiesTest.cs" />
+    <Compile Include="ActionLogic\Web\ControllerLogic\BOELaborControllerlogicTest.cs" />
+    <Compile Include="ActionLogic\Web\ControllerLogic\GenBOEControllerLogicTest.cs" />
+    <Compile Include="ActionLogic\Web\ControllerLogic\TravelControllerLogicTest.cs" />
+    <Compile Include="ActionLogic\Web\ControllerLogic\WorkspaceControllerLogicTest.cs" />
+    <Compile Include="ActionLogic\Web\ValidationAttributes\ServerValidationAttributeTest.cs" />
+    <Compile Include="ActionLogic\Web\ValidationAttributes\LaborSpreadHoursValidationAttributeTest.cs" />
+    <Compile Include="ActionLogic\Web\ValidationAttributes\StartEndDateValidationAttributeTest.cs" />
+    <Compile Include="ActionLogic\Web\ValidationAttributes\LaborSpreadCostValidationAttributeTest.cs" />
+    <Compile Include="ActionLogic\WorkspaceTransitions\ClosedToInitializationTest.cs" />
+    <Compile Include="ActionLogic\WorkspaceTransitions\CompleteToLockedTest.cs" />
+    <Compile Include="ActionLogic\WorkspaceTransitions\CompleteToWorkingTest.cs" />
+    <Compile Include="ActionLogic\WorkspaceTransitions\DefaultWorkspaceTransitionTest.cs" />
+    <Compile Include="ActionLogic\EmailerTest.cs" />
+    <Compile Include="ActionLogic\WorkspaceTransitions\InitializationToClosedTest.cs" />
+    <Compile Include="ActionLogic\WorkspaceTransitions\InitializationToWorkingTransitionTest.cs" />
+    <Compile Include="ActionLogic\WorkspaceTransitions\LockedToClosedTest.cs" />
+    <Compile Include="ActionLogic\WorkspaceTransitions\LockedToCompleteTest.cs" />
+    <Compile Include="ActionLogic\WorkspaceTransitions\LockedToWorkingTest.cs" />
+    <Compile Include="ActionLogic\WorkspaceTransitions\NoneToInitializeTransitionTest.cs" />
+    <Compile Include="ActionLogic\SpreadCurveTest.cs" />
+    <Compile Include="ActionLogic\ValidateBOETest.cs" />
+    <Compile Include="ActionLogic\Validation\ValidationFactoryTest.cs" />
+    <Compile Include="ActionLogic\Validation\IsUserNotGroupValidtorTest.cs" />
+    <Compile Include="ActionLogic\Validation\WorkspaceUniqueNameValidatorTest.cs" />
+    <Compile Include="ActionLogic\Validation\WorkspaceUniqueShortnameValidatorTest.cs" />
+    <Compile Include="ActionLogic\WorkspaceTransitions\WorkingToClosedTransition.cs" />
+    <Compile Include="ActionLogic\WorkspaceTransitions\WorkingToInitTransitionTest.cs" />
+    <Compile Include="ActionLogic\WorkspaceTransitions\WorkingToLockedTransitionTest.cs" />
+    <Compile Include="ActionLogic\ZoneTravel\NonZoneTravelCalculationTest.cs" />
+    <Compile Include="Common\BOEStateMachineTest.cs" />
+    <Compile Include="Common\ExtensionMethodTest.cs" />
+    <Compile Include="Common\GenBOEUtilitiesTest.cs" />
+    <Compile Include="Common\HtmlAgilityPackUtilitiesTest.cs" />
+    <Compile Include="Common\LoggerTest.cs" />
+    <Compile Include="Common\SecurityInformationTest.cs" />
+    <Compile Include="Common\UtilitiesTest.cs" />
+    <Compile Include="Common\WorkspaceStateMachineTest.cs" />
+    <Compile Include="MOQObject.cs" />
+    <Compile Include="Objects\FullWorkspaceTests.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GenBOE.ActionLogic\GenBOE.ActionLogic.csproj">
+      <Project>{8b23113c-48a0-4f65-8ed5-0f725ac170e7}</Project>
+      <Name>GenBOE.ActionLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenTRAC.DataBridge\GenTRAC.DataBridge.csproj">
+      <Project>{6EBD0376-9273-4A2A-9E23-1912418DDBA5}</Project>
+      <Name>GenTRAC.DataBridge</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IES.Common\IES.Common.csproj">
+      <Project>{FADFE985-0AA1-41AF-B7CB-A740673FC0D7}</Project>
+      <Name>IES.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.Models\GenBOE.Models.csproj">
+      <Project>{5E73D211-CFD8-49AC-B164-3ECDDEA9B443}</Project>
+      <Name>GenBOE.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.ModelView\GenBOE.DataBridge.csproj">
+      <Project>{F909CD46-E2D7-4D57-B647-6D93F9DD9618}</Project>
+      <Name>GenBOE.DataBridge</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.Web\GenBOE.Web.csproj">
+      <Project>{AD87CC58-CFBC-4901-9AE3-418473E78590}</Project>
+      <Name>GenBOE.Web</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="ActionLogic\Import\Labor\LaborImportSpreadDataInvalidStartMonth.xlsx" />
+    <None Include="ActionLogic\Import\Labor\LaborImportSpreadDataInvalidStartMonth0.xlsx" />
+    <None Include="ActionLogic\Import\Labor\LaborImportSpreadDataValidStartMonth.xlsx" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <EmbeddedResource Include="ActionLogic\Import\BOEImporterTest.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportHours.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportMissingStartDate.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportMissingEndDate.xlsx" />
+    <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
+      <Link>CustomDictionary.xml</Link>
+    </CodeAnalysisDictionary>
+    <Content Include="ActionLogic\Export\LaborTypesAndSpread.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportCost.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportCostDecimalPrecision.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportCostEmptyCost.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportCostInvalidTotal.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportCostMissingCost.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportCostSpreadDecimalPrecision.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportCostSpreadRangeInvalid.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportCostSpreadTooLarge.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportCostTooLarge.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImporterBadFormat.xls" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImporterNotExcel.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportHoursChangeCurve.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportHoursChangeCurveAndRateType.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportHoursInvalidDates.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportHoursInvalidEnd.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportHoursInvalidPerfOrg.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportHoursInvalidResource.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportHoursInvalidStart.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportHoursInvalidTotal.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportHoursSpreadInvalidDecimal.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportInvalidSpreadData.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportSpreadDataDecimalsTooLong.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportMissingPerfOrg.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportMissingResource.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportMissingSpreadCurve.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportNoRows.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportSpreadDataExtraMonth.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportSpreadDataLargerSum.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportSpreadDataMissingMonth.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportSpreadDataMissingValue.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportSpreadDataTooLong.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportHoursCustomFields.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportHoursCustomFieldsNoChange.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportHoursCustomFieldsNoSelection.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportMultiWBS.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportMultiClin.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportMultiNull.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportHoursCustomFieldsMulti.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportMultiCustomFields.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportHoursPercentage.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportInvalidResourceId.xlsx" />
+    <EmbeddedResource Include="ActionLogic\Import\Labor\LaborImportEPs.xlsx" />
+    <None Include="CodeCloneIgnoreSettings.codeclonesettings" />
+    <None Include="packages.config" />
+    <None Include="Resources\LaborImportHoursCustomFields.xlsx" />
+    <None Include="Resources\LaborImportHoursCustomFieldsNoChange.xlsx" />
+    <None Include="Resources\LaborImportHoursCustomFieldsNoSelection.xlsx" />
+    <None Include="Resources\laborimportmulticustomfields.xlsx" />
+    <None Include="Resources\LaborTypesAndSpread.xlsx" />
+    <None Include="Resources\ProjectMap.xlsx" />
+    <EmbeddedResource Include="Resources\TINATraining.xlsx" />
+    <None Include="Settings.StyleCop" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ActionLogic\ValidationAttributes\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

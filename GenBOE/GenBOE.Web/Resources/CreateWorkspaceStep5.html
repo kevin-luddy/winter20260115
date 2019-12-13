@@ -1,0 +1,201 @@
+﻿<div>
+    Review and confirm that all information is correct.
+</div>
+<br />
+<h2>
+    Workspace Type
+</h2>
+<a style="float: right;" name="EditStep" data-ng-click="goToStep(1)">Edit</a>
+<div>{{getWorkspaceType()}}</div>
+<hr />
+<div data-ng-show="data.IsAttemptingToImport">
+    <h2>
+        Search & Copy Existing Workspace
+    </h2>
+    <a style="float: right;" name="EditStep" data-ng-click="goToStep(2)">Edit</a>
+    <div class="form-row">
+        <div class="form-label">
+            <b>Workspace to Copy:</b>
+        </div>
+        <div class="form-element static">{{model.workspaceToCopy.WorkspaceName}}</div>
+    </div>
+    <div class="form-row">
+        <div class="form-label">
+            <b>Copy:</b>
+        </div>
+        <div data-ng-show="data.WSExactCopy" class="form-element static">Create an exact duplicate of the workspace. Authors, Approvers, BOE Statuses and Workspace Status will remain the same.</div>
+        <div data-ng-hide="data.WSExactCopy" class="form-element static">
+            <span data-ng-show="data.CopyPermissions">Permissions<br/></span>
+            <span data-ng-show="data.CopyTasks">Tasks of selected BOEs<br /></span>
+            <span data-ng-show="data.CopyLaborSpreads">Labor Spreads of selected BOEs<br /></span>
+        </div>
+    </div>
+    <div data-ng-hide="data.WSExactCopy" class="form-row">
+        <div class="form-label">
+            <b>BOEs to Copy:</b>
+        </div>
+        <div class="form-element static">{{data.BOEsToCopy.length}} </div>
+        (<a name="EditStep" data-ng-click="goToStep(2)">View selected BOEs</a>)
+    </div>
+    <hr />
+</div>
+<h2>
+    Workspace Identification
+</h2>
+<a style="float: right;" id="Workspace-Identification-EditStep" data-ng-hide="data.IsAttemptingToImport && data.WSExactCopy" data-ng-click="goToStep(3)">Edit</a>
+<div class="form-row">
+    <div class="form-label">
+        <b>Workspace/Proposal Name:</b>
+    </div>
+    <div class="form-element static">{{data.WorkspaceName}}</div>
+</div>
+<div class="form-row">
+    <div class="form-label">
+        <b>Description:</b>
+    </div>
+    <div class="form-element static">{{data.Description}}</div>
+</div>
+<div class="form-row">
+    <div class="form-label">
+        <b>URL:</b>
+    </div>
+    <div class="form-element static">{{model.applicationUrl}}{{data.Shortname}}</div>
+</div>
+<div class="form-row" data-ng-show="model.showProjectMap && !model.isSSC">
+    <div class="form-label">
+        <b>Project Map Type:</b>
+    </div>
+    <div class="form-element static">{{getProjectMapTypeName()}}</div>
+</div>
+<div class="form-row">
+    <div class="form-label">
+        <b>Line of Business:</b>
+    </div>
+    <div class="form-element static">{{getLOB()}}</div>
+</div>
+<div class="form-row" data-ng-show="model.isSSC">
+    <div class="form-label">
+        <b>Proposal Class:</b>
+    </div>
+    <div class="form-element static">{{getProposalClass()}}</div>
+</div>
+<div class="form-row" data-ng-show="model.isSSC">
+    <div class="form-label">
+        <b>Contract Type:</b>
+    </div>
+    <div class="form-element static" style="width:745px">{{getSelectedContractTypes()}}</div>
+</div>
+<div class="form-row">
+    <div class="form-label">
+        <b>{{model.labelLeadPricer}}:</b>
+    </div>
+    <div class="form-element static">{{data.CostVolumeLeadPricerDisplayName}}</div>
+</div>
+<div class="form-row" data-ng-show="model.showProjectMap && !model.isSSC">
+    <div class="form-label">
+        <b>Allow Grid Edit:</b>
+    </div>
+    <div class="form-element static">{{convertBool(data.AllowGridEdit)}}</div>
+</div>
+<div class="form-row">
+    <div class="form-label">
+        <b>Contract Start Date:</b>
+    </div>
+    <div class="form-element static">{{data.ContractStartDate}}</div>
+    <div class="form-label" style="margin-left: 100px;">
+        <b>Contract End Date:</b>
+    </div>
+    <div class="form-element static">{{data.ContractEndDate}}</div>
+</div>
+<div class="form-row">
+    <div class="form-label" data-ng-hide="model.isSSC">
+        <b>Proposal Submittal Date:</b>
+    </div>
+    <div class="form-label" data-ng-show="model.isSSC">
+        <b>Anticipated Delivery Date:</b>
+    </div>
+    <div class="form-element static">{{data.ProposalSubmittalDate}}</div>
+</div>
+<div class="form-row">
+    <div class="form-label" data-ng-show="model.isSSC && model.isPTMIntegrated">
+        <b>Revised Submittal Date:</b>
+    </div>
+    <div class="form-element static">{{data.RevisedSubmittalDate}}</div>
+</div>
+<div class="form-row">
+    <div class="form-label">
+        <b>Resource Decimal Precision:</b>
+    </div>
+    <div class="form-element static">{{data.ResourceDecimalPrecision}}</div>
+</div>
+<div class="form-row">
+    <div class="form-label">
+        <b>Cost Decimal Precision:</b>
+    </div>
+    <div class="form-element static">{{data.CostDecimalPrecision}}</div>
+</div>
+<div class="form-row" data-ng-show="model.isSSC">
+    <div class="form-label">
+        <b>PTM Tracking #:</b>
+    </div>
+    <div class="form-element static">{{data.TrackingNumber}}</div>
+</div>
+<div class="form-row" data-ng-show="model.isPTMIntegrated || !model.isSSC">
+    <div class="form-label">
+        <b>RFP #:</b>
+    </div>
+    <div class="form-element static">{{data.RFPNumber}}</div>
+</div>
+<div class="form-row" data-ng-show="model.isPTMIntegrated">
+    <div class="form-label">
+        <b>PTM Proposal Title:</b>
+    </div>
+    <div class="form-element static">{{data.ProposalTitle}}</div>
+</div>
+<div class="form-row" id="UsingEP" data-ng-show="model.isSSC && model.showEquivalentPersonsOption">
+    <div class="form-label">
+        <b>Using Equivalent Person (EP):</b>
+    </div>
+    <div class="form-element static">{{convertBool(data.IsUsingEquivalentPerson)}}</div>
+</div>
+<div class="form-row" id="UsingTM" data-ng-show="model.isSSC">
+    <div class="form-label">
+        <b>Using T&M Subcontractor/IWTA<br />Labor Rates:</b>
+    </div>
+    <div class="form-element static">{{convertBool(data.IsUsingTM)}}</div>
+</div>
+<div class="form-row" id="RteSizeLimit">
+    <div class="form-label">
+        <b>Rich Text Character Limit:</b>
+    </div>
+    <div class="form-element static">{{data.RteSizeLimit}}</div>
+</div>
+<div class="form-row" data-ng-show="!model.isSSC && !data.IsAttemptingToImport">
+    <div class="form-label">
+        <b>Create Sikorsky Custom Fields:</b>
+    </div>
+    <div class="form-element static">{{data.CreateSikorskyCustomFields | yesNo}}</div>
+</div>
+<hr />
+<h2>
+    Share & Allow Search Settings
+</h2>
+<a style="float: right;" data-ng-hide="data.IsAttemptingToImport && data.WSExactCopy" data-ng-click="goToStep(4)">Edit</a>
+<div class="form-row">
+    <div class="form-label">
+        <b>Contains OCI Information:</b>
+    </div>
+    <div class="form-element static">{{convertBool(data.ContainsOCI)}}</div>
+</div>
+<div class="form-row">
+    <div class="form-label">
+        <b>Contains BOE Templates:</b>
+    </div>
+    <div class="form-element static">{{convertBool(data.ContainsContentTemplates)}}</div>
+</div>
+<div class="form-row">
+    <div class="form-label">
+        <b>Share & Allow Search:</b>
+    </div>
+    <div class="form-element static">{{convertBool(data.ShareAndAllowSearch)}}</div>
+</div>

@@ -1,0 +1,35 @@
+﻿@model ICollection<OfflineApplicationModelView>
+@using IES.DataBridge.ModelViews;
+@using IES.Common;
+@using Newtonsoft.Json;
+@{ 
+    ViewBag.Title = "Manage Offline Applications";
+    Layout = "~/Views/Admin/_Layout.cshtml";
+}
+<script type="text/javascript">
+    angular.module('portal').value('OfflineApplicationsView',
+    {
+        controller: '@IESWebConstants.CONTROLLER_ADMIN',
+        baseUrl: '@Url.Content("~/")',
+        data: @Html.Raw(JsonConvert.SerializeObject(Model)),
+        saveAction: '@IESWebConstants.SAVE_OFFLINE_APPLICATIONS'
+    });
+</script>
+<div data-ng-app="portal" data-ng-controller="editOfflineApplicationsController">
+    <div class="module-header-data left">
+        Manage Offline Applications
+    </div>
+    <div class="module-content-data black">
+        <div class="application-list" data-ng-repeat="app in applications">
+            <label class="application-label">{{app.ApplicationName}}</label>
+            <div class="online-offline-radio"><input type="radio" name="{{app.ApplicationName}}" data-ng-model="app.IsOffline" data-ng-value="false" data-ng-change="markPageDirty()" /> Online</div>
+            <div class="online-offline-radio"><input type="radio" name="{{app.ApplicationName}}" data-ng-model="app.IsOffline" data-ng-value="true" data-ng-change="markPageDirty()" /> Offline</div>
+        </div>
+        <hr class="manage-offline-hr">
+        <div class="action-buttons">
+            <button data-ng-hide="isSaving" id="SaveButton-ManageOffline" type="submit" class="ies-action" data-ng-click="save()" data-ng-disabled="isDataLoading || !isPageDirty">Save</button>
+            <button data-ng-show="isSaving" class="ies-action ng-hide"><div class="loader"></div></button>
+            <button id="CancelButton-ManageOffline" type="button" class="ies" data-ng-click="cancel()" data-ng-disabled="isDataLoading">Cancel</button>
+        </div>
+    </div>
+</div>

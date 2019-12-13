@@ -1,0 +1,38 @@
+﻿Apply Changes to Local Development
+
+Launch VS 2010 on vfaswd090
+Select the database solution
+Select Data -> Schema compare
+Select New Schema
+Select Source Schema:  Click Project and select the database project you loaded above
+Select Target Schema: Click Database and select your database vfaswd09\genBOE_dave
+Click OK.
+
+skip users and permissions
+Export to Editor
+
+Remove the following from file:
+
+:setvar DatabaseName "genBOE_dave"
+:setvar DefaultDataPath "e:\Program Files\Microsoft SQL Server\MSSQL10_50.MSSQLSERVER\MSSQL\DATA\"
+:setvar DefaultLogPath "e:\Program Files\Microsoft SQL Server\MSSQL10_50.MSSQLSERVER\MSSQL\DATA\"
+
+GO
+:on error exit
+GO
+USE [master]
+GO
+USE [$(DatabaseName)]
+GO
+
+**Remeber to look at bottom onf file for another DatabaseName section.
+
+
+Then paste into SQL Server Management Studio
+Select the target database
+Run the script.
+
+Clean the solution
+Run model update
+Rebuild the solution
+

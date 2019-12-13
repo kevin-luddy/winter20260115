@@ -1,0 +1,123 @@
+﻿@{
+    ViewBag.Title = "Proposal Log Report";
+    Layout = "~/Views/Shared/HomeLayout.cshtml";
+}
+<script type="text/javascript">
+    var ProposalLogReportWidget;
+
+    $(function () {
+
+        var widgetConfig = {};
+        widgetConfig.ContextID = "proposalLogReport";
+        widgetConfig.IsModule = true;
+
+
+        var FormConfigs = [];
+        FormConfigs.push({
+            ElementID: "proposalLogReportForm", 
+            Buttons: [
+            {
+                ButtonClass: 'ies',
+                ButtonText: 'View Report',
+                ButtonName: "view-report-button",
+                ButtonAction: function (buttonPressed) {
+                    ProposalLogReportWidget.ViewReport(buttonPressed);
+                },
+                Stateful: false
+            }],
+            HideOCI: "true"
+        });
+
+        widgetConfig.FormConfigs = FormConfigs;
+
+        ProposalLogReportWidget = new GenWidget(widgetConfig);
+
+        var widgetCounter = 0;
+        GenSession.ShowLoadingBox();
+
+
+        // create the composite widgets
+        $.ajax({
+            type: 'POST',
+            url: GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.REPORTS',
+                action: '@WebConstants.Action.DISPLAY_PROPOSAL_LOG_REPORT_PARAMETERS'
+            }),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'html',
+            success: function (response) {
+                $('#proposalLogReportParametersPlaceholder').html(response);
+                ProposalLogReportWidget.ShouldHideLoadingBox();
+                ProposalLogReportWidget.refreshModule();
+            },
+            error: function () {
+                ProposalLogReportWidget.ShouldHideLoadingBox();
+            }
+        });
+
+        // Hide the Loading Box after the 1 composite widget has loaded (on success or error)
+        ProposalLogReportWidget.ShouldHideLoadingBox = function () {
+            widgetCounter++;
+            if (widgetCounter == 1) {
+                GenSession.HideLoadingBox();
+            }
+
+        };
+
+        // returns all of the data from the child widgets.
+        ProposalLogReportWidget.GetData = function () {
+            var dataToSave = {};
+            dataToSave.reportParameters = ProposalLogReportParameterWidget.getForm("proposalLogReportParameterForm").getData();
+            return dataToSave;
+        };
+
+        ProposalLogReportWidget.ViewReport = function (buttonPressed) {
+
+            var dataToSend = ProposalLogReportWidget.GetData();
+            dataToSend = JSON.stringify(dataToSend);
+
+            // Make the call
+            ProposalLogReportWidget.saveRequest({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.REPORTS',
+                    action: '@WebConstants.Action.VIEW_PROPOSAL_LOG_REPORT'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                data: dataToSend,
+                success: function (response) {
+                    ProposalLogReportWidget.CallSSRS(response);
+                },
+                error: function () {
+                    ProposalLogReportParameterWidget.refreshModule();
+                    ProposalLogReportWidget.refreshModule();
+                }
+            }, buttonPressed);
+        };
+
+        ProposalLogReportWidget.CallSSRS = function (data) {
+
+            // if the URL hits the IE limit, inform the user. 
+            // This is just a precaution so that's why alert.dialog is being used
+            if (data.Url.length >= 2083) {
+                GenSession.alertdialog('URL Limit Warning', 'If using IE, the url limit is 2083 chars. You have exceeded that which may limit the report results');
+            }   
+            window.open(data.Url, '_blank', 'resizable=yes, location=yes');
+        };
+
+    });
+</script>
+
+<div id="proposalLogReport" class="module full">
+    <div class="module-header-data"> Proposal Log Report</div>
+    <div id="proposalLogReportParametersPlaceholder"> </div>
+    <div class ="button-container"></div>
+
+    <div class="module-content-data">
+        <div>
+            @using (Html.BeginForm("", "", FormMethod.Post, new { id = "proposalLogReportForm", name = "proposalLogReportForm" }))
+            {
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,56 @@
+﻿@inherits System.Web.Mvc.WebViewPage<IES.DataBridge.ModelViews.BurdenPoolGridModelView>
+@using IES.Common
+@{
+    ViewBag.Title = "Burden Pools";
+}
+<br />
+<script type="text/javascript">
+    angular.module('RDM').value('BurdenPoolModel', {
+        controller: '@IESWebConstants.CONTROLLER_BURDEN_POOL',
+        saveAction: '@IESWebConstants.ACTION_SAVE_BURDEN_POOL',
+        getBurdenPoolsAction: '@IESWebConstants.ACTION_GET_BURDEN_POOLS',
+        baseUrl: '@Url.Content("~/")',
+        Area: @((int)LockArea.RDMBurdenPools),        
+        SelectedRevisionId: '@Model.SelectedRevisionId'
+        });
+</script>
+<div data-ng-app="RDM" data-ng-controller="BurdenPoolController">
+    <div class="row top-margin-2">
+        <div class="col-xs-12">
+            <div class="module" data-ng-hide="isDataLoading">
+                <div class="module-header-data left" data-ng-cloak>
+                    Burden Pools
+                    <span data-ng-if="lockInfo.Editing"> -- Currently locked for edit by {{lockInfo.Editing}}</span> &nbsp; &nbsp;
+                    <button id="EnableEditButton-BurdenPools" data-ng-click="lock()" data-ng-disabled="isDataLoading" data-ng-if="lockInfo.IsReadOnly && lockInfo.IsLockAllowed && selectedVersion.Label === '@IES.Common.classes.CommonConstants.WorkInProgress'" type="button" class="ies">Enable Editing</button>
+                    <span data-ng-if="showEditLockTimeoutExpiration" class="EditLockTimeoutExpiration">Your edit lock has expired.</span>
+                </div>
+                <div class="module-content-data" data-ng-cloak>
+                    <div class="form-row css3pie-position-fix">
+                        <div id="errorMessage"></div>
+                        <gen-validation data-errors="$root.errors"></gen-validation>
+                        <div class="form-element black" data-ng-hide="canEdit()">
+                            Version: <select data-ng-options="item.Label for item in versions" data-ng-model="selectedVersion" data-ng-change="reloadGrid(true)"></select>
+                        </div>
+                    </div>
+                    <div class="form-row css3pie-position-fix last-form-row" data-ng-hide="isDataLoading || lockInfo.IsReadOnly">
+                        <div class="buttons inline css3pie-position-fix" style="line-height: 28px;">
+                            <button id="AddButton-BurdenPool" data-ng-click="addBurdenPool()" data-ng-disabled="isDataLoading" type="button" class="ies-action">+ Add</button>
+                            &nbsp; <!-- need line-height and nbsp to ensure div still occupies some real estate when button is hidden -->
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div ui-grid="gridOptions" ui-grid-edit ui-grid-cellNav ui-grid-pinning ui-grid-move-columns ui-grid-resize-columns class="burden-pool-grid-ui"></div>
+                    </div>
+                    <div class="form-row css3pie-position-fix last-form-row" data-ng-hide="lockInfo.IsReadOnly">
+                        <div class="inline css3pie-position-fix" style="line-height: 28px;">
+                            <button id="SaveButton-BurdenPoolGrid" data-ng-click="saveBurdenPoolGrid(true)" data-ng-disabled="isDataLoading || !PageIsDirty" type="button" class="ies-action">Save</button>
+                            <button id="SaveContinueButton-BurdenPoolGrid" data-ng-click="saveBurdenPoolGrid(false)" data-ng-disabled="isDataLoading || !PageIsDirty" type="button" class="ies-action">Save &amp; Continue</button>
+                            <button id="CancelButton-BurdenPoolGrid" data-ng-click="confirmCancel()" data-ng-disabled="isDataLoading" type="button" class="ies">Cancel</button>
+                            &nbsp; <!-- need line-height and nbsp to ensure div still occupies some real estate when button is hidden -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,83 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Admin.PermissionsGridModelView
+           
+@{
+    ViewBag.Title = "Manage Permissions";
+}
+
+<script type="text/javascript">
+</script>
+
+<div id="managePermissionsGrid">
+    @using (Html.BeginForm("", "", FormMethod.Post, new {id = "managePermissionsGridForm", @class = "permission-grid-form" }))
+    {
+    <table id="ManagePermissionsTable" class="grid readonly" style="width: 100%">
+        <thead>
+            <tr>
+                <th>Active Directory Group</th>
+                <th>User(s)</th>
+                <th class="last-child">Permission(s)</th>
+            </tr>
+        </thead> 
+        <tbody>
+            @if (Model.PermissionData.Any())
+                {
+                    foreach (var user in Model.PermissionData)
+                    {
+                        <tr pkid="@user.UserId" UpdateDateLong="@user.UpdateDateLong">
+                            <input id="userNtId" name="userNtId" type="hidden" value="@user.UserNtId"/>
+                            <input id="viewerLinesOfBusiness" name="viewerLinesOfBusiness" type="hidden" value="@user.ViewerLinesOfBusinessString" />
+                            <input id="proposalSetupAdminLinesOfBusiness" name="proposalSetupAdminLinesOfBusiness" type="hidden" value="@user.ProposalSetupAdminLinesOfBusinessString" />
+                            <td class="text ad-group">
+                            @if (user.UserType == IES.Common.UserType.Group)
+                            {
+                                <a name="ADGroup" class="userlink">@user.UserName</a>
+                            }
+                            </td>
+                            @if (user.UserType == IES.Common.UserType.User)
+                            {
+                                <td class="text user-name">
+                                    <a name="UserName" class="userlink">@user.UserName</a>
+                                </td>
+                            }
+                            @if (user.UserType == IES.Common.UserType.Group)
+                            {
+                                <td name="GroupName" class="text user-name">
+                                    <a name="ViewUsers">View Users</a>
+                                    <div name="UsersList" class="users-list display-none">
+                                        <div class="loader"></div>
+                                    </div>
+                                </td>
+                            }
+                            <td class="text user-roles">
+                                @foreach (PtmRole role in @user.Roles)
+                                {
+                                    if (role == PtmRole.Viewer)
+                                    {
+                                        <span>@user.ViewerLinesOfBusinessDisplay</span>
+                                    }
+                                    else if (role == PtmRole.ProposalSetupAdmin)
+                                    {
+                                        <span>@user.ProposalSetupAdminLinesOfBusinessDisplay</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@role.GetDescription()</span>
+                                    }
+                                    <input class="userRole" name="userRole" type="hidden" value="@((int)role)"/>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            else
+            {
+                <tr>
+                    <td colspan="3">
+                        <div class="empty-grid-text">There are no permissions.</div>
+                    </td>
+                </tr>
+            } 
+        </tbody>
+    </table>
+    }
+</div>

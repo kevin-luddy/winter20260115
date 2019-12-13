@@ -1,0 +1,219 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Checklist.ChecklistProposalPricingReviewDocumentModelView
+@{
+    ViewBag.Title = "Proposal Pricing Review (PPR) Document";
+}
+<script type="text/javascript">
+
+    var ChecklistPPRDocumentDataWidget;
+
+    $(function () {
+        var readOnly = @Model.IsReadOnly;
+        var isPTMChecklistUIEnabled = ("@Model.IsPTMChecklistUIEnabled".toLowerCase() == "true");
+        var DisplayPPRSection = @Model.ShouldDisplayPPRSection;
+        var Q1SortOrder = @Model.Question1SortOrder;
+        var PPRDocumentDataWidgetConfig = {};
+        PPRDocumentDataWidgetConfig.ContextID = "checklistPPRDocumentSection";
+        PPRDocumentDataWidgetConfig.IsModule = true;
+        PPRDocumentDataWidgetConfig.isReadOnly = readOnly;
+        ChecklistPPRDocumentDataWidget = new GenWidget(PPRDocumentDataWidgetConfig);
+
+        ChecklistPPRDocumentDataWidget.LoadDataPlaceholderID = 'checklistPPRDocumentPlaceholder';
+
+        ChecklistPPRDocumentDataWidget.on('HIDE_PPR_SECTION', function (e, params) {
+            $('#checklistPPRDocumentSection').addClass('display-none');
+
+            // all previous radio button selections should be cleared
+            $('#checklistPPRDocumentSection :input[type=radio]').each(function () {
+                this.checked = false;
+            });
+
+            // all previous comments should be cleared
+            $('#PPRDocumentPricerComment').val('');
+            $('[name=PPRPricerComment]').val('');
+        });
+
+        // Define functionality based on whether or not we are displaying new (PTM) or old (GenTRAC) checklists
+        if (isPTMChecklistUIEnabled) {
+            // These functions are not used with PTM checklists
+            ChecklistPPRDocumentDataWidget.ValidateQuestion1Yes = function (row) {};
+            ChecklistPPRDocumentDataWidget.ValidateQuestion1No = function (row) {};
+        } else {
+            // Hide N/A radio button for question 1
+            $('#PPRGrid :input[type=radio]:eq(2)').hide();
+
+            // If and only if Question 1 is set to Yes, hide PAR Document section
+            ChecklistPPRDocumentDataWidget.ValidateQuestion1Yes = function (row) {
+                var rowElement = $(row).parents('tr');
+                var sortOrder = $(rowElement).attr('pkid');
+                if (Q1SortOrder == sortOrder)
+                {
+                    // if Question 1 is Yes, and are you sure is Yes, the need to trigger to hide PAR
+                    // the actual clearing out the response can happen in the controller logic
+                    var DialogBodyText = 'Changing PPR Question 1 to "Yes" will set the Proposal Adequacy </br> Review form to inactive. Any existing responses will be removed (for </br> both Lead Estimator and Peer). </br> </br> Are you sure?';
+                    GenSession.confirmDialog('PPR Question 1 - Exempt from Proposal Adequacy Review?', DialogBodyText, ChecklistPPRDocumentDataWidget.ConfirmQuestion1Change, ChecklistPPRDocumentDataWidget.CancelQuestion1Change, ChecklistPPRDocumentDataWidget.CancelQuestion1Change);
+                }
+            };
+
+            ChecklistPPRDocumentDataWidget.ConfirmQuestion1Change = function () {
+                var data = {};
+                data.proposalid = @ViewBag.proposalid;
+                $(document).trigger('HIDE_PAR_SECTION', data);
+                $('#deliverChecklistDFARQuestion').addClass('display-none');
+                $('#deliverChecklistDFARRadio').addClass('display-none');
+            };
+
+            ChecklistPPRDocumentDataWidget.CancelQuestion1Change = function () {
+                // if cancelled, change back radio button selection from yes to no
+                $('#PPRGrid').find('tr[pkid='+Q1SortOrder+'] input[id=QPPRYes'+Q1SortOrder+']').removeAttr('checked');
+                $('#PPRGrid').find('tr[pkid='+Q1SortOrder+'] input[id=QPPRNo'+Q1SortOrder+']').attr('checked', true);
+            };
+
+            // If and only if Question 1 is set to No, show PAR Document section
+            ChecklistPPRDocumentDataWidget.ValidateQuestion1No = function (row) {
+                var rowElement = $(row).parents('tr');
+                var sortOrder = $(rowElement).attr('pkid');
+                if (Q1SortOrder == sortOrder)
+                {
+                    $('#checklistPARDocumentSection').removeClass('display-none');
+                    $('#deliverChecklistDFARQuestion').removeClass('display-none');
+                    $('#deliverChecklistDFARRadio').removeClass('display-none');
+                    ChecklistPARDocumentDataWidget.refreshModule();
+                }
+            };
+        }
+
+        if (!readOnly) {
+            // Used for print to pdf, display textarea content in a div to preserve textarea overflow text.
+            var pricerComment = ChecklistPPRDocumentDataWidget.getElement('#PPRDocumentPricerComment').val().replace(/\n/g, '<br/>');
+            ChecklistPPRDocumentDataWidget.getElement('#PrintPPRPricerComment').html(pricerComment);
+
+            ChecklistPPRDocumentDataWidget.getElement('#PPRDocumentPricerComment').change(function () {
+                $('[name=PPRPricerComment]').val(this.value);
+                var pricerComment = ChecklistPPRDocumentDataWidget.getElement('#PPRDocumentPricerComment').val().replace(/\n/g, '<br/>');
+                ChecklistPPRDocumentDataWidget.getElement('#PrintPPRPricerComment').html(pricerComment);
+            });
+        } else {
+            ChecklistPPRDocumentDataWidget.getElement('#PrintPPRPricerComment').html('');
+        }
+
+        // update to add/remove the checked attribute for each radio button change, as ie won't detect dynamic changes by the user when printing
+        ChecklistPPRDocumentDataWidget.getElement('#PPRGrid input[type="radio"]').change(function () {
+
+            // set the checked attribute for the checked radio button
+            GenTRAC.SetCheckAttr(this);
+
+            var responseId = this.id;
+            var row = $(this).parents('tr');
+
+            // find all radio buttons in current row and remove its checked attribute, if it doesn't match the current selection
+            $(row).find(".radio").each(function() {
+                if(this.id != responseId)
+                    $(this).removeAttr('checked');
+            });
+        });
+
+        if (DisplayPPRSection) {
+            $('#checklistPPRDocumentSection').removeClass('display-none');
+        } else {
+            $('#checklistPPRDocumentSection').addClass('display-none');
+        }
+
+    });
+</script>
+
+<div id="checklistPPRDocumentSection" class="composite module expanded full">
+    <div class="module-header-data">Proposal Pricing Review (PPR) Document</div>
+    <div class="module-content-data expanded-content">
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ChecklistControllerLogic.CHECKLIST_PPR_DOCUMENT_FORM, name = GenTRAC.ActionLogic.ChecklistControllerLogic.CHECKLIST_PPR_DOCUMENT_FORM }))
+        {
+           
+            <input name="ProposalID" value="@Model.ProposalID" type="hidden"/>
+            <input name="ProposalChecklistID" value="@Model.ProposalChecklistID" type="hidden" />
+            <input name="ShowChecklistResponse" value="@Model.ShowChecklistResponse" type="hidden" />
+            <input name="PPRPricerComment" value="@Model.PPRPricerComment" type="hidden" />
+            var IntroRows = Model.ChecklistRows.Where(z => z.RowType == ChecklistTextType.Introduction).ToList();
+            foreach (GenTRAC.ActionLogic.ModelView.Checklist.ChecklistRowModelView row in IntroRows)
+            {
+                <div>@Html.Raw(row.DisplayText)</div>               
+            }
+
+
+            var GridRows = Model.ChecklistRows.Except(IntroRows);
+            var isFirstHeader = true;
+            <table id="PPRGrid" style="border: thin solid; width:928px;" name="ChecklistRows">
+                @foreach (var row in GridRows)
+                {
+                    <tr @if (row.RowType == ChecklistTextType.Question || row.RowType == ChecklistTextType.PricerComment || row.RowType == ChecklistTextType.PeerComment)
+                        { <text>pkid="@row.SortOrder"</text> }>
+
+                        @switch (row.RowType)
+                        {
+                            case ChecklistTextType.Header:
+                            <th>
+                                <input name="ChecklistContentId" value="@row.ChecklistContentId" type="hidden" />
+                                <input name="RowType" value="@row.RowType" type="hidden" />
+                                <div>@Html.Raw(row.DisplayText)</div>
+                            </th>
+                                if (isFirstHeader)
+                                {
+                                    <th style="border-left: thin solid">
+                                        <div>Yes</div>
+                                    </th>
+                                    <th>
+                                        <div>No</div>
+                                    </th>
+                                    <th>
+                                        <div>N/A</div>
+                                    </th>
+                                }
+                                isFirstHeader = false;
+                                break;
+                            case ChecklistTextType.Question:
+                            <td style="border-right: thin solid;">
+                                <input name="ChecklistContentId" value="@row.ChecklistContentId" type="hidden" />
+                                <input name="RowType" value="@row.RowType" type="hidden" />
+                                <div>@Html.Raw(row.DisplayText)</div>
+                            </td>
+                            <td>
+                                <div>
+                                    <input type="radio" class="radio" id=@string.Concat("QPPRYes", @row.SortOrder) value="Yes" mvprop="PricerResponse" name=PricerResponse.@row.ChecklistContentId @if (@row.PricerResponse == ChecklistResponseOption.Yes) { <text> checked </text>} onclick="ChecklistPPRDocumentDataWidget.ValidateQuestion1Yes(this);"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <input type="radio" class="radio" id=@string.Concat("QPPRNo", @row.SortOrder) value="No" mvprop="PricerResponse" name=PricerResponse.@row.ChecklistContentId @if (@row.PricerResponse == ChecklistResponseOption.No) {<text>checked</text>}  onclick="ChecklistPPRDocumentDataWidget.ValidateQuestion1No(this);"/>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <input type="radio" class="radio" id=@string.Concat("QPPRNa", @row.SortOrder) value="NA" mvprop="PricerResponse" name=PricerResponse.@row.ChecklistContentId @if (@row.PricerResponse == ChecklistResponseOption.NA) {<text>checked</text>} />
+                                </div>
+                            </td>
+                                break;
+                            case ChecklistTextType.PricerComment:
+                                <td colspan="4">
+                                    <input name="ChecklistContentId" value="@row.ChecklistContentId" type="hidden" />
+                                    <input name="RowType" value="@row.RowType" type="hidden" />
+                                    <div>@Html.Raw(row.DisplayText)</div>
+                                    <div>
+                                        <textarea name="PricerComment" maxlength="2500" class="resize" id="PPRDocumentPricerComment">@Model.PPRPricerComment</textarea>
+                                    </div>
+                                    <div class="comments" id="PrintPPRPricerComment">@Html.Raw(Model.PPRPricerComment)</div>
+                                </td>
+                                 break;
+                            case ChecklistTextType.Text:
+                            <td colspan="4">
+                                <div>@Html.Raw(row.DisplayText)</div>
+                            </td>
+                                break;
+                            default:
+                                break;
+                        }
+
+                    </tr>
+                }
+            </table>
+        }
+
+    </div>
+</div>

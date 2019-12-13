@@ -1,0 +1,453 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F075ADB5-EDB4-45D4-BC3E-E903797A1DC3}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GenTRAC.Web</RootNamespace>
+    <AssemblyName>GenTRAC.Web</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <MvcBuildViews>false</MvcBuildViews>
+    <UseIISExpress>true</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <AllowUntrustedCertificate>True</AllowUntrustedCertificate>
+    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+    <DebugSymbols>true</DebugSymbols>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Glimpse.Ado, Version=1.7.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Glimpse.Ado.1.7.3\lib\net45\Glimpse.Ado.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Glimpse.AspNet, Version=1.9.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Glimpse.AspNet.1.9.2\lib\net45\Glimpse.AspNet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Glimpse.Core, Version=1.8.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Glimpse.1.8.6\lib\net45\Glimpse.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Glimpse.EF6, Version=1.6.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Glimpse.EF6.1.6.5\lib\net45\Glimpse.EF6.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Glimpse.Mvc5, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Glimpse.Mvc5.1.5.3\lib\net45\Glimpse.Mvc5.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Impersonation">
+      <HintPath>..\Libraries\Impersonation.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Practices.Unity">
+      <HintPath>..\Libraries\Microsoft.Practices.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Interception">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\Microsoft.Practices.Unity.Interception.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.4\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.DynamicData">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Entity">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.ApplicationServices">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Abstractions">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.4\lib\net45\System.Web.Http.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.4\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.4\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.4\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Routing">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.4\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Net.Http">
+    </Reference>
+    <Reference Include="System.Net.Http.WebRequest">
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="Common\AuthorizationDictionarySetup.cs" />
+    <Compile Include="Common\GenTRACController.cs" />
+    <Compile Include="Common\NoCacherAttribute.cs" />
+    <Compile Include="Common\SecurityPageAndAuthorization.cs" />
+    <Compile Include="Common\HandleErrorAttribute.cs" />
+    <Compile Include="Common\SiteMasterUtilities.cs" />
+    <Compile Include="Common\WebConstants.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
+    <Compile Include="Controllers\ApprovalsController.cs" />
+    <Compile Include="Controllers\ChecklistController.cs" />
+    <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\CertificationTimelineController.cs" />
+    <Compile Include="Controllers\PostSubmittalAttachmentsController.cs" />
+    <Compile Include="Controllers\ProposalController.cs" />
+    <Compile Include="Controllers\ReportsController.cs" />
+    <Compile Include="Controllers\Unity\UnityFactory.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Content Include="app_offlineX.htm" />
+    <Content Include="Content\font-awesome.css" />
+    <Content Include="Content\font-awesome.min.css" />
+    <Content Include="Content\images\approval.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\images\Cancel_16x.png" />
+    <Content Include="Content\images\UploadFile_16x.png" />
+    <Content Include="Content\images\ui-icons_444444_256x240.png" />
+    <Content Include="Content\images\ui-icons_555555_256x240.png" />
+    <Content Include="Content\images\ui-icons_777620_256x240.png" />
+    <Content Include="Content\images\ui-icons_777777_256x240.png" />
+    <Content Include="Content\images\ui-icons_cc0000_256x240.png" />
+    <Content Include="Content\images\ui-icons_ffffff_256x240.png" />
+    <Content Include="Content\jquery-ui.css" />
+    <Content Include="Content\jquery-ui.min.css" />
+    <Content Include="fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\images\btn_close_orange.png" />
+    <Content Include="Content\images\checklist.png" />
+    <Content Include="Content\images\favicon.ico" />
+    <Content Include="Content\images\proposal.png" />
+    <Content Include="Content\images\tabBG_72px.png" />
+    <Content Include="Content\images\tabLeft_72px.png" />
+    <Content Include="Content\images\tabRightCorner_72px.png" />
+    <Content Include="Content\generation.css" />
+    <Content Include="Content\images\ajax-loader.gif" />
+    <Content Include="Content\images\calendar.gif" />
+    <Content Include="Content\images\clear_transparent_img.png" />
+    <Content Include="Content\images\collaspe.png" />
+    <Content Include="Content\images\expand.png" />
+    <Content Include="Content\images\expand_light.png" />
+    <Content Include="Content\images\helpSmall.png" />
+    <Content Include="Content\images\homepage\bg.png" />
+    <Content Include="Content\images\in_progress_white.gif" />
+    <Content Include="Content\images\LM_logo_notagline_black.png" />
+    <Content Include="Content\images\logo_PTM_wide.jpg" />
+    <Content Include="Content\images\menu_arrow.png" />
+    <Content Include="Content\images\message_large_gray.png" />
+    <Content Include="Content\images\moduleBottomBorder.png" />
+    <Content Include="Content\images\moduleLeftBorder.png" />
+    <Content Include="Content\images\moduleLeftBottom.png" />
+    <Content Include="Content\images\moduleRightBorder.png" />
+    <Content Include="Content\images\moduleRightBottom.png" />
+    <Content Include="Content\images\navShadow.png" />
+    <Content Include="Content\images\PTM.png" />
+    <Content Include="Content\images\searchBox2.png" />
+    <Content Include="Content\images\searchBtn.png" />
+    <Content Include="Content\images\tabBG.png" />
+    <Content Include="Content\images\tabButtonActiveLeft.png" />
+    <Content Include="Content\images\tabButtonActiveRepeat.png" />
+    <Content Include="Content\images\tabButtonActiveRight.png" />
+    <Content Include="Content\images\tabButtonHoverLeft.png" />
+    <Content Include="Content\images\tabButtonHoverRepeat.png" />
+    <Content Include="Content\images\tabButtonHoverRight.png" />
+    <Content Include="Content\images\tabButtonLeft.png" />
+    <Content Include="Content\images\tabButtonRepeat.png" />
+    <Content Include="Content\images\tabButtonRight.png" />
+    <Content Include="Content\images\tabLeft.png" />
+    <Content Include="Content\images\tableHeaderBG.png" />
+    <Content Include="Content\images\tabRight.png" />
+    <Content Include="Content\images\warning.png" />
+    <Content Include="Content\images\warning_orange.png" />
+    <Content Include="Scripts\Generation.js" />
+    <Content Include="Scripts\GenerationInit.js" />
+    <Content Include="Scripts\IdentitySwappingScript.js" />
+    <None Include="Scripts\jquery-1.12.4.intellisense.js" />
+    <Content Include="Scripts\jquery-1.12.4.js" />
+    <Content Include="Scripts\jquery-1.12.4.min.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.js" />
+    <Content Include="Scripts\jquery-ui-1.12.1.min.js" />
+    <Content Include="Scripts\json2.js" />
+    <Content Include="Content\images\animated-overlay.gif" />
+    <Content Include="Content\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Global.asax" />
+    <Content Include="Content\GenTRAC.css" />
+    <Content Include="logs\ReadMe.txt" />
+    <Content Include="parameters.xml" />
+    <Content Include="Content\Pie\PIE.htc" />
+    <Content Include="Content\Pie\PIE_IE678.js" />
+    <Content Include="Content\Pie\PIE_IE678_uncompressed.js" />
+    <Content Include="Content\Pie\PIE_IE9.js" />
+    <Content Include="Content\Pie\PIE_IE9_uncompressed.js" />
+    <Content Include="Content\Pie\PIE_uncompressed.htc" />
+    <Content Include="Scripts\ActiveDirectorySearch.js" />
+    <Content Include="Scripts\ChecklistTypeChangeConfirmationDialog.js" />
+    <Content Include="Scripts\GenTRAC.js" />
+    <Content Include="Scripts\ITCOConfirmationDialog.js" />
+    <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="fonts\fontawesome-webfont.woff2" />
+    <Content Include="fonts\fontawesome-webfont.woff" />
+    <Content Include="fonts\fontawesome-webfont.ttf" />
+    <Content Include="fonts\fontawesome-webfont.eot" />
+    <None Include="Properties\PublishProfiles\Local.pubxml" />
+    <None Include="Properties\PublishProfiles\ReleaseTFS.pubxml" />
+    <Content Include="Scripts\jquery-migrate-1.2.0.js" />
+    <Content Include="Scripts\jquery-migrate-1.2.0.min.js" />
+    <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Scripts\moment-timezone-utils.js" />
+    <Content Include="Scripts\moment-timezone-with-data-2012-2022.js" />
+    <Content Include="Scripts\moment-timezone-with-data-2012-2022.min.js" />
+    <Content Include="Scripts\moment-timezone-with-data.js" />
+    <Content Include="Scripts\moment-timezone-with-data.min.js" />
+    <Content Include="Scripts\moment-timezone.js" />
+    <Content Include="Scripts\moment-timezone.min.js" />
+    <Content Include="Scripts\moment-with-locales.js" />
+    <Content Include="Scripts\moment-with-locales.min.js" />
+    <Content Include="Scripts\moment.js" />
+    <Content Include="Scripts\moment.min.js" />
+    <Content Include="Scripts\UserLookupWidget.js" />
+    <Content Include="Scripts\_references.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Settings.StyleCop" />
+    <Content Include="Views\Home\GenTRACHome.cshtml" />
+    <Content Include="Views\Shared\HomeLayout.cshtml" />
+    <Content Include="Views\Shared\HomeMenu.cshtml" />
+    <Content Include="Views\Home\GenTRACHomeProposalGrid.cshtml" />
+    <Content Include="Views\Home\GenTRACHomeProposal.cshtml" />
+    <Content Include="Views\Home\GenTRACProposalFilters.cshtml" />
+    <Content Include="Views\Proposal\ProposalIndex.cshtml" />
+    <Content Include="Views\Proposal\ProposalInformation.cshtml" />
+    <Content Include="Views\Proposal\ProposalGeneralInformation.cshtml" />
+    <Content Include="Views\Proposal\ProposalUserInformation.cshtml" />
+    <Content Include="Views\Shared\ActiveDirectorySearch.cshtml" />
+    <Content Include="Views\Admin\ManagePermissions.cshtml" />
+    <Content Include="Views\Admin\ManagePermissionsGrid.cshtml" />
+    <Content Include="Views\Proposal\ProposalDetails.cshtml" />
+    <Content Include="Views\Checklist\ChecklistIndex.cshtml" />
+    <Content Include="Views\Shared\SecurityError.cshtml" />
+    <Content Include="Views\Checklist\ChecklistGeneralInformation.cshtml" />
+    <Content Include="Views\Checklist\ChecklistProposalPricingData.cshtml" />
+    <Content Include="Views\Checklist\ChecklistPPRDocument.cshtml" />
+    <Content Include="Views\Checklist\ChecklistPARDocument.cshtml" />
+    <Content Include="Views\Admin\ManageProposalInformation.cshtml" />
+    <Content Include="Views\Admin\ManageProposalInformationDetails.cshtml" />
+    <Content Include="Views\Admin\BulkArchive.cshtml" />
+    <Content Include="Views\Reports\ProposalLogReport.cshtml" />
+    <Content Include="Views\Reports\ProposalLogReportParameters.cshtml" />
+    <Content Include="Views\Reports\ProposalActivityReport.cshtml" />
+    <Content Include="Views\Reports\ProposalActivityReportParameters.cshtml" />
+    <Content Include="Views\Shared\UsersOnlineDetails.cshtml" />
+    <Content Include="Views\Checklist\ChecklistDefaultPARDocument.cshtml" />
+    <Content Include="Views\Checklist\ChecklistInternationalCommercialPARDocument.cshtml" />
+    <Content Include="Views\Home\MyApprovals.cshtml" />
+    <Content Include="Views\Approvals\ApprovalsIndex.cshtml" />
+    <Content Include="Views\Proposal\ProposalApprovals.cshtml" />
+    <Content Include="Views\Approvals\ApproverSection.cshtml" />
+    <Content Include="Views\PostSubmittalAttachments\PostSubmittalAttachments.cshtml" />
+    <Content Include="Scripts\jquery-1.12.4.min.map" />
+    <Content Include="Views\CertificationTimeline\CertificationTimeline.cshtml" />
+    <Content Include="Views\Reports\DfarsReport.cshtml" />
+    <Content Include="Views\Reports\DfarsReportParameters.cshtml" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GenBOE.Models\GenBOE.Models.csproj">
+      <Project>{5e73d211-cfd8-49ac-b164-3ecddea9b443}</Project>
+      <Name>GenBOE.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenBOE.ModelView\GenBOE.DataBridge.csproj">
+      <Project>{f909cd46-e2d7-4d57-b647-6d93f9dd9618}</Project>
+      <Name>GenBOE.DataBridge</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenTRAC.ActionLogic\GenTRAC.ActionLogic.csproj">
+      <Project>{43e225dd-557f-45eb-8317-23284a61ec79}</Project>
+      <Name>GenTRAC.ActionLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenTRAC.DataBridge\GenTRAC.DataBridge.csproj">
+      <Project>{6ebd0376-9273-4a2a-9e23-1912418ddba5}</Project>
+      <Name>GenTRAC.DataBridge</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenTRAC.Models\GenTRAC.Models.csproj">
+      <Project>{2802b2b5-80b1-4447-88d4-caad5fc36ba1}</Project>
+      <Name>GenTRAC.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\IES.Common\IES.Common.csproj">
+      <Project>{FADFE985-0AA1-41AF-B7CB-A740673FC0D7}</Project>
+      <Name>IES.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseTFS|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>CODE_ANALYSIS;CODE_ANALYSIS;TRACE;CODE_ANALYSIS</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Import Project="..\Libraries\StyleCop Files\StyleCop.targets" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

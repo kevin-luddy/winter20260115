@@ -1,0 +1,37 @@
+﻿<div id="editSectionModal">
+    <div class="ui-widget-header modal-title-bar">Edit Section<div class="modal-close-box" data-ng-click="$close()"><i class="glyphicon glyphicon-remove"></i></div></div>
+    <div class="modal-content-area">
+        <form name="form">
+            <div class="form-row css3pie-position-fix">
+                <div gen-validation data-errors="$root.modalErrors"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">Title *</div>
+                <div class="form-element">
+                    <input type="text" name="sectionTitle" data-ng-required="true" data-ng-model="model.Title" class="sectionTitle input-full" maxlength="4000" autofocus/>
+                    <div class="bg-danger">
+                        <span class="error" data-ng-show="form.sectionTitle.$error.required">
+                            Title is Required.
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">Internal</div>
+                <div class="form-element">
+                    <input data-ng-disabled="isReadOnly" type="checkbox" data-ng-model="model.IsInternalSection" data-ng-change="uncheckRequiredIfInternal()" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">Require in RDSB</div>
+                <div class="form-element">
+                    <input id="IsRdsbRequiredCheckbox" data-ng-disabled="isReadOnly || model.IsInternalSection" type="checkbox" data-ng-model="model.IsRdsbRequired" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="ies-action" data-ng-disabled="form.$invalid || $root.modalErrors.length > 0" type="submit" data-ng-click="$close(model)">OK</button>
+                <button class="ies" type="button" data-ng-click="$close()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>

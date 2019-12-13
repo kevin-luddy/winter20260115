@@ -1,0 +1,218 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Admin.ManageProposalInfoDetailsView
+@{
+    ViewBag.Title = "ManageProposalInformationDetails";
+}
+
+<script type="text/javascript">
+
+    var ManageProposalInfoDetailsWidget;
+
+    $(function () {
+
+        var ManageProposalInfoDetailsWidgetConfig = {};
+        ManageProposalInfoDetailsWidgetConfig.ContextID = "manageProposalInfoDetailsSection";
+        ManageProposalInfoDetailsWidgetConfig.IsModule = true;
+
+        var FormConfigs = [];
+        FormConfigs.push({
+            ElementID: "manageProposalInfoDetailsForm",
+            Buttons: [
+            {
+                ButtonClass: 'ies-action',
+                ButtonText: 'Save',
+                ButtonName: "save-button",
+                ButtonAction: function (buttonPressed) {
+                    ManageProposalInfoDetailsWidget.SavePage(buttonPressed);
+                },
+                Stateful: true
+            }],
+            HideOCI: "true"
+        });
+
+        ManageProposalInfoDetailsWidgetConfig.FormConfigs = FormConfigs;
+
+        ManageProposalInfoDetailsWidget = new GenWidget(ManageProposalInfoDetailsWidgetConfig);
+
+        ManageProposalInfoDetailsWidget.GetData = function () {
+            var dataToSave = {};
+            dataToSave = ManageProposalInfoDetailsWidget.getForm("manageProposalInfoDetailsForm").getData();
+            return dataToSave;
+        };
+
+        ManageProposalInfoDetailsWidget.SavePage = function (buttonPressed) {
+            if (typeof (ManageProposalInfoWidget) != 'undefined') {
+                ManageProposalInfoWidget.getForm('manageProposalInfoForm').clearValidationBox();
+                ManageProposalInfoWidget.refreshModule();
+            }
+
+            var dataToSend = ManageProposalInfoDetailsWidget.GetData();
+            dataToSend = JSON.stringify(dataToSend);
+
+            // Make the call
+            ManageProposalInfoDetailsWidget.saveRequest({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.ADMIN',
+                    action: '@WebConstants.Action.SAVE_MANAGE_PROPOSAL_INFO_DETAILS'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                data: dataToSend,
+                success: function (response) {
+                    if (typeof (response.proposalId) != 'undefined') {
+                        if (typeof (ManageProposalInfoWidget) != 'undefined') {
+                            ManageProposalInfoWidget.ReloadDetails(response.proposalId);
+                            ManageProposalInfoWidget.refreshModule();
+                        }
+                    }
+                },
+                error: function () {
+                    if (typeof (ManageProposalInfoWidget) != 'undefined') {
+                        ManageProposalInfoWidget.refreshModule();
+                    }
+                }
+            }, buttonPressed);
+        }
+
+        ManageProposalInfoDetailsWidget.getElement('input[name="newProposalSubmittalDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                ManageProposalInfoDetailsWidget.setDirty("manageProposalInfoDetailsForm");
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
+        ManageProposalInfoDetailsWidget.getElement('input[name="newChecklistSubmittedDatePricer"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                ManageProposalInfoDetailsWidget.setDirty("manageProposalInfoDetailsForm");
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
+        ManageProposalInfoDetailsWidget.getElement('input[name="newChecklistSubmittedDatePeer"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                ManageProposalInfoDetailsWidget.setDirty("manageProposalInfoDetailsForm");
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
+        // skip datepicker icons when tabbing
+        ManageProposalInfoDetailsWidget.getElement('.ui-datepicker-trigger').attr('tabindex', '-1');
+        ManageProposalInfoDetailsWidget.getElement('.ui-datepicker-trigger').on('blur', function () {
+            $(this).attr('tabindex', '-1');
+        });
+
+        // On lose focus, adds thousand comma separator for dollar amount input field. 
+        ManageProposalInfoDetailsWidget.getElement('input[name="NewTotalPrice"]').change(function () {
+            var dollarAmount = ManageProposalInfoDetailsWidget.getElement('input[name="NewTotalPrice"]').val().replace(/\,/g, "");
+
+            ManageProposalInfoDetailsWidget.CommaSeparator(dollarAmount);
+        });
+
+        // Formats dollar amount value by adding comma separator, when applicable. 
+        ManageProposalInfoDetailsWidget.CommaSeparator = function (dollarAmount) {
+            GenTRAC.numericCommaSeparator(ManageProposalInfoDetailsWidget, dollarAmount, 'input[name="NewTotalPrice"]', false);
+        }
+
+        var completedSection = ManageProposalInfoDetailsWidget.getElement("#manageProposalInfoDetailsCompletedSection");
+        var peerDateSection = ManageProposalInfoDetailsWidget.getElement("#manageProposalInfoDetailsPeerDateSection");
+        @if (Model.ShowCompletedSection)
+        {
+            <text>
+                completedSection.show();
+            </text>
+            
+            if (Model.ShowChecklistSubmittedDatePeer)
+            {
+                <text>
+                    peerDateSection.show();
+                </text>                
+            }
+            else
+            {
+                <text>
+                    peerDateSection.hide();
+                </text>                
+            }
+        }
+        else
+        {
+            <text>
+                completedSection.hide();
+            </text>
+        }
+
+        ManageProposalInfoDetailsWidget.CommaSeparator(@(Model.NewTotalPrice));
+        ManageProposalInfoDetailsWidget.refreshModule();
+    });
+</script>
+
+<div id="manageProposalInfoDetailsSection" class="composite module expanded full">
+    <div class="module-header-data">
+        <div class="manageProposalInfoDetailsHeader auto-tooltip">
+            @Model.TrackingNumber - @Model.ProposalTitle
+        </div>
+    </div>
+    <div class="module-content-data expanded-content">
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = "manageProposalInfoDetailsForm", name = "manageProposalInfoDetailsForm" }))
+        {
+            <input name="ProposalID" value="@Model.ProposalID" type="hidden"/>
+            <input name="OldStatus" value="@Model.OldStatus" type="hidden"/>
+            <input name="OldProposalSubmittalDate" value="@Model.OldProposalSubmittalDate" type="hidden"/>
+            <input name="OldTotalPrice" value="@Model.OldTotalPrice" type="hidden"/>
+            <input name="OldChecklistSubmittedDatePricer" value="@Model.OldChecklistSubmittedDatePricer" type="hidden"/>
+            <input name="OldChecklistSubmittedDatePeer" value="@Model.OldChecklistSubmittedDatePeer" type="hidden"/>
+            <input name="UpdateDateLong" value="@Model.UpdateDateLong" type="hidden" />
+            <input name="ShowChecklistSubmittedDatePeer" value="@Html.AttributeEncode(Model.ShowChecklistSubmittedDatePeer)" type="hidden" />
+            <div class="form-row">
+                <div class="form-label">
+                    Proposal Status
+                </div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.NewStatus, Model.ProposalStatusList, new { name = "proposalStatus" })
+                </div>
+            </div>
+            <div id="manageProposalInfoDetailsCompletedSection" style="display: none;">
+                <div class="form-row">
+                    <div class="form-label">
+                        Actual Submittal Date
+                    </div>
+                    <div class="form-element">
+                        <input name="newProposalSubmittalDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.NewProposalSubmittalDate" maxlength="10" size="12"/>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">
+                        Total Price ($)
+                    </div>
+                    <div class="form-element">
+                        @Html.TextBoxFor(model => model.NewTotalPrice, new { style = "text-align: right", name = "NewTotalPrice", size="17" })
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">
+                        Checklist Submitted Date (Estimator)
+                    </div>
+                    <div class="form-element">
+                        <input name="newChecklistSubmittedDatePricer" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.NewChecklistSubmittedDatePricer" maxlength="10" size="12"/>
+                    </div>
+                </div>
+                <div class="form-row" id="manageProposalInfoDetailsPeerDateSection" style="display: none;">
+                    <div class="form-label">
+                        Checklist Submitted Date (Peer)
+                    </div>
+                    <div class="form-element">
+                        <input name="newChecklistSubmittedDatePeer" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.NewChecklistSubmittedDatePeer" maxlength="10" size="12"/>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

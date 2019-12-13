@@ -1,0 +1,351 @@
+﻿@model GenTRAC.ActionLogic.ModelView.ApprovalSectionModelView
+@{
+    ViewBag.Title = "Cover Sheet Approver Approval";
+}
+
+<script type="text/javascript">
+    var ApproverSectionWidget;
+    $(function () {
+		var readOnly = @Model.IsReadOnly.ToString().ToLower();
+		var preferredDialog;
+
+        var ASWidget = {};
+        ASWidget.ContextID = "@Model.ApproverRole-ApproverSection";
+        ASWidget.IsModule = true;
+        ASWidget.IsReadOnly = readOnly;
+
+        $("#@Model.ApproverRole-Header").html("@(Model.ApproverHeader)");
+        $("#@Model.ApproverRole-ApproverName").html("@(Model.ApproverName)");
+        $("#@Model.ApproverRole-ApproverSignature").html("@(Model.SignatureString)");
+        $("#@Model.ApproverRole-ApproverComments").html("@(Model.Comments)");
+        $("#@Model.ApproverRole-AdditionalEmailText").html("@(Model.AdditionalEmailText)");
+        ApproverSectionWidget = new GenWidget(ASWidget);
+
+        if (readOnly) {
+            $("#@Model.ApproverRole-ApproverComments").attr("disabled", "disabled");
+            $("#@Model.ApproverRole-ValidateButton").attr("disabled", "disabled");
+            $("#@Model.ApproverRole-ApproveButton").attr("disabled", "disabled");
+            $("#@Model.ApproverRole-AdditionalEmailText").attr("disabled", "disabled");
+            $("#@Model.ApproverRole-ValidateButton").addClass("display-none");
+            $("#@Model.ApproverRole-ApproveButton").addClass("display-none");
+            $("#Pricer-psaMessage").addClass("display-none");
+        }
+
+        var isProposalDeletedOrArchived = @ViewBag.IsProposalDeletedOrArchived.ToString().ToLower();
+        if (isProposalDeletedOrArchived)
+        {
+            $("#ResetWorkflow").attr("disabled", "disabled");
+        }
+
+        ApproverSectionWidget.refreshModule();
+
+        ApproverSectionWidget.on("click", "#@Model.ApproverRole-ValidateButton", function (ele) {
+            GenSession.ShowLoadingBox();
+            ApprovalsIndexWidget.getForm('approvalIndexForm').clearValidationBox(); // clear any leftover messages from previous validate
+
+            var buttonPressed = $("#@Model.ApproverRole-ValidateButton");
+            var dataToSend = {};
+            dataToSend.checklistGeneralInfo = null;
+            dataToSend.checklistProposalPricingData = null;
+            dataToSend.checklistPPRDocumentData = null;
+            dataToSend.checklistPARDocumentData = null;
+            dataToSend = JSON.stringify(dataToSend);
+
+            // Validate the checklist
+            ApproverSectionWidget.saveRequest({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.CHECKLIST',
+                    action: '@WebConstants.Action.VALIDATE_CHECKLIST_INFORMATION',
+                    id: '@ViewBag.proposalid'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                data: dataToSend,
+                //Don't clear dirty bit on success since no data is saved on validation
+                performDirtyProcessing: false,
+                success: function (response) {
+                    ApproverSectionWidget.validatePostSubmittalAttachments();
+                },
+                error: function () {
+                    GenSession.HideLoadingBox();
+                }
+            }, buttonPressed);
+        });
+
+        // Validate that all of the required Post Submittal Attachments have been uploaded.
+        ApproverSectionWidget.validatePostSubmittalAttachments = function () {
+            var buttonPressed = $("#@Model.ApproverRole-ValidateButton");
+
+            // Validate the PSAs.
+            ApproverSectionWidget.saveRequest({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.PSA',
+                    action: '@WebConstants.Action.VALIDATE_REQUIRED_ATTACHMENTS',
+                    id: '@ViewBag.proposalid'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                data: null,
+                //Don't clear dirty bit on success since no data is saved on validation.
+                performDirtyProcessing: false,
+                success: function (response) {
+                    ApproverSectionWidget.validateCoverSheetApprover();
+                },
+                error: function () {
+                    GenSession.HideLoadingBox();
+                }
+            }, buttonPressed);
+        };
+
+        ApproverSectionWidget.validateCoverSheetApprover = function () {
+            var buttonPressed = $("#@Model.ApproverRole-ValidateButton");
+
+            // Validate the Cover Sheet Approver
+            ApproverSectionWidget.saveRequest({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.APPROVALS',
+                    action: '@WebConstants.Action.VALIDATE_COVER_SHEET_APPROVER',
+                    id: '@ViewBag.proposalId'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                data: null,
+                //Don't clear dirty bit on success since no data is saved on validation.
+                performDirtyProcessing: false,
+                success: function (response) {
+                    GenSession.HideLoadingBox();
+                    GenSession.alertDialog('Validation', 'Validation was successful.  No errors were detected.', function () {
+                        // re-enable close button
+                        $('.ui-dialog-titlebar-close').show();
+
+                        // enable the Lead Estimator Comments, E-mail Text, and Approve button
+                        $("#@Model.ApproverRole-ApproverComments").removeAttr("disabled");
+                        $("#@Model.ApproverRole-AdditionalEmailText").removeAttr("disabled");
+                        $("#@Model.ApproverRole-ApproveButton").removeAttr("disabled");
+                    });
+
+                    // hide close button on dialog
+                    $('.ui-dialog-titlebar-close').hide();
+                    $('.ui-dialog-titlebar-close').blur();
+                },
+                error: function () {
+                    GenSession.HideLoadingBox();
+                }
+            }, buttonPressed);
+        };
+
+        ApproverSectionWidget.on("click", "#@Model.ApproverRole-ApproveButton", function () {
+			var confirmString = "";
+            var role = "@Model.ApproverRole";
+
+            switch(role){
+                case "@PtmRole.Pricer":
+                    confirmString = "@Html.Raw(@WebConstants.ApprovalDescription.LEAD_ESTIMATOR)";
+                    break;
+                case "@PtmRole.CoverSheetApprover":
+                    confirmString = "@Html.Raw(@WebConstants.ApprovalDescription.COVER_SHEET_APPROVER)";
+                    break;
+                case "@PtmRole.PricingVerification":
+                    confirmString = "@Html.Raw(@WebConstants.ApprovalDescription.PRICING_VERIFICATION)";
+                    break;
+                case "@PtmRole.PeerReviewer":
+                    confirmString = "@Html.Raw(@WebConstants.ApprovalDescription.INDEPENDENT_REVIEWER)";
+                    break;
+                case "@PtmRole.LOBEstLead":
+                    confirmString = "@Html.Raw(@WebConstants.ApprovalDescription.LOB_ESTIMATING_LEAD)";
+                    break;
+                default:
+                    break;
+            }
+
+			if (role === "@PtmRole.LOBEstLead" && "@Model.HasNonPreferredTool.ToString().ToLower()" === "true") {
+				ApproverSectionWidget.ShowNonPreferredDialog();
+			} else {
+				GenSession.confirmDialog("Confirm Approval", confirmString, function () { ApproverSectionWidget.SubmitApproval(role) }, null);
+			}
+		});
+
+		ApproverSectionWidget.HideNonPreferredDialog = function () {
+			preferredDialog.dialog('close');
+		};
+
+		ApproverSectionWidget.ShowNonPreferredDialog = function () {
+			if (preferredDialog === undefined) {
+				preferredDialog = $('#NonPreferredToolDialog').dialog({
+					width: 425,
+					height: 265,
+					modal: true,
+					title: "Non-Preferred Tool Usage",
+					closeOnEscape: false,
+					autoOpen: false,
+					open: function (even, ui)
+					{
+						$(".ui-dialog-titlebar-close").hide();
+						$('#NonPreferredToolDialog').removeClass('display-none');
+					}
+				});
+			}
+
+			preferredDialog.dialog('open');
+		};
+
+        ApproverSectionWidget.SubmitApproval = function (role) {
+            var buttonId = "#" + role + "-ApproveButton";
+            var loaderId = "#" + role + "-ApproveLoader";
+            var commentId = "#" + role + "-ApproverComments";
+            var additionalEmailId = "#" + role + "-AdditionalEmailText";
+
+            $(buttonId).attr("disabled", "disabled");
+            $(buttonId).addClass("display-none");
+            $(loaderId).removeClass("display-none");
+
+            var dataToSend = {};
+            dataToSend.additionalEmailText = $(additionalEmailId).val();
+            dataToSend.comment = $(commentId).val();
+            dataToSend.role = role;
+            dataToSend = JSON.stringify(dataToSend);
+
+            $.ajax({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.APPROVALS',
+                    action: '@WebConstants.Action.SAVE_APPROVAL',
+                    id: '@ViewBag.proposalid'
+                }),
+                data: dataToSend,
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {   
+                    switch(role){
+                        case "@PtmRole.Pricer":
+                            $(document).trigger('LOAD_LEAD_ESTIMATOR');
+                            // Load these sections since they should now be available
+                            $(document).trigger('LOAD_COVER_SHEET_APPROVER');
+                            $(document).trigger('LOAD_PRICING_VERIFICATION');
+                            $(document).trigger('LOAD_INDEPENDENT_REVIEWER');
+                            $(document).trigger('LOAD_LOB_ESTIMATING_LEAD');
+                            break;
+                        case "@PtmRole.CoverSheetApprover":
+                            $(document).trigger('LOAD_COVER_SHEET_APPROVER');
+                            // Attempt to load LOB Est Lead section since it may now be available
+                            $(document).trigger('LOAD_LOB_ESTIMATING_LEAD');
+                            break;
+                        case "@PtmRole.PricingVerification":
+                            $(document).trigger('LOAD_PRICING_VERIFICATION');
+                            // Attempt to load LOB Est Lead section since it may now be available
+                            $(document).trigger('LOAD_LOB_ESTIMATING_LEAD');
+                            break;
+                        case "@PtmRole.PeerReviewer":
+                            $(document).trigger('LOAD_INDEPENDENT_REVIEWER');
+                            // Attempt to load LOB Est Lead section since it may now be available
+                            $(document).trigger('LOAD_LOB_ESTIMATING_LEAD');
+                            break;
+                        case "@PtmRole.LOBEstLead":
+                            if (response.message == "PricerSaved") {
+                                GenSession.alertDialog('Checklist Updated by Lead Estimator',
+                                    'The checklist document has been updated by the Lead Estimator since the time you opened the checklist. ' +
+                                    'Once the save is complete, the checklist will be refreshed with the latest updates.', function () {
+                                        ApprovalsIndexWidget.SaveSuccess();
+                                    });
+                            } else {
+                                ApprovalsIndexWidget.SaveSuccess();
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+
+                    // Refresh the navigation menu to refresh the Approvals count for My Approvals
+                    ApproverSectionWidget.refreshMenu();
+                }
+            });
+        };
+
+        ApproverSectionWidget.refreshMenu = function(){
+            $('.nav-container').load(document.URL + ' .nav-container', function() {
+
+                $(".nav-bar.left .submenu").each(function () {
+                    // Move each submenu directly under its parent tab
+
+                    // move it right to the position of its parent menu item.
+                    $(this).css("margin-left", $(this).parent().position().left);
+
+                    // Set the submenu width the greater of its current size or the tab width - 2px
+                    // The 2px make up for the border on the submenu.
+                    // add 5 pixels for padding
+                    $(this).css("width", Math.max($(this).parent().width() - 2, $(this).width() + 5));
+                });
+
+                $(".nav-bar.right .submenu").each(function () {
+                    // Set the submenu width the greater of its current size or the tab width - 2px
+                    // The 2px make up for the border on the submenu.
+                    // add 5 pixels for padding
+                    $(this).css("width", Math.max($(this).parent().width() - 2, $(this).width() + 5));
+
+                    // the submenu will be aligned with the start of the nav-bar
+                    // move it right to the position of its parent menu item.
+                    $(this).css("margin-left", $(this).parent().position().left - 1 - ($(this).width() - $(this).parent().width()));
+                });
+            });
+        };
+    });
+</script>
+
+<div id="@Model.ApproverRole-ApproverSection" class="composite module full">
+    <div class="module-header-data" id="@Model.ApproverRole-Header"></div>
+    <div class="module-content-data expanded-content">
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = "ApprovalForm", name = "ApprovalForm" }))
+        {
+            if (Model.ShowResetWorkflowButton)
+            {
+            <button type="button" id="ResetWorkflow" class="ies" title="@Html.Raw(@WebConstants.ApprovalDescription.RESET_WORKFLOW)">Reset Workflow</button>
+            <br/><br/>
+            }
+            <div>
+                <div class="form-row">
+                    <div id="@Model.ApproverRole-ApproverName" class="form-label"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">Signature</div>
+                    <br />
+                    <div id="@Model.ApproverRole-ApproverSignature"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">Comments</div>
+                    <br />
+                    <div class="form-element">
+                        <textarea rows="3" id="@Model.ApproverRole-ApproverComments" @(Model.ApproverRole == PtmRole.Pricer ? "disabled=\"disabled\"" : "") />
+                    </div>
+                </div>
+                @if (Model.ApproverRole == PtmRole.Pricer)
+                {
+                    <div class="form-row">
+                        <div class="form-label">Additional Approval Email Text</div>
+                        <br />
+                        <div class="form-element">
+                            <textarea rows="3" maxlength="1000" id="@Model.ApproverRole-AdditionalEmailText" disabled="disabled" />
+                        </div>
+                    </div>
+                }
+            </div>
+            if ((Model.ApproverRole == PtmRole.Pricer || Model.ApproverRole == PtmRole.LOBEstLead) && !Model.AllAttachmentsHaveBeenUploaded)
+            {
+                string approvalText = Model.ApproverRole == PtmRole.Pricer ? "be initiated" : "continue";
+                <div class="red" id="Pricer-psaMessage">
+                    Before the approval process can @approvalText all Post Submittal Attachments must be uploaded
+                    <br />
+                    (Navigate to the Post Submittal Attachments tab to upload the required attachments)
+                    <br />
+                    <br />
+                </div>
+            }
+            if (Model.ApproverRole == PtmRole.Pricer)
+            {
+                <button type="button" class="ies" id="@Model.ApproverRole-ValidateButton">Validate</button>
+            }
+            <button type="button" class="ies" id="@Model.ApproverRole-ApproveButton" @(Model.ApproverRole == PtmRole.Pricer || (Model.ApproverRole == PtmRole.LOBEstLead && !Model.AllAttachmentsHaveBeenUploaded) ? "disabled=\"disabled\"" : "")>Approve</button>
+            <div class="loader display-none" id="@Model.ApproverRole-ApproveLoader"></div>
+            <br />
+            <br />
+        }
+    </div>
+</div>

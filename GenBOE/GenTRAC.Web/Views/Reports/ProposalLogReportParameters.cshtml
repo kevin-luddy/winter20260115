@@ -1,0 +1,245 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Reports.ProposalLogReportModelView
+@{
+    ViewBag.Title = "Report Parameters";
+}
+
+<script type="text/javascript">
+
+    var ProposalLogReportParameterWidget;
+
+    $(function () {
+
+        var ParameterWidgetConfig = {};
+        ParameterWidgetConfig.ContextID = "proposalLogReportParameterSection";
+        ParameterWidgetConfig.IsModule = true;
+
+        ProposalLogReportParameterWidget = new GenWidget(ParameterWidgetConfig);
+        ProposalLogReportParameterWidget.LoadDataPlaceholderID = 'proposalLogReportParametersPlaceholder';
+
+        ProposalLogReportParameterWidget.getElement('input[name="SubmitStartDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
+        ProposalLogReportParameterWidget.getElement('input[name="SubmitEndDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
+        // skip datepicker icons when tabbing
+        ProposalLogReportParameterWidget.getElement('.ui-datepicker-trigger').attr('tabindex', '-1');
+        ProposalLogReportParameterWidget.getElement('.ui-datepicker-trigger').on('blur', function () {
+            $(this).attr('tabindex', '-1');
+        });
+
+        // set radio buttons when updating inputs
+        ProposalLogReportParameterWidget.getElement('input[name=TrackingNumber]').on("focus", function () {
+            $("#TrackingNumberRadio").prop('checked', true).trigger('change');
+        });
+        ProposalLogReportParameterWidget.getElement('input[name=SubmitStartDate], input[name=SubmitEndDate]').on("focus", function () {
+            $("#SubmitDateRangeRadio").prop('checked', true).trigger('change');
+        });
+        ProposalLogReportParameterWidget.getElement('select[name=Years], select[name=LOBIds], select[name=CentralEstimators]').on("focus", function () {
+            $("#SpecificProposalsRadio").prop('checked', true).trigger('change');
+        });
+
+        $("#AllProposalsRadio").on("change", function () {
+            $("input[name=TrackingNumber]").val('');
+            ProposalLogReportParameterWidget.clearSubmitDateRange();
+            ProposalLogReportParameterWidget.clearSpecificProposals();
+        });
+
+        $("#SpecificProposalsRadio").on("change", function () {
+            $("input[name=TrackingNumber]").val('');
+            ProposalLogReportParameterWidget.clearSubmitDateRange();
+        });
+
+        $("#SubmitDateRangeRadio").on("change", function () {
+            $("input[name=TrackingNumber]").val('');
+            ProposalLogReportParameterWidget.clearSpecificProposals();
+        });
+
+        $("#TrackingNumberRadio").on("change", function () {
+            ProposalLogReportParameterWidget.clearSubmitDateRange();
+            ProposalLogReportParameterWidget.clearSpecificProposals();
+        });
+
+        ProposalLogReportParameterWidget.clearSpecificProposals = function () {
+            $("select[name=Years]").val([]);
+            $("select[name=LOBIds]").val([]);
+            $("select[name=CentralEstimators]").val([]);
+            yearList = [];
+            lobList = [];
+            centralEstimatorList = [];
+        }
+
+        ProposalLogReportParameterWidget.clearSubmitDateRange = function () {
+            $("input[name=SubmitStartDate]").val('');
+            $("input[name=SubmitEndDate]").val('');
+            $("input[name=SubmitStartDate]").removeClass('not-placeholder-value');
+            $("input[name=SubmitEndDate]").removeClass('not-placeholder-value');
+        }
+
+        // Manage the selected Year options to allow select/deselect with mouse click
+        var yearList = [];
+        ProposalLogReportParameterWidget.UpdateYearSelect = function (row) {
+            GenTRAC.UpdateSelect(yearList, row, 'ProposalLogYears');
+        }
+
+        // Manage the selected Line of Business options to allow select/deselect with mouse click
+        var lobList = [];
+        ProposalLogReportParameterWidget.UpdateLOBSelect = function (row) {
+            GenTRAC.UpdateSelect(lobList, row, 'LOBIds');
+        }
+
+        // Manage the selected Central Estimator options to allow select/deselect with mouse click
+        var centralEstimatorList = [];
+        ProposalLogReportParameterWidget.UpdateCentralEstimatorSelect = function (row) {
+            GenTRAC.UpdateSelect(centralEstimatorList, row, 'CentralEstimators');
+        }
+    });
+</script>
+
+<div id="proposalLogReportParameterSection" class="composite module expanded full">
+    <div class="module-header-data"><b>Report Parameters</b></div>
+    <div class="module-content-data expanded-content">
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ReportsControllerLogic.PROPOSAL_LOG_REPORT_PARAMETER_FORM, name = GenTRAC.ActionLogic.ReportsControllerLogic.PROPOSAL_LOG_REPORT_PARAMETER_FORM }))
+        {
+              <input name="ExecutionUserIds" value="@Model.ExecutionUserIds" type="hidden"/>
+             <div class="form-row">
+                   <div class="form-label"><b>Proposal Status</b></div>
+                    <div class="form-element">
+                       <select multiple="multiple" id="ProposalLogStatus" name="ProposalLogStatus" class="ignore-dirty">
+                            @foreach (SelectListItem option in Model.ProposalLogStatusList)
+                            {
+                                <option value="@option.Value" selected="@option.Selected">@option.Text</option>
+                            }
+                      </select>
+                    </div>
+                </div>
+            <div id="ProposalLogFilterOptions">
+                <span><b>Select a Filter Option</b></span>
+                <div class="form-row">
+                    <div class="form-element">
+                        <div>
+                            <input type="radio" class="radio ignore-dirty" id="AllProposalsRadio" value="AllProposalsFilter" name="ProposalLogFilterOption"  checked="checked" />
+                            <label for="AllProposalsRadio">All Proposals</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-element">
+                        <div>
+                            <input type="radio" class="radio ignore-dirty" id="SpecificProposalsRadio" value="SpecificProposalRadioFilter" name="ProposalLogFilterOption" />
+                            <label for="SpecificProposalsRadio">Specific Proposals</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    &nbsp; &nbsp; &nbsp;&nbsp; &nbsp;
+                   <table id="ProposalLogYearsTable" style="display: inline-block;">
+                    <thead>
+                        <tr style="height: 15px;">
+                            <th class="last-child">
+                                Years
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <select multiple="multiple" id="ProposalLogYears" name="Years" class="ignore-dirty" onclick="ProposalLogReportParameterWidget.UpdateYearSelect(this);">
+                                @foreach (SelectListItem option in Model.YearsList)
+                                {
+                                    <option value="@option.Value">@option.Text</option>
+                                }
+                          </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                    &nbsp; &nbsp; 
+                    <table id="ProposalLogLOBTable" style="display: inline-block;">
+                        <thead>
+                            <tr style="height: 15px;">
+                                <th class="last-child">
+                                    LOB
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <select multiple="multiple" id="LOBIds" name="LOBIds" class="ignore-dirty" onclick="ProposalLogReportParameterWidget.UpdateLOBSelect(this);" style="max-width:350px">
+                                        @foreach (SelectListItem option in Model.LOBList)
+                                        {
+                                            <option value="@option.Value" title="@option.Text">@option.Text</option>
+                                        }
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    &nbsp; &nbsp;
+                    <table id="ProposalLogCentralEstimatorTable" style="display: inline-block;">
+                        <thead>
+                            <tr style="height: 15px;">
+                                <th class="last-child">
+                                    Lead Estimator
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <select multiple="multiple" id="CentralEstimators" name="CentralEstimators" class="ignore-dirty" onclick="ProposalLogReportParameterWidget.UpdateCentralEstimatorSelect(this);" style="min-height:60px;">
+                                        @foreach (SelectListItem option in Model.LeadEstimatorList)
+                                        {
+                                            <option value="@option.Value">@option.Text</option>
+                                        }
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="form-row">
+                    <div class="form-element">
+                        <div>
+                            <input type="radio" class="radio ignore-dirty" id="SubmitDateRangeRadio" value="SubmitDateRangeFilter" name="ProposalLogFilterOption" />
+                            <label for="SubmitDateRangeRadio">Actual Submittal Date Range</label>
+                        </div>
+                    </div>
+                    <div class="form-element">
+                        &nbsp; &nbsp; &nbsp;
+                        <input name="SubmitStartDate" type="text" placeholder="mm/dd/yyyy" class="date ignore-dirty" value="@Model.SubmitStartDate" maxlength="10"/>
+                    </div>
+                    <span>to</span>
+                    <div class="form-element">
+                        <input name="SubmitEndDate" type="text" placeholder="mm/dd/yyyy" class="date ignore-dirty" value="@Model.SubmitEndDate" maxlength="10"/>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-element">
+                        <div>
+                            <input type="radio" class="radio ignore-dirty" id="TrackingNumberRadio" value="TrackingNumberFilter" name="ProposalLogFilterOption" />
+                            <label for="TrackingNumberRadio">Tracking # begins with </label>
+                        </div>
+                    </div>
+                    @Html.TextBoxFor(model => model.TrackingNumber, new { maxlength = 13, size = 13, name="TrackingNumber", @class= "ignore-dirty" })
+                </div>
+            </div>
+        }
+    </div>
+</div>
+

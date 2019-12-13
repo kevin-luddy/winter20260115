@@ -1,0 +1,121 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Reports.DfarsReportModelView
+@{
+    ViewBag.Title = "Report Parameters";
+}
+
+<script type="text/javascript">
+    var DfarsReportParameterWidget;
+
+    $(function () {
+        var ParameterWidgetConfig = {};
+        ParameterWidgetConfig.ContextID = "dfarsReportParameterSection";
+        ParameterWidgetConfig.IsModule = true;
+
+        DfarsReportParameterWidget = new GenWidget(ParameterWidgetConfig);
+        DfarsReportParameterWidget.LoadDataPlaceholderID = 'dfarsReportParametersPlaceholder';
+
+         DfarsReportParameterWidget.getElement('input[name="StartDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
+        DfarsReportParameterWidget.getElement('input[name="EndDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });
+
+        // skip datepicker icons when tabbing
+        DfarsReportParameterWidget.getElement('.ui-datepicker-trigger').attr('tabindex', '-1');
+        DfarsReportParameterWidget.getElement('.ui-datepicker-trigger').on('blur', function () {
+            $(this).attr('tabindex', '-1');
+        });
+
+        // Manage the selected Line of Business and Program Area options to allow select/deselect with mouse click
+        var lobList = [];
+        var paList = [];
+
+        DfarsReportParameterWidget.UpdateLOBSelect = function (row) {
+            GenSession.ShowLoadingBox();
+
+            GenTRAC.UpdateSelect(lobList, row, 'LOBs');
+
+            // clear Program Area selections
+            $("#ProgramAreas").val('');
+            paList = [];
+
+            // update Program Areas to match selected LOBs
+            var dataToSend = JSON.stringify($("#LOBs").val());
+            $.ajax({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.REPORTS',
+                    action: '@WebConstants.Action.PROPOSAL_FILTER_PROGRAM_AREA' }),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'html',
+                data: dataToSend,
+                success: function (response) {
+                    var element = DfarsReportParameterWidget.getElement('select[name="ProgramAreas"]')
+                    element.html(response);
+                    GenSession.HideLoadingBox();
+                },
+                failure: function () {
+                    GenSession.HideLoadingBox();
+                }
+            });
+        }
+
+        DfarsReportParameterWidget.UpdatePASelect = function (row) {
+            GenTRAC.UpdateSelect(paList, row, 'ProgramAreas');
+        }
+    });
+</script>
+
+<div id="dfarsReportParameterSection" class="composite module expanded full">
+    <div class="module-header-data"><b>Report Parameters</b></div>
+    <div class="module-content-data expanded-content">
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ReportsControllerLogic.DFARS_REPORT_PARAMETER_FORM, name = GenTRAC.ActionLogic.ReportsControllerLogic.DFARS_REPORT_PARAMETER_FORM }))
+        {
+            <input name="ExecutionUserIds" value="@Model.ExecutionUserIds" type="hidden" />
+            <div class="form-row">
+                <div class="form-label dfars-report-label"><b>Line of Business</b></div>
+                <div class="form-element">
+                    <select multiple="multiple" id="LOBs" name="LOBs" class="ignore-dirty" onclick="DfarsReportParameterWidget.UpdateLOBSelect(this);">
+                        @foreach (SelectListItem option in Model.LobList)
+                        {
+                            <option value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label dfars-report-label"><b>Program Area</b></div>
+                <div class="form-element">
+                    <select multiple="multiple" id="ProgramAreas" name="ProgramAreas" class="ignore-dirty" onclick="DfarsReportParameterWidget.UpdatePASelect(this);">
+                        @foreach (SelectListItem option in Model.ProgramAreaList)
+                        {
+                            <option value="@option.Value">@option.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label dfars-report-label">Actual Submittal Date Range</div>
+                <div class="form-element dfars-date-element">
+                    <input name="StartDate" type="text" placeholder="mm/dd/yyyy" class="date ignore-dirty" value="@Model.StartDate" maxlength="10" />
+                </div>
+                <span>to</span>
+                <div class="form-element">
+                    <input name="EndDate" type="text" placeholder="mm/dd/yyyy" class="date ignore-dirty" value="@Model.EndDate" maxlength="10" />
+                </div>
+            </div>
+        }
+    </div>
+</div>

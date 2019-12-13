@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{159641D6-6404-4A2A-AE62-294DE0FE8301}") = "PTM_SSIS", "genTrac_SSIS\PTM_SSIS.dtproj", "{84AF748C-CC53-4B2F-89E4-7AF0E06B593D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Development|Default = Development|Default
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{84AF748C-CC53-4B2F-89E4-7AF0E06B593D}.Development|Default.ActiveCfg = Development
+		{84AF748C-CC53-4B2F-89E4-7AF0E06B593D}.Development|Default.Build.0 = Development
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 2
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://idetfs01d.ast.lmco.com:8443/tfs/estimating
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = genTrac_SSIS\\PTM_SSIS.dtproj
+		SccProjectName1 = genTrac_SSIS
+		SccLocalPath1 = genTrac_SSIS
+	EndGlobalSection
+EndGlobal

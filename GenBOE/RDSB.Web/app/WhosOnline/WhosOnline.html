@@ -1,0 +1,25 @@
+﻿<div id="whosOnlineModal">
+    <div class="ui-widget-header modal-title-bar">Who's Online?<div class="modal-close-box" data-ng-click="$close()"><i class="glyphicon glyphicon-remove"></i></div></div>
+    <div class="modal-content-area">
+        <div id="WhosOnlineDivContent"  class="whosonline-content">
+            <table class="whosonline-table">
+                <thead>
+                <tr class="whosonline-header-row">
+                    <td>User Name</td>
+                    <td>NTID</td>
+                    <td>Time Last Accessed</td>
+                    <td>Time Since Last Accessed</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="whosonline-row" data-ng-repeat="user in model">
+                    <td>{{ user.DisplayName }}</td>
+                    <td>{{ user.Ntid }}</td>
+                    <td>{{ user.TimeLastAccessedString }}</td>
+                    <td>{{ user.TimeSinceLastAccess }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
