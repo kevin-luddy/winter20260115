@@ -1730,9 +1730,9 @@
             ResourceName: laborType.ResourceName,
             ResourceType: laborType.ResourceType,
             SpreadCurveID: laborType.SpreadCurveID,
-            SpreadData: laborType.SpreadData,
-            SpreadDataInvalid: laborType.SpreadDataInvalid,
-            Spreads: laborType.Spreads,
+            SpreadData: angular.copy(laborType.SpreadData),
+            SpreadDataInvalid: angular.copy(laborType.SpreadDataInvalid),
+            Spreads: angular.copy(laborType.Spreads),
             StartDate: laborType.StartDate,
             TieredPercentage: laborType.TieredPercentage,
             UpdateDateLong: '0',
@@ -1763,15 +1763,6 @@
                 row.CustomFieldValues.push(cfValue);
             } 
         });
-
-        if ($scope.model.SpreadDatesFull && $scope.model.SpreadDatesFull.length > 0) {
-            // loop through all of the spread dates
-            angular.forEach($scope.model.SpreadDatesFull, function (dt) {
-                row.Spreads.push({ LaborSpreadDate: dt, LaborSpreadValue: 0 });
-                row.SpreadData.push('');
-                row.SpreadDataInvalid.push(false);
-            });
-        }
 
         // insert before the blank row
         $scope.model.LaborTypesData.splice($scope.model.LaborTypesData.length - 1, 0, row);
