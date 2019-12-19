@@ -539,7 +539,7 @@
                 taskHeaders.push('Description');
                 taskHeaders.push('Start Date');
                 taskHeaders.push('End Date');
-                taskHeaders.push('Burden Pool');
+                taskHeaders.push('Indirect Pool');
                 taskHeaders.push('Quantity');
                 taskHeaders.push('Profit / Fee');
 
