@@ -1295,13 +1295,13 @@
                             <td>
                                 <span>{{item.EndDate}}</span>
                             </td>
-                            <td data-ng-if="item.RateType === ManageTaskModel.RateTypeCost" data-ng-repeat="option in ManageTaskModel.SpreadCurvesCost | filter: {Value:item.SpreadCurveID}">
+                            <td data-ng-if="item.RateType === ManageTaskModel.RateTypeCost" data-ng-repeat="option in ManageTaskModel.SpreadCurvesCost | filter: {Value:item.SpreadCurveID} : true">
                                 <span>{{option.Text}}</span>
                             </td>
                             <td data-ng-if="item.RateType === ManageTaskModel.RateTypeCost">
                                 <span>${{item.CostSpread}}</span>
                             </td>
-                            <td data-ng-if="item.RateType === ManageTaskModel.RateTypeHours" data-ng-repeat="option in ManageTaskModel.SpreadCurvesHours | filter: {Value:item.SpreadCurveID}">
+                            <td data-ng-if="item.RateType === ManageTaskModel.RateTypeHours" data-ng-repeat="option in ManageTaskModel.SpreadCurvesHours | filter: {Value:item.SpreadCurveID} : true">
                                 <span>{{option.Text}}</span>
                             </td>
                             <td data-ng-if="item.RateType === ManageTaskModel.RateTypeHours">
