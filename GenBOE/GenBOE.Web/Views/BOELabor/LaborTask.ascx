@@ -731,7 +731,7 @@
                 <div data-ng-hide="isLoading">
                     <div id="LaborSpreadGridContent" class="clear labor-spread-grid-content">
                     <gen-validation data-errors="laborSpreadErrors"></gen-validation>
-                    <gen-validation data-errors="laborSpreadPasteErrors"></gen-validation>    
+                    <gen-validation data-classtype="'warning-'" data-errors="laborSpreadPasteErrors"></gen-validation>    
                     <div id="LaborSpreadGridBlock" data-ng-cloak>
                         <div class="labor-spread-labels">
                             <table class="header-rows">

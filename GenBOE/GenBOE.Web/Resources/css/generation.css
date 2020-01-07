@@ -2459,8 +2459,8 @@ div#LaborTypeWarningFlag .warning-message
     float: right;
 }
 
-.validation-box li
-{
+.validation-box li,
+.warning-validation-box li {
     color: #333333;
     list-style-type: none;
 }
