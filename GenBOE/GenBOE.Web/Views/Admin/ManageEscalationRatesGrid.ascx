@@ -39,10 +39,9 @@
         data.Year = rowElement.find('a[name="Year"]').text();
         data.LMSIEscalation = rowElement.find('a[name="LMSIEscalation"]').text();
         data.MiscRate = rowElement.find('a[name="MiscRate"]').text();
-        if (data.MiscRate == undefined || data.MiscRate == ''){
+        if (data.MiscRate == undefined || data.MiscRate == '') {
             data.MiscRate = 0;
         }
-        data.UpdateDateLong = rowElement.find('input[name="UpdateDateLong"]').val().toString();
         data.Deleted = rowElement.find('input[name="DeleteRate"]').prop('checked');
         data.inUse = rowElement.find('input[name="inUse"]').val();
         return data;
