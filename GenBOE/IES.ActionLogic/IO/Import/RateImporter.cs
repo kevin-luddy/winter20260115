@@ -107,6 +107,7 @@ namespace IES.ActionLogic.IO.Import
                                                     }
 
                                                     string cellValue = ExcelUtilities.GetCellValue(cell, sharedStringItems, stylesheet);
+                                                    cellValue = cellValue.Replace("$", string.Empty);
                                                     if (!string.IsNullOrEmpty(cellValue) && decimal.TryParse(cellValue, out newValue))
                                                     {
                                                         // If the excel precision blew up, round the number.
