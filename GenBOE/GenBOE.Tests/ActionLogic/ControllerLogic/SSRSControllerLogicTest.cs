@@ -267,7 +267,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 Description = "task1",
                 StartDate = DateTime.Parse("1/15/2020").Normalize(),
                 EndDate = DateTime.Parse("2/15/2020").Normalize(),
-                MOQText = "rationale 1"
+                MOQText = "rationale 1",
+                BOETaskID = "111",
+                TaskTitle = "task title 1"
             };
             BoeTaskElementDTO taskElement2 = new BoeTaskElementDTO()
             {
@@ -277,7 +279,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 Description = "task2",
                 StartDate = DateTime.Parse("1/15/2019").Normalize(),
                 EndDate = DateTime.Parse("2/15/2019").Normalize(),
-                MOQText = "rationale 2"
+                MOQText = "rationale 2",
+                BOETaskID = "222",
+                TaskTitle = "task title 2"
             };
             BoeTaskElementDTO taskElement3 = new BoeTaskElementDTO()
             {
@@ -287,7 +291,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 Description = "task3",
                 StartDate = DateTime.Parse("1/15/2018").Normalize(),
                 EndDate = DateTime.Parse("2/15/2018").Normalize(),
-                MOQText = "rationale 3"
+                MOQText = "rationale 3",
+                BOETaskID = "333",
+                TaskTitle = "task title 3"
             };
             BoeTaskElementDTO taskElement4 = new BoeTaskElementDTO()
             {
@@ -297,7 +303,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 Description = "task4",
                 StartDate = DateTime.Parse("1/15/2017").Normalize(),
                 EndDate = DateTime.Parse("2/15/2017").Normalize(),
-                MOQText = "rationale 4"
+                MOQText = "rationale 4",
+                BOETaskID = "444",
+                TaskTitle = "task title 4"
             };
 
             // Set up Resources and PerformingOrgs.
@@ -356,6 +364,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             // Setup factories and mock calls.
             factory.Setup(x => x.CreateClonedProjectMapWorkspace(It.IsAny<FullWorkspace>())).Returns(ws);
             factory.Setup(x => x.CreateFullProjectMapWorkspace(ws.Shortname, It.IsAny<bool>())).Returns(ws);
+            factory.Setup(x => x.CreateFullWorkspace(ws.Shortname, It.IsAny<bool>())).Returns(ws);
             factory.Setup(x => x.CreateFullWorkspace(ws.Id)).Returns(ws);
             factory.Setup(x => x.CreateFullWorkspace(ws)).Returns(ws);
             factory.Setup(x => x.CreateFullBoe(boe1.Id)).Returns(boe1);
@@ -398,8 +407,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 .Returns(new Collection<ResourceDTO>() {resource1, resource2, subresource1, subresource2 });
             retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(It.IsAny<int>()))
                 .Returns(new Collection<FullWbs>() {wbs1});
-            retriever.Setup(x => x.GetClinsByWorkspaceId(It.IsAny<int>()))
-                .Returns(new Collection<FullClin>() {clin1});
             retriever.Setup(x => x.GetTravelByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>()))
                 .Returns(new Collection<TravelDTO>());
             offloadRatesDTOLoader.Setup(x => x.GetByWorkspaceId(ws.Id)).Returns(offloadRates);
@@ -558,7 +565,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                     Description = "bad task with no resources",
                     StartDate = new DateTime(firstYear - 1, 1, 1),
                     EndDate = new DateTime(firstYear - 1, 12, 1),
-                    BoeID = boeWithBadTask.Id
+                    BoeID = boeWithBadTask.Id,
+                TaskTitle = "booooooo 333"
                 }
             });
             
@@ -573,7 +581,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 Description = "bad task with no resources on good boe",
                 StartDate = new DateTime(firstYear - 1, 1, 1),
                 EndDate = new DateTime(firstYear - 1, 12, 1),
-                BoeID = boeWithBadTask.Id
+                BoeID = boeWithBadTask.Id,
+                TaskTitle = "boooooo 444o"
             });
             goodBoe.SetTaskElements(goodBoeTasks);
 
@@ -1021,7 +1030,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             BoeTaskElementDTO taskElement = new BoeTaskElementDTO
             {
                 BoeID = 5,
-                taskElementLabors = resourceTypeList
+                taskElementLabors = resourceTypeList,
+                TaskTitle = "booooooo"
             };
 
             Collection<BoeTaskElementDTO> taskElementList = new Collection<BoeTaskElementDTO>();
@@ -1112,7 +1122,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         /// Test retrieving the ModelViews for RAM Report
         /// </summary>
         [TestMethod]
-        public void GetRamReportModelViewsTest()
+        public void GetRamReportModelViewsTest_ProjectMap()
         {
             ICollection<FullBoe> boes = sut.GetOffloadBOEsFromFullWorkspace(this.ws);
 
@@ -1161,6 +1171,62 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 Assert.AreEqual(expected.ElementAt(i).Value, results.ElementAt(i).Value);
             }
         }
+
+        /// <summary>
+        /// Test retrieving the ModelViews for RAM Report
+        /// </summary>
+        [TestMethod]
+        public void GetRamReportModelViewsTest_Standard()
+        {
+            ICollection<FullBoe> boes = sut.GetOffloadBOEsFromFullWorkspace(this.ws);
+
+            ICollection<RAMReportModelView> expected = new Collection<RAMReportModelView>();
+
+            resource2.ResourceName = resource1.ResourceName;
+            retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>()))
+                .Returns(new Collection<ResourceDTO>() { resource1, resource2 });
+
+            foreach (FullBoe boe in boes)
+            {
+                foreach (BoeTaskElementDTO task in boe.TaskElements)
+                {
+                    var groupedResourceTypes = task.taskElementLabors.GroupBy(x => new { x.ResourceID, x.PerformingOrgID }).ToCollection();
+                    foreach (var groupedResourceType in groupedResourceTypes)
+                    {
+                        decimal resourceValue = groupedResourceType.Sum(x => x.ValueSpread ?? 0);
+                        string resourceValueString = groupedResourceType.First().SpreadType == SpreadType.Cost
+                            ? "$" + resourceValue.ToString(
+                                  Utilities.CostPrecisionFormattingString(this.ws.CostDecimalPrecision))
+                            : resourceValue.ToString(Utilities.PrecisionFormattingString(this.ws.DecimalPrecision));
+
+                        expected.Add(new RAMReportModelView()
+                        {
+                            Clin = boe.Clin.ClinTitle,
+                            Wbs = boe.Wbs.WbsNumber,
+                            ActivityId = task.BOETaskID,
+                            ActivityName = task.TaskTitle,
+                            ResourceCostCenter = "Resource1, Test Cost Center",
+                            Value = resourceValueString
+                        });
+                    }
+                }
+            }
+
+            this.ws.ProjectMapType = ProjectMapType.StandardWithOffload;
+            ICollection<RAMReportModelView> results = sut.GetRamReportModelViews(boes, this.ws);
+
+            Assert.AreEqual(expected.Count, results.Count);
+            for (int i = 0; i < expected.Count; i++)
+            {
+                Assert.AreEqual(expected.ElementAt(i).Clin, results.ElementAt(i).Clin);
+                Assert.AreEqual(expected.ElementAt(i).Wbs, results.ElementAt(i).Wbs);
+                Assert.AreEqual(expected.ElementAt(i).ActivityId, results.ElementAt(i).ActivityId);
+                Assert.AreEqual(expected.ElementAt(i).ActivityName, results.ElementAt(i).ActivityName);
+                Assert.AreEqual(expected.ElementAt(i).ResourceCostCenter, results.ElementAt(i).ResourceCostCenter);
+                Assert.AreEqual(expected.ElementAt(i).Value, results.ElementAt(i).Value);
+            }
+        }
+
 
         /// <summary>
         /// Test retrieving the ModelViews for Workbench Offload report.

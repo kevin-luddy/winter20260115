@@ -64,10 +64,14 @@ namespace GenBOE.ActionLogic.Workspace
                         WbsDTO wbs = workspace.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
                         FullClin clin = workspace.Clins.FirstOrDefault(x => x.Id == boe.CLINID);
 
+                        // Project map -> activity is fed from BOE. Standard -> fed from task. (facepalm)
+                        string activityId = workspace.IsProjectMapWorkspace ? boe.Title : task.BOETaskID;
+                        string activityName = workspace.IsProjectMapWorkspace ? boe.Description : task.TaskTitle;
+
                         ProjectMapModelView dto = new ProjectMapModelView()
                         {
-                            ActivityID = boe.Title,
-                            ActivityName = boe.Description,
+                            ActivityID = activityId,
+                            ActivityName = activityName,
                             AddDelete = laborResource.AddOrDelete ?? "A",
                             CamName = boe.CamName,
                             Category = boe.Category,

@@ -109,6 +109,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 {
                     foreach (BoeTaskElementDTO task in boe.TaskElements)
                     {
+                        string activityId = fullWS.IsProjectMapWorkspace ? boe.Title : task.BOETaskID;
+                        string activityName = fullWS.IsProjectMapWorkspace ? boe.Description : task.TaskTitle;
+
                         foreach (ResourceTypeDto laborResource in task.taskElementLabors)
                         {
                             PerformingOrgDTO perfOrg = fullWS.PerformingOrgsForWsList.First(p => p.Id == laborResource.PerformingOrgID);
@@ -144,12 +147,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
                                 PerformingOrgDescription = perfOrg.PerformingOrgDesc ?? string.Empty,
                                 ResourceUnit = laborResource.SpreadType == SpreadType.Cost ? Constants.COST_ANALYSIS_RESOURCE_UNIT_DIRECT_DOLLARS : Constants.COST_ANALYSIS_RESOURCE_UNIT_HOURS,
                                 Category = boe.Category ?? string.Empty,
-                                ActivityID = boe.Title ?? string.Empty,
+                                ActivityID = activityId ?? string.Empty,
                                 ClassOfCost = boe.ClassOfCost.GetDescription(),
                                 WBS = (wbs == null) ? string.Empty : wbs.WbsNumber,
                                 WbsTitle = wbs?.WbsTitle ?? string.Empty,
                                 TieredPercentage = laborResource.TieredPercentage.HasValue ? (laborResource.TieredPercentage.Value / 100m).ToString(Constants.PERCENTAGE_FORMATTING) : string.Empty,
-                                ActivityName = RTEUtilities.TurnHTMLIntoPlainText(boe.Description),
+                                ActivityName = RTEUtilities.TurnHTMLIntoPlainText(activityName),
                                 StartYear = reportStartYear,
                                 ResourceType = resourceType ?? string.Empty,
                                 SOWTitle = boe.SOWTitle ?? string.Empty,
@@ -209,6 +212,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 foreach (BoeTaskElementDTO task in boe.TaskElements)
                 {
+                    string activityId = fullWS.IsProjectMapWorkspace ? boe.Title : task.BOETaskID;
+
                     foreach (ResourceTypeDto laborResource in task.taskElementLabors)
                     {
                         if (!(laborResource is SubResourceTypeDto))
@@ -237,7 +242,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                             decimal offloadDollars = offloadedDollarSpreads.First(x => x.Key == year).Value;
                             decimal inHouseHours = inHouseLaborSpread.Value;
 
-                            OffloadCostByYearReportRMSModelView modelView = modelViews.FirstOrDefault(m => (string.IsNullOrEmpty(m.Wbs) || (wbs != null && m.Wbs == wbs.WbsNumber)) && m.ActivityId == boe.Title && m.CostCenter == perfOrg.PerformingOrgName && m.OffloadYear == year.ToString());
+                            OffloadCostByYearReportRMSModelView modelView = modelViews.FirstOrDefault(m => (string.IsNullOrEmpty(m.Wbs) || (wbs != null && m.Wbs == wbs.WbsNumber)) && m.ActivityId == activityId && m.CostCenter == perfOrg.PerformingOrgName && m.OffloadYear == year.ToString());
                             if (modelView != null)
                             {
                                 // add to existing grouping
@@ -253,7 +258,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                                 // create a new one
                                 modelViews.Add(new OffloadCostByYearReportRMSModelView()
                                 {
-                                    ActivityId = boe.Title ?? string.Empty,
+                                    ActivityId = activityId ?? string.Empty,
                                     CostCenter = perfOrg.PerformingOrgName ?? string.Empty,
                                     Resource = resourceName ?? string.Empty,
                                     Wbs = wbs?.WbsNumber ?? string.Empty,
@@ -315,6 +320,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 foreach (BoeTaskElementDTO task in boe.TaskElements)
                 {
+                    string activityId = fullWS.IsProjectMapWorkspace ? boe.Title : task.BOETaskID;
+
                     foreach (ResourceTypeDto laborResource in task.taskElementLabors)
                     {
                         if (!(laborResource is SubResourceTypeDto))
@@ -346,7 +353,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
                             modelViews.Add(new OffloadCostByYearReportRMSModelView()
                             {
-                                ActivityId = boe.Title ?? string.Empty,
+                                ActivityId = activityId ?? string.Empty,
                                 CostCenter = perfOrg.PerformingOrgName ?? string.Empty,
                                 OffloadedResource = legacyName ?? string.Empty,
                                 Resource = resourceName ?? string.Empty,
@@ -706,8 +713,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         HeaderHTMLColumn3 = boeHeaderHTMLColumn3,
                         HeaderHTMLColumn4 = boeHeaderHTMLColumn4,
                         ReportStartYear = reportStartYear,
+// ToDo: Dusan -> This is an issue.. cannot use task, since it's summing things up.. yuck 2x
                         ActivityID = boe.Title ?? string.Empty,
                         ActivityName = RTEUtilities.TurnHTMLIntoPlainText(boe.Description),
+
                         TaskDescription = RTEUtilities.TurnHTMLIntoPlainText(taskDescription),
                         SalaryHoursTotal = salaryHoursTotal,
                         CostDollarsTotal = costDollarsTotal,
@@ -740,8 +749,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         HeaderHTMLColumn3 = boeHeaderHTMLColumn3,
                         HeaderHTMLColumn4 = boeHeaderHTMLColumn4,
                         ReportStartYear = reportStartYear,
+// ToDo: Dusan -> PROBLEM 2x
                         ActivityID = boe.Title ?? string.Empty,
                         ActivityName = RTEUtilities.TurnHTMLIntoPlainText(boe.Description),
+
                         TaskDescription = RTEUtilities.TurnHTMLIntoPlainText(taskDescription),
                         SalaryHoursTotal = salaryHoursTotal,
                         CostDollarsTotal = costDollarsTotal,
@@ -939,6 +950,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 WbsDTO wbs = workspace.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
                 foreach (BoeTaskElementDTO task in boe.TaskElements)
                 {
+                    // Project map -> activity is fed from BOE. Standard -> fed from task. (facepalm)
+                    string activityId = workspace.IsProjectMapWorkspace ? boe.Title : task.BOETaskID;
+                    string activityName = workspace.IsProjectMapWorkspace ? boe.Description : task.TaskTitle;
+
                     var groupedResourceTypes = task.taskElementLabors.GroupBy(x => new { x.ResourceID, x.LegacyID, x.PerformingOrgID }).ToCollection();
                     foreach (var groupedResourceType in groupedResourceTypes)
                     {
@@ -964,8 +979,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         {
                             Clin = clin?.ClinTitle ?? string.Empty,
                             Wbs = wbs?.WbsNumber ?? string.Empty,
-                            ActivityId = boe.Title ?? string.Empty,
-                            ActivityName = RTEUtilities.TurnHTMLIntoPlainText(boe.Description),
+                            ActivityId = activityId ?? string.Empty,
+                            ActivityName = RTEUtilities.TurnHTMLIntoPlainText(activityName),
                             ResourceCostCenter = resourceName + ", " + costCenterName,
                             Value = resourceValueString
                         });
@@ -1060,6 +1075,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 foreach (BoeTaskElementDTO task in boe.TaskElements)
                 {
+                    // Project map -> activity is fed from BOE. Standard -> fed from task. (facepalm)
+                    string activityId = fullWS.IsProjectMapWorkspace ? boe.Title : task.BOETaskID;
+                    string activityName = fullWS.IsProjectMapWorkspace ? boe.Description : task.TaskTitle;
+
                     foreach (ResourceTypeDto laborResource in task.taskElementLabors)
                     {
                         string resourceName = this.GetResourceName(laborResource, fullWS.ResourcesUsedInWsBoes);
@@ -1072,8 +1091,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         {
                             WorkspaceName = fullWS.WorkspaceName,
                             Clin = clin?.ClinNumber ?? string.Empty,
-                            ActivityID = boe.Title ?? string.Empty,
-                            ActivityName = RTEUtilities.TurnHTMLIntoPlainText(boe.Description),
+                            ActivityID = activityId ?? string.Empty,
+                            ActivityName = RTEUtilities.TurnHTMLIntoPlainText(activityName),
                             CostCenter = perfOrg.PerformingOrgName ?? string.Empty,
                             Resource = resourceName ?? string.Empty,
                             StartDate = laborResource.StartDate,
@@ -1145,6 +1164,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 string minorGroupingText = reportType == SSRSReportType.ProjectCLINCategoryCostSummary ? boe.Category : clinTitle;
                 foreach (BoeTaskElementDTO task in boe.TaskElements)
                 {
+                    string activityId = ws.IsProjectMapWorkspace ? boe.Title : task.BOETaskID;
+                    string activityName = ws.IsProjectMapWorkspace ? boe.Description : task.TaskTitle;
+
                     foreach (ResourceTypeDto laborResource in task.taskElementLabors)
                     {
                         ResourceDTO resource = ws.ResourcesForWsResourceListId.First(r => r.Id == laborResource.ResourceID);
@@ -1157,8 +1179,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                             Project = projectName,
                             MajorGroupingText = majorGroupingText,
                             MinorGroupingText = minorGroupingText,
-                            ActivityID = boe.Title ?? string.Empty,
-                            ActivityName = RTEUtilities.TurnHTMLIntoPlainText(boe.Description),
+                            ActivityID = activityId ?? string.Empty,
+                            ActivityName = RTEUtilities.TurnHTMLIntoPlainText(activityName),
                             Resource = Utilities.FormatResourceNames(resource.ResourceName, this.commonDataMapper.GetSikorskyLegacyResourceID(laborResource.LegacyID, allLegacyResources), laborResource is SubResourceTypeDto),
                             ResourceName = perfOrg.PerformingOrgDesc,
                             StartDate = laborResource.StartDateValue.ToMonthString(),
@@ -1196,6 +1218,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 {
                     foreach (BoeTaskElementDTO task in boe.TaskElements)
                     {
+                        // Project map -> activity is fed from BOE. Standard -> fed from task. (facepalm)
+                        string activityId = fullWS.IsProjectMapWorkspace ? boe.Title : task.BOETaskID;
+
                         foreach (ResourceTypeDto laborResource in task.taskElementLabors)
                         {
                             PerformingOrgDTO perfOrg = fullWS.PerformingOrgsForWsList.First(p => p.Id == laborResource.PerformingOrgID);
@@ -1211,7 +1236,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                                     Project = fullWS.WorkspaceName,
                                     CLIN = clin?.ClinTitle ?? string.Empty,
                                     WBS = wbs?.WbsNumber ?? string.Empty,
-                                    ActivityId = boe.Title ?? string.Empty,
+                                    ActivityId = activityId ?? string.Empty,
                                     ResourceType = resource.ElementOfCost.GetDescription(),
                                     Resource = Utilities.FormatResourceNames(resource.ResourceName, this.commonDataMapper.GetSikorskyLegacyResourceID(laborResource.LegacyID, allLegacyResources), laborResource is SubResourceTypeDto),
                                     CostCenter = perfOrg.PerformingOrgName,
