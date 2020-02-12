@@ -361,6 +361,12 @@ namespace GenBOE.Web.Controllers
                 // Perform Action
                 ICollection<SSRSReportsModelView> theModelViews = this.reportsControllerLogic.GetCustomerReportsModelViews();
 
+                // Non-Project Maps will not include the BOE Summary Report
+                if(!ws.IsProjectMapWorkspace)
+                {
+                    theModelViews = theModelViews.Where(x => x.ReportID != (int)Reports.BOESummaryReport).ToList();
+                }
+
                 toReturn = this.View(WebConstants.VIEW_CUSTOMER_REPORTS, theModelViews);
             }
 
