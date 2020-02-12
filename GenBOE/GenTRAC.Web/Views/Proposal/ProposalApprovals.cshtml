@@ -112,7 +112,7 @@
                 </div>
             </div>
             <div class="form-row" data-proposal-type="standard">
-                <div class="form-label"><span helptext="Pricing Verifier is required if CCOPD is set to Yes.">@Html.LabelFor(m => m.PricingVerificationNtid) *</span></div>
+                <div class="form-label"><span helptext="Pricing Verifier is required if CCOPD is set to Yes. Lead Estimator and Pricing Verification cannot be the same person.">@Html.LabelFor(m => m.PricingVerificationNtid) *</span></div>
                 <div class="form-element">
                     @if (Model.IsPricingVerificationReadOnly)
                     {
