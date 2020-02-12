@@ -57,6 +57,20 @@ GO
 IF NOT EXISTS (SELECT * FROM sys.all_columns C INNER JOIN sys.tables T on C.object_id = T.object_id INNER JOIN sys.schemas S ON T.schema_id = S.schema_id WHERE S.name = 'dbo' AND 
 	T.name = 'ETIuser' AND C.name = 'IsUsPerson')
 BEGIN
-    ALTER TABLE [dbo].ETIuser ADD IsUsPerson bit; ALTER TABLE [dbo].ETIuser ADD IsSubcontractor bit;
+    ALTER TABLE [dbo].ETIuser ADD IsUsPerson bit; 
+	ALTER TABLE [dbo].ETIuser ADD IsSubcontractor bit;
 END
 GO
+
+/*
+		## START ##
+		1/22/20		Dusan			Temp fix because there's a path in the code (maybe copy WS) which causes a null failure
+*/
+
+ALTER TABLE BOELaborType ADD CONSTRAINT BOELaborType_LaborSortId_Default DEFAULT 2000 FOR LaborSortId;
+GO
+
+/*
+       1/22/20		Dusan			Temp fix because there's a path in the code (maybe copy WS) which causes a null failure
+       ## END ##
+*/
