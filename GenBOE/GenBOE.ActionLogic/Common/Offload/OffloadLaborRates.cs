@@ -145,21 +145,18 @@ namespace GenBOE.ActionLogic.Common
                 // create copies of the boes
                 boes = this.CreateBoeCopies(boes, workspace);
             }
-             
-            
-            
+
+            string justifyingPublication = this.systemSettingLoader.GetSystemSetting(SystemSettingConstants.JUSTIFYING_PUBLICATION)?.Value ?? string.Empty;
+            string projectMapOffloadText = this.systemSettingLoader.GetSystemSetting(SystemSettingConstants.PROJECT_MAP_OFFLOAD_TEXT)?.Value ?? string.Empty;
+
             if (workspace.IsProjectMapWorkspace)
             {
-                SystemSettingDTO systemSetting = this.systemSettingLoader.GetSystemSetting(SystemSettingConstants.JUSTIFYING_PUBLICATION);
-                string justifyingPublication = systemSetting == null ? string.Empty : systemSetting.Value;
-                systemSetting = this.systemSettingLoader.GetSystemSetting(SystemSettingConstants.PROJECT_MAP_OFFLOAD_TEXT);
-                string projectMapOffloadText = systemSetting == null ? string.Empty : systemSetting.Value;
                 results = this.OffloadAsProjectMap(boes, workspace, offloadRates, justifyingPublication, projectMapOffloadText);
             }
             else
             {
                 // Add the new ResourceTypeDto (inserted after the current ResourceTypeDto that was offloaded)
-                results = this.OffloadAsNonProjectMap(boes, workspace, offloadRates);
+                results = this.OffloadAsNonProjectMap(boes, workspace, offloadRates, justifyingPublication, projectMapOffloadText);
             }
 
             return results;
@@ -545,7 +542,7 @@ namespace GenBOE.ActionLogic.Common
         /// <param name="workspace">The workspace.</param>
         /// <param name="offloadRates">The offload rates.</param>
         /// <returns>The offloaded labor results.</returns>
-        private OffloadLaborRatesResults OffloadAsNonProjectMap(ICollection<FullBoe> boes, FullWorkspace workspace, ICollection<OffloadRatesDTO> offloadRates)
+        private OffloadLaborRatesResults OffloadAsNonProjectMap(ICollection<FullBoe> boes, FullWorkspace workspace, ICollection<OffloadRatesDTO> offloadRates, string justifyingPublication, string projectMapOffloadText)
         {
             logger.Info($"OffloadAsNonProjectMap. Workspace Id: {workspace.Id}");
 
@@ -556,6 +553,10 @@ namespace GenBOE.ActionLogic.Common
 
                 results.Boes.Enqueue(boe);
 
+                decimal originalBoeHours = 0;
+                decimal offloadedBoeHours = 0;
+                decimal percentOffload = 0;
+
                 foreach (BoeTaskElementDTO taskElement in boe.TaskElements)
                 {
                     decimal taskElementTotalHoursOffloaded = 0m;
@@ -565,7 +566,7 @@ namespace GenBOE.ActionLogic.Common
                     foreach (ResourceTypeDto laborResource in resources)
                     {
                         newResourceList.Add(laborResource);
-
+                        originalBoeHours += laborResource.SpreadType == SpreadType.Hours ? laborResource.ValueSpread ?? 0 : 0;
                         decimal offloadedHours;
                         decimal? percent;
                         ResourceTypeDto newResource = this.OffloadLaborResource(workspace, offloadRates, laborResource, out offloadedHours, out percent);
@@ -578,6 +579,10 @@ namespace GenBOE.ActionLogic.Common
                             taskElement.TotalHours -= offloadedHours;
                             taskElementTotalHoursOffloaded += offloadedHours;
                         }
+
+                        offloadedBoeHours += offloadedHours;
+                        percentOffload = percent ?? 0;
+
                     }
 
                     if (taskElementTotalHoursOffloaded > 0m)
@@ -590,6 +595,10 @@ namespace GenBOE.ActionLogic.Common
                     } 
 
                     taskElement.taskElementLabors = newResourceList;
+
+                    taskElement.MOQText += string.Format(this.EXISTING_TASK_RATIONALE, justifyingPublication, projectMapOffloadText, originalBoeHours.ToString("F"),
+                                    offloadedBoeHours.ToString("F"), (originalBoeHours - offloadedBoeHours).ToString("F"));
+
                 }
             }
 
