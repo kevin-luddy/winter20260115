@@ -596,9 +596,11 @@ namespace GenBOE.ActionLogic.Common
 
                     taskElement.taskElementLabors = newResourceList;
 
-                    taskElement.MOQText += string.Format(this.EXISTING_TASK_RATIONALE, justifyingPublication, projectMapOffloadText, originalBoeHours.ToString("F"),
+                    if (offloadedBoeHours != 0)
+                    {
+                        taskElement.MOQText += string.Format(this.EXISTING_TASK_RATIONALE, justifyingPublication, projectMapOffloadText, originalBoeHours.ToString("F"),
                                     offloadedBoeHours.ToString("F"), (originalBoeHours - offloadedBoeHours).ToString("F"));
-
+                    }
                 }
             }
 
