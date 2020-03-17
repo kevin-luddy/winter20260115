@@ -54,7 +54,7 @@ BEGIN
 	ON [PRIMARY]
 
 	CREATE TABLE [dbo].[RteTemplateAssigned](
-		[TemplateID] [int] IDENTITY(1,1) NOT NULL,
+		[TemplateID] [int] NOT NULL,
 		[RteTemplateSourceId] [int] NOT NULL
 	CONSTRAINT [PK_RteTemplateAssigned] PRIMARY KEY CLUSTERED 
 	(
