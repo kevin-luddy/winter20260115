@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -21,6 +21,7 @@ namespace GenBOE.Web.Controllers
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.Common.Email;
     using GenBOE.ActionLogic.ControllerLogic;
+    using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.Metrics;
     using GenBOE.ActionLogic.ModelView;
@@ -58,6 +59,7 @@ namespace GenBOE.Web.Controllers
         private IWbsDTODataLoader wbsLoader;
         private ITravelControllerLogic _TravelControllerLogic = null;
         private ITravelDTODataLoader _TravelDTOLoader = null;
+        private readonly IRteTemplateDataLoader rteTemplateDataLoader;
         /// <summary>
         /// Task Element Validation Class
         /// </summary>
@@ -103,7 +105,8 @@ namespace GenBOE.Web.Controllers
             ITravelControllerLogic inTravelControllerLogic,
             TaskElementValidation taskElementValidation,
             ITravelDTODataLoader travelLoader,
-            IWorkspaceVersionMetaDataDTODataLoader versionLoader)
+            IWorkspaceVersionMetaDataDTODataLoader versionLoader,
+            IRteTemplateDataLoader rteTemplateDataLoader)
           : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDataLoader, inPermissionsLoader, inControllerLogic)
         {
             _emailer = inEmailer;
@@ -126,6 +129,7 @@ namespace GenBOE.Web.Controllers
             this.taskElementValidation = taskElementValidation;
             this._TravelDTOLoader = travelLoader;
             this.versionLoader = versionLoader;
+            this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
         #region Display
@@ -393,7 +397,8 @@ namespace GenBOE.Web.Controllers
             Stopwatch sw = InitializeAction(_log, "DisplayBOEHeaderDescription", SecurityPage.EditBOEHeaderDescription,
                 SecurityAuthorization.Read, ws, boeID);
 
-            ViewResult toReturn = View(WebConstants.VIEW_BOE_HEADER_DESCRIPTION, _createBOEHeaderMVDescription(boe));
+            ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boeID).Where(t => t.SourceId == (int)RteTemplateSource.BoeDescription).OrderBy(r => r.SortOrder).ToList();
+            ViewResult toReturn = View(WebConstants.VIEW_BOE_HEADER_DESCRIPTION, _createBOEHeaderMVDescription(boe, rteTemplateAnswers));
 
             ViewBag.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
 
@@ -432,10 +437,10 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        private BOEHeaderDescriptionModelView _createBOEHeaderMVDescription(FullBoe boe)
+        private BOEHeaderDescriptionModelView _createBOEHeaderMVDescription(FullBoe boe, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers)
         {
             // Perform Action
-            BOEHeaderDescriptionModelView theModelView = new BOEHeaderDescriptionModelView(boe);
+            BOEHeaderDescriptionModelView theModelView = new BOEHeaderDescriptionModelView(boe, rteTemplateAnswers);
             ViewData["BOEID"] = boe.Id;
 
             return theModelView;
@@ -860,7 +865,15 @@ namespace GenBOE.Web.Controllers
 
             try
             {
-                this.reportsControllerLogic.ExportAllBOEsReport(ws, isSubcontractorUser, summarizeByCustomField, ids, null, ViewData, Response, false);
+                bool isCustomExport;
+                WorkspaceExportFormatDTO wsExportFormatDTO;
+                BOEExportInputs exportInputs;
+                ICollection<BOEExportModelView> boeExportModelViews;
+                List<BOESummaryGridModelView> boeSummaryGridModelViews;
+
+                this.reportsControllerLogic.PrepareAllBOEsReport(ws, isSubcontractorUser, summarizeByCustomField, ids, ViewData, out isCustomExport, out wsExportFormatDTO,
+                    out exportInputs, out boeExportModelViews, out boeSummaryGridModelViews, false);
+                this.reportsControllerLogic.ExportAllBOEsReport(ws, null, Response, false, isCustomExport, wsExportFormatDTO, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
             }
             catch (Exception ex)
             {
@@ -1003,16 +1016,31 @@ namespace GenBOE.Web.Controllers
             JsonResult toReturn = null;
 
             // validate RTE field length
-            if(ws.RteSizeLimit.HasValue)
+            if (ws.RteSizeLimit.HasValue)
             {
-                if(!string.IsNullOrEmpty(inBOEHeaderDescription.Description) && ws.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(inBOEHeaderDescription.Description).Length)
+                if (!string.IsNullOrEmpty(inBOEHeaderDescription.Description) && ws.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(inBOEHeaderDescription.Description).Length)
                 {
                     ModelState.AddModelError("Description", string.Format("The maximum length of BOE Description is {0} characters.", ws.RteSizeLimit.Value));
                 }
 
-                if(!descriptionOnly && !string.IsNullOrEmpty(inBOEHeader.DataSource) && ws.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(inBOEHeader.DataSource).Length)
+                if (!descriptionOnly && !string.IsNullOrEmpty(inBOEHeader.DataSource) && ws.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(inBOEHeader.DataSource).Length)
                 {
                     ModelState.AddModelError("DataSource", string.Format("The maximum length of BOE Source of Data is {0} characters.", ws.RteSizeLimit.Value));
+                }
+            }
+
+            if (inBOEHeaderDescription.RteTemplateAnswers != null && inBOEHeaderDescription.RteTemplateAnswers.Any())
+            {
+                ICollection<RteCustomTemplateSourceModelView> sources = this.rteTemplateDataLoader.GetSources();
+                ICollection<ValidationMessage> rteValidationErrors = this.ValidateRteAnswers(inBOEHeaderDescription.RteTemplateAnswers, sources, ws.RteSizeLimit);
+
+                //convert from validationmessage to modelerror
+                if (rteValidationErrors.Any())
+                {
+                    foreach (ValidationMessage message in rteValidationErrors)
+                    {
+                        ModelState.AddModelError(message.FieldName, message.ValidationIssue);
+                    }
                 }
             }
 

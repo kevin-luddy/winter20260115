@@ -39,8 +39,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IBOEFormPBOEDTODataLoader pboeFormDataLoader,
             IInUseDataLoader iInUseDataLoader,
             IProposalLoader proposalLoader,
-            IWorkspaceControllerLogic workspaceControllerLogic)
-            : base(boeExporter, boeSummary, boeCustomExporter, workspaceExportFormatDTOLoader, boeDiscrepancyReport, proposalLoader, workspaceControllerLogic)
+            IWorkspaceControllerLogic workspaceControllerLogic,
+            IRteTemplateDataLoader rteTemplateDataLoader)
+            : base(boeExporter, boeSummary, boeCustomExporter, workspaceExportFormatDTOLoader, boeDiscrepancyReport, proposalLoader, workspaceControllerLogic, rteTemplateDataLoader)
         {
             this.iboeFormDataLoader = iboeFormDataLoader;
             this.pboeFormDataLoader = pboeFormDataLoader;

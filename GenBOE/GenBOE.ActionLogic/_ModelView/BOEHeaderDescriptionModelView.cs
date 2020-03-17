@@ -7,10 +7,12 @@
 namespace GenBOE.ActionLogic.ModelView
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.ActionLogic.ValidationAttributes;
     using GenBOE.DataBridge.DTO;
+    using GenBOE.Dtos;
     using IES.Common;
 
     public class BOEHeaderDescriptionModelView : PersistedDataModelView
@@ -19,9 +21,10 @@ namespace GenBOE.ActionLogic.ModelView
         {
             this.Description = string.Empty;
             this.BOEID = 0;
+            this.RteTemplateAnswers = new List<RTECustomTemplateQuestionAnswerModelView>();
         }
 
-        public BOEHeaderDescriptionModelView(BoeDTO inBoe)
+        public BOEHeaderDescriptionModelView(BoeDTO inBoe, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers)
             : this()
         {
             if (inBoe != null)
@@ -30,6 +33,7 @@ namespace GenBOE.ActionLogic.ModelView
                 this.StartDate = inBoe.StartDate.ToString("MM/yyyy");
                 this.EndDate = inBoe.EndDate.ToString("MM/yyyy");
                 this.BOEID = inBoe.Id;
+                this.RteTemplateAnswers = rteTemplateAnswers;
             }
         }
 
@@ -54,5 +58,10 @@ namespace GenBOE.ActionLogic.ModelView
         /// </summary>
         /// <remarks>Setter must be public to support model binding (notably for image processing)</remarks>
         public int BOEID { get; set; }
+
+        /// <summary>
+        /// Gets or sets the RTE Custom Template Answers at BOE level.
+        /// </summary>
+        public ICollection<RTECustomTemplateQuestionAnswerModelView> RteTemplateAnswers { get; set; }
     }
 }

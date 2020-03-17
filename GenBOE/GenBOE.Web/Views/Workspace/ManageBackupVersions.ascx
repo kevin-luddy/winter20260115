@@ -4,20 +4,18 @@
     ManageBackupVersionsWidget = new Widget("ManageBackupVersionsContainer", '<%= ViewData["READONLY"] %>'.isTrue());
  
     ManageBackupVersionsWidget.ReloadGridData = function() {
-        $.ajax({
+       $.ajax({
             type: 'POST',
             url: CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
                 '<%:WebConstants.CONTROLLER_WORKSPACE %>',
                 '<%:WebConstants.ACTION_DISPLAY_BACKUP_VERSIONS_GRID %>', ''),
             success: function(response)
-            {             
+            {            
                 $('#BackupVersionsGridContent').html(response);
-                refreshModule($(ManageBackupVersionsWidget.Module));
-              
+                refreshModule($(ManageBackupVersionsWidget.Module));              
             }
         });
     }
-
 
     ManageBackupVersionsWidget.SaveNewVersion = function () {
         $('#versionErrorMessage').text('').hide();
@@ -34,11 +32,11 @@
                 '<%: WebConstants.CONTROLLER_WORKSPACE %>',
                 '<%: WebConstants.ACTION_SAVE_WORKSPACE_VERSION %>', ''),
                 success: function (response) {
-                    ManageBackupVersionsWidget.ReloadGridData();
                     ManageBackupVersionsWidget.CloseDialog(ManageBackupVersionsWidget.NewVersionDialog);
                     $('#SaveVersionSpinner').hide();
                     $('#SaveVersionButton').show();
                     RaiseNotification("Version successfully created");
+                    location.reload();
                 },
                 error: function (errorDetails) {
                     $('#versionErrorMessage').text($.parseJSON(errorDetails.responseText).Message).show();
@@ -54,16 +52,16 @@
 
     };
 
-    ManageBackupVersionsWidget.ConfirmRestore = function(versionID) {
-        var versionRow = $("table#ManageBackupVersionsGridTable tr[pkid="+versionID+"]");
-        var text = "Restoring version: "+ versionRow.attr("name") + "<br/>"+
-                    "The status of all BOEs will be set to Draft <br/>"+
-                    "The status of the Workspace will be set to "+ versionRow.data('restore-version') +"<br/>"+
-                    "You cannot undo the restore operation. <br/>" +
-                    "Are you sure you want to restore this version?";
+    ManageBackupVersionsWidget.ConfirmRestore = function (versionID) {
+        var versionRow = $("table#ManageBackupVersionsGridTable tr[pkid=" + versionID + "]");
+        var text = "Restoring version: " + versionRow.attr("name") + "<br/>" +
+            "The status of all BOEs will be set to Draft <br/>" +
+            "The status of the Workspace will be set to " + versionRow.data('restore-version') + "<br/>" +
+            "You cannot undo the restore operation. <br/>" +
+            "Are you sure you want to restore this version?";
         var title = 'Restoring a version of the Workspace';
-        Session.confirmDialog(title, text, function(){ManageBackupVersionsWidget.RestoreConfirmed(versionID);}, null);
-    }
+        Session.confirmDialog(title, text, function () { ManageBackupVersionsWidget.RestoreConfirmed(versionID); }, null);
+    };
 
     ManageBackupVersionsWidget.RestoreConfirmed = function (versionID) {
         $('#PageLoading').removeClass('display-none');
@@ -117,7 +115,6 @@
         }
     };
 
-
     ManageBackupVersionsWidget.DeleteRecords = function(event, data) {
         $('#Delete-ManageBackupVersionsWidget').addClass('display-none');
         $('#DeleteLoader-ManageBackupVersionsWidget').removeClass('display-none');
@@ -146,15 +143,15 @@
                 '<%: WebConstants.ACTION_DELETE_WORKSPACE_VERSIONS %>', ''),
             success: function(response) {
                 $('#ManageBackupVersions-Delete').addClass('disabled');
-                ManageBackupVersionsWidget.ReloadGridData();
+                RaiseNotification("Version(s) successfully deleted");
+                location.reload();
             },
             error: function() { 
                 ManageBackupVersionsWidget.CloseDialog(ManageBackupVersionsWidget.RestoreResultsDialog); 
             }
         });
     };
-
-    
+        
     ManageBackupVersionsWidget.AddRecord = function() {
         $("div#NewVersionDialog input[name=VersionName]").val("");
         $('#versionErrorMessage').hide();
@@ -254,4 +251,3 @@
          </div>
     </div>
 </div>
-

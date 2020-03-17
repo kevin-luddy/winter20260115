@@ -53,7 +53,7 @@ namespace GenBOE.Tests.ActionLogic.IO
             Assert.IsFalse(missing.Any(t => t.CourseId == Constants.SHARED_BOE_WRITING_COURSE && t.UserId == "111034"));
             // the 2nd training code (BOEJ-4134)
             Assert.IsFalse(missing.Any(t => t.CourseId == Constants.SHARED_BOE_WRITING_COURSE && t.UserId == "017144"));
-            Assert.IsTrue(missing.Any(t => t.CourseId == Constants.SHARED_BOE_WRITING_COURSE && t.UserDisplayName == "Felicioni, Frank M (US)"));
+            Assert.IsTrue(missing.Any(t => t.CourseId == Constants.SHARED_BOE_WRITING_COURSE && t.UserDisplayName == "Felicioni, Frank M (US)" && t.NTID == "ffelicio"));
         }
 
         [TestMethod]
@@ -113,8 +113,8 @@ namespace GenBOE.Tests.ActionLogic.IO
             ICollection<TrainingModelView> overdue = sut.GetOverdueTraining(new ADTest(), models, tina.CourseGroupName);
             // There should be 1 overdue, and 1 missing
             Assert.AreEqual(2, overdue.Count);
-            TrainingModelView expired = overdue.FirstOrDefault(o => o.CourseId == Constants.TINA_TRAINING_COURSEID && o.UserDisplayName == ExpiredGuy);
-            TrainingModelView missing = overdue.FirstOrDefault(o => o.CourseId == Constants.TINA_TRAINING_COURSEID && o.UserDisplayName == MissingGuy);
+            TrainingModelView expired = overdue.FirstOrDefault(o => o.CourseId == Constants.TINA_TRAINING_COURSEID && o.UserDisplayName == ExpiredGuy && o.NTID == ExpiredGuy.ToLower());
+            TrainingModelView missing = overdue.FirstOrDefault(o => o.CourseId == Constants.TINA_TRAINING_COURSEID && o.UserDisplayName == MissingGuy && o.NTID == MissingGuy.ToLower());
             Assert.IsNotNull(expired);
             Assert.IsNotNull(missing);
             Assert.AreEqual(ExpiredTime, expired.LastCompleted);
@@ -125,8 +125,8 @@ namespace GenBOE.Tests.ActionLogic.IO
             overdue = sut.GetOverdueTraining(new ADTest(), models, boe.CourseGroupName);
             // There should be 1 overdue, and 1 missing, and 1 invalid
             Assert.AreEqual(3, overdue.Count);
-            expired = overdue.FirstOrDefault(o => o.CourseId == Constants.SHARED_BOE_WRITING_COURSE && o.UserDisplayName == ExpiredGuy);
-            missing = overdue.FirstOrDefault(o => o.CourseId == Constants.SHARED_BOE_WRITING_COURSE && o.UserDisplayName == MissingGuy);
+            expired = overdue.FirstOrDefault(o => o.CourseId == Constants.SHARED_BOE_WRITING_COURSE && o.UserDisplayName == ExpiredGuy && o.NTID == ExpiredGuy.ToLower());
+            missing = overdue.FirstOrDefault(o => o.CourseId == Constants.SHARED_BOE_WRITING_COURSE && o.UserDisplayName == MissingGuy && o.NTID == MissingGuy.ToLower());
             TrainingModelView invalid = overdue.FirstOrDefault(o => o.CourseId == Constants.SSC_OLD_BOE_WRITING_COURSE && o.UserDisplayName == InvalidGuy);
             Assert.IsNotNull(expired);
             Assert.IsNotNull(missing);
@@ -140,7 +140,7 @@ namespace GenBOE.Tests.ActionLogic.IO
             overdue = sut.GetOverdueTraining(new ADTest(), models, sub.CourseGroupName);
             // There should be 1 missing
             Assert.AreEqual(1, overdue.Count);
-            missing = overdue.FirstOrDefault(o => o.CourseId == Constants.SUBCONTRACT_TRAINING_COURSEID && o.UserDisplayName == MissingGuy);
+            missing = overdue.FirstOrDefault(o => o.CourseId == Constants.SUBCONTRACT_TRAINING_COURSEID && o.UserDisplayName == MissingGuy && o.NTID == MissingGuy.ToLower());
             Assert.IsNotNull(missing);
             Assert.IsNull(missing.LastCompleted);
         }

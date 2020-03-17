@@ -12,6 +12,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Linq;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
+    using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.ModelView.Workspace;
     using GenBOE.DataBridge.Common;
@@ -67,7 +68,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
             ICustomFieldDTODataLoader customFieldLoader,
             IProjectMapDataLoader projectMapDataLoader,
             IPickListMapper boePickListMapper,
-            IPickListMapper ptmPickListMapper)
+            IPickListMapper ptmPickListMapper,
+            ContractTypeLoader contractTypeLoader,
+            WorkspaceExporter workspaceExporter,
+            IRteTemplateDataLoader rteTemplateDataLoader)
             : base(
                 workspaceLoader,
                 inuserLoader,
@@ -86,7 +90,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 customFieldLoader,
                 projectMapDataLoader,
                 boePickListMapper,
-                ptmPickListMapper
+                ptmPickListMapper,
+                contractTypeLoader,
+                workspaceExporter,
+                rteTemplateDataLoader
         )
         {
             // nothing to do here

@@ -468,6 +468,11 @@ namespace GenBOE.ActionLogic.WBS.BOE
                     TaskElementMessages.Add(BoeDTO.MOQ_TYPE_REQUIRED);
                 }
 
+                if (boeTask.TaskElementType == TaskElementType.Labor && string.IsNullOrWhiteSpace(boeTask.Description))
+                {
+                    TaskElementMessages.Add(BoeDTO.TASK_DESCRIPTION_REQUIRED);
+                }
+
                 // (rule only valid for non summary Labor TE)
                 //  validate MOQ Equation
                 if (boeTask.TaskElementType == TaskElementType.Labor && string.IsNullOrEmpty(boeTask.MOQHoursEquation))

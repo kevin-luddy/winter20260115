@@ -171,6 +171,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string CUSTOM_FIELD_DEFINED_NAME_PREFIX = "CustomField_";
 
         public static readonly string PLACEHOLDER_TEXT = "Text exists in genBOE.  Character limitations or existing rich text formatting restrict the export of this data.  Do not edit or remove this placeholder.  Edits made to this placeholder will replace data within genBOE.";
+        public static readonly string PLACEHOLDER_TEXT_RTE_TEMPLATES = "Templates have been turned on by Workspace Administrator. Import via this field is disabled, any edits made will not be imported into the application.";
 
         public static readonly string SHAPE_ID_PREFIX = "_x0000_s"; // Prefix used by VmlDrawing Shape IDs
         public static readonly string SPID_ATTRIBUTE = "spid";      // Shape ID attribute

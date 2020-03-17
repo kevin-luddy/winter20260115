@@ -53,6 +53,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<TaskElementValidation> _TaskElementValidation = null;
         private Mock<IVariableCircularReferenceChecker> circularReferenceChecker = null;
         private Mock<ICommonDataMapper> commonDataMapper = null;
+        private Mock<IRteTemplateDataLoader> rteTemplateDataLoader = null;
 
         #region Private members
         private BOELaborControllerLogic CreateSystem()
@@ -76,7 +77,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                    _TaskVariableLoader.Object,
                    _TaskElementValidation.Object,
                    circularReferenceChecker.Object,
-                   commonDataMapper.Object
+                   commonDataMapper.Object, this.rteTemplateDataLoader.Object
             );
         }
 
@@ -101,7 +102,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                    _TaskVariableLoader.Object,
                    _TaskElementValidation.Object,
                    circularReferenceChecker.Object,
-                   commonDataMapper.Object
+                   commonDataMapper.Object, rteTemplateDataLoader.Object
             );
         }
 
@@ -127,7 +128,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                    _MSTMetricLoader.Object,
                    _TaskElementValidation.Object,
                    circularReferenceChecker.Object,
-                   commonDataMapper.Object
+                   commonDataMapper.Object, rteTemplateDataLoader.Object
             );
         }
 
@@ -136,6 +137,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         /// </summary>
         private void CreateCommonSystem()
         {
+            this.rteTemplateDataLoader = new Mock<IRteTemplateDataLoader>();
             _WorkspaceVarLoader = new Mock<IWorkspaceVariableDTODataLoader>();
             _boeStateMachine = new Mock<IBOEStateMachine>();
             _BoeMediator = new Mock<IBoeMediator>();
@@ -163,7 +165,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _PermissionDataLoader.Object);
 
             _BoeTaskElementRecalculation = new Mock<BoeTaskElementRecalculation>(_VariableSelectBoeToSum.Object, factory.Object);
-
+            this.rteTemplateDataLoader.Setup(x => x.GetByBoeIdAndTaskId(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int?>())).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
         }
         
         /// <summary>
@@ -1565,7 +1567,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             // pass over code that does OtherBOERecalculationsNeeded
             task.TotalHours = null;
-            sut.SaveLaborTaskData(ws, task, taskMV.TaskElementData.MetricIds);
+            sut.SaveLaborTaskData(ws, task, taskMV.TaskElementData.MetricIds, null);
 
             _BoeTaskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { task }, ws), Times.Once());
             _VariableSelectBoeToSum.Verify(x => x.GetWorkspaceVarLabelTotal(It.IsAny<WorkspaceVariableDTO>(), It.IsAny<DataClassForSumOfBOEsCalculation>()), Times.Never());
@@ -1588,7 +1590,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             _BoeTaskElementMediator.Setup(x => x.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { task }, ws)).Returns(new Dictionary<int, int>() { { task.Id, 1 } });
             _BoeTaskElementRecalculation.Setup(x => x.RecalculateLaborWithBoe(It.IsAny<FullBoe>(), It.IsAny<VariableType>(), It.IsAny<FullWorkspace>(), It.IsAny<Collection<BoeTaskElementDTO>>(), It.IsAny<Collection<WorkspaceVariableDTO>>())).Returns(new Collection<BoeTaskElementDTO>());
 
-            sut.SaveLaborTaskData(ws, task, taskMV.TaskElementData.MetricIds);
+            sut.SaveLaborTaskData(ws, task, taskMV.TaskElementData.MetricIds, null);
 
             _BoeTaskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { task }, ws), Times.Once());
             _VariableSelectBoeToSum.Verify(x => x.GetWorkspaceVarLabelTotal(It.IsAny<WorkspaceVariableDTO>(), It.IsAny<DataClassForSumOfBOEsCalculation>()), Times.Never());
@@ -1599,7 +1601,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         public void Test_SaveLaborTaskData_EX()
         {
             BOELaborControllerLogic sut = CreateSystem();
-            sut.SaveLaborTaskData(null, new BoeTaskElementDTO(), new Collection<int>());
+            sut.SaveLaborTaskData(null, new BoeTaskElementDTO(), new Collection<int>(), null);
         }
 
         [TestMethod]

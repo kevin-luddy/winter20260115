@@ -61,6 +61,13 @@ namespace GenTRAC.DataBridge.DTO
         DateTime? GetProposalCompletedDate(int inProposalId);
 
         /// <summary>
+        /// Get all completed proposals after an optional submit date
+        /// </summary>
+        /// <param name="cutoffDate">Earliest submit date to get proposals for</param>
+        /// <returns>all completed proposals after an optional date</returns>
+        ICollection<ProposalDto> GetAllCompletedProposalsAfterSubmitDate(DateTime? cutoffDate);
+
+        /// <summary>
         /// Updates a proposal status
         /// </summary>
         /// <param name="proposalId">proposal id</param>
@@ -97,6 +104,13 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="workflowStatus">The workflow status.</param>
         /// <returns>A list of proposals.</returns>
         ICollection<ProposalDto> GetProposalsByWorkflowStatus(WorkflowStatus workflowStatus);
+
+        /// <summary>
+        /// Gets a list of proposals that are in the status passed into the method.
+        /// </summary>
+        /// <param name="workflowStatus">The proposal status.</param>
+        /// <returns>A list of proposals.</returns>
+        ICollection<ProposalDto> GetProposalsByProposalStatus(ProposalStatus proposalStatus);
 
         /// <summary>
         /// Gets a list of proposals that are in the status passed into the method and older than the cutoff date.

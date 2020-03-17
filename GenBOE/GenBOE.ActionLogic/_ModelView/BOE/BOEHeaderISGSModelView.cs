@@ -7,7 +7,9 @@
 namespace GenBOE.ActionLogic.ModelView.BOE
 {
     using System;
+    using System.Collections.Generic;
     using GenBOE.DataBridge.DTO;
+    using GenBOE.Dtos;
     using IES.Common.classes;
 
     public class BOEHeaderISGSModelView : BOEHeaderModelView, IBOEHeaderModelView
@@ -19,8 +21,8 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public BOEHeaderISGSModelView(BoeDTO inBoe)
-            : base(inBoe)
+        public BOEHeaderISGSModelView(BoeDTO inBoe, ICollection<RTECustomTemplateQuestionAnswerModelView> answers)
+            : base(inBoe, answers)
         {
             if (inBoe == null)
             {

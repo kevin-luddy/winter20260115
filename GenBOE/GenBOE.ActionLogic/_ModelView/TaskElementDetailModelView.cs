@@ -38,6 +38,7 @@ namespace GenBOE.ActionLogic.ModelView
             this.CustomFieldValues = new Collection<CustomFieldSelectionModelView>();
             this.LaborTypeWarning = false;
             this.MetricIds = new Collection<int>();
+            this.RteTemplateAnswers = new List<RTECustomTemplateQuestionAnswerModelView>();
         }
 
         public TaskElementDetailModelView(BoeTaskElementDTO inBoeTaskElement)
@@ -73,6 +74,7 @@ namespace GenBOE.ActionLogic.ModelView
         /// <summary>
         /// Task Description
         /// </summary>
+        [Required(ErrorMessage = "Task Description is required.")]
         [HtmlTextLength(ValidationConstants.MAX_TASK_DESC_LENGTH)]
         [RichText(RichTextDbColumn.BOE_TASK_ELEMENT_TASK_DESCRIPTION, "TaskElementDetailID")]
         [Display(Name = "Task Description")]
@@ -129,6 +131,11 @@ namespace GenBOE.ActionLogic.ModelView
         /// The value of the order in which the task will appear in the boe listing
         /// </summary>
         public int BOETaskElementOrder { get; set; }
+
+        /// <summary>
+        /// Gets or sets the RTE Custom Template Answers at Task level. Used during the Save from the UI.
+        /// </summary>
+        public ICollection<RTECustomTemplateQuestionAnswerModelView> RteTemplateAnswers { get; set; }
 
         #region ISGS Versus SSC terminology
 

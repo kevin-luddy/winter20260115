@@ -23,6 +23,9 @@
 
     bool allowDateShift = Html.GetViewDataValue<bool>("ALLOW_DATE_SHIFT", false);
     int rteFieldSize = ViewBag.RteFieldSize;
+    var DataSourceAnswers = Model.HeaderRteTemplateAnswers.Where(a => a.SourceId == (int)RteTemplateSource.BoeSources).ToList();
+    bool showCustomQuestions = DataSourceAnswers.Any();
+    int numberQuestions = showCustomQuestions ? DataSourceAnswers.Count : 1;
 %>
 
 <script type="text/javascript">
@@ -61,7 +64,7 @@
         'boe/');
 
         BoeHeaderWidget = AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, saveEditBoeHeaderUrl, 
-            boeStateNotDraft, allowDateShift, <%:rteFieldSize%>, dateShiftUrl, findAdjacentBoesUrl, boeId, newBoeUrl);
+            boeStateNotDraft, allowDateShift, <%:rteFieldSize%>, dateShiftUrl, findAdjacentBoesUrl, boeId, newBoeUrl, '<%:showCustomQuestions.ToString()%>'.isTrue(), <%:numberQuestions%>);
     });
 </script>
 
@@ -132,9 +135,7 @@
                 <%: Model.LabelSourcesOfData %>
             </div>
             <div class="form-element" id="sources-element">
-                <div class="wrapper">
-                    <%: Html.TextAreaFor(model => model.DataSource, new { @maxlength = Constants.MAX_RTE_LENGTH, onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH + ")" }) %>
-                </div>
+                <% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(DataSourceAnswers, "DataSource", Model.DataSource));  %>
             </div>
         </div>
         <div class="form-row<% if (!Model.ShowHistoricMetricCheck)

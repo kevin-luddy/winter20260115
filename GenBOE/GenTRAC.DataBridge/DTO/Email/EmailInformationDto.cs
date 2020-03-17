@@ -7,6 +7,7 @@
 namespace GenTRAC.DataBridge.DTO
 {
     using System;
+    using System.Collections.ObjectModel;
     using IES.Common;
 
     /// <summary>
@@ -19,6 +20,11 @@ namespace GenTRAC.DataBridge.DTO
         /// Gets or sets the email address to use.
         /// </summary>
         public string EmailAddress { get; set; }
+
+        /// <summary>
+        /// Gets or sets users to CC
+        /// </summary>
+        public Collection<UserDTO> ccUsers { get; set; }
 
         /// <summary>
         /// Gets or sets the Proposal tracking Number.
@@ -95,6 +101,19 @@ namespace GenTRAC.DataBridge.DTO
                 string url = string.Format("{0}/proposal/DisplayProposalDetails/id/{1}/#CertificationTimeline", commonUrl, this.ProposalId);
                 return new Uri(url);
             }
-        }        
+        }
+
+        /// <summary>
+        /// Gets the Post Submittal Attachments URL.
+        /// </summary>
+        public Uri ProposalPsaUrl
+        {
+            get
+            {
+                string commonUrl = IES.Common.ConfigurationUtilities.GetAppSetting("ServerURL");
+                string url = string.Format("{0}/proposal/DisplayProposalDetails/id/{1}/#PSA", commonUrl, this.ProposalId);
+                return new Uri(url);
+            }
+        }
     }
 }

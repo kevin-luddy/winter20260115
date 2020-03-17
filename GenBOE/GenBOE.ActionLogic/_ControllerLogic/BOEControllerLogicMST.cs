@@ -18,7 +18,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic.CopyBOE;
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Import;
-    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.ActionLogic.WBS;
@@ -71,13 +70,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
             INestedWBSUtilities inNestedWBSUtilities,
             IOffloadRatesDTOLoader offloadRatesDTOLoader,
             IProjectMapDataLoader projectMapLoader,
-            RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader
+            RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader,
+            IRteTemplateDataLoader rteTemplateDataLoader
             )
             : base(inBOESummary, inUserLoader, inActiveDirectoryUtil, 
             inPermissionsLoader, inFactory, inBOEExporter, inBoeCustomExporter, inGenBOEControllerLogic,
             inBoeMediator, inValidationHelper, inBoeCommentLoader, inEmailer, inBoeTaskElementMediator, inWorkspaceVariableLoader, inBOEStateMachine,
             inVariableSelectBOEtoSumCalculation, inBOELaborControllerLogic, inValidateBOE, inSecurityInformation, inBoeSearchLoader, inSecurityAccess,
-            inBoeTaskElementRecalculation, inBOEImporter, inVariableCircularReferenceChecker, inConflictBOE, inNestedWBSUtilities, projectMapLoader, zoneTravelRatesFeesLoader)
+            inBoeTaskElementRecalculation, inBOEImporter, inVariableCircularReferenceChecker, inConflictBOE, inNestedWBSUtilities, projectMapLoader, zoneTravelRatesFeesLoader,
+            rteTemplateDataLoader)
         {
             this.mstMetricsLoader = mstMetricsLoader;
             this.offloadRatesDTOLoader = offloadRatesDTOLoader;
@@ -92,10 +93,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <returns>
         /// the populated <see cref="BOEHeaderISGSModelView" />
         /// </returns>
-        public override IBOEHeaderModelView GetCreateBOEHeaderMV(BoeDTO boe)
+        public override IBOEHeaderModelView GetCreateBOEHeaderMV(BoeDTO boe, ICollection<RTECustomTemplateQuestionAnswerModelView> answers)
         {
             // The header requirements are identical to SSC implementation so we can re-use it
-            return new BOEHeaderSpaceModelView(boe);
+            return new BOEHeaderSpaceModelView(boe, answers);
         }
 
         /// <summary>
@@ -120,38 +121,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 return string.Empty;
             }
-        }
-
-        /// <summary>
-        /// Saves a BOE Header edit.
-        /// </summary>
-        /// <param name="ws">Workspace containing the BOE</param>
-        /// <param name="boe">BOE containing the header</param>
-        /// <param name="inBOEHeader">Modelview for the BOE Header</param>
-        /// <param name="inBOEHeaderDescription">Modelview for the BOE description</param>
-        /// <param name="descriptionOnly">Bool denoting if only descrpition was changed</param>
-        /// <exception cref="System.ArgumentNullException">inBOEHeaderDescription</exception>
-        /// <exception cref="GenValidationException">Thrown when Description is null/empty on the BOE.</exception>
-        public override void SaveEditBoeHeader(FullWorkspace ws, FullBoe boe, IBOEHeaderModelView inBOEHeader, BOEHeaderDescriptionModelView inBOEHeaderDescription, bool descriptionOnly)
-        {
-            // Validate Description -- required
-            if (inBOEHeaderDescription == null)
-            {
-                throw new ArgumentNullException(nameof(inBOEHeaderDescription));
-            }
-
-            if (string.IsNullOrEmpty(inBOEHeaderDescription.Description))
-            {
-                Collection<ValidationMessage> validationErrors =
-                    new Collection<ValidationMessage>
-                    {
-                        new ValidationMessage("Description", "Description is required.")
-                    };
-
-                throw new GenValidationException(validationErrors);
-            }
-
-            base.SaveEditBoeHeader(ws, boe, inBOEHeader, inBOEHeaderDescription, descriptionOnly);
         }
 
         /// <summary>

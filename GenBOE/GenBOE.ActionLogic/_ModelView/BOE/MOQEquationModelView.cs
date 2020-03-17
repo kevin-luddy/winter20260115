@@ -41,6 +41,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.Company = SystemConfiguration.Instance().CompanyMode;
             this.MOQTextLabel = String.Empty;
             this.HelpText = String.Empty;
+            this.MoqTemplateAnswers = new List<RTECustomTemplateQuestionAnswerModelView>();
         }
 
         /// <summary>
@@ -174,6 +175,12 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         public string MOQTextLabel { get; set; }
         public string HelpText { get; set; }
         #endregion 
+
+        /// <summary>
+        /// Gets or sets the RTE Custom Template Answers at Task level.
+        /// </summary>
+        public ICollection<RTECustomTemplateQuestionAnswerModelView> MoqTemplateAnswers { get; set; }
+        
     }
 
     public enum MOQEquationType

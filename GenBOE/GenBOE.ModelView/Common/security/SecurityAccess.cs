@@ -20,9 +20,9 @@ namespace GenBOE.DataBridge.Common
     /// </summary>
     public class SecurityAccess : ISecurityAccess
     {
-        private Logger _log = new Logger(typeof(SecurityAccess));
+        private readonly Logger _log = new Logger(typeof(SecurityAccess));
 
-        private IBoeDTODataLoader boeLoader;
+        private readonly IBoeDTODataLoader boeLoader;
 
         /// <summary>
         /// The Security lookup matrix, structured as follow:
@@ -316,6 +316,16 @@ namespace GenBOE.DataBridge.Common
                      new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Locked },  // Authors and Admins can still submit for review/approval when the workspace is locked
                      new Role[] { Role.Author, Role.SubcontractorAuthor },
                      SecurityAuthorization.ReadUpdate);
+
+            // Workspace RTE Templates
+            InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.RTETemplates },
+                     new Role[] { Role.SystemAdmin, Role.WorkspaceAdmin },
+                     SecurityAuthorization.Read);
+
+            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.RTETemplates },
+                new WorkspaceState[] { WorkspaceState.Working, WorkspaceState.Initialization, WorkspaceState.Locked }, 
+                     new Role[] { Role.SystemAdmin, Role.WorkspaceAdmin },
+                     SecurityAuthorization.CreateReadUpdateDelete);
 
             // Workspace Delete
             InitializeMatrixAllBOEStatesAndAllWorkspaceStates(new SecurityPage[] { SecurityPage.WorkspaceDelete },
@@ -774,6 +784,7 @@ namespace GenBOE.DataBridge.Common
                 case SecurityPage.WorkspaceDelete:
                 case SecurityPage.WorkspaceRestore:
                 case SecurityPage.GettingStartedMenuOption:
+                case SecurityPage.RTETemplates:
                     wsRequired = true;
                     boeRequired = false;
                     break;

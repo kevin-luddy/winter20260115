@@ -41,6 +41,7 @@ namespace GenBOE.Models
             this.WorkspaceUserXREFs = new HashSet<WorkspaceUserXREF>();
             this.WorkspaceVariables = new HashSet<WorkspaceVariable>();
             this.WorkspaceVersions = new HashSet<WorkspaceVersion>();
+            this.RteTemplates = new HashSet<RteTemplate>();
         }
     
         public int WorkspaceID { get; set; }
@@ -149,5 +150,7 @@ namespace GenBOE.Models
         public virtual ICollection<WorkspaceVariable> WorkspaceVariables { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WorkspaceVersion> WorkspaceVersions { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RteTemplate> RteTemplates { get; set; }
     }
 }

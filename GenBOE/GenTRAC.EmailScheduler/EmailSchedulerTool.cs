@@ -6,6 +6,7 @@
 
 namespace EmailScheduler
 {
+    using System;
     using System.Security.Principal;
     using System.Threading;
     using System.Transactions;
@@ -43,9 +44,15 @@ namespace EmailScheduler
                             using (TransactionScope scope = new TransactionScope())
                             {
                                 approvalEmailer.SendEmails(null);
+
+                                if(Utilities.IsTimeForDocumentReminderEmails())
+                                {
+                                    DocumentReminderEmailer documentReminderEmailer = new DocumentReminderEmailer(loader, emailer);
+                                    documentReminderEmailer.SendEmails();
+                                }
+
                                 scope.Complete();
                             }
-
                         }
                     }
                     catch (System.Exception ex)

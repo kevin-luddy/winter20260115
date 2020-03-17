@@ -26,7 +26,7 @@ namespace GenBOE.ActionLogic
         /// </summary>
         /// <param name="boe">The <see cref="BoeDTO"/> used to populate the <see cref="BOEHeaderISGSModelView"/></param>
         /// <returns>the populated <see cref="BOEHeaderISGSModelView"/></returns>
-        IBOEHeaderModelView GetCreateBOEHeaderMV(BoeDTO boe);
+        IBOEHeaderModelView GetCreateBOEHeaderMV(BoeDTO boe, ICollection<RTECustomTemplateQuestionAnswerModelView> answers);
 
         /// <summary>
         /// Returns a bool indicating if historic metrics should be shown

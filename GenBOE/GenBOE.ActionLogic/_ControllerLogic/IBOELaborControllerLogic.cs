@@ -238,7 +238,7 @@ namespace GenBOE.ActionLogic
         /// </summary>
         /// <param name="ws">Workspace</param>
         /// <param name="modelView">Labor Task dto</param>
-        void SaveLaborTaskData(FullWorkspace ws, BoeTaskElementDTO dtoToSave, ICollection<int> metricIds);
+        void SaveLaborTaskData(FullWorkspace ws, BoeTaskElementDTO dtoToSave, ICollection<int> metricIds, ICollection<RTECustomTemplateQuestionAnswerModelView> answers);
 
         /// <summary>
         /// Converts Labor Task Data Model View to BOE Task Element DTO 

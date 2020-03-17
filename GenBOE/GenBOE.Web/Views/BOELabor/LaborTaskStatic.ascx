@@ -5,6 +5,9 @@
 <% 
     var serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
     string asterisk = "*";
+    int rteFieldSize = ViewBag.RteFieldSize;
+    bool showDescQuestions = Model.DescriptionTemplateAnswers.Any();
+    int numberDescQuestions = showDescQuestions ? Model.DescriptionTemplateAnswers.Count : 1;
 %>
 <script type="text/javascript">
     var debugOutputEnabled = false;
@@ -25,6 +28,12 @@
     
     var TaskLaborTypesWidget;
     var TaskLaborSpreadsWidget;
+
+    validateCustomFields = function () {
+        // Does nothing, but called from manageTaskController() even when using static page
+        // so blank method is here to prevent console error for an undefined method
+    }
+
     $(function () {
         $(document).trigger("SHOW_LOADING_BOX");
     
@@ -101,7 +110,11 @@
             searchTypeAheadUrl,
             '<%:Model.AllowDateShift%>'.toLowerCase(),
             recalculateAndRefreshPageUrl,
-            '#' // dateshift url not needed for static page
+            '#', // dateshift url not needed for static page
+            '#', // saveReorderLaborTypes url not needed for static page
+            '<%: showDescQuestions %>'.isTrue(),
+            <%: numberDescQuestions %>,
+            <%: rteFieldSize %>
         );
 
         // End Task Element details       
@@ -188,8 +201,8 @@
                     <div class="form-label">
                         Task Description
                     </div>
-                    <div class="form-element">{{encode(model.TaskElementData.TaskDescription, 'taskDescription_replacement')}}
-                        <div class="replacedWidgetText" id="taskDescription_replacement"></div>
+                    <div class="form-element">
+                        <% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(Model.DescriptionTemplateAnswers, "TaskDescription", Model.TaskDescription));  %>
                     </div>
                 </div>
                 <div class="form-row">

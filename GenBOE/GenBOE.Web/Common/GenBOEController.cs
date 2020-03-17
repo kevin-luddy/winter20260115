@@ -895,6 +895,18 @@ namespace GenBOE.Web.Common
         }
 
         /// <summary>
+        /// Validates the RTE Answers
+        /// </summary>
+        /// <param name="answers">The answers to validate.</param>
+        /// <param name="sources">The sources for RTE Templates.</param>
+        /// <param name="rteSizeLimit">The RTE Size limit for the workspace if overridden.</param>
+        /// <returns>Validation warnings.</returns>
+        protected ICollection<ValidationMessage> ValidateRteAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<RteCustomTemplateSourceModelView> sources, int? rteSizeLimit)
+        {
+            return this._ControllerLogic.ValidateRteAnswers(answers, sources, rteSizeLimit);
+        }
+
+        /// <summary>
         /// Assemble a JSON response containing a list of validation errors
         /// </summary>
         /// <param name="validationErrors">Errors</param>

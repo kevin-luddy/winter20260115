@@ -168,7 +168,7 @@ namespace GenTRAC.ActionLogic
                 validationMessages = new List<ValidationMessage>();
             }
 
-            if (!this.attachmentLoader.AllAttachmentsHaveBeenUploaded(proposalId))
+            if (!this.attachmentLoader.AllRequiredAttachmentsHaveBeenUploaded(proposalId))
             {
                 validationMessages.Add(new ValidationMessage("Not all required Post Submittal Attachments are present."));
             }

@@ -53,6 +53,7 @@ namespace GenBOE.Web.Controllers
         private readonly IMSTMetricLoader _MSTMetricsLoader;
         private const string SYSTEM_OFFLOAD_RATES_EXPORT_TEMPLATE = "~/Templates/Export/OffloadRatesRMS.xlsx";
         private readonly IOffloadRatesDTOLoader offloadRatesLoader;
+        private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 
         #endregion Private Fields
 
@@ -82,7 +83,8 @@ namespace GenBOE.Web.Controllers
             IFullWorkspaceRecalculation fullWsRecalc,
             TaskElementValidation taskElementValidation,
             IMSTMetricLoader inMSTMetricsLoader,
-            IOffloadRatesDTOLoader offloadRatesDTOLoader)
+            IOffloadRatesDTOLoader offloadRatesDTOLoader,
+            IRteTemplateDataLoader rteTemplateDataLoader)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserLoader, inPermissionsLoader, inControllerLogic)
         {
             this._CommonDataMapper = inCommonDataMapper;
@@ -99,6 +101,7 @@ namespace GenBOE.Web.Controllers
             this.taskElementValidation = taskElementValidation;
             this._MSTMetricsLoader = inMSTMetricsLoader;
             this.offloadRatesLoader = offloadRatesDTOLoader;
+            this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
         #region Display
@@ -118,7 +121,7 @@ namespace GenBOE.Web.Controllers
             bool isReadOnly = bool.Parse((string)this.ViewData["READONLY"]);
             //create a var for list items
             Collection<SelectListItem> orderOfResourceTypes = new Collection<SelectListItem>();
-
+            string taskDescription = string.Empty;
             if (taskElementID.HasValue)
             {
                 ViewData["TASKID"] = taskElementID.Value;
@@ -126,7 +129,7 @@ namespace GenBOE.Web.Controllers
                 BoeTaskElementDTO element = this.Factory.CreateTaskElement(taskElementID.Value, ws.DecimalPrecision, ws.CostDecimalPrecision);
                 DataRelationshipVerifier.VerifyDataRelation(element, boeID);
                 selectedMoqType = element.MOQType;
-
+                taskDescription = element.Description;
                 containsDiscrete = element.taskElementLabors.Any(x => x.SpreadCurveID == SpreadCurves.DiscreteHours || x.SpreadCurveID == SpreadCurves.DiscreteCost);
 
                 if (!isReadOnly)
@@ -155,6 +158,7 @@ namespace GenBOE.Web.Controllers
             }
 
             SecurityAuthorization taskDateShiftAuthorization = this.CheckPermissions(SecurityPage.BoeTaskDates, ws, boeID);
+            ICollection<RTECustomTemplateQuestionAnswerModelView> rteAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, boeID, taskElementID);
 
             LaborTaskModelView modelView = new LaborTaskModelView
             {
@@ -171,13 +175,17 @@ namespace GenBOE.Web.Controllers
                 BoeId = boeID,
                 LaborTypeWarning = false, // TODO
                 TaskElementId = taskElementID,
-                ContainsDiscrete = containsDiscrete
+                ContainsDiscrete = containsDiscrete,
+                DescriptionTemplateAnswers = rteAnswers.Where(t => t.SourceId == (int)RteTemplateSource.TaskDescription).ToList(),
+                TaskDescription = taskDescription
             };
 
             this._BoeLaborControllerLogic.GetMetricSearchDialogParameters(modelView);
 
             ViewData["Order_Of_ResourceTypes"] = orderOfResourceTypes;
-            string viewName = isReadOnly || ws.WorkspaceState != WorkspaceState.Working ? WebConstants.VIEW_LABOR_TASK_STATIC : WebConstants.VIEW_LABOR_TASK;
+            string viewName = isReadOnly || (ws.WorkspaceState != WorkspaceState.Working && !(ws.WorkspaceState == WorkspaceState.Locked && boe.State == BOEState.Draft))
+                ? WebConstants.VIEW_LABOR_TASK_STATIC 
+                : WebConstants.VIEW_LABOR_TASK;
 
             ViewResult toReturn = this.View(viewName, modelView);
 
@@ -780,6 +788,13 @@ namespace GenBOE.Web.Controllers
                 validationErrors.AddRange(richTextValidationErrors);
             }
 
+            ICollection<RteCustomTemplateSourceModelView> sources = this.rteTemplateDataLoader.GetSources();
+            ICollection<ValidationMessage> rteValidationErrors = this.ValidateRteAnswers(modelView.TaskElementData.RteTemplateAnswers, sources, ws.RteSizeLimit);
+            if (rteValidationErrors.Any())
+            {
+                validationErrors.AddRange(rteValidationErrors);
+            }
+
             BoeTaskElementDTO dto = this._BoeLaborControllerLogic.ConvertModelViewToDto(modelView, ws);
 
             // Validate DTO 
@@ -791,7 +806,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Save
-            this._BoeLaborControllerLogic.SaveLaborTaskData(ws, dto, modelView.TaskElementData.MetricIds);
+            this._BoeLaborControllerLogic.SaveLaborTaskData(ws, dto, modelView.TaskElementData.MetricIds, modelView.TaskElementData.RteTemplateAnswers);
 
             // Finalize Action
             this.FinalizeAction(this._log, WebConstants.ACTION_SAVE_TASK_DATA_MODEL, sw);

@@ -9,7 +9,11 @@
         $scope.file = null;
         $scope.showImportResults = false;
         $scope.courseName = '';
-        
+
+        $scope.exportCsv = function () {
+            ManageOverdueTrainingWidget.DownloadCSV('OverdueTrainingTable');
+        };
+
         $scope.showImportError = function (message) {
             var error = {};
             error.Title = "Import Training Error";

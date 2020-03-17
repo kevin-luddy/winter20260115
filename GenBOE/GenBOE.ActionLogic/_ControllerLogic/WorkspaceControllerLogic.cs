@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -17,6 +17,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
+    using GenBOE.ActionLogic.IO.Export;
+    using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.Workspace;
@@ -71,7 +73,22 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// Exposes the <see cref="IResourceDTODataLoader"/> to derived classes
         /// </summary>
         protected IResourceDTODataLoader ResourceLoader { get; }
-        
+
+        /// <summary>
+        /// Contact Type Loader
+        /// </summary>
+        private ContractTypeLoader contractTypeLoader;
+
+        /// <summary>
+        /// Workspace Exporter
+        /// </summary>
+        private WorkspaceExporter workspaceExporter;
+
+        /// <summary>
+        /// RTE Template loader
+        /// </summary>
+        private readonly IRteTemplateDataLoader rteTemplateDataLoader;
+
         /// <summary>
         /// The PTM LOB conversion error.
         /// </summary>
@@ -124,7 +141,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
             ICustomFieldDTODataLoader customFieldLoader,
             IProjectMapDataLoader projectMapDataLoader,
             IPickListMapper boePickListMapper,
-            IPickListMapper ptmPickListMapper)
+            IPickListMapper ptmPickListMapper,
+            ContractTypeLoader contractTypeLoader,
+            WorkspaceExporter workspaceExporter,
+            IRteTemplateDataLoader rteTemplateDataLoader)
         {
             this.WorkspaceLoader = workspaceLoader;
             this.UserLoader = inuserLoader;
@@ -144,6 +164,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.projectMapDataLoader = projectMapDataLoader;
             this.boePickListMapper = boePickListMapper;
             this.ptmPickListMapper = ptmPickListMapper;
+            this.contractTypeLoader = contractTypeLoader;
+            this.workspaceExporter = workspaceExporter;
+            this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
         #endregion
@@ -1075,6 +1098,77 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="ws">Workspace</param>
         /// <returns>Collection of template types</returns>
         public abstract ICollection<ExcelReportTemplateType> GetPicklistReportTemplateTypes(FullWorkspace ws);
+        #endregion
+
+        #region Backup Export Actions
+
+        /// <summary>
+        /// Create a copy of a previous verison of the workspace
+        /// </summary>
+        /// <param name="ws">The Workspace</param>
+        /// <param name="versionId">ID of the version</param>
+        /// <param name="exportAllBoes">bool noting if all boes should be copied</param>
+        /// <param name="boesToExport">list of BOE IDs if copying select BOEs</param>
+        /// <returns>ID of the new temporary Workspace</returns>
+        public int CopyWorkspaceVersion(FullWorkspace ws, int versionId, bool exportAllBoes, ICollection<int> boesToExport)
+        {
+            if (ws == null)
+            {
+                throw new ArgumentNullException(nameof(ws));
+            }
+
+            // Workspace will only be around for 1 day, so just time will be unique enough for naming
+            string tempWsName = ws.WorkspaceName + "-Backup-Version_" + versionId + "-" + DateTime.Now.ToString("HH:mm:ss.fff");
+            string tempWsShortName = DateTime.Now.ToString("HH:mm:ss.fff-") + ws.Shortname;
+
+            string boeList = exportAllBoes ? string.Empty : string.Join(",", boesToExport);
+
+            int tempWorkspaceId = WorkspaceLoader.CopyWorkspaceVersion(ws.Id, tempWsName.Substring(0, Math.Min(tempWsName.Length, 115)), tempWsShortName.Substring(0, Math.Min(tempWsName.Length, 21)), versionId, boeList);
+
+            return tempWorkspaceId;
+        }
+
+        /// <summary>
+        /// Create the Workspace Data Report for a previous version of a Workspace
+        /// </summary>
+        /// <param name="ws">The temporary copy of the previous workspace version</param>
+        /// <param name="templateFileLocation">template file location</param>
+        /// <param name="originalWorkspaceName">Original Workspace name</param>
+        /// <param name="versionId">Version ID</param>
+        /// <returns>File location of Workspace Data Report for the previous version</returns>
+        public string CreateWorkspaceDataReportForVersion(FullWorkspace ws, string templateFileLocation, MetricNameTaskElementMappingDTO metricTaskElementMappings, string originalWorkspaceName, int versionId)
+        {
+            if (ws == null)
+            {
+                throw new ArgumentNullException(nameof(ws));
+            }
+
+            // All BOEs for the workspace as a default
+            List<FullBoe> boes = ws.Boes.ToList();
+            List<BoeTaskElementDTO> tasks = ws.TaskElements.OrderBy(t => t.BOETaskElementOrder).ToList();
+
+            bool isOffloading = ws.ProjectMapType != ProjectMapType.StandardWithoutOffload;
+            if (isOffloading)
+            {
+                OffloadLaborRates offloader = new OffloadLaborRates();
+                List<int> selectedBoeIds = boes.Select(b => b.Id).ToList();
+                OffloadLaborRatesResults results = offloader.OffloadWorkspace(boes.Where(b => selectedBoeIds.Contains(b.Id)).ToList(), ws);
+
+                boes = results.Boes.ToList();
+                tasks = boes.SelectMany(b => b.TaskElements).OrderBy(t => t.BOETaskElementOrder).ToList();
+            }
+            
+            // Get RTE overrides
+            ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = this.rteTemplateDataLoader.GetByWorkspaceId(ws.Id, boes);
+
+            BOEExportInputs exportInputs = new BOEExportInputs(boes, ws.Boes.ToList(), tasks, ws, rteTemplateOverrides);
+            // Need picklist values for contract type for Workspace Identification sheet
+            exportInputs.ContractTypes = this.contractTypeLoader.GetPickListValues();
+            ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
+            
+            return this.workspaceExporter.ExportToExcelFile(templateFileLocation, exportInputs, metricTaskElementMappings, contractTypes);
+        }
+        
         #endregion
 
         /// <summary>

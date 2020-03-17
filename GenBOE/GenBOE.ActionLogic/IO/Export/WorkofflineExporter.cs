@@ -40,20 +40,17 @@ namespace GenBOE.ActionLogic.IO.Export
         IResourceDTODataLoader _IResourceDTODataLoader;
         IPerformingOrgDTODataLoader perfOrgLoader;
         ICustomFieldValueDTODataLoader _ICustomFieldValueDTODataLoader;
-        IFullObjectFactory _IFullObjectFactory;
 
         public WorkofflineExporter(
             ICommonDataMapper inICommonDataMapper,
             IResourceDTODataLoader inIResourceDTODataLoader,
             IPerformingOrgDTODataLoader perfOrgLoader,
-            ICustomFieldValueDTODataLoader inICustomFieldValueDTODataLoader,
-            IFullObjectFactory inIFullObjectFactory)
+            ICustomFieldValueDTODataLoader inICustomFieldValueDTODataLoader)
         {
             this._ICommonDataMapper = inICommonDataMapper;
             this._IResourceDTODataLoader = inIResourceDTODataLoader;
             this.perfOrgLoader = perfOrgLoader;
             this._ICustomFieldValueDTODataLoader = inICustomFieldValueDTODataLoader;
-            this._IFullObjectFactory = inIFullObjectFactory;
         }
 
         /// <summary>
@@ -213,7 +210,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="wbs"></param>
         /// <param name="clin"></param>
         private void ExportBOE(SpreadsheetDocument spreadsheet, WorkofflineTemplate workofflineTemplate, WorksheetPart worksheetPart, string worksheetName,
-            WorkspaceDTO workspace, FullBoe boe, WbsDTO wbs, ClinDTO clin, IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, IReadOnlyCollection<FullWbs> wsWBSs, IReadOnlyCollection<ClinDTO> wsClins)
+            FullWorkspace workspace, FullBoe boe, WbsDTO wbs, ClinDTO clin, IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, IReadOnlyCollection<FullWbs> wsWBSs, IReadOnlyCollection<ClinDTO> wsClins)
         {
             // Get the ID of the "Add Resource" button
             uint addResourceButtonId = FindButtonByName(worksheetPart, ImportExportConstants.ADD_RESOURCE_BUTTON);
@@ -248,7 +245,7 @@ namespace GenBOE.ActionLogic.IO.Export
                      worksheetName.Replace(" ", "") + ImportExportConstants.BOE_TABLE_SUFFIX;   // Adding BOE table to BOE worksheet
                 TableDefinitionPart boeTableDefinitionPart = this.GenerateBoeWorksheetData(spreadsheet,
                     workofflineTemplate, worksheetPart, ++tableDefPartId, boeTableName, rowIndex, boe, wbs, clin,
-                    allWorkspaceCustomFields, dataValidationReferences);
+                    allWorkspaceCustomFields, dataValidationReferences, workspace?.RteOverrides);
                 tablePartDefinitionIds.Add(worksheetPart.GetIdOfPart(boeTableDefinitionPart));
                 TableRange tableRange = new TableRange(worksheetName, boeTableDefinitionPart.Table);
                 rowIndex = tableRange.RowEnd + 3;
@@ -522,8 +519,10 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <returns>TableDefinitionPart containing new BOE table</returns>
         private TableDefinitionPart GenerateBoeWorksheetData(SpreadsheetDocument spreadsheet, WorkofflineTemplate workofflineTemplate,
             WorksheetPart worksheetPart, uint newTableDefPartId, string newTableName, uint rowIndex, FullBoe boe, WbsDTO wbs, ClinDTO clin,
-            IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, Dictionary<string, string> dataValidationReferences)
+            IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, Dictionary<string, string> dataValidationReferences, ICollection<RteTemplateSource> rteOverrides)
         {
+            if(rteOverrides == null) { rteOverrides = new List<RteTemplateSource>(); }
+
             uint startRowIndex = rowIndex;
             long startColIndex = 1; // start table in column A (one-based column index)
             string boeTableBegin = TableRange.GetColumnName(startColIndex) + startRowIndex;
@@ -558,13 +557,27 @@ namespace GenBOE.ActionLogic.IO.Export
                 ExcelUtilities.SetCellValueByOffset(spreadsheet, worksheetPart.Worksheet, BoeTableBegin,
                     ImportExportConstants.BOE_TITLE_CELL_ROW_OFFSET, ImportExportConstants.BOE_TITLE_CELL_COLUMN_OFFSET,
                     boe.Title, null, true, false);
-                if (!string.IsNullOrEmpty(boe.Description))
+
+                if(rteOverrides.Contains(RteTemplateSource.BoeDescription))
+                {
+                    ExcelUtilities.SetCellValueByOffset(spreadsheet, worksheetPart.Worksheet, BoeTableBegin,
+                        ImportExportConstants.BOE_DESCRIPTION_CELL_ROW_OFFSET, ImportExportConstants.BOE_DESCRIPTION_CELL_COLUMN_OFFSET,
+                        ImportExportConstants.PLACEHOLDER_TEXT_RTE_TEMPLATES, null, true, false);
+                }
+                else if (!string.IsNullOrEmpty(boe.Description))
                 {
                     ExcelUtilities.SetCellValueByOffset(spreadsheet, worksheetPart.Worksheet, BoeTableBegin,
                         ImportExportConstants.BOE_DESCRIPTION_CELL_ROW_OFFSET, ImportExportConstants.BOE_DESCRIPTION_CELL_COLUMN_OFFSET,
                         ImportExportConstants.PLACEHOLDER_TEXT, null, true, false);
                 }
-                if (!string.IsNullOrEmpty(boe.DataSource))
+
+                if (rteOverrides.Contains(RteTemplateSource.BoeSources))
+                {
+                    ExcelUtilities.SetCellValueByOffset(spreadsheet, worksheetPart.Worksheet, BoeTableBegin,
+                        ImportExportConstants.BOE_SOURCESOFDATA_CELL_ROW_OFFSET, ImportExportConstants.BOE_SOURCESOFDATA_CELL_COLUMN_OFFSET,
+                        ImportExportConstants.PLACEHOLDER_TEXT_RTE_TEMPLATES, null, true, false);
+                }
+                else if(!string.IsNullOrEmpty(boe.DataSource))
                 {
                     ExcelUtilities.SetCellValueByOffset(spreadsheet, worksheetPart.Worksheet, BoeTableBegin,
                         ImportExportConstants.BOE_SOURCESOFDATA_CELL_ROW_OFFSET, ImportExportConstants.BOE_SOURCESOFDATA_CELL_COLUMN_OFFSET,
@@ -652,7 +665,7 @@ namespace GenBOE.ActionLogic.IO.Export
             WorkofflineTemplate workofflineTemplate, 
             WorksheetPart worksheetPart, 
             string worksheetName,
-            WorkspaceDTO workspace, 
+            FullWorkspace workspace, 
             uint addResourceButtonId,
             ICollection<string> tablePartDefinitionIds,
             IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, 
@@ -668,7 +681,6 @@ namespace GenBOE.ActionLogic.IO.Export
             uint newResourceTableDefid,
             bool isFirstTask)
         {
-            int workspaceId = workspace != null ? workspace.Id : 0;
             // Generate Task data
             if (workofflineTemplate.TaskTable != null)
             {
@@ -681,8 +693,8 @@ namespace GenBOE.ActionLogic.IO.Export
                     rowIndex, 
                     taskElement, 
                     allWorkspaceCustomFields, 
-                    dataValidationReferences, 
-                    workspaceId);
+                    dataValidationReferences,
+                    workspace);
                 tablePartDefinitionIds.Add(worksheetPart.GetIdOfPart(taskTableDefinitionPart));
                 TableRange tableRange = new TableRange(worksheetName, taskTableDefinitionPart.Table);
                 rowIndex = tableRange.RowEnd + 3;
@@ -741,10 +753,9 @@ namespace GenBOE.ActionLogic.IO.Export
             uint rowIndex, 
             BoeTaskElementDTO taskElement,
             IReadOnlyCollection<CustomFieldDTO> allWorkspaceCustomFields, 
-            Dictionary<string, string> dataValidationReferences, 
-            int workspaceId)
+            Dictionary<string, string> dataValidationReferences,
+            FullWorkspace workspace)
         {
-            FullWorkspace workspace = this._IFullObjectFactory.CreateFullWorkspace(workspaceId);
             uint startRowIndex = rowIndex;
             long startColIndex = 1; // start table in column A (one-based column index)
             string taskTableBegin = TableRange.GetColumnName(startColIndex) + startRowIndex;
@@ -767,12 +778,20 @@ namespace GenBOE.ActionLogic.IO.Export
                 ExcelUtilities.SetCellValueByOffset(spreadsheet, worksheetPart.Worksheet, TaskTableBegin,
                     ImportExportConstants.TASK_TITLE_CELL_ROW_OFFSET, ImportExportConstants.TASK_TITLE_CELL_COLUMN_OFFSET,
                     taskElement.TaskTitle, null, true, false);
-                if (!string.IsNullOrEmpty(taskElement.Description))
+
+                if (workspace.RteOverrides.Contains(RteTemplateSource.TaskDescription))
+                {
+                    ExcelUtilities.SetCellValueByOffset(spreadsheet, worksheetPart.Worksheet, TaskTableBegin,
+                        ImportExportConstants.TASK_DESCRIPTION_CELL_ROW_OFFSET, ImportExportConstants.TASK_DESCRIPTION_CELL_COLUMN_OFFSET,
+                        ImportExportConstants.PLACEHOLDER_TEXT_RTE_TEMPLATES, null, true, false);
+                }
+                else if (!string.IsNullOrEmpty(taskElement.Description))
                 {
                     ExcelUtilities.SetCellValueByOffset(spreadsheet, worksheetPart.Worksheet, TaskTableBegin,
                         ImportExportConstants.TASK_DESCRIPTION_CELL_ROW_OFFSET, ImportExportConstants.TASK_DESCRIPTION_CELL_COLUMN_OFFSET,
                         ImportExportConstants.PLACEHOLDER_TEXT, null, true, false);
                 }
+
                 string startDateDisplay = taskElement.StartDate.HasValue ? taskElement.StartDate.Value.ToString("MM/yyyy") : string.Empty;
                 string endDateDisplay = taskElement.EndDate.HasValue ? taskElement.EndDate.Value.ToString("MM/yyyy") : string.Empty;
                 ExcelUtilities.SetCellValueByOffset(spreadsheet, worksheetPart.Worksheet, TaskTableBegin,
@@ -805,7 +824,15 @@ namespace GenBOE.ActionLogic.IO.Export
                 ExcelUtilities.SetCellValueByOffset(spreadsheet, worksheetPart.Worksheet, TaskTableBegin,
                     ImportExportConstants.TASK_MOQTYPE_CELL_ROW_OFFSET, ImportExportConstants.TASK_MOQTYPE_CELL_COLUMN_OFFSET,
                     moqTypeName, null, true, false);
-                if (!string.IsNullOrEmpty(taskElement.MOQText))
+
+                if (workspace.RteOverrides.Contains(RteTemplateSource.TaskMOQ))
+                {
+                    ExcelUtilities.SetCellValueByOffset(spreadsheet, worksheetPart.Worksheet, TaskTableBegin,
+                        ImportExportConstants.TASK_MOQTEXT_CELL_ROW_OFFSET, ImportExportConstants.TASK_MOQTEXT_CELL_COLUMN_OFFSET,
+                        ImportExportConstants.PLACEHOLDER_TEXT_RTE_TEMPLATES, null, true, false);
+
+                }
+                else if (!string.IsNullOrEmpty(taskElement.MOQText))
                 {
                     ExcelUtilities.SetCellValueByOffset(spreadsheet, worksheetPart.Worksheet, TaskTableBegin,
                         ImportExportConstants.TASK_MOQTEXT_CELL_ROW_OFFSET, ImportExportConstants.TASK_MOQTEXT_CELL_COLUMN_OFFSET,

@@ -98,6 +98,17 @@ namespace GenBOE.DataBridge.DTO
         int ExactCopyWorkspace(int inWorkspaceIDtoCopy, string newWorkspaceName, string newShortName);
 
         /// <summary>
+        /// Create a copy of a previous version of a workspace
+        /// </summary>
+        /// <param name="workspaceId">Workspace ID</param>
+        /// <param name="tempWorkspaceName">Name for the temp Workspace</param>
+        /// <param name="tempWorkspaceShortName">Short Name for the temp Workspace</param>
+        /// <param name="versionId">Id of the version</param>
+        /// <param name="boesToCopy">Comma separated list of BOE IDs if copying select BOEs</param>
+        /// <returns>ID of the temporary Workspace</returns>
+        int CopyWorkspaceVersion(int workspaceId, string tempWorkspaceName, string tempWorkspaceShortName, int versionId, string boesToCopy);
+
+        /// <summary>
         /// Soft Deletes or Restores Workspace
         /// </summary>
         /// <param name="inWorkspaceID">workspace id</param>

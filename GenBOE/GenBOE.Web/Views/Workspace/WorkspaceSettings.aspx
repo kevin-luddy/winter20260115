@@ -109,6 +109,13 @@
                     '<%: WebConstants.ACTION_DISPLAY_WORKSPACE_EMAIL_PREFERENCES %>', ''), "WORKSPACE_EMAIL_PREFERENCES_LOADED");
         };
 
+        WorkspaceSettings.LoadManageRTETemplates = function () {
+            ShowLoadingBox();
+            window.location = CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
+                    '<%: WebConstants.CONTROLLER_RTE_TEMPLATES %>',
+                '<%: WebConstants.ACTION_DISPLAY_MANAGE_RTE_TEMPLATES %>', '');
+        };
+
 
         WorkspaceSettings.RetrievePage = function (actionURL, trigger) {
             ShowLoadingBox();
@@ -206,6 +213,9 @@
                     case "WorkspaceEmailPreferences":
                         WorkspaceSettings.LoadWorkspaceEmailPreferences();
                         break;
+                    case "ManageRTETemplates":
+                        WorkspaceSettings.LoadManageRTETemplates();
+                        break;
                     default:
                         WorkspaceSettings.LoadWorkspaceSettingsJump();
                 }
@@ -232,6 +242,7 @@
             WorkspaceSettings.registerForEvent("WS_LOAD_RESOURCE_RATES_TM", WorkspaceSettings.LoadResourceRatesTM);
             WorkspaceSettings.registerForEvent("WS_LOAD_ADD_RESOURCE_RATE_TM", WorkspaceSettings.LoadAddResourceRateTM);
             WorkspaceSettings.registerForEvent("WS_LOAD_WORKSPACE_EMAIL_PREFERENCES", WorkspaceSettings.LoadWorkspaceEmailPreferences);
+            WorkspaceSettings.registerForEvent("WS_LOAD_MANAGE_RTE_TEMPLATES", WorkspaceSettings.LoadManageRTETemplates);
             
             window.onhashchange = WorkspaceSettings.LoadPage;
 

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -27,6 +27,7 @@ namespace GenBOE.Web.Controllers
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.CustomFields;
     using GenBOE.ActionLogic.IO.Export;
+    using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.Metrics;
     using GenBOE.ActionLogic.ModelView;
@@ -46,6 +47,7 @@ namespace GenBOE.Web.Controllers
     using GenBOE.Web.ModelView;
     using IES.Common;
     using IES.Common.classes;
+    using IES.Common.Compression;
     using IES.Common.Exceptions;
     using IES.Common.OfficeUtilities;
     using IES.Common.PickList;
@@ -98,6 +100,26 @@ namespace GenBOE.Web.Controllers
         private GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader;
         private GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper;
         private BoePickListMapper boePickListMapper;
+
+        /// <summary>
+        /// Workspace Exporter
+        /// </summary>
+        private WorkspaceExporter workspaceExporter;
+        
+        /// <summary>
+        /// Reports Controller Logic
+        /// </summary>
+        private IReportsControllerLogic reportsControllerLogic;
+
+        /// <summary>
+        /// BOE Exporter
+        /// </summary>
+        private IBOEExporter boeExporter;
+
+        /// <summary>
+        /// BOE Custom Exporter
+        /// </summary>
+        private IBOECustomExporter boeCustomExporter;
 
         /// <summary>
         /// Full WS Recalculation
@@ -169,7 +191,11 @@ namespace GenBOE.Web.Controllers
             IRetriever retriever,
             GenTRAC.DataBridge.DTO.IProposalLoader proposalLoader,
             GenTRAC.DataBridge.Common.Security.ISecurityMapper ptmSecurityMapper,
-            BoePickListMapper boePickListMapper)
+            BoePickListMapper boePickListMapper,
+            WorkspaceExporter workspaceExporter,
+            IReportsControllerLogic reportsControllerLogic,
+            IBOEExporter boeExporter,
+            IBOECustomExporter boeCustomExporter)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDTODataLoader, inPermissionsDTOLoader, inControllerLogic)
         {
             _WorkspaceStateMachine = inWorkspaceStateMachine;
@@ -218,6 +244,10 @@ namespace GenBOE.Web.Controllers
             this.proposalLoader = proposalLoader;
             this.ptmSecurityMapper = ptmSecurityMapper;
             this.boePickListMapper = boePickListMapper;
+            this.workspaceExporter = workspaceExporter;
+            this.reportsControllerLogic = reportsControllerLogic;
+            this.boeExporter = boeExporter;
+            this.boeCustomExporter = boeCustomExporter;
         }
 
         #region Public Methods
@@ -1876,11 +1906,15 @@ namespace GenBOE.Web.Controllers
 
             Collection<WorkspaceVersionMetaDataDTO> backupVersionDTOs = _WorkspaceVersionMetaDataDTODataLoader.GetByWorkspaceID(ws.Id);
 
+            IDictionary<int, ICollection<BoeVersionDTO>> backupBoes = new Dictionary<int, ICollection<BoeVersionDTO>>();
+
             foreach (WorkspaceVersionMetaDataDTO bk in backupVersionDTOs)
             {
-                model.Add(new WorkspaceVersionModelView(bk, (UserDTODataLoader)this.UserLoader));
+                ICollection<BoeVersionDTO> boes = _WorkspaceVersionMetaDataDTODataLoader.GetBoesByVersionID(bk.VersionID, bk.WorkspaceID);
+                backupBoes.Add(bk.Id, boes);
+                model.Add(new WorkspaceVersionModelView(bk, (UserDTODataLoader)this.UserLoader, boes));
             }
-
+            
             ViewBag.IsSystemAdmin = CheckPermissions(SecurityPage.SystemAdmin, null, null) != SecurityAuthorization.None;
 
             // Finalize Action
@@ -2692,7 +2726,6 @@ namespace GenBOE.Web.Controllers
                     isNewCustomField = true;
                 }
 
-                bool optionsAdded = false;
                 bool optionsEdited = false;
                 
                 if (customFieldsMV.CustomFieldMetaData.isOpenEnded)
@@ -2715,8 +2748,6 @@ namespace GenBOE.Web.Controllers
                                 validationMessages.Add(new ValidationMessage(
                                                 "ID cannot contain a dash."));
                             }
-
-                            optionsAdded = true;
 
                             customfieldValuestoSave.Add(new CustomFieldValueDTO()
                             {
@@ -2869,7 +2900,7 @@ namespace GenBOE.Web.Controllers
                  *    5. Changing the Type of a custom field.
                  * 
                  */
-                if ( customFieldTypeChanged || (isRequired && (isNewCustomField || requiredChanged || openEndedChanged || customFieldNameChanged || optionsAdded || optionsEdited)))
+                if ( customFieldTypeChanged || (isRequired && (isNewCustomField || requiredChanged || openEndedChanged || customFieldNameChanged || optionsEdited)))
                 {
                     // Update all BOEs that are in awaiting approval, approved or locked-draft back to draft.
                     boesBackToDraft = ws.Boes.Where(x => x.State == BOEState.Approved || x.State == BOEState.AwaitingApproval || x.State == BOEState.DraftLocked).ToCollection<FullBoe>();
@@ -4342,6 +4373,91 @@ namespace GenBOE.Web.Controllers
 
             // Finalize Action
             FinalizeAction(_log, "RestoreWorkspaceVersion", sw);
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Performs an export of a previous version of a Workspace
+        /// </summary>
+        /// <param name="workspace">The workspace</param>
+        /// <param name="versionId">ID of the version to export</param>
+        /// <param name="exportAllBoes">Bool noting if all BOEs to be exported or just selected ones</param>
+        /// <param name="boesToExport">BOEs to be exported if not exporting all</param>
+        /// <returns>Report</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        public ActionResult ExportWorkspaceVersion(string workspace, int versionId, bool exportAllBoes, ICollection<int> boesToExport)
+        {
+            ActionResult toReturn = new EmptyResult();
+
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+            string versionName = this._WorkspaceVersionMetaDataDTODataLoader.GetByIds(new Collection<int>() { versionId }).FirstOrDefault()?.VersionName;
+
+            int tempWsId = this._ControllerLogic.CopyWorkspaceVersion(ws, versionId, exportAllBoes, boesToExport);
+
+            FullWorkspace tempWs = this.Factory.CreateFullWorkspace(tempWsId);
+            tempWs.LoadBoesRTEData();
+            tempWs.LoadTravelRTEData();
+            tempWs.LoadODCsRTEData();
+            tempWs.LoadMaterialsRTEData();
+            tempWs.LoadTaskElementRTEData();
+
+            string excelTemplateLocaiton = Server.MapPath(workspaceExporter.WORKSPACE_DATA_EXCEL_MAP_PATH);
+            MetricNameTaskElementMappingDTO metricTaskElementMappings = this.reportsControllerLogic.GetMetricNameTaskElementMappingDTO(tempWs);
+
+            Dictionary<string, Stream> zipContents = new Dictionary<string, Stream>();
+
+            string workspaceDataReportLocation = this._ControllerLogic.CreateWorkspaceDataReportForVersion(tempWs, excelTemplateLocaiton, metricTaskElementMappings, ws.WorkspaceName, versionId);
+            
+            try
+            {
+                using (FileStream workspaceDataStream = new FileStream(workspaceDataReportLocation, FileMode.Open))
+                {
+                    workspaceDataStream.Position = 0;
+                    zipContents.Add(Utilities.CleanFileName(string.Format("WorkspaceData-{0}-{1}.xlsx", ws.WorkspaceName, versionName)), workspaceDataStream);
+
+                    using (Stream allBoesStream = new MemoryStream())
+                    {
+                        bool isCustomExport;
+                        WorkspaceExportFormatDTO wsExportFormatDTO;
+                        BOEExportInputs exportInputs;
+                        ICollection<BOEExportModelView> boeExportModelViews;
+                        List<BOESummaryGridModelView> boeSummaryGridModelViews;
+
+                        // Set Version Template ID to the current Template ID so the user can select the template
+                        tempWs.TemplateID = ws.TemplateID;
+
+                        this.reportsControllerLogic.PrepareAllBOEsReport(tempWs, ws.CurrentActiveUser.IsSubcontractor ?? false, null, null, ViewData, out isCustomExport,
+                            out wsExportFormatDTO, out exportInputs, out boeExportModelViews, out boeSummaryGridModelViews, false);
+
+                        if (isCustomExport)
+                        {
+                            this.boeCustomExporter.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, null, allBoesStream, wsExportFormatDTO);
+                        }
+                        else
+                        {
+                            this.boeExporter.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, wsExportFormatDTO.PhysicalFilePathCache,
+                                allBoesStream, wsExportFormatDTO.ExportFormat.TemplateType);
+                        }
+
+                        allBoesStream.Position = 0;
+                        zipContents.Add(Utilities.CleanFileName(string.Format("AllBOEs-{0}-{1}.docx", ws.WorkspaceName, versionName)), allBoesStream);
+
+                        string zipFileName = Zip.ZipFiles(zipContents, Server.MapPath("~/Templates/Export"));
+                        toReturn = new ExportFileDownloadResult(zipFileName, Utilities.CleanFileName(string.Format("BackupExport_{0}_{1}.zip", ws.WorkspaceName, versionName)));
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _log.Error(e);
+            }
+            finally
+            {
+                // Delete temporary Workspace Data report file - All BOEs already deleted
+                System.IO.File.Delete(workspaceDataReportLocation);
+            }
 
             return toReturn;
         }

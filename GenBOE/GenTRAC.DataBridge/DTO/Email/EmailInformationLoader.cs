@@ -8,6 +8,7 @@ namespace GenTRAC.DataBridge.DTO
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using IES.Common;
 
@@ -37,6 +38,13 @@ namespace GenTRAC.DataBridge.DTO
         private IUserLoader UserLoader { get; set; }
 
         /// <summary>
+        /// Gets or sets the attachment loader
+        /// </summary>
+        private IAttachmentLoader AttachmentLoader { get; set; }
+
+        private static DateTime DOCUMENT_REMINDER_CUTOFF_DATE = new DateTime(2020, 1, 1);
+
+        /// <summary>
         /// Default Constructor
         /// </summary>
         public EmailInformationLoader()
@@ -46,6 +54,7 @@ namespace GenTRAC.DataBridge.DTO
             this.PermissionLoader = new ProposalPermissionLoader();
             this.ProposalLoader = new ProposalLoader(this.PermissionLoader);
             this.UserLoader = new UserLoader();
+            this.AttachmentLoader = new AttachmentLoader();
         }
 
         /// <summary>
@@ -162,6 +171,61 @@ namespace GenTRAC.DataBridge.DTO
                     this.ProposalLoader.Save(proposal);
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets the optional document missing reminder emails to be sent
+        /// </summary>
+        /// <returns>A collection of the email info dtos for the emails to be sent</returns>
+        public ICollection<EmailInformationDto> GetDocumentReminderEmailsToBeSent()
+        {
+            ICollection<EmailInformationDto> emailList = new List<EmailInformationDto>();
+
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("EmailInformationLoader.GetDocumentReminderEmailsToBeSent", this.Log))
+            {
+                // Get all approved Proposals approved in 2020 or later, when this feature was first implemented
+                // so we don't send for proposals missing the document because PSAs were not implemented when they were created
+                ICollection<ProposalDto> approvedProposals = this.ProposalLoader.GetAllCompletedProposalsAfterSubmitDate(DOCUMENT_REMINDER_CUTOFF_DATE);
+
+                foreach (ProposalDto proposal in approvedProposals)
+                {
+                    // Only send for approved proposals missing the optional document that have been approved for a week or more
+                    DateTime? approvalDate = this.ProposalLoader.GetProposalCompletedDate(proposal.Id);
+
+                    if (approvalDate != null && approvalDate <= DateTime.Today.AddDays(-7))
+                    { 
+                        if (!this.AttachmentLoader.OptionalAttachmentHasBeenUploaded(proposal.Id))
+                        {
+                            // retrieve permissions
+                            ICollection<ProposalPermissionDto> permissions = this.RetrievePermissions(proposal.Id);
+
+                            string leadEstEmail = this.RetrieveEmailForRole(proposal, PtmRole.Pricer, permissions);
+                            string backupEstEmail = this.RetrieveEmailForRole(proposal, PtmRole.BackupPricer, permissions);
+
+                            string emailTo = leadEstEmail;
+                            if(!string.IsNullOrEmpty(backupEstEmail))
+                            {
+                                emailTo += ";" + backupEstEmail;
+                            }
+
+                            UserDTO estManagerDelegate = this.RetrieveUserForRole(proposal, PtmRole.LOBEstLead, permissions);
+
+                            emailList.Add(new EmailInformationDto()
+                            {
+                                EmailAddress = emailTo,
+                                ccUsers = new Collection<UserDTO>() { estManagerDelegate },
+                                ProposalEmailType = EmailType.OptionalDocumentReminderEmail,
+                                ProposalId = proposal.Id,
+                                ProposalTitle = proposal.ProposalTitle,
+                                TrackingNumber = proposal.TrackingNumber,
+                                AdditionalText = string.Empty
+                            });
+                        }
+                    }
+                }
+            }
+
+            return emailList;
         }
 
         /// <summary>
@@ -438,6 +502,39 @@ namespace GenTRAC.DataBridge.DTO
         {
             ICollection<ProposalPermissionDto> permissions = this.RetrievePermissions(proposal.Id);
             return this.RetrieveEmailForRole(proposal, role, permissions);
+        }
+
+        /// <summary>
+        /// Retrieves the user DTO for a particular role.
+        /// </summary>
+        /// <param name="proposal">The proposal.</param>
+        /// <param name="role">The role.</param>
+        /// <param name="permissions">The permissions.</param>
+        /// <returns>A user dto for a role found in the permissions passed in.</returns>
+        private UserDTO RetrieveUserForRole(ProposalDto proposal, PtmRole role, ICollection<ProposalPermissionDto> permissions)
+        {
+            UserDTO user = new UserDTO();
+            ProposalPermissionDto permission = permissions.FirstOrDefault(p => p.Role == role);
+
+            if (permission == null)
+            {
+                bool coverSheetApproverRequired = proposal.IsCCPDRequired.HasValue && proposal.IsCCPDRequired.Value;
+
+                // Since the Independent Reviewer is optional and Cover Sheet Approver sometimes, don't log if not found
+                if (role != PtmRole.PeerReviewer)
+                {
+                    if (coverSheetApproverRequired || role != PtmRole.CoverSheetApprover)
+                    {
+                        this.Log.Error(string.Format("There is no Permission associated with Proposal {0} and role {1} ", proposal.Id, role));
+                    }
+                }
+            }
+            else
+            {
+                user = this.UserLoader.GetById(permission.UserId);
+            }
+
+            return user;
         }
     }
 }

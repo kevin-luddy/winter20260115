@@ -76,7 +76,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 boeSummary.Object, boeCustomeExporter.Object, workspaceExportFormatDTOLoader.Object,
                 boeDiscrepancyReport.Object, resourceDTODataLoader.Object, iboeFormDataLoader.Object,
                 pboeFormDataLoader.Object, iInUseDataLoader.Object, this.proposalLoader.Object,
-                this.workspaceControllerLogic.Object);
+                this.workspaceControllerLogic.Object, null);
             //ACt
             sut.GetMetricNameTaskElementMappingDTO(workspace);
         }

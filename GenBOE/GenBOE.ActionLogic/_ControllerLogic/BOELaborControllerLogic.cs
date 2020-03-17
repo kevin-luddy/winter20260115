@@ -16,7 +16,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
-    using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.Common.MOQ;
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.ModelView;
@@ -47,6 +46,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IBoeDTODataLoader _BoeLoader;
         private readonly IPerformingOrgDTODataLoader PerfOrgLoader;
         private readonly IOrdinaryVariableLoader _taskVariableLoader;
+        private readonly IRteTemplateDataLoader rteTemplateDataLoader;
+
         /// <summary>
         /// Task Element Validation Class
         /// </summary>
@@ -72,7 +73,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IOrdinaryVariableLoader inTaskVariableLoader,
             TaskElementValidation taskElementValidation,
             IVariableCircularReferenceChecker circularReferenceChecker,
-            ICommonDataMapper commonDataMapper)
+            ICommonDataMapper commonDataMapper,
+            IRteTemplateDataLoader rteTemplateDataLoader)
         {
             this._BoeTaskElementRecalculation = inBoeTaskElementRecalc;
             this._boeStateMachine = inBoeStateMachine;
@@ -91,6 +93,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.taskElementValidation = taskElementValidation;
             this.circularReferenceChecker = circularReferenceChecker;
             this.CommonDataMapper = commonDataMapper;
+            this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
         #region Public Members
@@ -696,7 +699,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// </summary>
         /// <param name="ws">Workspace</param>
         /// <param name="modelView">Labor Task dto</param>
-        public void SaveLaborTaskData(FullWorkspace ws, BoeTaskElementDTO dtoToSave, ICollection<int> metricIds)
+        public void SaveLaborTaskData(FullWorkspace ws, BoeTaskElementDTO dtoToSave, ICollection<int> metricIds, ICollection<RTECustomTemplateQuestionAnswerModelView> answers)
         {
             if (ws == null)
             {
@@ -760,6 +763,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 this._BoeTaskElementMediator.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { dtoToSave }, ws);
 
+                if (answers != null && answers.Any())
+                {
+                    this.rteTemplateDataLoader.SaveAnswers(answers);
+                }
+                
                 ws.RefreshBoes();
 
                 // Save historical metrics for BOE Task Element
@@ -1731,7 +1739,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <returns>The <see cref="MOQEquationModelView"/> for the given task element.</returns>
         public virtual MOQEquationModelView GetMOQModelView(BoeTaskElementDTO taskElement, FullWorkspace workspace)
         {
+            if (workspace == null)
+            {
+                throw new ArgumentNullException(nameof(workspace));
+            }
+
+            if (taskElement == null)
+            {
+                throw new ArgumentNullException(nameof(taskElement));
+            }
+
             MOQEquationModelView toReturn = new MOQEquationModelView(taskElement, this.VariableSelectBOEtoSumCalculation, workspace);
+            toReturn.MoqTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, taskElement.BoeID, taskElement.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ).ToList();
             this.SetShowMetricLink(toReturn);
             return toReturn;
         }

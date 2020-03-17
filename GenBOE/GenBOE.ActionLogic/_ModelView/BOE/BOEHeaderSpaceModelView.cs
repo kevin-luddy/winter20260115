@@ -7,8 +7,10 @@
 namespace GenBOE.ActionLogic.ModelView.BOE
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using GenBOE.DataBridge.DTO;
+    using GenBOE.Dtos;
     using IES.Common.classes;
 
     public class BOEHeaderSpaceModelView : BOEHeaderModelView, IBOEHeaderModelView
@@ -18,7 +20,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             base.Title = String.Empty;
         }
 
-        public BOEHeaderSpaceModelView(BoeDTO inBoe) : base(inBoe)
+        public BOEHeaderSpaceModelView(BoeDTO inBoe, ICollection<RTECustomTemplateQuestionAnswerModelView> answers) : base(inBoe, answers)
         {
             if (inBoe == null)
             {

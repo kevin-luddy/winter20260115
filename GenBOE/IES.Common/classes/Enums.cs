@@ -1437,4 +1437,17 @@ namespace IES.Common
         /// </summary>
         ID = 1
     }
+
+    public enum RteTemplateSource
+    {
+        NA = 0,
+        [Description("Boe Description")]
+        BoeDescription = 1,
+        [Description("Boe Sources")]
+        BoeSources = 2,
+        [Description("Task Description")]
+        TaskDescription = 3,
+        [Description("Task MOQ Rationale")]
+        TaskMOQ = 4
+    }
 }

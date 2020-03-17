@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -496,7 +496,15 @@ namespace IES.Common
             return withinBusinessHours;
         }
 
-
+        /// <summary>
+        /// Determines if the current time is the time to send the PTM Document Reminder Emails
+        /// </summary>
+        /// <returns>True if start of business hours on Monday, False otherwise</returns>
+        public static bool IsTimeForDocumentReminderEmails()
+        {
+            DateTime currentTime = DateTime.Now;
+            return currentTime.DayOfWeek == DayOfWeek.Monday && currentTime.Hour >= BUSINESS_HOURS_START && currentTime.Hour < BUSINESS_HOURS_START + 1;
+        }
 
         /// <summary>
         /// Gets a value indicating whether PTM is integrated into creation process.
@@ -532,6 +540,21 @@ namespace IES.Common
             }
 
             return text;
+        }
+
+        /// <summary>
+        /// Replaces spaces with underscores and removes invalid file name characters
+        /// </summary>
+        /// <param name="filename">Filename to clean</param>
+        /// <returns>Filename with only valid characters</returns>
+        public static string CleanFileName(string filename)
+        {
+            if(filename==null)
+            {
+                throw new ArgumentNullException(nameof(filename));
+            }
+
+            return string.Concat(filename.Replace(' ', '_').Split(Path.GetInvalidFileNameChars()));
         }
     }
 }

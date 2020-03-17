@@ -34,7 +34,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// <param name="boe">The boe.</param>
         /// <param name="workspace">The workspace.</param>
         /// <exception cref="System.ArgumentNullException">workspace</exception>
-        public BOEExportInputs(FullBoe boe, FullWorkspace workspace)
+        public BOEExportInputs(FullBoe boe, FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null)
         {
             if (ReferenceEquals(workspace, null))
             {
@@ -42,6 +42,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             }
 
             this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - begin");
+            SetRteTemplateOverrides(rteTemplatesOverrides);
             IRetriever retriever = GenBOEUnityContainer.Container.Resolve(typeof(IRetriever)) as IRetriever;
             this.Boes = new List<BoeDTO> { boe }.AsReadOnly();
             this.TaskElements = workspace.TaskElements;
@@ -65,7 +66,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// <param name="taskElements">The task elements for entire workspace.</param>
         /// <param name="workspace">The workspace.</param>
         /// <exception cref="ArgumentNullException">workspace</exception>
-        public BOEExportInputs(ICollection<FullBoe> boesToExport, ICollection<FullBoe> allWorkspaceBoes, ICollection<BoeTaskElementDTO> taskElements, FullWorkspace workspace)
+        public BOEExportInputs(ICollection<FullBoe> boesToExport, ICollection<FullBoe> allWorkspaceBoes, ICollection<BoeTaskElementDTO> taskElements, 
+            FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null)
         {
             if (ReferenceEquals(workspace, null))
             {
@@ -74,6 +76,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
             this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - begin");
             IRetriever retriever = GenBOEUnityContainer.Container.Resolve(typeof(IRetriever)) as IRetriever;
+            SetRteTemplateOverrides(rteTemplatesOverrides);
             this.Boes = boesToExport.ToList<BoeDTO>().AsReadOnly();
             this.TaskElements = taskElements.ToList().AsReadOnly();
             this.Workspace = workspace;
@@ -88,6 +91,16 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             this.AllWorkspaceBoes = allWorkspaceBoes.ToList<BoeDTO>().AsReadOnly();
             this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - end");
         }
+
+        /// <summary>
+        /// Gets or sets all of the RTE Custom Template Overrides.
+        /// </summary>
+        public IReadOnlyCollection<RTECustomTemplateQuestionAnswerModelView> RTETemplatesOverrides { get; private set; }
+
+        /// <summary>
+        /// The original collection of RTE Custom Template Overrides.
+        /// </summary>
+        private ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverridesCollection;
 
         /// <summary>
         /// Gets all of the boes in the workspace.
@@ -258,5 +271,36 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// Gets or sets the contract types.
         /// </summary>
         public ICollection<PickListDto> ContractTypes { get; set; }
+
+        /// <summary>
+        /// Sets the RTE Template Overrides, providing a null check.
+        /// </summary>
+        /// <param name="rteTemplatesOverrides">The rte template overrides.</param>
+        private void SetRteTemplateOverrides(ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides)
+        {
+            if (rteTemplatesOverrides == null)
+            {
+                this.RTETemplatesOverrides = new List<RTECustomTemplateQuestionAnswerModelView>().AsReadOnly();
+            }
+            else
+            {
+                this.rteTemplatesOverridesCollection = rteTemplatesOverrides;
+                this.RTETemplatesOverrides = new List<RTECustomTemplateQuestionAnswerModelView>(rteTemplatesOverrides).AsReadOnly();
+            }
+        }
+
+        /// <summary>
+        /// Clears the RTE Overrides List
+        /// </summary>
+        public void ClearRteOverrides()
+        {
+            // release all references inside original list to free up memory.
+            if (this.rteTemplatesOverridesCollection != null)
+            {
+                this.rteTemplatesOverridesCollection.Clear();
+            }
+
+            this.RTETemplatesOverrides = new List<RTECustomTemplateQuestionAnswerModelView>().AsReadOnly();
+        }
     }
 }

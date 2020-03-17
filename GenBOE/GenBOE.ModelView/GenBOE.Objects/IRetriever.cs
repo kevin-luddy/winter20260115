@@ -561,5 +561,10 @@ namespace GenBOE.Objects
         /// <param name="workspaceId">The workspace identifier.</param>
         /// <returns>A collection of project map data.</returns>
         ICollection<ProjectMapModelView> GetProjectMapDataByWorkspaceId(int workspaceId);
+
+        /// <summary>
+        /// Gets RTE Template Overrides for the specific workspace
+        /// </summary>
+        ICollection<RteTemplateSource> GetWsRteOverrides(int workspaceId);
     }
 }

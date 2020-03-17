@@ -76,6 +76,9 @@
     <Compile Include="BOE.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="BOE1.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="BOEApproval.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
@@ -173,6 +176,9 @@
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="CLIN.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CLIN1.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ContractTypeLU.cs">
@@ -375,6 +381,18 @@
     <Compile Include="RoleLU.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="RteTemplate.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RteTemplateAnswer.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RteTemplateQuestion.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="RteTemplateSource.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="SearchCategoryLU.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
@@ -462,7 +480,13 @@
     <Compile Include="WBS_CLIN_BOE_XREF.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="WBS_CLIN_BOE_XREF1.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="WorkBreakdownStructure.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="WorkBreakdownStructure1.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Workspace.cs">

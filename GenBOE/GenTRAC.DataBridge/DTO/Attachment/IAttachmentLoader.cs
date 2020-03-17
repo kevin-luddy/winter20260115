@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -33,6 +33,13 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="proposalId">ID of proposal to check</param>
         /// <returns>true if all required attachments have been uploaded</returns>
-        bool AllAttachmentsHaveBeenUploaded(int proposalId);
+        bool AllRequiredAttachmentsHaveBeenUploaded(int proposalId);
+
+        /// <summary>
+        /// Returns true if the optional DelegationOfAuthority attachment has been uploaded
+        /// </summary>
+        /// <param name="proposalId">ID of proposal to check</param>
+        /// <returns>true if the optional DelegationOfAuthority attachment has been uploaded</returns>
+        bool OptionalAttachmentHasBeenUploaded(int proposalId);
     }
 }

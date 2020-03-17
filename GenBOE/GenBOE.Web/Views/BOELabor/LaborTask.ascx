@@ -6,6 +6,9 @@
 <% 
     var serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
     string asterisk = "*";
+    int rteFieldSize = ViewBag.RteFieldSize;
+    bool showDescQuestions = Model.DescriptionTemplateAnswers.Any();
+    int numberDescQuestions = showDescQuestions ? Model.DescriptionTemplateAnswers.Count : 1;
 %>
 <script type="text/javascript">
     // Checks to see if the container is visible. This is needed for the custom field validation on page load
@@ -354,7 +357,10 @@
             '<%:Model.AllowDateShift%>'.toLowerCase(),
             recalculateAndRefreshPageUrl,
             dateShiftUrl,
-            saveReorderLaborTypesUrl
+            saveReorderLaborTypesUrl,
+            '<%: showDescQuestions %>'.isTrue(),
+            <%: numberDescQuestions %>,
+            <%: rteFieldSize %>
         );
 
         TaskElementDetailsWidget.waitingBeforeSubmit = false;
@@ -446,10 +452,10 @@
                     </div>
                     <div class="form-row">
                         <div class="form-label">
-                            Task Description
+                            Task Description *
                         </div>
                         <div class="form-element">
-                            <textarea ui-tinymce="tinyMceOptionsDescription" data-ng-model="model.TaskElementData.TaskDescription" data-ng-change="setDirty()" data-ng-required="true" name="TaskDescription" id="TaskDescription"></textarea>
+                            <% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(Model.DescriptionTemplateAnswers, "TaskDescription", Model.TaskDescription));  %>
                         </div>
                     </div>
                     <div class="form-row">

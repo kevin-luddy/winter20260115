@@ -69,6 +69,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private INestedWBSUtilities _nestedWbsUtilities;
         private IProjectMapDataLoader projectMapLoader;
         private RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader;
+        private IRteTemplateDataLoader rteTemplateDataLoader;
 
         #region Protected Properties and Constructor
 
@@ -103,7 +104,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IConflictBOE inConflictBOE,
             INestedWBSUtilities inNestedWBSUtilities,
             IProjectMapDataLoader projectMapLoader,
-            RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader)
+            RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader,
+            IRteTemplateDataLoader rteTemplateDataLoader)
         {
             this._BOESummary = inBOESummary;
             this.UserLoader = inUserLoader;
@@ -133,6 +135,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this._nestedWbsUtilities = inNestedWBSUtilities;
             this.projectMapLoader = projectMapLoader;
             this.zoneTravelRatesFeesLoader = zoneTravelRatesFeesLoader;
+            this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
         #endregion
@@ -144,9 +147,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// </summary>
         /// <param name="boe">The <see cref="BoeDTO"/> used to populate the <see cref="BOEHeaderISGSModelView"/></param>
         /// <returns>the populated <see cref="BOEHeaderISGSModelView"/></returns>
-        public virtual IBOEHeaderModelView GetCreateBOEHeaderMV(BoeDTO boe)
+        public virtual IBOEHeaderModelView GetCreateBOEHeaderMV(BoeDTO boe, ICollection<RTECustomTemplateQuestionAnswerModelView> answers)
         {
-            return new BOEHeaderISGSModelView(boe);
+            return new BOEHeaderISGSModelView(boe, answers);
         }
 
         #endregion Get Actions
@@ -349,9 +352,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 throw new ArgumentNullException(nameof(ws));
             }
-
+            
+            ICollection<RTECustomTemplateQuestionAnswerModelView> answers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boe.Id);
             // Perform Action
-            IBOEHeaderModelView theModelView = this.GetCreateBOEHeaderMV(boe);
+            IBOEHeaderModelView theModelView = this.GetCreateBOEHeaderMV(boe, answers);
 
             theModelView.WBS = boe.Wbs != null ? boe.Wbs.WbsString : CommonConstants.Unassigned_WBS_Display_Text;
             
@@ -770,7 +774,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     exportWorkspace.LoadODCsRTEData();
                     exportWorkspace.LoadMaterialsRTEData();
 
-                    BOEExportInputs inputs = new BOEExportInputs(new FullBoe[] { boe }, exportWorkspace.Boes.ToList(), exportWorkspace.TaskElements.ToList(), exportWorkspace);
+                    // Get RTE overrides
+                    ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = this.rteTemplateDataLoader.GetByWorkspaceId(exportWorkspace.Id, new FullBoe[] { boe });
+
+                    BOEExportInputs inputs = new BOEExportInputs(new FullBoe[] { boe }, exportWorkspace.Boes.ToList(), exportWorkspace.TaskElements.ToList(), exportWorkspace, rteTemplateOverrides);
 
                     // Get BOE Summary Grid data for the current BOE. Used for populating the summary grid on the template
                     ICollection<BOESummaryGridModelView> boeSummaryGridModelViews = this._BOESummary.GetBOESummaryGridModelViews(boe, inputs, isSubcontractorUser);
@@ -839,7 +846,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     boe.SetTaskElements(new Collection<BoeTaskElementDTO> { taskElement });
 
                     // there should only be one Task Element for a tiered BOE, only show the correct taskElementLabor
-
 
                     BOEExportInputs inputs = new BOEExportInputs(new FullBoe[] { boe }, exportWorkspace.Boes.ToList(), exportWorkspace.TaskElements.ToList(), exportWorkspace);
 
@@ -970,6 +976,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             Collection<ValidationMessage> ValidationErrors = new Collection<ValidationMessage>();
 
+            if (string.IsNullOrEmpty(inBOEHeaderDescription.Description))
+            {
+                ValidationErrors.Add(new ValidationMessage("Description", "Description is required."));
+                throw new GenValidationException(ValidationErrors);
+            }
+            
             WorkspaceDTO workspaceDTO = ws;
             List<ValidationMessage> richTextValidationMessages = new List<ValidationMessage>();
 
@@ -1019,6 +1031,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     // do not use the MediatedSave for saving the boe header. In MediatedSave, there is unnecessary logic to go through for this
                     // type of save (like rates, recalculations) none of that can be effected and
                     this._BoeMediator.SaveEditBoeHeader(boe);
+                    if (inBOEHeaderDescription.RteTemplateAnswers != null && inBOEHeaderDescription.RteTemplateAnswers.Any())
+                    {
+                        this.rteTemplateDataLoader.SaveAnswers(inBOEHeaderDescription.RteTemplateAnswers);
+                    }
 
                     scope.Complete();
                 }
@@ -1075,6 +1091,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     // do not use the MediatedSave for saving the boe header. In MediatedSave, there is unnecessary logic to go through for this
                     // type of save (like rates, recalculations) none of that can be effected and
                     this._BoeMediator.MediatedSaveBOEs(ws, new Collection<BoeDTO>() { boe });
+                    if (inBOEHeaderDescription.RteTemplateAnswers != null && inBOEHeaderDescription.RteTemplateAnswers.Any())
+                    {
+                        this.rteTemplateDataLoader.SaveAnswers(inBOEHeaderDescription.RteTemplateAnswers);
+                    }
 
                     scope.Complete();
                 }

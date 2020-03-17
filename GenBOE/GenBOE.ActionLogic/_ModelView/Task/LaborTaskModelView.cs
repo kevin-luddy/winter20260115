@@ -6,6 +6,8 @@
 
 namespace GenBOE.ActionLogic.ModelView
 {
+    using System.Collections.Generic;
+    using GenBOE.Dtos;
     using IES.Common;
 
     public class LaborTaskModelView
@@ -13,6 +15,7 @@ namespace GenBOE.ActionLogic.ModelView
         public LaborTaskModelView()
         {
             this.MetricsPagingActionName = string.Empty;
+            this.DescriptionTemplateAnswers = new List<RTECustomTemplateQuestionAnswerModelView>();
         }
 
         #region Dropdown values 
@@ -121,5 +124,15 @@ namespace GenBOE.ActionLogic.ModelView
         /// Gets or sets a value indicating whether [labor type warning].
         /// </summary>
         public bool LaborTypeWarning { get; set; }
+
+        /// <summary>
+        /// Gets or sets the RTE Custom Template Answers at Task level.
+        /// </summary>
+        public ICollection<RTECustomTemplateQuestionAnswerModelView> DescriptionTemplateAnswers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Task Description.
+        /// </summary>
+        public string TaskDescription { get; set; }
     }
 }

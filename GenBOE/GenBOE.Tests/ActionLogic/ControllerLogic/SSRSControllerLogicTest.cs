@@ -969,7 +969,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         /// </summary>
         [TestMethod]
         public void GetOffloadCostByYearReportModelViewsTest()
-        {
+        { 
             ICollection<ProjectMapModelView> modelsWorkspace1 = new List<ProjectMapModelView> {
                 new ProjectMapModelView { ClassOfCost = ClassOfCost.Recurring.ToDescription(), WbsNumber = "Wbs11", CostCenter = "PerfOrg2", ActivityID = "Boe1Title",
                     ActivityName = "Boe1Desc", WbsElementTitle = "Wbs11", InitialResource = "Resource2", StartDate = DateTime.Parse("1/15/2020").Normalize(), EndDate = DateTime.Parse("2/15/2020").Normalize(),
@@ -1044,6 +1044,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             FullBoe rwBoes = new FullBoe()
             {
                 Id = 5,
+                Title = "Test",
+                Description = "Description",
                 WBSID = ws.WbsElements.First().Id,
                 CLINID = ws.Clins.First().Id
             };
@@ -1178,7 +1180,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         [TestMethod]
         public void GetRamReportModelViewsTest_Standard()
         {
-            ICollection<FullBoe> boes = sut.GetOffloadBOEsFromFullWorkspace(this.ws);
+            FullWorkspace workspace = new FullWorkspace() { Id = 1, WorkspaceName = "Workspace1", ProjectMapType = ProjectMapType.StandardWithOffload };
+            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(workspace);
+
+            ICollection<FullBoe> boes = sut.GetOffloadBOEsFromFullWorkspace(workspace);
 
             ICollection<RAMReportModelView> expected = new Collection<RAMReportModelView>();
 
@@ -1196,8 +1201,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                         decimal resourceValue = groupedResourceType.Sum(x => x.ValueSpread ?? 0);
                         string resourceValueString = groupedResourceType.First().SpreadType == SpreadType.Cost
                             ? "$" + resourceValue.ToString(
-                                  Utilities.CostPrecisionFormattingString(this.ws.CostDecimalPrecision))
-                            : resourceValue.ToString(Utilities.PrecisionFormattingString(this.ws.DecimalPrecision));
+                                  Utilities.CostPrecisionFormattingString(workspace.CostDecimalPrecision))
+                            : resourceValue.ToString(Utilities.PrecisionFormattingString(workspace.DecimalPrecision));
 
                         expected.Add(new RAMReportModelView()
                         {
@@ -1212,8 +1217,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 }
             }
 
-            this.ws.ProjectMapType = ProjectMapType.StandardWithOffload;
-            ICollection<RAMReportModelView> results = sut.GetRamReportModelViews(boes, this.ws);
+            ICollection<RAMReportModelView> results = sut.GetRamReportModelViews(boes, workspace);
 
             Assert.AreEqual(expected.Count, results.Count);
             for (int i = 0; i < expected.Count; i++)

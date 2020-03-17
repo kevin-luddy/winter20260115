@@ -51,5 +51,10 @@ namespace GenBOE.ActionLogic.ModelView
         /// Gets or sets the display name of the user.
         /// </summary>
         public string UserDisplayName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user's NTID
+        /// </summary>
+        public string NTID { get; set; }
     }
 }

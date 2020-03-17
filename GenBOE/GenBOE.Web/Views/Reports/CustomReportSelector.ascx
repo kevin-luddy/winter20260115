@@ -52,7 +52,7 @@
                 },
                 Stateful: false
             }],
-            ContainsOCI: false
+            ContainsOCI: <%= ViewData["ContainsOCI"] %>
         });
 
         var widgetConfig = {};

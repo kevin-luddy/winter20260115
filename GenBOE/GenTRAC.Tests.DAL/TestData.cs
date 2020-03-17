@@ -753,6 +753,27 @@ namespace GenTRAC.Tests.DAL
             }
         }
 
+        /// <summary>
+        /// Sets the Submit Date
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <param name="submitDate">Submit Date</param>
+        public void SetSubmitDate(int proposalId, DateTime submitDate)
+        {
+            using (genTRACEntities dbModel = new genTRACEntities())
+            {
+                ICollection<ProposalChecklistComplete> pccList = (from x in dbModel.ProposalChecklistCompletes
+                           where x.ProposalID == proposalId
+                           select x).ToCollection();
+
+                foreach(ProposalChecklistComplete pCC in pccList)
+                {
+                    pCC.SubmitDate = submitDate;
+                    dbModel.SaveChanges();
+                }
+            }
+        }
+
         #endregion
 
         #region Reset

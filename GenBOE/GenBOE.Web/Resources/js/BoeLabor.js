@@ -186,7 +186,7 @@ function AfterDomLoadImportLaborTypeWidget(ImportLaborType) {
 
 function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetricsDialogIdSuffix, readOnly, workspaceState, boeId, taskElementId, laborTypeWarning,
     loadMOQEquationUrl, confirmWarningUrl, searchHistoricalMetricsMSTUrl, historicalMetricsDetailsUrl, pagingMetricsUrl,
-    boeStateNotDraft, isMetricStoreConnected, searchTypeAheadUrl, allowDateShift, recalculateAndRefreshPageUrl, dateShiftUrl, saveReorderLaborTypesUrl) {
+    boeStateNotDraft, isMetricStoreConnected, searchTypeAheadUrl, allowDateShift, recalculateAndRefreshPageUrl, dateShiftUrl, saveReorderLaborTypesUrl, showDescQuestions, numberDescQuestions, rteFieldSize) {
     var TaskElementDetailsWidget;
     var formConfigs = [];
     formConfigs.push({
@@ -229,11 +229,7 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
             modal: true, 
             resizable: false,
             draggable: true, 
-            title: metricsSearchDialogTitle + 'Results',
-            onOpen: function() {
-                // close the search dialog so the user doesn't see the title changing
-                TaskElementDetailsWidget.getDialog("MOQEquation-SearchEstimatingCatalogDialog" + searchMetricsDialogIdSuffix).closeDialog();
-            },
+            title: metricsSearchDialogTitle + ' Results',
             close: function() { $('#MOQEquation-SearchEstimatingCatalogDialog' + searchMetricsDialogIdSuffix).dialog("option","title",metricsSearchDialogTitle);}               
         }
     });
@@ -246,6 +242,7 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
     widgetConfig.IsModule = true;
 
     TaskElementDetailsWidget = new GenWidget(widgetConfig);
+    
     TaskElementDetailsWidget.WorkspaceState = workspaceState;
     TaskElementDetailsWidget.BoeId = boeId;
     TaskElementDetailsWidget.TaskElementId = taskElementId;
@@ -392,6 +389,8 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
                 $('#MetricDetails').addClass('display-none');
                 $('#SearchEstimatingCatalog-Loader' + searchMetricsDialogIdSuffix).addClass('display-none');
                 $('#SearchEstimatingCatalog-SearchButton' + searchMetricsDialogIdSuffix).removeClass('display-none');
+                // close the search dialog so the user doesn't see the title changing
+                TaskElementDetailsWidget.getDialog("MOQEquation-SearchEstimatingCatalogDialog" + searchMetricsDialogIdSuffix).closeDialog();
                 TaskElementDetailsWidget.getDialog('MetricSearchResultsContainter').openDialog();
                 $('#MetricSearchResultsContainter').dialog("option","title",metricsSearchDialogTitle + " Results");
             },
@@ -417,6 +416,8 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
                 $('#MetricSearchResults').addClass('display-none');
                 // If check added for displaying metric details from the Historical Metrics Used table.          
                 if ((openDialogFlag != undefined) && (openDialogFlag == true)) {
+                    // close the search dialog so the user doesn't see the title changing
+                TaskElementDetailsWidget.getDialog("MOQEquation-SearchEstimatingCatalogDialog" + searchMetricsDialogIdSuffix).closeDialog();
                     TaskElementDetailsWidget.getDialog('MetricSearchResultsContainter').openDialog();
                     $('#MetricDetailButtons').addClass('display-none');
                     $('#AddDialogDescription').addClass('display-none');
@@ -464,8 +465,8 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
             $("#MOQEquation").val(inData.MOQEquation);
         }
 
-        var moqTextBeforeAppend = $.trim(tinyMCE.EditorManager.editors.MOQText.getContent());
-        tinyMCE.EditorManager.editors.MOQText.setContent(moqTextBeforeAppend + " " + inData.MOQText);
+        var moqTextBeforeAppend = $.trim(tinyMCE.EditorManager.editors.MOQText_0.getContent());
+        tinyMCE.EditorManager.editors.MOQText_0.setContent(moqTextBeforeAppend + " " + inData.MOQText);
 
         $("#MOQType").val(inData.MOQTypeValue);
         $(document).trigger('ADD_METRIC_TO_BOE_HEADER', headerDetails);
@@ -509,7 +510,7 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
 
         $('#MOQType option:contains("Historical Performance")').attr('selected', 'selected');
 
-        var moqTextBeforeAppend = $.trim(tinyMCE.EditorManager.editors.MOQText.getContent());
+        var moqTextBeforeAppend = $.trim(tinyMCE.EditorManager.editors.MOQText_0.getContent());
             
         //Include blank lines before and after table because MCE doesn't let you click out of table 
         //if that's all that exists in the rich text field
@@ -525,7 +526,7 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
         }           
 
         var populatedTable = tablePrefix + tableRows + tableSuffix;
-        tinyMCE.EditorManager.editors.MOQText.setContent(moqTextBeforeAppend + " " + populatedTable);
+        tinyMCE.EditorManager.editors.MOQText_0.setContent(moqTextBeforeAppend + " " + populatedTable);
 
         $(document).trigger('ADD_METRIC_TO_BOE_HEADER', headerDetails);
 
@@ -1030,7 +1031,18 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
     TaskElementDetailsWidget.CloseDialog = function (dialog) {
         $(dialog.Element).dialog('close');
     };
-        
+
+    TaskElementDetailsWidget.TaskDescription = CreateRteTemplate(showDescQuestions, numberDescQuestions);
+
+    if (!readOnly) {
+        $('#description-element .replacedWidgetText').remove();
+        $('#description-element *').removeClass('display-none');
+
+        InitializeRteTemplate(TaskElementDetailsWidget.TaskDescription, 'TaskDescription', rteFieldSize);
+    } else {
+        HandleRTETemplateDataForReadOnly(TaskElementDetailsWidget.TaskDescription, 'TaskDescription');
+    }
+
     return TaskElementDetailsWidget;
 }
 

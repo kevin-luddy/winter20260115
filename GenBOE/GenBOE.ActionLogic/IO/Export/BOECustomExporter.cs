@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
+    using System.IO;
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
@@ -104,13 +105,40 @@ namespace GenBOE.ActionLogic.IO.Export
             if (Response == null) { throw new ArgumentNullException(nameof(Response)); }
             if (exportFormat == null) { throw new ArgumentNullException(nameof(exportFormat)); }
 
-            ChunkCounter counters = new ChunkCounter();
 
             // setup the response correctly with BufferOutput since this is going to be awhile...
             Response.ContentType = BOEExporterConstants.ContentType_DOCX;
             Response.Clear();
             Response.BufferOutput = true;  // why would we want this buffered?
             Response.AppendHeader(BOEExporterConstants.CONTENT_HEADER_NAME, string.Format(BOEExporterConstants.CONTENT_HEADER_FORMAT_STRING, fileNameToDisplayToBrowser));
+
+            this.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, components, Response.OutputStream, exportFormat);
+        }
+
+        /// <summary>
+        /// Export data about the given BOE into a pre-formatted Word template and return the file path of
+        /// the populated template.
+        /// </summary>
+        /// <param name="exportInputs">The export inputs.</param>
+        /// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
+        /// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
+        /// <param name="components">List of selected components</param>
+        /// <param name="returnStream">Output stream</param>
+        /// <param name="exportFormat">Export file info</param>
+        public void ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+            ICollection<BoeCustomReportComponent> components, Stream returnStream, WorkspaceExportFormatDTO exportFormat)
+        {
+            if (exportInputs == null)
+            {
+                throw new ArgumentNullException(nameof(exportInputs));
+            }
+
+            if (exportFormat == null)
+            {
+                throw new ArgumentNullException(nameof(exportFormat));
+            }
+
+            ChunkCounter counters = new ChunkCounter();
 
             // If the ModelViews have data
             if (boeExportModelViews != null && boeSummaryGridModelViews != null)
@@ -121,7 +149,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     this.Export(exportFormat.PhysicalFilePathCache, (document) =>
                     {
                         this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, boeSummaryGridModelViews, components, ref counters);
-                    }, Response.OutputStream);
+                    }, returnStream);
                 }
                 else
                 {
@@ -129,7 +157,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     this.Export(exportFormat.FileData, (document) =>
                     {
                         this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, boeSummaryGridModelViews, components, ref counters);
-                    }, Response.OutputStream);
+                    }, returnStream);
                 }
             }
         }
@@ -245,12 +273,12 @@ namespace GenBOE.ActionLogic.IO.Export
                 PaddedClinName = (clinDTO != null) ? clinDTO.ClinPaddedNumber : string.Empty,
                 ProposalSubmittalDate = exportInputs.Workspace.ProposalSubmittalDate,
                 ContainsOCI = exportInputs.Workspace.ContainsOCI,
-                DataSource = boe.DataSource != null ? boe.DataSource : string.Empty,
+                DataSource = BOEExportConverter.GetRteOverride(boe.Id, null, boe.DataSource, RteTemplateSource.BoeSources, exportInputs.RTETemplatesOverrides),
                 IsMaterial = boe.isMaterial,
                 IsMultiClinWbs = boe.IsMultiClinWbs,
                 StartDate = boe.StartDate,
                 EndDate = boe.EndDate,
-                BOEDescription = boe.Description != null ? boe.Description : string.Empty,
+                BOEDescription = BOEExportConverter.GetRteOverride(boe.Id, null, boe.Description, RteTemplateSource.BoeDescription, exportInputs.RTETemplatesOverrides),
                 ExportFormat = exportFormatDTO.ExportFormat,
                 SubmittedDate = boe.SubmitForApprovalDate.Year == DateTime.MinValue.Year ? string.Empty : boe.SubmitForApprovalDate.ToShortDateString(),
                 BOETitle = boe.Title
@@ -491,6 +519,9 @@ namespace GenBOE.ActionLogic.IO.Export
                         // Do not null out taskElementLabors, they are needed if the MOQ Equation uses a Sum Of Variable
                     }
                 }
+
+                // discard the RTE overrides to free up memory
+                exportInputs.ClearRteOverrides();
 
                 // remove page break on last BOE
                 if (boeContainer != null && String.IsNullOrEmpty(boeContainer.LastChild.LastChild.InnerText) &&
@@ -4379,12 +4410,12 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 BOEExportTaskElement boeExportTaskElement = new BOEExportTaskElement();
                 boeExportTaskElement.BoeID = boeTaskElement.BoeID;
-                boeExportTaskElement.BOETaskDesc = boeTaskElement.Description;
+                boeExportTaskElement.BOETaskDesc = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.Description, RteTemplateSource.TaskDescription, exportInputs.RTETemplatesOverrides);
                 boeExportTaskElement.BOETaskElementID = boeTaskElement.Id;
                 boeExportTaskElement.BOETaskID = boeTaskElement.BOETaskID;
                 boeExportTaskElement.EndDate = boeTaskElement.EndDate;
                 boeExportTaskElement.MOQEquation = boeTaskElement.MOQHoursEquation;
-                boeExportTaskElement.MOQText = boeTaskElement.MOQText;
+                boeExportTaskElement.MOQText = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.MOQText, RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides);
                 boeExportTaskElement.MOQType = boeTaskElement.MOQType.GetDescription();
                 boeExportTaskElement.OrdinaryVariables = boeTaskElement.OrdinaryVariables;
                 boeExportTaskElement.StartDate = boeTaskElement.StartDate;

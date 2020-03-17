@@ -11,6 +11,8 @@
     bool IsSubContractor = (bool)ViewData["IsSubContractor"];
     int rteFieldSize = ViewBag.RteFieldSize;
     int taskElementId = Model.TaskElementId > 0 ? Model.TaskElementId : -1;
+    bool showMoqQuestions = Model.MoqTemplateAnswers.Any();;
+    int numberMoqQuestions = showMoqQuestions ? Model.MoqTemplateAnswers.Count : 1;
 %>
 
 <script type="text/javascript">
@@ -231,9 +233,7 @@
                 $('.replacedWidgetText', moqTypeElement.parent()).addClass('display-none');
                 moqTypeElement.removeClass('display-none');
 
-                var moqTextElement = $("#MOQText", moqSection);
-                $('.replacedWidgetText', moqTextElement.parent()).addClass('display-none');
-                moqTextElement.removeClass('display-none');
+                RemoveRTETemplateReadOnly(TaskElementDetailsWidget.MOQText, 'MOQText', moqSection);
             }
         }
 
@@ -270,7 +270,8 @@
                     $('#MoqType').children('.replacedWidgetText').remove();
                     $('.moqTypes').removeClass('display-none');
 
-                    $('#MOQText').siblings('.replacedWidgetText').remove();
+                    var moqSection = $('#<%:Model.MoqEquationName%>MOQEquationField');
+                    RemoveRTETemplateReadOnly(TaskElementDetailsWidget.MOQText, 'MOQText', moqSection);
                 }
             },
             error: function(response, textStatus) {
@@ -984,14 +985,15 @@
         });
 
         TaskElementDetailsWidget.CheckToShowMetrics();
+        TaskElementDetailsWidget.MOQText = CreateRteTemplate('<%:showMoqQuestions%>'.isTrue(), <%:numberMoqQuestions%>);
 
         if(!<%: Model.MoqEquationName %>MOQEquationFieldWidget.isReadOnly() || '<%: ViewData["ShouldMoqReadOnlyBeReversed"] %>' == 'True' || !TaskElementDetailsWidget.isReadOnly())
         {
-            InitializeRTE('MOQText', { maxlen: <%:rteFieldSize%>, enableCharCounting: true }, TaskElementDetailsWidget);
+            InitializeRteTemplate(TaskElementDetailsWidget.MOQText, 'MOQText', <%:rteFieldSize%>);
         }
         else
         {
-            HandleRTEDataForReadOnly("#MOQText", ".replacedWidgetText");
+            HandleRTETemplateDataForReadOnly(TaskElementDetailsWidget.MOQText, 'MOQText');
         }
 
         $(document).trigger('MOQWidgetLoaded', "MOQEquationField");
@@ -1055,7 +1057,7 @@
     </div>
     <div class="form-row">
         <div class="form-label"><%: Model.MOQTextLabel %> **</div>
-        <div class="form-element moq-text-area"><%: Html.TextAreaFor(model => model.MOQText, new { onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH + ")" })%></div>
+        <div class="form-element moq-text-area"><% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(Model.MoqTemplateAnswers, "MOQText", Model.MOQText));  %></div>
     </div>
     <div id="UsedHistoricalMetrics" class="form-row display-none">
         <div class="form-label">

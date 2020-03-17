@@ -164,6 +164,14 @@ namespace GenBOE.Models
         public virtual DbSet<SystemProPricerExport> SystemProPricerExports { get; set; }
         public virtual DbSet<SystemProPricerFieldXREF> SystemProPricerFieldXREFs { get; set; }
         public virtual DbSet<Workspace> Workspaces { get; set; }
+        public virtual DbSet<BOE1> BOE1 { get; set; }
+        public virtual DbSet<CLIN1> CLIN1 { get; set; }
+        public virtual DbSet<WorkBreakdownStructure1> WorkBreakdownStructure1 { get; set; }
+        public virtual DbSet<WBS_CLIN_BOE_XREF1> WBS_CLIN_BOE_XREF1 { get; set; }
+        public virtual DbSet<RteTemplate> RteTemplates { get; set; }
+        public virtual DbSet<RteTemplateQuestion> RteTemplateQuestions { get; set; }
+        public virtual DbSet<RteTemplateAnswer> RteTemplateAnswers { get; set; }
+        public virtual DbSet<RteTemplateSource> RteTemplateSources { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]
         public virtual IQueryable<SplitString_Result> SplitString(string list, string delimiter, string emptyListItem)
@@ -5108,6 +5116,140 @@ namespace GenBOE.Models
                 new ObjectParameter("UpdateDT", typeof(System.DateTime));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertSystemProPricerExport", systemProPricerExportIDParameter, proPricerExportNameParameter, updateDTParameter);
+        }
+    
+        public virtual int deleteRteTemplate(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteRteTemplate", idParameter);
+        }
+    
+        public virtual int deleteRteTemplateQuestion(Nullable<int> id)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteRteTemplateQuestion", idParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> upsertRteTemplate(Nullable<int> templateID, Nullable<System.DateTime> updateDT, Nullable<int> workspaceID, string description, Nullable<int> authorID, string assigned)
+        {
+            var templateIDParameter = templateID.HasValue ?
+                new ObjectParameter("TemplateID", templateID) :
+                new ObjectParameter("TemplateID", typeof(int));
+    
+            var updateDTParameter = updateDT.HasValue ?
+                new ObjectParameter("UpdateDT", updateDT) :
+                new ObjectParameter("UpdateDT", typeof(System.DateTime));
+    
+            var workspaceIDParameter = workspaceID.HasValue ?
+                new ObjectParameter("WorkspaceID", workspaceID) :
+                new ObjectParameter("WorkspaceID", typeof(int));
+    
+            var descriptionParameter = description != null ?
+                new ObjectParameter("Description", description) :
+                new ObjectParameter("Description", typeof(string));
+    
+            var authorIDParameter = authorID.HasValue ?
+                new ObjectParameter("AuthorID", authorID) :
+                new ObjectParameter("AuthorID", typeof(int));
+    
+            var assignedParameter = assigned != null ?
+                new ObjectParameter("Assigned", assigned) :
+                new ObjectParameter("Assigned", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertRteTemplate", templateIDParameter, updateDTParameter, workspaceIDParameter, descriptionParameter, authorIDParameter, assignedParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> upsertRteTemplateQuestion(Nullable<int> questionID, Nullable<System.DateTime> updateDT, Nullable<int> templateID, string text, Nullable<int> sortOrder, Nullable<bool> required)
+        {
+            var questionIDParameter = questionID.HasValue ?
+                new ObjectParameter("QuestionID", questionID) :
+                new ObjectParameter("QuestionID", typeof(int));
+    
+            var updateDTParameter = updateDT.HasValue ?
+                new ObjectParameter("UpdateDT", updateDT) :
+                new ObjectParameter("UpdateDT", typeof(System.DateTime));
+    
+            var templateIDParameter = templateID.HasValue ?
+                new ObjectParameter("TemplateID", templateID) :
+                new ObjectParameter("TemplateID", typeof(int));
+    
+            var textParameter = text != null ?
+                new ObjectParameter("Text", text) :
+                new ObjectParameter("Text", typeof(string));
+    
+            var sortOrderParameter = sortOrder.HasValue ?
+                new ObjectParameter("SortOrder", sortOrder) :
+                new ObjectParameter("SortOrder", typeof(int));
+    
+            var requiredParameter = required.HasValue ?
+                new ObjectParameter("Required", required) :
+                new ObjectParameter("Required", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertRteTemplateQuestion", questionIDParameter, updateDTParameter, templateIDParameter, textParameter, sortOrderParameter, requiredParameter);
+        }
+    
+        public virtual int upsertRteTemplateAnswer(Nullable<int> answerID, Nullable<System.DateTime> updateDT, Nullable<int> questionID, Nullable<int> bOEID, Nullable<int> taskID, string text, Nullable<int> rteTemplateSourceId)
+        {
+            var answerIDParameter = answerID.HasValue ?
+                new ObjectParameter("AnswerID", answerID) :
+                new ObjectParameter("AnswerID", typeof(int));
+    
+            var updateDTParameter = updateDT.HasValue ?
+                new ObjectParameter("UpdateDT", updateDT) :
+                new ObjectParameter("UpdateDT", typeof(System.DateTime));
+    
+            var questionIDParameter = questionID.HasValue ?
+                new ObjectParameter("QuestionID", questionID) :
+                new ObjectParameter("QuestionID", typeof(int));
+    
+            var bOEIDParameter = bOEID.HasValue ?
+                new ObjectParameter("BOEID", bOEID) :
+                new ObjectParameter("BOEID", typeof(int));
+    
+            var taskIDParameter = taskID.HasValue ?
+                new ObjectParameter("TaskID", taskID) :
+                new ObjectParameter("TaskID", typeof(int));
+    
+            var textParameter = text != null ?
+                new ObjectParameter("Text", text) :
+                new ObjectParameter("Text", typeof(string));
+    
+            var rteTemplateSourceIdParameter = rteTemplateSourceId.HasValue ?
+                new ObjectParameter("RteTemplateSourceId", rteTemplateSourceId) :
+                new ObjectParameter("RteTemplateSourceId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("upsertRteTemplateAnswer", answerIDParameter, updateDTParameter, questionIDParameter, bOEIDParameter, taskIDParameter, textParameter, rteTemplateSourceIdParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> copyWorkspaceVersion(Nullable<int> workspaceID, string workspaceName, string workspaceShortName, Nullable<int> versionID, string boeList)
+        {
+            var workspaceIDParameter = workspaceID.HasValue ?
+                new ObjectParameter("WorkspaceID", workspaceID) :
+                new ObjectParameter("WorkspaceID", typeof(int));
+    
+            var workspaceNameParameter = workspaceName != null ?
+                new ObjectParameter("WorkspaceName", workspaceName) :
+                new ObjectParameter("WorkspaceName", typeof(string));
+    
+            var workspaceShortNameParameter = workspaceShortName != null ?
+                new ObjectParameter("WorkspaceShortName", workspaceShortName) :
+                new ObjectParameter("WorkspaceShortName", typeof(string));
+    
+            var versionIDParameter = versionID.HasValue ?
+                new ObjectParameter("VersionID", versionID) :
+                new ObjectParameter("VersionID", typeof(int));
+    
+            var boeListParameter = boeList != null ?
+                new ObjectParameter("BoeList", boeList) :
+                new ObjectParameter("BoeList", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("copyWorkspaceVersion", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, versionIDParameter, boeListParameter);
         }
     }
 }

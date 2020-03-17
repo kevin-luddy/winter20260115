@@ -443,7 +443,10 @@ namespace GenBOE.ActionLogic.IO.Export
                     }
 
                     // Task Description and Task MOQ Text are now HTML formatted rich text. We need to get plain text out of them
-                    ICollection<string> plainText = RTEUtilities.TurnHTMLIntoPlainText(new List<string>() { task.Description, task.MOQText });
+                    string descriptionRteOverride = BOEExportConverter.GetRteOverride(boe.Id, task.Id, task.Description, RteTemplateSource.BoeDescription, exportInputs.RTETemplatesOverrides);
+                    string moqRteOverride = BOEExportConverter.GetRteOverride(task.BoeID, task.Id, task.MOQText, RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides);
+
+                    ICollection<string> plainText = RTEUtilities.TurnHTMLIntoPlainText(new List<string>() { descriptionRteOverride, moqRteOverride });
                     string taskDescription = plainText.ElementAt(0);
                     string taskMOQText = plainText.ElementAt(1);
 
@@ -1274,7 +1277,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 // Add blanks for BOE-level CFs
                 this.AddBlankCustomFieldCells(row, workspace_customFields, CustomFieldType.BoeDisplay);
 
-                string[] taskFields2 = this.GetTaskDescriptionMetricsAndDateFields(boe, task, metricNameTaskElementMappingDTO);
+                string[] taskFields2 = this.GetTaskDescriptionMetricsAndDateFields(boe, task, metricNameTaskElementMappingDTO, exportInputs);
                 row.AddRange(taskFields2);
 
                 this.GetTaskCustomFields(row, task, workspace_customFields, workspaceCustomFieldValues);
@@ -1784,7 +1787,7 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             // Get the task ID
             string taskID = task.BOETaskID;
-            string taskMOQText = RTEUtilities.TurnHTMLIntoPlainText(task.MOQText);
+            string taskMOQText = RTEUtilities.TurnHTMLIntoPlainText(BOEExportConverter.GetRteOverride(task.BoeID, task.Id, task.MOQText, RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides));
 
             decimal isDecimal;
 
@@ -1829,9 +1832,9 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="task">Task</param>
         /// <param name="metricNameTaskElementMappingDTO">Metric Name Task Element Mapping DTO</param>
         /// <returns>strings for the Task description, metrics, and date fields</returns>
-        private string[] GetTaskDescriptionMetricsAndDateFields(BoeDTO boe, BoeTaskElementDTO task, MetricNameTaskElementMappingDTO metricNameTaskElementMappingDTO)
+        private string[] GetTaskDescriptionMetricsAndDateFields(BoeDTO boe, BoeTaskElementDTO task, MetricNameTaskElementMappingDTO metricNameTaskElementMappingDTO, BOEExportInputs exportInputs)
         {
-            string taskDescription = RTEUtilities.TurnHTMLIntoPlainText(task.Description);
+            string taskDescription = RTEUtilities.TurnHTMLIntoPlainText(BOEExportConverter.GetRteOverride(boe.Id, task.Id, task.Description, RteTemplateSource.BoeDescription, exportInputs.RTETemplatesOverrides));
 
             string historicalMetricString = metricNameTaskElementMappingDTO.GetMetricNamesByTaskElementId(task.Id);
 

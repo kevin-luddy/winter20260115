@@ -16,6 +16,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
+    using Microsoft.Practices.ObjectBuilder2;
 
     public class WorkspaceCopier
     {
@@ -35,6 +36,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         private IBOEFormIBOEDTODataLoader iboeDataLoader;
         private IBOEFormPBOEDTODataLoader pboeDataLoader;
         private RMSZoneTravelRatesFeesDataLoader zoneTravelRatesLoader;
+        private IRteTemplateDataLoader rteTemplateDataLoader;
 
         List<BoeTaskElementDTO> copiedFromTaskElements = new List<BoeTaskElementDTO>();
         List<TravelDTO> copiedFromTravelElements = new List<TravelDTO>();
@@ -55,7 +57,8 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             IPerformingOrgDTODataLoader perfOrgLoader,
             IBOEFormIBOEDTODataLoader iboeDataLoader,
             IBOEFormPBOEDTODataLoader pboeDataLoader,
-            RMSZoneTravelRatesFeesDataLoader zoneTravelRatesLoader)
+            RMSZoneTravelRatesFeesDataLoader zoneTravelRatesLoader,
+            IRteTemplateDataLoader rteTemplateDataLoader)
         {
             this._WorkspaceVariableLoader = inWorkspaceVariableLoader;
             this._PermissionsLoader = inPermissionsLoader;
@@ -73,6 +76,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             this.iboeDataLoader = iboeDataLoader;
             this.pboeDataLoader = pboeDataLoader;
             this.zoneTravelRatesLoader = zoneTravelRatesLoader;
+            this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
         public int CopyWorkspaceExactly(int workspaceIDToCopy, string newWorkspaceName, string newShortName)
@@ -130,7 +134,41 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                 finishedCorrectly = this.CopyTravelTasks(newWorkspace, BOEIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, ClinIDMapping, WBSIDMapping, performingOrgMapping, resourceMapping) && finishedCorrectly;
             }
 
+            this.CopyRteCustomTemplates(workspaceToCopy, newWorkspace);
+
             return finishedCorrectly;
+        }
+
+        /// <summary>
+        /// Copy RTE Custom Templates into new workspace
+        /// </summary>
+        /// <param name="workspaceToCopy">The workspace to copy.</param>
+        /// <param name="newWorkspace">The workspace to copy into.</param>
+        private void CopyRteCustomTemplates(FullWorkspace workspaceToCopy, FullWorkspace newWorkspace)
+        {
+            ICollection<RteCustomTemplateModelView> templates = this.rteTemplateDataLoader.GetTemplates(workspaceToCopy.Id);
+
+            int newId = -1;
+
+            foreach (RteCustomTemplateModelView template in templates)
+            {
+                // Reset template
+                template.Id = newId--;
+                template.Updateable = UpdateType.Upsert;
+                template.WorkspaceId = newWorkspace.Id;
+
+                if (template.Questions.Any())
+                {
+                    template.Questions.ForEach(question =>
+                    {
+                        question.Id = newId--;
+                        question.TemplateId = template.Id;
+                        question.Updateable = UpdateType.Upsert;
+                    });
+                }
+            }
+
+            this.rteTemplateDataLoader.Save(templates);
         }
 
         /// <summary>

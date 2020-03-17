@@ -58,7 +58,7 @@
                             <button id="AddButton-Rate" data-ng-click="addRate()" data-ng-hide="isDataLoading || lockInfo.IsReadOnly" data-ng-disabled="isDataLoading" type="button" class="ies-action">+ Add</button>
                             &nbsp; <!-- need line-height and nbsp to ensure div still occupies some real estate when button is hidden -->
                             <button class="ies-action" data-ng-click="showImportRatesModal($event)" data-ng-hide="isDataLoading || lockInfo.IsReadOnly || ReplicationValidationMessages.length > 0">Import Rates</button>
-                            <button class="ies-action" 
+                            <button class="ies-action"
                                     id="Export-Rates"
                                     type="button"
                                     data-ng-hide="isDataLoading || (!lockInfo.IsLockAllowed && selectedVersion.Label === '@IES.Common.classes.CommonConstants.WorkInProgress')"
@@ -194,17 +194,41 @@
                     </div>
                 </div>
                 <div class="modal-content-area">
-                    <span>This action will set all the Direct Labor and Service Center rates in <b>{{zeroYear}}</b> to Zero.<br/>
-                        If you are sure you wish to Zero out these rates, type <b>ZERO</b> into the confirmation box below.</span>
-                    <hr class="modal-separator"/>
+                    <span>
+                        This action will set all the Direct Labor and Service Center rates in <b>{{zeroYear}}</b> to Zero.<br />
+                        If you are sure you wish to Zero out these rates, type <b>ZERO</b> into the confirmation box below.
+                    </span>
+                    <hr class="modal-separator" />
                     <div gen-validation data-errors="$scope.zeroOutModalErrors" data-ng-hide></div>
                     <div style="text-align: center">
-                        <input type="text" id="zeroOutConfirmInput" class="modal-input" data-ng-model="zeroOutConfirmationText" style="margin-top: auto; width: 50%" md-autofocus/>
+                        <input type="text" id="zeroOutConfirmInput" class="modal-input" data-ng-model="zeroOutConfirmationText" style="margin-top: auto; width: 50%" md-autofocus />
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button id="ZeroOutButton" class="ies-warning" data-ng-disabled="zeroOutConfirmationText.toUpperCase() != 'ZERO'" data-ng-click="zeroOutClick();">Zero Out Rates</button>
                     <button class="ies" type="button" data-ng-click="closeZeroOutModal();">Cancel</button>
+                </div>
+            </md-dialog>
+        </div>
+    </div>
+    @*Cobra Reminder Modal*@
+    <div style="visibility: hidden">
+        <div class="md-dialog-container" id="cobraReminderDialog">
+            <md-dialog style="width: 400px;">
+                <div class="modal-title-bar modal-header">
+                    <span class="modal-title-text">Cobra Mapping Needed</span>
+                    <div class="modal-close-box" data-ng-click="closeCobraReminderModal()">
+                        <i class="glyphicon glyphicon-remove"></i>
+                    </div>
+                </div>
+                <div class="modal-content-area">
+                    <span>A Cobra mapping is needed for the new Rate Code{{cobraReminderRateList.length > 1 ? 's' : ''}}:</span>
+                    <ul>
+                        <li data-ng-repeat="item in cobraReminderRateList">{{item}}</li>
+                    </ul>
+                    <div class="modal-footer">
+                        <button class="ies" type="button" data-ng-click="closeCobraReminderDialog();">Ok</button>
+                    </div>
                 </div>
             </md-dialog>
         </div>

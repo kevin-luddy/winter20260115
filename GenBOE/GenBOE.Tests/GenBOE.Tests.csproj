@@ -142,6 +142,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionLogic\ControllerLogic\AdminControllerLogicTests.cs" />
+    <Compile Include="ActionLogic\ControllerLogic\GenboeControllerLogicTest.cs" />
     <Compile Include="ActionLogic\ControllerLogic\BOEFormControllerLogicTest.cs" />
     <Compile Include="ActionLogic\ControllerLogic\BOEControllerLogicTest.cs" />
     <Compile Include="ActionLogic\ControllerLogic\BoeCommentsControllerLogicTests.cs" />

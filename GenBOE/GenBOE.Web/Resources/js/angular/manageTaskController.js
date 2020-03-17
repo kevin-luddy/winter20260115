@@ -81,7 +81,9 @@
     $scope.isExporting = false;
     $scope.isLoading = true;
     $scope.taskElementId = -1; // default is 0 for new task elements (per original page)
-    $scope.tinyMceOptionsDescription = utilityService.getTinyMceOptions('TaskDescription', { maxlen: ManageTaskModel.RteFieldSize, enableCharCounting: true }, TaskElementDetailsWidget);
+    $scope.getTinyMceOptionsDescription = function (name) {
+        return utilityService.getTinyMceOptions(name, { maxlen: ManageTaskModel.RteFieldSize, enableCharCounting: true }, TaskElementDetailsWidget);
+    };
 
     $scope.init = function (taskElementId) {
         // this function is a private constructor for ManageTaskController
@@ -909,22 +911,6 @@
         });
     };
 
-    var getTaskDescriptionTinymceEditor = function () {
-        var tdEditor = undefined;
-        if (tinyMCE.EditorManager.editors) {
-            // first find the new id
-            var newId = $('textarea[name=TaskDescription]').attr('id');
-            tinyMCE.EditorManager.editors.some(function (ed) {
-                if (ed.id === newId) {
-                    tdEditor = ed;
-                    return true;
-                }
-            });
-        }
-
-        return tdEditor;
-    };
-
     var loadData = function (callback) {
         $(document).trigger("SHOW_LOADING_BOX");
         $scope.isLoading = true;
@@ -956,6 +942,22 @@
 
             delete $scope.model.TaskCustomFields;
             delete $scope.model.LaborCustomFields;
+
+            var index = 0;
+            if ($scope.model.TaskElementData.DescriptionTemplateAnswers) {
+                angular.forEach($scope.model.TaskElementData.DescriptionTemplateAnswers, function (item, key) {
+                    delete item.UpdateDate;
+                    item.name = 'TaskDescription_' + index++;
+                });
+            }
+
+            if ($scope.model.TaskElementData.MOQTemplateAnswers) {
+                index = 0;
+                angular.forEach($scope.model.TaskElementData.MOQTemplateAnswers, function (item, key) {
+                    delete item.UpdateDate;
+                    item.name = 'MOQDescription_' + index++;
+                });
+            }
 
             // generate SpreadDatesFull
             $scope.generateSpreadDatesFull();
@@ -1111,7 +1113,6 @@
 
                 var postedData = angular.copy($scope.model);
                 // Copy MOQ data over
-                postedData.TaskElementData.MOQText = $.trim(tinyMCE.get("MOQText").getContent());
                 postedData.TaskElementData.MOQHoursEquation = $('#MOQEquation').val();
                 // set MOQ equation to "0" if it is empty
                 if (postedData.TaskElementData.MOQHoursEquation === undefined || postedData.TaskElementData.MOQHoursEquation === '') {
@@ -1258,14 +1259,9 @@
                 });
 
                 // there seems to be an issue with the jquery serializer when dealing with rich text pasted from excel so we need to get these field contents again
-                if (tinyMCE.EditorManager.editors.MOQText) {
-                    postedData.TaskElementData.MOQText = tinyMCE.EditorManager.editors.MOQText.getContent();
-                }
-
-                var tdEditor = getTaskDescriptionTinymceEditor();
-                if (tdEditor) {
-                    postedData.TaskElementData.TaskDescription = tdEditor.getContent();
-                }
+                postedData.TaskElementData.RteTemplateAnswers = [];
+                GetRteTemplateJson(TaskElementDetailsWidget.TaskDescription, 'TaskDescription', postedData.TaskElementData);
+                GetRteTemplateJson(TaskElementDetailsWidget.MOQText, 'MOQText', postedData.TaskElementData);
 
                 // Filter out the blank row before save
                 postedData.LaborTypesData = postedData.LaborTypesData.filter(function (d) { return d.NewLaborType === false });

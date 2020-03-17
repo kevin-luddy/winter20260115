@@ -443,7 +443,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 foreach (MSTTravelTripType mstTrip in travel.MSTTravelTrips)
                 {
-                    ++wsLevelData.ItemCounters.LaborId; // todo: find which seq. to use, for propricer id, and which prefix for rms travel 
+                    ++wsLevelData.ItemCounters.TravelId;
                     // if zone, get to/from strings to use same propricer output field
                     if (mstTrip.ModeID == MSTTravelMode.ZoneAirfare || mstTrip.ModeID == MSTTravelMode.ZoneNoAirfare)
                     {
@@ -1375,7 +1375,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         newResourceRow.Append(END_FIELD);
                         break;
                     case ProPricerField_Resources.ProPricerTaskID:
-                        newResourceRow.Append(TRAVEL_TIDN).Append(wsLevelData.ItemCounters.LaborId.ToString(FORMAT)).Append(END_FIELD);
+                        newResourceRow.Append(TRAVEL_TIDN).Append(wsLevelData.ItemCounters.TravelId.ToString(FORMAT)).Append(END_FIELD);
                         break;
                     case ProPricerField_Resources.GenBOEResourceID:
                         {
@@ -1520,7 +1520,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         NewTaskRow.Append(DOUBLE_QUOTE).Append(clinTitle).Append(DOUBLE_QUOTE).Append(END_FIELD);
                         break;
                     case ProPricerField_Task.ProPricerTaskID:
-                        NewTaskRow.Append(TRAVEL_TIDN).Append(wsLevelData.ItemCounters.LaborId.ToString(FORMAT)).Append(END_FIELD);
+                        NewTaskRow.Append(TRAVEL_TIDN).Append(wsLevelData.ItemCounters.TravelId.ToString(FORMAT)).Append(END_FIELD);
                         break;
                     case ProPricerField_Task.GenBOEResourceID:
                         NewTaskRow.Append(DOUBLE_QUOTE).Append(trip.ResourceIdForExport).Append(DOUBLE_QUOTE).Append(END_FIELD);

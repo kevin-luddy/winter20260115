@@ -7,7 +7,9 @@
 namespace GenBOE.ActionLogic.ModelView.BOE
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using GenBOE.Dtos;
     using IES.Common;
 
     public interface IBOEHeaderModelView
@@ -83,5 +85,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Gets the Sources of data label
         /// </summary>
         String LabelSourcesOfData { get; }
+
+        ICollection<RTECustomTemplateQuestionAnswerModelView> HeaderRteTemplateAnswers { get; }
     }
 }

@@ -7,12 +7,13 @@
 namespace GenBOE.Tests.DAL.DataLoaders
 {
     using System;
-    using System.Linq;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using GenBOE.DataBridge.DTO;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Linq;
+    using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using IES.Common;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class WorkspaceVersionMetaDataDTODataLoaderTest : MOQLoaderObject
@@ -347,6 +348,30 @@ namespace GenBOE.Tests.DAL.DataLoaders
            //// Assert.IsTrue(errors.Contains(PerfOrgIDToDelete.ToString()), "perf org id not in message <" + errors + ">");
 
            // this.ResetTestData();
+        }
+
+        /// <summary>
+        /// Test GetBoesByVersionID
+        /// </summary>
+        [TestMethod]
+        public void L_GetBoesByVersionID()
+        {
+            WorkspaceVersionMetaDataDTODataLoader sut = new WorkspaceVersionMetaDataDTODataLoader();
+
+            // Create version to test for BOEs
+            string guid = Guid.NewGuid().ToString();
+            WorkspaceVersionMetaDataDTO version = new WorkspaceVersionMetaDataDTO { VersionID = -1, CreatedByID = this.Author.UserID, VersionName = guid, DateCreated = DateTime.Now, Updateable = UpdateType.Upsert };
+            sut.Save(new Collection<WorkspaceVersionMetaDataDTO> { version }, this.Workspace.Id);
+            ICollection<WorkspaceVersionMetaDataDTO> workspaceVersions = sut.GetByWorkspaceID(this.Workspace.Id);
+
+            // Get the BOEs
+            ICollection<BoeVersionDTO> result = sut.GetBoesByVersionID(workspaceVersions.First().VersionID, workspaceVersions.First().WorkspaceID);
+
+            // Assert the BOEs are returned
+            Assert.IsTrue(result.Any());
+            Assert.IsTrue(result.Any(x => x.BoeId == this.Boe1.Id));
+            Assert.IsTrue(result.Any(x => x.BoeId == this.Boe2.Id));
+            Assert.IsTrue(result.Any(x => x.BoeId == this.Boe3.Id));
         }
     }
 }

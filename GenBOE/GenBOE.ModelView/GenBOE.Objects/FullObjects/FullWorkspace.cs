@@ -82,7 +82,8 @@ namespace GenBOE.Objects
         private IDictionary<int, IDictionary<CustomFieldValueDTO, CustomFieldDTO>> assignedBoeIdsAndCustomFieldValuesMapping;
         private ILookup<ElementOfCostType, ResourceDTO> workspaceResourcesLookup = null;
         private IDictionary<int, ICollection<BoeApproverResponseDTO>> boeMappingWithApproverResponses;
-        
+        private ICollection<RteTemplateSource> rteOverrides;
+
         #endregion
 
         /// <summary>
@@ -1176,6 +1177,22 @@ namespace GenBOE.Objects
             }
 
             this.workspaceVariables = variables.AsReadOnly();
+        }
+
+        /// <summary>
+        /// Returns list of RTE fields which are being over-written w/ RTE templates 
+        /// </summary>
+        public ICollection<RteTemplateSource> RteOverrides
+        {
+            get
+            {
+                if(this.rteOverrides == null)
+                {
+                    this.rteOverrides = this.retriever.GetWsRteOverrides(this.Id);
+                }
+
+                return this.rteOverrides;
+            }
         }
     }
 }

@@ -39,7 +39,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllEmailsToBeSentTest_InitialApprover()
         {
-            var sut = this.CreateSystem();
+            EmailInformationLoader sut = this.CreateSystem();
 
             // Set the status to Started
             ProposalDto testProposal = this.testData.GetProposal();
@@ -60,7 +60,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllEmailsToBeSentTest_Forecast()
         {
-            var sut = this.CreateSystem();
+            EmailInformationLoader sut = this.CreateSystem();
 
             // Set the anticipated delivery date to be in the past, and save it
             ProposalDto testProposal = this.testData.GetProposal(true, null, DateTime.Now.AddDays(-1), true);
@@ -85,7 +85,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllEmailsToBeSentTest_SecondEmailApprover()
         {
-            var sut = this.CreateSystem();
+            EmailInformationLoader sut = this.CreateSystem();
 
             // Set the status to Started
             ProposalDto testProposal = this.testData.GetProposal();
@@ -106,7 +106,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllEmailsToBeSentTest_FinalEmailApprover()
         {
-            var sut = this.CreateSystem();
+            EmailInformationLoader sut = this.CreateSystem();
 
             // Set the status to Started
             ProposalDto testProposal = this.testData.GetProposal();
@@ -127,7 +127,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllEmailsToBeSentTest_LeadAlertForApprover()
         {
-            var sut = this.CreateSystem();
+            EmailInformationLoader sut = this.CreateSystem();
 
             // Set the status to Started
             ProposalDto testProposal = this.testData.GetProposal();
@@ -158,7 +158,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllEmailsToBeSentTest_InitialLOBApprover()
         {
-            var sut = this.CreateSystem();
+            EmailInformationLoader sut = this.CreateSystem();
 
             // Set the status to Started
             ProposalDto testProposal = this.testData.GetProposal();
@@ -188,7 +188,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllEmailsToBeSentTest_SecondEmailLOBApprover()
         {
-            var sut = this.CreateSystem();
+            EmailInformationLoader sut = this.CreateSystem();
 
             // Set the status to Started
             ProposalDto testProposal = this.testData.GetProposal();
@@ -218,7 +218,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllEmailsToBeSentTest_FinalEmailLOBApprover()
         {
-            var sut = this.CreateSystem();
+            EmailInformationLoader sut = this.CreateSystem();
 
             // Set the status to Started
             ProposalDto testProposal = this.testData.GetProposal();
@@ -248,7 +248,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllEmailsToBeSentTest_LeadAlertForLOBApprover()
         {
-            var sut = this.CreateSystem();
+            EmailInformationLoader sut = this.CreateSystem();
 
             // Set the status to Started
             ProposalDto testProposal = this.testData.GetProposal();
@@ -278,7 +278,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllEmailsToBeSentTest_CertificationTimeline()
         {
-            var sut = this.CreateSystem();
+            EmailInformationLoader sut = this.CreateSystem();
 
             ProposalDto testProposal = this.testData.GetProposal(true);
 
@@ -300,6 +300,27 @@ namespace GenTRAC.Tests.DAL.Loader
             ICollection<EmailInformationDto> emails = sut.GetAllEmailsToBeSent(null);
 
             Assert.IsTrue(emails.Any(e => e.ProposalId == testProposal.Id && e.ProposalEmailType == EmailType.CertificationTimelineEmail));
+        }
+
+        /// <summary>
+        /// Test GetDocumentReminderEmailsToBeSent
+        /// </summary>
+        [TestMethod]
+        public void L_GetDocumentReminderEmailsToBeSent()
+        {
+            EmailInformationLoader sut = this.CreateSystem();
+
+            ProposalDto testProposal = this.testData.GetProposal(true);
+
+            this.testData.SaveChecklistAsPricer(testProposal.Id, null, true);
+            this.testData.SetSubmitDate(testProposal.Id, DateTime.Now.AddDays(-8));
+            this.testData.SetProposalStatus(testProposal.Id, ProposalStatus.Submitted);
+
+            ICollection<EmailInformationDto> result = sut.GetDocumentReminderEmailsToBeSent();
+            EmailInformationDto reminderEmail = result.FirstOrDefault(x => x.ProposalId == testProposal.Id);
+
+            Assert.IsNotNull(reminderEmail);
+            Assert.AreEqual(EmailType.OptionalDocumentReminderEmail, reminderEmail.ProposalEmailType);
         }
     }
 }

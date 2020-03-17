@@ -125,6 +125,7 @@
     <Compile Include="DataLoaders\CommonDataLoaderTest.cs" />
     <Compile Include="DataLoaders\BOEFormDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\ProjectMapDataLoaderTest.cs" />
+    <Compile Include="DataLoaders\RteTemplateDataLoaderTest.cs" />
     <Compile Include="DataLoaders\SystemSettingDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\TMResourceRateDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\OffloadRatesDTODataLoaderTest.cs" />

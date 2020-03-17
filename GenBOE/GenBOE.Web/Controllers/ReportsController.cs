@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -64,6 +64,11 @@ namespace GenBOE.Web.Controllers
         private IReportsControllerLogic reportsControllerLogic;
 
         /// <summary>
+        /// RTE Template loader
+        /// </summary>
+        private readonly IRteTemplateDataLoader rteTemplateDataLoader;
+
+        /// <summary>
         /// Constructor
         /// </summary>
         public ReportsController(ISecurityAccess inSecurityAccess,
@@ -89,7 +94,8 @@ namespace GenBOE.Web.Controllers
             IBOEFormControllerLogic inBOEFormControllerLogic,
             ISSRSControllerLogic ssrsControllerLogic,
             IUserDTODataLoader userLoader,
-            ContractTypeLoader contractTypeLoader)
+            ContractTypeLoader contractTypeLoader,
+            IRteTemplateDataLoader rteTemplateDataLoader)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDTODataLoader, inPermissionsLoader, inControllerLogic)
         {
             this._WorkspaceActivityReport = inWorkspaceActivityReport;
@@ -108,6 +114,7 @@ namespace GenBOE.Web.Controllers
             this.ssrsControllerLogic = ssrsControllerLogic;
             this.userLoader = userLoader;
             this.contractTypeLoader = contractTypeLoader;
+            this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
         /// <summary>
@@ -1269,6 +1276,7 @@ namespace GenBOE.Web.Controllers
             ICollection<BoeCustomReportBoeData> boeData = this.GetBoeDataForWorkspace(ws, selectedSortBy, secondarySelectedSortBy);
 
             CustomReportSelectorModelView viewModelCustomReport = new CustomReportSelectorModelView(workspace, boeData, selectedSortBy, secondarySelectedSortBy, selections);
+            ViewData["ContainsOCI"] = ws.ContainsOCI.ToString().ToLower();
 
             return this.PartialView(WebConstants.VIEW_BOE_CUSTOM_REPORT_SELECTOR, viewModelCustomReport);
         }
@@ -1478,8 +1486,16 @@ namespace GenBOE.Web.Controllers
 
             try
             {
-                this.reportsControllerLogic.ExportAllBOEsReport(workspace, IsSubcontractorUser(workspace), summarizeByCustomField,
-                    selectedBOEs, selectedComponents, ViewData, Response, custom);
+                bool isCustomExport;
+                WorkspaceExportFormatDTO wsExportFormatDTO;
+                BOEExportInputs exportInputs;
+                ICollection<BOEExportModelView> boeExportModelViews;
+                List<BOESummaryGridModelView> boeSummaryGridModelViews;
+
+                this.reportsControllerLogic.PrepareAllBOEsReport(workspace, IsSubcontractorUser(workspace), summarizeByCustomField, selectedBOEs, ViewData, out isCustomExport, 
+                    out wsExportFormatDTO, out exportInputs, out boeExportModelViews, out boeSummaryGridModelViews, custom);
+                this.reportsControllerLogic.ExportAllBOEsReport(workspace, selectedComponents, Response, false, isCustomExport, wsExportFormatDTO, exportInputs, 
+                    boeExportModelViews, boeSummaryGridModelViews);
             }
             catch (GenValidationException ex)
             {
@@ -1622,7 +1638,10 @@ namespace GenBOE.Web.Controllers
                         tasks = boes.SelectMany(b => b.TaskElements).OrderBy(t => t.BOETaskElementOrder).ToList();
                     }
 
-                    BOEExportInputs exportInputs = new BOEExportInputs(boes, ws.Boes.ToList(), tasks, ws);
+                    // Get RTE overrides
+                    ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = this.rteTemplateDataLoader.GetByWorkspaceId(ws.Id, boes);
+
+                    BOEExportInputs exportInputs = new BOEExportInputs(boes, ws.Boes.ToList(), tasks, ws, rteTemplateOverrides);
                     // Need picklist values for contract type for Workspace Identification sheet
                     exportInputs.ContractTypes = this.contractTypeLoader.GetPickListValues();
 

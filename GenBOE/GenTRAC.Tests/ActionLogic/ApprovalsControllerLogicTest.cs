@@ -123,7 +123,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.approvalEmailer = new Mock<ApprovalEmailer>();
             this.approvalEmailer.Setup(x => x.SendEmails(It.IsAny<int?>()));
             this.attachmentLoader = new Mock<IAttachmentLoader>();
-            this.attachmentLoader.Setup(x => x.AllAttachmentsHaveBeenUploaded(It.IsAny<int>()));
+            this.attachmentLoader.Setup(x => x.AllRequiredAttachmentsHaveBeenUploaded(It.IsAny<int>()));
             this.adUtils = new Mock<IActiveDirectoryUtilities>();
             
             this.retriever = new Mock<IRetriever>();

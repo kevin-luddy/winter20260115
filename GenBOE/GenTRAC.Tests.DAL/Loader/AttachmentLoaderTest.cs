@@ -122,6 +122,93 @@ namespace GenTRAC.Tests.DAL.Loader
         }
 
         /// <summary>
+        /// Test AllRequiredAttachmentsHaveBeenUploaded
+        /// </summary>
+        [TestMethod]
+        public void L_AllRequiredAttachmentsHaveBeenUploaded()
+        {
+            AttachmentLoader sut = this.CreateSystem();
+
+            ProposalDto proposal = this.testData.GetProposal(true);
+
+            bool result = sut.AllRequiredAttachmentsHaveBeenUploaded(proposal.Id);
+
+            // Assert is false when no attachements are added
+            Assert.IsFalse(result);
+
+            // Add the required attachments
+            AttachmentDto dto1 = new AttachmentDto
+            {
+                AttachmentType = AttachmentType.CostKickOffPackage,
+                Contents = new byte[10],
+                Name = "dto1",
+                UploadedBy = "test",
+                ProposalId = proposal.Id,
+                Updateable = UpdateType.Upsert
+            };
+
+            AttachmentDto dto2 = new AttachmentDto
+            {
+                AttachmentType = AttachmentType.ResponsibilityAssignmentsMatrix,
+                Contents = new byte[5],
+                Name = "dto2",
+                UploadedBy = "test",
+                ProposalId = proposal.Id,
+                Updateable = UpdateType.Upsert
+            };
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                dto1.Id = sut.Save(dto1).Value;
+                dto2.Id = sut.Save(dto2).Value;
+                scope.Complete();
+            }
+
+            result = sut.AllRequiredAttachmentsHaveBeenUploaded(proposal.Id);
+
+            // Assert is true when required attachements are added
+            Assert.IsTrue(result);
+        }
+
+        /// <summary>
+        /// Test OptionalAttachmentHasBeenUploaded
+        /// </summary>
+        [TestMethod]
+        public void L_OptionalAttachmentHasBeenUploaded()
+        {
+            AttachmentLoader sut = this.CreateSystem();
+
+            ProposalDto proposal = this.testData.GetProposal(true);
+
+            bool result = sut.OptionalAttachmentHasBeenUploaded(proposal.Id);
+
+            // Assert is false when attachement is not added
+            Assert.IsFalse(result);
+
+            // Add the optional attachment
+            AttachmentDto dto1 = new AttachmentDto
+            {
+                AttachmentType = AttachmentType.DelegationOfAuthority,
+                Contents = new byte[10],
+                Name = "dto1",
+                UploadedBy = "test",
+                ProposalId = proposal.Id,
+                Updateable = UpdateType.Upsert
+            };
+            
+            using (TransactionScope scope = new TransactionScope())
+            {
+                dto1.Id = sut.Save(dto1).Value;
+                scope.Complete();
+            }
+
+            result = sut.OptionalAttachmentHasBeenUploaded(proposal.Id);
+
+            // Assert is true when required attachements are added
+            Assert.IsTrue(result);
+        }
+
+        /// <summary>
         /// Asserts that the two attachment dtos are equal.
         /// </summary>
         /// <param name="expected">The expected.</param>

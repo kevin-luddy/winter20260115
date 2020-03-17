@@ -22,6 +22,7 @@ namespace GenBOE.Models
             this.BOETaskElementMetricDetailXREFs = new HashSet<BOETaskElementMetricDetailXREF>();
             this.BOETaskElementWorkspaceVariableXREFs = new HashSet<BOETaskElementWorkspaceVariableXREF>();
             this.OrdinaryVariables = new HashSet<OrdinaryVariable>();
+            this.RteTemplateAnswers = new HashSet<RteTemplateAnswer>();
         }
     
         public int BOETaskElementID { get; set; }
@@ -54,5 +55,7 @@ namespace GenBOE.Models
         public virtual ICollection<BOETaskElementWorkspaceVariableXREF> BOETaskElementWorkspaceVariableXREFs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrdinaryVariable> OrdinaryVariables { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RteTemplateAnswer> RteTemplateAnswers { get; set; }
     }
 }

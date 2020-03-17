@@ -71,6 +71,7 @@ namespace GenBOE.Web
                 "~/Scripts/ui-grid.js", 
                 "~/Scripts/angular-sanitize.js",
                 "~/Scripts/angular-animate.js",
+                "~/Scripts/angular-ui/sortable.js",
                 "~/Resources/js/angular/directives.js",
                 "~/Scripts/angular-ui/ui-bootstrap-tpls.js",
                 "~/Resources/js/angular/MoqEquationApp.js",
@@ -85,6 +86,7 @@ namespace GenBOE.Web
                 "~/Scripts/ui-grid.js",
                 "~/Scripts/angular-sanitize.js",
                 "~/Scripts/angular-animate.js",
+                "~/Scripts/angular-ui/sortable.js",
                 "~/Resources/js/angular/directives.js",
                 "~/Scripts/angular-ui/ui-bootstrap-tpls.js",
                 "~/Resources/js/angular/MoqEquationApp.js",
@@ -109,6 +111,7 @@ namespace GenBOE.Web
                 "~/Scripts/ui-tinymce.js",
                 "~/Scripts/ui-grid.js",
                 "~/Scripts/angular-ui/ui-bootstrap-tpls.js",
+                "~/Scripts/angular-ui/sortable.js",
                 "~/Scripts/modernizr-{version}.js",
                 "~/Scripts/angular-cookies.js",
                 "~/Resources/js/json2.js",
@@ -185,6 +188,10 @@ namespace GenBOE.Web
 
             bundles.Add(new ScriptBundle("~/bundles/boebulksubmit").Include(
                 "~/Resources/js/angular/boeBulkSubmitController.js"
+                ));
+
+            bundles.Add(new ScriptBundle("~/bundles/manageRTETemplates").Include(
+                "~/Resources/js/angular/rteTemplatesController.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/discrepancy").Include(

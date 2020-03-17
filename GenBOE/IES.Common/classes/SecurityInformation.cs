@@ -130,7 +130,8 @@ namespace IES.Common
         WorkspaceDelete = 70,
         WorkspaceRestore = 71,
         GettingStartedMenuOption = 72,
-        WorkspaceSettingsShareAndAllowSearch = 73
+        WorkspaceSettingsShareAndAllowSearch = 73,
+        RTETemplates = 74
     }
 
     /// <summary>

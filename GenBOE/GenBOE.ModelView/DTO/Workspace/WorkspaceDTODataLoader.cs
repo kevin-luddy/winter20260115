@@ -655,6 +655,40 @@ namespace GenBOE.DataBridge.DTO
             return outNewWorkspaceID;
         }
 
+        /// <summary>
+        /// Create a copy of a previous version of a workspace
+        /// </summary>
+        /// <param name="workspaceId">Workspace ID</param>
+        /// <param name="tempWorkspaceName">Name for the temp Workspace</param>
+        /// <param name="tempWorkspaceShortName">Short Name for the temp Workspace</param>
+        /// <param name="versionId">Id of the version</param>
+        /// <param name="boesToCopy">Comma separated list of BOE IDs if copying select BOEs</param>
+        /// <returns>ID of the temporary Workspace</returns>
+        public virtual int CopyWorkspaceVersion(int workspaceId, string tempWorkspaceName, string tempWorkspaceShortName, int versionId,string boesToCopy)
+        {
+            int tempWorkspaceId = 0;
+
+            try
+            {
+                using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+                {
+                    using (GenBoeEntities gbe = new GenBoeEntities())
+                    {
+                        gbe.Database.CommandTimeout = 300;  // give the SP enough time to execute
+
+                        tempWorkspaceId = gbe.copyWorkspaceVersion(workspaceId, tempWorkspaceName, tempWorkspaceShortName, versionId, boesToCopy).FirstOrDefault().GetValueOrDefault(); 
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                Log.Error(ex);
+                throw new GeneralAppException("There was an error copying the workspace version.  Contact a system administrator for assistance.");
+            }
+
+            return tempWorkspaceId;
+        }
+
         #endregion
 
         #region Commits

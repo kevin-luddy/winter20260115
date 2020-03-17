@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -10,6 +10,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Web.Mvc;
     using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
@@ -67,6 +68,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<IOffloadRatesDTOLoader> offloadRatesLoader;
         private Mock<IPickListMapper> ptmPickListMapper;
         private Mock<IPickListMapper> boePickListMapper;
+        private Mock<ContractTypeLoader> contractTypeLoader;
+        private Mock<IRteTemplateDataLoader> rteTemplateDataLoader;
 
         private WorkspaceControllerLogicSpaceSystems CreateSystemSpaceSystems()
         {
@@ -89,7 +92,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 null,
                 null,
                 this.boePickListMapper.Object,
-                this.ptmPickListMapper.Object);
+                this.ptmPickListMapper.Object,
+                this.contractTypeLoader.Object,
+                null,
+                rteTemplateDataLoader.Object);
         }
 
         private WorkspaceControllerLogicMST CreateSystemMST()
@@ -116,7 +122,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 null,
                 this.offloadRatesLoader.Object, null, 
                 this.boePickListMapper.Object, 
-                this.ptmPickListMapper.Object);
+                this.ptmPickListMapper.Object,
+                this.contractTypeLoader.Object,
+                null,
+                rteTemplateDataLoader.Object);
         }
 
         /// <summary>
@@ -166,10 +175,14 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             this.boePickListMapper = new Mock<IPickListMapper>();
             this.ptmPickListMapper = new Mock<IPickListMapper>();
 
+            this.contractTypeLoader = new Mock<ContractTypeLoader>();
+
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), this.retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), this.factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), this._commonDatamapper.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), this._permissionLoader.Object);
+
+            this.rteTemplateDataLoader = new Mock<IRteTemplateDataLoader>();
         }
 
         private void DoGetWorkspaceIdentificationTest(IWorkspaceControllerLogic sut, CompanyConfiguration config)
@@ -2163,5 +2176,85 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             Assert.AreEqual(4, items.PreviousId);
             Assert.AreEqual(1, items.NextId);
         }
+
+        #region Backup Export Tests
+
+        /// <summary>
+        /// Test CopyWorkspaceVersion for copying all BOEs
+        /// </summary>
+        [TestMethod]
+        public void CopyWorkspaceVersionTest()
+        {
+            WorkspaceControllerLogic sut = this.CreateSystemSpaceSystems();
+
+            WorkspaceDTO workspace = new WorkspaceDTO()
+            {
+                Shortname = "testWorkspace",
+                Id = 1
+            };
+            FullWorkspace ws = new FullWorkspace(workspace);
+
+            int versionId = 2;
+            int copyWsId = 3;
+
+            this.wsLoader.Setup(w => w.CopyWorkspaceVersion(ws.Id, It.IsAny<string>(), It.IsAny<string>(), versionId, string.Empty)).Returns(copyWsId);
+
+            int result = sut.CopyWorkspaceVersion(ws, versionId, true, new Collection<int>());
+
+            Assert.AreEqual(copyWsId, result);
+        }
+
+        /// <summary>
+        /// Test CopyWorkspaceVersion for copying select BOEs
+        /// </summary>
+        [TestMethod]
+        public void CopyWorkspaceVersionTest_SelectBoes()
+        {
+            WorkspaceControllerLogic sut = this.CreateSystemSpaceSystems();
+
+            WorkspaceDTO workspace = new WorkspaceDTO()
+            {
+                Shortname = "testWorkspace",
+                Id = 1
+            };
+            FullWorkspace ws = new FullWorkspace(workspace);
+
+            ICollection<int> selectBoes = new Collection<int>() { 1, 2, 3 };
+
+            int versionId = 2;
+            int copyWsId = 3;
+
+            this.wsLoader.Setup(w => w.CopyWorkspaceVersion(ws.Id, It.IsAny<string>(), It.IsAny<string>(), versionId, string.Join(",", selectBoes))).Returns(copyWsId);
+
+            int result = sut.CopyWorkspaceVersion(ws, versionId, false, selectBoes);
+
+            Assert.AreEqual(copyWsId, result);
+        }
+
+        /// <summary>
+        /// Test CopyWorkspaceVersion for throwing an exceptino for null Workspace param
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void CopyWorkspaceVersionTest_Ex()
+        {
+            WorkspaceControllerLogic sut = this.CreateSystemSpaceSystems();
+            int result = sut.CopyWorkspaceVersion(null, 1, false, null);
+        }
+
+        /// <summary>
+        /// Tests that CreateWorkspaceDataReportForVersion throws an exception when ws param is null
+        /// Note - rest of method cannot be tested since we cannot mock WorkspaceExporter
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void CreateWorkspaceDataReportForVersionTest_EX()
+        {
+            WorkspaceControllerLogic sut = this.CreateSystemSpaceSystems();
+
+            string result = sut.CreateWorkspaceDataReportForVersion(null, string.Empty, null, string.Empty, 1);
+        }
+
+        #endregion
     }
 }

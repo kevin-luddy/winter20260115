@@ -369,7 +369,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             if (group == null)
             {
-                throw new ArgumentException("The course group with name " + courseName + " was not found.", "courseName");
+                throw new ArgumentException("The course group with name " + courseName + " was not found.", nameof(courseName));
             }
 
             ICollection<TrainingModelView> overdueList = new List<TrainingModelView>();
@@ -461,7 +461,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                             CourseId = group.Courses.First().CourseID,
                             UserDisplayName = user.DisplayName,
                             UserId = user.EmployeeId,
-                            LastCompleted = lastCompleted
+                            LastCompleted = lastCompleted,
+                            NTID = user.Ntid
                         };
 
                         overdueList.Add(training);

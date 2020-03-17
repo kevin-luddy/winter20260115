@@ -8,6 +8,7 @@ namespace GenBOE.ActionLogic.ModelView
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using GenBOE.Dtos;
     using IES.Common.Exceptions;
 
     /// <summary>

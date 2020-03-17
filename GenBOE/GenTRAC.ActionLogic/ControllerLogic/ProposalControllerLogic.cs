@@ -929,6 +929,12 @@ namespace GenTRAC.ActionLogic
                 model.CompletedDate = date.HasValue ? date.Value.ToString("MM/dd/yyyy") : string.Empty;
                 date = fullProposalDto.CertificationTimelineCompleted;
                 model.CertificationCompletedDate = date.HasValue ? date.Value.ToString("MM/dd/yyyy") : string.Empty;
+
+                if (!date.HasValue && model.ProposalStatus == ProposalStatus.Completed)
+                {
+                    // assuming all proposals that are completed without certification date were completed before certification was added to PTM
+                    model.CompletedBeforeCertification = true;
+                }
             }
 
             return model;

@@ -57,7 +57,8 @@ namespace GenBOE.ActionLogic
             IOrdinaryVariableLoader inTaskVariableLoader,
             TaskElementValidation taskElementValidation,
             IVariableCircularReferenceChecker circularReferenceChecker,
-            ICommonDataMapper commonDataMapper
+            ICommonDataMapper commonDataMapper,
+            IRteTemplateDataLoader rteTemplateDataLoader
             ) :base(inBoeTaskElementRecalc, 
                 inBoeStateMachine, 
                 inBoeMediator, 
@@ -74,7 +75,8 @@ namespace GenBOE.ActionLogic
                 inTaskVariableLoader,
                 taskElementValidation,
                 circularReferenceChecker,
-                commonDataMapper)
+                commonDataMapper,
+                rteTemplateDataLoader)
         {
         }
 

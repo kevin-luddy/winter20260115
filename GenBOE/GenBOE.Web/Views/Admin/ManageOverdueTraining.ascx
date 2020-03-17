@@ -43,14 +43,16 @@
                         <input type="hidden" id="ImportDialog-DocumentDomain" name="documentDomain" />
                         <input type="file" size="60" id="ImportDialog-File" name="file"  onchange="angular.element(this).scope().fileUploadChange(this)" />
                         <button data-ng-click="import()" data-ng-disabled="disableImport || importWorking" type="button" class="ies-action">Import</button>
+                        <button data-ng-click="exportCsv()" data-ng-disabled="disableImport || importWorking || !showImportResults" type="button" class="ies-action">Export Results</button>
                     </div>
                     <div class="form-row css3pie-position-fix last-form-row">
                         <div class="loader" data-ng-show="importWorking"></div>
                         <div class="OverdueTraining" data-ng-show="showImportResults">
-                            <table class="sortable grid readonly">
+                            <table id="OverdueTrainingTable" class="sortable grid readonly">
                                 <thead>
                                     <tr>
                                         <th class="sort">Name</th>
+                                        <th class="sort">NTID</th>
                                         <th class="sort">Last Completed</th>
                                         <th class="sort">Course Id</th>
                                     </tr>
@@ -58,6 +60,7 @@
                                 <tbody>
                                     <tr data-ng-repeat="user in data">
                                         <td>{{user.UserDisplayName}}</td>
+                                        <td>{{user.NTID}}</td>
                                         <td>{{user.LastCompletedString}}</td>
                                         <td>{{user.CourseId}}</td>
                                     </tr>

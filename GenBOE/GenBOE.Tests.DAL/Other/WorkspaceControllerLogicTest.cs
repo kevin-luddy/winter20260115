@@ -39,7 +39,8 @@ namespace GenBOE.Tests.DAL.Other
         private Mock<IPerformingOrgListDTODataLoader> perfListLoader;
         private BoeTaskElementDTODataLoader boeTaskElementDTODataLoader;
         private Mock<IOffloadRatesDTOLoader> offloadRatesLoader;
-        
+        private Mock<IRteTemplateDataLoader> rteTemplateDataLoader;
+
         /// <summary>
         /// Initializes the test data.
         /// </summary>
@@ -87,7 +88,7 @@ namespace GenBOE.Tests.DAL.Other
 
             retriever = new Retriever(new ClinDTODataLoader(), new WbsDTODataLoader(), new WorkspaceDTODataLoader(), new BoeDTODataLoader(), null, null, null, null,
                 new ResourceTypeLoader(), boeTaskElementDTODataLoader, null, resourceLoader.Object, null, null, null, null, null, null,
-                perfLoader.Object, perfListLoader.Object, null, null, null, null, userLoader.Object, null, null, null, null, new ProjectMapDataLoader(new ProjectMapSpreadLoader()));
+                perfLoader.Object, perfListLoader.Object, null, null, null, null, userLoader.Object, null, null, null, null, new ProjectMapDataLoader(new ProjectMapSpreadLoader()), null);
 
             permissionsLoader.Setup(x => x.GetBOEPermissions(It.IsAny<ICollection<int>>())).Returns(new Collection<PermissionsDTO>());
 
@@ -97,6 +98,8 @@ namespace GenBOE.Tests.DAL.Other
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IUserDTODataLoader), userLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceTypeLoader), new ResourceTypeLoader());
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IOffloadRatesDTOLoader), offloadRatesLoader.Object);
+
+            rteTemplateDataLoader = new Mock<IRteTemplateDataLoader>();
 
             GlobalTestCaseSetup.ResetGlobalWorkspaceID();
         }
@@ -111,7 +114,10 @@ namespace GenBOE.Tests.DAL.Other
             return new WorkspaceControllerLogicMST(new WorkspaceDTODataLoader(), null, new ResourceDTODataLoader(),
                 null, null, null, this.fullObjectFactory,
                 this.commonDataMapper.Object, this.permissionsLoader.Object, null, null, null, null, null, null, null,
-                null, null, null, new ProjectMapDataLoader(new ProjectMapSpreadLoader()), new BoePickListMapper(new LineOfBusinessDataLoader(), new ProposalClassLoader(), new ContractTypeLoader()), new GenTRAC.DataBridge.DTO.PtmPickListMapper(new GenTRAC.DataBridge.DTO.ProposalTypeLULoader(), new GenTRAC.DataBridge.DTO.ProposalClassLULoader(), new GenTRAC.DataBridge.DTO.TypeOfRequestLULoader(),new GenTRAC.DataBridge.DTO.LineOfBusinessDataLoader(), new GenTRAC.DataBridge.DTO.ProgramAreaDataLoader(), new GenTRAC.DataBridge.DTO.ContractTypeLULoader(), new GenTRAC.DataBridge.DTO.ContractTypeGroupLULoader()));
+                null, null, null, new ProjectMapDataLoader(new ProjectMapSpreadLoader()), new BoePickListMapper(new LineOfBusinessDataLoader(), new ProposalClassLoader(), 
+                new ContractTypeLoader()), new GenTRAC.DataBridge.DTO.PtmPickListMapper(new GenTRAC.DataBridge.DTO.ProposalTypeLULoader(), new GenTRAC.DataBridge.DTO.ProposalClassLULoader(), 
+                new GenTRAC.DataBridge.DTO.TypeOfRequestLULoader(),new GenTRAC.DataBridge.DTO.LineOfBusinessDataLoader(), new GenTRAC.DataBridge.DTO.ProgramAreaDataLoader(), 
+                new GenTRAC.DataBridge.DTO.ContractTypeLULoader(), new GenTRAC.DataBridge.DTO.ContractTypeGroupLULoader()), null, null, rteTemplateDataLoader.Object);
         }
 
 

@@ -59,8 +59,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
             BOEDiscrepancyReport boeDiscrepancyReport,
             ICommonDataMapper commonDataMapper,
             IProposalLoader proposalLoader,
-            IWorkspaceControllerLogic workspaceControllerLogic)
-            : base(boeExporter, boeSummary, boeCustomExporter, workspaceExportFormatDTOLoader, boeDiscrepancyReport, proposalLoader, workspaceControllerLogic)
+            IWorkspaceControllerLogic workspaceControllerLogic,
+            IRteTemplateDataLoader rteTemplateDataLoader)
+            : base(boeExporter, boeSummary, boeCustomExporter, workspaceExportFormatDTOLoader, boeDiscrepancyReport, proposalLoader, workspaceControllerLogic, rteTemplateDataLoader)
         {
             this._metricLoader = metricLoader;
             this._CommonDataMapper = commonDataMapper;

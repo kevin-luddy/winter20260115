@@ -32,9 +32,8 @@ namespace GenBOE.ActionLogic
         /// <summary>
         /// Loader for MST Metrics.
         /// </summary>
-        private IMSTMetricLoader _mstMetricsLoader;
-
-
+        private readonly IMSTMetricLoader _mstMetricsLoader;
+        private readonly IRteTemplateDataLoader rteTemplateDataLoader;
         
         /// <summary>
         /// Injection constructor.
@@ -72,7 +71,8 @@ namespace GenBOE.ActionLogic
             IMSTMetricLoader inMSTMetricLoader,
             TaskElementValidation taskElementValidation,
             IVariableCircularReferenceChecker circularReferenceChecker,
-            ICommonDataMapper commonDataMapper
+            ICommonDataMapper commonDataMapper,
+            IRteTemplateDataLoader rteTemplateDataLoader
             )
             : base(inBoeTaskElementRecalc,
                 inBoeStateMachine,
@@ -90,9 +90,11 @@ namespace GenBOE.ActionLogic
                 inTaskVariableLoader,
                 taskElementValidation,
                 circularReferenceChecker,
-                commonDataMapper)
+                commonDataMapper,
+                rteTemplateDataLoader)
         {
             this._mstMetricsLoader = inMSTMetricLoader;
+            this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
         /// <summary>
@@ -220,7 +222,18 @@ namespace GenBOE.ActionLogic
         /// <returns>Loaded MOQEquationModelView.</returns>
         public override MOQEquationModelView GetMOQModelView(BoeTaskElementDTO taskElement, FullWorkspace workspace)
         {
+            if (workspace == null)
+            {
+                throw new ArgumentNullException(nameof(workspace));
+            }
+
+            if (taskElement == null)
+            {
+                throw new ArgumentNullException(nameof(taskElement));
+            }
+
             MOQEquationModelView toReturn = new MOQEquationModelView(taskElement, this.VariableSelectBOEtoSumCalculation, workspace);
+            toReturn.MoqTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, taskElement.BoeID, taskElement.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ).ToList();
             toReturn.PMMetricsUsed = this._mstMetricsLoader.GetByTaskElementIds(new Collection<int> { taskElement.Id });
             this.SetShowMetricLink(toReturn);
             return toReturn;

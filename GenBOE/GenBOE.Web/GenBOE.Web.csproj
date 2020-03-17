@@ -229,6 +229,7 @@
     <Compile Include="Controllers\BOEBulkSubmitController.cs" />
     <Compile Include="Controllers\BOEFormController.cs" />
     <Compile Include="Controllers\BOEZoneTravelController.cs" />
+    <Compile Include="Controllers\RTETemplatesController.cs" />
     <Compile Include="Controllers\DateShiftController.cs" />
     <Compile Include="ModelView\BOEFormMasterModelView.cs" />
     <Compile Include="ModelView\CustomFieldImportModelView.cs" />
@@ -237,6 +238,7 @@
     <Compile Include="ModelView\ImportLaborSpreadModelView.cs" />
     <Compile Include="ModelView\ManageOffloadRatesGridModelView.cs" />
     <Compile Include="ModelView\PagedSystemOffloadRateModelView.cs" />
+    <Compile Include="ModelView\RteTemplateModelView.cs" />
     <Compile Include="ModelView\SendToProPricerModelView.cs" />
     <Compile Include="ModelView\UpdateWorkspaceResourceRateTMModelView.cs" />
     <Compile Include="ModelView\WhosOnlineGridModelView.cs" />
@@ -553,6 +555,7 @@
     <Content Include="Content\images\ui-icons_888888_256x240.png" />
     <Content Include="Content\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Resources\css\tinymce.css" />
+    <Content Include="Resources\js\angular\rteTemplatesController.js" />
     <Content Include="Resources\js\angular\boeBulkSubmitController.js" />
     <Content Include="Resources\js\angular\createWorkspaceController.js" />
     <Content Include="Resources\js\angular\dateShiftController.js" />
@@ -631,6 +634,7 @@
     <Content Include="Scripts\angular-ui-tree-search.min.js" />
     <Content Include="Scripts\angular-ui-tree.js" />
     <Content Include="Scripts\angular-ui-tree.min.js" />
+    <Content Include="Scripts\angular-ui\sortable.js" />
     <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.js" />
     <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.min.js" />
     <Content Include="Scripts\angular-ui\ui-bootstrap.js" />
@@ -874,6 +878,8 @@
     <Content Include="Views\Reports\SummaryReports.ascx" />
     <Content Include="Views\Reports\BoeDiscrepancyReport.ascx" />
     <Content Include="Views\Reports\ValidateAllBOEReport.ascx" />
+    <Content Include="Views\RTETemplates\ManageRTETemplates.aspx" />
+    <Content Include="Views\Shared\RteTemplate.ascx" />
     <Content Include="Views\Workspace\AddWorkspaceResourceRateTM.ascx" />
     <Content Include="Views\Workspace\CreateWorkspaceDiv.ascx" />
     <Content Include="Views\Workspace\DiscreteWorkspaceVariables.ascx" />

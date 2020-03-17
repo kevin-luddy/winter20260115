@@ -171,6 +171,7 @@ namespace GenBOE.DataBridge.DTO
         public const string BOE_DESC_REQUIRED = "BOE Description is required.";
         public const string BOE_TITLE_REQUIRED = "BOE Title is required.";
         public const string MOQ_TYPE_REQUIRED = "MOQ Type is required.";
+        public const string TASK_DESCRIPTION_REQUIRED = "Task Description is required.";
         public const string MOQ_EQ_REQUIRED = "MOQ Equation is required.";
         public const string MOQ_TEXT_REQUIRED = "{0} is required.";
         public const string DATA_SOURCE_REQUIRED = "Sources of Data is required.";

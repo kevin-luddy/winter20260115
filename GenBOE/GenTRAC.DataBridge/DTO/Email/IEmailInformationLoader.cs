@@ -27,5 +27,11 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="proposalId">The Proposal Id.</param>
         /// <param name="emailType">The email type.</param>
         void UpdateEmailSent(int proposalId, EmailType emailType);
+
+        /// <summary>
+        /// Gets the optional document missing reminder emails to be sent
+        /// </summary>
+        /// <returns>A collection of the email info dtos for the emails to be sent</returns>
+        ICollection<EmailInformationDto> GetDocumentReminderEmailsToBeSent();
     }
 }

@@ -119,7 +119,7 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="proposalId">ID of proposal to check</param>
         /// <returns>true if all required attachments have been uploaded</returns>
-        public bool AllAttachmentsHaveBeenUploaded(int proposalId)
+        public bool AllRequiredAttachmentsHaveBeenUploaded(int proposalId)
         {
             bool toReturn;
             using (StopwatchTimer sw = new StopwatchTimer("AttachmentLoader.AllAttachmentsHaveBeenUploaded", this.Log))
@@ -127,8 +127,26 @@ namespace GenTRAC.DataBridge.DTO
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
                     toReturn = dbModel.Attachments.Any(x => x.ProposalID == proposalId && x.AttachmentType == (int)AttachmentType.CostKickOffPackage)
-                            && dbModel.Attachments.Any(x => x.ProposalID == proposalId && x.AttachmentType == (int)AttachmentType.DelegationOfAuthority)
                             && dbModel.Attachments.Any(x => x.ProposalID == proposalId && x.AttachmentType == (int)AttachmentType.ResponsibilityAssignmentsMatrix);
+                }
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Returns true if the optional DelegationOfAuthority attachment has been uploaded
+        /// </summary>
+        /// <param name="proposalId">ID of proposal to check</param>
+        /// <returns>true if the optional DelegationOfAuthority attachment has been uploaded</returns>
+        public bool OptionalAttachmentHasBeenUploaded(int proposalId)
+        {
+            bool toReturn;
+            using (StopwatchTimer sw = new StopwatchTimer("AttachmentLoader.OptionalAttachmentHasBeenUploaded", this.Log))
+            {
+                using (genTRACEntities dbModel = new genTRACEntities())
+                {
+                    toReturn = dbModel.Attachments.Any(x => x.ProposalID == proposalId && x.AttachmentType == (int)AttachmentType.DelegationOfAuthority);
                 }
             }
 

@@ -96,6 +96,7 @@
     <Compile Include="CacheWarming\ICacheWarmer.cs" />
     <Compile Include="ControllerLogic\PostSubmittalAttachmentsControllerLogic.cs" />
     <Compile Include="Email\ApprovalEmailer.cs" />
+    <Compile Include="Email\DocumentReminderEmailer.cs" />
     <Compile Include="Email\PtmEmailer.cs" />
     <Compile Include="Email\IPtmEmailer.cs" />
     <Compile Include="GeneralHelper\Helpers.cs" />

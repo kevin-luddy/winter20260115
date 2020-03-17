@@ -1,12 +1,20 @@
-﻿using System;
-using System.Diagnostics.CodeAnalysis;
-using GenBOE.DataBridge.DTO;
-using GenBOE.Dtos;
-using IES.Common;
-using IES.Common.classes;
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace GenBOE.Web.ModelView
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
+    using GenBOE.DataBridge.DTO;
+    using GenBOE.Dtos;
+    using IES.Common;
+    using IES.Common.classes;
+
     [ExcludeFromCodeCoverage]
     public class WorkspaceVersionModelView
     {
@@ -24,6 +32,7 @@ namespace GenBOE.Web.ModelView
             VersionName = string.Empty;
             DateCreated = DateTime.MinValue;
             CreatedByDisplayName = string.Empty;
+            Boes = new Collection<BoeVersionDTO>();
         }
 
         /// <summary>
@@ -31,7 +40,7 @@ namespace GenBOE.Web.ModelView
         /// </summary>
         /// <param name="inVersion">Workspace version meta data.</param>
         /// <param name="inCreatedByUser">User who created the backup version.</param>
-        public WorkspaceVersionModelView(WorkspaceVersionMetaDataDTO inVersion, UserDTODataLoader inCreatedByUser)
+        public WorkspaceVersionModelView(WorkspaceVersionMetaDataDTO inVersion, UserDTODataLoader inCreatedByUser, ICollection<BoeVersionDTO> inBoes)
         {
             if (inCreatedByUser == null)
             {
@@ -47,6 +56,7 @@ namespace GenBOE.Web.ModelView
             DateCreated = inVersion.DateCreated;
             CreatedByDisplayName = inCreatedByUser.GetUserByID(inVersion.CreatedByID).DisplayName;
             this.workspaceState = inVersion.VersionState;
+            this.Boes = inBoes;
         }
 
         /// <summary>
@@ -100,6 +110,11 @@ namespace GenBOE.Web.ModelView
                 return this.VersionName.StartsWith(CommonConstants.AUTO_SYSTEM_BACKUP_DAILY);
             }
         }
+
+        /// <summary>
+        /// The BOEs for the backup version
+        /// </summary>
+        public ICollection<BoeVersionDTO> Boes { get; set; }
     }
 }
 

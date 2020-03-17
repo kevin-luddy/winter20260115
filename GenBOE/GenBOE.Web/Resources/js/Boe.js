@@ -319,7 +319,7 @@ function SetupMonthPickerJquery(inputBox) {
 }
 
 function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, saveEditBoeHeaderUrl,  
-    boeStateNotDraft, allowDateShift, rteFieldSize, dateShiftUrl, findAdjacentBoesUrl, boeId, newBoeUrl) {
+    boeStateNotDraft, allowDateShift, rteFieldSize, dateShiftUrl, findAdjacentBoesUrl, boeId, newBoeUrl, useQuestions, numberQuestions) {
     var formConfigs = [];
     formConfigs.push({
         ElementID: 'BoeHeaderForm',
@@ -431,6 +431,8 @@ function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, save
     $('#BoeHeaderForm button[name=previous-boe-button]').prop('disabled', true);
     $('#BoeHeaderForm button[name=next-boe-button]').prop('disabled', true);
 
+    BoeHeaderWidget.DataSource = CreateRteTemplate(useQuestions, numberQuestions);
+
     BoeHeaderWidget.GetCookieValue = function (cookieArray, name) {
         var nameEQ = name + "=";
         var value = '';
@@ -528,16 +530,13 @@ function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, save
         var data = BoeHeaderWidget.getForm('BoeHeaderForm').getData();          
             
         // there seems to be an issue with the jquery serializer when dealing with rich text pasted from excel so we need to get these field contents again
-        if(tinyMCE.EditorManager.editors.DataSource){
-            data.DataSource = tinyMCE.EditorManager.editors.DataSource.getContent();
-        }
-        if(tinyMCE.EditorManager.editors.Description){
-            data.Description = tinyMCE.EditorManager.editors.Description.getContent();
-        }
-        if(!BoeHeaderWidget.isReadOnly()) {
-            data.DataSource = tinyMCE.EditorManager.editors.DataSource.getContent();
-        }
+        data.RteTemplateAnswers = [];
+        GetRteTemplateJson(BoeHeaderWidget.Description, 'Description', data);   
 
+        if(!BoeHeaderWidget.isReadOnly()) {
+            GetRteTemplateJson(BoeHeaderWidget.DataSource, 'DataSource', data);    
+        }
+                
         var dataToSend = JSON.stringify(data);
         BoeHeaderWidget.saveRequest({
             url: saveEditBoeHeaderUrl,
@@ -550,8 +549,7 @@ function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, save
     * Capture the original values in case the user presses cancel
     */
     BoeHeaderWidget.captureOriginalValues = function () {
-        BoeHeaderWidget.OriginalDescription = $("#Description").val();
-        BoeHeaderWidget.OriginalDataSource = $("#DataSource").val();
+
         $("#Title").val($.trim($("#Title").val())); // Remove leading and trailing whitespace from Boe Title 
         BoeHeaderWidget.OriginalTitle = $("#Title").val();
         if ($('#MetricUsed:checked').length > 0) {
@@ -569,15 +567,12 @@ function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, save
     }
 
     BoeHeaderWidget.Cancel = function () {
-        if(tinyMCE.EditorManager.editors.Description){
-            tinyMCE.EditorManager.editors.Description.setContent(BoeHeaderWidget.OriginalDescription);
-        }
-        if(!BoeHeaderWidget.isReadOnly() && tinyMCE.EditorManager.editors.DataSource){
-            tinyMCE.EditorManager.editors.DataSource.setContent(BoeHeaderWidget.OriginalDataSource);
+        ResetRteTemplate(BoeHeaderWidget.Description, 'Description');
+
+        if (!BoeHeaderWidget.isReadOnly()) {
+            ResetRteTemplate(BoeHeaderWidget.DataSource, 'DataSource');
         }
 
-        $("#Description").val(BoeHeaderWidget.OriginalDescription);
-        $("#DataSource").val(BoeHeaderWidget.OriginalDataSource);
         $("#Title").val(BoeHeaderWidget.OriginalTitle);
         $('#MetricUsed').prop('checked', BoeHeaderWidget.OriginalShowDisclosure);
 
@@ -645,11 +640,11 @@ function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, save
 
         if (inHeaderInfo.SourceProgramShortName.length || inHeaderInfo.DataSourceLocation.length) {
             // Update sources of data by append to existing and set dirty bit.
-            var newDataSource = $.trim(tinyMCE.EditorManager.editors.DataSource.getContent()) + "<BR />" + inHeaderInfo.SourceProgramShortName;
+            var newDataSource = $.trim(tinyMCE.EditorManager.editors.DataSource_0.getContent()) + "<BR />" + inHeaderInfo.SourceProgramShortName;
             if (inHeaderInfo.DataSourceLocation.length) {
                 newDataSource = newDataSource + " - " + inHeaderInfo.DataSourceLocation;
             }
-            tinyMCE.EditorManager.editors.DataSource.setContent(newDataSource);
+            tinyMCE.EditorManager.editors.DataSource_0.setContent(newDataSource);
             BoeHeaderWidget.setDirty();
         }
 
@@ -706,11 +701,11 @@ function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, save
 
     if(!BoeHeaderWidget.isReadOnly())
     {
-        InitializeRTE('DataSource', { maxlen: rteFieldSize, enableCharCounting: true }, BoeHeaderWidget);
+        InitializeRteTemplate(BoeHeaderWidget.DataSource, 'DataSource', rteFieldSize);
     }
     else  // read-only
     { 
-        HandleRTEDataForReadOnly("#DataSource", ".replacedWidgetText");
+        HandleRTETemplateDataForReadOnly(BoeHeaderWidget.DataSource, 'DataSource');
     }
 
     if (!allowDateShift) {
@@ -730,8 +725,9 @@ function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, save
     return BoeHeaderWidget;
 }
 
-function AfterDomLoadBoeHeaderDescription(BOEHeaderDescription_ReadOnly, rteFieldSize) {
+function AfterDomLoadBoeHeaderDescription(BOEHeaderDescription_ReadOnly, rteFieldSize, useQuestions, numberQuestions) {
     var BOEHeaderDescription = new Widget("BoeHeaderDescription", BOEHeaderDescription_ReadOnly);
+    BoeHeaderWidget.Description = CreateRteTemplate(useQuestions, numberQuestions);
 
     //bind any events that the objects need to observe to and member functions.
     BOEHeaderDescription.InitializeDescription = function () {
@@ -744,9 +740,9 @@ function AfterDomLoadBoeHeaderDescription(BOEHeaderDescription_ReadOnly, rteFiel
             $('#description-element *').removeClass('display-none');
             $('#BoeHeaderForm .oci-note').css('display', 'block');
 
-            InitializeRTE('Description', { maxlen: rteFieldSize, enableCharCounting: true }, BoeHeaderWidget);
+            InitializeRteTemplate(BoeHeaderWidget.Description, 'Description', rteFieldSize);
         } else {
-            HandleRTEDataForReadOnly("#Description", ".replacedWidgetText");
+            HandleRTETemplateDataForReadOnly(BoeHeaderWidget.Description, 'Description');
             $('#BoeHeaderForm .buttons button[name=save-button]').addClass('display-none');
             $('#BoeHeaderForm .buttons button[name=cancel-button]').addClass('display-none');
         }
@@ -2103,4 +2099,82 @@ function AfterDomLoadBOECommentsGridWidget(BOECommentsGrid) {
     }
 
     refreshModule($('.boe-comments.module'));
+}
+
+function CreateRteTemplate(useQuestions, numberQuestions) {
+    return {
+        UseQuestions: useQuestions,
+        NumberQuestions: numberQuestions,
+        OriginalAnswers: []
+    };
+}
+
+function InitializeRteTemplate(template, templateName, rteFieldSize) {
+    // capture original values as well as initialize
+    for (var i = 0; i < template.NumberQuestions; i++) {
+        template.OriginalAnswers = [];
+        template.OriginalAnswers.push($('#' + templateName + '_' + i.toString()).val());
+        InitializeRTE(templateName + '_' + i.toString(), { maxlen: rteFieldSize, enableCharCounting: true }, BoeHeaderWidget);
+    }
+}
+
+function ResetRteTemplate(template, templateName) {
+    if (tinyMCE.get(templateName + '_0')) {
+        for (var i = 0; i < template.NumberQuestions; i++) {
+            var editor = tinyMCE.get(templateName + '_' + i.toString());
+            editor.setContent(template.OriginalAnswers[i]);
+
+            $('#' + templateName + '_' + i.toString()).val(template.OriginalAnswers[i]);
+        }
+    }
+}
+
+function GetRteTemplateJson(template, templateName, data) {
+    var editor = tinyMCE.get(templateName + '_0')
+    if (editor) {
+        if (template.UseQuestions) {
+            data[templateName] = '_'; // set it since it is required
+            // set the RTE template answers
+            for (var i = 0; i < template.NumberQuestions; i++) {
+                editor = tinyMCE.get(templateName + '_' + i.toString());
+                var element = $('#' + templateName + '_' + i.toString());
+                data.RteTemplateAnswers.push({
+                    Id: element.attr('pkid'),
+                    QuestionId: element.attr('questionId'),
+                    BoeId: element.attr('boeId'),
+                    SourceId: element.attr('sourceId'),
+                    AnswerText: editor.getContent(),
+                    UpdateDateLong: element.attr('updateDateLong'),
+                    TaskId: element.attr('taskId'),
+                    Required: element.attr('isrequired')
+                });
+            }
+        } else {
+            data[templateName] = editor.getContent();
+        }
+    }
+}
+
+function HandleRTETemplateDataForReadOnly(template, templateName) {
+    for (var i = 0; i < template.NumberQuestions; i++) {
+        HandleRTEDataForReadOnly('#' + templateName + '_' + i.toString(), '.replacedWidgetText');
+    }
+}
+
+/**
+ *  Mainly used by MOQ RTE field where MOQ View is read-only but the RTE field should not be so it has to be reset to editable
+ * @param {any} template
+ * @param {any} templateName
+ * @param {any} section
+ */
+function RemoveRTETemplateReadOnly(template, templateName, section) {
+    if (template !== undefined) {
+        for (var i = 0; i < template.NumberQuestions; i++) {
+            var name = '#' + templateName + '_' + i.toString();
+
+            var textElement = $(name, section);
+            $('.replacedWidgetText', textElement.parent()).addClass('display-none');
+            textElement.removeClass('display-none');
+        }
+    }
 }

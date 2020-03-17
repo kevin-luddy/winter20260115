@@ -7,6 +7,7 @@
 namespace GenBOE.ActionLogic.ControllerLogic
 {
     using System.Collections.Generic;
+    using GenBOE.Dtos;
     using IES.Common.Exceptions;
 
     /// <summary>
@@ -43,5 +44,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="workspaceId">The id of the workspace to check.</param>
         /// <returns></returns>
         bool AreOffloadRatesOutOfDate(int workspaceId);
+
+        /// <summary>
+        /// Validates the RTE Answers
+        /// </summary>
+        /// <param name="answers">The answers to validate.</param>
+        /// <param name="sources">The sources for RTE Templates.</param>
+        /// <param name="rteSizeLimit">The RTE Size limit for the workspace if overridden.</param>
+        /// <returns>Validation warnings.</returns>
+        ICollection<ValidationMessage> ValidateRteAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<RteCustomTemplateSourceModelView> sources, int? rteSizeLimit);
     }
 }

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -48,6 +48,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         Mock<BOEDiscrepancyReport> boeDiscrepancyReport = new Mock<BOEDiscrepancyReport>(new Mock<IFullWorkspaceRecalculation>().Object, new Mock<IUserDTODataLoader>().Object);
         Mock<IProposalLoader> proposalLoader = new Mock<IProposalLoader>();
         Mock<IWorkspaceControllerLogic> workspaceControllerLogic = new Mock<IWorkspaceControllerLogic>();
+        Mock<IRteTemplateDataLoader> rteTemplateLoader = new Mock<IRteTemplateDataLoader>();
         
         [TestInitialize]
         public void Init()
@@ -73,7 +74,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 this.boeCustomExporter.Object,
                 this.workspaceExportFormatDTOLoader.Object, this.boeDiscrepancyReport.Object,
                 this.proposalLoader.Object,
-                this.workspaceControllerLogic.Object);
+                this.workspaceControllerLogic.Object, rteTemplateLoader.Object);
         }
 
         #region ExportAllBOEsReport
@@ -178,16 +179,37 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             workspaceExportFormatDTOLoader.Setup(x => x.GetById((int)ExcelReportTemplateType.MASTER)).Returns(wsExportFormatDTO);
 
             boeCustomExporter.Setup(x => x.ConvertBoeDTOsToExportMVs(It.IsAny<ICollection<FullBoe>>(), It.IsAny<BOEExportInputs>())).Returns(new List<BOEExportModelView> { boeModel1, boeModel3, boeModel4 });
+            List<RTECustomTemplateQuestionAnswerModelView> answers = new List<RTECustomTemplateQuestionAnswerModelView>();
+            answers.Add(new RTECustomTemplateQuestionAnswerModelView
+            {
+                AnswerText = "testing answer",
+                QuestionText = "question:",
+                SourceId = (int)RteTemplateSource.BoeDescription,
+                BoeId = 1
+            });
 
+            rteTemplateLoader.Setup(x => x.GetByWorkspaceId(It.IsAny<int>(), It.IsAny<ICollection<FullBoe>>())).Returns(answers);
             ReportsControllerLogic sut = CreateSut();
 
+            bool isCustomExport;
+            WorkspaceExportFormatDTO wsExportFormat;
+            BOEExportInputs exportInputs;
+            ICollection<BOEExportModelView> boeExportModelViews;
+            List<BOESummaryGridModelView> boeSummaryGridModelViews;
+
             //Act
-            sut.ExportAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, selectedComponents, viewDataDictionary, httpResponse.Object, true);
-            sut.ExportAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, selectedComponents, viewDataDictionary, httpResponse.Object, false);
-            sut.ExportAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, selectedComponents, viewDataDictionary, httpResponse.Object, true);
+            sut.PrepareAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
+                out boeExportModelViews, out boeSummaryGridModelViews, true);
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, true, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
+            sut.PrepareAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
+                out boeExportModelViews, out boeSummaryGridModelViews, false);
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, true, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
+            sut.PrepareAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
+                out boeExportModelViews, out boeSummaryGridModelViews, true);
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, true, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
 
             //Assert
-
+            rteTemplateLoader.Verify(x => x.GetByWorkspaceId(It.IsAny<int>(), It.IsAny<ICollection<FullBoe>>()), Times.Exactly(3));
             boeSummary.Verify(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[0], It.IsAny<BOEExportInputs>(), isSubContractorUser), Times.Exactly(3));
             boeSummary.Verify(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[1], It.IsAny<BOEExportInputs>(), isSubContractorUser), Times.Never());
             boeSummary.Verify(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[2], It.IsAny<BOEExportInputs>(), isSubContractorUser), Times.Exactly(3));
@@ -201,8 +223,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         /// template with the boe exporter. 
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        //[TestMethod]
-        // ToDo: Dusan - this started to fail due to permissions. Need to look into it. 
+        [TestMethod]
         public void ExportAllBOEsReportTestCustomFalse()
         {
             //Value Declarations
@@ -239,7 +260,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             BOEExportModelView boeModel1 = new BOEExportModelView() { BoeID = 1 };
             BOEExportModelView boeModel3 = new BOEExportModelView() { BoeID = 3 };
-            Collection<BOEExportModelView> boeModelCollection = new Collection<BOEExportModelView>() { boeModel1, boeModel3 };
+            ICollection<BOEExportModelView> boeModelCollection = new Collection<BOEExportModelView>() { boeModel1, boeModel3 };
 
             ICollection<ResourceDTO> resourcesFromDB = new Collection<ResourceDTO>(){
                 new ResourceDTO(){ Id = 1 },
@@ -260,6 +281,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);
             _retriever.Setup(x => x.GetMaterialsByBoeIds(BoeIds, false)).Returns(MaterialID);
 
+            _retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, true)).Returns(new ReadOnlyCollection<TravelDTO>(new List<TravelDTO>()));
+            _retriever.Setup(x => x.GetMaterialsByBoeIds(BoeIds, true)).Returns(new ReadOnlyCollection<MaterialDTO>(new List<MaterialDTO>()));
+
             this._retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);
 
             ResourceLoader.Setup(x => x.GetByIds(resourceIds)).Returns(resourcesFromDB);
@@ -276,9 +300,17 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             ReportsControllerLogic sut = CreateSut();
 
+            bool isCustomExport;
+            WorkspaceExportFormatDTO wsExportFormat;
+            List<BOESummaryGridModelView> boeSummaryGridModelViews;
+
             //Act
-            sut.ExportAllBOEsReport(workspace, true, null, selectBOEs, selectedComponents, viewDataDictionary, httpResponse.Object, false);
-            sut.ExportAllBOEsReport(workspace, true, null, selectBOEs, selectedComponents, viewDataDictionary, httpResponse.Object, false);
+            sut.PrepareAllBOEsReport(workspace, true, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
+                out boeModelCollection, out boeSummaryGridModelViews, false);
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, true, isCustomExport, wsExportFormat, exportInputs, boeModelCollection, boeSummaryGridModelViews);
+            sut.PrepareAllBOEsReport(workspace, true, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
+                out boeModelCollection, out boeSummaryGridModelViews, false);
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, true, isCustomExport, wsExportFormat, exportInputs, boeModelCollection, boeSummaryGridModelViews);
 
             //Assert
             boeExporter.Verify(x => x.ExportBOEToWordFile(exportInputs, boeModelCollection, listOfBOEs, httpResponse.Object, string.Format("genBOEExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO.PhysicalFilePathCache, wsExportFormatDTO.ExportFormat.TemplateType), Times.Once());
@@ -326,6 +358,33 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         /// </summary>
         [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
+        public void PrepareAllBOEsReportTestWorkspaceNull()
+        {
+            //Value Declarations
+            bool isSubContractorUser = true;
+            List<int> selectBOEs = new List<int>();
+            ICollection<BoeCustomReportComponent> selectedComponents = new Collection<BoeCustomReportComponent>();
+            ViewDataDictionary viewDataDictionary = new ViewDataDictionary();
+
+            ReportsControllerLogic sut = CreateSut();
+
+            bool isCustomExport;
+            WorkspaceExportFormatDTO wsExportFormat;
+            BOEExportInputs exportInputs;
+            ICollection<BOEExportModelView> boeExportModelViews;
+            List<BOESummaryGridModelView> boeSummaryGridModelViews;
+
+            //Act
+            sut.PrepareAllBOEsReport(null, isSubContractorUser, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs, out boeExportModelViews, out boeSummaryGridModelViews);
+        }
+
+        /// <summary>
+        /// This test case will test ExportAllBOEsReport. It will verify that 
+        /// this function will properly throw a ArgumentNullException when the
+        /// FullWorkspace is passed through as Null.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
         public void ExportAllBOEsReportTestWorkspaceNull()
         {
             //Value Declarations
@@ -340,9 +399,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             ReportsControllerLogic sut = CreateSut();
 
             //Act
-            sut.ExportAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, selectedComponents, viewDataDictionary, httpResponse.Object, custom);
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, true, false, null, null, null, null);
         }
-        
+
         /// <summary>
         /// This test case will test ExportAllBOEsReport. It will verify that
         /// this function will properly throw a ArgumentNullException when the
@@ -355,16 +414,38 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             //Value Declarations
             FullWorkspace workspace = new FullWorkspace() { Id = 1 };
             bool isSubContractorUser = true;
-            List<int> selectBOEs = new List<int>();
             ICollection<BoeCustomReportComponent> selectedComponents = new Collection<BoeCustomReportComponent>();
-            ViewDataDictionary viewDataDictionary = new ViewDataDictionary();
             HttpResponseBase httpResponse = null;
             bool custom = false;
 
             ReportsControllerLogic sut = CreateSut();
 
-            //ACt
-            sut.ExportAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, selectedComponents, viewDataDictionary, httpResponse, custom);
+            //Act
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse, isSubContractorUser, custom, null, null, null, null);
+        }
+
+        /// <summary>
+        /// This test case will test ExportAllBOEsReport. It will verify that 
+        /// this function will properly throw a ArgumentNullException when 
+        /// wsExportFormatDTO is passed through as Null.
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ExportAllBOEsReportTestWsExportFormatDTONull()
+        {
+            //Value Declarations
+            FullWorkspace workspace = new FullWorkspace();
+            bool isSubContractorUser = true;
+            List<int> selectBOEs = new List<int>();
+            ICollection<BoeCustomReportComponent> selectedComponents = new Collection<BoeCustomReportComponent>();
+            ViewDataDictionary viewDataDictionary = new ViewDataDictionary();
+            Mock<HttpResponseBase> httpResponse = new Mock<HttpResponseBase>();
+            bool custom = false;
+
+            ReportsControllerLogic sut = CreateSut();
+
+            //Act
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, true, false, null, null, null, null);
         }
         #endregion
 

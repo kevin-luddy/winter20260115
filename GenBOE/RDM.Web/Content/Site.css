@@ -1522,6 +1522,7 @@ lv-backdrop {
     text-align:center;
     background: transparent;
     z-index: 940 !important;
+    pointer-events: none; /*Allow user to interact with page through transparent div*/
 }
 
 .notification
@@ -1543,6 +1544,7 @@ lv-backdrop {
     padding-right: 15px;
     padding-top: 6px;
     padding-bottom: 6px;
+    pointer-events: auto; /*Allow user to interact with notification while notification-bar has pointer events off*/
 }
 
 .message-close-button

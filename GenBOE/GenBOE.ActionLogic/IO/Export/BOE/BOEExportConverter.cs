@@ -12,6 +12,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Linq;
+    using System.Text;
     using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.DataBridge.Common;
@@ -185,6 +186,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 modelViews.Add(modelView);
             }
 
+            exportInputs.ClearRteOverrides();
+
             return modelViews;
         }
 
@@ -271,7 +274,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             boeExportModelView.PaddedClinName = (clinDTO != null) ? clinDTO.ClinPaddedNumber : string.Empty;
             boeExportModelView.ProposalSubmittalDate = exportInputs.Workspace.ProposalSubmittalDate;
             boeExportModelView.ContainsOCI = exportInputs.Workspace.ContainsOCI;
-            boeExportModelView.DataSource = boe.DataSource != null ? boe.DataSource : string.Empty;
+            boeExportModelView.DataSource = BOEExportConverter.GetRteOverride(boe.Id, null, boe.DataSource, RteTemplateSource.BoeSources, exportInputs.RTETemplatesOverrides);
             boeExportModelView.IsMaterial = boe.isMaterial;
             boeExportModelView.IsMultiClinWbs = boe.IsMultiClinWbs;
             boeExportModelView.StartDate = boe.StartDate;
@@ -352,7 +355,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             boeExportModelView.Approvers = this.DetermineBoeExportApprovers(boe.Id, exportInputs.BoeMappingWithApproverResponses, exportInputs.GetUserDataForBoesForWs);
 
             boeExportModelView.BOETitle = boe.Title;
-            boeExportModelView.BOEDescription = boe.Description;
+            boeExportModelView.BOEDescription = BOEExportConverter.GetRteOverride(boe.Id, null, boe.Description, RteTemplateSource.BoeDescription, exportInputs.RTETemplatesOverrides);
             boeExportModelView.ExportFormat = exportFormatDTO.ExportFormat;
 
             Collection<BOEExportTaskElement> boeExportTaskElements = this.PopulateLaborAndMissionTasks(boe,
@@ -432,12 +435,12 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             {
                 BOEExportTaskElement boeExportTaskElement = new BOEExportTaskElement();
                 boeExportTaskElement.BoeID = boeTaskElement.BoeID;
-                boeExportTaskElement.BOETaskDesc = boeTaskElement.Description;
+                boeExportTaskElement.BOETaskDesc = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.Description, RteTemplateSource.TaskDescription, exportInputs.RTETemplatesOverrides);
                 boeExportTaskElement.BOETaskElementID = boeTaskElement.Id;
                 boeExportTaskElement.BOETaskID = boeTaskElement.BOETaskID;
                 boeExportTaskElement.EndDate = boeTaskElement.EndDate;
                 boeExportTaskElement.MOQEquation = boeTaskElement.MOQHoursEquation;
-                boeExportTaskElement.MOQText = boeTaskElement.MOQText;
+                boeExportTaskElement.MOQText = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.MOQText, RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides);
                 boeExportTaskElement.MOQType = boeTaskElement.MOQType.GetDescription();
                 boeExportTaskElement.OrdinaryVariables = boeTaskElement.OrdinaryVariables;
                 boeExportTaskElement.StartDate = boeTaskElement.StartDate;
@@ -1245,6 +1248,40 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             }
 
             this.WorkspaceDecimalPrecision = ws.DecimalPrecision;
+        }
+
+        /// <summary>
+        /// Gets an RTE field or the overridden prompts and answers.
+        /// </summary>
+        /// <param name="boeId">The boe for the override.</param>
+        /// <param name="taskId">The task for the override.</param>
+        /// <param name="original">The original text if not overridden.</param>
+        /// <param name="source">The source for the override.</param>
+        /// <param name="answers">The overrides for this workspace.</param>
+        /// <returns></returns>
+        public static string GetRteOverride(int boeId, int? taskId, string original, RteTemplateSource source, IReadOnlyCollection<RTECustomTemplateQuestionAnswerModelView> answers)
+        {
+            ICollection<RTECustomTemplateQuestionAnswerModelView> overrides = answers.Where(a => a.SourceId == (int)source && a.BoeId == boeId && a.TaskId == taskId).OrderBy(t => t.SortOrder).ToList();
+
+            if (overrides.Any())
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (RTECustomTemplateQuestionAnswerModelView answer in overrides)
+                {
+                    sb.AppendLine();
+                    sb.Append("<b>");
+                    sb.Append(answer.QuestionText);
+                    sb.AppendLine("</b>");
+                    sb.AppendLine(answer.AnswerText ?? "<br />");
+                    sb.AppendLine();
+                }
+
+                return sb.ToString();
+            }
+            else
+            {
+                return original ?? string.Empty;
+            }
         }
     }
 }

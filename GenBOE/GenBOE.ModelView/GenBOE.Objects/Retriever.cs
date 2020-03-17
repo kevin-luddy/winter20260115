@@ -48,6 +48,7 @@ namespace GenBOE.Objects
         private IBOEHistoryDTODataLoader boeHistoryLoader;
         private ITMResourceRateDTODataLoader tmResourceRateLoader;
         private IProjectMapDataLoader projectMapDataLoader;
+        private IRteTemplateDataLoader rteTemplateDataLoader;
 
         /// <summary>
         /// Constructor
@@ -94,7 +95,7 @@ namespace GenBOE.Objects
             IEscalationRatesDTOLoader escalationRateLoader, ITripDTODataLoader tripDataLoader, IPerDiemDTODataLoader perDiemLoader,
             IMiscTravelRateDTOLoader miscTravelRateLoader, IUserDTODataLoader userDataLoader, ILocationDTODataLoader locationLoader,
             ICustomFieldValueDTODataLoader customFieldValueLoader, IBOEHistoryDTODataLoader boeHistoryLoader, ITMResourceRateDTODataLoader tmResourceRateLoader,
-            IProjectMapDataLoader projectMapDataLoader)
+            IProjectMapDataLoader projectMapDataLoader, IRteTemplateDataLoader rteTemplateDataLoader)
         {
             this.clinLoader = clinLoader;
             this.wbsLoader = wbsLoader;
@@ -126,6 +127,7 @@ namespace GenBOE.Objects
             this.boeHistoryLoader = boeHistoryLoader;
             this.tmResourceRateLoader = tmResourceRateLoader;
             this.projectMapDataLoader = projectMapDataLoader;
+            this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
         #endregion
@@ -962,6 +964,14 @@ namespace GenBOE.Objects
         public ProjectMapPageModelView GetProjectMapPagedData(int workspaceId, int page)
         {
             return this.projectMapDataLoader.GetProjectMapPagedData(workspaceId, page);
+        }
+
+        /// <summary>
+        /// Gets RTE Template Overrides for the specific workspace
+        /// </summary>
+        public ICollection<RteTemplateSource> GetWsRteOverrides(int workspaceId)
+        {
+            return this.rteTemplateDataLoader.GetTemplates(workspaceId).SelectMany(x => x.Assigned).Distinct().Select(x => (RteTemplateSource)x).ToList();
         }
     }
 }

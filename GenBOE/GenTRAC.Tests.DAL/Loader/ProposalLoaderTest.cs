@@ -48,7 +48,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetAllProposalIDs()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             ICollection<int> beforeProposalIds = sut.GetAllIds();
             this.testData.GetProposal(true);
@@ -63,7 +63,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetProposalIdByTrackingIdForecastTest()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
             ProposalDto p = TestData.GetInstance().GetProposal(true, null, null, true);
             int fid = sut.GetIdByTrackingNumber(p.ForecastedTrackingNumber);
 
@@ -84,7 +84,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_SaveProposalAndGetProposalByID()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             string proposalIdentifier = TestData.CreateRandomWord(6);
             ProposalDto newProposal = new ProposalDto()
@@ -175,7 +175,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_SaveProposalTestOtherFieldHandling()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
             string boeToolName = "Big BOE";
             string pricingToolName = "Big Pricer";
             string proposalLocationName = "Kansas City, MO";
@@ -272,7 +272,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetProposalIDByTrackingNumber()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             ProposalDto testProposal = this.testData.GetProposal();
 
@@ -290,7 +290,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetProposalIdsByUser()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
             UserDTO user = this.testData.GetUser(inCreateNew: true);
@@ -313,7 +313,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetProposalsByUser()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
             UserDTO user = this.testData.GetUser(inCreateNew: true);
@@ -336,7 +336,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetProposalsByUser_ShowProposalsForMyOrganization()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
 
@@ -429,7 +429,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetProposals_Forecasted()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
             
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true, isForecasted: true);
             UserDTO user = this.testData.GetUser(inCreateNew: true);
@@ -468,7 +468,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetProposals_NonForecasted()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true, isForecasted: false);
             UserDTO user = this.testData.GetUser(inCreateNew: true);
@@ -507,7 +507,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_DateAssignedTest()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
 
@@ -548,7 +548,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetProposalCompletedDateTest()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
 
@@ -584,7 +584,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetProposalStatusTest()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             // new proposal is In Progress
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
@@ -603,7 +603,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_UpdateProposalStatusTest()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
 
@@ -637,7 +637,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_IsProposalTitleUnique()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
 
@@ -654,7 +654,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void L_GetProposalsByWorkflowStatus()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
             proposal.WorkflowStatus = WorkflowStatus.InitialLOBLeadEmail;
@@ -684,12 +684,54 @@ namespace GenTRAC.Tests.DAL.Loader
         }
 
         /// <summary>
+        /// Test GetProposalsByProposalStatus
+        /// </summary>
+        [TestMethod]
+        public void L_GetProposalsByProposalStatus()
+        {
+            ProposalLoader sut = this.CreateSystem();
+
+            ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
+
+            // the newly created test proposal should have a status of In Progress
+            ICollection<ProposalDto> result = sut.GetProposalsByProposalStatus(ProposalStatus.InProgress);
+
+            Assert.IsNotNull(result.FirstOrDefault(x => x.Id == proposal.Id));
+
+            // Change the status and test getting proposals by that status
+            sut.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Submitted);
+
+            result = sut.GetProposalsByProposalStatus(ProposalStatus.Submitted);
+
+            Assert.IsNotNull(result.FirstOrDefault(x => x.Id == proposal.Id));
+        }
+
+        /// <summary>
+        /// Test GetAllCompletedProposalsAfterSubmitDate
+        /// </summary>
+        [TestMethod]
+        public void L_GetAllCompletedProposalsAfterSubmitDate()
+        {
+            ProposalLoader sut = this.CreateSystem();
+
+            ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
+            this.testData.SaveChecklistAsPricer(proposal.Id, null, true);
+            this.testData.SetSubmitDate(proposal.Id, DateTime.Now);
+            this.testData.SetProposalStatus(proposal.Id, ProposalStatus.Submitted);
+
+            ICollection<ProposalDto> result = sut.GetAllCompletedProposalsAfterSubmitDate(DateTime.Now.AddMinutes(-1));
+
+            Assert.IsTrue(result.Any());
+            Assert.IsTrue(result.Any(x => x.Id == proposal.Id));
+        }
+
+        /// <summary>
         /// Test for retrieval of proposals by workflow status and cutoff date.
         /// </summary>
         [TestMethod]
         public void L_GetProposalsByWorkflowStatusAndCutoffDate()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             DateTime cutoffDate = DateTime.Now.AddHours(-1);
 
@@ -744,7 +786,7 @@ namespace GenTRAC.Tests.DAL.Loader
             proposal.LOBEstimatingLeadSignatureComment = "lob comment";
             proposal.LOBEstimatingLeadSignedDate = DateTime.Now;
 
-            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot}))
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot}))
             {
                 proposal.Updateable = UpdateType.Upsert;
                 sut.Save(proposal);
@@ -769,7 +811,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             Mock<IChecklistMediator> checklistMediator;
             ApprovalsControllerLogic approvalsControllerLogic = this.CreateControllerLogicSystem(sut, out checklistMediator);
-            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
             {
                 approvalsControllerLogic.ResetWorkflow(proposal.Id);
                 scope.Complete();
@@ -801,16 +843,16 @@ namespace GenTRAC.Tests.DAL.Loader
         /// <returns>ApprovalsControllerLogic</returns>
         private ApprovalsControllerLogic CreateControllerLogicSystem(ProposalLoader proposalLoader, out Mock<IChecklistMediator> checklistMediator)
         {
-            var securityAccess = new Mock<ISecurityAccess>();
-            var userMapper = new Mock<IUserMapper>();
-            var userLoader = new Mock<IUserLoader>();
-            var emailer = new Mock<IPtmEmailer>();
-            var approvalsLoader = new Mock<ApprovalsLoader>();
-            var proposalChecklistLoader = new Mock<IProposalChecklistLoader>();
+            Mock<ISecurityAccess> securityAccess = new Mock<ISecurityAccess>();
+            Mock<IUserMapper> userMapper = new Mock<IUserMapper>();
+            Mock<IUserLoader> userLoader = new Mock<IUserLoader>();
+            Mock<IPtmEmailer> emailer = new Mock<IPtmEmailer>();
+            Mock<ApprovalsLoader> approvalsLoader = new Mock<ApprovalsLoader>();
+            Mock<IProposalChecklistLoader> proposalChecklistLoader = new Mock<IProposalChecklistLoader>();
             checklistMediator = new Mock<IChecklistMediator>();
-            var approvalEmailer = new Mock<ApprovalEmailer>();
+            Mock<ApprovalEmailer> approvalEmailer = new Mock<ApprovalEmailer>();
 
-            var retriever = new Mock<IRetriever>();
+            Mock<IRetriever> retriever = new Mock<IRetriever>();
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterInstance(retriever.Object);
 
             return new ApprovalsControllerLogic(securityAccess.Object, proposalLoader, userMapper.Object, userLoader.Object, emailer.Object, new FullObjectFactory(), approvalsLoader.Object, new ProposalMediator(proposalLoader), proposalChecklistLoader.Object, checklistMediator.Object, approvalEmailer.Object, null, null);
@@ -825,7 +867,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [ExpectedException(typeof(ArgumentNullException))]
         public void L_SaveProposalException1()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             using (TransactionScope scope = new TransactionScope())
             {
@@ -842,7 +884,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [ExpectedException(typeof(ArgumentException))]
         public void L_SaveProposalException2()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             ProposalDto toSave = new ProposalDto();
 
@@ -860,7 +902,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [ExpectedException(typeof(ArgumentException))]
         public void L_IsProposalTitleUnique2()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
 
             sut.IsProposalTitleUnique(1, null);
         }
@@ -873,7 +915,7 @@ namespace GenTRAC.Tests.DAL.Loader
         [TestMethod]
         public void GetProposalsCertificationTimelinePastDue()
         {
-            var sut = this.CreateSystem();
+            ProposalLoader sut = this.CreateSystem();
             ICollection<ProposalDto> proposals = sut.GetProposalsCertificationTimelinePastDue();
 
             Assert.IsNotNull(proposals);

@@ -346,8 +346,17 @@ namespace GenBOE.ActionLogic.IO.Import
             else
             {
                 // if the data contains placeholder text get the data from the dto
-                toReturn.Description = importedBoeDescription == null || importedBoeDescription.Equals(ImportExportConstants.PLACEHOLDER_TEXT) ? boeDTO.Description : importedBoeDescription;   // If null, field was removed from the worksheet due to ShowDescriptionAndSources being set to false.
-                toReturn.DataSource = importedBoeDescription == null || importedBoeSourcesOfData.Equals(ImportExportConstants.PLACEHOLDER_TEXT) ? boeDTO.DataSource : importedBoeSourcesOfData; // If null, field was removed from the worksheet due to ShowDescriptionAndSources being set to false.
+                if (!workspace.RteOverrides.Contains(RteTemplateSource.BoeDescription))
+                {
+                    toReturn.Description = importedBoeDescription == null || importedBoeDescription.Equals(ImportExportConstants.PLACEHOLDER_TEXT) ? boeDTO.Description : importedBoeDescription;   // If null, field was removed from the worksheet due to ShowDescriptionAndSources being set to false.
+                }
+
+                if (!workspace.RteOverrides.Contains(RteTemplateSource.BoeSources))
+                {
+                    toReturn.DataSource = importedBoeDescription == null || importedBoeSourcesOfData.Equals(ImportExportConstants.PLACEHOLDER_TEXT) ? boeDTO.DataSource : importedBoeSourcesOfData; // If null, field was removed from the worksheet due to ShowDescriptionAndSources being set to false.
+                }
+
+
                 toReturn.IsMultiClinWbs = Boolean.Parse(importedBoeMulti);
                 toReturn.CLINID = boeDTO.CLINID.HasValue ? boeDTO.CLINID.Value : 0;
                 toReturn.WBSID = boeDTO.WBSID.HasValue ? boeDTO.WBSID.Value : 0;
@@ -432,8 +441,15 @@ namespace GenBOE.ActionLogic.IO.Import
             }
             else
             {
-                toReturn.Description = importedTaskDescription.Contains(ImportExportConstants.PLACEHOLDER_TEXT) ? Task.Description : importedTaskDescription;
-                toReturn.MOQText = importedTaskMOQText.Contains(ImportExportConstants.PLACEHOLDER_TEXT) ? Task.MOQText : importedTaskMOQText;
+                if (!workspace.RteOverrides.Contains(RteTemplateSource.TaskDescription))
+                {
+                    toReturn.Description = importedTaskDescription.Contains(ImportExportConstants.PLACEHOLDER_TEXT) ? Task.Description : importedTaskDescription;
+                }
+
+                if (!workspace.RteOverrides.Contains(RteTemplateSource.TaskMOQ))
+                {
+                    toReturn.MOQText = importedTaskMOQText.Contains(ImportExportConstants.PLACEHOLDER_TEXT) ? Task.MOQText : importedTaskMOQText;
+                }
             }
 
             DateTime ParsedDate;

@@ -141,6 +141,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string CONTROLLER_BOE_ZONE_TRAVEL = "BOEZoneTravel";
         public static readonly string CONTROLLER_AUTOCOMPLETE = "AutoComplete";
         public static readonly string CONTROLLER_BOE_BULK_SUBMIT = "BOEBulkSubmit";
+        public static readonly string CONTROLLER_RTE_TEMPLATES = "RTETemplates";
 
         #endregion CONTROLLERS
 
@@ -623,6 +624,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_REFRESH_VARIABLE_BOE_SUM_BY_WBS = "RefreshVariableBOESumByWBS";
         public static readonly string ACTION_RESTORE_CUSTOM_FIELD_PERFORMING_ORGANIZATIONS = "RestoreCustomFieldPerformingOrganizations";
         public static readonly string ACTION_RESTORE_WORKSPACE_VERSION = "RestoreWorkspaceVersion";
+        public static readonly string ACTION_EXPORT_WORKSPACE_VERSION = "ExportWorkspaceVersion";
         public static readonly string ACTION_SAVE_CUSTOM_FIELDS = "SaveCustomFields";
         public static readonly string ACTION_SAVE_CUSTOM_FIELD_PERFORMING_ORGS = "SaveCustomFieldPerformingOrgs";
         public static readonly string ACTION_SAVE_CUSTOM_FIELD_RESOURCES = "SaveCustomFieldResources";
@@ -670,6 +672,17 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_FIND_ADJACENT_BOES = "FindAdjacentBoes";
 
         #endregion Workspace
+
+        #region RTE Custom Templates
+
+        public static readonly string ACTION_DISPLAY_MANAGE_RTE_TEMPLATES = "Index";
+        public static readonly string VIEW_MANAGE_RTE_TEMPLATES = "ManageRTETemplates";
+        public static readonly string ACTION_GET_RTE_TEMPLATES = "GetRTETemplatesModel";
+        public static readonly string ACTION_SAVE_RTE_TEMPLATES = "SaveRTETemplatesModel";
+        public static readonly string ACTION_SEARCH_RTE_TEMPLATES = "SearchTemplates";
+        public static readonly string ACTION_COPY_RTE_TEMPLATE = "CopyTemplate";
+
+        #endregion RTE Custom Templates
 
         #region DateShift
 
@@ -883,6 +896,7 @@ namespace GenBOE.ActionLogic.Common
 
         #region SHARED
 
+        public static readonly string VIEW_RTE_TEMPLATE = "RteTemplate";
         public static readonly string VIEW_NOT_FOUND_CONTROL = "NotFoundControl";
         public static readonly string VIEW_INVALID_PARAMETERS = "InvalidParameters";
         public static readonly string VIEW_ERROR = "Error";

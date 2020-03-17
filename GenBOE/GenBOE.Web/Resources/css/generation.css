@@ -1713,7 +1713,8 @@ button.ui-datepicker-trigger
 }
 
 .grid div.delete,
-.historicalMetric .delete
+.historicalMetric .delete,
+.question-table .delete
 {
     background: transparent url(/Resources/css/images/delete.png) no-repeat 0 0;
     width: 13px;
@@ -1723,7 +1724,8 @@ button.ui-datepicker-trigger
 }
 
 .grid div.delete:hover,
-.historicalMetric .delete:hover
+.historicalMetric .delete:hover,
+.question-table .delete:hover
 {
     background: transparent url(/Resources/css/images/deletehover.png) no-repeat 0 0;
     cursor: pointer;
@@ -1734,8 +1736,7 @@ button.ui-datepicker-trigger
     background: transparent url(/Resources/css/images/delete.png) no-repeat 0 0;
 }
 
-.grid th.delete
-{
+.grid th.delete {
     padding: 5px;
     width: 13px;
     vertical-align: bottom;
@@ -1900,7 +1901,8 @@ button.ui-datepicker-trigger
 .task-element-grid .grid,
 .boe-history .grid,
 .manage-misc-rates-grid,
-.boebulksubmit-grid .grid
+.boebulksubmit-grid .grid,
+.manage-rte-templates-grid .grid
 {
     width: 962px;
 }
@@ -2243,6 +2245,10 @@ button.ui-datepicker-trigger
     font-size: 11px;
 }
 
+.ui-widget-content .paging-control a {
+    color: #ffffff !important;
+}
+
 .ui-widget-content a
 {
     color: #5297AD !important;
@@ -2263,7 +2269,7 @@ button.ui-datepicker-trigger
 ----------------------------------------------------------*/
 .replacedWidgetText
 {
-    display: inline-block;
+    display: block;
     *display: inline;
     *zoom: 1;
     margin-top: 3px;
@@ -5294,8 +5300,57 @@ td.greenStar:hover {
     width: 70px;
 }
 
-.wbs .paging
-{
+#AssignRTETemplateDialog .form-label {
+    width: 120px;
+}
+
+#AssignRTETemplateDialog .button-container {
+    margin-top: 15px;
+}
+
+#RteTemplateGrid input[type=checkbox],
+#TemplateDialog input[type=checkbox],
+#AssignRTETemplateDialog input[type=checkbox] {
+    cursor: pointer;
+}
+
+#RteTemplateGrid input:disabled,
+#TemplateDialog input:disabled,
+#AssignRTETemplateDialog input:disabled {
+    cursor: not-allowed;
+}
+
+#SearchTemplateDialog .form-label {
+    width: 250px;
+}
+
+.question-element {
+    min-height: 300px;
+}
+
+.question-table td {
+    text-align: center;
+}
+
+.question-table .question {
+    width: 500px;
+    height: unset;
+    text-align: left;
+}
+
+table.question-table {
+    border: solid 1px #b2b2b2;
+}
+
+.template-description {
+    width: 500px;
+}
+
+table.question-table tr {
+    border-top: solid 1px #b2b2b2;
+}
+
+.wbs .paging {
     height: auto;
 }
 
@@ -5709,8 +5764,11 @@ select.select-list-with-ellipses option,
     width:100%;
 }
 
-#ManageBackupVersionsGridTable th.restore
-{
+#ManageBackupVersionsGridTable th.restore {
+    width: 45px;
+}
+
+#ManageBackupVersionsGridTable th.export {
     width: 45px;
 }
 
@@ -5719,8 +5777,15 @@ select.select-list-with-ellipses option,
     width: 135px;
 }
 
-.grid .help-icon
-{
+#ExportDialog .validation-box {
+    white-space: pre-wrap;
+}
+
+#ExportDialog .selections {
+    margin-top: 3px;
+}
+
+.grid .help-icon {
     margin-left: 3px;
 }
 
@@ -8251,4 +8316,10 @@ input.labelLookFeel {
 
 #ExportToProPricerElementDialog-CopyFromHelpDialog {
     top: 0!important;
+}
+
+.template-label {
+    margin-bottom: 5px;
+    margin-top: 15px;
+    display: block;
 }

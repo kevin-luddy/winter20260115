@@ -4,6 +4,7 @@
     ViewBag.Title = "Proposal Details";
     string proposalLinkText = string.IsNullOrWhiteSpace(Model.ProposalTrackingNumber) ? Model.ForecastedTrackingNumber : Model.ProposalTrackingNumber;
     string proposalTabsCss = string.IsNullOrWhiteSpace(Model.ProposalTrackingNumber) ? "display: none;" : string.Empty;
+    string naHelpText = "Proposal was created before Certification Functionality<br/> was introduced into PTM.";
 }
 
 <script type="text/javascript">
@@ -46,6 +47,7 @@
         DetailWidget.IsModule = true;
 
         ProposalDetailsWidget = new GenWidget(DetailWidget);
+        ProposalDetailsWidget.applyHelpPopouts($("#ProposalTabs div.proposalStatusDates"));
 
         $('#ProposalTabs .tabs a').click(function (event) {
             event.preventDefault();
@@ -364,9 +366,18 @@
                                         }
                                         else if (Model.ProposalStatus == ProposalStatus.Completed)
                                         {
-                                            <text>
-                                                Certification Completed: @Model.CertificationCompletedDate
-                                            </text>
+                                            if (Model.CompletedBeforeCertification)
+                                            {
+                                                <span>
+                                                    Certification Completed: <span helptext="@naHelpText">N/A </span>
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <text>
+                                                    Certification Completed: @Model.CertificationCompletedDate
+                                                </text>
+                                            }
                                         }
                                     }
                                     else

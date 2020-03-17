@@ -236,8 +236,7 @@ input[type=radio] {
     height: 30px;
 }
 
-#proposalFiltersSection .help-dialog-text
-{
+#proposalFiltersSection .help-dialog-text {
     line-height: 18px;
     font-weight: normal;
     font-size: 11px;
@@ -603,6 +602,23 @@ hr {
     overflow: hidden;
     white-space: nowrap;
     vertical-align: top;
+}
+
+#ProposalTabs .tabs-center .proposal-text div .help-dialog-text {
+    line-height: normal;
+    font-weight: normal;
+    font-size: 11px;
+    color: #333333;
+    padding: 5px 5px 5px 0;
+}
+
+#ProposalTabs .tabs-center .proposal-text div.help-icon {
+    margin-left: 2px;
+    margin-top: 1px;
+}
+
+#ProposalTabs .tabs-center .proposal-text div.help-dialog {
+    display: none;
 }
 
 /* Buttons

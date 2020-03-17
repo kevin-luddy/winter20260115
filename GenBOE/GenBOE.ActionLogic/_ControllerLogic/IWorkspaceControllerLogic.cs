@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -9,6 +9,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Web.Mvc;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.Workspace;
     using GenBOE.DataBridge.DTO;
@@ -125,6 +126,26 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="ws">Workspace</param>
         /// <returns>Collection of template types</returns>
         ICollection<ExcelReportTemplateType> GetPicklistReportTemplateTypes(FullWorkspace ws);
+
+        /// <summary>
+        /// Create a copy of a previous verison of the workspace
+        /// </summary>
+        /// <param name="ws">The Workspace</param>
+        /// <param name="versionId">ID of the version</param>
+        /// <param name="exportAllBoes">bool noting if all boes should be copied</param>
+        /// <param name="boesToExport">list of BOE IDs if copying select BOEs</param>
+        /// <returns>ID of the new temporary Workspace</returns>
+        int CopyWorkspaceVersion(FullWorkspace ws, int versionId, bool exportAllBoes, ICollection<int> boesToExport);
+
+        /// <summary>
+        /// Create the Workspace Data Report for a previous version of a Workspace
+        /// </summary>
+        /// <param name="ws">The temporary copy of the previous workspace version</param>
+        /// <param name="templateFileLocation">template file location</param>
+        /// <param name="originalWorkspaceName">Original Workspace name</param>
+        /// <param name="versionId">Version ID</param>
+        /// <returns>File location of Workspace Data Report for the previous version</returns>
+        string CreateWorkspaceDataReportForVersion(FullWorkspace ws, string templateFileLocation, MetricNameTaskElementMappingDTO metricTaskElementMappings, string originalWorkspaceName, int versionId);
 
         /// <summary>
         /// Populates properties with company specific data

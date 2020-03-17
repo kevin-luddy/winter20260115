@@ -7,11 +7,13 @@
 namespace GenBOE.ActionLogic.ModelView.BOE
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel.DataAnnotations;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.ActionLogic.ValidationAttributes;
     using GenBOE.DataBridge.DTO;
+    using GenBOE.Dtos;
     using IES.Common;
 
     [StartEndDateValidation(StartDate = "StartDate", EndDate = "EndDate", CanBeEqual = true, ErrorMessage = "Start Date must be before the End Date")]
@@ -25,12 +27,13 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.CLIN = string.Empty;
             this.WBS = string.Empty;
             this.CustomFieldValues = new Collection<CustomFieldSelectionModelView>();
+            this.HeaderRteTemplateAnswers = new List<RTECustomTemplateQuestionAnswerModelView>();
             this.DataSource = string.Empty;
             this.HistoricMetricDisclosureChecked = false;
             this.ShowHistoricMetricCheck = false;
         }
 
-        public BOEHeaderModelView(BoeDTO inBoe) : this()
+        public BOEHeaderModelView(BoeDTO inBoe, ICollection<RTECustomTemplateQuestionAnswerModelView> answers) : this()
         {
             if (inBoe != null)
             {
@@ -46,8 +49,11 @@ namespace GenBOE.ActionLogic.ModelView.BOE
                 this.UpdateDate = inBoe.UpdateDate;
                 this.DataSource = inBoe.DataSource;
                 this.HistoricMetricDisclosureChecked = inBoe.HistoricMetricDisclosureChecked;
+                this.HeaderRteTemplateAnswers = answers;
             }
         }
+
+        public ICollection<RTECustomTemplateQuestionAnswerModelView> HeaderRteTemplateAnswers { get; }
 
         public string CLIN { get; set; }
   

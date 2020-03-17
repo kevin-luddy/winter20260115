@@ -35,6 +35,7 @@
     $scope.ResourceTypeLabor = RateModel.ResourceTypeLabor;
     lockService.id = RateModel.Area;
     $scope.ReplicationErrors = [];
+    $scope.cobraReminderRateList = [];
 
     $scope.FormatRates = function (grid, row, col, input) {
         var rateObjectRef = col.colDef.field.substring(0, col.colDef.field.indexOf('.Val'));
@@ -496,12 +497,35 @@
                 // start a new timer on Save & Continue.
                 $scope.refreshLock();
             }
-                        
+
             $(document).trigger("HIDE_LOADING_BOX");
+
+            // Remind user about cobra mapping for any new rates
+            var newRates = dirtyRates.filter(function (rate) { return rate.Id < 0; });
+            if (newRates.length > 0) {
+                $scope.showCobraReminderDialog(newRates);
+            }
         }, function errorCallback(response) {
             $scope.refreshLock(); // Refresh lock to give user time to correct errors
             $(document).trigger("HIDE_LOADING_BOX");
         });
+    };
+
+    $scope.showCobraReminderDialog = function (newRates) {
+        $scope.cobraReminderRateList = [];
+        newRates.forEach(function (rate) {
+            $scope.cobraReminderRateList.push(rate.Co);
+        });
+
+        $mdDialog.show({
+            contentElement: '#cobraReminderDialog',
+            parent: angular.element(document.body)
+        });
+    };
+
+    $scope.closeCobraReminderDialog = function () {
+        $mdDialog.hide();
+        $scope.cobraReminderRateList = [];
     };
 
     $scope.showConfirmDelete = function (rate) {
@@ -783,6 +807,16 @@
                 $scope.releaseLock();
                 $(document).trigger("DISPLAY_NOTIFICATION", 'Import successful and changes saved');
                 $(document).trigger("HIDE_LOADING_BOX");
+
+                // Remind user about cobra mapping for any new rates
+                var newRates = [];
+                $scope.insertRateCodes.forEach(function (rc) {
+                    newRates.push({ Co: rc.RateCode });
+                });
+
+                if (newRates.length > 0) {
+                    $scope.showCobraReminderDialog(newRates);
+                }
             },
             error: function (response) {
                 $scope.importRateCodesWorking = false;

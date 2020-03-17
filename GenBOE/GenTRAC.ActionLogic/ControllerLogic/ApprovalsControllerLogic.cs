@@ -168,7 +168,7 @@ namespace GenTRAC.ActionLogic
                         model.AdditionalEmailText = proposal.ApprovalEmailText ?? string.Empty;
                         // only show the reset workflow button if the workflow has been started and the current user is the lead or backup estimator.
                         model.ShowResetWorkflowButton = proposal.WorkflowStatus != WorkflowStatus.NotStarted && this.IsCurrentUserPricerOrBackupEstimator(proposal.Id);
-                        model.AllAttachmentsHaveBeenUploaded = this.attachmentLoader.AllAttachmentsHaveBeenUploaded(proposal.Id);
+                        model.AllAttachmentsHaveBeenUploaded = this.attachmentLoader.AllRequiredAttachmentsHaveBeenUploaded(proposal.Id);
                         break;
                     case PtmRole.CoverSheetApprover:
                         model.Comments = proposal.CoverSheetApproverSignatureComment ?? string.Empty;
@@ -185,7 +185,7 @@ namespace GenTRAC.ActionLogic
                     case PtmRole.LOBEstLead:
                         model.Comments = proposal.LOBEstimatingLeadSignatureComment ?? string.Empty;
                         model.DateOfApproval = proposal.LOBEstimatingLeadSignedDate;
-                        model.AllAttachmentsHaveBeenUploaded = this.attachmentLoader.AllAttachmentsHaveBeenUploaded(proposal.Id);
+                        model.AllAttachmentsHaveBeenUploaded = this.attachmentLoader.AllRequiredAttachmentsHaveBeenUploaded(proposal.Id);
                         model.HasNonPreferredTool = proposal.BoeTool != BOETool.genBOE || proposal.PricingTool != PricingTool.ProPricer;
                         break;
                     default:

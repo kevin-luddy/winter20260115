@@ -1160,7 +1160,12 @@ namespace IES.Common
         /// <summary>
         /// The certification timeline email
         /// </summary>
-        CertificationTimelineEmail
+        CertificationTimelineEmail,
+
+        /// <summary>
+        /// The reminder email for when the optional document is missing
+        /// </summary>
+        OptionalDocumentReminderEmail
     }
 
     /// <summary>

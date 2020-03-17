@@ -38,6 +38,7 @@ namespace GenBOE.Models
             this.WorkspaceUserXREFs = new HashSet<WorkspaceUserXREF>();
             this.Workspaces = new HashSet<Workspace>();
             this.Workspaces1 = new HashSet<Workspace>();
+            this.RteTemplates = new HashSet<RteTemplate>();
         }
     
         public int ETIUserID { get; set; }
@@ -93,5 +94,7 @@ namespace GenBOE.Models
         public virtual ICollection<Workspace> Workspaces { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Workspace> Workspaces1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<RteTemplate> RteTemplates { get; set; }
     }
 }

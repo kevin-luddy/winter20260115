@@ -93,6 +93,43 @@ namespace GenBOE.DataBridge.DTO
         }
 
         /// <summary>
+        /// Get the BOEs for the previous version of the Workspace
+        /// </summary>
+        /// <param name="versionID">Version ID</param>
+        /// <param name="workspaceID">Workspace ID</param>
+        /// <returns>BOEs for the previous version of the Workspace</returns>
+        [DbQuery]
+        virtual public ICollection<BoeVersionDTO> GetBoesByVersionID(int versionID, int workspaceID)
+        {
+            ICollection<BoeVersionDTO> toReturn = new Collection<BoeVersionDTO>();
+
+            using (StopwatchTimer sw = new StopwatchTimer(this._log))
+            {
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+                    toReturn = (from x in gbe.WBS_CLIN_BOE_XREF1
+                                join b in gbe.BOE1 on new { A = x.BOEID.Value, B = x.VersionID } equals new { A = b.BOEID, B = b.VersionID }
+                                join c in gbe.CLIN1 on  new { A = x.CLINID.Value, B = x.VersionID } equals new { A = c.CLINID, B = c.VersionID } into cx
+                                from c in cx.DefaultIfEmpty()
+                                join w in gbe.WorkBreakdownStructure1 on new { A = x.WBSID.Value, B = x.VersionID } equals new { A = w.WBSID, B = w.VersionID } into wx
+                                from w in wx.DefaultIfEmpty()
+                                where x.VersionID == versionID && b.WorkspaceID == workspaceID
+                                select new BoeVersionDTO
+                                {
+                                    BoeId = b.BOEID,
+                                    BoeTitle = b.BOETitle,
+                                    ClinNumber = c.DisplayedCLINNumber,
+                                    Clin = c.CLINTitle,
+                                    WbsNumber = w.DisplayedWBSNumber,
+                                    Wbs = w.WBSTitle
+                                }).ToCollection<BoeVersionDTO>();
+                }
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
         /// Gets for automatic backup generation.
         /// </summary>
         /// <param name="wsIds">The ws identifiers.</param>

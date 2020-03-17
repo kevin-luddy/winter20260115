@@ -1020,6 +1020,56 @@ warning 6002: The table/view 'GenBOESpace.dbo.BOEFormPBOEResourcesXREF' does not
           <Property Name="RoleID" Type="int" Nullable="false" />
           <Property Name="RoleName" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <EntityType Name="RteTemplate">
+          <Key>
+            <PropertyRef Name="TemplateID" />
+          </Key>
+          <Property Name="TemplateID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="WorkspaceID" Type="int" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="200" Nullable="false" />
+          <Property Name="AuthorID" Type="int" Nullable="false" />
+          <Property Name="CreatedOn" Type="datetime2" Precision="7" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RteTemplateAnswer">
+          <Key>
+            <PropertyRef Name="AnswerID" />
+          </Key>
+          <Property Name="AnswerID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="QuestionID" Type="int" Nullable="false" />
+          <Property Name="BOEID" Type="int" Nullable="false" />
+          <Property Name="TaskID" Type="int" />
+          <Property Name="Text" Type="varchar(max)" Nullable="false" />
+          <Property Name="RteTemplateSourceId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RteTemplateAssigned">
+          <Key>
+            <PropertyRef Name="TemplateID" />
+            <PropertyRef Name="RteTemplateSourceId" />
+          </Key>
+          <Property Name="TemplateID" Type="int" Nullable="false" />
+          <Property Name="RteTemplateSourceId" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RteTemplateQuestion">
+          <Key>
+            <PropertyRef Name="QuestionID" />
+          </Key>
+          <Property Name="QuestionID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="TemplateID" Type="int" Nullable="false" />
+          <Property Name="Text" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="SortOrder" Type="int" Nullable="false" />
+          <Property Name="Required" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RteTemplateSource">
+          <Key>
+            <PropertyRef Name="RteTemplateSourceId" />
+          </Key>
+          <Property Name="RteTemplateSourceId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Description" Type="varchar" MaxLength="50" />
+          <Property Name="TaskOnly" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="SearchCategoryLU">
           <Key>
             <PropertyRef Name="SearchCategoryID" />
@@ -1587,6 +1637,87 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
           <Property Name="CreatedByETIUserID" Type="int" Nullable="false" />
           <Property Name="WorkspaceStateID" Type="int" Nullable="false" />
           <Property Name="WorkspaceID" Type="int" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'GenBOESpace.version.BOE' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="BOE1">
+          <Key>
+            <PropertyRef Name="BOEID" />
+            <PropertyRef Name="UpdateDT" />
+            <PropertyRef Name="BOEStateID" />
+            <PropertyRef Name="BOEStartDate" />
+            <PropertyRef Name="BOEEndDate" />
+            <PropertyRef Name="WorkspaceID" />
+            <PropertyRef Name="MetricDisclosureAcknowledge" />
+            <PropertyRef Name="NumAuthorReassigned" />
+            <PropertyRef Name="IsMaterial" />
+            <PropertyRef Name="VersionID" />
+            <PropertyRef Name="BOETitle" />
+          </Key>
+          <Property Name="BOEID" Type="int" Nullable="false" />
+          <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="BOEStateID" Type="int" Nullable="false" />
+          <Property Name="BOEStartDate" Type="date" Nullable="false" />
+          <Property Name="BOEEndDate" Type="date" Nullable="false" />
+          <Property Name="BOEDescription" Type="varchar(max)" />
+          <Property Name="DataSource" Type="varchar(max)" />
+          <Property Name="WorkspaceID" Type="int" Nullable="false" />
+          <Property Name="MetricDisclosureAcknowledge" Type="bit" Nullable="false" />
+          <Property Name="NumAuthorReassigned" Type="int" Nullable="false" />
+          <Property Name="IsMaterial" Type="bit" Nullable="false" />
+          <Property Name="VersionID" Type="int" Nullable="false" />
+          <Property Name="BOETitle" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="IsMultiClinWbs" Type="bit" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'GenBOESpace.version.CLIN' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="CLIN1">
+          <Key>
+            <PropertyRef Name="CLINID" />
+            <PropertyRef Name="UpdateDT" />
+            <PropertyRef Name="WorkspaceID" />
+            <PropertyRef Name="VersionID" />
+          </Key>
+          <Property Name="CLINID" Type="int" Nullable="false" />
+          <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="CLINNumber" Type="varchar" MaxLength="459" />
+          <Property Name="CLINTitle" Type="varchar" MaxLength="100" />
+          <Property Name="CLINStartDate" Type="date" />
+          <Property Name="CLINEndDate" Type="date" />
+          <Property Name="WorkspaceID" Type="int" Nullable="false" />
+          <Property Name="VersionID" Type="int" Nullable="false" />
+          <Property Name="DisplayedCLINNumber" Type="varchar" MaxLength="50" />
+          <Property Name="ContractTypeID" Type="int" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'GenBOESpace.version.WBS_CLIN_BOE_XREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="WBS_CLIN_BOE_XREF1">
+          <Key>
+            <PropertyRef Name="WCBID" />
+            <PropertyRef Name="VersionID" />
+          </Key>
+          <Property Name="WCBID" Type="int" Nullable="false" />
+          <Property Name="WBSID" Type="int" />
+          <Property Name="CLINID" Type="int" />
+          <Property Name="BOEID" Type="int" />
+          <Property Name="VersionID" Type="int" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="WorkBreakdownStructure1">
+          <Key>
+            <PropertyRef Name="WBSID" />
+            <PropertyRef Name="UpdateDT" />
+            <PropertyRef Name="VersionID" />
+          </Key>
+          <Property Name="WBSID" Type="int" Nullable="false" />
+          <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="WBSNumber" Type="varchar" MaxLength="119" />
+          <Property Name="DisplayedWBSNumber" Type="varchar" MaxLength="50" />
+          <Property Name="WBSTitle" Type="varchar" MaxLength="255" />
+          <Property Name="WorkspaceID" Type="int" />
+          <Property Name="VersionID" Type="int" Nullable="false" />
+          <Property Name="WorkspaceDTCElementID" Type="int" />
         </EntityType>
         <Association Name="FK__MSTTravel__ModeI__71829B23">
           <End Role="MSTTravelModeLU" Type="Self.MSTTravelModeLU" Multiplicity="1" />
@@ -2968,6 +3099,102 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_RteTemplate_ETIuser">
+          <End Role="ETIuser" Type="Self.ETIuser" Multiplicity="1" />
+          <End Role="RteTemplate" Type="Self.RteTemplate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ETIuser">
+              <PropertyRef Name="ETIUserID" />
+            </Principal>
+            <Dependent Role="RteTemplate">
+              <PropertyRef Name="AuthorID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RteTemplate_Workspace">
+          <End Role="Workspace" Type="Self.Workspace" Multiplicity="1" />
+          <End Role="RteTemplate" Type="Self.RteTemplate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Workspace">
+              <PropertyRef Name="WorkspaceID" />
+            </Principal>
+            <Dependent Role="RteTemplate">
+              <PropertyRef Name="WorkspaceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RteTemplateAnswer_BoeID">
+          <End Role="BOE" Type="Self.BOE" Multiplicity="1" />
+          <End Role="RteTemplateAnswer" Type="Self.RteTemplateAnswer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="RteTemplateAnswer">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RteTemplateAnswer_QuestionID">
+          <End Role="RteTemplateQuestion" Type="Self.RteTemplateQuestion" Multiplicity="1" />
+          <End Role="RteTemplateAnswer" Type="Self.RteTemplateAnswer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RteTemplateQuestion">
+              <PropertyRef Name="QuestionID" />
+            </Principal>
+            <Dependent Role="RteTemplateAnswer">
+              <PropertyRef Name="QuestionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RteTemplateAnswer_TaskID">
+          <End Role="BOETaskElement" Type="Self.BOETaskElement" Multiplicity="0..1" />
+          <End Role="RteTemplateAnswer" Type="Self.RteTemplateAnswer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOETaskElement">
+              <PropertyRef Name="BOETaskElementID" />
+            </Principal>
+            <Dependent Role="RteTemplateAnswer">
+              <PropertyRef Name="TaskID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RteTemplateAssigned_RteTemplateSourceId">
+          <End Role="RteTemplateSource" Type="Self.RteTemplateSource" Multiplicity="1" />
+          <End Role="RteTemplateAssigned" Type="Self.RteTemplateAssigned" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RteTemplateSource">
+              <PropertyRef Name="RteTemplateSourceId" />
+            </Principal>
+            <Dependent Role="RteTemplateAssigned">
+              <PropertyRef Name="RteTemplateSourceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RteTemplateAssigned_TemplateID">
+          <End Role="RteTemplate" Type="Self.RteTemplate" Multiplicity="1" />
+          <End Role="RteTemplateAssigned" Type="Self.RteTemplateAssigned" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RteTemplate">
+              <PropertyRef Name="TemplateID" />
+            </Principal>
+            <Dependent Role="RteTemplateAssigned">
+              <PropertyRef Name="TemplateID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RteTemplateQuestion_TemplateID">
+          <End Role="RteTemplate" Type="Self.RteTemplate" Multiplicity="1" />
+          <End Role="RteTemplateQuestion" Type="Self.RteTemplateQuestion" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RteTemplate">
+              <PropertyRef Name="TemplateID" />
+            </Principal>
+            <Dependent Role="RteTemplateQuestion">
+              <PropertyRef Name="TemplateID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_SumOfBOE_OrdinaryVariableXREF_BOE">
           <End Role="BOE" Type="Self.BOE" Multiplicity="0..1" />
           <End Role="SumOfBOE_OrdinaryVariableXREF" Type="Self.SumOfBOE_OrdinaryVariableXREF" Multiplicity="*" />
@@ -3901,6 +4128,13 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
           <Parameter Name="WorkspaceName" Type="varchar" Mode="In" />
           <Parameter Name="WorkspaceShortName" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="copyWorkspaceVersion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="WorkspaceID" Type="int" Mode="In" />
+          <Parameter Name="WorkspaceName" Type="varchar" Mode="In" />
+          <Parameter Name="WorkspaceShortName" Type="varchar" Mode="In" />
+          <Parameter Name="VersionID" Type="int" Mode="In" />
+          <Parameter Name="BoeList" Type="varchar(max)" Mode="In" />
+        </Function>
         <Function Name="createWorkspaceVersion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="VersionName" Type="varchar" Mode="In" />
           <Parameter Name="CreatedByETIUserID" Type="int" Mode="In" />
@@ -4095,6 +4329,12 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
         <Function Name="deleteResourceList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ResourceListID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="deleteRteTemplate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="deleteRteTemplateQuestion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
         </Function>
         <Function Name="deleteSumOfBOEByOrdinaryVariableID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="OrdinaryVariableID" Type="int" Mode="In" />
@@ -5011,6 +5251,31 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
           <Parameter Name="ResourceListName" Type="varchar" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
+        <Function Name="upsertRteTemplate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="TemplateID" Type="int" Mode="In" />
+          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
+          <Parameter Name="WorkspaceID" Type="int" Mode="In" />
+          <Parameter Name="Description" Type="varchar" Mode="In" />
+          <Parameter Name="AuthorID" Type="int" Mode="In" />
+          <Parameter Name="Assigned" Type="varchar(max)" Mode="In" />
+        </Function>
+        <Function Name="upsertRteTemplateAnswer" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="AnswerID" Type="int" Mode="In" />
+          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
+          <Parameter Name="QuestionID" Type="int" Mode="In" />
+          <Parameter Name="BOEID" Type="int" Mode="In" />
+          <Parameter Name="TaskID" Type="int" Mode="In" />
+          <Parameter Name="Text" Type="varchar(max)" Mode="In" />
+          <Parameter Name="RteTemplateSourceId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="upsertRteTemplateQuestion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="QuestionID" Type="int" Mode="In" />
+          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
+          <Parameter Name="TemplateID" Type="int" Mode="In" />
+          <Parameter Name="Text" Type="varchar" Mode="In" />
+          <Parameter Name="SortOrder" Type="int" Mode="In" />
+          <Parameter Name="Required" Type="bit" Mode="In" />
+        </Function>
         <Function Name="upsertSystemOffloadRate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="OffloadRateID" Type="int" Mode="In" />
           <Parameter Name="Resource" Type="varchar" Mode="In" />
@@ -5331,6 +5596,11 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
           <EntitySet Name="Resource" EntityType="Self.Resource" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ResourceList" EntityType="Self.ResourceList" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RoleLU" EntityType="Self.RoleLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RteTemplate" EntityType="Self.RteTemplate" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RteTemplateAnswer" EntityType="Self.RteTemplateAnswer" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RteTemplateAssigned" EntityType="Self.RteTemplateAssigned" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RteTemplateQuestion" EntityType="Self.RteTemplateQuestion" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="RteTemplateSource" EntityType="Self.RteTemplateSource" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SearchCategoryLU" EntityType="Self.SearchCategoryLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SegmentLU" EntityType="Self.SegmentLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SikorskyLegacyResource" EntityType="Self.SikorskyLegacyResource" Schema="dbo" store:Type="Tables" />
@@ -5467,6 +5737,59 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
     [WorkspaceCopyMetric].[TargetWorkspaceID] AS [TargetWorkspaceID], 
     [WorkspaceCopyMetric].[CreateDate] AS [CreateDate]
     FROM [dbo].[WorkspaceCopyMetric] AS [WorkspaceCopyMetric]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="BOE1" EntityType="Self.BOE1" store:Type="Tables" store:Schema="version" store:Name="BOE">
+            <DefiningQuery>SELECT 
+    [BOE1].[BOEID] AS [BOEID], 
+    [BOE1].[UpdateDT] AS [UpdateDT], 
+    [BOE1].[BOEStateID] AS [BOEStateID], 
+    [BOE1].[BOEStartDate] AS [BOEStartDate], 
+    [BOE1].[BOEEndDate] AS [BOEEndDate], 
+    [BOE1].[BOEDescription] AS [BOEDescription], 
+    [BOE1].[DataSource] AS [DataSource], 
+    [BOE1].[WorkspaceID] AS [WorkspaceID], 
+    [BOE1].[MetricDisclosureAcknowledge] AS [MetricDisclosureAcknowledge], 
+    [BOE1].[NumAuthorReassigned] AS [NumAuthorReassigned], 
+    [BOE1].[IsMaterial] AS [IsMaterial], 
+    [BOE1].[VersionID] AS [VersionID], 
+    [BOE1].[BOETitle] AS [BOETitle], 
+    [BOE1].[IsMultiClinWbs] AS [IsMultiClinWbs]
+    FROM [version].[BOE] AS [BOE1]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="CLIN1" EntityType="Self.CLIN1" store:Type="Tables" store:Schema="version" store:Name="CLIN">
+            <DefiningQuery>SELECT 
+    [CLIN1].[CLINID] AS [CLINID], 
+    [CLIN1].[UpdateDT] AS [UpdateDT], 
+    [CLIN1].[CLINNumber] AS [CLINNumber], 
+    [CLIN1].[CLINTitle] AS [CLINTitle], 
+    [CLIN1].[CLINStartDate] AS [CLINStartDate], 
+    [CLIN1].[CLINEndDate] AS [CLINEndDate], 
+    [CLIN1].[WorkspaceID] AS [WorkspaceID], 
+    [CLIN1].[VersionID] AS [VersionID], 
+    [CLIN1].[DisplayedCLINNumber] AS [DisplayedCLINNumber], 
+    [CLIN1].[ContractTypeID] AS [ContractTypeID]
+    FROM [version].[CLIN] AS [CLIN1]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="WBS_CLIN_BOE_XREF1" EntityType="Self.WBS_CLIN_BOE_XREF1" store:Type="Tables" store:Schema="version" store:Name="WBS_CLIN_BOE_XREF">
+            <DefiningQuery>SELECT 
+    [WBS_CLIN_BOE_XREF1].[WCBID] AS [WCBID], 
+    [WBS_CLIN_BOE_XREF1].[WBSID] AS [WBSID], 
+    [WBS_CLIN_BOE_XREF1].[CLINID] AS [CLINID], 
+    [WBS_CLIN_BOE_XREF1].[BOEID] AS [BOEID], 
+    [WBS_CLIN_BOE_XREF1].[VersionID] AS [VersionID]
+    FROM [version].[WBS_CLIN_BOE_XREF] AS [WBS_CLIN_BOE_XREF1]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="WorkBreakdownStructure1" EntityType="Self.WorkBreakdownStructure1" store:Type="Tables" store:Schema="version" store:Name="WorkBreakdownStructure">
+            <DefiningQuery>SELECT 
+    [WorkBreakdownStructure1].[WBSID] AS [WBSID], 
+    [WorkBreakdownStructure1].[UpdateDT] AS [UpdateDT], 
+    [WorkBreakdownStructure1].[WBSNumber] AS [WBSNumber], 
+    [WorkBreakdownStructure1].[DisplayedWBSNumber] AS [DisplayedWBSNumber], 
+    [WorkBreakdownStructure1].[WBSTitle] AS [WBSTitle], 
+    [WorkBreakdownStructure1].[WorkspaceID] AS [WorkspaceID], 
+    [WorkBreakdownStructure1].[VersionID] AS [VersionID], 
+    [WorkBreakdownStructure1].[WorkspaceDTCElementID] AS [WorkspaceDTCElementID]
+    FROM [version].[WorkBreakdownStructure] AS [WorkBreakdownStructure1]</DefiningQuery>
           </EntitySet>
           <AssociationSet Name="FK__MSTTravel__ModeI__71829B23" Association="Self.FK__MSTTravel__ModeI__71829B23">
             <End Role="MSTTravelModeLU" EntitySet="MSTTravelModeLU" />
@@ -5928,6 +6251,38 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
             <End Role="SegmentLU" EntitySet="SegmentLU" />
             <End Role="Resource" EntitySet="Resource" />
           </AssociationSet>
+          <AssociationSet Name="FK_RteTemplate_ETIuser" Association="Self.FK_RteTemplate_ETIuser">
+            <End Role="ETIuser" EntitySet="ETIuser" />
+            <End Role="RteTemplate" EntitySet="RteTemplate" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RteTemplate_Workspace" Association="Self.FK_RteTemplate_Workspace">
+            <End Role="Workspace" EntitySet="Workspace" />
+            <End Role="RteTemplate" EntitySet="RteTemplate" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RteTemplateAnswer_BoeID" Association="Self.FK_RteTemplateAnswer_BoeID">
+            <End Role="BOE" EntitySet="BOE" />
+            <End Role="RteTemplateAnswer" EntitySet="RteTemplateAnswer" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RteTemplateAnswer_QuestionID" Association="Self.FK_RteTemplateAnswer_QuestionID">
+            <End Role="RteTemplateQuestion" EntitySet="RteTemplateQuestion" />
+            <End Role="RteTemplateAnswer" EntitySet="RteTemplateAnswer" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RteTemplateAnswer_TaskID" Association="Self.FK_RteTemplateAnswer_TaskID">
+            <End Role="BOETaskElement" EntitySet="BOETaskElement" />
+            <End Role="RteTemplateAnswer" EntitySet="RteTemplateAnswer" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RteTemplateAssigned_RteTemplateSourceId" Association="Self.FK_RteTemplateAssigned_RteTemplateSourceId">
+            <End Role="RteTemplateSource" EntitySet="RteTemplateSource" />
+            <End Role="RteTemplateAssigned" EntitySet="RteTemplateAssigned" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RteTemplateAssigned_TemplateID" Association="Self.FK_RteTemplateAssigned_TemplateID">
+            <End Role="RteTemplate" EntitySet="RteTemplate" />
+            <End Role="RteTemplateAssigned" EntitySet="RteTemplateAssigned" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RteTemplateQuestion_TemplateID" Association="Self.FK_RteTemplateQuestion_TemplateID">
+            <End Role="RteTemplate" EntitySet="RteTemplate" />
+            <End Role="RteTemplateQuestion" EntitySet="RteTemplateQuestion" />
+          </AssociationSet>
           <AssociationSet Name="FK_SumOfBOE_OrdinaryVariableXREF_BOE" Association="Self.FK_SumOfBOE_OrdinaryVariableXREF_BOE">
             <End Role="BOE" EntitySet="BOE" />
             <End Role="SumOfBOE_OrdinaryVariableXREF" EntitySet="SumOfBOE_OrdinaryVariableXREF" />
@@ -6279,6 +6634,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
           <NavigationProperty Name="TravelTripTaskElements" Relationship="Self.FK_TravelTripTaskElement_BOE" FromRole="BOE" ToRole="TravelTripTaskElement" />
           <NavigationProperty Name="WBS_CLIN_BOE_XREF" Relationship="Self.FK_WBS_CLIN_BOE_XREF_BOE" FromRole="BOE" ToRole="WBS_CLIN_BOE_XREF" />
           <NavigationProperty Name="Workspace" Relationship="GenBOE.Models.FK_BOE_Workspace" FromRole="BOE" ToRole="Workspace" />
+          <NavigationProperty Name="RteTemplateAnswers" Relationship="GenBOE.Models.FK_RteTemplateAnswer_BoeID" FromRole="BOE" ToRole="RteTemplateAnswer" />
         </EntityType>
         <EntityType Name="BOEApproval">
           <Key>
@@ -6577,6 +6933,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
           <NavigationProperty Name="BOETaskElementMetricDetailXREFs" Relationship="Self.FK_BOETaskElementMetricDetailXREF_BOETaskElement" FromRole="BOETaskElement" ToRole="BOETaskElementMetricDetailXREF" />
           <NavigationProperty Name="BOETaskElementWorkspaceVariableXREFs" Relationship="Self.FK_BOETaskElementWorkspaceVariableXREF_BOETaskElement" FromRole="BOETaskElement" ToRole="BOETaskElementWorkspaceVariableXREF" />
           <NavigationProperty Name="OrdinaryVariables" Relationship="Self.FK_OrdinaryVariable_BOETaskElement" FromRole="BOETaskElement" ToRole="OrdinaryVariable" />
+          <NavigationProperty Name="RteTemplateAnswers" Relationship="GenBOE.Models.FK_RteTemplateAnswer_TaskID" FromRole="BOETaskElement" ToRole="RteTemplateAnswer" />
         </EntityType>
         <EntityType Name="BOETaskElementCustomFieldValueXREF">
           <Key>
@@ -6796,6 +7153,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
           <NavigationProperty Name="Workspaces1" Relationship="GenBOE.Models.FK_Workspace_ETIuser_CreatedBy" FromRole="ETIuser" ToRole="Workspace" />
           <Property Name="IsUsPerson" Type="Boolean" />
           <Property Name="IsSubcontractor" Type="Boolean" />
+          <NavigationProperty Name="RteTemplates" Relationship="GenBOE.Models.FK_RteTemplate_ETIuser" FromRole="ETIuser" ToRole="RteTemplate" />
         </EntityType>
         <EntityType Name="FieldLU">
           <Key>
@@ -11891,6 +12249,80 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
             <End Role="Workspace" EntitySet="Workspaces" />
             <End Role="WorkspaceVersion" EntitySet="WorkspaceVersions" />
           </AssociationSet>
+          <EntitySet Name="BOE1" EntityType="GenBOE.Models.BOE1" />
+          <EntitySet Name="CLIN1" EntityType="GenBOE.Models.CLIN1" />
+          <EntitySet Name="WorkBreakdownStructure1" EntityType="GenBOE.Models.WorkBreakdownStructure1" />
+          <EntitySet Name="WBS_CLIN_BOE_XREF1" EntityType="GenBOE.Models.WBS_CLIN_BOE_XREF1" />
+          <EntitySet Name="RteTemplates" EntityType="GenBOE.Models.RteTemplate" />
+          <EntitySet Name="RteTemplateQuestions" EntityType="GenBOE.Models.RteTemplateQuestion" />
+          <AssociationSet Name="FK_RteTemplate_ETIuser" Association="GenBOE.Models.FK_RteTemplate_ETIuser">
+            <End Role="ETIuser" EntitySet="ETIusers" />
+            <End Role="RteTemplate" EntitySet="RteTemplates" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RteTemplate_Workspace" Association="GenBOE.Models.FK_RteTemplate_Workspace">
+            <End Role="Workspace" EntitySet="Workspaces" />
+            <End Role="RteTemplate" EntitySet="RteTemplates" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RteTemplateQuestion_TemplateID" Association="GenBOE.Models.FK_RteTemplateQuestion_TemplateID">
+            <End Role="RteTemplate" EntitySet="RteTemplates" />
+            <End Role="RteTemplateQuestion" EntitySet="RteTemplateQuestions" />
+          </AssociationSet>
+          <FunctionImport Name="deleteRteTemplate">
+          <Parameter Name="Id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="deleteRteTemplateQuestion">
+          <Parameter Name="Id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="upsertRteTemplate" ReturnType="Collection(Int32)">
+            <Parameter Name="TemplateID" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+            <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
+            <Parameter Name="Description" Mode="In" Type="String" />
+            <Parameter Name="AuthorID" Mode="In" Type="Int32" />
+            <Parameter Name="Assigned" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="upsertRteTemplateQuestion" ReturnType="Collection(Int32)">
+            <Parameter Name="QuestionID" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+            <Parameter Name="TemplateID" Mode="In" Type="Int32" />
+            <Parameter Name="Text" Mode="In" Type="String" />
+            <Parameter Name="SortOrder" Mode="In" Type="Int32" />
+            <Parameter Name="Required" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <EntitySet Name="RteTemplateAnswers" EntityType="GenBOE.Models.RteTemplateAnswer" />
+          <AssociationSet Name="FK_RteTemplateAnswer_BoeID" Association="GenBOE.Models.FK_RteTemplateAnswer_BoeID">
+            <End Role="BOE" EntitySet="BOEs" />
+            <End Role="RteTemplateAnswer" EntitySet="RteTemplateAnswers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RteTemplateAnswer_TaskID" Association="GenBOE.Models.FK_RteTemplateAnswer_TaskID">
+            <End Role="BOETaskElement" EntitySet="BOETaskElements" />
+            <End Role="RteTemplateAnswer" EntitySet="RteTemplateAnswers" />
+          </AssociationSet>
+          <AssociationSet Name="FK_RteTemplateAnswer_QuestionID" Association="GenBOE.Models.FK_RteTemplateAnswer_QuestionID">
+            <End Role="RteTemplateQuestion" EntitySet="RteTemplateQuestions" />
+            <End Role="RteTemplateAnswer" EntitySet="RteTemplateAnswers" />
+          </AssociationSet>
+          <FunctionImport Name="upsertRteTemplateAnswer">
+            <Parameter Name="AnswerID" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+            <Parameter Name="QuestionID" Mode="In" Type="Int32" />
+            <Parameter Name="BOEID" Mode="In" Type="Int32" />
+            <Parameter Name="TaskID" Mode="In" Type="Int32" />
+            <Parameter Name="Text" Mode="In" Type="String" />
+            <Parameter Name="RteTemplateSourceId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <EntitySet Name="RteTemplateSources" EntityType="GenBOE.Models.RteTemplateSource" />
+          <AssociationSet Name="RteTemplateAssigned" Association="GenBOE.Models.RteTemplateAssigned">
+            <End Role="RteTemplateSource" EntitySet="RteTemplateSources" />
+            <End Role="RteTemplate" EntitySet="RteTemplates" />
+          </AssociationSet>
+          <FunctionImport Name="copyWorkspaceVersion" ReturnType="Collection(Int32)">
+            <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
+            <Parameter Name="WorkspaceName" Mode="In" Type="String" />
+            <Parameter Name="WorkspaceShortName" Mode="In" Type="String" />
+            <Parameter Name="VersionID" Mode="In" Type="Int32" />
+            <Parameter Name="BoeList" Mode="In" Type="String" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="getBOEForFindReplace_Result">
           <Property Type="Int32" Name="BOEID" Nullable="true" />
@@ -12474,6 +12906,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
           <NavigationProperty Name="WorkspaceUserXREFs" Relationship="GenBOE.Models.FK_WorkspaceUserXREF_Workspace" FromRole="Workspace" ToRole="WorkspaceUserXREF" />
           <NavigationProperty Name="WorkspaceVariables" Relationship="GenBOE.Models.FK_WorkspaceVariable_Workspace" FromRole="Workspace" ToRole="WorkspaceVariable" />
           <NavigationProperty Name="WorkspaceVersions" Relationship="GenBOE.Models.FK_WorkspaceVersion_Workspace" FromRole="Workspace" ToRole="WorkspaceVersion" />
+          <NavigationProperty Name="RteTemplates" Relationship="GenBOE.Models.FK_RteTemplate_Workspace" FromRole="Workspace" ToRole="RteTemplate" />
         </EntityType>
         <Association Name="FK_BOE_Workspace">
           <End Type="GenBOE.Models.Workspace" Role="Workspace" Multiplicity="1" />
@@ -12906,6 +13339,207 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
               <PropertyRef Name="WorkspaceID" />
             </Dependent>
           </ReferentialConstraint>
+        </Association>
+        <EntityType Name="BOE1">
+          <Key>
+            <PropertyRef Name="BOEID" />
+            <PropertyRef Name="UpdateDT" />
+            <PropertyRef Name="BOEStateID" />
+            <PropertyRef Name="BOEStartDate" />
+            <PropertyRef Name="BOEEndDate" />
+            <PropertyRef Name="WorkspaceID" />
+            <PropertyRef Name="MetricDisclosureAcknowledge" />
+            <PropertyRef Name="NumAuthorReassigned" />
+            <PropertyRef Name="IsMaterial" />
+            <PropertyRef Name="VersionID" />
+            <PropertyRef Name="BOETitle" />
+          </Key>
+          <Property Name="BOEID" Type="Int32" Nullable="false" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="BOEStateID" Type="Int32" Nullable="false" />
+          <Property Name="BOEStartDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="BOEEndDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="BOEDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="DataSource" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="WorkspaceID" Type="Int32" Nullable="false" />
+          <Property Name="MetricDisclosureAcknowledge" Type="Boolean" Nullable="false" />
+          <Property Name="NumAuthorReassigned" Type="Int32" Nullable="false" />
+          <Property Name="IsMaterial" Type="Boolean" Nullable="false" />
+          <Property Name="VersionID" Type="Int32" Nullable="false" />
+          <Property Name="BOETitle" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="IsMultiClinWbs" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="CLIN1">
+          <Key>
+            <PropertyRef Name="CLINID" />
+            <PropertyRef Name="UpdateDT" />
+            <PropertyRef Name="WorkspaceID" />
+            <PropertyRef Name="VersionID" />
+          </Key>
+          <Property Name="CLINID" Type="Int32" Nullable="false" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="CLINNumber" Type="String" MaxLength="459" FixedLength="false" Unicode="false" />
+          <Property Name="CLINTitle" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="CLINStartDate" Type="DateTime" Precision="0" />
+          <Property Name="CLINEndDate" Type="DateTime" Precision="0" />
+          <Property Name="WorkspaceID" Type="Int32" Nullable="false" />
+          <Property Name="VersionID" Type="Int32" Nullable="false" />
+          <Property Name="DisplayedCLINNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ContractTypeID" Type="Int32" />
+        </EntityType>
+        <EntityType Name="WorkBreakdownStructure1">
+          <Key>
+            <PropertyRef Name="WBSID" />
+            <PropertyRef Name="UpdateDT" />
+            <PropertyRef Name="VersionID" />
+          </Key>
+          <Property Name="WBSID" Type="Int32" Nullable="false" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="WBSNumber" Type="String" MaxLength="119" FixedLength="false" Unicode="false" />
+          <Property Name="DisplayedWBSNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="WBSTitle" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="WorkspaceID" Type="Int32" />
+          <Property Name="VersionID" Type="Int32" Nullable="false" />
+          <Property Name="WorkspaceDTCElementID" Type="Int32" />
+        </EntityType>
+        <EntityType Name="WBS_CLIN_BOE_XREF1">
+          <Key>
+            <PropertyRef Name="WCBID" />
+            <PropertyRef Name="VersionID" />
+          </Key>
+          <Property Name="WCBID" Type="Int32" Nullable="false" />
+          <Property Name="WBSID" Type="Int32" />
+          <Property Name="CLINID" Type="Int32" />
+          <Property Name="BOEID" Type="Int32" />
+          <Property Name="VersionID" Type="Int32" Nullable="false" />
+        </EntityType>
+        <EntityType Name="RteTemplate">
+          <Key>
+            <PropertyRef Name="TemplateID" />
+          </Key>
+          <Property Name="TemplateID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="WorkspaceID" Type="Int32" Nullable="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="AuthorID" Type="Int32" Nullable="false" />
+          <Property Name="CreatedOn" Type="DateTime" Nullable="false" Precision="7" />
+          <NavigationProperty Name="ETIuser" Relationship="GenBOE.Models.FK_RteTemplate_ETIuser" FromRole="RteTemplate" ToRole="ETIuser" />
+          <NavigationProperty Name="Workspace" Relationship="GenBOE.Models.FK_RteTemplate_Workspace" FromRole="RteTemplate" ToRole="Workspace" />
+          <NavigationProperty Name="RteTemplateQuestions" Relationship="GenBOE.Models.FK_RteTemplateQuestion_TemplateID" FromRole="RteTemplate" ToRole="RteTemplateQuestion" />
+          <NavigationProperty Name="RteTemplateSources" Relationship="GenBOE.Models.RteTemplateAssigned" FromRole="RteTemplate" ToRole="RteTemplateSource" />
+        </EntityType>
+        <EntityType Name="RteTemplateQuestion">
+          <Key>
+            <PropertyRef Name="QuestionID" />
+          </Key>
+          <Property Name="QuestionID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="TemplateID" Type="Int32" Nullable="false" />
+          <Property Name="Text" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="SortOrder" Type="Int32" Nullable="false" />
+          <Property Name="Required" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="RteTemplate" Relationship="GenBOE.Models.FK_RteTemplateQuestion_TemplateID" FromRole="RteTemplateQuestion" ToRole="RteTemplate" />
+          <NavigationProperty Name="RteTemplateAnswers" Relationship="GenBOE.Models.FK_RteTemplateAnswer_QuestionID" FromRole="RteTemplateQuestion" ToRole="RteTemplateAnswer" />
+        </EntityType>
+        <Association Name="FK_RteTemplate_ETIuser">
+          <End Type="GenBOE.Models.ETIuser" Role="ETIuser" Multiplicity="1" />
+          <End Type="GenBOE.Models.RteTemplate" Role="RteTemplate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ETIuser">
+              <PropertyRef Name="ETIUserID" />
+            </Principal>
+            <Dependent Role="RteTemplate">
+              <PropertyRef Name="AuthorID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RteTemplate_Workspace">
+          <End Type="GenBOE.Models.Workspace" Role="Workspace" Multiplicity="1" />
+          <End Type="GenBOE.Models.RteTemplate" Role="RteTemplate" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Workspace">
+              <PropertyRef Name="WorkspaceID" />
+            </Principal>
+            <Dependent Role="RteTemplate">
+              <PropertyRef Name="WorkspaceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RteTemplateQuestion_TemplateID">
+          <End Type="GenBOE.Models.RteTemplate" Role="RteTemplate" Multiplicity="1" />
+          <End Type="GenBOE.Models.RteTemplateQuestion" Role="RteTemplateQuestion" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RteTemplate">
+              <PropertyRef Name="TemplateID" />
+            </Principal>
+            <Dependent Role="RteTemplateQuestion">
+              <PropertyRef Name="TemplateID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RteTemplateAnswer">
+          <Key>
+            <PropertyRef Name="AnswerID" />
+          </Key>
+          <Property Name="AnswerID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="QuestionID" Type="Int32" Nullable="false" />
+          <Property Name="BOEID" Type="Int32" Nullable="false" />
+          <Property Name="TaskID" Type="Int32" />
+          <Property Name="Text" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="BOE" Relationship="GenBOE.Models.FK_RteTemplateAnswer_BoeID" FromRole="RteTemplateAnswer" ToRole="BOE" />
+          <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_RteTemplateAnswer_TaskID" FromRole="RteTemplateAnswer" ToRole="BOETaskElement" />
+          <NavigationProperty Name="RteTemplateQuestion" Relationship="GenBOE.Models.FK_RteTemplateAnswer_QuestionID" FromRole="RteTemplateAnswer" ToRole="RteTemplateQuestion" />
+          <Property Name="RteTemplateSourceId" Type="Int32" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_RteTemplateAnswer_BoeID">
+          <End Type="GenBOE.Models.BOE" Role="BOE" Multiplicity="1" />
+          <End Type="GenBOE.Models.RteTemplateAnswer" Role="RteTemplateAnswer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOE">
+              <PropertyRef Name="BOEID" />
+            </Principal>
+            <Dependent Role="RteTemplateAnswer">
+              <PropertyRef Name="BOEID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RteTemplateAnswer_TaskID">
+          <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="0..1" />
+          <End Type="GenBOE.Models.RteTemplateAnswer" Role="RteTemplateAnswer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOETaskElement">
+              <PropertyRef Name="BOETaskElementID" />
+            </Principal>
+            <Dependent Role="RteTemplateAnswer">
+              <PropertyRef Name="TaskID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_RteTemplateAnswer_QuestionID">
+          <End Type="GenBOE.Models.RteTemplateQuestion" Role="RteTemplateQuestion" Multiplicity="1" />
+          <End Type="GenBOE.Models.RteTemplateAnswer" Role="RteTemplateAnswer" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RteTemplateQuestion">
+              <PropertyRef Name="QuestionID" />
+            </Principal>
+            <Dependent Role="RteTemplateAnswer">
+              <PropertyRef Name="QuestionID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="RteTemplateSource">
+          <Key>
+            <PropertyRef Name="RteTemplateSourceId" />
+          </Key>
+          <Property Name="RteTemplateSourceId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Description" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="RteTemplates" Relationship="GenBOE.Models.RteTemplateAssigned" FromRole="RteTemplateSource" ToRole="RteTemplate" />
+          <Property Name="TaskOnly" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <Association Name="RteTemplateAssigned">
+          <End Type="GenBOE.Models.RteTemplateSource" Role="RteTemplateSource" Multiplicity="*" />
+          <End Type="GenBOE.Models.RteTemplate" Role="RteTemplate" Multiplicity="*" />
         </Association>
       </Schema>
     </edmx:ConceptualModels>
@@ -14954,6 +15588,127 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="BOE1">
+            <EntityTypeMapping TypeName="GenBOE.Models.BOE1">
+              <MappingFragment StoreEntitySet="BOE1">
+                <ScalarProperty Name="IsMultiClinWbs" ColumnName="IsMultiClinWbs" />
+                <ScalarProperty Name="BOETitle" ColumnName="BOETitle" />
+                <ScalarProperty Name="VersionID" ColumnName="VersionID" />
+                <ScalarProperty Name="IsMaterial" ColumnName="IsMaterial" />
+                <ScalarProperty Name="NumAuthorReassigned" ColumnName="NumAuthorReassigned" />
+                <ScalarProperty Name="MetricDisclosureAcknowledge" ColumnName="MetricDisclosureAcknowledge" />
+                <ScalarProperty Name="WorkspaceID" ColumnName="WorkspaceID" />
+                <ScalarProperty Name="DataSource" ColumnName="DataSource" />
+                <ScalarProperty Name="BOEDescription" ColumnName="BOEDescription" />
+                <ScalarProperty Name="BOEEndDate" ColumnName="BOEEndDate" />
+                <ScalarProperty Name="BOEStartDate" ColumnName="BOEStartDate" />
+                <ScalarProperty Name="BOEStateID" ColumnName="BOEStateID" />
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="BOEID" ColumnName="BOEID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CLIN1">
+            <EntityTypeMapping TypeName="GenBOE.Models.CLIN1">
+              <MappingFragment StoreEntitySet="CLIN1">
+                <ScalarProperty Name="ContractTypeID" ColumnName="ContractTypeID" />
+                <ScalarProperty Name="DisplayedCLINNumber" ColumnName="DisplayedCLINNumber" />
+                <ScalarProperty Name="VersionID" ColumnName="VersionID" />
+                <ScalarProperty Name="WorkspaceID" ColumnName="WorkspaceID" />
+                <ScalarProperty Name="CLINEndDate" ColumnName="CLINEndDate" />
+                <ScalarProperty Name="CLINStartDate" ColumnName="CLINStartDate" />
+                <ScalarProperty Name="CLINTitle" ColumnName="CLINTitle" />
+                <ScalarProperty Name="CLINNumber" ColumnName="CLINNumber" />
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="CLINID" ColumnName="CLINID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WorkBreakdownStructure1">
+            <EntityTypeMapping TypeName="GenBOE.Models.WorkBreakdownStructure1">
+              <MappingFragment StoreEntitySet="WorkBreakdownStructure1">
+                <ScalarProperty Name="WorkspaceDTCElementID" ColumnName="WorkspaceDTCElementID" />
+                <ScalarProperty Name="VersionID" ColumnName="VersionID" />
+                <ScalarProperty Name="WorkspaceID" ColumnName="WorkspaceID" />
+                <ScalarProperty Name="WBSTitle" ColumnName="WBSTitle" />
+                <ScalarProperty Name="DisplayedWBSNumber" ColumnName="DisplayedWBSNumber" />
+                <ScalarProperty Name="WBSNumber" ColumnName="WBSNumber" />
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="WBSID" ColumnName="WBSID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="WBS_CLIN_BOE_XREF1">
+            <EntityTypeMapping TypeName="GenBOE.Models.WBS_CLIN_BOE_XREF1">
+              <MappingFragment StoreEntitySet="WBS_CLIN_BOE_XREF1">
+                <ScalarProperty Name="VersionID" ColumnName="VersionID" />
+                <ScalarProperty Name="BOEID" ColumnName="BOEID" />
+                <ScalarProperty Name="CLINID" ColumnName="CLINID" />
+                <ScalarProperty Name="WBSID" ColumnName="WBSID" />
+                <ScalarProperty Name="WCBID" ColumnName="WCBID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RteTemplates">
+            <EntityTypeMapping TypeName="GenBOE.Models.RteTemplate">
+              <MappingFragment StoreEntitySet="RteTemplate">
+                <ScalarProperty Name="CreatedOn" ColumnName="CreatedOn" />
+                <ScalarProperty Name="AuthorID" ColumnName="AuthorID" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="WorkspaceID" ColumnName="WorkspaceID" />
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="TemplateID" ColumnName="TemplateID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="RteTemplateQuestions">
+            <EntityTypeMapping TypeName="GenBOE.Models.RteTemplateQuestion">
+              <MappingFragment StoreEntitySet="RteTemplateQuestion">
+                <ScalarProperty Name="Required" ColumnName="Required" />
+                <ScalarProperty Name="SortOrder" ColumnName="SortOrder" />
+                <ScalarProperty Name="Text" ColumnName="Text" />
+                <ScalarProperty Name="TemplateID" ColumnName="TemplateID" />
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="QuestionID" ColumnName="QuestionID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="deleteRteTemplate" FunctionName="GenBOE.Models.Store.deleteRteTemplate" />
+          <FunctionImportMapping FunctionImportName="deleteRteTemplateQuestion" FunctionName="GenBOE.Models.Store.deleteRteTemplateQuestion" />
+          <FunctionImportMapping FunctionImportName="upsertRteTemplate" FunctionName="GenBOE.Models.Store.upsertRteTemplate" />
+          <FunctionImportMapping FunctionImportName="upsertRteTemplateQuestion" FunctionName="GenBOE.Models.Store.upsertRteTemplateQuestion" />
+          <EntitySetMapping Name="RteTemplateAnswers">
+            <EntityTypeMapping TypeName="GenBOE.Models.RteTemplateAnswer">
+              <MappingFragment StoreEntitySet="RteTemplateAnswer">
+                <ScalarProperty Name="RteTemplateSourceId" ColumnName="RteTemplateSourceId" />
+                <ScalarProperty Name="Text" ColumnName="Text" />
+                <ScalarProperty Name="TaskID" ColumnName="TaskID" />
+                <ScalarProperty Name="BOEID" ColumnName="BOEID" />
+                <ScalarProperty Name="QuestionID" ColumnName="QuestionID" />
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="AnswerID" ColumnName="AnswerID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="upsertRteTemplateAnswer" FunctionName="GenBOE.Models.Store.upsertRteTemplateAnswer" />
+          <EntitySetMapping Name="RteTemplateSources">
+            <EntityTypeMapping TypeName="GenBOE.Models.RteTemplateSource">
+              <MappingFragment StoreEntitySet="RteTemplateSource">
+                <ScalarProperty Name="TaskOnly" ColumnName="TaskOnly" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="RteTemplateSourceId" ColumnName="RteTemplateSourceId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="RteTemplateAssigned" TypeName="GenBOE.Models.RteTemplateAssigned" StoreEntitySet="RteTemplateAssigned">
+            <EndProperty Name="RteTemplate">
+              <ScalarProperty Name="TemplateID" ColumnName="TemplateID" />
+            </EndProperty>
+            <EndProperty Name="RteTemplateSource">
+              <ScalarProperty Name="RteTemplateSourceId" ColumnName="RteTemplateSourceId" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <FunctionImportMapping FunctionImportName="copyWorkspaceVersion" FunctionName="GenBOE.Models.Store.copyWorkspaceVersion" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

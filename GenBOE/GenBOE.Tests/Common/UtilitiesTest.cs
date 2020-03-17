@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -189,6 +189,20 @@ namespace GenBOE.Tests.Common
             string formattedName = Utilities.FormatResourceNames(resourceName, oldResource, true);
 
             Assert.AreEqual("r1", formattedName);
+        }
+
+        /// <summary>
+        /// Tests that CleanFileName successfully removes invalid characters and converts spaces to underscores
+        /// </summary>
+        [TestMethod]
+        public void Test_CleanFileName()
+        {
+            string testString = "Test? st/ri*ng with: in\"va><lid c|ha\\r.acters";
+            string validString = "Test_string_with_invalid_char.acters";
+
+            string result = Utilities.CleanFileName(testString);
+
+            Assert.AreEqual(validString, result);
         }
     }
 }

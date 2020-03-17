@@ -105,6 +105,8 @@
     <Compile Include="Common\Delegates.cs" />
     <Compile Include="Common\Interfaces\ISecurityUserAuthorizationsDataLoader.cs" />
     <Compile Include="Common\security\SecurityAccessSpaceSystems.cs" />
+    <Compile Include="DTO\RteTemplate\IRteTemplateDataLoader.cs" />
+    <Compile Include="DTO\RteTemplate\RteTemplateDataLoader.cs" />
     <Compile Include="GenBOE.Dtos\Common\IBOEMembership.cs" />
     <Compile Include="GenBOE.Dtos\Common\IVariableDTO.cs" />
     <Compile Include="GenBOE.Dtos\Common\IWorkspaceMembership.cs" />
@@ -118,6 +120,7 @@
     <Compile Include="GenBOE.Dtos\DTOs\BOEProjectMapSearchDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\BOESearchDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\BOESearchResultDTO.cs" />
+    <Compile Include="GenBOE.Dtos\DTOs\BoeVersionDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\ClinDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\CustomFieldDTO.cs" />
     <Compile Include="GenBOE.Dtos\DTOs\CustomFieldValueContainer.cs" />
@@ -192,6 +195,10 @@
     <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\ValidationBOETaskElementDetails.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\ValidationBOETasks.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Workspace\ProjectMapPageModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Workspace\RteCustomTemplateModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Workspace\RTECustomTemplateQuestionAnswerModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Workspace\RteCustomTemplateQuestionModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Workspace\RteCustomTemplateSourceModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Workspace\WorkspaceStatusHistoryModelView.cs" />
     <Compile Include="GenBOE.Dtos\Reference\BOEStateModelView.cs" />
     <Compile Include="GenBOE.Dtos\Reference\ElementOfCostTypeModelView.cs" />

@@ -14,6 +14,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Net;
     using System.Reflection;
     using System.Text;
+    using GenBOE.Dtos;
     using IES.Common;
     using IES.Common.Exceptions;
 
@@ -23,6 +24,43 @@ namespace GenBOE.ActionLogic.ControllerLogic
     public class GenBOEControllerLogic : IGenBOEControllerLogic
     {
         private Logger _log = new Logger(typeof(GenBOEControllerLogic));
+
+        /// <summary>
+        /// Validates the RTE Answers
+        /// </summary>
+        /// <param name="answers">The answers to validate.</param>
+        /// <param name="sources">The sources for RTE Templates.</param>
+        /// <param name="rteSizeLimit">The RTE Size limit for the workspace if overridden.</param>
+        /// <returns>Validation warnings.</returns>
+        public ICollection<ValidationMessage> ValidateRteAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<RteCustomTemplateSourceModelView> sources, int? rteSizeLimit)
+        {
+            List<ValidationMessage> allValidationMessages = new List<ValidationMessage>();
+
+            if (answers != null && answers.Any())
+            {
+                foreach (RTECustomTemplateQuestionAnswerModelView rteTemplateAnswer in answers)
+                {
+                    ICollection<ValidationMessage> scrubMessages = this.ScrubRichTextPropertiesForSave(rteTemplateAnswer);
+                    if (scrubMessages.Any())
+                    {
+                        allValidationMessages.AddRange(scrubMessages);
+                    }
+
+                    RteCustomTemplateSourceModelView source = sources.First(s => s.SourceId == rteTemplateAnswer.SourceId);
+                    if (string.IsNullOrEmpty(rteTemplateAnswer.AnswerText) && rteTemplateAnswer.Required)
+                    {
+                        allValidationMessages.Add(new ValidationMessage(source.Description, string.Format("All RTE Custom Template Answers for {0} are required", source.Description)));
+                    }
+
+                    if (rteSizeLimit.HasValue && !string.IsNullOrEmpty(rteTemplateAnswer.AnswerText) && rteTemplateAnswer.SourceId > 0 && rteSizeLimit < GenBOEUtilities.ConvertHtmlToText(rteTemplateAnswer.AnswerText).Length)
+                    {
+                        allValidationMessages.Add(new ValidationMessage(source.Description, string.Format("The maximum length of an RTE Custom Template Answer for {0} is {1} characters.", source.Description, rteSizeLimit.Value)));
+                    }
+                }
+            }
+
+            return allValidationMessages;
+        }
 
         /// <summary>
         /// For any properties marked as rich-text, remove styling and/or markup that are known to cause problems

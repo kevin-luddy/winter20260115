@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -34,14 +34,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <summary>
         /// The AD utils
         /// </summary>
-        private IBOEExporter boeExporter;
-        private BOESummary boeSummary;
-        private IBOECustomExporter boeCustomExporter;
-        private IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader;
-        private BOEDiscrepancyReport boeDiscrepancyReport;
-        private IProposalLoader proposalLoader;
-        private IWorkspaceControllerLogic workspaceControllerLogic;
-
+        private readonly IBOEExporter boeExporter;
+        private readonly BOESummary boeSummary;
+        private readonly IBOECustomExporter boeCustomExporter;
+        private readonly IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader;
+        private readonly BOEDiscrepancyReport boeDiscrepancyReport;
+        private readonly IProposalLoader proposalLoader;
+        private readonly IWorkspaceControllerLogic workspaceControllerLogic;
+        private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 
         #region Cache Setup
 
@@ -75,6 +75,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="boeDiscrepancyReport">The boe discrepancy report.</param>
         /// <param name="proposalLoader">Proposal Loader</param>
         /// <param name="workspaceControllerLogic">Workspace Controller Logic</param>
+        /// <param name="rteTemplateDataLoader">The RTE Template dto loader.</param>
         public ReportsControllerLogic(
             IBOEExporter boeExporter,
             BOESummary boeSummary,
@@ -82,7 +83,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader,
             BOEDiscrepancyReport boeDiscrepancyReport,
             IProposalLoader proposalLoader,
-            IWorkspaceControllerLogic workspaceControllerLogic)
+            IWorkspaceControllerLogic workspaceControllerLogic,
+            IRteTemplateDataLoader rteTemplateDataLoader)
         {
             this.boeExporter = boeExporter;
             this.boeSummary = boeSummary;
@@ -91,6 +93,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.boeDiscrepancyReport = boeDiscrepancyReport;
             this.proposalLoader = proposalLoader;
             this.workspaceControllerLogic = workspaceControllerLogic;
+            this.rteTemplateDataLoader = rteTemplateDataLoader;
 
             this.cache = new MemoryCache();
         }
@@ -101,29 +104,29 @@ namespace GenBOE.ActionLogic.ControllerLogic
         public virtual bool SupportCustomExport { get { return false; } }
 
         /// <summary>
-        /// Reusable logic for exporting the "All BOEs" report
+        /// Reusable logic for preparing the "All BOEs" report
         /// </summary>
         /// <param name="workspace">The current workspace</param>
         /// <param name="isSubcontractorUser">Whether the current user is a subcontractor</param>
         /// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template.</param>
         /// <param name="selectedBOEs">List of BOEs to be included in the report; if null, then include ALL</param>
-        /// <param name="selectedComponents">List of resources to be included in the report; if null, then include ALL</param>
         /// <param name="viewDataDictionary">View data</param>
-        /// <param name="httpResponse">HTTP response object</param>
+        /// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
+        /// <param name="wsExportFormatDTO">the Workspace Format DTO</param>
+        /// <param name="exportInputs">the export inputs</param>
+        /// <param name="boeExportModelViews">the boe export model views</param>
+        /// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
         /// <param name="custom">Flag indicating whether the template file is based on the custom export template</param>
-        public void ExportAllBOEsReport(FullWorkspace workspace, bool isSubcontractorUser, string summarizeByCustomField, ICollection<int> selectedBOEs,
-            ICollection<BoeCustomReportComponent> selectedComponents, ViewDataDictionary viewDataDictionary, HttpResponseBase httpResponse, bool custom = false)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "9")]
+        public void PrepareAllBOEsReport(FullWorkspace workspace, bool isSubcontractorUser, string summarizeByCustomField, ICollection<int> selectedBOEs,
+            ViewDataDictionary viewDataDictionary, out bool isCustomExport, out WorkspaceExportFormatDTO wsExportFormatDTO, out BOEExportInputs exportInputs, 
+            out ICollection<BOEExportModelView> boeExportModelViews, out List<BOESummaryGridModelView> boeSummaryGridModelViews, bool custom = false)
         {
             if (workspace == null)
             {
                 throw new ArgumentNullException(nameof(workspace));
             }
-
-            if (httpResponse == null)
-            {
-                throw new ArgumentNullException(nameof(httpResponse));
-            }
-
+            
             // Pre-load the RTE data since this is faster than loading all objects in ResourcesUsedInWsBoes property, then later adding RTE data to each object.
             workspace.LoadBoesRTEData();
             workspace.LoadTravelRTEData();
@@ -134,17 +137,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
             // All BOEs for the workspace as a default
             List<FullBoe> boes = workspace.Boes.ToList();
             List<BoeTaskElementDTO> tasks = workspace.TaskElements.ToList();
-            ICollection<BOEExportModelView> boeExportModelViews;
-            List<BOESummaryGridModelView> boeSummaryGridModelViews = new List<BOESummaryGridModelView>();
+            boeSummaryGridModelViews = new List<BOESummaryGridModelView>();
 
             #region Override assigned output format template
 
             // Get template based on workspace preferences
-            WorkspaceExportFormatDTO wsExportFormatDTO = workspace.WorkspaceExportFormats.First(x => x.ExportFormat.TemplateId == workspace.TemplateID);
-            
+            wsExportFormatDTO = workspace.WorkspaceExportFormats.First(x => x.ExportFormat.TemplateId == workspace.TemplateID);
+
             #endregion
 
-            bool isCustomExport = custom || (wsExportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.MASTER);
+            isCustomExport = custom || (wsExportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.MASTER);
             bool isOffloading = workspace.ProjectMapType != ProjectMapType.StandardWithoutOffload;
             if (selectedBOEs != null && selectedBOEs.Any())
             {
@@ -164,8 +166,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 OffloadLaborRates offloader = new OffloadLaborRates();
                 List<int> selectedBoeIds = boes.Select(b => b.Id).ToList();
                 OffloadLaborRatesResults results = offloader.OffloadWorkspace(boes.Where(b => selectedBoeIds.Contains(b.Id)).ToList(), workspace);
-                
-                boes = results.Boes.ToList(); 
+
+                boes = results.Boes.ToList();
                 tasks = boes.SelectMany(b => b.TaskElements).ToList();
             }
 
@@ -174,9 +176,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 boes = ProjectMapSorter.OrderBoes(boes, workspace).ToList();
             }
 
-            BOEExportInputs exportInputs = new BOEExportInputs(boes, workspace.Boes.ToList(), tasks, workspace);
+            // Get RTE overrides
+            ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = this.rteTemplateDataLoader.GetByWorkspaceId(workspace.Id, boes);
+
+            exportInputs = new BOEExportInputs(boes, workspace.Boes.ToList(), tasks, workspace, rteTemplateOverrides);
             exportInputs.SummarizeByCustomField = summarizeByCustomField;
-            
+
             if (isCustomExport)
             {
                 this.boeCustomExporter.SetWorkspacePrecisionVariables(workspace);
@@ -191,7 +196,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 // Get BOE Summary Grid data for the current BOE. Used for populating the summary grid on the template
                 boeSummaryGridModelViews.AddRange(this.boeSummary.GetBOESummaryGridModelViews(boe, exportInputs, isSubcontractorUser));
             }
-            
+
             // Get BOE Export Model View for the current BOE. Used for filling in most of the data on the template.
             // Note that an Export All using the Master template is treated like a Custom export
             if (isCustomExport)
@@ -214,6 +219,37 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     string sortDirection = "Asc";
                     boeExportModelViews = SortAllBOEReport(boeExportModelViews, sortField, sortDirection, viewDataDictionary);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Reusable logic for exporting the "All BOEs" report
+        /// </summary>
+        /// <param name="workspace">The current workspace</param>
+        /// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
+        /// <param name="httpResponse">HTTP response object</param>
+        /// <param name="custom">Flag indicating whether the template file is based on the custom export template</param>
+        /// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
+        /// <param name="wsExportFormatDTO">the Workspace Format DTO</param>
+        /// <param name="exportInputs">the export inputs</param>
+        /// <param name="boeExportModelViews">the boe export model views</param>
+        /// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
+        public void ExportAllBOEsReport(FullWorkspace workspace, ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool custom, bool isCustomExport, 
+            WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, List<BOESummaryGridModelView> boeSummaryGridModelViews)
+        {
+            if (workspace == null)
+            {
+                throw new ArgumentNullException(nameof(workspace));
+            }
+
+            if (httpResponse == null)
+            {
+                throw new ArgumentNullException(nameof(httpResponse));
+            }
+
+            if (wsExportFormatDTO == null)
+            {
+                throw new ArgumentNullException(nameof(wsExportFormatDTO));
             }
 
             if (isCustomExport)

@@ -328,6 +328,21 @@
         <AssociationConnector Association="GenBOE.Models.FK_WorkspaceUserXREF_Workspace" />
         <AssociationConnector Association="GenBOE.Models.FK_WorkspaceVariable_Workspace" />
         <AssociationConnector Association="GenBOE.Models.FK_WorkspaceVersion_Workspace" />
+        <EntityTypeShape EntityType="GenBOE.Models.BOE1" Width="1.5" PointX="15.375" PointY="3.75" />
+        <EntityTypeShape EntityType="GenBOE.Models.CLIN1" Width="1.5" PointX="15.375" PointY="14.75" />
+        <EntityTypeShape EntityType="GenBOE.Models.WorkBreakdownStructure1" Width="1.5" PointX="17.375" PointY="3.75" />
+        <EntityTypeShape EntityType="GenBOE.Models.WBS_CLIN_BOE_XREF1" Width="1.5" PointX="0.75" PointY="15.75" />
+        <EntityTypeShape EntityType="GenBOE.Models.RteTemplate" Width="1.5" PointX="17.25" PointY="93.625" />
+        <EntityTypeShape EntityType="GenBOE.Models.RteTemplateQuestion" Width="1.5" PointX="19.5" PointY="98.25" />
+        <AssociationConnector Association="GenBOE.Models.FK_RteTemplate_ETIuser" />
+        <AssociationConnector Association="GenBOE.Models.FK_RteTemplate_Workspace" />
+        <AssociationConnector Association="GenBOE.Models.FK_RteTemplateQuestion_TemplateID" />
+        <EntityTypeShape EntityType="GenBOE.Models.RteTemplateAnswer" Width="1.5" PointX="27.75" PointY="105.125" />
+        <AssociationConnector Association="GenBOE.Models.FK_RteTemplateAnswer_BoeID" />
+        <AssociationConnector Association="GenBOE.Models.FK_RteTemplateAnswer_TaskID" />
+        <AssociationConnector Association="GenBOE.Models.FK_RteTemplateAnswer_QuestionID" />
+        <EntityTypeShape EntityType="GenBOE.Models.RteTemplateSource" Width="1.5" PointX="5.375" PointY="17.875" />
+        <AssociationConnector Association="GenBOE.Models.RteTemplateAssigned" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
