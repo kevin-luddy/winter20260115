@@ -1,0 +1,369 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{5192983F-CD21-46BF-8363-A491DB30E93E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Scripts_</RootNamespace>
+    <AssemblyName>Scripts_</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Object Scripts\Functions\SplitString.function.sql" />
+    <Content Include="Object Scripts\Stored Procedures\archiveOutputFormatTemplate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\copyWorkspace.sql" />
+    <Content Include="Object Scripts\Stored Procedures\copyWorkspaceVersion.sql" />
+    <Content Include="Object Scripts\Stored Procedures\CreateCompliance_WorkspaceCreationReport.sql" />
+    <Content Include="Object Scripts\Stored Procedures\CreateMetricAnalysisReport.sql" />
+    <Content Include="Object Scripts\Stored Procedures\CreateUserAccessReport.sql" />
+    <Content Include="Object Scripts\Stored Procedures\createWorkspaceVersion.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteAllBOEsInWs.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteAllMaterialTaskElements.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteAllMSTTravelTripTaskElements.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteAllODCTaskElements.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteAllTravelTripTaskElements.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteBOE.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteBOEApprover.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteBOEComment.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteBOECustomFieldValue.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteBOEFormIBOE.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteBOEFormPBOE.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteBOELaborSpreadByBOELaborTypeID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteBOELaborType.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteBOELaborTypeCustomFieldValue.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteBOEPotentialRolebyETIUserID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteBOETaskElement.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteBOETaskElementCustomFieldValue.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteBOETaskElementMetricDetail.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteBOETaskElementOrdinaryVariable.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteCLIN.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteContractType.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteCustomField.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteCustomFieldValueByCustomFieldValueID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteFullWorkspace.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteLOB.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteMaterialTaskElement.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteMetricDetail.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteMockTestData.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteMSTTravelTrip.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteMSTTravelTripCustomFieldValue.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteMSTTravelTripTaskelement.sql" />
+    <Content Include="Object Scripts\Stored Procedures\DeleteMSTZoneTravelOrigin.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteODCSpreadByODCTypeID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteODCTaskElement.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteODCType.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteOrdinaryVariableResourceType.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteOutputFormatTemplateForAllWorkspaces.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteOutputFormatTemplateWorkspace.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deletePerDiem.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deletePerformingOrganizationByPerformingOrganizationID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deletePerformingOrganizationByPerformingOrganizationListID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteProposalClass.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteProPricerExport.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteProPricerExportResources.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteProPricerExportTasks.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteResourceList.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteRteTemplate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteRteTemplateQuestion.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteSumOfBOEByOrdinaryVariableID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteSumOfBOEByWorkspaceVariableID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteSystemOffloadRate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteSystemPerformingOrganizationByPerformingOrganizationID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteSystemProPricerExport.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteSystemResourceByResourceID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteSystemRolesByETIUserID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteSystemSetting.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteTMResourceRate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteTravelEscalationRate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteTravelMiscRate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteTravelTrip.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteTravelTripCustomFieldValue.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteTravelTripTaskElement.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteTravelTripTaskElementCustomFieldValue.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteTrip.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteUserLog.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteWorkBreakdownStructure.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteWorkspace.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteWorkspaceEmail.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteWorkspacePerformingOrganizationByPerformingOrganizationID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteWorkspaceResourceByResourceID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteWorkspaceRMSTravelEscalationRate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteWorkspaceRMSTravelNonzoneFeesAndCosts.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteWorkspaceRolesByETIUserID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteWorkspaceVariable.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteWorkspaceVariableResourceType.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteWorkspaceVersion.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteWorkspace_ProcessSoftDelete.sql" />
+    <Content Include="Object Scripts\Stored Procedures\ELMAH_GetErrorsXml.sql" />
+    <Content Include="Object Scripts\Stored Procedures\ELMAH_GetErrorXml.sql" />
+    <Content Include="Object Scripts\Stored Procedures\ELMAH_LogError.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getBOEForFindReplace.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getBOEHistoryLog.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getBOEIDByWorkspaceAdvancedSearch.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getBOEIDByWorkspaceQuickSearch.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getBOEPermissions.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getConfigurationValue.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getLaborSpread.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getLaborType.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getOrdinaryVariableByTaskElementID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getPerformingOrganizationInUseFlagByPerformingOrganizationListID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getProjectMapIDForProjectMapAdvancedSearch.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getProjectMapIDForProjectMapQuickSearch.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getReportXml.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getResourceInUseFlagByResourceListID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getResourceInUseFlagBySystemResourceID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getSystemPermissions.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getSystemResourceInUseFlag.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getWorkspaceHistoryLog.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getWorkspaceIDByWorkspaceAdvancedSearch.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getWorkspacePerformingOrganizationInUseFlagByPerformingOrganizationID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getWorkspacePermissions.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getWorkspaceResourceInUseFlagByMultipleResources.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getWorkspaceResourceInUseFlagByResourceID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\getWorkspaceVariableByTaskElementID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertBOEApprover.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertBOECommentHistory.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertBOETaskElementMetricDetailXREF.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertBOETaskElementWorkspaceVariable.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertDefaultMultiClinWBS.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertDefaultPerformingOrganization.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertDefaultResource.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertLocation.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertMetricDetail.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertOrdinaryVariableResourceType.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertOutputFormatTemplate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertOutputFormatTemplateWorkspace.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertProPricerExportCustomField.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertProPricerExportField.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertReportXml.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertSumOfBOE_OrdinaryVariable.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertSumOfBOE_WorkspaceVariable.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertSystemProPricerExportCustomField.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertSystemProPricerExportField.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertSystemUserRole.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertWorkspaceUserRole.sql" />
+    <Content Include="Object Scripts\Stored Procedures\insertWorkspaceVariableResourceType.sql" />
+    <Content Include="Object Scripts\Stored Procedures\lockWorkspaceRate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\refreshCustomFieldInUseFlagByWorkspaceID.sql" />
+    <Content Include="Object Scripts\Stored Procedures\resetWorkspaceDefaultFees.sql" />
+    <Content Include="Object Scripts\Stored Procedures\resetWorkspaceDefaultRates.sql" />
+    <Content Include="Object Scripts\Stored Procedures\resetWorkspaceOffloadRates.sql" />
+    <Content Include="Object Scripts\Stored Procedures\restoreOutputFormatTemplate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\restoreWorkspaceRate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\restoreWorkspaceVersion.sql" />
+    <Content Include="Object Scripts\Stored Procedures\updateBOEApproval.sql" />
+    <Content Include="Object Scripts\Stored Procedures\updateBOETaskElementLaborTypeWarningFlag.sql" />
+    <Content Include="Object Scripts\Stored Procedures\UpdateDbVersion.sql" />
+    <Content Include="Object Scripts\Stored Procedures\updateMileageReimbursementRate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\UpdateMSTTravelNonzoneFeesAndCosts.sql" />
+    <Content Include="Object Scripts\Stored Procedures\UpdateMSTZoneTravelDestination.sql" />
+    <Content Include="Object Scripts\Stored Procedures\updateSumOfBOEs.sql" />
+    <Content Include="Object Scripts\Stored Procedures\updateSystemEmail.sql" />
+    <Content Include="Object Scripts\Stored Procedures\updateTravelTripInUse.sql" />
+    <Content Include="Object Scripts\Stored Procedures\updateWorkspaceAllowSearch.sql" />
+    <Content Include="Object Scripts\Stored Procedures\updateWorkspacePerformingOrganizationFlag.sql" />
+    <Content Include="Object Scripts\Stored Procedures\updateWorkspaceProcessSoftDelete.sql" />
+    <Content Include="Object Scripts\Stored Procedures\updateWorkspaceStatus.sql" />
+    <Content Include="Object Scripts\Stored Procedures\updateWorkspaceUserRoleHideHelp.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertBOE.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertBOEComment.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertBOECustomFieldValue.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertBOEFormIBOE.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertBOEFormPBOE.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertBOELaborSpread.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertBOELaborType.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertBOELaborTypeCustomFieldValue.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertBOEPotentialRoleByDTO.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertBOETaskElement.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertBOETaskElementCustomFieldValue.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertBOETaskElementOrdinaryVariable.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertCLIN.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertContractType.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertCustomField.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertCustomFieldValue.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertLOB.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertMSTTravelTrip.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertMSTTravelTripCustomFieldValue.sql" />
+    <Content Include="Object Scripts\Stored Procedures\UpsertMSTZoneTravelOrigin.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertODCSpread.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertODCTaskElement.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertODCType.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertOutputFormatTemplate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertPerDiem.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertPerformingOrganization.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertPerformingOrganizationList.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertProposalClass.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertProPricerExport.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertResourceList.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertRteTemplateAnswer.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertRteTemplateQuestion.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertRteTemplate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertSystemOffloadRate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertSystemPerformingOrganization.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertSystemProPricerExport.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertSystemResource.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertSystemSetting.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertTMResourceRate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertTravelEscalationRate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertTravelMiscellaneousRate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertTravelTrip.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertTravelTripCustomFieldValue.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertTravelTripTaskElement.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertTravelTripTaskElementCustomFieldValue.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertTrip.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertUser.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertUserLog.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertWBSElement.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertWorkspace.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertWorkspaceEmail.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertWorkspaceFavorite.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertWorkspaceLastAccessed.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertWorkspacePerformingOrganization.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertWorkspaceResource.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertWorkspaceRMSTravelEscalationRate.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertWorkspaceRMSTravelNonzoneFeesAndCosts.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertWorkspaceVariable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\LaborSpreadViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\LaborTypeCustomFieldViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\LaborTypeViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\OrdinaryVariableViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\OrdinaryVarSumVarViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\ProjectMapSpreadViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\ProjectMapViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\SumOfBoe_OrdinaryVarViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\SumOfBoe_WorkspaceVarViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\TaskElementCustomFieldViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\TaskElementViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\TaskElementWorkspaceVariableViaTable.sql" />
+    <Content Include="Object Scripts\X_Data Cleanup\ErrorLogs.sql" />
+    <Content Include="Object Scripts\X_Data Cleanup\Fix Boe Level Duplicated CF XREF Values.sql" />
+    <Content Include="Object Scripts\X_Data Cleanup\Fix Labor Type Level Duplicated CF XREF Values.sql" />
+    <Content Include="Object Scripts\X_Data Cleanup\Fix Task Level Duplicated CF XREF Values.sql" />
+    <Content Include="Object Scripts\X_Data Cleanup\FixMissingRMSEscalationRates.sql" />
+    <Content Include="Object Scripts\X_Data Cleanup\WSBackups.sql" />
+    <Content Include="Release Scripts\Release 2.09\1 - Release 2.9 Script.sql" />
+    <Content Include="Release Scripts\Release 2.09\2 - Release 2.9.1 Script.sql" />
+    <Content Include="Release Scripts\Release 2.09\3 - Release 2.9.3 Script.sql" />
+    <Content Include="Release Scripts\Release 2.10\1 - Release 2.10 Script.sql" />
+    <Content Include="Release Scripts\Release 2.11\1 - Release 2.11 Script.sql" />
+    <Content Include="Release Scripts\Release 2.12\1 - Release 2.12 Script.sql" />
+    <Content Include="Release Scripts\Release 2.13\1 - Release 2.13 Script.sql" />
+    <Content Include="Release Scripts\Release 2.14\0 - Create Default WS.sql" />
+    <Content Include="Release Scripts\Release 2.14\1 - Release 2.14 Script.sql" />
+    <Content Include="Release Scripts\Release 2.14\2 - Release 2.14.1 Script.sql" />
+    <Content Include="Release Scripts\Release 2.15\1 - Release 2.15 Script.sql" />
+    <Content Include="Release Scripts\Release 2.16\1 - Release 2.16 Script.sql" />
+    <Content Include="Release Scripts\Release 2.17\1 - Release 2.17 Script.sql" />
+    <Content Include="Release Scripts\Release 2.18\1 - Release 2.18 Script.sql" />
+    <Content Include="Release Scripts\Release 2.19\1 - Release 2.19 Script.sql" />
+    <Content Include="Release Scripts\Release 2018.1\1 - Release 2018.1 Script.sql" />
+    <Content Include="Release Scripts\Release 2018.2\1 - Release 2018.2 Script.sql" />
+    <Content Include="Release Scripts\Release 2018.3\1 - Release 2018.3 Script.sql" />
+    <Content Include="Release Scripts\Release 2018.4\1 - Release 2018.4 Script.sql" />
+    <Content Include="Release Scripts\Release 2018.5\1 - Release 2018.5 Script.sql" />
+    <Content Include="Release Scripts\Release 2018.6\1 - Release 2018.6 Script.sql" />
+    <Content Include="Release Scripts\Release 2018.7\1 - Release 2018.7 Script.sql" />
+    <Content Include="Release Scripts\Release 2018.8\1 - Release 2018.8 Script.sql" />
+    <Content Include="Release Scripts\Release 2019.1\1 - Release 2019.1 Script.sql" />
+    <Content Include="Release Scripts\Release 2019.4\Release 2019.4.sql" />
+    <Content Include="Release Scripts\Release 2019.5\Release 2019.5.sql" />
+    <Content Include="Release Scripts\Release 2019.8\Release 2019.8.sql" />
+    <Content Include="Release Scripts\Release 2020.1\Release 2020.1.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - Sql Script For Release 2019.4 Generated On 7_1_2019.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - Sql Script For Release 2019.5 Generated On 9_26_2019.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - Sql Script For Release 2019.8 Generated On 12_2_2019.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2018.1 Generated On 1_30_2018.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2018.2 Generated On 2_19_2018.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2018.3 Generated On 4_16_2018.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2018.4 Generated On 4_29_2018.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2018.5 Generated On 6_12_2018.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2018.6 Generated On 7_23_2018.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2018.7 Generated On 9_5_2018.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2018.8 Generated On 10_29_2018.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script for Release 2019.1.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2019.2 Generated On 5_21_2019.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.09 Generated On 1_26_2016.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.09.1 Generated On 2_18_2016.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.10 Generated On 5_23_2016 %28Without Realignment Scripts%29.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.11 Generated On 8_1_2016.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.13 Generated On 12_13_2016.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.14 Generated On 2_20_2017.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.14.2 Generated On 4_21_2017.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.15 Generated On 7_19_2017.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.16 Generated On 8_16_2017.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.17 Generated On 9_11_2017.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.18 Generated On 10_19_2017.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.19 Generated On 12_19_2017.sql" />
+    <Content Include="_Other Scripts\Create Default WS.sql" />
+    <Content Include="_Other Scripts\Custom Field Stuff\Abandoned Open Ended CF Values.sql" />
+    <Content Include="_Other Scripts\Custom Field Stuff\Duplicated CF XREF Values.sql" />
+    <Content Include="_Other Scripts\Custom Field Stuff\Duplicated Open Ended CF Values.sql" />
+    <Content Include="_Other Scripts\Custom Field Stuff\Fix Boe Level Duplicated CF XREF Values.sql" />
+    <Content Include="_Other Scripts\Custom Field Stuff\Fix Boe Level Open Ended CF Values.sql" />
+    <Content Include="_Other Scripts\Custom Field Stuff\Fix Labor Type Level Duplicated CF XREF Values.sql" />
+    <Content Include="_Other Scripts\Custom Field Stuff\Fix Labor Type Level Open Ended CF Values.sql" />
+    <Content Include="_Other Scripts\Custom Field Stuff\Fix Task Level Duplicated CF XREF Values.sql" />
+    <Content Include="_Other Scripts\Custom Field Stuff\Fix Task Level Open Ended CF Values.sql" />
+    <Content Include="_Other Scripts\Custom Field Stuff\Fix Travel Task Level Open Ended CF XREF Values.sql" />
+    <Content Include="_Other Scripts\Custom Field Stuff\Fix Travel Trip Level Open Ended CF XREF Values.sql" />
+    <Content Include="_Other Scripts\Custom Field Stuff\Problematic Custom Fields.sql" />
+    <Content Include="_Other Scripts\Custom Field Stuff\Relink Boe Level Custom Fields.sql" />
+    <Content Include="_Other Scripts\Custom Field Stuff\Relink Labor Type Level Custom Fields.sql" />
+    <Content Include="_Other Scripts\DB Copy Script.sql" />
+    <Content Include="_Other Scripts\FindBadPerformingOrgsInMSTTravelTrips.sql" />
+    <Content Include="_Other Scripts\FindDuplicateNTIDs.sql" />
+    <Content Include="_Other Scripts\FindRolesAndWorkspacesForNtId.sql" />
+    <Content Include="_Other Scripts\Fix Duplicate Ordinary Variables.sql" />
+    <Content Include="_Other Scripts\FixBadPerformingOrgsInMSTTravelTrips.sql" />
+    <Content Include="_Other Scripts\FixDuplicateNTIDs.sql" />
+    <Content Include="_Other Scripts\From Transition\quick collation fix 20141215_b - Forgot to compare Schema Names in Functions.sql" />
+    <Content Include="_Other Scripts\From Transition\quick collation fix 20150416 - Added Support to remove deprecated commands from SPs.sql" />
+    <Content Include="_Other Scripts\From Transition\quick collation fix 20150416 - Started to Add Support to remove deprecated commands from SPs.sql" />
+    <Content Include="_Other Scripts\From Transition\quick collation fix 20150417 - Added Support to remove deprecated commands from SPs.sql" />
+    <Content Include="_Other Scripts\From Transition\sp_helptext_custom.sql" />
+    <Content Include="_Other Scripts\GenBOE - Insert Application Administrator.sql" />
+    <Content Include="_Other Scripts\Realignment and DB Copy Scripts.sql" />
+    <Content Include="_Other Scripts\RemoveNonDiscreteLaborSpreads.sql" />
+    <Content Include="_Other Scripts\Sql To Move Templates for Hotfix 2.9.5.sql" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

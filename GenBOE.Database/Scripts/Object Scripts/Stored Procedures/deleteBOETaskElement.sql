@@ -32,12 +32,17 @@ AS
 **		1/16/18		twilson3			BOEJ-2887 Remove Historical Metrics
 **		4/2/18		ranzalon			BOEJ-3268 - Update for Open Ended Custom Fields
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+**		12/13/19	twilson3			BOEJ-4434 - RTE Template Answers
 *******************************************************************************/
 SET NOCOUNT ON 
 
 
 	IF (SELECT UpdateDT FROM [dbo].[BOETaskElement] WHERE BOETaskElementID = @BOETaskElementID) = @UpdateDT
 		BEGIN
+
+			-- Delete RTE Template Answers
+			DELETE FROM dbo.[RteTemplateAnswer]
+			WHERE TaskID = @BOETaskElementID
 
 			DELETE FROM dbo.BOELaborSpread
 				FROM dbo.BOELaborSpread LS

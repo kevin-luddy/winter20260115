@@ -37,6 +37,8 @@ CREATE  PROCEDURE [dbo].[deleteWorkspaceVersion]
 **		1/11/18		ranzalon			BOEJ-2889 Updated template backup
 **		1/16/18		twilson3			BOEJ-2887 Remove Historical Metrics
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+**		12/13/19	twilson3			BOEJ-4434 - RTE Template Answers
+**		12/17/19	twilson3			BOEJ-4434 Fix Assigned
 *******************************************************************************/
 AS
 SET NOCOUNT ON
@@ -132,6 +134,14 @@ IF EXISTS (SELECT VersionID FROM  [version].[Resource] WHERE VersionID = @Versio
 				DELETE FROM [version].[Resource] WHERE VersionID = @VersionID
 IF EXISTS (SELECT VersionID FROM  [version].[ResourceList] WHERE VersionID = @VersionID)		
 				DELETE FROM [version].[ResourceList] WHERE VersionID = @VersionID
+IF EXISTS (SELECT VersionID FROM  [version].[RteTemplateAnswer] WHERE VersionID = @VersionID)		
+				DELETE FROM [version].[RteTemplateAnswer] WHERE VersionID = @VersionID
+IF EXISTS (SELECT VersionID FROM  [version].[RteTemplateAssigned] WHERE VersionID = @VersionID)		
+				DELETE FROM [version].[RteTemplateAssigned] WHERE VersionID = @VersionID
+IF EXISTS (SELECT VersionID FROM  [version].[RteTemplate] WHERE VersionID = @VersionID)		
+				DELETE FROM [version].[RteTemplate] WHERE VersionID = @VersionID
+IF EXISTS (SELECT VersionID FROM  [version].[RteTemplateQuestion] WHERE VersionID = @VersionID)		
+				DELETE FROM [version].[RteTemplateQuestion] WHERE VersionID = @VersionID
 IF EXISTS (SELECT VersionID FROM  [version].[SumOfBOE_OrdinaryVariableXREF] WHERE VersionID = @VersionID)		
 				DELETE FROM [version].[SumOfBOE_OrdinaryVariableXREF] WHERE VersionID = @VersionID
 IF EXISTS (SELECT VersionID FROM  [version].[SumOfBOE_WorkspaceVariableXREF] WHERE VersionID = @VersionID)		

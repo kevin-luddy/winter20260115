@@ -41,6 +41,9 @@ AS
 **		7/12/19		twilson3			BOEJ-4037	System Pro Pricer Export 
 **		9/26/19		ranzalon			BOEJ-4349 - Revised Submittal Date
 **		12/2/19		ranzalon			BOEJ-4464 - Added LaborSortId
+**		12/5/19		twilson3			BOEJ-4429 - RTE Templates
+**		12/13/19	twilson3			BOEJ-4434 - RTE Template Answers
+**		12/17/19	twilson3			BOEJ-4434 Fix Assigned
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 
@@ -382,6 +385,80 @@ SELECT 	    @VersionID,
 			[SpreadValue]
 FROM  [dbo].ProjectMapSpread S
 WHERE [WorkspaceId] = @WorkspaceID
+
+/** RTE Templates **/
+
+INSERT INTO [version].[RteTemplate]
+			([TemplateID],
+			[UpdateDT],
+			[WorkspaceID],
+			[Description],
+			[AuthorID],
+			[CreatedOn],
+			[VersionID])
+			SELECT [TemplateID],
+		[UpdateDT]
+      ,[WorkspaceID]
+      ,[Description]
+      ,[AuthorID]
+      ,[CreatedOn]
+	  ,@VersionID
+  FROM [dbo].[RteTemplate]
+WHERE WorkspaceID = @WorkspaceID
+
+INSERT INTO [version].[RteTemplateAssigned]
+	([TemplateID],
+	[RteTemplateSourceId],
+	VersionID)
+	SELECT RA.[TemplateID],
+		RA.[RteTemplateSourceId],
+		@VersionID
+	FROM [dbo].[RteTemplateAssigned] RA
+	INNER JOIN [dbo].[RteTemplate] R on R.[TemplateID] = RA.[TemplateID]
+WHERE R.WorkspaceID = @WorkspaceID
+
+INSERT INTO [version].[RteTemplateQuestion]
+           ([QuestionID],
+		    [UpdateDT],
+			[TemplateID],
+			[Text],
+			[SortOrder],
+			[Required],
+			[VersionID])
+SELECT RTQ.[QuestionID]
+	  ,RTQ.[UpdateDT]
+      ,RTQ.[TemplateID]
+      ,RTQ.[Text]
+      ,RTQ.[SortOrder]
+      ,RTQ.[Required]
+	  ,@VersionID
+  FROM [dbo].[RteTemplateQuestion] RTQ
+  INNER JOIN dbo.[RteTemplate] RT ON RT.TemplateID = RTQ.TemplateID
+  WHERE RT.WorkspaceID = @WorkspaceID
+
+INSERT INTO [version].[RteTemplateAnswer]
+	([AnswerID],
+	[UpdateDT],
+	[QuestionID],
+	[BOEID],
+	[TaskID],
+	[Text],
+	[RteTemplateSourceId],
+	[VersionID])
+SELECT RTA.[AnswerID],
+		RTA.[UpdateDT],
+		RTA.[QuestionID],
+		RTA.[BOEID],
+		RTA.[TaskID],
+		RTA.[Text],
+		RTA.[RteTemplateSourceId],
+		@VersionID
+	FROM [dbo].[RteTemplateAnswer] RTA
+	INNER JOIN [dbo].[RteTemplateQuestion] RTQ ON RTA.[QuestionID] = RTQ.[QuestionID]
+	INNER JOIN dbo.[RteTemplate] RT ON RT.TemplateID = RTQ.TemplateID
+	WHERE RT.WorkspaceID = @WorkspaceID
+
+/** Custom Fields **/
 
 INSERT INTO [version].[CustomField]
 ([CustomFieldID]

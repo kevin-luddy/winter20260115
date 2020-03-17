@@ -61,6 +61,10 @@ AS
 **		7/12/19		twilson3			BOEJ-4037	System Pro Pricer Export 
 **		9/26/19		ranzalon			BOEJ-4349 - Revised Submittal Date
 **		12/2/19		ranzalon			BOEJ-4464 - Added LaborSortId
+**		12/5/19		twilson3			BOEJ-4429 - RTE Templates
+**		12/13/19	twilson3			BOEJ-4434 - RTE Template Answers
+**		12/17/19	twilson3			BOEJ-4434 - Fix Assigned
+**		02/13/20	ranzalon			BOEJ-4506 - Fix RTE Assigned, RTE template deletion order
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -213,7 +217,27 @@ DELETE FROM [dbo].[BOETaskElementCustomFieldValueXREF]
 		INNER JOIN dbo.BOE B ON BTE.BOEID  = B.BOEID
 		INNER JOIN dbo.Workspace WS ON B.WorkspaceID = WS.WorkspaceID
 	WHERE WS.WorkspaceID = @WorkspaceID
-DELETE FROM  [dbo].[BOETaskElement] 
+
+DELETE FROM [dbo].[RteTemplateAnswer]
+	FROM [dbo].[RteTemplateAnswer] RTA 
+		INNER JOIN [RteTemplateQuestion] RTQ ON RTQ.[QuestionID] = RTA.[QuestionID]
+		INNER JOIN dbo.[RteTemplate] RT ON RTQ.TemplateID = RT.TemplateID
+	WHERE RT.WorkspaceID = @WorkspaceID
+
+DELETE FROM [dbo].[RteTemplateQuestion]
+	FROM [dbo].[RteTemplateQuestion] RTQ
+		INNER JOIN dbo.[RteTemplate] RT ON RTQ.TemplateID = RT.TemplateID
+	WHERE RT.WorkspaceID = @WorkspaceID
+
+DELETE FROM [dbo].[RteTemplateAssigned]
+	FROM [dbo].[RteTemplateAssigned] RTA
+		INNER JOIN dbo.[RteTemplate] RT ON RTA.TemplateID = RT.TemplateID
+	WHERE RT.WorkspaceID = @WorkspaceID
+
+DELETE FROM [dbo].[RteTemplate]
+	WHERE WorkspaceID = @WorkspaceID
+
+DELETE FROM  [dbo].[BOETaskElement]
 	FROM [dbo].[BOETaskElement] BTE
 		INNER JOIN dbo.BOE B ON BTE.BOEID  = B.BOEID
 		INNER JOIN dbo.Workspace WS ON B.WorkspaceID = WS.WorkspaceID
@@ -1425,6 +1449,7 @@ S.[WorkspaceId] = @WorkspaceID
 
 END
 
+/** Custom Fields **/
 
 IF EXISTS (SELECT 1 FROM [version].[CustomField] WHERE VersionID = @VersionID)
 BEGIN
@@ -2359,6 +2384,111 @@ IF  EXISTS  (SELECT vPO.PerformingOrganizationID
 						WS.WorkspaceID = @WorkspaceID AND
 						PO.PerformingOrganizationID IS NULL
 		END
+
+/** RTE Templates **/ 
+
+IF EXISTS (SELECT 1 FROM [version].[RteTemplate] WHERE VersionID = @VersionID)
+BEGIN
+
+SET IDENTITY_INSERT [dbo].[RteTemplate] ON
+INSERT INTO [dbo].[RteTemplate]
+([TemplateID],
+[UpdateDT],
+[WorkspaceID],
+[Description],
+[AuthorID],
+[CreatedOn]
+)
+SELECT RT.[TemplateID]
+,RT.[UpdateDT]
+,RT.[WorkspaceID]
+,RT.[Description]
+,RT.[AuthorID]
+,RT.[CreatedOn]
+FROM [version].[RteTemplate] RT
+WHERE 
+RT.VersionID = @VersionID AND
+RT.WorkspaceID = @WorkspaceID 
+SET IDENTITY_INSERT [dbo].[RteTemplate] OFF
+
+END
+
+IF EXISTS (SELECT 1 FROM [version].[RteTemplateAssigned] WHERE VersionID = @VersionID)
+BEGIN
+
+INSERT INTO [dbo].[RteTemplateAssigned]
+([TemplateID],
+[RteTemplateSourceId]
+)
+SELECT RTA.[TemplateID]
+,RTA.[RteTemplateSourceId]
+FROM [version].[RteTemplateAssigned] RTA
+INNER JOIN [version].[RteTemplate] RT ON RT.[TemplateID] = RTA.[TemplateID]
+WHERE   
+RT.VersionID = @VersionID AND RT.WorkspaceID = @WorkspaceID AND 
+RTA.VersionID = @VersionID
+
+END
+
+IF EXISTS (SELECT 1 FROM [version].[RteTemplateQuestion] WHERE VersionID = @VersionID)
+BEGIN
+
+SET IDENTITY_INSERT [dbo].[RteTemplateQuestion] ON
+INSERT INTO [dbo].[RteTemplateQuestion]
+([QuestionID],
+[UpdateDT],
+[TemplateID],
+[Text],
+[SortOrder],
+[Required]
+)
+SELECT RTQ.[QuestionID]
+,RTQ.[UpdateDT]
+,RTQ.[TemplateID]
+,RTQ.[Text]
+,RTQ.[SortOrder]
+,RTQ.[Required]
+FROM [version].[RteTemplateQuestion] RTQ
+INNER JOIN [version].[RteTemplate] RT ON RT.[TemplateID] = RTQ.[TemplateID]
+WHERE   
+RT.VersionID = @VersionID AND RT.WorkspaceID = @WorkspaceID AND 
+RTQ.VersionID = @VersionID
+SET IDENTITY_INSERT  [dbo].[RteTemplateQuestion] OFF
+
+END
+
+IF EXISTS (SELECT 1 FROM [version].[RteTemplateAnswer] WHERE VersionID = @VersionID)
+BEGIN
+
+SET IDENTITY_INSERT [dbo].[RteTemplateAnswer] ON
+INSERT INTO [dbo].[RteTemplateAnswer]
+([AnswerID],
+[UpdateDT],
+[QuestionID],
+[BOEID],
+[TaskID],
+[Text],
+[RteTemplateSourceId]
+)
+SELECT RTA.[AnswerID]
+,RTA.[UpdateDT]
+,RTA.[QuestionID]
+,RTA.[BOEID]
+,RTA.[TaskID]
+,RTA.[Text]
+,RTA.[RteTemplateSourceId]
+FROM [version].[RteTemplateAnswer] RTA
+INNER JOIN [version].[RteTemplateQuestion] RTQ ON RTA.[QuestionID] = RTQ.[QuestionID]
+INNER JOIN [version].[RteTemplate] RT ON RT.[TemplateID] = RTQ.[TemplateID]
+WHERE   
+RT.VersionID = @VersionID AND RT.WorkspaceID = @WorkspaceID AND 
+RTQ.VersionID = @VersionID AND RTA.VersionID = @VersionID
+SET IDENTITY_INSERT  [dbo].[RteTemplateAnswer] OFF
+
+END
+
+/** End RTE Templates **/ 
+
 IF EXISTS (SELECT 1 FROM [version].[BOELaborType] WHERE VersionID = @VersionID)
 BEGIN
 /*Updated for WI 8398*/
@@ -3010,6 +3140,9 @@ BEGIN CATCH
 	SET IDENTITY_INSERT [dbo].[ProPricerFieldXREF] OFF
 	SET IDENTITY_INSERT [dbo].[Resource] OFF
 	SET IDENTITY_INSERT [dbo].[ResourceList] OFF
+	SET IDENTITY_INSERT [dbo].[RteTemplate] OFF
+	SET IDENTITY_INSERT [dbo].[RteTemplateQuestion] OFF
+	SET IDENTITY_INSERT [dbo].[RteTemplateAnswer] OFF
 	SET IDENTITY_INSERT [dbo].[SumOfBOE_OrdinaryVariableXREF] OFF
 	SET IDENTITY_INSERT [dbo].[SumOfBOE_WorkspaceVariableXREF] OFF
 	SET IDENTITY_INSERT [dbo].[SystemUserRole] OFF

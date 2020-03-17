@@ -38,6 +38,7 @@ AS
 **		7/20/18		twilson3			BOEJ-3568 Remove User Workspace XREF
 **		10/25/2018	twilson3			BOEJ-3878 Added missing Tables, moved deletes around to mimic deleteFullWorkspace.sql for easier Compare in future
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+**		12/17/19	twilson3			BOEJ-4434 - RTE Templates
 *******************************************************************************/
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 
@@ -183,6 +184,25 @@ FROM dbo.WorkspaceVersion WV
 			INNER JOIN @MockWorkspace WS ON CF.WorkspaceID = WS.WorkspaceID
 
 
+			DELETE FROM [dbo].[RteTemplateAnswer]
+				FROM [dbo].[RteTemplateAnswer] RTA 
+					INNER JOIN [RteTemplateQuestion] RTQ ON RTQ.[QuestionID] = RTA.[QuestionID]
+					INNER JOIN dbo.[RteTemplate] RT ON RTQ.TemplateID = RT.TemplateID
+					INNER JOIN @MockWorkspace WS ON RT.WorkspaceID = WS.WorkspaceID
+
+			DELETE FROM [dbo].[RteTemplateQuestion]
+				FROM [dbo].[RteTemplateQuestion] RTQ
+					INNER JOIN dbo.[RteTemplate] RT ON RTQ.TemplateID = RT.TemplateID
+					INNER JOIN @MockWorkspace WS ON RT.WorkspaceID = WS.WorkspaceID
+
+			DELETE FROM [dbo].[RteTemplateAssigned]
+				FROM [dbo].[RteTemplateAssigned] RTA
+					INNER JOIN dbo.[RteTemplate] RT ON RTA.TemplateID = RT.TemplateID
+					INNER JOIN @MockWorkspace WS ON RT.WorkspaceID = WS.WorkspaceID
+
+			DELETE FROM [dbo].[RteTemplate]
+				FROM [dbo].[RteTemplate] RT
+					INNER JOIN @MockWorkspace WS ON RT.WorkspaceID = WS.WorkspaceID
 
 			DELETE FROM dbo.BOELaborType
 			FROM dbo.BOELaborType LT 
