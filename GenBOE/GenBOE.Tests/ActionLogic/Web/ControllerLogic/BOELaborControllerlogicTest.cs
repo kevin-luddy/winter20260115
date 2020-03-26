@@ -1274,6 +1274,310 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             Assert.AreEqual(1, validations.Count());
         }
 
+        /// <summary>
+        /// Test ValidateLockedLaborTaskData returns no errors when no changes made
+        /// </summary>
+        [TestMethod]
+        public void TestValidateLockedLaborTaskData()
+        {
+            BOELaborControllerLogic sut = CreateSystem();
+
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            FullWorkspace ws = new FullWorkspace(workspace);
+
+            FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2012"), IsMultiClinWbs = false });
+
+            LaborTaskDataModelView task = CreateModelView(boe, ws);
+            BoeTaskElementDTO originalTask = CreateDto(boe, ws, sut);
+
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, workspace.DecimalPrecision, workspace.CostDecimalPrecision)).Returns(new Collection<BoeTaskElementDTO>() { originalTask });
+            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(ws);
+
+            ICollection<ValidationMessage> result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            Assert.IsFalse(result.Any());
+        }
+
+        /// <summary>
+        /// Test ValidateLockedLaborTaskData returns proper error when Task ID is changed
+        /// </summary>
+        [TestMethod]
+        public void TestValidateLockedLaborTaskData_TaskId()
+        {
+            BOELaborControllerLogic sut = CreateSystem();
+
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            FullWorkspace ws = new FullWorkspace(workspace);
+
+            FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2012"), IsMultiClinWbs = false });
+
+            LaborTaskDataModelView task = CreateModelView(boe, ws);
+            BoeTaskElementDTO originalTask = CreateDto(boe, ws, sut);
+
+            // Change Task ID
+            task.TaskElementData.TaskID = "2";
+
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, workspace.DecimalPrecision, workspace.CostDecimalPrecision)).Returns(new Collection<BoeTaskElementDTO>() { originalTask });
+            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(ws);
+
+            ICollection<ValidationMessage> result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().ValidationIssue.Contains("Task ID"));
+        }
+
+        /// <summary>
+        /// Test ValidateLockedLaborTaskData returns proper error when Task Title is changed
+        /// </summary>
+        [TestMethod]
+        public void TestValidateLockedLaborTaskData_TaskTitle()
+        {
+            BOELaborControllerLogic sut = CreateSystem();
+
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            FullWorkspace ws = new FullWorkspace(workspace);
+
+            FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2012"), IsMultiClinWbs = false });
+
+            LaborTaskDataModelView task = CreateModelView(boe, ws);
+            BoeTaskElementDTO originalTask = CreateDto(boe, ws, sut);
+
+            // Change Task Title
+            task.TaskElementData.Title = "Wrong title";
+
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, workspace.DecimalPrecision, workspace.CostDecimalPrecision)).Returns(new Collection<BoeTaskElementDTO>() { originalTask });
+            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(ws);
+
+            ICollection<ValidationMessage> result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().ValidationIssue.Contains("Task Title"));
+        }
+
+
+        /// <summary>
+        /// Test ValidateLockedLaborTaskData returns proper error when Task dates are changed
+        /// </summary>
+        [TestMethod]
+        public void TestValidateLockedLaborTaskData_TaskDates()
+        {
+            BOELaborControllerLogic sut = CreateSystem();
+
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            FullWorkspace ws = new FullWorkspace(workspace);
+
+            FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2012"), IsMultiClinWbs = false });
+
+            LaborTaskDataModelView task = CreateModelView(boe, ws);
+            BoeTaskElementDTO originalTask = CreateDto(boe, ws, sut);
+
+            // Change Task Start Date
+            task.TaskElementData.StartDate = DateTime.Now.AddDays(1).ToMonthString();
+
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, workspace.DecimalPrecision, workspace.CostDecimalPrecision)).Returns(new Collection<BoeTaskElementDTO>() { originalTask });
+            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(ws);
+
+            ICollection<ValidationMessage> result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().ValidationIssue.Contains("Task Start and End Dates"));
+
+            // Change Task Start Date
+            task.TaskElementData.StartDate = DateTime.Now.ToMonthString();
+            task.TaskElementData.EndDate = DateTime.Now.AddDays(1).ToMonthString();
+
+            result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().ValidationIssue.Contains("Task Start and End Dates"));
+        }
+
+        /// <summary>
+        /// Test ValidateLockedLaborTaskData returns proper error when the MOQ Equation is changed
+        /// </summary>
+        [TestMethod]
+        public void TestValidateLockedLaborTaskData_Moq()
+        {
+            BOELaborControllerLogic sut = CreateSystem();
+
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            FullWorkspace ws = new FullWorkspace(workspace);
+
+            FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2012"), IsMultiClinWbs = false });
+
+            LaborTaskDataModelView task = CreateModelView(boe, ws);
+            BoeTaskElementDTO originalTask = CreateDto(boe, ws, sut);
+
+            // Change MOQ text
+            task.TaskElementData.MOQHoursEquation = "Wrong text";
+
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, workspace.DecimalPrecision, workspace.CostDecimalPrecision)).Returns(new Collection<BoeTaskElementDTO>() { originalTask });
+            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(ws);
+
+            ICollection<ValidationMessage> result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().ValidationIssue.Contains("MOQ Equation"));
+        }
+
+        /// <summary>
+        /// Test ValidateLockedLaborTaskData returns proper error when Labor fields are changed
+        /// </summary>
+        [TestMethod]
+        public void TestValidateLockedLaborTaskData_Labor()
+        {
+            BOELaborControllerLogic sut = CreateSystem();
+
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            FullWorkspace ws = new FullWorkspace(workspace);
+
+            FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2012"), IsMultiClinWbs = false });
+
+            LaborTaskDataModelView task = CreateModelView(boe, ws);
+            BoeTaskElementDTO originalTask = CreateDto(boe, ws, sut);
+
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, workspace.DecimalPrecision, workspace.CostDecimalPrecision)).Returns(new Collection<BoeTaskElementDTO>() { originalTask });
+            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(ws);
+
+            // Make a copy of the MV so values can easily be reverted. Testing one field at a time.
+            LaborTaskDataModelView unchangedTask = new LaborTaskDataModelView() { TaskElementData = task.TaskElementData, LaborTypesData = task.LaborTypesData };
+
+            // Change Labor Resource ID
+            task.LaborTypesData.First().ResourceID = unchangedTask.LaborTypesData.First().ResourceID + 1;
+
+            ICollection<ValidationMessage> result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            string validationContainsString = "Resource Types";
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().ValidationIssue.Contains(validationContainsString));
+
+            // Change Labor Perf Org ID
+            task.LaborTypesData.First().PerformingOrgID = unchangedTask.LaborTypesData.First().PerformingOrgID + 1;
+            task.LaborTypesData.First().ResourceID = unchangedTask.LaborTypesData.First().ResourceID;
+
+            result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().ValidationIssue.Contains(validationContainsString));
+
+            // Change Labor Start Date
+            task.LaborTypesData.First().StartDate = DateTime.Now.AddDays(1).ToMonthString();
+            task.LaborTypesData.First().PerformingOrgID = unchangedTask.LaborTypesData.First().PerformingOrgID;
+
+            result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().ValidationIssue.Contains(validationContainsString));
+
+            // Change Labor End Date
+            task.LaborTypesData.First().EndDate = DateTime.Now.AddDays(1).ToMonthString();
+            task.LaborTypesData.First().StartDate = unchangedTask.LaborTypesData.First().StartDate;
+
+            result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().ValidationIssue.Contains(validationContainsString));
+
+            // Change Labor Spread Curve
+            task.LaborTypesData.First().SpreadCurveID = unchangedTask.LaborTypesData.First().SpreadCurveID + 1;
+            task.LaborTypesData.First().EndDate = unchangedTask.LaborTypesData.First().EndDate;
+
+            result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().ValidationIssue.Contains(validationContainsString));
+
+            // Change Labor Percent Spread
+            task.LaborTypesData.First().PercentSpread = unchangedTask.LaborTypesData.First().PercentSpread + 1;
+            task.LaborTypesData.First().SpreadCurveID = unchangedTask.LaborTypesData.First().SpreadCurveID;
+
+            result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().ValidationIssue.Contains(validationContainsString));
+
+            // Change Labor hours spread value
+            task.LaborTypesData.First().HourSpread = unchangedTask.LaborTypesData.First().HourSpread + 1;
+            task.LaborTypesData.First().PercentSpread = unchangedTask.LaborTypesData.First().PercentSpread;
+
+            result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().ValidationIssue.Contains(validationContainsString));
+
+            // Change Labor cost spread value
+            task.LaborTypesData.First().CostSpread = unchangedTask.LaborTypesData.First().CostSpread + 1;
+            task.LaborTypesData.First().HourSpread = unchangedTask.LaborTypesData.First().HourSpread;
+            originalTask.taskElementLabors.First().SpreadType = SpreadType.Cost;
+            this.retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, workspace.DecimalPrecision, workspace.CostDecimalPrecision)).Returns(new Collection<BoeTaskElementDTO>() { originalTask });
+
+            result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().ValidationIssue.Contains(validationContainsString));
+        }
+
+        /// <summary>
+        /// Test ValidateLockedLaborTaskData returns proper error when Spread Values or Dates are changed
+        /// </summary>
+        [TestMethod]
+        public void TestValidateLockedLaborTaskData_Spread()
+        {
+            BOELaborControllerLogic sut = CreateSystem();
+
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            FullWorkspace ws = new FullWorkspace(workspace);
+
+            FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2012"), IsMultiClinWbs = false });
+
+            LaborTaskDataModelView task = CreateModelView(boe, ws);
+            BoeTaskElementDTO originalTask = CreateDto(boe, ws, sut);
+
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe>() { boe });
+            this.retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, workspace.DecimalPrecision, workspace.CostDecimalPrecision)).Returns(new Collection<BoeTaskElementDTO>() { originalTask });
+            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(ws);
+
+            // Change Spread Value
+            decimal? originalValue = task.LaborTypesData.First().Spreads.First().LaborSpreadValue;
+            task.LaborTypesData.First().Spreads.First().LaborSpreadValue = originalValue + 1;
+
+            ICollection<ValidationMessage> result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().ValidationIssue.Contains("Resource Spreads"));
+
+            // Change Spread Date
+            task.LaborTypesData.First().Spreads.First().LaborSpreadDate = DateTime.Now.AddDays(1).ToMonthString();
+            task.LaborTypesData.First().Spreads.First().LaborSpreadValue = originalValue;
+
+            result = sut.ValidateLockedLaborTaskData(ws, task);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().ValidationIssue.Contains("Resource Spreads"));
+        }
+
         [TestMethod]
         public void Test_ConvertModelViewToDto()
         {

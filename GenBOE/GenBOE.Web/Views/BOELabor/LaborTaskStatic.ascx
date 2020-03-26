@@ -36,7 +36,7 @@
 
     $(function () {
         $(document).trigger("SHOW_LOADING_BOX");
-    
+
         // Labor Types
 
         var widgetConfig = {};
@@ -138,6 +138,10 @@
             // Change the Labor Spread Section to be expanded if collapsed
             $('#ManageLaborSpread.collapsed .collapsible-header').click();
         <% } %>
+
+        if (<%: ViewData["READONLY"] %>) {
+            $('#Save-BOEUpdatesAndClose').addClass('display-none');
+        }
 
         refreshModule($('.boe-details .module'));
     });
@@ -472,6 +476,8 @@
             <div>** required for validating and submitting for approval</div>
         </div>
         <div class="oci-note"><b>Note: </b><span id="Task-OCINote"></span></div>  
+        <button id="Save-BOEUpdatesAndClose" data-ng-hide="isSaving" data-ng-click="saveAndClose(true)" class="ies-action stateful_button" name="save-button" type="button">Save & Close</button>
+        <div id="Loader-BOEUpdates" class="loader" data-ng-show="isSaving"></div>
         <button id="Cancel-BOEUpdates" class="ies" name="cancel-button" type="button">Cancel</button>
         <button id="Next-Task" data-ng-disabled="isNextTaskDisabled()" data-ng-click="navigateToNext()" class="ies" name="next-task-button" type="button">Next Task</button>
         <button id="Previous-Task" data-ng-disabled="isPreviousTaskDisabled()" data-ng-click="navigateToPrevious()" class="ies" name="previous-task-button" type="button">Previous Task</button>

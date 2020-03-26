@@ -498,6 +498,108 @@ namespace GenBOE.ActionLogic.ControllerLogic
         }
 
         /// <summary>
+        /// Validate a labor task for saving in a locked Workspace
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="modelView">Labor Task ModelView</param>
+        /// <returns>Any validation errors</returns>
+        public ICollection<ValidationMessage> ValidateLockedLaborTaskData(FullWorkspace ws, LaborTaskDataModelView modelView)
+        {
+            if (ws == null)
+            {
+                throw new ArgumentNullException(nameof(ws));
+            }
+
+            ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+
+            BoeTaskElementDTO originalTask = ws.Boes.FirstOrDefault(x => x.Id == modelView.TaskElementData.BOEID).TaskElements.FirstOrDefault(x => x.Id == modelView.TaskElementData.TaskElementDetailID);
+
+            IReadOnlyCollection<WorkspaceVariableDTO> allWorkspaceVariables = ws.Boes.First(x => x.Id == originalTask.BoeID).WorkspaceVariables;
+
+            string lockedTaskErrorMessage = " cannot be changed while the Workspace is locked.";
+
+            // Validate no change to Task ID
+            if(modelView.TaskElementData.TaskID != originalTask.BOETaskID)
+            {
+                validationErrors.Add(new ValidationMessage(string.Format(Constants.CANNOT_CHANGE_IN_LOCKED_TASK, "Task ID")));
+            }
+
+            // Validate no change to Task Title
+            if (modelView.TaskElementData.Title != originalTask.TaskTitle)
+            {
+                validationErrors.Add(new ValidationMessage(string.Format(Constants.CANNOT_CHANGE_IN_LOCKED_TASK, "Task Title")));
+            }
+
+            // Validate no change to Dates
+            if (modelView.TaskElementData.StartDate != originalTask.StartDate.Value.ToMonthString() 
+                || modelView.TaskElementData.EndDate != originalTask.EndDate.Value.ToMonthString())
+            {
+                validationErrors.Add(new ValidationMessage(string.Format(Constants.CANNOT_CHANGE_IN_LOCKED_TASK, "Task Start and End Dates")));
+            }
+
+            // Validate no change to MOQ Equation
+            // Untag variables before comparing
+            List<WorkspaceVariableDTO> inUseWorkspaceVariables = (from wID in originalTask.WorkspaceVariableIDs
+                                                                  from workspaceVariable in allWorkspaceVariables
+                                                                  where workspaceVariable.Id == wID
+                                                                  select workspaceVariable).ToList();
+
+            originalTask.MOQHoursEquation = Common.MOQ.Parser.UntagVariables(originalTask.MOQHoursEquation, inUseWorkspaceVariables);
+
+            if (modelView.TaskElementData.MOQHoursEquation != originalTask.MOQHoursEquation)
+            {
+                validationErrors.Add(new ValidationMessage(string.Format(Constants.CANNOT_CHANGE_IN_LOCKED_TASK, "MOQ Equation")));
+            }
+            
+            // Validate no change to Labors
+            bool errorFound = false;
+            foreach (ResourceTypeDto originalLabor in originalTask.taskElementLabors)
+            {
+                LaborTypeDataModelView labor = modelView.LaborTypesData.FirstOrDefault(x => x.BOELaborTypeID == originalLabor.Id);
+
+                if (labor == null)
+                {
+                    validationErrors.Add(new ValidationMessage("Resource Types" + lockedTaskErrorMessage));
+                    break;
+                }
+
+                if (labor.ResourceID != originalLabor.ResourceID
+                    || labor.PerformingOrgID != originalLabor.PerformingOrgID
+                    || labor.StartDate != originalLabor.StartDate.Value.ToMonthString()
+                    || labor.EndDate != originalLabor.EndDate.Value.ToMonthString()
+                    || labor.SpreadCurveID != originalLabor.SpreadCurveID
+                    || labor.PercentSpread != originalLabor.PercentSpread
+                    || (originalLabor.SpreadType == SpreadType.Hours && labor.HourSpread != originalLabor.ValueSpread)
+                    || (originalLabor.SpreadType == SpreadType.Cost && labor.CostSpread != originalLabor.ValueSpread))
+                {
+                    validationErrors.Add(new ValidationMessage(string.Format(Constants.CANNOT_CHANGE_IN_LOCKED_TASK, "Resource Types")));
+                    errorFound = true;
+                    break;
+                }
+
+                // Validate no change to Spreads
+                for (int i = 0; i < originalLabor.LaborSpreads.Count(); i++)
+                {
+                    if(labor.Spreads.ElementAt(i).LaborSpreadValue != originalLabor.LaborSpreads.ElementAt(i).LaborSpreadValue
+                        || labor.Spreads.ElementAt(i).LaborSpreadDate != originalLabor.LaborSpreads.ElementAt(i).LaborSpreadDate.ToMonthString())
+                    {
+                        validationErrors.Add(new ValidationMessage(string.Format(Constants.CANNOT_CHANGE_IN_LOCKED_TASK, "Resource Spreads")));
+                        errorFound = true;
+                        break;
+                    }
+                }
+
+                if (errorFound)
+                {
+                    break;
+                }
+            }
+
+
+            return validationErrors;
+        }
+
+        /// <summary>
         /// Validate the Labor of the Labor Task Data
         /// </summary>
         /// <param name="ws">Workspace</param>

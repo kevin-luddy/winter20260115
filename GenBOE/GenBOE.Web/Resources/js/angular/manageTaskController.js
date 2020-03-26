@@ -1065,7 +1065,7 @@
         $(document).trigger('DISPLAY_TASK_ELEMENT_DETAILS', data);  // this will destroy the angular scope and refresh task composites
     };
 
-    $scope.saveAndClose = function () {
+    $scope.saveAndClose = function (wsLocked = false) {
         save(function () {
             // reload the LM Labor grid
             window.location.hash = 'LMLabor';
@@ -1077,7 +1077,7 @@
                 TaskElementDetailsWidget.cleanAllDirty();
                 $scope.isDirty = false;
             }, 300);
-        });
+        }, wsLocked);
     };
 
     $scope.saveAndAddAnother = function () {
@@ -1089,7 +1089,7 @@
         });
     };
 
-    var save = function (callback) {
+    var save = function (callback, wsLocked = false) {
         if (TaskElementDetailsWidget.isAnyDirty() && !TaskElementDetailsWidget.waitingBeforeSubmit) {
             var invalidResources = $("#LaborTypesFixed td.resources.inputError").length > 0;
             var invalidPerfOrgs = $("#LaborTypesFixed td.performing-org.inputError").length > 0;
@@ -1268,10 +1268,12 @@
 
                 var data = { modelView: postedData };
 
+                var saveAction = wsLocked ? "SaveLockedTaskDataModel" : ManageTaskModel.saveAction;
+
                 return $http({
                     method: 'POST',
                     data: data,
-                    url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.saveAction, '')
+                    url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, saveAction, '')
                 }).then(function (response) {
 
                     // reset the task element id in case this was saving a new task element

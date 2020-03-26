@@ -300,6 +300,11 @@ namespace IES.Common
         public const string CUSTOM_FIELD_IS_REQUIRED = "Custom Field {0} is required.";
 
         /// <summary>
+        /// The field cannot be changed in a task in a locked workspace
+        /// </summary>
+        public const string CANNOT_CHANGE_IN_LOCKED_TASK = "{0} cannot be changed while the Workspace is locked.";
+
+        /// <summary>
         /// SSRS RPS Report - The ResourceUnit for Resources represented by Hours.
         /// </summary>
         public const string RPS_RESOURCE_UNIT_HOURS = "Hours";

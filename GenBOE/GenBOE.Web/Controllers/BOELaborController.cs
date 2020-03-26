@@ -816,6 +816,36 @@ namespace GenBOE.Web.Controllers
         }
 
         /// <summary>
+        /// Saves the task data model in a locked workspace.
+        /// </summary>
+        /// <param name="workspace">The workspace.</param>
+        /// <param name="modelView">The model view.</param>
+        /// <returns></returns>
+        public ActionResult SaveLockedTaskDataModel(string workspace, LaborTaskDataModelView modelView)
+        {
+            if (modelView == null)
+            {
+                throw new ArgumentNullException(nameof(modelView));
+            }
+
+            if (modelView.TaskElementData == null)
+            {
+                throw new ArgumentNullException("modelView", "TaskElementData is null inside modelView");
+            }
+
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+            ICollection<ValidationMessage> validationErrors = this._BoeLaborControllerLogic.ValidateLockedLaborTaskData(ws, modelView);
+
+            if (validationErrors.Any())
+            {
+                throw new GenValidationException(validationErrors);
+            }
+
+            return SaveTaskDataModel(workspace, modelView);
+        }
+
+        /// <summary>
         /// Gets the task data model.
         /// </summary>
         /// <param name="workspace">The workspace.</param>
