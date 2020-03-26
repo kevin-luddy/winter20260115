@@ -1206,7 +1206,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
                         expected.Add(new RAMReportModelView()
                         {
-                            Clin = boe.Clin.ClinTitle,
+                            Clin = boe.Clin.ClinNumber,
                             Wbs = boe.Wbs.WbsNumber,
                             ActivityId = task.BOETaskID,
                             ActivityName = task.TaskTitle,

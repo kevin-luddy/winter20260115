@@ -126,6 +126,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
                             WbsDTO wbs = fullWS.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
                             ClinDTO clin = fullWS.Clins.FirstOrDefault(x => x.Id == boe.CLINID);
+                            string clinText = fullWS.IsProjectMapWorkspace ? clin?.ClinTitle : clin?.ClinNumber ?? string.Empty;
 
                             // Get the Labor Spread summaries for each year.
                             Dictionary<int, decimal> laborSpreadYearSummaries = this.GetCostAnalysisReportLaborSpreadSummariesByYear(reportStartYear, laborResource.LaborSpreads);
@@ -140,7 +141,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                             {
                                 ReportTitle = reportTitle,
                                 Project = fullWS.WorkspaceName,
-                                CLIN = clin?.ClinTitle ?? string.Empty,
+                                CLIN = clinText,
                                 CostCenter = perfOrg.PerformingOrgName ?? string.Empty,
                                 ResourceID = resourceName ?? string.Empty,
                                 ResourceDescription = resource.ResourceDesc ?? string.Empty,
@@ -231,6 +232,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         ResourceDTO inHouseResourceDto = fullWS.ResourcesUsedInWsBoes.First(r => r.Id == subResourceTypeDto.InHouseResource);
                         WbsDTO wbs = fullWS.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
                         ClinDTO clin = fullWS.Clins.FirstOrDefault(x => x.Id == boe.CLINID);
+                        string clinText = fullWS.IsProjectMapWorkspace ? clin?.ClinTitle : clin?.ClinNumber ?? string.Empty;
+
                         string resourceName = Utilities.FormatResourceNames(inHouseResourceDto.ResourceName, this.commonDataMapper.GetSikorskyLegacyResourceID(laborResource.LegacyID, allLegacyResources), false);
 
                         decimal totalHours = inHouseLaborSpreads.Sum(x => x.Value) + offloadedHourSpreads.Sum(x => x.Value);
@@ -262,7 +265,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                                     CostCenter = perfOrg.PerformingOrgName ?? string.Empty,
                                     Resource = resourceName ?? string.Empty,
                                     Wbs = wbs?.WbsNumber ?? string.Empty,
-                                    Clin = clin?.ClinTitle ?? string.Empty,
+                                    Clin = clinText,
                                     TotalInHouseHours = inHouseHours,
                                     TotalOffLoadHours = offloadHours,
                                     SumOfOLCost = offloadDollars,
@@ -339,6 +342,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         ResourceDTO inHouseResourceDto = fullWS.ResourcesUsedInWsBoes.First(r => r.Id == subResourceTypeDto.InHouseResource);
                         WbsDTO wbs = fullWS.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
                         ClinDTO clin = fullWS.Clins.FirstOrDefault(x => x.Id == boe.CLINID);
+                        string clinText = fullWS.IsProjectMapWorkspace ? clin?.ClinTitle : clin?.ClinNumber ?? string.Empty;
                         string resourceName = inHouseResourceDto.ResourceName;
                         string legacyName = this.commonDataMapper.GetSikorskyLegacyResourceID(laborResource.LegacyID, allLegacyResources);
 
@@ -358,7 +362,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                                 OffloadedResource = legacyName ?? string.Empty,
                                 Resource = resourceName ?? string.Empty,
                                 Wbs = wbs?.WbsNumber ?? string.Empty,
-                                Clin = clin?.ClinTitle ?? string.Empty,
+                                Clin = clinText,
                                 TotalInHouseHours = inHouseHours,
                                 TotalOffLoadHours = offloadHours,
                                 SumOfOLCost = offloadDollars,
@@ -382,8 +386,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// </summary>
         /// <param name="offloadCostByYearReportRMSModelViews">model views broken out by year.</param>
         /// <returns>consolidated model views</returns>
-        public ICollection<OffloadCostByYearReportRMSModelView> ConsolidateOffloadCostByYear(
-            ICollection<OffloadCostByYearReportRMSModelView> offloadCostByYearReportRMSModelViews)
+        public ICollection<OffloadCostByYearReportRMSModelView> ConsolidateOffloadCostByYear(ICollection<OffloadCostByYearReportRMSModelView> offloadCostByYearReportRMSModelViews)
         {
             return offloadCostByYearReportRMSModelViews
                 .GroupBy(x => new { x.Wbs, x.ActivityId, x.Resource, x.CostCenter, x.OffloadedResource, x.OffLoadPercent, x.TotalHours })
@@ -947,6 +950,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             foreach (FullBoe boe in offloadedBoes)
             {
                 ClinDTO clin = workspace.Clins.FirstOrDefault(x => x.Id == boe.CLINID);
+                string clinText = workspace.IsProjectMapWorkspace ? clin?.ClinTitle : clin?.ClinNumber ?? string.Empty;
                 WbsDTO wbs = workspace.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
                 foreach (BoeTaskElementDTO task in boe.TaskElements)
                 {
@@ -977,7 +981,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
                         ramReport.Add(new RAMReportModelView()
                         {
-                            Clin = clin?.ClinTitle ?? string.Empty,
+                            Clin = clinText,
                             Wbs = wbs?.WbsNumber ?? string.Empty,
                             ActivityId = activityId ?? string.Empty,
                             ActivityName = RTEUtilities.TurnHTMLIntoPlainText(activityName),
@@ -1013,6 +1017,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             foreach (FullBoe boe in offloadedBoes)
             {
                 ClinDTO clin = workspace.Clins.FirstOrDefault(x => x.Id == boe.CLINID);
+                string clinText = workspace.IsProjectMapWorkspace ? clin?.ClinTitle : clin?.ClinNumber ?? string.Empty;
                 foreach (BoeTaskElementDTO task in boe.TaskElements)
                 {
                     foreach (ResourceTypeDto laborType in task.taskElementLabors)
@@ -1021,14 +1026,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         {
                             foreach (ResourceSpreadDto spread in laborType.LaborSpreads)
                             {
-                                string clinTitle = clin?.ClinTitle ?? string.Empty;
-                                string key = clinTitle + "#@$" + spread.LaborSpreadDate.Year.ToString();
+                                string key = clinText + "#@$" + spread.LaborSpreadDate.Year.ToString();
                                 WorkbenchOffloadModelView modelView;
                                 if (!modelViews.TryGetValue(key, out modelView))
                                 {
                                     modelView = new WorkbenchOffloadModelView
                                     {
-                                        Clin = clinTitle,
+                                        Clin = clinText,
                                         Year = spread.LaborSpreadDate.Year.ToString()
                                     };
 
@@ -1065,8 +1069,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 throw new ArgumentNullException(nameof(fullWS));
             }
 
-            ICollection<ProjectWbsCostSummaryByClinModelView> retProjectWbsCostSummaryByClin =
-                new Collection<ProjectWbsCostSummaryByClinModelView>();
+            ICollection<ProjectWbsCostSummaryByClinModelView> retProjectWbsCostSummaryByClin = new Collection<ProjectWbsCostSummaryByClinModelView>();
 
             IDictionary<int, SikorskyLegacyResourceDTO> allLegacyResources = this.commonDataMapper.GetSikorskyLegacyResourcesDictionary(fullWS.IsProjectMapWorkspace);
 
@@ -1159,9 +1162,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 ClinDTO clin = ws.Clins.FirstOrDefault(x => x.Id == boe.CLINID);
                 // Assuming there are no multi boes
-                string clinTitle = clin?.ClinTitle ?? string.Empty;
-                string majorGroupingText = reportType == SSRSReportType.ProjectCLINCategoryCostSummary ? clinTitle : boe.Category;
-                string minorGroupingText = reportType == SSRSReportType.ProjectCLINCategoryCostSummary ? boe.Category : clinTitle;
+                string clinText = ws.IsProjectMapWorkspace ? clin?.ClinTitle : clin?.ClinNumber ?? string.Empty;
+                string majorGroupingText = reportType == SSRSReportType.ProjectCLINCategoryCostSummary ? clinText : boe.Category;
+                string minorGroupingText = reportType == SSRSReportType.ProjectCLINCategoryCostSummary ? boe.Category : clinText;
                 foreach (BoeTaskElementDTO task in boe.TaskElements)
                 {
                     string activityId = ws.IsProjectMapWorkspace ? boe.Title : task.BOETaskID;
@@ -1227,6 +1230,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                             ResourceDTO resource = fullWS.ResourcesForWsResourceListId.First(r => r.Id == laborResource.ResourceID);
                             WbsDTO wbs = fullWS.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
                             ClinDTO clin = fullWS.Clins.FirstOrDefault(x => x.Id == boe.CLINID);
+                            string clinText = fullWS.IsProjectMapWorkspace ? clin?.ClinTitle : clin?.ClinNumber ?? string.Empty;
 
                             // Get the Labor Spread summaries for each year.
                             foreach (ResourceSpreadDto spread in laborResource.LaborSpreads)
@@ -1234,7 +1238,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                                 modelViews.Add(new PRPModelView()
                                 {
                                     Project = fullWS.WorkspaceName,
-                                    CLIN = clin?.ClinTitle ?? string.Empty,
+                                    CLIN = clinText,
                                     WBS = wbs?.WbsNumber ?? string.Empty,
                                     ActivityId = activityId ?? string.Empty,
                                     ResourceType = resource.ElementOfCost.GetDescription(),
