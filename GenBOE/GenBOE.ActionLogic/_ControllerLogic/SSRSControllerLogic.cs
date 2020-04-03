@@ -147,16 +147,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
                                 ResourceDescription = resource.ResourceDesc ?? string.Empty,
                                 PerformingOrgDescription = perfOrg.PerformingOrgDesc ?? string.Empty,
                                 ResourceUnit = laborResource.SpreadType == SpreadType.Cost ? Constants.COST_ANALYSIS_RESOURCE_UNIT_DIRECT_DOLLARS : Constants.COST_ANALYSIS_RESOURCE_UNIT_HOURS,
-                                Category = boe.Category ?? string.Empty,
+                                Category = boe.Category ?? task.Category ?? string.Empty,
                                 ActivityID = activityId ?? string.Empty,
-                                ClassOfCost = boe.ClassOfCost.GetDescription(),
+                                ClassOfCost = (boe.ClassOfCost == ClassOfCost.None ? task.ClassOfCost : boe.ClassOfCost).GetDescription(),
                                 WBS = (wbs == null) ? string.Empty : wbs.WbsNumber,
                                 WbsTitle = wbs?.WbsTitle ?? string.Empty,
                                 TieredPercentage = laborResource.TieredPercentage.HasValue ? (laborResource.TieredPercentage.Value / 100m).ToString(Constants.PERCENTAGE_FORMATTING) : string.Empty,
                                 ActivityName = RTEUtilities.TurnHTMLIntoPlainText(activityName),
                                 StartYear = reportStartYear,
                                 ResourceType = resourceType ?? string.Empty,
-                                SOWTitle = boe.SOWTitle ?? string.Empty,
+                                SOWTitle = boe.SOWTitle ?? task.SOWTitle ?? string.Empty,
                                 Task = RTEUtilities.TurnHTMLIntoPlainText(task.Description),
                                 AddDelete = laborResource.AddOrDelete ?? string.Empty,
                                 LegacyResource = legacyResource?.LegacyResourceID ?? string.Empty,
@@ -1027,8 +1027,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                             foreach (ResourceSpreadDto spread in laborType.LaborSpreads)
                             {
                                 string key = clinText + "#@$" + spread.LaborSpreadDate.Year.ToString();
-                                WorkbenchOffloadModelView modelView;
-                                if (!modelViews.TryGetValue(key, out modelView))
+                                if (!modelViews.TryGetValue(key, out WorkbenchOffloadModelView modelView))
                                 {
                                     modelView = new WorkbenchOffloadModelView
                                     {
@@ -1160,15 +1159,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             foreach (FullBoe boe in offloadedBoes)
             {
+                string majorGroupingText, minorGroupingText;
                 ClinDTO clin = ws.Clins.FirstOrDefault(x => x.Id == boe.CLINID);
                 // Assuming there are no multi boes
                 string clinText = ws.IsProjectMapWorkspace ? clin?.ClinTitle : clin?.ClinNumber ?? string.Empty;
-                string majorGroupingText = reportType == SSRSReportType.ProjectCLINCategoryCostSummary ? clinText : boe.Category;
-                string minorGroupingText = reportType == SSRSReportType.ProjectCLINCategoryCostSummary ? boe.Category : clinText;
                 foreach (BoeTaskElementDTO task in boe.TaskElements)
                 {
                     string activityId = ws.IsProjectMapWorkspace ? boe.Title : task.BOETaskID;
                     string activityName = ws.IsProjectMapWorkspace ? boe.Description : task.TaskTitle;
+                    majorGroupingText = reportType == SSRSReportType.ProjectCLINCategoryCostSummary ? clinText : boe.Category ?? task.Category;
+                    minorGroupingText = reportType == SSRSReportType.ProjectCLINCategoryCostSummary ? boe.Category ?? task.Category : clinText;
 
                     foreach (ResourceTypeDto laborResource in task.taskElementLabors)
                     {
@@ -1245,7 +1245,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                                     Resource = Utilities.FormatResourceNames(resource.ResourceName, this.commonDataMapper.GetSikorskyLegacyResourceID(laborResource.LegacyID, allLegacyResources), laborResource is SubResourceTypeDto),
                                     CostCenter = perfOrg.PerformingOrgName,
                                     CostCenterDescription = perfOrg.PerformingOrgDesc,
-                                    Category = boe.Category ?? string.Empty,
+                                    Category = boe.Category ?? task.Category ?? string.Empty,
                                     StartDate = laborResource.StartDate,
                                     EndDate = laborResource.EndDate,
                                     Month = this.GetMonthRelativeToStartYear(reportStartDate, spread.LaborSpreadDate),
@@ -1316,82 +1316,85 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             foreach (FullBoe boe in boes)
             {
-                foreach (ResourceTypeDto resourceType in boe.TaskElements.SelectMany(x => x.taskElementLabors))
+                foreach (BoeTaskElementDTO task in boe.TaskElements)
                 {
-                    // if we are missing the resource, we'll grab it by the id.. this is likely going to trip for the offload resource
-                    // we'll add it into the hashset, to make sure we don't have to keep pulling the same thing... :)
-                    if (!resources.Any(x => x.Id == resourceType.ResourceID))
+                    foreach (ResourceTypeDto resourceType in task.taskElementLabors)
                     {
-                        resources.Add(this.resourceLoader.GetById(resourceType.ResourceID.Value));
-                    }
-
-                    string resourceName = Utilities.FormatResourceNames(resources.First(x => x.Id == resourceType.ResourceID).ResourceName, 
-                        this.commonDataMapper.GetSikorskyLegacyResourceID(resourceType.LegacyID, allLegacyResources), resourceType is SubResourceTypeDto);
-
-                    PerformingOrgDTO costCenter = performingOrgs.First(x => x.Id == resourceType.PerformingOrgID);
-
-                    // Check for existing MV with this Resource Type's resource, cost center, pricing code, and (if applicable) category
-                    ICollection<CostByPricingCodeReportModelView> existingResourceTypes = toReturn.Where(x => x.Resource == resourceName 
-                        && x.CostCenter == costCenter.PerformingOrgName && x.PricingCode == costCenter.PerformingOrgDesc).ToCollection();
-
-                    if(includeCategory)
-                    {
-                        existingResourceTypes = existingResourceTypes.Where(x => x.Category == boe.Category).ToCollection();
-                    }
-
-                    CostByPricingCodeReportModelView existingResourceType = existingResourceTypes.FirstOrDefault();
-
-                    // If there is an existing MV, add the spread values to it rather than making a new MV
-                    if (existingResourceType != null)
-                    {
-                        existingResourceType.Year01 += this.GetSpreadValueByYear(resourceType, reportStartYear);
-                        existingResourceType.Year02 += this.GetSpreadValueByYear(resourceType, reportStartYear + 1);
-                        existingResourceType.Year03 += this.GetSpreadValueByYear(resourceType, reportStartYear + 2);
-                        existingResourceType.Year04 += this.GetSpreadValueByYear(resourceType, reportStartYear + 3);
-                        existingResourceType.Year05 += this.GetSpreadValueByYear(resourceType, reportStartYear + 4);
-                        existingResourceType.Year06 += this.GetSpreadValueByYear(resourceType, reportStartYear + 5);
-                        existingResourceType.Year07 += this.GetSpreadValueByYear(resourceType, reportStartYear + 6);
-                        existingResourceType.Year08 += this.GetSpreadValueByYear(resourceType, reportStartYear + 7);
-                        existingResourceType.Year09 += this.GetSpreadValueByYear(resourceType, reportStartYear + 8);
-                        existingResourceType.Year10 += this.GetSpreadValueByYear(resourceType, reportStartYear + 9);
-                        existingResourceType.Year11 += this.GetSpreadValueByYear(resourceType, reportStartYear + 10);
-                        existingResourceType.Year12 += this.GetSpreadValueByYear(resourceType, reportStartYear + 11);
-                        existingResourceType.Year13 += this.GetSpreadValueByYear(resourceType, reportStartYear + 12);
-                        existingResourceType.Year14 += this.GetSpreadValueByYear(resourceType, reportStartYear + 13);
-                        existingResourceType.Year15 += this.GetSpreadValueByYear(resourceType, reportStartYear + 14);
-                        existingResourceType.Year16 += this.GetSpreadValueByYear(resourceType, reportStartYear + 15);
-                        existingResourceType.Year17 += this.GetSpreadValueByYear(resourceType, reportStartYear + 16);
-                    }
-                    else
-                    {
-                        // If there is no existing MV, create one
-                        toReturn.Add(new CostByPricingCodeReportModelView()
+                        // if we are missing the resource, we'll grab it by the id.. this is likely going to trip for the offload resource
+                        // we'll add it into the hashset, to make sure we don't have to keep pulling the same thing... :)
+                        if (!resources.Any(x => x.Id == resourceType.ResourceID))
                         {
-                            Project = ws.WorkspaceName,
-                            Resource = resourceName ?? string.Empty,
-                            ResourceType = resourceType.SpreadType == SpreadType.Cost ? "Cost Dollars" : "Labor Hours",
-                            CostCenter = costCenter.PerformingOrgName ?? string.Empty,
-                            PricingCode = costCenter.PerformingOrgDesc ?? string.Empty,
-                            Category = boe.Category ?? string.Empty,
-                            StartYear = reportStartYear,
-                            Year01 = this.GetSpreadValueByYear(resourceType, reportStartYear),
-                            Year02 = this.GetSpreadValueByYear(resourceType, reportStartYear + 1),
-                            Year03 = this.GetSpreadValueByYear(resourceType, reportStartYear + 2),
-                            Year04 = this.GetSpreadValueByYear(resourceType, reportStartYear + 3),
-                            Year05 = this.GetSpreadValueByYear(resourceType, reportStartYear + 4),
-                            Year06 = this.GetSpreadValueByYear(resourceType, reportStartYear + 5),
-                            Year07 = this.GetSpreadValueByYear(resourceType, reportStartYear + 6),
-                            Year08 = this.GetSpreadValueByYear(resourceType, reportStartYear + 7),
-                            Year09 = this.GetSpreadValueByYear(resourceType, reportStartYear + 8),
-                            Year10 = this.GetSpreadValueByYear(resourceType, reportStartYear + 9),
-                            Year11 = this.GetSpreadValueByYear(resourceType, reportStartYear + 10),
-                            Year12 = this.GetSpreadValueByYear(resourceType, reportStartYear + 11),
-                            Year13 = this.GetSpreadValueByYear(resourceType, reportStartYear + 12),
-                            Year14 = this.GetSpreadValueByYear(resourceType, reportStartYear + 13),
-                            Year15 = this.GetSpreadValueByYear(resourceType, reportStartYear + 14),
-                            Year16 = this.GetSpreadValueByYear(resourceType, reportStartYear + 15),
-                            Year17 = this.GetSpreadValueByYear(resourceType, reportStartYear + 16)
-                        });
+                            resources.Add(this.resourceLoader.GetById(resourceType.ResourceID.Value));
+                        }
+
+                        string resourceName = Utilities.FormatResourceNames(resources.First(x => x.Id == resourceType.ResourceID).ResourceName,
+                            this.commonDataMapper.GetSikorskyLegacyResourceID(resourceType.LegacyID, allLegacyResources), resourceType is SubResourceTypeDto);
+
+                        PerformingOrgDTO costCenter = performingOrgs.First(x => x.Id == resourceType.PerformingOrgID);
+
+                        // Check for existing MV with this Resource Type's resource, cost center, pricing code, and (if applicable) category
+                        ICollection<CostByPricingCodeReportModelView> existingResourceTypes = toReturn.Where(x => x.Resource == resourceName
+                            && x.CostCenter == costCenter.PerformingOrgName && x.PricingCode == costCenter.PerformingOrgDesc).ToCollection();
+
+                        if (includeCategory)
+                        {
+                            existingResourceTypes = existingResourceTypes.Where(x => x.Category == (boe.Category ?? task.Category)).ToCollection();
+                        }
+
+                        CostByPricingCodeReportModelView existingResourceType = existingResourceTypes.FirstOrDefault();
+
+                        // If there is an existing MV, add the spread values to it rather than making a new MV
+                        if (existingResourceType != null)
+                        {
+                            existingResourceType.Year01 += this.GetSpreadValueByYear(resourceType, reportStartYear);
+                            existingResourceType.Year02 += this.GetSpreadValueByYear(resourceType, reportStartYear + 1);
+                            existingResourceType.Year03 += this.GetSpreadValueByYear(resourceType, reportStartYear + 2);
+                            existingResourceType.Year04 += this.GetSpreadValueByYear(resourceType, reportStartYear + 3);
+                            existingResourceType.Year05 += this.GetSpreadValueByYear(resourceType, reportStartYear + 4);
+                            existingResourceType.Year06 += this.GetSpreadValueByYear(resourceType, reportStartYear + 5);
+                            existingResourceType.Year07 += this.GetSpreadValueByYear(resourceType, reportStartYear + 6);
+                            existingResourceType.Year08 += this.GetSpreadValueByYear(resourceType, reportStartYear + 7);
+                            existingResourceType.Year09 += this.GetSpreadValueByYear(resourceType, reportStartYear + 8);
+                            existingResourceType.Year10 += this.GetSpreadValueByYear(resourceType, reportStartYear + 9);
+                            existingResourceType.Year11 += this.GetSpreadValueByYear(resourceType, reportStartYear + 10);
+                            existingResourceType.Year12 += this.GetSpreadValueByYear(resourceType, reportStartYear + 11);
+                            existingResourceType.Year13 += this.GetSpreadValueByYear(resourceType, reportStartYear + 12);
+                            existingResourceType.Year14 += this.GetSpreadValueByYear(resourceType, reportStartYear + 13);
+                            existingResourceType.Year15 += this.GetSpreadValueByYear(resourceType, reportStartYear + 14);
+                            existingResourceType.Year16 += this.GetSpreadValueByYear(resourceType, reportStartYear + 15);
+                            existingResourceType.Year17 += this.GetSpreadValueByYear(resourceType, reportStartYear + 16);
+                        }
+                        else
+                        {
+                            // If there is no existing MV, create one
+                            toReturn.Add(new CostByPricingCodeReportModelView()
+                            {
+                                Project = ws.WorkspaceName,
+                                Resource = resourceName ?? string.Empty,
+                                ResourceType = resourceType.SpreadType == SpreadType.Cost ? "Cost Dollars" : "Labor Hours",
+                                CostCenter = costCenter.PerformingOrgName ?? string.Empty,
+                                PricingCode = costCenter.PerformingOrgDesc ?? string.Empty,
+                                Category = boe.Category ?? task.Category ?? string.Empty,
+                                StartYear = reportStartYear,
+                                Year01 = this.GetSpreadValueByYear(resourceType, reportStartYear),
+                                Year02 = this.GetSpreadValueByYear(resourceType, reportStartYear + 1),
+                                Year03 = this.GetSpreadValueByYear(resourceType, reportStartYear + 2),
+                                Year04 = this.GetSpreadValueByYear(resourceType, reportStartYear + 3),
+                                Year05 = this.GetSpreadValueByYear(resourceType, reportStartYear + 4),
+                                Year06 = this.GetSpreadValueByYear(resourceType, reportStartYear + 5),
+                                Year07 = this.GetSpreadValueByYear(resourceType, reportStartYear + 6),
+                                Year08 = this.GetSpreadValueByYear(resourceType, reportStartYear + 7),
+                                Year09 = this.GetSpreadValueByYear(resourceType, reportStartYear + 8),
+                                Year10 = this.GetSpreadValueByYear(resourceType, reportStartYear + 9),
+                                Year11 = this.GetSpreadValueByYear(resourceType, reportStartYear + 10),
+                                Year12 = this.GetSpreadValueByYear(resourceType, reportStartYear + 11),
+                                Year13 = this.GetSpreadValueByYear(resourceType, reportStartYear + 12),
+                                Year14 = this.GetSpreadValueByYear(resourceType, reportStartYear + 13),
+                                Year15 = this.GetSpreadValueByYear(resourceType, reportStartYear + 14),
+                                Year16 = this.GetSpreadValueByYear(resourceType, reportStartYear + 15),
+                                Year17 = this.GetSpreadValueByYear(resourceType, reportStartYear + 16)
+                            });
+                        }
                     }
                 }
             }

@@ -15,6 +15,7 @@ namespace GenBOE.DataBridge.DTO
     using GenBOE.Models;
     using IES.Common;
     using IES.Common.Exceptions;
+    using static IES.Common.Constants;
 
     public class BoeTaskElementDTODataLoader : BulkDataLoader<BoeTaskElementDTO, BOETaskElement>, IBoeTaskElementDTODataLoader
     {
@@ -147,13 +148,11 @@ namespace GenBOE.DataBridge.DTO
                                   }).ToList();
 
                     ordinaryVariables = GetOrdinaryVariables(ids, gbe);
-
                     taskElementLabors = GetTaskLabors(ids, gbe);
-
+                    this.LoadSikorskyFields(gbe, result);
                 }
 
                 DoPostProcessing(result, ordinaryVariables, taskElementLabors, hoursPrecision, costPrecision);
-
                 return result;
             }
         }
@@ -222,11 +221,11 @@ namespace GenBOE.DataBridge.DTO
                     List<int> ids = result.Select(bT => bT.Id).ToList();
 
                     ordinaryVariables = GetOrdinaryVariables(ids, gbe);
-
                     taskElementLabors = GetTaskLabors(ids, gbe);
-
-                    DoPostProcessing(result, ordinaryVariables, taskElementLabors, hoursPrecision, costPrecision);
+                    this.LoadSikorskyFields(gbe, result);
                 }
+
+                DoPostProcessing(result, ordinaryVariables, taskElementLabors, hoursPrecision, costPrecision);
 
                 return result;
             }
@@ -295,12 +294,39 @@ namespace GenBOE.DataBridge.DTO
 
                     ordinaryVariables = GetOrdinaryVariables(ids, gbe);
                     taskElementLabors = GetTaskLabors(ids, gbe);
-
-                    DoPostProcessing(result, ordinaryVariables, taskElementLabors, hoursPrecision, costPrecision);
+                    this.LoadSikorskyFields(gbe, result);
                 }
+
+                DoPostProcessing(result, ordinaryVariables, taskElementLabors, hoursPrecision, costPrecision);
 
                 return result;
             }
+        }
+
+        /// <summary>
+        /// Loads Sikorsky Custom Fields into Task properties
+        /// </summary>
+        /// <param name="gbe">GenBOE Entities connected to the DB</param>
+        /// <param name="taskElementsToLoad">Task elements to load</param>
+        [DbQuery]
+        private void LoadSikorskyFields(GenBoeEntities gbe, List<BoeTaskElementDTO> taskElementsToLoad)
+        {
+            List<int> taskIds = taskElementsToLoad.Select(z => z.Id).ToList();
+
+            var sikorskyCfTaskData = gbe.BOETaskElementCustomFieldValueXREFs.Where(x => taskIds.Contains(x.BOETaskElementID)).Select(x => new {
+                CfName = x.CustomFieldValue.CustomFieldValueName,
+                CfValue = x.CustomFieldValue.CustomFieldValueDescription,
+                FieldName = x.CustomFieldValue.CustomField.CustomFieldName,
+                TaskElementId = x.BOETaskElementID
+            }).ToList();
+
+            taskElementsToLoad.ForEach(task => {
+                task.SOW = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_SOW)?.CfName;
+                task.SOWTitle = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_SOW)?.CfValue;
+                task.Category = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CATEGORY)?.CfValue;
+                task.CamName = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CAMNAME)?.CfValue;
+                task.ClassOfCost = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CLASSOFCOST)?.CfValue?.GetEnumeratedValueNullable<ClassOfCost>() ?? ClassOfCost.None;
+            });
         }
 
         #region RTE Load Methods

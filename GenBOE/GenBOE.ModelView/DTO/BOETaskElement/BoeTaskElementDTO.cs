@@ -233,7 +233,37 @@ namespace GenBOE.DataBridge.DTO
         {
             return this.Id;
         }
-        
+
+        #region Project Map Fields
+
+        /// <summary>
+        /// Gets or sets the sow.
+        /// </summary>
+        public string SOW { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sow title.
+        /// </summary>
+        public string SOWTitle { get; set; }
+
+        /// <summary>
+        /// Gets or sets the category.
+        /// </summary>
+        public string Category { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the cam.
+        /// </summary>
+        public string CamName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the class of cost.
+        /// </summary>
+        public ClassOfCost ClassOfCost { get; set; }
+
+        #endregion Project Map Fields
+
+
         #region UpdateableDTO
 
         /// <summary>

@@ -996,19 +996,23 @@ namespace GenBOE.ActionLogic.IO.Export
                                 newTaskRow.Append(DOUBLE_QUOTE).Append("1").Append(DOUBLE_QUOTE).Append(END_FIELD);
                                 break;
                             case ProPricerField_Task.ProjMapCamName:
-                                newTaskRow.Append(DOUBLE_QUOTE).Append(inputsForExport.CamName.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
+                                string camName = inputsForExport.CamName ?? boeTask.CamName;
+                                newTaskRow.Append(DOUBLE_QUOTE).Append(camName.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
                                 break;
                             case ProPricerField_Task.ProjMapSowNumber:
-                                newTaskRow.Append(DOUBLE_QUOTE).Append(inputsForExport.Sow.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
+                                string sow = inputsForExport.Sow ?? boeTask.SOW;
+                                newTaskRow.Append(DOUBLE_QUOTE).Append(sow.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
                                 break;
                             case ProPricerField_Task.ProjMapAddDelete:
                                 newTaskRow.Append(DOUBLE_QUOTE).Append(resourceTypeEntry.AddOrDelete).Append(DOUBLE_QUOTE).Append(END_FIELD);
                                 break;
                             case ProPricerField_Task.ProjMapCategory:
-                                newTaskRow.Append(DOUBLE_QUOTE).Append(inputsForExport.Category.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
+                                string category = inputsForExport.Category ?? boeTask.Category;
+                                newTaskRow.Append(DOUBLE_QUOTE).Append(category.RemoveCarriageReturns()).Append(DOUBLE_QUOTE).Append(END_FIELD);
                                 break;
                             case ProPricerField_Task.ProjMapClassOfCost:
-                                newTaskRow.Append(DOUBLE_QUOTE).Append(inputsForExport.ClassOfCost.GetDescription()).Append(DOUBLE_QUOTE).Append(END_FIELD);
+                                string classOfCost = (inputsForExport.ClassOfCost == ClassOfCost.None ? boeTask.ClassOfCost : inputsForExport.ClassOfCost).GetDescription();
+                                newTaskRow.Append(DOUBLE_QUOTE).Append(classOfCost).Append(DOUBLE_QUOTE).Append(END_FIELD);
                                 break;
                             case ProPricerField_Task.ProjMapOldResource:
                                 newTaskRow.Append(DOUBLE_QUOTE).Append(this.commonDataMapper.GetSikorskyLegacyResourceID(resourceTypeEntry.LegacyID, this.allLegacyResources)).Append(DOUBLE_QUOTE).Append(END_FIELD);

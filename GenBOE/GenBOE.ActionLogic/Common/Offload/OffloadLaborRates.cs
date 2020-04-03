@@ -707,7 +707,12 @@ namespace GenBOE.ActionLogic.Common
                                             newBoe.StartDate.ToString("MM/yyyy"),
                                             newBoe.EndDate.ToString("MM/yyyy"),
                                             justifyingPublication,
-                                            projectMapOffloadText)
+                                            projectMapOffloadText),
+                                        SOW = taskElement.SOW,
+                                        SOWTitle = taskElement.SOWTitle,
+                                        Category = taskElement.Category,
+                                        CamName = taskElement.CamName,
+                                        ClassOfCost = taskElement.ClassOfCost
                                     };
 
                                     newBoe.SetTaskElements(new List<BoeTaskElementDTO> { newTaskElement });
