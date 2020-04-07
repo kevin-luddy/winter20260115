@@ -626,7 +626,7 @@ namespace GenTRAC.ActionLogic
 
             FullProposal fullProposal = this.GetFullProposalDto(proposalId);
             manageProposalInfoDetailsView.ProposalID = fullProposal.Id;
-            manageProposalInfoDetailsView.TrackingNumber = fullProposal.TrackingNumber;
+            manageProposalInfoDetailsView.TrackingNumber = fullProposal.IsForecastProposal ? fullProposal.ForecastedTrackingNumber : fullProposal.TrackingNumber;
             manageProposalInfoDetailsView.ProposalTitle = fullProposal.ProposalTitle;
             manageProposalInfoDetailsView.OldStatus = fullProposal.ProposalStatus;
             manageProposalInfoDetailsView.UpdateDate = fullProposal.UpdateDate;
@@ -873,17 +873,23 @@ namespace GenTRAC.ActionLogic
                 FullProposal fullProposal = this.GetFullProposalDto(proposalId.Value);
                 if (fullProposal != null)
                 {
-                    // check for linked RDSB documents
-                    if (fullProposal.DocumentId.HasValue)
+                    // Forecasted proposals cannot have linked RDSB docs or BOE Workspaces 
+                    // Because Forcasted proposals have a null Tracking Number, checking here can cause a false positive 
+                    // if there are BOEs without a proposal tracking number, prenting deletion
+                    if (!fullProposal.IsForecastProposal)
                     {
-                        inValidationErrors.Add(new ValidationMessage(ValidationConstants.DeleteProposalValidationConstants.HAS_LINKED_RDSB_DOCUMENT));
-                    }
+                        // check for linked RDSB documents
+                        if (fullProposal.DocumentId.HasValue)
+                        {
+                            inValidationErrors.Add(new ValidationMessage(ValidationConstants.DeleteProposalValidationConstants.HAS_LINKED_RDSB_DOCUMENT));
+                        }
 
-                    // pull information from BOE and check for linked workspaces
-                    ICollection<GenBOE.Dtos.WorkspaceDTO> workspaces = this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo();
-                    if (workspaces.Any(n => n.TrackingNumber == fullProposal.TrackingNumber))
-                    {
-                        inValidationErrors.Add(new ValidationMessage(ValidationConstants.DeleteProposalValidationConstants.HAS_LINKED_BOE_WORKSPACE));
+                        // pull information from BOE and check for linked workspaces
+                        ICollection<GenBOE.Dtos.WorkspaceDTO> workspaces = this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo();
+                        if (workspaces.Any(n => n.TrackingNumber == fullProposal.TrackingNumber))
+                        {
+                            inValidationErrors.Add(new ValidationMessage(ValidationConstants.DeleteProposalValidationConstants.HAS_LINKED_BOE_WORKSPACE));
+                        }
                     }
                 }
                 else
