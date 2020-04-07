@@ -1264,26 +1264,56 @@ namespace GenTRAC.ActionLogic
                             model.LeadEstimatorNtid = user.Ntid;
                             model.LeadEstimatorDisplayName = user.DisplayName;
                             model.IsLeadEstimatorReadOnly = fullProposalDto.LeadEstimatorSignedDate.HasValue;
+
+                            if (!model.LeadEstimatorList.Any(x => x.Ntid == user.Ntid))
+                            {
+                                model.LeadEstimatorList.Add(user);
+                            }
+
                             break;
                         case PtmRole.PricingVerification:
                             model.PricingVerificationNtid = user.Ntid;
                             model.PricingVerificationDisplayName = user.DisplayName;
                             model.IsPricingVerificationReadOnly = fullProposalDto.PricingVerifierSignedDate.HasValue;
+
+                            if (!model.PricingVerificationList.Any(x => x.Ntid == user.Ntid))
+                            {
+                                model.PricingVerificationList.Add(user);
+                            }
+
                             break;
                         case PtmRole.LOBEstLead:
                             model.LOBEstimatingLeadMgrNtid = user.Ntid;
                             model.LOBEstimatingLeadMgrDisplayName = user.DisplayName;
                             model.IsLOBEstimatingLeadMgrReadOnly = fullProposalDto.LOBEstimatingLeadSignedDate.HasValue;
+
+                            if (!model.LOBEstimatingLeadList.Any(x => x.Ntid == user.Ntid))
+                            {
+                                model.LOBEstimatingLeadList.Add(user);
+                            }
+
                             break;
                         case PtmRole.CoverSheetApprover:
                             model.CoverSheetApproverNtid = user.Ntid;
                             model.CoverSheetApproverDisplayName = user.DisplayName;
                             model.IsCoverSheetApproverReadOnly = fullProposalDto.CoverSheetApproverSignedDate.HasValue;
+
+                            if (!model.CoverSheetApproverList.Any(x => x.Ntid == user.Ntid))
+                            {
+                                model.CoverSheetApproverList.Add(user);
+                            }
+
                             break;
                         case PtmRole.PeerReviewer:
                             model.IndependentReviewerNtid = user.Ntid;
                             model.IndependentReviewerDisplayName = user.DisplayName;
                             model.IsIndependentReviewerReadOnly = fullProposalDto.IndependentReviewerSignedDate.HasValue;
+
+                            if (!model.IndependentReviewerList.Any(x => x.Ntid == user.Ntid))
+                            {
+                                model.IndependentReviewerList.Add(user);
+                            }
+
                             break;
                         default:
                             break;

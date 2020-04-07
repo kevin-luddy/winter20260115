@@ -1672,6 +1672,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.retriever.Setup(x => x.GetProposalPermissions(proposalId.Value)).Returns(permissions);
             this.retriever.Setup(x => x.GetAllChecklistSaveInfo(proposalId.Value)).Returns(new Collection<ProposalChecklistSaveInfo>());
             this.genBoePermissionsLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("TestNtid", "TestDisplayName") });
+            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<UserDTO>() { user });
 
             ProposalApprovalsModelView proposalApprovalsInfo = sut.GetDataForProposalApprovals(proposalId);
             ProposalUserInformationModelView proposalUserInfo = sut.GetDataForProposalUserInformation(proposalId);
@@ -1701,6 +1702,11 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(user.Ntid, proposalUserInfo.GenBoeWorkspaceCreatorNtid);
             Assert.AreEqual(ResourceType.Pricer, proposalUserInfo.AdditionalPricingResource1Type);
             Assert.AreEqual(ResourceType.Strategist, proposalUserInfo.AdditionalPricingResource2Type);
+            Assert.IsTrue(proposalApprovalsInfo.LeadEstimatorList.Any(x => x.Ntid == user.Ntid));
+            Assert.IsTrue(proposalApprovalsInfo.PricingVerificationList.Any(x => x.Ntid == user.Ntid));
+            Assert.IsTrue(proposalApprovalsInfo.LOBEstimatingLeadList.Any(x => x.Ntid == user.Ntid));
+            Assert.IsTrue(proposalApprovalsInfo.CoverSheetApproverList.Any(x => x.Ntid == user.Ntid));
+            Assert.IsTrue(proposalApprovalsInfo.IndependentReviewerList.Any(x => x.Ntid == user.Ntid));
         }
 
         /// <summary>
