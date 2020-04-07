@@ -1065,7 +1065,11 @@
         $(document).trigger('DISPLAY_TASK_ELEMENT_DETAILS', data);  // this will destroy the angular scope and refresh task composites
     };
 
-    $scope.saveAndClose = function (wsLocked = false) {
+    $scope.saveAndClose = function (wsLocked) {
+        if (wsLocked === undefined) {
+            wsLocked = false;
+        }
+
         save(function () {
             // reload the LM Labor grid
             window.location.hash = 'LMLabor';
@@ -1089,7 +1093,11 @@
         });
     };
 
-    var save = function (callback, wsLocked = false) {
+    var save = function (callback, wsLocked) {
+        if (wsLocked === undefined) {
+            wsLocked = false;
+        }
+
         if (TaskElementDetailsWidget.isAnyDirty() && !TaskElementDetailsWidget.waitingBeforeSubmit) {
             var invalidResources = $("#LaborTypesFixed td.resources.inputError").length > 0;
             var invalidPerfOrgs = $("#LaborTypesFixed td.performing-org.inputError").length > 0;
