@@ -50,7 +50,7 @@ namespace GenBOE.ActionLogic.IO.Import
         private readonly string[] requiredColumns = new string[] { wbsIDColumn, ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.WBS_TITLE_COLUMN_HEADER, clinNumberColumn };
 
         // Array of columns that should be treated as text and not converted to numeric values.
-        private readonly string[] textOnlyColumns = new string[] { wbsIDColumn, clinNumberColumn };
+        private readonly string[] textOnlyColumns = new string[] { wbsIDColumn, clinNumberColumn, ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.WBS_TITLE_COLUMN_HEADER };
 
         #endregion Constants
 
