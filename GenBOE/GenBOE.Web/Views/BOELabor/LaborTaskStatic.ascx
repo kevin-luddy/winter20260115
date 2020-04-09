@@ -203,7 +203,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-label">
-                        Task Description
+                        Task Description *
                     </div>
                     <div class="form-element">
                         <% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(Model.DescriptionTemplateAnswers, "TaskDescription", Model.TaskDescription));  %>

@@ -696,7 +696,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="workspace">The workspace.</param>
         /// <param name="modelView">The model view.</param>
         /// <returns></returns>
-        public ActionResult SaveTaskDataModel(string workspace, LaborTaskDataModelView modelView)
+        public ActionResult SaveTaskDataModel(string workspace, LaborTaskDataModelView modelView, bool isLocked = false)
         {
             if (modelView == null)
             {
@@ -712,9 +712,12 @@ namespace GenBOE.Web.Controllers
             // Initialize Action
             Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_TASK_DATA_MODEL, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, modelView.TaskElementData.BOEID);
 
-
+            ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
             // Validate
-            ICollection<ValidationMessage> validationErrors = this._BoeLaborControllerLogic.ValidateLaborTaskData(ws, modelView);
+            if (!isLocked)
+            {
+                validationErrors = this._BoeLaborControllerLogic.ValidateLaborTaskData(ws, modelView);
+            }
 
             // could not move the following logic to the BOELaborControllerLogic because ValidationFactory is static which can't be mocked
             // test for task id uniqueness across all task elements
@@ -798,7 +801,10 @@ namespace GenBOE.Web.Controllers
             BoeTaskElementDTO dto = this._BoeLaborControllerLogic.ConvertModelViewToDto(modelView, ws);
 
             // Validate DTO 
-            validationErrors.AddRange(this._BoeLaborControllerLogic.ValidateTaskElementDto(ws, dto));
+            if (!isLocked)
+            {
+                validationErrors.AddRange(this._BoeLaborControllerLogic.ValidateTaskElementDto(ws, dto));
+            }
 
             if(validationErrors.Any())
             {
@@ -842,7 +848,7 @@ namespace GenBOE.Web.Controllers
                 throw new GenValidationException(validationErrors);
             }
 
-            return SaveTaskDataModel(workspace, modelView);
+            return SaveTaskDataModel(workspace, modelView, true);
         }
 
         /// <summary>

@@ -387,67 +387,67 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
                 #region Validate that MOQ Equation Value = Labor Hour Spreads = Resource Hours Spreads
 
-                decimal? moqResult = 0;
+                    decimal? moqResult = 0;
 
-                decimal tempMoqResult;
+                    decimal tempMoqResult;
 
-                if (!string.IsNullOrEmpty(result))
-                {
-                    if (decimal.TryParse(result, out tempMoqResult))
+                    if (!string.IsNullOrEmpty(result))
                     {
-                        moqResult = Utilities.AdjustPrecision(tempMoqResult, ws.DecimalPrecision);
-                    }
-                }
-
-                // Need to find any missing labors stored in DB that are not handled by UI
-                if (modelView.TaskElementData.TaskElementDetailID > 0)
-                {
-                    BoeTaskElementDTO element = ws.TaskElements.FirstOrDefault(a => a.Id == modelView.TaskElementData.TaskElementDetailID);
-                    if (element != null)
-                    {
-                        List<int> idsOfLaborsBeingEdited = modelView.LaborTypesData.Where(a => a.BOELaborTypeID.HasValue).Select(a => a.BOELaborTypeID.Value).ToList();
-
-                        // Find missing labors stored in the DB that are not being saved by the UI
-                        ICollection<ResourceTypeDto> missingLabors = element.taskElementLabors.Where(a => !idsOfLaborsBeingEdited.Contains(a.Id)).ToList();
-
-                        // these missing labors need to be removed
-                        foreach (ResourceTypeDto missing in missingLabors)
+                        if (decimal.TryParse(result, out tempMoqResult))
                         {
-                            this.logger.Error("During Save of Task Element, there was a missing task element labor found in the DB that will be deleted with id " + missing.Id);
-                            LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new PerformingOrgDTO());
-                            toDelete.Deleted = true;
-                            modelView.LaborTypesData.Add(toDelete);
+                            moqResult = Utilities.AdjustPrecision(tempMoqResult, ws.DecimalPrecision);
                         }
                     }
-                }
 
-                if (modelView.LaborTypesData.Any())
-                {
-                    Collection<LaborTypeDataModelView> laborTypes = (from lt in modelView.LaborTypesData
-                                                                     where lt.Deleted == false && lt.RateType == RateType.Hours
-                                                                     select lt).ToCollection();
-
-                    // should only validate if there are any labor types
-                    if (laborTypes.Any())
+                    // Need to find any missing labors stored in DB that are not handled by UI
+                    if (modelView.TaskElementData.TaskElementDetailID > 0)
                     {
-                        decimal? laborTypesHours = laborTypes.Sum(a => a.HourSpread ?? 0);
-
-                        // only consider spreads for which spread type = Hours
-                        decimal? spreadsHours = laborTypes.Sum(a => a.Spreads.Sum(b => b.LaborSpreadValue));
-
-                        if (moqResult != laborTypesHours || laborTypesHours != spreadsHours)
+                        BoeTaskElementDTO element = ws.TaskElements.FirstOrDefault(a => a.Id == modelView.TaskElementData.TaskElementDetailID);
+                        if (element != null)
                         {
-                            string hoursLabel = FullObjectHelper.HoursLabel(ws);
-                            string errorMsg = "The total Resource Type <b>" + hoursLabel + " Spread</b> must equal the Total Resource Spread which must also equal the total " + hoursLabel + " computed by the <b>" + this.GetMOQEquationLabel() + "</b>."
-                                            + "<br />    · If the <b>Total</b> Resource Spread is incorrect for a resource: change the <b>Spread Curve</b> so it recalculates. Then change it back to the original <b>Spread Curve</b>. "
-                                        + "<br />    · Verify the " + this.GetMOQEquationLabel() + " Total = Total Resource " + hoursLabel + " = Total Resource Spread and the Delta = 0.";
+                            List<int> idsOfLaborsBeingEdited = modelView.LaborTypesData.Where(a => a.BOELaborTypeID.HasValue).Select(a => a.BOELaborTypeID.Value).ToList();
 
-                            validationErrors.Add(new ValidationMessage("MOQ-Labor", errorMsg));
+                            // Find missing labors stored in the DB that are not being saved by the UI
+                            ICollection<ResourceTypeDto> missingLabors = element.taskElementLabors.Where(a => !idsOfLaborsBeingEdited.Contains(a.Id)).ToList();
+
+                            // these missing labors need to be removed
+                            foreach (ResourceTypeDto missing in missingLabors)
+                            {
+                                this.logger.Error("During Save of Task Element, there was a missing task element labor found in the DB that will be deleted with id " + missing.Id);
+                                LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new PerformingOrgDTO());
+                                toDelete.Deleted = true;
+                                modelView.LaborTypesData.Add(toDelete);
+                            }
                         }
                     }
-                }
 
-                #endregion
+                    if (modelView.LaborTypesData.Any())
+                    {
+                        Collection<LaborTypeDataModelView> laborTypes = (from lt in modelView.LaborTypesData
+                                                                         where lt.Deleted == false && lt.RateType == RateType.Hours
+                                                                         select lt).ToCollection();
+
+                        // should only validate if there are any labor types
+                        if (laborTypes.Any())
+                        {
+                            decimal? laborTypesHours = laborTypes.Sum(a => a.HourSpread ?? 0);
+
+                            // only consider spreads for which spread type = Hours
+                            decimal? spreadsHours = laborTypes.Sum(a => a.Spreads.Sum(b => b.LaborSpreadValue));
+
+                            if (moqResult != laborTypesHours || laborTypesHours != spreadsHours)
+                            {
+                                string hoursLabel = FullObjectHelper.HoursLabel(ws);
+                                string errorMsg = "The total Resource Type <b>" + hoursLabel + " Spread</b> must equal the Total Resource Spread which must also equal the total " + hoursLabel + " computed by the <b>" + this.GetMOQEquationLabel() + "</b>."
+                                                + "<br />    · If the <b>Total</b> Resource Spread is incorrect for a resource: change the <b>Spread Curve</b> so it recalculates. Then change it back to the original <b>Spread Curve</b>. "
+                                            + "<br />    · Verify the " + this.GetMOQEquationLabel() + " Total = Total Resource " + hoursLabel + " = Total Resource Spread and the Delta = 0.";
+
+                                validationErrors.Add(new ValidationMessage("MOQ-Labor", errorMsg));
+                            }
+                        }
+                    }
+
+                    #endregion
 
                 #endregion
 
@@ -515,11 +515,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
             BoeTaskElementDTO originalTask = ws.Boes.FirstOrDefault(x => x.Id == modelView.TaskElementData.BOEID).TaskElements.FirstOrDefault(x => x.Id == modelView.TaskElementData.TaskElementDetailID);
 
             IReadOnlyCollection<WorkspaceVariableDTO> allWorkspaceVariables = ws.Boes.First(x => x.Id == originalTask.BoeID).WorkspaceVariables;
-
-            string lockedTaskErrorMessage = " cannot be changed while the Workspace is locked.";
-
+            
             // Validate no change to Task ID
-            if(modelView.TaskElementData.TaskID != originalTask.BOETaskID)
+            if((string.IsNullOrEmpty(modelView.TaskElementData.TaskID) && !string.IsNullOrEmpty(originalTask.BOETaskID))
+                || (!string.IsNullOrEmpty(modelView.TaskElementData.TaskID) && modelView.TaskElementData.TaskID != originalTask.BOETaskID))
             {
                 validationErrors.Add(new ValidationMessage(string.Format(Constants.CANNOT_CHANGE_IN_LOCKED_TASK, "Task ID")));
             }
@@ -546,7 +545,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             originalTask.MOQHoursEquation = Common.MOQ.Parser.UntagVariables(originalTask.MOQHoursEquation, inUseWorkspaceVariables);
 
-            if (modelView.TaskElementData.MOQHoursEquation != originalTask.MOQHoursEquation)
+            if ((modelView.TaskElementData.MOQHoursEquation == "0" && originalTask.MOQHoursEquation != "0" && !string.IsNullOrEmpty(originalTask.MOQHoursEquation)) 
+                || (!string.IsNullOrEmpty(originalTask.MOQHoursEquation) && modelView.TaskElementData.MOQHoursEquation != originalTask.MOQHoursEquation))
             {
                 validationErrors.Add(new ValidationMessage(string.Format(Constants.CANNOT_CHANGE_IN_LOCKED_TASK, "MOQ Equation")));
             }
@@ -559,7 +559,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
                 if (labor == null)
                 {
-                    validationErrors.Add(new ValidationMessage("Resource Types" + lockedTaskErrorMessage));
+                    validationErrors.Add(new ValidationMessage("Resource Types" + Constants.CANNOT_CHANGE_IN_LOCKED_TASK));
                     break;
                 }
 
@@ -595,6 +595,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 }
             }
 
+            this.ValidateTaskElementRteSizeLimit(modelView, ws, validationErrors);
 
             return validationErrors;
         }
@@ -1316,26 +1317,37 @@ namespace GenBOE.ActionLogic.ControllerLogic
             // validate RTE field length
             if(inWorkspaceDTO.RteSizeLimit.HasValue)
             {
-                if(!string.IsNullOrEmpty(laborTaskData.TaskElementData.TaskDescription) && inWorkspaceDTO.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.TaskDescription).Length)
-                {
-                    inValidationErrors.Add(new ValidationMessage("TaskDescription",
-                        string.Format("The maximum length of Task Description is {0} characters.", inWorkspaceDTO.RteSizeLimit.Value)));
-                }
-
-                if(!string.IsNullOrEmpty(laborTaskData.TaskElementData.MOQText) && inWorkspaceDTO.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.MOQText).Length)
-                {
-                    inValidationErrors.Add(new ValidationMessage("MOQText",
-                        string.Format("The maximum length of MOQ Rationale is {0} characters.", inWorkspaceDTO.RteSizeLimit.Value)));
-                }
+                this.ValidateTaskElementRteSizeLimit(laborTaskData, inWorkspaceDTO, inValidationErrors);
             }
 
             this.ValidateTaskElementDates(laborTaskData, inWorkspaceDTO, boeDTO, inValidationErrors, out taskElement);
-            
+
             this.ValidateLaborTypeDates(laborTaskData, inValidationErrors);
 
             this.ValidateLaborTypeCustomFields(laborTaskData, inWorkspaceDTO, taskElement, inValidationErrors);
 
             this.ValidateTaskCustomFields(laborTaskData, inWorkspaceDTO, inValidationErrors);
+        }
+
+        /// <summary>
+        /// Validate the RTE Size Limit in the Task Element
+        /// </summary>
+        /// <param name="laborTaskData">Task Composite MV</param>
+        /// <param name="inWorkspaceDTO">Workspace</param>
+        /// <param name="inValidationErrors">Validation Errors collection</param>
+        private void ValidateTaskElementRteSizeLimit(LaborTaskDataModelView laborTaskData, FullWorkspace inWorkspaceDTO, ICollection<ValidationMessage> inValidationErrors)
+        {
+            if (!string.IsNullOrEmpty(laborTaskData.TaskElementData.TaskDescription) && inWorkspaceDTO.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.TaskDescription).Length)
+            {
+                inValidationErrors.Add(new ValidationMessage("TaskDescription",
+                    string.Format("The maximum length of Task Description is {0} characters.", inWorkspaceDTO.RteSizeLimit.Value)));
+            }
+
+            if (!string.IsNullOrEmpty(laborTaskData.TaskElementData.MOQText) && inWorkspaceDTO.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.MOQText).Length)
+            {
+                inValidationErrors.Add(new ValidationMessage("MOQText",
+                    string.Format("The maximum length of MOQ Rationale is {0} characters.", inWorkspaceDTO.RteSizeLimit.Value)));
+            }
         }
 
         /// <summary>
