@@ -1087,7 +1087,7 @@
     $scope.saveAndAddAnother = function () {
         save(function () {
             $scope.init(-1);
-            TaskElementDetailsWidget.LoadMOQEquationField($('#MOQEquationFieldContent'), '-1');
+            $(document).trigger('DISPLAY_TASK_ELEMENT_DETAILS', { taskElementId: -1 });
             $(document).trigger('BOESUMMARYGRID_RELOAD');
             $scope.setDirty();
         });
