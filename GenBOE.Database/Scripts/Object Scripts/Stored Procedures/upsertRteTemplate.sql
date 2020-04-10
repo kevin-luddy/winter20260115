@@ -32,6 +32,7 @@ AS
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			-------------------------------------------
+**		04/10/20	ranzalon			BOEJ-4546 - Clear underlying template on assign
 *******************************************************************************/
 
 SET NOCOUNT ON 
@@ -100,6 +101,43 @@ IF @Assigned IS NOT NULL
 			([TemplateID],
 			[RteTemplateSourceId])
 		SELECT @TemplateID, Item FROM SplitString(@Assigned, ',', 0)
+
+		-- Clear out underlying data
+		IF EXISTS (SELECT 1 FROM SplitString(@Assigned, ',', 0) WHERE Item = 1) -- BOE Description
+			BEGIN
+				UPDATE [dbo].[BOE]
+				SET [BOEDescription] = ''
+				WHERE [WorkspaceID] = @WorkspaceID
+			END
+
+		IF EXISTS (SELECT 1 FROM SplitString(@Assigned, ',', 0) WHERE Item = 2) -- BOE Sources
+			BEGIN
+				UPDATE [dbo].[BOE]
+				SET [DataSource] = ''
+				WHERE [WorkspaceID] = @WorkspaceID
+			END
+
+		IF EXISTS (SELECT 1 FROM SplitString(@Assigned, ',', 0) WHERE Item = 3) -- Task Description
+			BEGIN
+				UPDATE [dbo].[BOETaskElement]
+				SET [TaskDescription] = ''
+				WHERE [BOEID] IN (
+					SELECT [BOEID]
+					FROM [dbo].[BOE]
+					WHERE [WorkspaceID] = @WorkspaceID
+					)
+			END
+
+		IF EXISTS (SELECT 1 FROM SplitString(@Assigned, ',', 0) WHERE Item = 4) -- Task MOQ Rationale
+			BEGIN
+				UPDATE [dbo].[BOETaskElement]
+				SET [MOQText] = ''
+				WHERE [BOEID] IN (
+					SELECT [BOEID]
+					FROM [dbo].[BOE]
+					WHERE [WorkspaceID] = @WorkspaceID
+					)
+			END
 	END
 
 -- Now clear out old answers for old assigned
