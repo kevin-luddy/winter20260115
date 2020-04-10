@@ -34,6 +34,7 @@ AS
 **		Date:		Author:				Description:
 **		--------	--------			-------------------------------------------
 **		02/19/20	Dusan				Fixed empty answer needs to be deleted
+**		04/10/20	ranzalon			Fix saving new empty strings
 *******************************************************************************/
 
 SET NOCOUNT ON 
@@ -45,7 +46,7 @@ IF @AnswerID > 0 AND (@Text IS NULL OR @Text = '')
 BEGIN
 	DELETE FROM [dbo].[RteTemplateAnswer] WHERE AnswerId = @AnswerID
 END
-ELSE IF @AnswerID < 0  /*Insert Record*/
+ELSE IF @AnswerID < 0 AND @Text IS NOT NULL AND @Text <> '' /*Insert Record (if not blank)*/
 	BEGIN
 		
 		SET @UpdateDT = GETDATE()
@@ -70,7 +71,7 @@ ELSE IF @AnswerID < 0  /*Insert Record*/
 		           
 		SELECT @AnswerID = AnswerID FROM @InsertedTemplateAnswer
 	END
-ELSE /*Update*/
+ELSE IF @AnswerID > 0 /*Update*/
 	BEGIN
 		IF (SELECT UpdateDT 
 				FROM [dbo].[RteTemplateAnswer] 
