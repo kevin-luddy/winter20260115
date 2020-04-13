@@ -46,7 +46,6 @@ namespace GenTRAC.Web.Controllers
         /// </summary>
         /// <param name="proposalId">Proposal ID</param>
         /// <returns>Displays the post proposal certification timeline info.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "proposalId")]
         public ViewResult DisplayCertificationTimeline(int proposalId)
         {
             this.ViewBag.proposalid = proposalId.ToString();

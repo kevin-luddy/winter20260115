@@ -222,9 +222,9 @@ namespace GenTRAC.Web.Common
         private static void AddCertificationTimelineControllerActions(Dictionary<string, Dictionary<string, SecurityPageAndAuthorization>> result)
         {
             Dictionary<string, SecurityPageAndAuthorization> certificationTimelineActions = new Dictionary<string, SecurityPageAndAuthorization>();
-            AddActionToController(WebConstants.Action.DISPLAY_CERTIFICATION_TIMELINE, PtmSecurityPage.PostSubmittalAttachments, SecurityAuthorization.Read, certificationTimelineActions);
-            AddActionToController(WebConstants.Action.SAVE_CERTIFICATION_TIMELINE, PtmSecurityPage.PostSubmittalAttachments, SecurityAuthorization.CreateReadUpdateDelete, certificationTimelineActions);
-            AddActionToController(WebConstants.Action.COMPLETE_CERTIFICATION_TIMELINE, PtmSecurityPage.PostSubmittalAttachments, SecurityAuthorization.CreateReadUpdateDelete, certificationTimelineActions);
+            AddActionToController(WebConstants.Action.DISPLAY_CERTIFICATION_TIMELINE, PtmSecurityPage.CertificationTimeline, SecurityAuthorization.Read, certificationTimelineActions);
+            AddActionToController(WebConstants.Action.SAVE_CERTIFICATION_TIMELINE, PtmSecurityPage.CertificationTimeline, SecurityAuthorization.CreateReadUpdateDelete, certificationTimelineActions);
+            AddActionToController(WebConstants.Action.COMPLETE_CERTIFICATION_TIMELINE, PtmSecurityPage.CertificationTimeline, SecurityAuthorization.CreateReadUpdateDelete, certificationTimelineActions);
             result.Add(WebConstants.Controller.CERTIFICATION_TIMELINE, certificationTimelineActions);
         }
 

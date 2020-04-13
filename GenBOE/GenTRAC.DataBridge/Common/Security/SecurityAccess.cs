@@ -141,11 +141,11 @@ namespace GenTRAC.DataBridge.Common.Security
 
             // Certificate Timeline
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.CertificationTimeline },
-                new[] { PtmRole.Admin, PtmRole.Pricer, PtmRole.BackupPricer, PtmRole.CostVolumeLead },
+                new[] { PtmRole.Admin, PtmRole.Pricer, PtmRole.BackupPricer, PtmRole.CostVolumeLead, PtmRole.LOBEstLead },
                 SecurityAuthorization.CreateReadUpdateDelete);
 
             this.InitializeMatrix(new[] { PtmSecurityPage.CertificationTimeline },
-                new[] { PtmRole.CoverSheetApprover, PtmRole.PricingVerification, PtmRole.PeerReviewer, PtmRole.LOBEstLead, PtmRole.Viewer },
+                new[] { PtmRole.CoverSheetApprover, PtmRole.PricingVerification, PtmRole.PeerReviewer, PtmRole.Viewer },
                 SecurityAuthorization.Read);
         }
 
