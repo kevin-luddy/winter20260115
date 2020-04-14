@@ -536,7 +536,7 @@ function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, save
         if(!BoeHeaderWidget.isReadOnly()) {
             GetRteTemplateJson(BoeHeaderWidget.DataSource, 'DataSource', data);    
         }
-                
+
         var dataToSend = JSON.stringify(data);
         BoeHeaderWidget.saveRequest({
             url: saveEditBoeHeaderUrl,
@@ -620,7 +620,31 @@ function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, save
                 $(toSet).attr("UpdateDateLong", returnModel.CustomFieldValues[x].UpdateDateLong);
                 $(toSet).attr("customfieldvalueid", customFieldValue);
             }
-        } 
+        }
+
+        // Update the UpdateDate and Id for template answers
+        if (returnModel.HeaderRteTemplateAnswers.length > 0) {
+            for (x in returnModel.HeaderRteTemplateAnswers) {
+                var answer = returnModel.HeaderRteTemplateAnswers[x];
+                var source = "";
+
+                switch (answer.SourceId) {
+                    case 1:
+                        source = "Description";
+                        break;
+                    case 2:
+                        source = "DataSource";
+                        break;
+                }
+                
+                var answerElement = $("#" + source + "_" + answer.SortOrder);
+
+                if (answerElement.length > 0) {
+                    answerElement[0].setAttribute('updateDateLong', returnModel.HeaderRteTemplateAnswers[x].UpdateDateLong);
+                    answerElement[0].setAttribute('pkid', returnModel.HeaderRteTemplateAnswers[x].Id);
+                }
+            }
+        }
     };
 
     BoeHeaderWidget.AdjustFieldState = function(){
