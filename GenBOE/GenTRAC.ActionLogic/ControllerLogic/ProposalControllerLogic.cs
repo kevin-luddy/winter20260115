@@ -1942,7 +1942,7 @@ namespace GenTRAC.ActionLogic
             else
             {
                 // check permission of current user
-                SecurityAuthorizationAndRole authorization = this.CheckPermissions(PtmSecurityPage.Proposal, proposal.Id);
+                SecurityAuthorizationAndRole authorization = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposal.Id);
                 if (authorization.Authorization == SecurityAuthorization.Read)
                 {
                     readOnly = true;
