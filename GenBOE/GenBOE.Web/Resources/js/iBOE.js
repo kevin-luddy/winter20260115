@@ -785,7 +785,7 @@ Widget.prototype.applyReadOnly = function () {
 					replacementFieldText = Widget.prototype.htmlDecode(replacementFieldText);
 				}
 
-				replacementFieldText = $.trim(replacementFieldText);
+                replacementFieldText = $.trim(replacementFieldText);
 
 				// Create read-only <div> element
 				var newElement = $("<div/>", {
@@ -2220,8 +2220,8 @@ function InitializeRTE(elementName, options, widget) {
 // @param elementNameDisplayedDuringReadOnly: name or class of the element that will be displayed during read only
 //
 function HandleRTEDataForReadOnly(elementNameContainingData, elementNameDisplayedDuringReadOnly) {
-	var decoded = $("<div/>").html($(elementNameContainingData).html()).text();
-	$(elementNameContainingData).siblings(elementNameDisplayedDuringReadOnly).html(decoded).attr('title', '');
+    var decoded = $("<div/>").html($(elementNameContainingData).html()).text();
+	$(elementNameContainingData).next(elementNameDisplayedDuringReadOnly).html(decoded).attr('title', '');
 }
 
 $(function () {
