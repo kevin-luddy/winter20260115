@@ -1287,11 +1287,11 @@ namespace GenTRAC.ActionLogic
                             model.LOBEstimatingLeadMgrDisplayName = user.DisplayName;
                             model.IsLOBEstimatingLeadMgrReadOnly = fullProposalDto.LOBEstimatingLeadSignedDate.HasValue;
 
-                            if (model.IsCCPDRequired.HasValue && !model.IsCCPDRequired.Value && !model.LOBEstimatingLeadList.Any(x => x.Ntid == user.Ntid))
+                            if (model.IsCCPDRequired != true && !model.LOBEstimatingLeadList.Any(x => x.Ntid == user.Ntid))
                             {
                                 model.LOBEstimatingLeadList.Add(user);
                             }
-                            else if (model.IsCCPDRequired.HasValue && model.IsCCPDRequired.Value && !model.LOBEstimatingMgrList.Any(x => x.Ntid == user.Ntid))
+                            else if (model.IsCCPDRequired == true && !model.LOBEstimatingMgrList.Any(x => x.Ntid == user.Ntid))
                             {
                                 model.LOBEstimatingMgrList.Add(user);
                             }
