@@ -5304,6 +5304,11 @@ td.greenStar:hover {
     width: 120px;
 }
 
+#AssignRTETemplateDialog .dialog-text {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
 #AssignRTETemplateDialog .button-container {
     margin-top: 15px;
 }

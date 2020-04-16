@@ -238,10 +238,10 @@
                 </div>
             </div>
 
-            <div gen-dialog  id="AssignRTETemplateDialog" class="dialog form" data-width="300" data-height="220" data-title="Assign RTE Custom Template" data-open="assign.open" data-on-close="onAssignClose()">
+            <div gen-dialog  id="AssignRTETemplateDialog" class="dialog form" data-width="300" data-height="246" data-title="Assign RTE Custom Template" data-open="assign.open" data-on-close="onAssignClose()">
                 <gen-validation data-errors="assign.errors"></gen-validation>
                 <div class="form-row">
-                    <div class="form-label">&nbsp;</div>
+                    <div class="dialog-text"><strong>Warning:</strong> Assigning a Rich Text Editor Template will delete all data for the assigned field throughout the Workspace.</div>
                 </div>
                 <div class="form-row" data-ng-repeat="source in assign.sources">
                     <div class="form-label">{{source.Description}}</div>
