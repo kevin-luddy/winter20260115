@@ -327,7 +327,6 @@ namespace GenBOE.ActionLogic.IO.Export
 
             // Get all BOE elements
             ICollection<BoeTaskElementDTO> taskElements = wsDataForExport.TaskElements.Where(x => x.BoeID == boe.Id).ToList();
-            bool isOffloadBoe = taskElements.Any(t => t.taskElementLabors.Any(te => te is SubResourceTypeDto));
             CategorizeAllTaskElements(boeLevelExportData, laborResourceIDs, iwtaResourceIDs, subContractorResourceIDs,
                 materialResourceIDs, odcResourceIDs, travelResourceIDs, taskElements);
 
@@ -337,17 +336,17 @@ namespace GenBOE.ActionLogic.IO.Export
             DetermineStartAndEndDates(boeLevelExportData, taskElements, materialElements, travelElements, odcElements);
 
             this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.LaborElements,
-                ElementOfCostType.LMLabor, laborResourceIDs, isUsingEP, offloading, isOffloadBoe);
+                ElementOfCostType.LMLabor, laborResourceIDs, isUsingEP, offloading);
             this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.IWTAElements,
-                ElementOfCostType.IWTA, iwtaResourceIDs, isUsingEP, offloading, isOffloadBoe);
+                ElementOfCostType.IWTA, iwtaResourceIDs, isUsingEP, offloading);
             this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.SubcontractorElements,
-                ElementOfCostType.Sub, subContractorResourceIDs, isUsingEP, offloading, isOffloadBoe);
+                ElementOfCostType.Sub, subContractorResourceIDs, isUsingEP, offloading);
             this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.MaterialLaborElements,
-                ElementOfCostType.Materials, materialResourceIDs, isUsingEP, offloading, isOffloadBoe);
+                ElementOfCostType.Materials, materialResourceIDs, isUsingEP, offloading);
             this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.TravelLaborElements,
-                ElementOfCostType.Travel, travelResourceIDs, isUsingEP, offloading, isOffloadBoe);
+                ElementOfCostType.Travel, travelResourceIDs, isUsingEP, offloading);
             this.ProcessTaskElements(wsDataForExport, boeLevelExportData, boeLevelExportData.ODCLaborElements,
-                ElementOfCostType.ODC, odcResourceIDs, isUsingEP, offloading, isOffloadBoe);
+                ElementOfCostType.ODC, odcResourceIDs, isUsingEP, offloading);
             this.ProcessOdcElements(wsDataForExport, boeLevelExportData, odcElements, odcResourceIDs);
             this.ProcessTravelElements(workspace, wsDataForExport, boeLevelExportData, travelElements, travelResources);
             this.ProcessRMSTravelElements(wsDataForExport, boeLevelExportData, travelElements, workspace);
@@ -363,9 +362,8 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="resourceIDs">The resource ids.</param>
         /// <param name="isUsingEquivalentPerson">if set to <c>true</c> [is using equivalent person].</param>
         /// <param name="offloading">if set to <c>true</c> [offloading].</param>
-        /// <param name="isOffloadBoe">if set to <c>true</c> then the BOE for this Task Element is an offloaded BOE.</param>
         private void ProcessTaskElements(WsLevelInputsForExport wsLevelData, BoeLevelExportData inputsForExport, Collection<BoeTaskElementDTO> taskElements,
-            ElementOfCostType elementOfCost, Collection<int> resourceIDs, bool isUsingEquivalentPerson, bool offloading, bool isOffloadBoe)
+            ElementOfCostType elementOfCost, Collection<int> resourceIDs, bool isUsingEquivalentPerson, bool offloading)
         {
             if (!taskElements.Any()) { return; }
 
@@ -374,19 +372,18 @@ namespace GenBOE.ActionLogic.IO.Export
                 // the data within the BOE Task Element will be part of the Resource Cost/Hours file
                 foreach (BoeTaskElementDTO boeTask in taskElements)
                 {
-
                     // do not export to ProPricer if task doesn't have any total hours or cost or if there no offsets
                     if (boeTask.TotalHours != 0 || boeTask.TotalCost != 0 || offloading || boeTask.taskElementLabors.Any(l => l.ValueSpread != 0))
                     {
                         List<ResourceTypeDto> taskResourcesEntriesForElementOfCost = boeTask.taskElementLabors.Where(r => r.ResourceID.HasValue && resourceIDs.Contains(r.ResourceID.Value)).ToList();
 
                         IDictionary<int, string> laborTypeIdToProPricerIdMappings = this.GenerateTaskRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs,
-                            elementOfCost, taskResourcesEntriesForElementOfCost, boeTask, isOffloadBoe);
+                            elementOfCost, taskResourcesEntriesForElementOfCost, boeTask, taskResourcesEntriesForElementOfCost.Any(x => x.IsOffloaded));
 
                         foreach (ResourceTypeDto labor in taskResourcesEntriesForElementOfCost)
                         {
                             this.GenerateResourceRow(wsLevelData, inputsForExport, inputsForExport.Clin, inputsForExport.Wbs, resourceIDs, boeTask,
-                                laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, isOffloadBoe);
+                                laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded);
                         }
                     }
                 }
@@ -406,10 +403,10 @@ namespace GenBOE.ActionLogic.IO.Export
                             WbsDTO resourceWbs = wsLevelData.Wbses.FirstOrDefault(i => i.Id == labor.WBSID.GetValueOrDefault(-1));
 
                             IDictionary<int, string> laborTypeIdToProPricerIdMappings = this.GenerateTaskRow(wsLevelData, inputsForExport, resourceClin,
-                                resourceWbs, elementOfCost, new List<ResourceTypeDto>() { labor }, boeTask, isOffloadBoe);
+                                resourceWbs, elementOfCost, new List<ResourceTypeDto>() { labor }, boeTask, labor.IsOffloaded);
 
                             this.GenerateResourceRow(wsLevelData, inputsForExport, resourceClin, resourceWbs, resourceIDs,
-                                boeTask, laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, isOffloadBoe);
+                                boeTask, laborTypeIdToProPricerIdMappings, labor, isUsingEquivalentPerson, labor.IsOffloaded);
                         }
                     }
                 }
@@ -850,11 +847,11 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <summary>
         /// Creating a task row for propricer
         /// </summary>
-        /// <param name="isOffloadBoe">if set to <c>true</c> then the BOE for this Task Element is an offloaded BOE.</param>
+        /// <param name="isResourceOffloaded">if set to <c>true</c> then the Task Element is offloaded.</param>
         [SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         private IDictionary<int, string> GenerateTaskRow(WsLevelInputsForExport wsLevelData, BoeLevelExportData inputsForExport, ClinDTO clin, WbsDTO wbs,
             ElementOfCostType elementOfCost, List<ResourceTypeDto> taskResourcesEntriesForElementOfCost,
-            BoeTaskElementDTO boeTask, bool isOffloadBoe)
+            BoeTaskElementDTO boeTask, bool isResourceOffloaded)
         {
             IDictionary<int, string> laborTypeIdToProPricerIdMappings = new Dictionary<int, string>();
 
@@ -1084,7 +1081,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         }
                     }
 
-                    if (isOffloadBoe)
+                    if (isResourceOffloaded)
                     {
                         wsLevelData.PpDataToBeExported.OffloadTaskData.Add(newTaskRow.ToString());
                     }
@@ -1101,11 +1098,11 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <summary>
         /// Creates the resource row for output format. 
         /// </summary>
-        /// <param name="isOffloadBoe">if set to <c>true</c> then the BOE for this Task Element is an offloaded BOE.</param>
+        /// <param name="isResourceOffloaded">if set to <c>true</c> then the Task Element is offloaded.</param>
         [SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         private void GenerateResourceRow(WsLevelInputsForExport wsLevelData, BoeLevelExportData inputsForExport, ClinDTO clin, WbsDTO wbs,
             Collection<int> inResourceIDs, BoeTaskElementDTO boeTask,
-            IDictionary<int, string> laborTypeIdToProPricerIdMappings, ResourceTypeDto labor, bool isUsingEquivalentPerson, bool isOffloadBoe)
+            IDictionary<int, string> laborTypeIdToProPricerIdMappings, ResourceTypeDto labor, bool isUsingEquivalentPerson, bool isResourceOffloaded)
         {
             // only want to export the resource associated with correct list of Resource IDs. 
             // For ex, if the labor contained 3 labors: 1 Labor, 1 IWTA, and 1 SubContractor. We only want to export the row that matched the current element of cost
@@ -1308,7 +1305,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     currentDate = currentDate.AddMonths(1);
                 }
 
-                if (isOffloadBoe)
+                if (isResourceOffloaded)
                 {
                     wsLevelData.PpDataToBeExported.OffloadResourceData.Add(newResourceRow.ToString());
                 }

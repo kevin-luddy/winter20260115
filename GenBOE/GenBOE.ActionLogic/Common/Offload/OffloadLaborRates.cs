@@ -250,7 +250,8 @@ namespace GenBOE.ActionLogic.Common
                 InHouseResource = laborResource.ResourceID,
                 InHouseResourceTypeId = laborResource.Id,
                 OffLoadedHourSpreads = new Collection<ResourceSpreadDto>(),
-                LegacyID = laborResource.LegacyID
+                LegacyID = laborResource.LegacyID,
+                IsOffloaded = true
             };
 
             decimal totalSubHours = 0m;
@@ -269,14 +270,9 @@ namespace GenBOE.ActionLogic.Common
                 decimal totalHoursThisYear = kvp.Value.Sum(ls => ls.LaborSpreadValue);
                 decimal totalOffloadHoursThisYear = Utilities.AdjustPrecision(totalHoursThisYear * offloadRateDTO.Percent, hoursPrecision);
 
-                // Find initial distribution
-                decimal[] distribution = kvp.Value.Select(ls => Utilities.AdjustPrecision(ls.LaborSpreadValue * offloadRateDTO.Percent, hoursPrecision)).ToArray();
-
-                if (distribution.Sum() != totalOffloadHoursThisYear)
-                {
-                    // Smooth (spread out) sub hours inside this year
-                    distribution = SpreadCurve.Smooth(totalOffloadHoursThisYear, distribution, 0, distribution.Length, hoursPrecision);
-                }
+                // Find initial distribution, then smooth it into correct numbers
+                decimal[] distribution = kvp.Value.Select(ls => ls.LaborSpreadValue * offloadRateDTO.Percent).ToArray();
+                distribution = SpreadCurve.Smooth(totalOffloadHoursThisYear, distribution, 0, distribution.Length, hoursPrecision);
 
                 // Calculate the sub cost by month
                 for (int i = 0; i < kvp.Value.Length; i++)

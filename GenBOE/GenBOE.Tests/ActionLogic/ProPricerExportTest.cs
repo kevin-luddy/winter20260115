@@ -1942,12 +1942,12 @@ namespace GenBOE.Tests.ActionLogic
             Assert.AreEqual("112006,,TOTAL,mock clin1 title,012007,LIDN000002,,\"\",\"mock clin1 title\",\"mock wbs title\",2.2,,,,\"BBBBBBB\",\"KristinePO\",\"\",-100001,-100001,-100001,\"Boe2Title\",\"\",\"NRE\",", result.TaskData[1], "The second task (first resource) did not match this value");
 
             Assert.AreEqual(",\"BBBBBBB\",LIDN000001,2.2,,,,D,mock clin1 title,\"mock clin1 title\",112005,\"mock wbs title\",-100000,-100000,-100000,\"Boe1Title\",\"KristinePO\",\"\",\"\",133,133,134,", result.ResourceData[0], "The first resource did not match this value");
-            Assert.AreEqual(",\"BBBBBBB\",LIDN000002,2.2,,,,D,mock clin1 title,\"mock clin1 title\",112006,\"mock wbs title\",-100001,-100001,-100001,\"Boe2Title\",\"KristinePO\",\"\",\"\",38,37,37,", result.ResourceData[1], "The second resource did not match this value");
+            Assert.AreEqual(",\"BBBBBBB\",LIDN000002,2.2,,,,D,mock clin1 title,\"mock clin1 title\",112006,\"mock wbs title\",-100001,-100001,-100001,\"Boe2Title\",\"KristinePO\",\"\",\"\",37,38,37,", result.ResourceData[1], "The second resource did not match this value");
             Assert.AreEqual(",\"BBBBBBB\",LIDN000002,2.2,,,,D,mock clin1 title,\"mock clin1 title\",112006,\"mock wbs title\",-100001,-100001,-100002,\"Boe2Title\",\"KristinePO\",\"\",\"\",75,75,75,", result.ResourceData[2], "The third resource did not match this value");
 
             Assert.AreEqual(1, result.OffloadTaskData.Count);
             Assert.AreEqual("112006,,TOTAL,mock clin1 title,012007,SIDN000001,,\"\",\"mock clin1 title\",\"mock wbs title\",2.2,,,,\"OFFLOADED_RESOURCE\",\"KristinePO\",\"\",-1,-1,-1,\"Boe2TitleOLKristinePOBBBBBBB\",\"\",\"NRE\",", result.OffloadTaskData[0], "The second task (first resource) did not match this value");
-            Assert.AreEqual(",\"OFFLOADED_RESOURCE\",SIDN000001,2.2,,,,D,mock clin1 title,\"mock clin1 title\",112006,\"mock wbs title\",-1,-1,-1,\"Boe2TitleOLKristinePOBBBBBBB\",\"KristinePO\",\"\",\"\",740.00,760.00,760.00,", result.OffloadResourceData[0], "The second resource did not match this value");
+            Assert.AreEqual(",\"OFFLOADED_RESOURCE\",SIDN000001,2.2,,,,D,mock clin1 title,\"mock clin1 title\",112006,\"mock wbs title\",-1,-1,-1,\"Boe2TitleOLKristinePOBBBBBBB\",\"KristinePO\",\"\",\"\",760.00,740.00,760.00,", result.OffloadResourceData[0], "The second resource did not match this value");
             Assert.AreEqual(",\"OFFLOADED_RESOURCE\",SIDN000001,2.2,,,,D,mock clin1 title,\"mock clin1 title\",112006,\"mock wbs title\",-1,-1,-2,\"Boe2TitleOLKristinePOBBBBBBB\",\"KristinePO\",\"\",\"\",1500.00,1500.00,1500.00,", result.OffloadResourceData[1], "The third resource did not match this value");
 
         }
