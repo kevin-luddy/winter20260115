@@ -198,6 +198,12 @@
                 <div class="small-close-button" data-ng-click="hideDeselectMultiClinWarning()">
                 </div>
             </div>
+            <div class="form-row MultiWBSClin-row">
+                <div class="form-label">Multi WBS/Clin</div>
+                <div class="form-element">
+                   <input name="MultiClinWbsCheckBox" data-ng-disabled="!isWorkingState" data-ng-model="edit.boe.IsMultiClinWbs" data-ng-click="updateMultiClin()" type="checkbox" id="MultiWBSClin" class = "MultiWBSClin" style="width:13px" />
+                </div>
+            </div> 
             <div class="form-row">
                 <div class="form-label">WBS</div>
                 <div class="form-element">
@@ -218,12 +224,6 @@
                     <div data-ng-show ="!edit.boe.IsMultiClinWbs && !isWorkingState">{{edit.boe.ClinDisplayName}}</div>
                 </div>
             </div>
-            <div class="form-row MultiWBSClin-row">
-                <div class="form-label">Multi WBS/Clin</div>
-                <div class="form-element">
-                   <input name="MultiClinWbsCheckBox" data-ng-disabled="!isWorkingState" data-ng-model="edit.boe.IsMultiClinWbs" data-ng-click="updateMultiClin()" type="checkbox" id="MultiWBSClin" class = "MultiWBSClin" style="width:13px" />
-                </div>
-            </div> 
             <div class="form-row" data-ng-show="edit.showMaterial">
                 <div class="form-label">Material</div>
                 <div class="form-element">
