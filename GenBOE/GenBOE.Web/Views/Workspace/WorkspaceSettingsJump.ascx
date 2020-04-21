@@ -95,10 +95,6 @@
                 <div>View System Default and Forced Email Preferences for Workspaces. Manage your Workspace Email Overrides (where applicable).</div>
             </div>
             <% } %>
-            <div>
-                <a id="ManageRTETemplates" href="#ManageRTETemplates">Manage Rich Text Editor Custom Templates</a>
-                <div>Manage the Rich Text Editor Custom Templates for this Workspace. Copy Rich Text Editor Custom Templates from other Workspaces.</div>
-            </div>
         </div>
     </div>
 </div>

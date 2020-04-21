@@ -159,6 +159,15 @@ namespace GenBOE.ActionLogic.ModelView
                             routeName = WebConstants.ROUTE_WORKSPACE
                         },
                         new GenBOEMasterMenuItemModelView {
+                            linkText = "Manage RTE Custom Templates",
+                            actionName = WebConstants.ACTION_INDEX,
+                            controllerName = WebConstants.CONTROLLER_RTE_TEMPLATES,
+                            routeValues = new { workspace = ws.Shortname },
+                            htmlAttributes = new { name = "ManageRteTemplatesMenuLink" },
+                            securityPage = SecurityPage.RTETemplates,
+                            routeName = WebConstants.ROUTE_WORKSPACE
+                        },
+                        new GenBOEMasterMenuItemModelView {
                             linkText = "Manage BOEs",
                             actionName = WebConstants.ACTION_INDEX,
                             controllerName = WebConstants.CONTROLLER_BOE,
