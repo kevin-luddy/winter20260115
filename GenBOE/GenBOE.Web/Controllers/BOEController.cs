@@ -794,14 +794,6 @@ namespace GenBOE.Web.Controllers
         public ViewResult DisplayExportBOEButton(string workspace, int boeID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-            int workspaceID = ws.Id;
-            bool IsSubContractor = (from p in this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(workspaceID)
-                                    where p.Role == Role.SubcontractorAuthor && p.ETIUserId == ws.CurrentActiveUser.UserID
-                                   select p).Any();
-            if (IsSubContractor) 
-            {
-                return null;
-            }
 
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "DisplayExportBOEButton", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
