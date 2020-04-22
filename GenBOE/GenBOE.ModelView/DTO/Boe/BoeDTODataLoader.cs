@@ -422,16 +422,16 @@ namespace GenBOE.DataBridge.DTO
             var sikorskyCfData = gbe.BOECustomFieldValueXREFs.Where(x => boeIds.Contains(x.BOEID)).Select(x => new {
                 CfName = x.CustomFieldValue.CustomFieldValueName,
                 CfValue = x.CustomFieldValue.CustomFieldValueDescription,
-                FieldName = x.CustomFieldValue.CustomField.CustomFieldName,
+                FieldName = x.CustomFieldValue.CustomField.CustomFieldName.ToUpper(),
                 BoeId = x.BOEID
             }).ToList();
 
             boesToLoad.ForEach(boe => {
-                boe.SOW = sikorskyCfData.FirstOrDefault(x => x.BoeId == boe.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_SOW)?.CfName;
-                boe.SOWTitle = sikorskyCfData.FirstOrDefault(x => x.BoeId == boe.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_SOW)?.CfValue;
-                boe.Category = sikorskyCfData.FirstOrDefault(x => x.BoeId == boe.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CATEGORY)?.CfValue;
-                boe.CamName = sikorskyCfData.FirstOrDefault(x => x.BoeId == boe.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CAMNAME)?.CfValue;
-                boe.ClassOfCost = sikorskyCfData.FirstOrDefault(x => x.BoeId == boe.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CLASSOFCOST)?.CfValue?.GetEnumeratedValueNullable<ClassOfCost>() ?? ClassOfCost.None;
+                boe.SOW = sikorskyCfData.FirstOrDefault(x => x.BoeId == boe.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_SOW.ToUpper())?.CfName;
+                boe.SOWTitle = sikorskyCfData.FirstOrDefault(x => x.BoeId == boe.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_SOW.ToUpper())?.CfValue;
+                boe.Category = sikorskyCfData.FirstOrDefault(x => x.BoeId == boe.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CATEGORY.ToUpper())?.CfValue;
+                boe.CamName = sikorskyCfData.FirstOrDefault(x => x.BoeId == boe.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CAMNAME.ToUpper())?.CfValue;
+                boe.ClassOfCost = sikorskyCfData.FirstOrDefault(x => x.BoeId == boe.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CLASSOFCOST.ToUpper())?.CfValue?.GetEnumeratedValueNullable<ClassOfCost>() ?? ClassOfCost.None;
             });
         }
 

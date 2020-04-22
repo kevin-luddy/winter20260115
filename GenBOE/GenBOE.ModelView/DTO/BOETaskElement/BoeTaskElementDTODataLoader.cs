@@ -316,16 +316,16 @@ namespace GenBOE.DataBridge.DTO
             var sikorskyCfTaskData = gbe.BOETaskElementCustomFieldValueXREFs.Where(x => taskIds.Contains(x.BOETaskElementID)).Select(x => new {
                 CfName = x.CustomFieldValue.CustomFieldValueName,
                 CfValue = x.CustomFieldValue.CustomFieldValueDescription,
-                FieldName = x.CustomFieldValue.CustomField.CustomFieldName,
+                FieldName = x.CustomFieldValue.CustomField.CustomFieldName.ToUpper(),
                 TaskElementId = x.BOETaskElementID
             }).ToList();
 
             taskElementsToLoad.ForEach(task => {
-                task.SOW = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_SOW)?.CfName;
-                task.SOWTitle = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_SOW)?.CfValue;
-                task.Category = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CATEGORY)?.CfValue;
-                task.CamName = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CAMNAME)?.CfValue;
-                task.ClassOfCost = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CLASSOFCOST)?.CfValue?.GetEnumeratedValueNullable<ClassOfCost>() ?? ClassOfCost.None;
+                task.SOW = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_SOW.ToUpper())?.CfName;
+                task.SOWTitle = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_SOW.ToUpper())?.CfValue;
+                task.Category = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CATEGORY.ToUpper())?.CfValue;
+                task.CamName = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CAMNAME.ToUpper())?.CfValue;
+                task.ClassOfCost = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CLASSOFCOST.ToUpper())?.CfValue?.GetEnumeratedValueNullable<ClassOfCost>() ?? ClassOfCost.None;
             });
         }
 
