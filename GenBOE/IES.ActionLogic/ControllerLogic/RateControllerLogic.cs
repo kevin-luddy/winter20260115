@@ -219,10 +219,14 @@ namespace IES.ActionLogic.ControllerLogic
 
                         if (rateYear.Value != null)
                         {
+                            bool isNonLaborEscalation = rdmv.RateCategoryDescription == RateCategory.NonLaborEscalationFactor.GetDescription()
+                                || rdmv.RateCategoryDescription == RateCategory.NonLaborEscalationPercentage.GetDescription();
+
                             // If the rounded value does not equal the actual value, we have too many decimal places.
-                            if (decimal.Round((decimal)rateYear.Value, rdmv.RatePrecision) != rateYear.Value || rateYear.Value < 0)
+                            if (decimal.Round((decimal)rateYear.Value, rdmv.RatePrecision) != rateYear.Value || 
+                                (rateYear.Value < 0 && !isNonLaborEscalation))
                             {
-                                string validationString = string.Format(RateMappingValidationConstants.RATEDETAILS_RATEPRECISION_ERROR,
+                                string validationString = string.Format(isNonLaborEscalation ? RateMappingValidationConstants.RATEDETAILS_RATEPRECISION_ERROR_ALLOW_NEGATIVE : RateMappingValidationConstants.RATEDETAILS_RATEPRECISION_ERROR,
                                                                         rdmv.RateCode, rateYear.Year, rateYear.Value, rdmv.RateCategoryDescription, rdmv.RatePrecision);
 
                                 validationErrors.Add(new ValidationMessage(validationString));

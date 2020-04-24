@@ -164,11 +164,13 @@
 
                             if (dirtyObject !== undefined) {
                                 dirtyObject.D = true;
-
                                 if (!isNaN(numericVal) && isFinite(numericVal)) {
                                     var twoDecimalRegex = new RegExp('^\\d+(\\.\\d{0,' + format.precision + '})?$');
+                                    var allowNegativeTwoDecimalRegex = new RegExp('^[+-]?\\d+(\\.\\d{0,' + format.precision + '})?$');
+                                    var isNonLaborEscalation = rowEntity.RCD.startsWith('Non-Labor Escalation');
 
-                                    if (twoDecimalRegex.test(numericVal) === false) {
+                                    if (!isNonLaborEscalation && twoDecimalRegex.test(numericVal) === false
+                                        || isNonLaborEscalation && allowNegativeTwoDecimalRegex.test(numericVal) === false) {
                                         // Create format function if we haven't already.
                                         if (!String.format) {
                                             String.format = function (format) {
@@ -181,7 +183,12 @@
                                                 });
                                             };
                                         }
-                                        $rootScope.errors = [{ ValidationIssue: String.format(RateModel.RatePrecisionError, rowEntity.Co, colDef.name, newValue, rowEntity.RCD, format.precision) }];
+
+                                        if (isNonLaborEscalation) {
+                                            $rootScope.errors = [{ ValidationIssue: String.format(RateModel.RatePrecisionErrorAllowNegative, rowEntity.Co, colDef.name, newValue, rowEntity.RCD, format.precision) }];
+                                        } else {
+                                            $rootScope.errors = [{ ValidationIssue: String.format(RateModel.RatePrecisionError, rowEntity.Co, colDef.name, newValue, rowEntity.RCD, format.precision) }];
+                                        }
                                         $scope.isDataValid = false;
                                         dirtyObject.isInValid = true;
                                     } else {

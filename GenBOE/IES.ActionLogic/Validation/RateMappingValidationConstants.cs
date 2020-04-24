@@ -103,6 +103,12 @@ namespace IES.ActionLogic.Validation
                                                               + "decimal precision of {4} decimal places. This is due to its Rate Category being {3}.";
 
         /// <summary>
+        /// Rate Precision error for rate categories that allow negative values
+        /// </summary>
+        public const string RATEDETAILS_RATEPRECISION_ERROR_ALLOW_NEGATIVE = "Rate Code: {0}, Year: {1}, Value: {2} is invalid. The rate should be a number with "
+                                                              + "decimal precision of {4} decimal places. This is due to its Rate Category being {3}.";
+
+        /// <summary>
         /// Get Rate Codes allowed to have empty burden pools
         /// </summary>
         public static IReadOnlyCollection<string> ALLOW_EMPTY_BURDEN_POOLS

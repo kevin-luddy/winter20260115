@@ -707,7 +707,8 @@ namespace RDM.Tests.ControllerLogic
             {
                 // Confirm specific error messages for invalid rates and years
                 ratePrecision = RateFormatter.GetRatePrecision(RateTarget.Rate, category.GetDescription());
-                string precisionError = string.Format(RateMappingValidationConstants.RATEDETAILS_RATEPRECISION_ERROR,
+                string precisionError = string.Format(category == RateCategory.NonLaborEscalationFactor || category == RateCategory.NonLaborEscalationPercentage ?
+                    RateMappingValidationConstants.RATEDETAILS_RATEPRECISION_ERROR_ALLOW_NEGATIVE : RateMappingValidationConstants.RATEDETAILS_RATEPRECISION_ERROR,
                     rateCode, 2012, 1.123456789m, category.GetDescription(), ratePrecision);
                 Assert.AreEqual(1, invalidMessages.Count(x => x.ValidationIssue.Equals(precisionError)));
             }
