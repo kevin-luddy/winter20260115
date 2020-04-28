@@ -213,7 +213,10 @@
                                         <input type="checkbox" data-ng-change="setEditDirty()" data-ng-model="question.Required" />
                                     </td>
                                     <td>
-                                        <a title="Order Question"><i class="fa fa-arrows-v" style="font-size:16px;color:black"></i></a>
+                                        <a title="Drag and Drop to change order">
+                                            <i class="fa fa-sort" style="font-size:16px;color:black;"></i>
+                                            <i class="fa fa-bars" style="font-size:16px;color:black;"></i>
+                                        </a>
                                     </td>
                                     <td>
                                         <div data-ng-click="deleteQuestion($index)" class="delete DeleteButton" />
