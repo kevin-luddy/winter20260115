@@ -167,7 +167,7 @@
                         </div>
                     </div>
                     <div class="form-element">
-                        <textarea data-ng-if="isWorkingState" maxlength="500" rows="3" class="template-description" data-ng-model="edit.template.Description" data-ng-blur="onEditBlur()"></textarea>
+                        <input type="text" data-ng-if="isWorkingState" maxlength="200" rows="3" class="template-description" data-ng-model="edit.template.Description" data-ng-blur="onEditBlur()"></input>
                         <span data-ng-if="!isWorkingState">{{edit.template.Description}}</span>
                     </div>
                 </div>
@@ -207,7 +207,7 @@
                             <tbody data-ng-if="isWorkingState" ui-sortable="sortableOptions" data-ng-model="edit.template.Questions">
                                 <tr data-ng-repeat="question in edit.template.Questions">
                                     <td>
-                                        <textarea rows="3" data-ng-change="setEditDirty()" class="question" maxlength="200" data-ng-model="question.Text"></textarea>
+                                        <textarea rows="3" data-ng-change="setEditDirty()" class="question" maxlength="500" data-ng-model="question.Text"></textarea>
                                     </td>
                                     <td>
                                         <input type="checkbox" data-ng-change="setEditDirty()" data-ng-model="question.Required" />
