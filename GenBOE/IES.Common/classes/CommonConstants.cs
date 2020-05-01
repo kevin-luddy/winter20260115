@@ -125,5 +125,16 @@ namespace IES.Common.classes
         /// The system user identifier
         /// </summary>
         public static readonly int SYSTEM_USER_ID = 0;
+
+        /// <summary>
+        /// The automatic system backup prior to Template Assignment
+        /// </summary>
+        public static readonly string AUTO_SYSTEM_BACKUP_TEMPLATE_ASSIGN_CHANGE = "[SYS TEMPLATE ASSIGN CHANGE]";
+
+        /// <summary>
+        /// The automatic system backup prior to Template Assignment
+        /// </summary>
+        public static readonly string AUTO_SYSTEM_BACKUP_TEMPLATE_QUESTION_DELETE = "[SYS TEMPLATE PROMPT DEL]";
+
     }
 }

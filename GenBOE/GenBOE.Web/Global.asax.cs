@@ -741,6 +741,10 @@ namespace GenBOE
                                                                                                                           new ResolvedParameter(typeof(IWorkspaceDTODataLoader)),
                                                                                                                           new ResolvedParameter(typeof(ICommonDataMapper))));
 
+            GenBOEUnityContainer.Container.RegisterType(typeof(IRTETemplatesControllerLogic), typeof(RTETemplatesControllerLogic), GetLifetimeManager(), new InjectionConstructor(
+                                                                                                                            new ResolvedParameter(typeof(IRteTemplateDataLoader)),
+                                                                                                                            new ResolvedParameter(typeof(IWorkspaceVersionMetaDataDTODataLoader))));
+
             switch (SysConfig.CompanyMode)
             {
                 case CompanyConfiguration.MST:

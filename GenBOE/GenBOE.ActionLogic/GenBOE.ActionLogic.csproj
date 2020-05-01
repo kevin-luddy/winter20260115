@@ -175,9 +175,11 @@
     <Compile Include="_ControllerLogic\BOEOtherDirectCostControllerLogicMST.cs" />
     <Compile Include="_ControllerLogic\IBOEFormControllerLogic.cs" />
     <Compile Include="_ControllerLogic\BOEZoneTravelControllerLogic.cs" />
+    <Compile Include="_ControllerLogic\IRTETemplatesControllerLogic.cs" />
     <Compile Include="_ControllerLogic\ISSRSControllerLogic.cs" />
     <Compile Include="_ControllerLogic\IWBSControllerLogic.cs" />
     <Compile Include="_ControllerLogic\ReportsControllerLogicMST.cs" />
+    <Compile Include="_ControllerLogic\RTETemplatesControllerLogic.cs" />
     <Compile Include="_ControllerLogic\SSRSControllerLogic.cs" />
     <Compile Include="_ControllerLogic\TravelControllerLogicMST.cs" />
     <Compile Include="_ControllerLogic\TravelControllerLogicSpaceSystems.cs" />
