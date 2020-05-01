@@ -1,4 +1,10 @@
-﻿namespace GenBOE.ActionLogic
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace GenBOE.ActionLogic
 {
     using System;
     using System.Collections.Generic;
@@ -210,7 +216,7 @@
                     // assignment
                     //     [we do not care about in-use, as a new template could be assigned, or an existing one be assigned to an additional field]
                     //     - template being saved has an assignment that the existing template record (in the DB) doesn't have
-                    if (templateBeingSaved.Assigned.Any(x => !templateFromDb.Assigned.Contains(x)))
+                    if (templateBeingSaved.AssignedList.Any(x => !templateFromDb.AssignedList.Contains(x)))
                     {
                         templatesBeingAssigned.Add(templateBeingSaved);
                     }
@@ -223,8 +229,8 @@
                     //          - (template is being deleted AND had at least 1 assignment before)
                     if (templateFromDb.InUse 
                             && (
-                                templateFromDb.Assigned.Any(x => !templateBeingSaved.Assigned.Contains(x))
-                                || (templateBeingSaved.Updateable == UpdateType.Deleted && templateFromDb.Assigned.Any())
+                                templateFromDb.AssignedList.Any(x => !templateBeingSaved.AssignedList.Contains(x))
+                                || (templateBeingSaved.Updateable == UpdateType.Deleted && templateFromDb.AssignedList.Any())
                         ))
                     {
                         templatesBeingUnassigned.Add(templateBeingSaved);
@@ -278,7 +284,7 @@
                 WorkspaceID = ws.Id
             };
 
-            versionLoader.Upsert(backup, backup.WorkspaceID);
+            this.versionLoader.Upsert(backup, backup.WorkspaceID);
         }
     }
 }
