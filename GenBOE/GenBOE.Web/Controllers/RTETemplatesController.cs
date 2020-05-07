@@ -94,6 +94,7 @@ namespace GenBOE.Web.Controllers
             this.controllerLogic.ValidateTemplates(templates);
             this.controllerLogic.SaveTemplates(templates, ws);
 
+            // Finalize Action
             this.FinalizeAction(this.logger, WebConstants.ACTION_SAVE_RTE_TEMPLATES, sw);
             return this.Json(new { Status = true });
         }

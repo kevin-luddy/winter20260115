@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic
     using System.Collections.Generic;
     using System.Linq;
     using System.Transactions;
+    using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -35,6 +36,26 @@ namespace GenBOE.ActionLogic
         /// </summary>
         private IRteTemplateDataLoader rteTemplateDataLoader;
 
+        /// <summary>
+        /// BOE DTO Data Loader
+        /// </summary>
+        private IBoeDTODataLoader boeDtoDataLoader;
+
+        /// <summary>
+        /// BOE Mediator
+        /// </summary>
+        private IBoeMediator boeMediator;
+
+        /// <summary>
+        /// Task Element DTO Data Loader
+        /// </summary>
+        private IBoeTaskElementDTODataLoader taskElementDtoDataLoader;
+
+        /// <summary>
+        /// Task Element Mediator
+        /// </summary>
+        private IBoeTaskElementMediator taskElementMediator;
+
         #endregion
 
         /// <summary>
@@ -42,10 +63,19 @@ namespace GenBOE.ActionLogic
         /// </summary>
         /// <param name="rteTemplateDataLoader">Template Loader</param>
         /// <param name="versionLoader">Version Loader</param>
-        public RTETemplatesControllerLogic(IRteTemplateDataLoader rteTemplateDataLoader, IWorkspaceVersionMetaDataDTODataLoader versionLoader)
+        /// <param name="boeDtoDataLoader">BOE DTO Data Loader</param>
+        /// <param name="boeMediator">BOE Mediator</param>
+        /// <param name="taskElementDtoDataLoader">Task Element DTO Data Loader</param>
+        /// <param name="taskElementMediator">Task Element Mediator</param>
+        public RTETemplatesControllerLogic(IRteTemplateDataLoader rteTemplateDataLoader, IWorkspaceVersionMetaDataDTODataLoader versionLoader, 
+            IBoeDTODataLoader boeDtoDataLoader, IBoeMediator boeMediator, IBoeTaskElementDTODataLoader taskElementDtoDataLoader, IBoeTaskElementMediator taskElementMediator)
         {
             this.rteTemplateDataLoader = rteTemplateDataLoader;
             this.versionLoader = versionLoader;
+            this.boeDtoDataLoader = boeDtoDataLoader;
+            this.boeMediator = boeMediator;
+            this.taskElementDtoDataLoader = taskElementDtoDataLoader;
+            this.taskElementMediator = taskElementMediator;
         }
 
         /// <summary>
@@ -211,39 +241,169 @@ namespace GenBOE.ActionLogic
                 List<RteCustomTemplateModelView> templatesBeingUnassigned = new List<RteCustomTemplateModelView>();
 
                 templatesFromDb.ToList().ForEach(templateFromDb => {
-                    RteCustomTemplateModelView templateBeingSaved = templatesBeingSaved.First(saveTemplate => saveTemplate.Id == templateFromDb.Id);
+                    RteCustomTemplateModelView templateBeingSaved = templatesBeingSaved.FirstOrDefault(saveTemplate => saveTemplate.Id == templateFromDb.Id);
 
-                    // assignment
-                    //     [we do not care about in-use, as a new template could be assigned, or an existing one be assigned to an additional field]
-                    //     - template being saved has an assignment that the existing template record (in the DB) doesn't have
-                    if (templateBeingSaved.AssignedList.Any(x => !templateFromDb.AssignedList.Contains(x)))
+                    if (templateBeingSaved != null)
                     {
-                        templatesBeingAssigned.Add(templateBeingSaved);
-                    }
+                        // assignment
+                        //     [we do not care about in-use, as a new template could be assigned, or an existing one be assigned to an additional field]
+                        //     - template being saved has an assignment that the existing template record (in the DB) doesn't have
+                        if (templateBeingSaved.Assigned.Any(x => !templateFromDb.Assigned.Contains(x)))
+                        {
+                            templatesBeingAssigned.Add(templateBeingSaved);
+                        }
 
-                    // unassignment
-                    //     - template is in-use
-                    //      AND
-                    //          - template record from the DB has an assignment that an updated template no longer has
-                    //          OR
-                    //          - (template is being deleted AND had at least 1 assignment before)
-                    if (templateFromDb.InUse 
+                        // unassignment
+                        //     - template is in-use
+                        //      AND
+                        //          - template record from the DB has an assignment that an updated template no longer has
+                        //          OR
+                        //          - (template is being deleted AND had at least 1 assignment before)
+                        if (templateFromDb.InUse
                             && (
-                                templateFromDb.AssignedList.Any(x => !templateBeingSaved.AssignedList.Contains(x))
-                                || (templateBeingSaved.Updateable == UpdateType.Deleted && templateFromDb.AssignedList.Any())
-                        ))
-                    {
-                        templatesBeingUnassigned.Add(templateBeingSaved);
+                                templateFromDb.Assigned.Any(x => !templateBeingSaved.Assigned.Contains(x))
+                                || (templateBeingSaved.Updateable == UpdateType.Deleted && templateFromDb.Assigned.Any())
+                            ))
+                        {
+                            templatesBeingUnassigned.Add(templateBeingSaved);
+                        }
                     }
                 });
 
-                // ToDo: RJ -> do what you need to do w/ templates that are being assigned or unassigned
+                this.ProcessUnassignedSources(templatesBeingUnassigned, templatesFromDb, ws);
 
                 if (templatesBeingAssigned.Any() || templatesBeingUnassigned.Any())
                 {
                     this.BackupWorkspace(ws, CommonConstants.AUTO_SYSTEM_BACKUP_TEMPLATE_ASSIGN_CHANGE);
                 }
             }
+        }
+
+        /// <summary>
+        /// Move data in RTE Templates that are being unassigned into the appropriate source fields
+        /// </summary>
+        /// <param name="templatesBeingUnassigned">Templates being unassigned</param>
+        /// <param name="templatesFromDb">Templates as they were prior to modification</param>
+        /// <param name="ws">The workspace</param>
+        private void ProcessUnassignedSources(List<RteCustomTemplateModelView> templatesBeingUnassigned, ICollection<RteCustomTemplateModelView> templatesFromDb, FullWorkspace ws)
+        {
+            ICollection<BoeDTO> boes = boeDtoDataLoader.GetByWorkspaceId(ws.Id);
+            ICollection<BoeTaskElementDTO> tasks = taskElementDtoDataLoader.GetByWorkspaceId(ws.Id, false, ws.DecimalPrecision, ws.CostDecimalPrecision);
+
+            bool saveBoes = false;
+            bool saveTasks = false;
+
+            foreach (RteCustomTemplateModelView template in templatesBeingUnassigned)
+            {
+                RteCustomTemplateModelView originalTemplate = templatesFromDb.First(x => x.Id == template.Id);
+                ICollection<int> removedAssignments;
+
+                if (template.Updateable == UpdateType.Deleted)
+                {
+                    // For deleted templates, need to handle all sources
+                    removedAssignments = originalTemplate.Assigned.ToCollection();
+                }
+                else
+                {
+                    // For templates only being unassigned, just need sources being unassigned
+                    removedAssignments = originalTemplate.Assigned.Except(template.Assigned).ToCollection();
+                }
+
+                foreach (int removedAssignment in removedAssignments)
+                {
+                    switch (removedAssignment)
+                    {
+                        case (int)RteTemplateSource.BoeDescription:
+                            foreach (BoeDTO boe in boes)
+                            {
+                                ICollection<RTECustomTemplateQuestionAnswerModelView> descQuestionsAndAnswers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boe.Id);
+
+                                boe.Description = this.convertQandAsToText(descQuestionsAndAnswers, (int)RteTemplateSource.BoeDescription);
+                                boe.Updateable = UpdateType.Upsert;
+                            }
+
+                            saveBoes = true;
+                            break;
+                        case (int)RteTemplateSource.BoeSources:
+                            foreach (BoeDTO boe in boes)
+                            {
+                                ICollection<RTECustomTemplateQuestionAnswerModelView> sourcesQuestionsAndAnswers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boe.Id);
+
+                                boe.DataSource = this.convertQandAsToText(sourcesQuestionsAndAnswers, (int)RteTemplateSource.BoeSources);
+                                boe.Updateable = UpdateType.Upsert;
+                            }
+
+                            saveBoes = true;
+                            break;
+                        case (int)RteTemplateSource.TaskDescription:
+                            foreach (BoeTaskElementDTO task in tasks)
+                            {
+                                ICollection<RTECustomTemplateQuestionAnswerModelView> taskDescQuestionsAndAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, task.BoeID, task.Id);
+
+                                task.Description = this.convertQandAsToText(taskDescQuestionsAndAnswers, (int)RteTemplateSource.TaskDescription);
+                                task.Updateable = UpdateType.Upsert;
+                            }
+
+                            saveTasks = true;
+                            break;
+                        case (int)RteTemplateSource.TaskMOQ:
+                            foreach (BoeTaskElementDTO task in tasks)
+                            {
+                                ICollection<RTECustomTemplateQuestionAnswerModelView> taskDescQuestionsAndAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, task.BoeID, task.Id);
+
+                                task.MOQText = this.convertQandAsToText(taskDescQuestionsAndAnswers, (int)RteTemplateSource.TaskMOQ);
+                                task.Updateable = UpdateType.Upsert;
+                            }
+
+                            saveTasks = true;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                if (saveBoes)
+                {
+                    foreach (BoeDTO boe in boes)
+                    {
+                        using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+                        {
+                            this.boeMediator.SaveEditBoeHeader(boe);
+                            scope.Complete();
+                        }
+                    }
+                }
+
+                if (saveTasks)
+                {
+                    using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+                    {
+                        this.taskElementMediator.MediatedBulkSaveTaskElements(tasks, ws);
+                        scope.Complete();
+                    }
+                }
+
+                // TODO - Wire in email(s) from BOEJ-4594
+            }
+        }
+
+        /// <summary>
+        /// Converts the Prompts and Answers for the RTE Templates into text to put into the source field
+        /// </summary>
+        /// <param name="questionsAndAnswers">RTE Template Prompts/Answers</param>
+        /// <param name="source">Source for the template</param>
+        /// <returns>Propmts and Answers as a single string</returns>
+        private string convertQandAsToText(ICollection<RTECustomTemplateQuestionAnswerModelView> questionsAndAnswers, int source)
+        {
+            string newText = string.Empty;
+
+            foreach (RTECustomTemplateQuestionAnswerModelView qAndA in questionsAndAnswers.Where(x => x.SourceId == source && !string.IsNullOrEmpty(x.AnswerText)))
+            {
+                newText += "<p><strong>" + qAndA.QuestionText + "</strong></p>"
+                    + "<br/>" + qAndA.AnswerText + "<br/>";
+            }
+
+            return newText;
         }
 
         /// <summary>

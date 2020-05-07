@@ -743,7 +743,11 @@ namespace GenBOE
 
             GenBOEUnityContainer.Container.RegisterType(typeof(IRTETemplatesControllerLogic), typeof(RTETemplatesControllerLogic), GetLifetimeManager(), new InjectionConstructor(
                                                                                                                             new ResolvedParameter(typeof(IRteTemplateDataLoader)),
-                                                                                                                            new ResolvedParameter(typeof(IWorkspaceVersionMetaDataDTODataLoader))));
+                                                                                                                            new ResolvedParameter(typeof(IWorkspaceVersionMetaDataDTODataLoader)),
+                                                                                                                            new ResolvedParameter(typeof(IBoeDTODataLoader)),
+                                                                                                                            new ResolvedParameter(typeof(IBoeMediator)),
+                                                                                                                            new ResolvedParameter(typeof(IBoeTaskElementDTODataLoader)),
+                                                                                                                            new ResolvedParameter(typeof(IBoeTaskElementMediator))));
 
             switch (SysConfig.CompanyMode)
             {
