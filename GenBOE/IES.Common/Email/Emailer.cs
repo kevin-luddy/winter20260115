@@ -149,7 +149,11 @@ namespace IES.Common
                 else
                 {
                     // remove current user from email and cc list
-                    inRecipient = inRecipient?.Replace(inUserData.Email, string.Empty);
+                    if (!string.IsNullOrEmpty(inUserData.Email))
+                    {
+                        inRecipient = inRecipient?.Replace(inUserData.Email, string.Empty);
+                    }
+
                     if (inCClist != null)
                     {
                         ICollection<UserData> removeEmails = inCClist.Where(c => c.Email == inUserData.Email).ToList();
