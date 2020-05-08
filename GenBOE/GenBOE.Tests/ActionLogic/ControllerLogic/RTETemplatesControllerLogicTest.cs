@@ -17,6 +17,7 @@ namespace GenBOE.Tests.ActionLogic
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
+    using IES.Common.Exceptions;
     using Microsoft.Practices.Unity;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
@@ -33,6 +34,9 @@ namespace GenBOE.Tests.ActionLogic
         private Mock<IRetriever> retriever;
         private Mock<IBoeEmailer> emailer;
 
+        /// <summary>
+        /// Creates System Under Test
+        /// </summary>
         public RTETemplatesControllerLogic CreateSUT()
         {
             this.versionLoader = new Mock<IWorkspaceVersionMetaDataDTODataLoader>();
@@ -57,6 +61,8 @@ namespace GenBOE.Tests.ActionLogic
             return new RTETemplatesControllerLogic(this.rteTemplateDataLoader.Object, this.versionLoader.Object, this.boeDtoDataLoader.Object, this.boeMediator.Object, 
                 this.taskElementDtoDataLoader.Object, this.taskElementMediator.Object, this.emailer.Object);
         }
+
+        #region SaveTemplates
 
         /// <summary>
         /// Creating a new template, when WS is in initialization
@@ -789,6 +795,252 @@ namespace GenBOE.Tests.ActionLogic
             this.rteTemplateDataLoader.Setup(x => x.GetByBoeIdAndTaskId(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns(questionAnswerMV);
 
             sut.SaveTemplates(templatesToSave, ws);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Tests template description being unique. Pass.
+        /// </summary>
+        [TestMethod]
+        public void Validate_UniqueDescription1()
+        {
+            RTETemplatesControllerLogic sut = this.CreateSUT();
+
+            #region Data Setup
+
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            ICollection<RteCustomTemplateModelView> templatesToValidate = new List<RteCustomTemplateModelView>()
+            {
+                new RteCustomTemplateModelView()
+                {
+                    Id = 22,
+                    Assigned = new List<int>() { 1 },
+                    InUse = false,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert, Text = "hello" } },
+                    Updateable = UpdateType.Upsert,
+                    Description = "Test Description Pass"
+                }
+            };
+            ICollection<RteCustomTemplateModelView> templatesFromDb = new List<RteCustomTemplateModelView>()
+            {
+                new RteCustomTemplateModelView()
+                {
+                    Id = 22,
+                    Assigned = new List<int>() { 1 },
+                    InUse = false,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert, Text = "hello" } },
+                    Description = "Test Description Pass"
+                }
+            };
+
+            #endregion
+
+            this.SetupValidationAndExecuteTestMock(sut, ws, templatesToValidate, templatesFromDb);
+        }
+
+        /// <summary>
+        /// Tests template description being unique. Pass, creation.
+        /// </summary>
+        [TestMethod]
+        public void Validate_UniqueDescription2()
+        {
+            RTETemplatesControllerLogic sut = this.CreateSUT();
+
+            #region Data Setup
+
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            ICollection<RteCustomTemplateModelView> templatesToValidate = new List<RteCustomTemplateModelView>()
+            {
+                new RteCustomTemplateModelView()
+                {
+                    Id = 22,
+                    Assigned = new List<int>() { 1 },
+                    InUse = false,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert, Text = "hello" } },
+                    Updateable = UpdateType.Upsert,
+                    Description = "Test Description Pass"
+                },
+                new RteCustomTemplateModelView()
+                {
+                    Id = -1,
+                    Assigned = new List<int>() { 1 },
+                    InUse = false,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert, Text = "hello" } },
+                    Updateable = UpdateType.Upsert,
+                    Description = "Test Description Another One"
+                }
+            };
+            ICollection<RteCustomTemplateModelView> templatesFromDb = new List<RteCustomTemplateModelView>()
+            {
+                new RteCustomTemplateModelView()
+                {
+                    Id = 22,
+                    Assigned = new List<int>() { 1 },
+                    InUse = false,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert, Text = "hello" } },
+                    Description = "Test Description Pass"
+                }
+            };
+
+            #endregion
+
+            this.SetupValidationAndExecuteTestMock(sut, ws, templatesToValidate, templatesFromDb);
+        }
+
+        /// <summary>
+        /// Tests template description being unique. Pass, deletion.
+        /// 
+        /// This is a weird setup, the goal is to get it to ignore failure in items that are being deleted
+        /// </summary>
+        [TestMethod]
+        public void Validate_UniqueDescription3()
+        {
+            RTETemplatesControllerLogic sut = this.CreateSUT();
+
+            #region Data Setup
+
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            ICollection<RteCustomTemplateModelView> templatesToValidate = new List<RteCustomTemplateModelView>()
+            {
+
+                new RteCustomTemplateModelView()
+                {
+                    Id = -1,
+                    Assigned = new List<int>() { 1 },
+                    InUse = false,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert, Text = "hello" } },
+                    Updateable = UpdateType.Deleted,
+                    Description = "Test Description Pass"
+                }
+            };
+            ICollection<RteCustomTemplateModelView> templatesFromDb = new List<RteCustomTemplateModelView>()
+            {
+                new RteCustomTemplateModelView()
+                {
+                    Id = 22,
+                    Assigned = new List<int>() { 1 },
+                    InUse = false,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert, Text = "hello" } },
+                    Description = "Test Description Pass"
+                }
+            };
+
+            #endregion
+
+            this.SetupValidationAndExecuteTestMock(sut, ws, templatesToValidate, templatesFromDb);
+        }
+
+        /// <summary>
+        /// Tests template description being unique. Failure due to duplication on changing existing
+        /// </summary>
+        [TestMethod, ExpectedException(typeof(GenValidationException))]
+        public void Validate_UniqueDescription4()
+        {
+            RTETemplatesControllerLogic sut = this.CreateSUT();
+
+            #region Data Setup
+
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            ICollection<RteCustomTemplateModelView> templatesToValidate = new List<RteCustomTemplateModelView>()
+            {
+                new RteCustomTemplateModelView()
+                {
+                    Id = 22,
+                    Assigned = new List<int>() { 1 },
+                    InUse = false,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert, Text = "hello" } },
+                    Updateable = UpdateType.Upsert,
+                    Description = "Test Description Fail"
+                },
+                new RteCustomTemplateModelView()
+                {
+                    Id = 23,
+                    Assigned = new List<int>() { 1 },
+                    InUse = false,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert, Text = "hello" } },
+                    Updateable = UpdateType.Upsert,
+                    Description = "Test Description Fail"
+                }
+            };
+            ICollection<RteCustomTemplateModelView> templatesFromDb = new List<RteCustomTemplateModelView>()
+            {
+                new RteCustomTemplateModelView()
+                {
+                    Id = 22,
+                    Assigned = new List<int>() { 1 },
+                    InUse = false,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert } },
+                    Description = "Test Description Fail"
+                }
+            };
+
+            #endregion
+
+            this.SetupValidationAndExecuteTestMock(sut, ws, templatesToValidate, templatesFromDb);
+        }
+
+        /// <summary>
+        /// Tests template description being unique. Failure due to duplication on creation
+        /// </summary>
+        [TestMethod, ExpectedException(typeof(GenValidationException))]
+        public void Validate_UniqueDescription5()
+        {
+            RTETemplatesControllerLogic sut = this.CreateSUT();
+
+            #region Data Setup
+
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            ICollection<RteCustomTemplateModelView> templatesToValidate = new List<RteCustomTemplateModelView>()
+            {
+                new RteCustomTemplateModelView()
+                {
+                    Id = 22,
+                    Assigned = new List<int>() { 1 },
+                    InUse = false,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert, Text = "hello" } },
+                    Updateable = UpdateType.Upsert,
+                    Description = "Test Description Fail"
+                },
+                new RteCustomTemplateModelView()
+                {
+                    Id = -1,
+                    Assigned = new List<int>() { 1 },
+                    InUse = false,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert, Text = "hello" } },
+                    Updateable = UpdateType.Upsert,
+                    Description = "Test Description Fail"
+                }
+            };
+            ICollection<RteCustomTemplateModelView> templatesFromDb = new List<RteCustomTemplateModelView>()
+            {
+                new RteCustomTemplateModelView()
+                {
+                    Id = 22,
+                    Assigned = new List<int>() { 1 },
+                    InUse = false,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert } },
+                    Description = "Test Description Fail"
+                }
+            };
+
+            #endregion
+
+            this.SetupValidationAndExecuteTestMock(sut, ws, templatesToValidate, templatesFromDb);
+        }
+
+        /// <summary>
+        /// Sets up Mock objects & executes validation test
+        /// </summary>
+        /// <param name="sut">System Under Test</param>
+        /// <param name="ws">Workspace</param>
+        /// <param name="templatesToValidate">Templates being validated</param>
+        /// <param name="templatesFromDb">Templates in DB</param>
+        private void SetupValidationAndExecuteTestMock(RTETemplatesControllerLogic sut, FullWorkspace ws, ICollection<RteCustomTemplateModelView> templatesToValidate, ICollection<RteCustomTemplateModelView> templatesFromDb)
+        {
+            this.rteTemplateDataLoader.Setup(x => x.GetTemplates(ws.Id)).Returns(templatesFromDb);
+
+            sut.ValidateTemplates(templatesToValidate, ws.Id);
         }
     }
 }

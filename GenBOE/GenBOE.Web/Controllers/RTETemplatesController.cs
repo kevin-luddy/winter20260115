@@ -91,7 +91,7 @@ namespace GenBOE.Web.Controllers
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             Stopwatch sw = InitializeAction(this.logger, WebConstants.ACTION_SAVE_RTE_TEMPLATES, SecurityPage.RTETemplates, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
-            this.controllerLogic.ValidateTemplates(templates);
+            this.controllerLogic.ValidateTemplates(templates, ws.Id);
             this.controllerLogic.SaveTemplates(templates, ws);
 
             // Finalize Action

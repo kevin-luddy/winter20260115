@@ -122,8 +122,9 @@ namespace GenBOE.ActionLogic
         /// Validates RTE templates
         /// </summary>
         /// <param name="templates">Templates to validate</param>
+        /// <param name="wsId">Workspace Id</param>
         /// <exception cref="GenValidationException">Throws GenValidationException with validation errors, if any</exception>
-        public void ValidateTemplates(ICollection<RteCustomTemplateModelView> templates)
+        public void ValidateTemplates(ICollection<RteCustomTemplateModelView> templates, int wsId)
         {
             if (templates == null || templates.None()) { throw new ArgumentNullException(nameof(templates)); }
 
@@ -142,6 +143,13 @@ namespace GenBOE.ActionLogic
             if (templates.Any(t => t.Updateable != UpdateType.Deleted && t.Questions.Any(q => q.Updateable != UpdateType.Deleted && string.IsNullOrWhiteSpace(q.Text))))
             {
                 validationErrors.Add(new ValidationMessage("Prompt text is required."));
+            }
+
+            ICollection<RteCustomTemplateModelView> templatesFromDb = this.rteTemplateDataLoader.GetTemplates(wsId);
+
+            if (templates.Any(t => t.Updateable != UpdateType.Deleted && templatesFromDb.Any(tdb => tdb.Description == t.Description && tdb.Id != t.Id) == true))
+            {
+                validationErrors.Add(new ValidationMessage("Template name must be unique."));
             }
 
             if (validationErrors.Any())

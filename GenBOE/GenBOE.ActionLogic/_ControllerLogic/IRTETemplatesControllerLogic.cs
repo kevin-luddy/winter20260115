@@ -30,8 +30,9 @@ namespace GenBOE.ActionLogic
         /// Validates RTE templates
         /// </summary>
         /// <param name="templates">Templates to validate</param>
+        /// <param name="wsId">Workspace Id</param>
         /// <exception cref="GenValidationException">Throws GenValidationException with validation errors, if any</exception>
-        void ValidateTemplates(ICollection<RteCustomTemplateModelView> templates);
+        void ValidateTemplates(ICollection<RteCustomTemplateModelView> templates, int wsId);
 
         /// <summary>
         /// Save Templates
