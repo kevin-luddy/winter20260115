@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic
     using System.Linq;
     using System.Transactions;
     using GenBOE.ActionLogic.BLL;
+    using GenBOE.ActionLogic.Common.Email;
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -29,32 +30,37 @@ namespace GenBOE.ActionLogic
         /// <summary>
         /// The version loader
         /// </summary>
-        private IWorkspaceVersionMetaDataDTODataLoader versionLoader;
+        private readonly IWorkspaceVersionMetaDataDTODataLoader versionLoader;
 
         /// <summary>
         /// rteTemplate Data Loader
         /// </summary>
-        private IRteTemplateDataLoader rteTemplateDataLoader;
+        private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 
         /// <summary>
         /// BOE DTO Data Loader
         /// </summary>
-        private IBoeDTODataLoader boeDtoDataLoader;
+        private readonly IBoeDTODataLoader boeDtoDataLoader;
 
         /// <summary>
         /// BOE Mediator
         /// </summary>
-        private IBoeMediator boeMediator;
+        private readonly IBoeMediator boeMediator;
 
         /// <summary>
         /// Task Element DTO Data Loader
         /// </summary>
-        private IBoeTaskElementDTODataLoader taskElementDtoDataLoader;
+        private readonly IBoeTaskElementDTODataLoader taskElementDtoDataLoader;
 
         /// <summary>
         /// Task Element Mediator
         /// </summary>
-        private IBoeTaskElementMediator taskElementMediator;
+        private readonly IBoeTaskElementMediator taskElementMediator;
+
+        /// <summary>
+        /// Boe Emailer
+        /// </summary>
+        private readonly IBoeEmailer emailer;
 
         #endregion
 
@@ -67,8 +73,10 @@ namespace GenBOE.ActionLogic
         /// <param name="boeMediator">BOE Mediator</param>
         /// <param name="taskElementDtoDataLoader">Task Element DTO Data Loader</param>
         /// <param name="taskElementMediator">Task Element Mediator</param>
+        /// <param name="emailer">BOE Emailer</param>
         public RTETemplatesControllerLogic(IRteTemplateDataLoader rteTemplateDataLoader, IWorkspaceVersionMetaDataDTODataLoader versionLoader, 
-            IBoeDTODataLoader boeDtoDataLoader, IBoeMediator boeMediator, IBoeTaskElementDTODataLoader taskElementDtoDataLoader, IBoeTaskElementMediator taskElementMediator)
+            IBoeDTODataLoader boeDtoDataLoader, IBoeMediator boeMediator, IBoeTaskElementDTODataLoader taskElementDtoDataLoader, IBoeTaskElementMediator taskElementMediator,
+            IBoeEmailer emailer)
         {
             this.rteTemplateDataLoader = rteTemplateDataLoader;
             this.versionLoader = versionLoader;
@@ -76,6 +84,7 @@ namespace GenBOE.ActionLogic
             this.boeMediator = boeMediator;
             this.taskElementDtoDataLoader = taskElementDtoDataLoader;
             this.taskElementMediator = taskElementMediator;
+            this.emailer = emailer;
         }
 
         /// <summary>
@@ -270,12 +279,16 @@ namespace GenBOE.ActionLogic
                     }
                 });
 
-                this.ProcessUnassignedSources(templatesBeingUnassigned, templatesFromDb, ws);
-
                 if (templatesBeingAssigned.Any() || templatesBeingUnassigned.Any())
                 {
                     this.BackupWorkspace(ws, CommonConstants.AUTO_SYSTEM_BACKUP_TEMPLATE_ASSIGN_CHANGE);
                 }
+
+                this.ProcessUnassignedSources(templatesBeingUnassigned, templatesFromDb, ws);
+
+                if (templatesBeingUnassigned.Any()) { this.emailer.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned); }
+                if (templatesBeingAssigned.Any()) { this.emailer.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned); }
+
             }
         }
 
@@ -382,8 +395,6 @@ namespace GenBOE.ActionLogic
                         scope.Complete();
                     }
                 }
-
-                // TODO - Wire in email(s) from BOEJ-4594
             }
         }
 
@@ -418,11 +429,16 @@ namespace GenBOE.ActionLogic
                 // In Use templates, with at least one prompt / question being deleted
                 ICollection<RteCustomTemplateModelView> templatesToProcess = templates.Where(x => x.InUse && x.Questions.Any(z => z.Updateable == UpdateType.Deleted)).ToList();
 
+                if (templatesToProcess.Any())
+                {
+                    this.BackupWorkspace(ws, CommonConstants.AUTO_SYSTEM_BACKUP_TEMPLATE_PROMPT_DELETE);
+                }
+
                 // ToDo: RJ -> do what you need to do w/ templates that are in use, and their prompt is being deleted
 
                 if (templatesToProcess.Any())
                 {
-                    this.BackupWorkspace(ws, CommonConstants.AUTO_SYSTEM_BACKUP_TEMPLATE_QUESTION_DELETE);
+                    this.emailer.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted);
                 }
             }
         }

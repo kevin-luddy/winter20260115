@@ -10,6 +10,7 @@ namespace GenBOE.Tests.ActionLogic
     using System.Collections.ObjectModel;
     using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.BLL;
+    using GenBOE.ActionLogic.Common.Email;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -30,6 +31,7 @@ namespace GenBOE.Tests.ActionLogic
         private Mock<IBoeTaskElementDTODataLoader> taskElementDtoDataLoader;
         private Mock<IBoeTaskElementMediator> taskElementMediator;
         private Mock<IRetriever> retriever;
+        private Mock<IBoeEmailer> emailer;
 
         public RTETemplatesControllerLogic CreateSUT()
         {
@@ -41,7 +43,9 @@ namespace GenBOE.Tests.ActionLogic
             this.taskElementDtoDataLoader = new Mock<IBoeTaskElementDTODataLoader>();
             this.taskElementMediator = new Mock<IBoeTaskElementMediator>();
 
-        Mock<ICommonDataMapper> commonDataMapper = new Mock<ICommonDataMapper>();
+            this.emailer = new Mock<IBoeEmailer>();
+
+            Mock<ICommonDataMapper> commonDataMapper = new Mock<ICommonDataMapper>();
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
             Mock<IPermissionsDTODataLoader> permissionDataLoader = new Mock<IPermissionsDTODataLoader>();
 
@@ -50,9 +54,8 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), commonDataMapper.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionDataLoader.Object);
 
-
             return new RTETemplatesControllerLogic(this.rteTemplateDataLoader.Object, this.versionLoader.Object, this.boeDtoDataLoader.Object, this.boeMediator.Object, 
-                this.taskElementDtoDataLoader.Object, this.taskElementMediator.Object);
+                this.taskElementDtoDataLoader.Object, this.taskElementMediator.Object, this.emailer.Object);
         }
 
         /// <summary>
@@ -91,6 +94,10 @@ namespace GenBOE.Tests.ActionLogic
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Never());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Never());
         }
 
         /// <summary>
@@ -129,6 +136,10 @@ namespace GenBOE.Tests.ActionLogic
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Never());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Never());
         }
 
         /// <summary>
@@ -174,6 +185,10 @@ namespace GenBOE.Tests.ActionLogic
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Never());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Never());
         }
 
         /// <summary>
@@ -221,6 +236,10 @@ namespace GenBOE.Tests.ActionLogic
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), ws.Id), Times.Once());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Once());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Never());
         }
 
         /// <summary>
@@ -243,7 +262,7 @@ namespace GenBOE.Tests.ActionLogic
                 {
                     WorkspaceId = ws.Id,
                     Id = 22,
-                    Assigned = new List<int>() { 2 },
+                    Assigned = new List<int>() { 1, 2 },
                     InUse = true,
                     Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert } },
                     Updateable = UpdateType.Upsert
@@ -267,8 +286,12 @@ namespace GenBOE.Tests.ActionLogic
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), ws.Id), Times.Once());
-            this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Once());
+            this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Once());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Never());
         }
 
         /// <summary>
@@ -317,6 +340,10 @@ namespace GenBOE.Tests.ActionLogic
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), ws.Id), Times.Once());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Once());
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Once());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Once());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Never());
         }
 
         /// <summary>
@@ -381,6 +408,10 @@ namespace GenBOE.Tests.ActionLogic
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), ws.Id), Times.Once());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Once());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Never());
         }
 
         /// <summary>
@@ -426,6 +457,10 @@ namespace GenBOE.Tests.ActionLogic
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Never());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Never());
         }
 
         /// <summary>
@@ -471,6 +506,10 @@ namespace GenBOE.Tests.ActionLogic
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Never());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Never());
         }
 
         /// <summary>
@@ -512,6 +551,10 @@ namespace GenBOE.Tests.ActionLogic
             #endregion
 
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb);
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Once());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Never());
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Once());
@@ -563,6 +606,10 @@ namespace GenBOE.Tests.ActionLogic
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Once());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Once());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Once());
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Once());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Never());
         }
 
         /// <summary>
@@ -608,6 +655,10 @@ namespace GenBOE.Tests.ActionLogic
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Never());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Never());
         }
 
         /// <summary>
@@ -653,6 +704,10 @@ namespace GenBOE.Tests.ActionLogic
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Never());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Never());
         }
 
         /// <summary>
@@ -698,6 +753,10 @@ namespace GenBOE.Tests.ActionLogic
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Once());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Once());
         }
 
         /// <summary>
@@ -711,6 +770,10 @@ namespace GenBOE.Tests.ActionLogic
             this.rteTemplateDataLoader.Setup(x => x.GetTemplates(ws.Id)).Returns(templatesFromDb);
             this.boeMediator.Setup(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>())).Verifiable();
             this.taskElementMediator.Setup(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>())).Verifiable();
+
+            this.emailer.Setup(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned)).Verifiable();
+            this.emailer.Setup(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned)).Verifiable();
+            this.emailer.Setup(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted)).Verifiable();
 
             ICollection<BoeDTO> boes = new Collection<BoeDTO>() { new BoeDTO() { Id = 1 } };
             this.boeDtoDataLoader.Setup(x => x.GetByWorkspaceId(It.IsAny<int>(), It.IsAny<bool>())).Returns(boes);

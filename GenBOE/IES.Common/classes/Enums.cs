@@ -170,7 +170,10 @@ namespace IES.Common
         WorkspaceLockedToWorking = 45,
         WorkspaceWorkingToInitialization = 46,
         WorkspaceInitializationToWorkingSubsequent = 47,
-        BOEAuthorsApproversDatesUpdatedError = 48
+        BOEAuthorsApproversDatesUpdatedError = 48,
+        TemplateUnassigned = 49,
+        TemplateAssigned = 50,
+        TemplatePromptDeleted = 51
     }
 
     /// <summary>

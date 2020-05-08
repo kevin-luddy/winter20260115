@@ -132,9 +132,9 @@ namespace IES.Common.classes
         public static readonly string AUTO_SYSTEM_BACKUP_TEMPLATE_ASSIGN_CHANGE = "[SYS TEMPLATE ASSIGN CHANGE]";
 
         /// <summary>
-        /// The automatic system backup prior to Template Assignment
+        /// The automatic system backup prior to Template Prompt Deletion
         /// </summary>
-        public static readonly string AUTO_SYSTEM_BACKUP_TEMPLATE_QUESTION_DELETE = "[SYS TEMPLATE PROMPT DEL]";
+        public static readonly string AUTO_SYSTEM_BACKUP_TEMPLATE_PROMPT_DELETE = "[SYS TEMPLATE PROMPT DEL]";
 
     }
 }

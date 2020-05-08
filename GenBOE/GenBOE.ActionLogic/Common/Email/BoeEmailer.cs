@@ -2423,6 +2423,56 @@ namespace GenBOE.ActionLogic.Common.Email
             }
         }
 
+        #region RTE Custom Templates
+
+        /// <summary>
+        /// Delegate for sending RTE Custom Template emails
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="authors">Authors who should receive emails. Comma delimited list of emails.</param>
+        /// <param name="emailType">Template Email type</param>
+        /// <param name="currentUser">Currently logged in user</param>
+        private delegate void SendRteTemplateDelegate(WorkspaceDTO ws, string authors, EmailTypes emailType, UserData currentUser);
+
+        /// <summary>
+        /// Send an email when a template is assigned
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="emailType">Template Email type</param>
+        public void SendRteTemplateEmail(FullWorkspace ws, EmailTypes emailType)
+        {
+            if (ws == null) { throw new ArgumentNullException("ws"); }
+            if (!new List<EmailTypes>() { EmailTypes.TemplateAssigned, EmailTypes.TemplateUnassigned, EmailTypes.TemplatePromptDeleted }.Contains(emailType))
+            { throw new ArgumentException("Invalid email type selected for this method."); }
+
+            if (!this.DisableAllEmails)
+            {
+                ICollection<int> authorIds = ws.Boes.SelectMany(x => x.AuthorIDs).Distinct().ToList();
+                string authors = string.Join(",", this.UserLoader.GetByIds(authorIds).Select(x => x.EmailAddress));
+
+                SendRteTemplateDelegate emailDelgate = new SendRteTemplateDelegate(this.PrivateSendRteTemplateEmail);
+                this.DataFetchingScheduler.FetchEmails(emailDelgate, new object[] { ws, authors, emailType, this.SecurityInformation.ActiveUserData });
+            }
+            else
+            {
+                this.logger.Debug("All Emails are disabled by configuration setting.");
+            }
+        }
+
+        /// <summary>
+        /// A method that is used by public methods to handle RTE Custom Template emails
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="authors">Authors who should receive emails. Comma delimited list of emails.</param>
+        /// <param name="emailType">Template Email type</param>
+        /// <param name="currentUser">Current User</param>
+        private void PrivateSendRteTemplateEmail(WorkspaceDTO ws, string authors, EmailTypes emailType, UserData currentUser)
+        {
+            this.SendEmail(emailType, authors, new Collection<UserDTO>(), new string[] { }, new string[] { ws.WorkspaceName }, null, currentUser, ws.Id);
+        }
+
+        #endregion
+
         /// <summary>
         /// Gets the table for date updates.
         /// </summary>

@@ -199,5 +199,12 @@ namespace GenBOE.ActionLogic.Common.Email
         /// <param name="inBOE">BOE to email Authors and Approvers about</param>
         /// <param name="inFields">The CLIN fields that were changed</param>
         void SendCLINUpdatedToAuthorsAndApprovers(FullBoe inBOE, ICollection<FieldChanged> inFields);
+
+        /// <summary>
+        /// Send an email when a template is assigned
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="emailType">Template Email type</param>
+        void SendRteTemplateEmail(FullWorkspace ws, EmailTypes emailType);
     }
 }
