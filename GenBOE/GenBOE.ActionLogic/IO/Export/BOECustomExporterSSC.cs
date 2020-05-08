@@ -101,12 +101,13 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="selectedComponents">Components selected for the output</param>
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelView">The boe export model view.</param>
+        /// <param name="useGfy">Should Government Fiscal Years be used</param>
         /// <exception cref="System.ArgumentNullException">
         /// selectedComponents
         /// or
         /// exportInputs
         /// </exception>
-        protected override void ProcessLaborTaskHoursRollupTable(SdtElement containerElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView)
+        protected override void ProcessLaborTaskHoursRollupTable(SdtElement containerElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, bool useGfy)
         {
             if (selectedComponents == null)
             {
@@ -150,7 +151,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                                                                             .Ancestors<TableRow>().FirstOrDefault(), BOEExporterConstants.FieldName_ResourceDescription) 
                                                                                             != null;
 
-                    Dictionary<int, List<LaborRollupByDateNew>> currentLMLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, ElementOfCostType.LMLabor, null);
+                    Dictionary<int, List<LaborRollupByDateNew>> currentLMLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, useGfy, ElementOfCostType.LMLabor, null);
                     SdtElement lmLaborHoursRollupTableElement = laborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement;
                     bool populated = false;
                     if (tag == BOEExporterConstants.Table_LaborHoursRollup || tag == BOEExporterConstants.Table_LaborHoursRollupByQuarter)
@@ -169,7 +170,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         currentInsertionElement = lmLaborHoursRollupTableElement;
                     }
 
-                    Dictionary<int, List<LaborRollupByDateNew>> currentSubLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, ElementOfCostType.Sub, null);
+                    Dictionary<int, List<LaborRollupByDateNew>> currentSubLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, useGfy, ElementOfCostType.Sub, null);
                     SdtElement subLaborHoursRollupTableElement = laborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement;
                     populated = false;
                     if (tag == BOEExporterConstants.Table_LaborHoursRollup || tag == BOEExporterConstants.Table_LaborHoursRollupByQuarter)
@@ -188,7 +189,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         currentInsertionElement = subLaborHoursRollupTableElement;
                     }
 
-                    Dictionary<int, List<LaborRollupByDateNew>> currentIWTALaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, ElementOfCostType.IWTA, null);
+                    Dictionary<int, List<LaborRollupByDateNew>> currentIWTALaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, useGfy, ElementOfCostType.IWTA, null);
                     
                     SdtElement iwtaLaborHoursRollupTableElement = laborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement;
                     populated = false;
@@ -226,8 +227,9 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="laborTaskElement">Element for the labor task</param>
         /// <param name="allLaborTaskElements">All task elements for the BOE</param>
         /// <param name="selectedComponents">Components selected for the output</param>
+        /// <param name="useGfy">Should Government Fiscal Years be used</param>
         /// <exception cref="System.ArgumentNullException">selectedComponents</exception>
-        protected override void ProcessLaborTaskCostSpreadRollupTable(SdtElement containerElement, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents)
+        protected override void ProcessLaborTaskCostSpreadRollupTable(SdtElement containerElement, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, bool useGfy)
         {
             if (selectedComponents == null)
             {
@@ -260,7 +262,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                     #region Repeat for each element of cost
 
-                    Dictionary<int, List<LaborRollupByDateNew>> currentLMLaborTaskRollupData = this.GetLaborTaskCostRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, ElementOfCostType.LMLabor, RateType.Cost);
+                    Dictionary<int, List<LaborRollupByDateNew>> currentLMLaborTaskRollupData = this.GetLaborTaskCostRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useGfy, ElementOfCostType.LMLabor, RateType.Cost);
                     SdtElement lmLaborCostRollupTableElement = costSpreadRollupTableTemplateElement.CloneNode(true) as SdtElement;
                     bool populated = false;
                     if (tag == BOEExporterConstants.Table_CostSpreadRollup || tag == BOEExporterConstants.Table_CostSpreadRollupByQuarter)
@@ -278,7 +280,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         currentInsertionElement = currentInsertionElement.InsertAfterSelf(lmLaborCostRollupTableElement);
                     }
 
-                    Dictionary<int, List<LaborRollupByDateNew>> currentSubLaborTaskRollupData = this.GetLaborTaskCostRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, ElementOfCostType.Sub, RateType.Cost);
+                    Dictionary<int, List<LaborRollupByDateNew>> currentSubLaborTaskRollupData = this.GetLaborTaskCostRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useGfy, ElementOfCostType.Sub, RateType.Cost);
                     SdtElement subLaborCostRollupTableElement = costSpreadRollupTableTemplateElement.CloneNode(true) as SdtElement;                    
                     populated = false;
                     if (tag == BOEExporterConstants.Table_CostSpreadRollup || tag == BOEExporterConstants.Table_CostSpreadRollupByQuarter)
@@ -296,7 +298,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         currentInsertionElement = currentInsertionElement.InsertAfterSelf(subLaborCostRollupTableElement);
                     }
 
-                    Dictionary<int, List<LaborRollupByDateNew>> currentIWTALaborTaskRollupData = this.GetLaborTaskCostRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, ElementOfCostType.IWTA, RateType.Cost);
+                    Dictionary<int, List<LaborRollupByDateNew>> currentIWTALaborTaskRollupData = this.GetLaborTaskCostRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useGfy, ElementOfCostType.IWTA, RateType.Cost);
                     SdtElement iwtaLaborCostRollupTableElement = costSpreadRollupTableTemplateElement.CloneNode(true) as SdtElement;
                     populated = false;
                     if (tag == BOEExporterConstants.Table_CostSpreadRollup || tag == BOEExporterConstants.Table_CostSpreadRollupByQuarter)
@@ -314,7 +316,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         currentInsertionElement = currentInsertionElement.InsertAfterSelf(iwtaLaborCostRollupTableElement);
                     }
 
-                    Dictionary<int, List<LaborRollupByDateNew>> currentMaterialLaborTaskRollupData = this.GetLaborTaskCostRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, ElementOfCostType.Materials, RateType.Cost);
+                    Dictionary<int, List<LaborRollupByDateNew>> currentMaterialLaborTaskRollupData = this.GetLaborTaskCostRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useGfy, ElementOfCostType.Materials, RateType.Cost);
                     SdtElement materialLaborCostRollupTableElement = costSpreadRollupTableTemplateElement.CloneNode(true) as SdtElement;
                     populated = false;
                     if (tag == BOEExporterConstants.Table_CostSpreadRollup || tag == BOEExporterConstants.Table_CostSpreadRollupByQuarter)
@@ -332,7 +334,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         currentInsertionElement = currentInsertionElement.InsertAfterSelf(materialLaborCostRollupTableElement);
                     }
 
-                    Dictionary<int, List<LaborRollupByDateNew>> currentODCLaborTaskRollupData = this.GetLaborTaskCostRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, ElementOfCostType.ODC, RateType.Cost);
+                    Dictionary<int, List<LaborRollupByDateNew>> currentODCLaborTaskRollupData = this.GetLaborTaskCostRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useGfy, ElementOfCostType.ODC, RateType.Cost);
                     SdtElement odcLaborCostRollupTableElement = costSpreadRollupTableTemplateElement.CloneNode(true) as SdtElement;
                     populated = false;
                     if (tag == BOEExporterConstants.Table_CostSpreadRollup || tag == BOEExporterConstants.Table_CostSpreadRollupByQuarter)
@@ -350,7 +352,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         currentInsertionElement = currentInsertionElement.InsertAfterSelf(odcLaborCostRollupTableElement);
                     }
 
-                    Dictionary<int, List<LaborRollupByDateNew>> currentTravelLaborTaskRollupData = this.GetLaborTaskCostRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, ElementOfCostType.Travel, RateType.Cost);
+                    Dictionary<int, List<LaborRollupByDateNew>> currentTravelLaborTaskRollupData = this.GetLaborTaskCostRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useGfy, ElementOfCostType.Travel, RateType.Cost);
                     SdtElement travelLaborCostRollupTableElement = costSpreadRollupTableTemplateElement.CloneNode(true) as SdtElement;
                     populated = false;
                     if (tag == BOEExporterConstants.Table_CostSpreadRollup || tag == BOEExporterConstants.Table_CostSpreadRollupByQuarter)

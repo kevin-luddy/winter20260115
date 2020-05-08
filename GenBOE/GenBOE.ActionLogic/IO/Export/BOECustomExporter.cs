@@ -454,8 +454,8 @@ namespace GenBOE.ActionLogic.IO.Export
                     ICollection<BOESummaryGridModelView> boeSummaryGridModelView = boeSummaryGridModelViews.Where(y => y.BOEID == boeExportModelView.BoeID).ToList();
 
                     #region Supporting data
-                    var boe = exportInputs.AllWorkspaceBoes.First(x => x.Id == boeExportModelView.BoeID);
-                    var taskElementCollection = exportInputs.TaskElements.Where(x => x.BoeID == boe.Id).ToList();
+                    BoeDTO boe = exportInputs.AllWorkspaceBoes.First(x => x.Id == boeExportModelView.BoeID);
+                    List<BoeTaskElementDTO> taskElementCollection = exportInputs.TaskElements.Where(x => x.BoeID == boe.Id).ToList();
                     #endregion
 
                     #region Clone the main container
@@ -463,9 +463,9 @@ namespace GenBOE.ActionLogic.IO.Export
                     // separate BOEs with page breaks if applicable for this template
                     // (insert before this BOE if it is not the first)
                     if (pageBreakAfterBoe && boeContainer != null)
-                        {
+                    {
                         lastElement = lastElement.InsertAfterSelf(new Paragraph(new Run(new Break() { Type = BreakValues.Page })));
-                        }
+                    }
 
                     // create container for this BOE
                     // (clone the template, insert after the last BOE container or page break)
@@ -481,8 +481,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         if (useGfy)
                         {
                             // If using government fiscal years, adjust the dates
-                            List<ResourceTypeDto> allTaskElementResources  = taskElementCollection.SelectMany(x => x.taskElementLabors).ToList();
-                            this.AdjustYearsForGovtFiscalYear(allTaskElementResources);
+                            this.AdjustYearsForGovtFiscalYear(boeExportModelView, taskElementCollection);
                         }
 
                         this.ProcessBOEHeader(document, boeContainer, boeExportModelView, selectedComponents, ref counters);
@@ -498,7 +497,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         List<LaborRollupByDateNew> nonLaborRollupCostData = this.ProcessNonLaborCostSummaryTable(boe, boeContainer, boeExportModelView, selectedComponents, exportInputs);
                         this.ProcessLaborAndNonLaborCostSummaryTable(boeContainer, laborTasksRollupCostData, nonLaborRollupCostData, selectedComponents);
 
-                        this.ProcessAllTaskElements(document, boeContainer, taskElementCollection, boe, exportInputs, boeExportModelView, resourcesByElementOfCost, selectedComponents, containsBoeHeaderInTask, ref counters);
+                        this.ProcessAllTaskElements(document, boeContainer, taskElementCollection, boe, exportInputs, boeExportModelView, resourcesByElementOfCost, selectedComponents, containsBoeHeaderInTask, useGfy, ref counters);
 
                         this.ProcessBOEHoursSummaryTable(boeContainer, boeExportModelView, selectedComponents);
                         this.ProcessBOECostSummaryTable(boeContainer, exportInputs.Workspace, travelResources, boeExportModelView, selectedComponents);
@@ -593,23 +592,66 @@ namespace GenBOE.ActionLogic.IO.Export
         }
 
         /// <summary>
-        /// Adjust the years of the resouce types to use Govt Fiscal Years
+        /// Adjust the years of the resource types and spreads to use Govt Fiscal Years in tables
+        /// One year is added for October, November, December - they are part of the following fiscal year
+        /// Ex. October 2020 is Govt Fiscal Year 2021
         /// </summary>
-        /// <param name="resourceTypes">Resouce Types to adjust</param>
-        private void AdjustYearsForGovtFiscalYear(List<ResourceTypeDto> resourceTypes)
+        /// <param name="taskElements">Task elements to adjust</param>
+        private void AdjustYearsForGovtFiscalYear(BOEExportModelView boeExportModelView, List<BoeTaskElementDTO> taskElements)
         {
-            foreach (ResourceTypeDto resourceType in resourceTypes)
+
+            // Adjust dates for tasks and labors in the export elements
+            foreach(BOEExportTaskElement taskElement in boeExportModelView.TaskElements)
             {
-                foreach (ResourceSpreadDto spread in resourceType.LaborSpreads)
+                foreach(BOEExportTaskElementLabor labor in taskElement.taskElementLabors)
                 {
-                    // Add 1 year for October, November, December - they are part of the following fiscal year
-                    // Ex. October 2020 is Govt Fiscal Year 2021
-                    if (spread.LaborSpreadDate.Month == 10 || spread.LaborSpreadDate.Month == 11 || spread.LaborSpreadDate.Month == 12)
+                    if(IsMonthOctNovDec(labor.StartDate.HasValue ? labor.StartDate.Value.Month : 0))
                     {
-                        spread.LaborSpreadDate = spread.LaborSpreadDate.AddYears(1);
+                        labor.StartDate = labor.StartDate.Value.AddYears(1);
+                    }
+
+                    if (IsMonthOctNovDec(labor.EndDate.HasValue ? labor.EndDate.Value.Month : 0))
+                    {
+                        labor.EndDate = labor.EndDate.Value.AddYears(1);
                     }
                 }
             }
+
+            // Adjust dates for the labors and spreads in the dtos
+            foreach (BoeTaskElementDTO taskElement in taskElements)
+            {
+                foreach (ResourceTypeDto resourceType in taskElement.taskElementLabors)
+                {
+                    if (IsMonthOctNovDec(resourceType.StartDate.HasValue ? resourceType.StartDate.Value.Month : 0))
+                    {
+                        resourceType.StartDate = resourceType.StartDate.Value.AddYears(1);
+                    }
+
+                    if (IsMonthOctNovDec(resourceType.EndDate.HasValue ? resourceType.EndDate.Value.Month : 0))
+                    {
+                        resourceType.EndDate = resourceType.EndDate.Value.AddYears(1);
+                    }
+
+                    foreach (ResourceSpreadDto spread in resourceType.LaborSpreads)
+                    {
+                        
+                        if (IsMonthOctNovDec(spread.LaborSpreadDate.Month))
+                        {
+                            spread.LaborSpreadDate = spread.LaborSpreadDate.AddYears(1);
+                        }
+                    }
+                }
+            }            
+        }
+
+        /// <summary>
+        /// Checks if given month is October, November, or December
+        /// </summary>
+        /// <param name="month">Month as an int</param>
+        /// <returns>True if October, November, or December, otherwise false</returns>
+        private bool IsMonthOctNovDec(int month)
+        {
+            return month == 10 || month == 11 || month == 12;
         }
 
         #endregion
@@ -1360,10 +1402,11 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="resourcesByElementOfCost">The resources by element of cost.</param>
         /// <param name="selectedComponents">The selected components.</param>
         /// <param name="containsBoeHeaderInTask">if set to <c>true</c> [contains boe header in task].</param>
+        /// <param name="useGfy">Should Government Fiscal Years be used</param>
         /// <param name="counters">The counters.</param>
         [SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         private void ProcessAllTaskElements(WordprocessingDocument document, SdtElement boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, BoeDTO exportBoe, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView,
-            IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool containsBoeHeaderInTask, ref ChunkCounter counters)
+            IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool containsBoeHeaderInTask, bool useGfy, ref ChunkCounter counters)
         {
             Collection<ResourceDTO> travelResources = resourcesByElementOfCost[ElementOfCostType.Travel];
 
@@ -1450,8 +1493,8 @@ namespace GenBOE.ActionLogic.IO.Export
                     this.ProcessLaborTaskHeader(document, containerElement, laborTaskElement, selectedComponents, exportInputs, ref counters);
                     this.ProcessLaborTaskCustomFields(containerElement, laborTaskElement, exportInputs.CustomFields, selectedComponents, exportInputs);
                     this.ProcessLaborTaskResourceTable(containerElement, laborTaskElement, allLaborTaskElements, exportInputs.CustomFields, selectedComponents, exportInputs);
-                    this.ProcessLaborTaskHoursRollupTable(containerElement, laborTaskElement, allLaborTaskElements, selectedComponents, exportInputs, boeExportModelView);
-                    this.ProcessLaborTaskCostSpreadRollupTable(containerElement, exportInputs, boeExportModelView, laborTaskElement, allLaborTaskElements, selectedComponents);
+                    this.ProcessLaborTaskHoursRollupTable(containerElement, laborTaskElement, allLaborTaskElements, selectedComponents, exportInputs, boeExportModelView, useGfy);
+                    this.ProcessLaborTaskCostSpreadRollupTable(containerElement, exportInputs, boeExportModelView, laborTaskElement, allLaborTaskElements, selectedComponents, useGfy);
                     this.ProcessLaborTaskResources(containerElement, exportInputs, laborTaskElement, allLaborTaskElements, selectedComponents, exportBoe.IsMultiClinWbs);
 
                     #endregion
@@ -2071,8 +2114,9 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="selectedComponents">Components selected for the output</param>
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelView">The boe export model view.</param>
+        /// <param name="useGfy">Should Government Fiscal Years be used</param>
         /// <exception cref="System.ArgumentNullException">selectedComponents</exception>
-        protected virtual void ProcessLaborTaskHoursRollupTable(SdtElement containerElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView)
+        protected virtual void ProcessLaborTaskHoursRollupTable(SdtElement containerElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, bool useGfy)
         {
             if (selectedComponents == null)
             {
@@ -2085,7 +2129,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 if (selectedComponents.Contains(BoeCustomReportComponent.TaskSpreadTables))
                 {
-                    this.PrepareLaborTaskHoursRollupTableData(laborHoursRollupTableTemplateElement, laborTaskElement, allLaborTaskElements, boeExportModelView);
+                    this.PrepareLaborTaskHoursRollupTableData(laborHoursRollupTableTemplateElement, laborTaskElement, allLaborTaskElements, boeExportModelView, useGfy);
                 }
                 else
                 {
@@ -2102,7 +2146,8 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="laborTaskElement">Element for the labor task</param>
         /// <param name="allLaborTaskElements">All task elements for the BOE</param>
         /// <param name="boeExportModelView">The boe export model view.</param>
-        protected virtual void PrepareLaborTaskHoursRollupTableData(SdtElement templateElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, BOEExportModelView boeExportModelView)
+        /// <param name="useGfy">Should Government Fiscal Years be used</param>
+        protected virtual void PrepareLaborTaskHoursRollupTableData(SdtElement templateElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, BOEExportModelView boeExportModelView, bool useGfy)
         {
             BoeTaskElementDTO currentLaborTaskElement = allLaborTaskElements.FirstOrDefault(x => x.Id == laborTaskElement.BOETaskElementID.Value);
 
@@ -2111,7 +2156,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                                                     .Ancestors<TableRow>().FirstOrDefault(), BOEExporterConstants.FieldName_ResourceDescription) 
                                                                     != null;
 
-            Dictionary<int, List<LaborRollupByDateNew>> currentLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, null, RateType.Hours);
+            Dictionary<int, List<LaborRollupByDateNew>> currentLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, useGfy, null, RateType.Hours);
 
             RollupSummaryByGroupByYearTableData laborSummaryRollupData = currentLaborTaskRollupData.Convert();
             this.PopulateRollupSummaryByGroupByYearTable(templateElement, null, laborSummaryRollupData, this.DefaultHoursFormat, false);
@@ -2126,7 +2171,8 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="laborTaskElement">Element for the labor task</param>
         /// <param name="allLaborTaskElements">All task elements for the BOE</param>
         /// <param name="selectedComponents">Components selected for the output</param>
-        protected virtual void ProcessLaborTaskCostSpreadRollupTable(SdtElement containerElement, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents)
+        /// <param name="useGfy">Should Government Fiscal Years be used</param>
+        protected virtual void ProcessLaborTaskCostSpreadRollupTable(SdtElement containerElement, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, bool useGfy)
         {
             //Nothing to do in ISGS mode
             return;
@@ -5288,16 +5334,17 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="labors">The labors.</param>
         /// <param name="elementOfCostFilter">The element of cost filter.</param>
         /// <param name="rateTypeFilter">The rate type filter.</param>
+        /// <param name="useGfy">Should Government Fiscal Years be used</param>
         /// <returns>List of labor rolled up by date.</returns>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        protected Dictionary<int, List<LaborRollupByDateNew>> GetTaskHourRollup(Collection<BoeTaskElementDTO> taskElements, Collection<BOEExportTaskElementLabor> labors, BOEExportModelView boeExportModelView,  bool useDescriptionInsteadOfName, ElementOfCostType? elementOfCostFilter = null, RateType? rateTypeFilter = null)
+        protected Dictionary<int, List<LaborRollupByDateNew>> GetTaskHourRollup(Collection<BoeTaskElementDTO> taskElements, Collection<BOEExportTaskElementLabor> labors, BOEExportModelView boeExportModelView,  bool useDescriptionInsteadOfName, bool useGfy, ElementOfCostType? elementOfCostFilter = null, RateType? rateTypeFilter = null)
         {
             // Each Labor task element contains a set of resources, each mapped to its own Element of Cost (i.e. LM Labor, IWTA or Sub) and rate type (i.e. Hours vs. Cost)
             string elementOfCostFilterString = elementOfCostFilter.HasValue ? elementOfCostFilter.Value.ToString() : null;
             string rateTypeFilterString = rateTypeFilter.HasValue ? rateTypeFilter.Value.ToString() : null;
 
             Dictionary<int, List<LaborRollupByDateNew>> RollupByDate = new Dictionary<int, List<LaborRollupByDateNew>>();
-            DateRange TaskElementsDateRange = this.GetTaskDateRange(taskElements, boeExportModelView);
+            DateRange TaskElementsDateRange = this.GetTaskDateRange(taskElements, boeExportModelView, useGfy);
             if (TaskElementsDateRange.StartDate.HasValue && TaskElementsDateRange.EndDate.HasValue)
             {
                 List<ResourceTypeDto> TaskElementLabors = taskElements.SelectMany(x => x.taskElementLabors).ToList();
@@ -5376,16 +5423,17 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="labors">The labors.</param>
         /// <param name="elementOfCostFilter">The element of cost filter.</param>
         /// <param name="rateTypeFilter">The rate type filter.</param>
+        /// <param name="useGfy">Should Government Fiscal Years be used</param>
         /// <returns>List of labor task cost rolled up.</returns>
         [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        protected Dictionary<int, List<LaborRollupByDateNew>> GetLaborTaskCostRollup(Collection<BoeTaskElementDTO> taskElements, Collection<BOEExportTaskElementLabor> labors, BOEExportModelView boeExportModelView, ElementOfCostType? elementOfCostFilter = null, RateType? rateTypeFilter = null)
+        protected Dictionary<int, List<LaborRollupByDateNew>> GetLaborTaskCostRollup(Collection<BoeTaskElementDTO> taskElements, Collection<BOEExportTaskElementLabor> labors, BOEExportModelView boeExportModelView, bool useGfy, ElementOfCostType? elementOfCostFilter = null, RateType? rateTypeFilter = null)
         {
             // Each Labor task element contains a set of resources, each mapped to its own Element of Cost (i.e. LM Labor, IWTA or Sub) and rate type (i.e. Hours vs. Cost)
             string elementOfCostFilterString = elementOfCostFilter.HasValue ? elementOfCostFilter.Value.ToString() : null;
             string rateTypeFilterString = rateTypeFilter.HasValue ? rateTypeFilter.Value.ToString() : null;
 
             Dictionary<int, List<LaborRollupByDateNew>> RollupByDate = new Dictionary<int, List<LaborRollupByDateNew>>();
-            DateRange TaskElementsDateRange = this.GetTaskDateRange(taskElements, boeExportModelView);
+            DateRange TaskElementsDateRange = this.GetTaskDateRange(taskElements, boeExportModelView, useGfy);
             if (TaskElementsDateRange.StartDate.HasValue && TaskElementsDateRange.EndDate.HasValue)
             {
                 List<ResourceTypeDto> TaskElementLabors = taskElements.SelectMany(x => x.taskElementLabors).ToList();
@@ -5565,8 +5613,9 @@ namespace GenBOE.ActionLogic.IO.Export
         /// </summary>
         /// <param name="taskElementCollection">The task element collection.</param>
         /// <param name="boeExportModelView">The boe export model view.</param>
+        /// <param name="useGfy">Should Government Fiscal Years be used</param>
         /// <returns></returns>
-        private DateRange GetTaskDateRange(Collection<BoeTaskElementDTO> taskElementCollection, BOEExportModelView boeExportModelView)
+        private DateRange GetTaskDateRange(Collection<BoeTaskElementDTO> taskElementCollection, BOEExportModelView boeExportModelView, bool useGfy)
         {
             if (taskElementCollection == null || !taskElementCollection.Any()) { return new DateRange(); }
 
@@ -5580,17 +5629,20 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 try
                 {
-                    toReturn = new DateRange(Earliest.StartDate, Latest.EndDate);
+                    toReturn = new DateRange(useGfy ? Earliest.StartDate.Value.AddYears(1) : Earliest.StartDate,
+                        useGfy ? Latest.EndDate.Value.AddYears(1) : Latest.EndDate);
                 }
                 catch (InvalidOperationException)
                 {
                     // get the date from the boe
-                    toReturn = new DateRange(boeExportModelView.StartDate, boeExportModelView.EndDate);
+                    toReturn = new DateRange(useGfy ? boeExportModelView.StartDate.AddYears(1) : boeExportModelView.StartDate,
+                        useGfy ? boeExportModelView.EndDate.AddYears(1) : boeExportModelView.EndDate);
                 }
             }
             else
             {
-                toReturn = new DateRange(boeExportModelView.StartDate, boeExportModelView.EndDate);
+                toReturn = new DateRange(useGfy ? boeExportModelView.StartDate.AddYears(1) : boeExportModelView.StartDate,
+                        useGfy ? boeExportModelView.EndDate.AddYears(1) : boeExportModelView.EndDate);
             }
 
             return toReturn;

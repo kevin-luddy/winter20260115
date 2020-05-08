@@ -242,8 +242,9 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="laborTaskElement">Element for the labor task</param>
         /// <param name="allLaborTaskElements">All task elements for the BOE</param>
         /// <param name="boeExportModelView">The boe export model view.</param>
+        /// <param name="useGfy">Should Government Fiscal Years be used</param>
         /// <exception cref="System.ArgumentNullException">templateElement</exception>
-        protected override void PrepareLaborTaskHoursRollupTableData(SdtElement templateElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, BOEExportModelView boeExportModelView)
+        protected override void PrepareLaborTaskHoursRollupTableData(SdtElement templateElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, BOEExportModelView boeExportModelView, bool useGfy)
         {
             if (templateElement == null)
             {
@@ -284,8 +285,9 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="laborTaskElement">Element for the labor task</param>
         /// <param name="allLaborTaskElements">All task elements for the BOE</param>
         /// <param name="selectedComponents">Components selected for the output</param>
+        /// <param name="useGfy">Should Government Fiscal Years be used</param>
         /// <exception cref="System.ArgumentNullException">selectedComponents</exception>
-        protected override void ProcessLaborTaskCostSpreadRollupTable(SdtElement containerElement, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents)
+        protected override void ProcessLaborTaskCostSpreadRollupTable(SdtElement containerElement, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, bool useGfy)
         {
             if (selectedComponents == null)
             {
