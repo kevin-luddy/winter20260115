@@ -148,7 +148,8 @@ namespace GenBOE.ActionLogic.IO.Export
                     // template file is on disk
                     this.Export(exportFormat.PhysicalFilePathCache, (document) =>
                     {
-                        this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, boeSummaryGridModelViews, components, ref counters);
+                        this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, boeSummaryGridModelViews, components, 
+                            this.UseGovernmentFiscalYear(exportFormat.ExportFormatName), ref counters);
                     }, returnStream);
                 }
                 else
@@ -156,10 +157,22 @@ namespace GenBOE.ActionLogic.IO.Export
                     // template file content was serialized to the DB (i.e. this template was DERIVED from the master)
                     this.Export(exportFormat.FileData, (document) =>
                     {
-                        this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, boeSummaryGridModelViews, components, ref counters);
+                        this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, boeSummaryGridModelViews, components,
+                            this.UseGovernmentFiscalYear(exportFormat.ExportFormatName), ref counters);
                     }, returnStream);
                 }
             }
+        }
+
+        /// <summary>
+        /// Check if template should use Government Fiscal Years based on template title
+        /// </summary>
+        /// <param name="templateName">The name of the template to check</param>
+        /// <returns>True if template should use GFY, false otherwise</returns>
+        private bool UseGovernmentFiscalYear(string templateName)
+        {
+            return templateName.ToLower().Contains("gfy") || templateName.ToLower().Contains("govt fiscal year") 
+                || templateName.ToLower().Contains("government fiscal year");
         }
 
         /// <summary>
@@ -359,9 +372,10 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="boeExportModelViews">The boe export model views.</param>
         /// <param name="boeSummaryGridModelViews">The boe summary grid model views.</param>
         /// <param name="selectedComponents">The selected components.</param>
+        /// <param name="useGfy">Does the template use Goverment Fiscal Years?</param>
         /// <param name="counters">The counters.</param>
         private void PopulateDataExportBOE(BOEExportInputs exportInputs, WordprocessingDocument document, ICollection<BOEExportModelView> boeExportModelViews,
-            ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
+            ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, ICollection<BoeCustomReportComponent> selectedComponents, bool useGfy, ref ChunkCounter counters)
         {
             /*
              * SJR:Notes - Wireframes
@@ -431,7 +445,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         { ElementOfCostType.Sub, subResources },
                         { ElementOfCostType.Travel, travelResources }
                     };
-
+                
                 #endregion
 
                 // Reverse iterate over all BOEs because this loop pushes them onto the top of the document (inserts after header)
@@ -464,6 +478,13 @@ namespace GenBOE.ActionLogic.IO.Export
 
                     try  // catch and rethrow to give exception some context
                     {
+                        if (useGfy)
+                        {
+                            // If using government fiscal years, adjust the dates
+                            List<ResourceTypeDto> allTaskElementResources  = taskElementCollection.SelectMany(x => x.taskElementLabors).ToList();
+                            this.AdjustYearsForGovtFiscalYear(allTaskElementResources);
+                        }
+
                         this.ProcessBOEHeader(document, boeContainer, boeExportModelView, selectedComponents, ref counters);
                         this.ProcessBOECustomFields(boeContainer, boeExportModelView, selectedComponents, exportInputs);
                         this.ProcessTaskSummaryTable(boeContainer, boeExportModelView);
@@ -569,6 +590,26 @@ namespace GenBOE.ActionLogic.IO.Export
             WordUtilities.CleanupDocumentXml(document);
 
             #endregion
+        }
+
+        /// <summary>
+        /// Adjust the years of the resouce types to use Govt Fiscal Years
+        /// </summary>
+        /// <param name="resourceTypes">Resouce Types to adjust</param>
+        private void AdjustYearsForGovtFiscalYear(List<ResourceTypeDto> resourceTypes)
+        {
+            foreach (ResourceTypeDto resourceType in resourceTypes)
+            {
+                foreach (ResourceSpreadDto spread in resourceType.LaborSpreads)
+                {
+                    // Add 1 year for October, November, December - they are part of the following fiscal year
+                    // Ex. October 2020 is Govt Fiscal Year 2021
+                    if (spread.LaborSpreadDate.Month == 10 || spread.LaborSpreadDate.Month == 11 || spread.LaborSpreadDate.Month == 12)
+                    {
+                        spread.LaborSpreadDate = spread.LaborSpreadDate.AddYears(1);
+                    }
+                }
+            }
         }
 
         #endregion
@@ -1857,10 +1898,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
             SdtElement laborHoursSummaryByDateTableElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_LaborHoursSummaryByDate);
 
-            if (laborHoursSummaryByDateTableElement == null)
-            {
-            }
-            else if (selectedComponents.Contains(BoeCustomReportComponent.BOESpreadSummaryTables) && taskElementCollection.Any())
+
+            if (selectedComponents.Contains(BoeCustomReportComponent.BOESpreadSummaryTables) && taskElementCollection.Any())
             {
                 // compile the rollup data
                 List<LaborRollupByDateNew> laborRollupData = this.GetRollupByYear(taskElementCollection, null, RateType.Hours);
@@ -1874,7 +1913,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 this.PopulateRollupSummaryByYearTable(laborHoursSummaryByDateTableElement, null, laborRollupTableData, this.DefaultHoursFormat, false);
             }
-            else
+            else if (laborHoursSummaryByDateTableElement != null)
             {
                 this.RemoveElement(laborHoursSummaryByDateTableElement);
                 WordUtilities.RemoveTaggedElement(boeContainer, BOEExporterConstants.Container_BOESpreadTables);
@@ -5262,7 +5301,7 @@ namespace GenBOE.ActionLogic.IO.Export
             if (TaskElementsDateRange.StartDate.HasValue && TaskElementsDateRange.EndDate.HasValue)
             {
                 List<ResourceTypeDto> TaskElementLabors = taskElements.SelectMany(x => x.taskElementLabors).ToList();
-
+                
                 ICollection<int> resourceIds =
                     (from f in TaskElementLabors.Where(t => t.ResourceID.HasValue)
                     group f by f.ResourceID.Value into g
@@ -5425,7 +5464,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="resources">The resources.</param>
         /// <returns>List of task cost rolled up.</returns>
         /// <exception cref="System.ArgumentNullException">exportInputs</exception>
-        
+
         protected virtual List<LaborRollupByDateNew> GetTaskCostRollup(ICollection<BoeTaskElementDTO> taskElements, BOEExportInputs exportInputs, Collection<ResourceDTO> resources)
         {
             if (exportInputs == null)
