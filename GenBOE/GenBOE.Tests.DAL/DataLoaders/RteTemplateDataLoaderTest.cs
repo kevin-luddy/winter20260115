@@ -165,5 +165,104 @@ namespace GenBOE.Tests.DAL.DataLoaders
             found = sut.Search("oogily");
             Assert.AreEqual(0, found.Count);
         }
+
+        /// <summary>
+        /// I took code from RteTemplateSearchTest, made the workspace not searchable, and adjusted verification to result in 0 counts
+        /// </summary>
+        [TestMethod]
+        public void RteTemplateSearchTest_AllowedSearch()
+        {
+            var sut = new RteTemplateDataLoader();
+            ICollection<RteCustomTemplateModelView> templates = sut.GetTemplates(this.Workspace.Id);
+
+            Assert.AreEqual(0, templates.Count);
+
+            templates.Add(new RteCustomTemplateModelView
+            {
+                Id = -1,
+                Assigned = new int[] { 1, 2 },
+                AuthorId = this.Workspace.CostVolumeLeadPricerUserID,
+                Description = "googily",
+                Updateable = UpdateType.Upsert,
+                WorkspaceId = this.Workspace.Id,
+                Questions = new List<RteCustomTemplateQuestionModelView> {
+                    new RteCustomTemplateQuestionModelView
+                    {
+                        Id = -3,
+                        Required = true,
+                        SortOrder = 0,
+                        Text = "Q1",
+                        Updateable = UpdateType.Upsert
+                    },
+                    new RteCustomTemplateQuestionModelView
+                    {
+                        Id = -4,
+                        Required = true,
+                        SortOrder = 2,
+                        Text = "Q2",
+                        Updateable = UpdateType.Upsert
+                    }
+                }
+            });
+            templates.Add(new RteCustomTemplateModelView
+            {
+                Id = -2,
+                AuthorId = this.Workspace.CostVolumeLeadPricerUserID,
+                Description = "moogily",
+                Updateable = UpdateType.Upsert,
+                WorkspaceId = this.Workspace.Id,
+                Assigned = new int[] { 3, 4 },
+                Questions = new List<RteCustomTemplateQuestionModelView> {
+                    new RteCustomTemplateQuestionModelView
+                    {
+                        Id = -5,
+                        Required = true,
+                        SortOrder = 0,
+                        Text = "Q3",
+                        Updateable = UpdateType.Upsert
+                    }
+                }
+            });
+
+            sut.Save(templates);
+
+            WorkspaceDTODataLoader wsLoader = new WorkspaceDTODataLoader();
+            this.Workspace.AllowSearch = false;
+            wsLoader.SaveAllowSearch(this.Workspace);
+
+            ICollection<RTECustomTemplateQuestionAnswerModelView> questions = sut.GetByBoeId(this.Boe1.WorkspaceID, this.Boe1.Id);
+            questions = sut.GetByBoeIdAndTaskId(this.Workspace.Id, this.TaskElement.BoeID, this.TaskElement.Id);
+            RTECustomTemplateQuestionAnswerModelView answer = questions.First();
+            answer.AnswerText = "new answer";
+            sut.SaveAnswers(questions);
+            questions = sut.GetByBoeIdAndTaskId(this.Workspace.Id, this.TaskElement.BoeID, this.TaskElement.Id);
+            ICollection<FullBoe> boes = new List<FullBoe>();
+            FullBoe fullBoe = new FullBoe(this.Boe1);
+            boes.Add(fullBoe);
+            fullBoe.SetTaskElements(new BoeTaskElementDTO[] { this.TaskElement });
+            FullBoe fullBoe2 = new FullBoe(this.Boe2);
+            boes.Add(fullBoe2);
+            fullBoe2.SetTaskElements(new BoeTaskElementDTO[] { });
+            questions = sut.GetByWorkspaceId(this.Workspace.Id, boes);
+            ICollection<RteCustomTemplateModelView> updatedTemplates = sut.GetTemplates(this.Workspace.Id);
+
+            ICollection<RteCustomTemplateModelView> found = sut.Search("googily");
+            Assert.AreEqual(0, found.Count);
+
+            found = sut.Search("oogily");
+            Assert.AreEqual(0, found.Count);
+
+            found = sut.Search(this.Workspace.WorkspaceName);
+            Assert.AreEqual(0, found.Count);
+
+            updatedTemplates.ForEach(t => t.Updateable = UpdateType.Deleted);
+            sut.Save(updatedTemplates);
+
+            found = sut.Search("oogily");
+            Assert.AreEqual(0, found.Count);
+
+            this.Workspace.AllowSearch = true;
+            wsLoader.SaveAllowSearch(this.Workspace);
+        }
     }
 }

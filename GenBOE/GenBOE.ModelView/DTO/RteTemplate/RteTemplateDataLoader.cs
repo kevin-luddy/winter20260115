@@ -66,7 +66,7 @@ namespace GenBOE.DataBridge.DTO
                 ICollection<RteCustomTemplateQuestionModelView> questions;
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    toReturn = (from t in gbe.RteTemplates.Where(rt => rt.Description.Contains(searchTerm) || rt.ETIuser.DisplayName.Contains(searchTerm) || rt.Workspace.WorkspaceName.Contains(searchTerm))
+                    toReturn = (from t in gbe.RteTemplates.Where(rt => rt.Workspace.AllowSearch && (rt.Description.Contains(searchTerm) || rt.ETIuser.DisplayName.Contains(searchTerm) || rt.Workspace.WorkspaceName.Contains(searchTerm)))
                                 select new RteCustomTemplateModelView
                                 {
                                     Id = t.TemplateID,
