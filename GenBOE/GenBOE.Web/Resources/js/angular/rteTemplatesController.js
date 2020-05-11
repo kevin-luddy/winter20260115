@@ -351,7 +351,7 @@
 
         if (newDescription === '') {
             addError($scope.newTemplateErrors, 'New Template Name is required.');
-        } else if ($scope.data.find(({ Description }) => Description === newDescription)) {
+        } else if ($scope.data.find(x => x.Description === newDescription)) {
             addError($scope.newTemplateErrors, 'New Template Name has to be unique.');
         } else {
 
