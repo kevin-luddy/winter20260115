@@ -53,6 +53,7 @@ namespace GenBOE.ActionLogic
         /// </summary>
         /// <param name="templateId">Template Id</param>
         /// <param name="ws">Target WS</param>
-        void CopyTemplate(int templateId, FullWorkspace ws);
+        /// <param name="newTemplateName">New Template Name</param>
+        void CopyTemplate(int templateId, FullWorkspace ws, string newTemplateName);
     }
 }

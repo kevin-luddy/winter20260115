@@ -123,13 +123,14 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="workspace">Workspace</param>
         /// <param name="templateId">Template To Copy</param>
+        /// <param name="newTemplateName">New Template Name</param>
         /// <returns>Success / Failure</returns>
-        public JsonResult CopyTemplate(string workspace, int templateId)
+        public JsonResult CopyTemplate(string workspace, int templateId, string newTemplateName)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             Stopwatch sw = InitializeAction(this.logger, WebConstants.ACTION_COPY_RTE_TEMPLATE, SecurityPage.RTETemplates, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
-            this.controllerLogic.CopyTemplate(templateId, ws);
+            this.controllerLogic.CopyTemplate(templateId, ws, newTemplateName);
 
             FinalizeAction(this.logger, WebConstants.ACTION_COPY_RTE_TEMPLATE, sw);
             return this.Json(new { Status = true });

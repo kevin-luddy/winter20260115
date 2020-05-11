@@ -4,6 +4,7 @@
     $scope.noDirty = true;
     $scope.isLoading = false;
     $scope.errors = [];
+    $scope.newTemplateErrors = [];
     $scope.deleteAll = {};
     $scope.deleteAll.deleteAll = false;
     $scope.newId = -1;
@@ -345,42 +346,54 @@
     }
 
     $scope.copyTemplate = function (template) {
-        Session.confirmDialog('Copy Template', 'Copy the Template "' + template.Description + '" from Workspace "' + template.WorkspaceName + '" into the current Workspace?', function () {
-            $timeout(function () {
-                $scope.search.errors = [];
-                $(document).trigger("SHOW_LOADING_BOX");
-                var data = {
-                    templateId: template.Id,
-                };
+        var newDescription = $('#newTemplateName').val();
+        $scope.newTemplateErrors = [];
 
-                return $http({
-                    method: 'POST',
-                    data: data,
-                    url: CreatePostURL(RTETemplateModel.workspace, RTETemplateModel.controller, RTETemplateModel.copyAction, '')
-                }).then(function (response) {
-                    $(document).trigger("HIDE_LOADING_BOX");
+        if (newDescription === '') {
+            addError($scope.newTemplateErrors, 'New Template Name is required.');
+        } else if ($scope.data.find(({ Description }) => Description === newDescription)) {
+            addError($scope.newTemplateErrors, 'New Template Name has to be unique.');
+        } else {
+
+            Session.confirmDialog('Copy Template', 'Copy the Template "' + template.Description + '" from Workspace "' +
+                                                    template.WorkspaceName + '", into the current Workspace, under a new name of "' + newDescription + '"?', function () {
+                $timeout(function () {
                     $scope.search.errors = [];
+                    $(document).trigger("SHOW_LOADING_BOX");
+                    var data = {
+                        templateId: template.Id,
+                        newTemplateName: $('#newTemplateName').val()
+                    };
 
-                    // alert template copied
-                    RaiseNotification('The Template was copied successfully');
+                    return $http({
+                        method: 'POST',
+                        data: data,
+                        url: CreatePostURL(RTETemplateModel.workspace, RTETemplateModel.controller, RTETemplateModel.copyAction, '')
+                    }).then(function (response) {
+                        $(document).trigger("HIDE_LOADING_BOX");
+                        $scope.search.errors = [];
 
-                    $scope.search.open = false;
+                        // alert template copied
+                        RaiseNotification('The Template was copied successfully');
 
-                    loadData();
-                }, function errorCallback(response) {
-                    $scope.search.errors = [];
-                    $(document).trigger("HIDE_LOADING_BOX");
-                    if (response.data && response.data.MessageList) {
-                        // put the errors into the appropriate error boxes
-                        angular.forEach(response.data.MessageList, function (value) {
-                            $scope.search.errors.push(value);
-                        });
-                    } else {
-                        addError($scope.search.errors, "Error copying Template.");
-                    }
-                });
-            }, 50);
-        });
+                        $scope.search.open = false;
+
+                        loadData();
+                    }, function errorCallback(response) {
+                        $scope.search.errors = [];
+                        $(document).trigger("HIDE_LOADING_BOX");
+                        if (response.data && response.data.MessageList) {
+                            // put the errors into the appropriate error boxes
+                            angular.forEach(response.data.MessageList, function (value) {
+                                $scope.search.errors.push(value);
+                            });
+                        } else {
+                            addError($scope.search.errors, "Error copying Template.");
+                        }
+                    });
+                }, 50);
+            });
+        }
     };
 
     $scope.numberOfSearchPages = function () {

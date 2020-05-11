@@ -116,6 +116,14 @@
                     </div>
                 </form>
                 <div class="divider"></div>
+                <div class="form-row" id="newTemplateNameDiv" data-ng-if="search.showResults">
+                    <gen-validation data-errors="newTemplateErrors"></gen-validation>
+                    <div class="form-label">New Template Name: *</div>
+                    <div class="form-element">
+                        <input type="text" id="newTemplateName" placeholder="New Template Name" maxlength="200" />
+                    </div>
+                </div>
+                <div class="divider" data-ng-if="search.showResults"></div>
                 <div class="form-row" data-ng-if="search.showResults">
                     <div class="form-element full-width">
                         <table class="search-template-table full-width">

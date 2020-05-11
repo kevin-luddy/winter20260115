@@ -207,7 +207,8 @@ namespace GenBOE.ActionLogic
         /// </summary>
         /// <param name="templateId">Template Id</param>
         /// <param name="ws">Target WS</param>
-        public void CopyTemplate(int templateId, FullWorkspace ws)
+        /// <param name="newTemplateName">New Template Name</param>
+        public void CopyTemplate(int templateId, FullWorkspace ws, string newTemplateName)
         {
             if (templateId <= 0) { throw new ArgumentOutOfRangeException("templateId", templateId, "Template Id must be a positive number."); }
             if (ws == null) { throw new ArgumentNullException(nameof(ws)); }
@@ -222,6 +223,7 @@ namespace GenBOE.ActionLogic
             template.AuthorId = ws.CurrentActiveUser.UserID;
             template.Updateable = UpdateType.Upsert;
             template.WorkspaceId = ws.Id;
+            template.Description = newTemplateName;
 
             if (template.Questions.Any())
             {
