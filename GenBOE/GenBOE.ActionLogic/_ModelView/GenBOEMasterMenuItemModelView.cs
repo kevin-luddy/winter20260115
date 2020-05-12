@@ -267,8 +267,8 @@ namespace GenBOE.ActionLogic.ModelView
                 });
             }
 
-            // Only show this menu item when in Initialization and Working states
-            if(ws.WorkspaceState == WorkspaceState.Initialization || ws.WorkspaceState == WorkspaceState.Working)
+            // Only show this menu item when in Initialization and Working states, and we are a standard workspace, not a project map
+            if(!ws.IsProjectMapWorkspace && (ws.WorkspaceState == WorkspaceState.Initialization || ws.WorkspaceState == WorkspaceState.Working))
             {
                 menuItems.First(x => x.linkText == "Workspace Administration").subMenuItems.Add(new GenBOEMasterMenuItemModelView
                 {
