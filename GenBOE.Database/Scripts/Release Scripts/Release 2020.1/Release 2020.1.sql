@@ -176,15 +176,25 @@ GO
 		5/8/2020		Dusan		BOEJ-4479 - Add emails to RTE templates
 */
 
-DELETE FROM EmailLU WHERE Emailid IN (49, 50, 51);
-INSERT 
-	INTO EmailLU
-	(EmailId, "Subject", Body, "Trigger", DefaultOn, ForcedOn, Category, Recipient)
-	VALUES 
-	(49, 'genBOE: In-Use RTE Custom Template was unassigned', 'An in-use RTE Custom Template was unassigned (removed from use) in workspace {0}. Please review all of your BOEs / Tasks in the workspace.', 'In-use template was unassigned', 0, 0, 'RTE Custom Templates', 'BOE Author(s)'), 
-	(50, 'genBOE: RTE Custom Template was assigned', 'An RTE Custom Template was assigned to replace a field in workspace {0}. Please review all of your BOEs / Tasks in the workspace.', 'Template was assigned when workspace was not in initialization', 0, 0, 'RTE Custom Templates', 'BOE Author(s)'), 
-	(51, 'genBOE: In-Use RTE Custom Template''s prompt was deleted', 'An in-use RTE Custom Template''s prompt was deleted by a Workspace Administrator, in workspace {0}. Please review all of your BOEs / Tasks in the workspace.', 'In-use template''s prompt is deleted', 0, 0, 'RTE Custom Templates', 'BOE Author(s)');
-
+IF NOT EXISTS (SELECT 1 FROM EmailLU WHERE EmailId IN (49, 50, 51))
+	BEGIN
+		INSERT 
+			INTO EmailLU
+			(EmailId, "Subject", Body, "Trigger", DefaultOn, ForcedOn, Category, Recipient)
+			VALUES 
+			(49, 'genBOE: In-Use RTE Custom Template was unassigned', 'A Custom Template, assigned to one of the following: BOE Description, Source of Data, Task Description, or MOQ Rationale, has been unassigned (removed from use) in workspace {0}. Please review all of your BOEs / Tasks in the workspace.', 'In-use template was unassigned', 0, 0, 'RTE Custom Templates', 'BOE Author(s)'), 
+			(50, 'genBOE: RTE Custom Template was assigned', 'A Custom Template, assigned to one of the following: BOE Description, Source of Data, Task Description, or MOQ Rationale, has been reassigned to another custom template in workspace {0}. Please review all of your BOEs / Tasks in the workspace.', 'Template was assigned when workspace was not in initialization', 0, 0, 'RTE Custom Templates', 'BOE Author(s)'), 
+			(51, 'genBOE: In-Use RTE Custom Template''s prompt was deleted', 'A Custom Template, assigned to one of the following: BOE Description, Source of Data, Task Description, or MOQ Rationale, had one of its prompts deleted by a Workspace Administrator, in workspace {0}. Please review all of your BOEs / Tasks in the workspace.', 'In-use template''s prompt is deleted', 0, 0, 'RTE Custom Templates', 'BOE Author(s)');
+	END
+ELSE
+	BEGIN
+		UPDATE EmailLU SET Body = 'A Custom Template, assigned to one of the following: BOE Description, Source of Data, Task Description, or MOQ Rationale, has been unassigned (removed from use) in workspace {0}. Please review all of your BOEs / Tasks in the workspace.'
+					WHERE EmailId = 49;
+		UPDATE EmailLU SET Body = 'A Custom Template, assigned to one of the following: BOE Description, Source of Data, Task Description, or MOQ Rationale, has been reassigned to another custom template in workspace {0}. Please review all of your BOEs / Tasks in the workspace.'
+					WHERE EmailId = 50;
+		UPDATE EmailLU SET Body = 'A Custom Template, assigned to one of the following: BOE Description, Source of Data, Task Description, or MOQ Rationale, had one of its prompts deleted by a Workspace Administrator, in workspace {0}. Please review all of your BOEs / Tasks in the workspace.'
+					WHERE EmailId = 51;
+	END
 /*
 		5/8/2020		Dusan		BOEJ-4479 - Add emails to RTE templates
 		## END ##
