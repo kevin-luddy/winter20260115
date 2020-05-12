@@ -8,6 +8,7 @@ namespace GenBOE.ActionLogic
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Transactions;
     using GenBOE.ActionLogic.BLL;
@@ -169,7 +170,7 @@ namespace GenBOE.ActionLogic
             if (ws == null ) { throw new ArgumentNullException(nameof(ws)); }
 
             ICollection<RteCustomTemplateModelView> templatesFromDb = this.rteTemplateDataLoader.GetTemplates(ws.Id);
-
+            
             // Set current user as author
             foreach (RteCustomTemplateModelView template in templates)
             {
@@ -181,14 +182,24 @@ namespace GenBOE.ActionLogic
                     template.Updateable = UpdateType.Upsert;
                 }
             }
-
-            this.ProcessTemplateAssignments(templates, ws, templatesFromDb);
+            
+            List<RteCustomTemplateModelView> templatesBeingAssigned = this.ProcessTemplateAssignments(templates, ws, templatesFromDb);
             this.ProcessTemplatesWithDeletedPrompts(templates, ws);
+
+            // Get BOEs and Tasks before saving templates so the necessary source data can be used to populate the first template answer
+            ICollection<BoeDTO> boesBeforeTemplateSave = boeDtoDataLoader.GetByWorkspaceId(ws.Id, true);
+            ICollection<BoeTaskElementDTO> tasksBeforeTemplateSave = taskElementDtoDataLoader.GetByWorkspaceId(ws.Id, true, ws.DecimalPrecision, ws.CostDecimalPrecision);
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
                 this.rteTemplateDataLoader.Save(templates);
                 scope.Complete();
+            }
+
+            // Process assigned sources after saving templates because the Answers must exist before they can be saved to
+            if (templatesBeingAssigned.Any())
+            {
+                this.ProcessAssignedSources(templatesBeingAssigned, templatesFromDb, ws, boesBeforeTemplateSave, tasksBeforeTemplateSave);
             }
         }
 
@@ -250,13 +261,15 @@ namespace GenBOE.ActionLogic
         /// <param name="templatesBeingSaved">Templates being saved</param>
         /// <param name="ws">Workspace</param>
         /// <param name="templatesFromDb">Templates as they were prior to modification</param>
-        private void ProcessTemplateAssignments(ICollection<RteCustomTemplateModelView> templatesBeingSaved, FullWorkspace ws, ICollection<RteCustomTemplateModelView> templatesFromDb)
+        /// <returns>List of templates being assinged so they can be used to update sources after templates are saved</returns>
+        private List<RteCustomTemplateModelView> ProcessTemplateAssignments(ICollection<RteCustomTemplateModelView> templatesBeingSaved, FullWorkspace ws, ICollection<RteCustomTemplateModelView> templatesFromDb)
         {
+            List<RteCustomTemplateModelView> templatesBeingAssigned = new List<RteCustomTemplateModelView>();
+
             if (ws.WorkspaceState != WorkspaceState.Initialization)
             {
                 // Assumption based on the UI -> a template must exist before it can be assigned, or unassigned, therefore we only need to compare prior assignment to new assignment
 
-                List<RteCustomTemplateModelView> templatesBeingAssigned = new List<RteCustomTemplateModelView>();
                 List<RteCustomTemplateModelView> templatesBeingUnassigned = new List<RteCustomTemplateModelView>();
 
                 templatesFromDb.ToList().ForEach(templateFromDb => {
@@ -288,7 +301,7 @@ namespace GenBOE.ActionLogic
                         }
                     }
                 });
-
+                
                 if (templatesBeingAssigned.Any() || templatesBeingUnassigned.Any())
                 {
                     this.BackupWorkspace(ws, CommonConstants.AUTO_SYSTEM_BACKUP_TEMPLATE_ASSIGN_CHANGE);
@@ -300,6 +313,8 @@ namespace GenBOE.ActionLogic
                 if (templatesBeingAssigned.Any()) { this.emailer.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned); }
 
             }
+
+            return templatesBeingAssigned;
         }
 
         /// <summary>
@@ -339,9 +354,9 @@ namespace GenBOE.ActionLogic
                         case (int)RteTemplateSource.BoeDescription:
                             foreach (BoeDTO boe in boes)
                             {
-                                ICollection<RTECustomTemplateQuestionAnswerModelView> descQuestionsAndAnswers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boe.Id);
+                                ICollection<RTECustomTemplateQuestionAnswerModelView> descQuestionsAndAnswers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boe.Id).Where(x => x.SourceId == (int)RteTemplateSource.BoeDescription).ToCollection();
 
-                                boe.Description = this.convertQandAsToText(descQuestionsAndAnswers, (int)RteTemplateSource.BoeDescription);
+                                boe.Description = this.ConvertQandAsToText(descQuestionsAndAnswers, (int)RteTemplateSource.BoeDescription);
                                 boe.Updateable = UpdateType.Upsert;
                             }
 
@@ -350,9 +365,9 @@ namespace GenBOE.ActionLogic
                         case (int)RteTemplateSource.BoeSources:
                             foreach (BoeDTO boe in boes)
                             {
-                                ICollection<RTECustomTemplateQuestionAnswerModelView> sourcesQuestionsAndAnswers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boe.Id);
+                                ICollection<RTECustomTemplateQuestionAnswerModelView> sourcesQuestionsAndAnswers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boe.Id).Where(x => x.SourceId == (int)RteTemplateSource.BoeSources).ToCollection();
 
-                                boe.DataSource = this.convertQandAsToText(sourcesQuestionsAndAnswers, (int)RteTemplateSource.BoeSources);
+                                boe.DataSource = this.ConvertQandAsToText(sourcesQuestionsAndAnswers, (int)RteTemplateSource.BoeSources);
                                 boe.Updateable = UpdateType.Upsert;
                             }
 
@@ -361,9 +376,9 @@ namespace GenBOE.ActionLogic
                         case (int)RteTemplateSource.TaskDescription:
                             foreach (BoeTaskElementDTO task in tasks)
                             {
-                                ICollection<RTECustomTemplateQuestionAnswerModelView> taskDescQuestionsAndAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, task.BoeID, task.Id);
+                                ICollection<RTECustomTemplateQuestionAnswerModelView> taskDescQuestionsAndAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, task.BoeID, task.Id).Where(x => x.SourceId == (int)RteTemplateSource.TaskDescription).ToCollection();
 
-                                task.Description = this.convertQandAsToText(taskDescQuestionsAndAnswers, (int)RteTemplateSource.TaskDescription);
+                                task.Description = this.ConvertQandAsToText(taskDescQuestionsAndAnswers, (int)RteTemplateSource.TaskDescription);
                                 task.Updateable = UpdateType.Upsert;
                             }
 
@@ -372,9 +387,9 @@ namespace GenBOE.ActionLogic
                         case (int)RteTemplateSource.TaskMOQ:
                             foreach (BoeTaskElementDTO task in tasks)
                             {
-                                ICollection<RTECustomTemplateQuestionAnswerModelView> taskDescQuestionsAndAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, task.BoeID, task.Id);
+                                ICollection<RTECustomTemplateQuestionAnswerModelView> taskDescQuestionsAndAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, task.BoeID, task.Id).Where(x => x.SourceId == (int)RteTemplateSource.TaskMOQ).ToCollection();
 
-                                task.MOQText = this.convertQandAsToText(taskDescQuestionsAndAnswers, (int)RteTemplateSource.TaskMOQ);
+                                task.MOQText = this.ConvertQandAsToText(taskDescQuestionsAndAnswers, (int)RteTemplateSource.TaskMOQ);
                                 task.Updateable = UpdateType.Upsert;
                             }
 
@@ -409,12 +424,88 @@ namespace GenBOE.ActionLogic
         }
 
         /// <summary>
+        /// Move data in the source fields that are being assigned into the appropriate RTE Templates
+        /// </summary>
+        /// <param name="templatesBeingAssigned">Templates being assigned</param>
+        /// <param name="templatesFromDb">Templates as they were prior to modification</param>
+        /// <param name="ws">The workspace</param>
+        /// <param name="boes">BOEs from before templates are saved</param>
+        /// <param name="tasks">Tasks from before templates are saved</param>
+        /// <returns>Answers that need to be saved</returns>
+        private void ProcessAssignedSources(List<RteCustomTemplateModelView> templatesBeingAssigned, ICollection<RteCustomTemplateModelView> templatesFromDb, 
+            FullWorkspace ws, ICollection<BoeDTO> boes, ICollection<BoeTaskElementDTO> tasks)
+        {
+            ICollection<RTECustomTemplateQuestionAnswerModelView> answersToSave = new Collection<RTECustomTemplateQuestionAnswerModelView>();
+
+            foreach (RteCustomTemplateModelView template in templatesBeingAssigned)
+            {
+                RteCustomTemplateModelView originalTemplate = templatesFromDb.First(x => x.Id == template.Id);
+                ICollection<int> addedAssignments = template.Assigned.Except(originalTemplate.Assigned).ToCollection();
+
+                foreach (int addedAssignment in addedAssignments)
+                {
+                    switch (addedAssignment)
+                    {
+                        case (int)RteTemplateSource.BoeDescription:
+                            foreach (BoeDTO boe in boes)
+                            {
+                                ICollection<RTECustomTemplateQuestionAnswerModelView> questionsAndAnswers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boe.Id);
+                                RTECustomTemplateQuestionAnswerModelView firstPrompt = questionsAndAnswers.Where(x => x.SourceId == (int)RteTemplateSource.BoeDescription).OrderBy(x => x.SortOrder).First();
+                                firstPrompt.AnswerText = boe.Description;
+                                firstPrompt.Updateable = UpdateType.Upsert;
+                                answersToSave.Add(firstPrompt);
+                            }
+                            break;
+                        case (int)RteTemplateSource.BoeSources:
+                            foreach (BoeDTO boe in boes)
+                            {
+                                ICollection<RTECustomTemplateQuestionAnswerModelView> questionsAndAnswers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boe.Id);
+                                RTECustomTemplateQuestionAnswerModelView firstPrompt = questionsAndAnswers.Where(x => x.SourceId == (int)RteTemplateSource.BoeSources).OrderBy(x => x.SortOrder).First();
+                                firstPrompt.AnswerText = boe.DataSource;
+                                firstPrompt.Updateable = UpdateType.Upsert;
+                                answersToSave.Add(firstPrompt);
+                            }
+                            break;
+                        case (int)RteTemplateSource.TaskDescription:
+                            foreach (BoeTaskElementDTO task in tasks)
+                            {
+                                ICollection<RTECustomTemplateQuestionAnswerModelView> questionsAndAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, task.BoeID, task.Id);
+                                RTECustomTemplateQuestionAnswerModelView firstPrompt = questionsAndAnswers.Where(x => x.SourceId == (int)RteTemplateSource.TaskDescription).OrderBy(x => x.SortOrder).First();
+                                firstPrompt.AnswerText = task.Description;
+                                firstPrompt.Updateable = UpdateType.Upsert;
+                                answersToSave.Add(firstPrompt);
+                            }
+                            break;
+                        case (int)RteTemplateSource.TaskMOQ:
+                            foreach (BoeTaskElementDTO task in tasks)
+                            {
+                                ICollection<RTECustomTemplateQuestionAnswerModelView> questionsAndAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, task.BoeID, task.Id);
+                                RTECustomTemplateQuestionAnswerModelView firstPrompt = questionsAndAnswers.Where(x => x.SourceId == (int)RteTemplateSource.TaskMOQ).OrderBy(x => x.SortOrder).First();
+                                firstPrompt.AnswerText = task.MOQText;
+                                firstPrompt.Updateable = UpdateType.Upsert;
+                                answersToSave.Add(firstPrompt);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+            {
+                this.rteTemplateDataLoader.SaveAnswers(answersToSave);
+                scope.Complete();
+            }
+        }
+
+        /// <summary>
         /// Converts the Prompts and Answers for the RTE Templates into text to put into the source field
         /// </summary>
         /// <param name="questionsAndAnswers">RTE Template Prompts/Answers</param>
         /// <param name="source">Source for the template</param>
         /// <returns>Propmts and Answers as a single string</returns>
-        private string convertQandAsToText(ICollection<RTECustomTemplateQuestionAnswerModelView> questionsAndAnswers, int source)
+        private string ConvertQandAsToText(ICollection<RTECustomTemplateQuestionAnswerModelView> questionsAndAnswers, int source)
         {
             string newText = string.Empty;
 
