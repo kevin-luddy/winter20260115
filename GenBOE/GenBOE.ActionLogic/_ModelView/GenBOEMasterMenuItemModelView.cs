@@ -158,15 +158,7 @@ namespace GenBOE.ActionLogic.ModelView
                             securityPage = SecurityPage.ManageWBS,
                             routeName = WebConstants.ROUTE_WORKSPACE
                         },
-                        new GenBOEMasterMenuItemModelView {
-                            linkText = "Manage RTE Custom Templates",
-                            actionName = WebConstants.ACTION_INDEX,
-                            controllerName = WebConstants.CONTROLLER_RTE_TEMPLATES,
-                            routeValues = new { workspace = ws.Shortname },
-                            htmlAttributes = new { name = "ManageRteTemplatesMenuLink" },
-                            securityPage = SecurityPage.RTETemplates,
-                            routeName = WebConstants.ROUTE_WORKSPACE
-                        },
+
                         new GenBOEMasterMenuItemModelView {
                             linkText = "Manage BOEs",
                             actionName = WebConstants.ACTION_INDEX,
@@ -194,7 +186,7 @@ namespace GenBOE.ActionLogic.ModelView
                             securityPage = SecurityPage.FindReplace,
                             routeName = WebConstants.ROUTE_WORKSPACE
                         },
-                       new GenBOEMasterMenuItemModelView {
+                        new GenBOEMasterMenuItemModelView {
                             linkText = "Update Zone Travel Rates",
                             actionName = "placeholderAction",
                             controllerName = "placeholderController",
@@ -244,6 +236,21 @@ namespace GenBOE.ActionLogic.ModelView
 
             AppendHelpMenuItems(menuItems);
 
+            // RTE Templates are only going to be used in standard workspace types
+            if (!ws.IsProjectMapWorkspace)
+            {
+                menuItems.First(x => x.linkText == "Workspace Administration").subMenuItems.Insert(6, new GenBOEMasterMenuItemModelView
+                {
+                    linkText = "Manage RTE Custom Templates",
+                    actionName = WebConstants.ACTION_INDEX,
+                    controllerName = WebConstants.CONTROLLER_RTE_TEMPLATES,
+                    routeValues = new { workspace = ws.Shortname },
+                    htmlAttributes = new { name = "ManageRteTemplatesMenuLink" },
+                    securityPage = SecurityPage.RTETemplates,
+                    routeName = WebConstants.ROUTE_WORKSPACE
+                });
+            }
+            
             // Per Les, Project Map admins will never be pricers, and pricers will never be admins.. So we show this to all project maps
             if (securityInformation.IsAllowedProPricerAccess(securityInformation.ActiveUserNTID) || ws.IsProjectMapWorkspace)
             {
@@ -273,7 +280,7 @@ namespace GenBOE.ActionLogic.ModelView
                     routeName = WebConstants.ROUTE_WORKSPACE
                 });
             }
-
+             
             return menuItems;
         }
 
