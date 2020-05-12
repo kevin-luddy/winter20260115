@@ -131,7 +131,7 @@
 
     $scope.confirmReplace = function () {
         Session.confirmDialog("Replace in-use Template",
-            "This will replace another template that is currently in use. All Answers from the in-use Template will be placed into the first prompt of the newly assigned Template. Are you sure you want to replace it?",
+            "This will replace another template that is currently in use. All Answers from the in-use Template will be placed into the first prompt of the newly assigned Template. Are you sure you want to replace it? This cannot be undone.",
             function () {
                 $timeout(function () { $scope.continueOnAssignSave(); }, 50);
             },

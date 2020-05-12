@@ -183,23 +183,50 @@ namespace GenBOE.ActionLogic
                 }
             }
             
-            List<RteCustomTemplateModelView> templatesBeingAssigned = this.ProcessTemplateAssignments(templates, ws, templatesFromDb);
+            List<RteCustomTemplateModelView> templatesBeingAssigned = this.GetTemplatesBeingAssigned(templates, ws, templatesFromDb);
+            List<RteCustomTemplateModelView> templatesBeingUnassigned = this.GetTemplatesBeingUnassigned(templates, ws, templatesFromDb);
             this.ProcessTemplatesWithDeletedPrompts(templates, ws);
 
-            // Get BOEs and Tasks before saving templates so the necessary source data can be used to populate the first template answer
-            ICollection<BoeDTO> boesBeforeTemplateSave = boeDtoDataLoader.GetByWorkspaceId(ws.Id, true);
-            ICollection<BoeTaskElementDTO> tasksBeforeTemplateSave = taskElementDtoDataLoader.GetByWorkspaceId(ws.Id, true, ws.DecimalPrecision, ws.CostDecimalPrecision);
+            if(templatesBeingAssigned.Any() || templatesBeingUnassigned.Any())
+            {
+                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+                {
+                    this.BackupWorkspace(ws, CommonConstants.AUTO_SYSTEM_BACKUP_TEMPLATE_ASSIGN_CHANGE);
+                }
+            }
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
+                // Process unassigned sources before saving templates so we can get template answer data before it's cleared
+                if (templatesBeingUnassigned.Any())
+                {
+                    this.ProcessUnassignedSources(templatesBeingUnassigned, templatesFromDb, ws);
+                }
+
+                // Get BOEs and Tasks before saving templates so the necessary source data can be used to populate the first template answer
+                ICollection<BoeDTO> boesBeforeTemplateSave = boeDtoDataLoader.GetByWorkspaceId(ws.Id, true);
+                ICollection<BoeTaskElementDTO> tasksBeforeTemplateSave = taskElementDtoDataLoader.GetByWorkspaceId(ws.Id, true, ws.DecimalPrecision, ws.CostDecimalPrecision);
+
                 this.rteTemplateDataLoader.Save(templates);
+
+                // Process assigned sources after saving templates because the Answers must exist before they can be saved to
+                if (templatesBeingAssigned.Any())
+                {
+                    this.ProcessAssignedSources(templatesBeingAssigned, templatesFromDb, ws, boesBeforeTemplateSave, tasksBeforeTemplateSave);
+                }
+
                 scope.Complete();
             }
 
-            // Process assigned sources after saving templates because the Answers must exist before they can be saved to
+            // Send any emails now that Save is successful
+            if (templatesBeingUnassigned.Any())
+            {
+                this.emailer.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned);
+            }
+
             if (templatesBeingAssigned.Any())
             {
-                this.ProcessAssignedSources(templatesBeingAssigned, templatesFromDb, ws, boesBeforeTemplateSave, tasksBeforeTemplateSave);
+                this.emailer.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned);
             }
         }
 
@@ -254,24 +281,21 @@ namespace GenBOE.ActionLogic
                 scope.Complete();
             }
         }
-
+        
         /// <summary>
-        /// This method looks for templates that are being assigned, or being unassigned
+        /// Gets the templates that are being assigned
         /// </summary>
         /// <param name="templatesBeingSaved">Templates being saved</param>
         /// <param name="ws">Workspace</param>
         /// <param name="templatesFromDb">Templates as they were prior to modification</param>
-        /// <returns>List of templates being assinged so they can be used to update sources after templates are saved</returns>
-        private List<RteCustomTemplateModelView> ProcessTemplateAssignments(ICollection<RteCustomTemplateModelView> templatesBeingSaved, FullWorkspace ws, ICollection<RteCustomTemplateModelView> templatesFromDb)
+        /// <returns>List of templates being assigned so they can be used to update sources after templates are saved</returns>
+        private List<RteCustomTemplateModelView> GetTemplatesBeingAssigned(ICollection<RteCustomTemplateModelView> templatesBeingSaved, FullWorkspace ws, ICollection<RteCustomTemplateModelView> templatesFromDb)
         {
             List<RteCustomTemplateModelView> templatesBeingAssigned = new List<RteCustomTemplateModelView>();
 
             if (ws.WorkspaceState != WorkspaceState.Initialization)
             {
                 // Assumption based on the UI -> a template must exist before it can be assigned, or unassigned, therefore we only need to compare prior assignment to new assignment
-
-                List<RteCustomTemplateModelView> templatesBeingUnassigned = new List<RteCustomTemplateModelView>();
-
                 templatesFromDb.ToList().ForEach(templateFromDb => {
                     RteCustomTemplateModelView templateBeingSaved = templatesBeingSaved.FirstOrDefault(saveTemplate => saveTemplate.Id == templateFromDb.Id);
 
@@ -284,7 +308,32 @@ namespace GenBOE.ActionLogic
                         {
                             templatesBeingAssigned.Add(templateBeingSaved);
                         }
+                    }
+                });
+            }
 
+            return templatesBeingAssigned;
+        }
+
+        /// <summary>
+        /// Gets the templates that are being unassigned
+        /// </summary>
+        /// <param name="templatesBeingSaved">Templates being saved</param>
+        /// <param name="ws">Workspace</param>
+        /// <param name="templatesFromDb">Templates as they were prior to modification</param>
+        /// <returns>List of templates being unassinged</returns>
+        private List<RteCustomTemplateModelView> GetTemplatesBeingUnassigned(ICollection<RteCustomTemplateModelView> templatesBeingSaved, FullWorkspace ws, ICollection<RteCustomTemplateModelView> templatesFromDb)
+        {
+            List<RteCustomTemplateModelView> templatesBeingUnassigned = new List<RteCustomTemplateModelView>();
+
+            if (ws.WorkspaceState != WorkspaceState.Initialization)
+            {
+                // Assumption based on the UI -> a template must exist before it can be assigned, or unassigned, therefore we only need to compare prior assignment to new assignment
+                templatesFromDb.ToList().ForEach(templateFromDb => {
+                    RteCustomTemplateModelView templateBeingSaved = templatesBeingSaved.FirstOrDefault(saveTemplate => saveTemplate.Id == templateFromDb.Id);
+
+                    if (templateBeingSaved != null)
+                    {
                         // unassignment
                         //     - template is in-use
                         //      AND
@@ -301,20 +350,9 @@ namespace GenBOE.ActionLogic
                         }
                     }
                 });
-                
-                if (templatesBeingAssigned.Any() || templatesBeingUnassigned.Any())
-                {
-                    this.BackupWorkspace(ws, CommonConstants.AUTO_SYSTEM_BACKUP_TEMPLATE_ASSIGN_CHANGE);
-                }
-
-                this.ProcessUnassignedSources(templatesBeingUnassigned, templatesFromDb, ws);
-
-                if (templatesBeingUnassigned.Any()) { this.emailer.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned); }
-                if (templatesBeingAssigned.Any()) { this.emailer.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned); }
-
             }
 
-            return templatesBeingAssigned;
+            return templatesBeingUnassigned;
         }
 
         /// <summary>
@@ -404,21 +442,13 @@ namespace GenBOE.ActionLogic
                 {
                     foreach (BoeDTO boe in boes)
                     {
-                        using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
-                        {
-                            this.boeMediator.SaveEditBoeHeader(boe);
-                            scope.Complete();
-                        }
+                        this.boeMediator.SaveEditBoeHeader(boe);
                     }
                 }
 
                 if (saveTasks)
                 {
-                    using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
-                    {
-                        this.taskElementMediator.MediatedBulkSaveTaskElements(tasks, ws);
-                        scope.Complete();
-                    }
+                    this.taskElementMediator.MediatedBulkSaveTaskElements(tasks, ws);
                 }
             }
         }
@@ -492,13 +522,9 @@ namespace GenBOE.ActionLogic
                 }
             }
 
-            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
-            {
-                this.rteTemplateDataLoader.SaveAnswers(answersToSave);
-                scope.Complete();
-            }
+            this.rteTemplateDataLoader.SaveAnswers(answersToSave);
         }
-
+        
         /// <summary>
         /// Converts the Prompts and Answers for the RTE Templates into text to put into the source field
         /// </summary>
