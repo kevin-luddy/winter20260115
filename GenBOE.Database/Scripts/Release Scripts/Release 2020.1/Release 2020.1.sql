@@ -195,7 +195,21 @@ ELSE
 		UPDATE EmailLU SET Body = 'A Custom Template, assigned to one of the following: BOE Description, Source of Data, Task Description, or MOQ Rationale, had one of its prompts deleted by a Workspace Administrator, in workspace {0}. Please review all of your BOEs / Tasks in the workspace.'
 					WHERE EmailId = 51;
 	END
+GO
 /*
 		5/8/2020		Dusan		BOEJ-4479 - Add emails to RTE templates
+		## END ##
+*/
+
+/*
+		## START ##
+		5/13/2020		Dusan		BOEJ-4612 - Fix a name of a template source
+*/
+
+UPDATE [RteTemplateSource] SET [Description] = 'BOE Sources of Data' WHERE Description = 'BOE Sources';
+GO
+
+/*
+		5/13/2020		Dusan		BOEJ-4612 - Fix a name of a template source
 		## END ##
 */
