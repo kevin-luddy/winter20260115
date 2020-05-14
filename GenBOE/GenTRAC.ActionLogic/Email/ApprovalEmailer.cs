@@ -60,7 +60,6 @@ namespace GenTRAC.ActionLogic.Email
         {
             ICollection<EmailInformationDto> emailList = this.emailInformationLoader.GetAllEmailsToBeSent(proposalId);
             this.logger.Debug(DateTime.Now.ToString() + " - Starting output to log.");
-            Collection<EmailInformationDto> successfulEmailList = new Collection<EmailInformationDto>();
 
             foreach (EmailInformationDto email in emailList)
             {
@@ -91,14 +90,12 @@ namespace GenTRAC.ActionLogic.Email
 
                 if(emailSent)
                 {
-                    successfulEmailList.Add(email);
+                    using (TransactionScope scope = new TransactionScope())
+                    {
+                        this.emailInformationLoader.UpdateEmailSent(email.ProposalId, email.ProposalEmailType);
+                        scope.Complete();
+                    }
                 }
-            }
-
-            foreach (EmailInformationDto email in successfulEmailList)
-            {
-                // Update the Database stating that the email has been sent.
-                this.emailInformationLoader.UpdateEmailSent(email.ProposalId, email.ProposalEmailType);
             }
 
             // Write the final trace message to the console trace listener.

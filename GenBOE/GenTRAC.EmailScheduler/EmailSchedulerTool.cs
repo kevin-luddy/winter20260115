@@ -9,7 +9,6 @@ namespace EmailScheduler
     using System;
     using System.Security.Principal;
     using System.Threading;
-    using System.Transactions;
     using GenTRAC.ActionLogic.Email;
     using GenTRAC.DataBridge.DTO;
     using IES.Common;
@@ -40,19 +39,14 @@ namespace EmailScheduler
                             DataFetchingScheduler dataFetchingScheduler = new DataFetchingScheduler();
                             IPtmEmailer emailer = new PtmEmailer(securityInformation, dataFetchingScheduler);
                             ApprovalEmailer approvalEmailer = new ApprovalEmailer(loader, emailer);
-                            // put the updating of the proposals inside a transaction
-                            using (TransactionScope scope = new TransactionScope())
+                            approvalEmailer.SendEmails(null);
+
+                            if (Utilities.IsTimeForDocumentReminderEmails())
                             {
-                                approvalEmailer.SendEmails(null);
-
-                                if(Utilities.IsTimeForDocumentReminderEmails())
-                                {
-                                    DocumentReminderEmailer documentReminderEmailer = new DocumentReminderEmailer(loader, emailer);
-                                    documentReminderEmailer.SendEmails();
-                                }
-
-                                scope.Complete();
+                                DocumentReminderEmailer documentReminderEmailer = new DocumentReminderEmailer(loader, emailer);
+                                documentReminderEmailer.SendEmails();
                             }
+
                         }
                     }
                     catch (System.Exception ex)
