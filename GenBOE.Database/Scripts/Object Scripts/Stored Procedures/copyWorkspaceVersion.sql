@@ -32,6 +32,7 @@ AS
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
 **		1/22/20		ranzalon			Fixed bug with missing RteTemplateSourceId
+**		5/15/20		Dusan				Changed Split_String function call to call our SplitString function
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -516,7 +517,7 @@ BEGIN
 	  FROM [version].[BOE]
 	WHERE WorkspaceID = @WorkspaceID AND VersionID = @VersionID AND BOEID IN
 	(
-		SELECT value as BOEID FROM string_split(@BoeList, ',')
+		SELECT Item as BOEID FROM dbo.SplitString(@BoeList, ',', DEFAULT)
 	)
 END
 
