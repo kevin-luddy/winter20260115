@@ -1424,29 +1424,34 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.IsTrue(rteLoadedBoe.WasDescriptionSet);
             Assert.IsTrue(nonRteLoadedBoe.WasMoqTextSet);
 
-            this.VerifyDtos(nonRteLoadedBoe, rteLoadedBoe);
+            VerifyDtos(nonRteLoadedBoe, rteLoadedBoe);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Leaving this here for future test support")]
-        private void VerifyCollections(ICollection<BoeTaskElementDTO> collection1, ICollection<BoeTaskElementDTO> collection2)
+        public static void VerifyCollections(ICollection<BoeTaskElementDTO> collection1, ICollection<BoeTaskElementDTO> collection2, bool skipFieldsNotRestoredFromBackup = false)
         {
             Assert.AreEqual(collection1.Count, collection2.Count);
             for (int i = 0; i < collection1.Count; i++)
             {
-                this.VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i));
+                VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i), skipFieldsNotRestoredFromBackup);
             }
         }
 
-        private void VerifyDtos(BoeTaskElementDTO dto1, BoeTaskElementDTO dto2)
+        public static void VerifyDtos(BoeTaskElementDTO dto1, BoeTaskElementDTO dto2, bool skipFieldsNotRestoredFromBackup = false)
         {
-            Assert.AreEqual(dto1.BoeID, dto2.BoeID);
+            if(!skipFieldsNotRestoredFromBackup)
+            {
+                Assert.AreEqual(dto1.BoeID, dto2.BoeID);
+                Assert.AreEqual(dto1.Id, dto2.Id);
+
+                // the equation contains variable IDs, so we cannot check it
+                Assert.AreEqual(dto1.MOQHoursEquation, dto2.MOQHoursEquation);
+            }
+
             Assert.AreEqual(dto1.BOETaskElementOrder, dto2.BOETaskElementOrder);
             Assert.AreEqual(dto1.BOETaskID, dto2.BOETaskID);
             Assert.AreEqual(dto1.EndDate, dto2.EndDate);
-            Assert.AreEqual(dto1.Id, dto2.Id);
             Assert.AreEqual(dto1.IMS_ID, dto2.IMS_ID);
             Assert.AreEqual(dto1.LaborTypeWarningFlag, dto2.LaborTypeWarningFlag);
-            Assert.AreEqual(dto1.MOQHoursEquation, dto2.MOQHoursEquation);
             Assert.AreEqual(dto1.MOQType, dto2.MOQType);
             Assert.AreEqual(dto1.MOQTypeName, dto2.MOQTypeName);
             Assert.AreEqual(dto1.StartDate, dto2.StartDate);
@@ -1469,33 +1474,44 @@ namespace GenBOE.Tests.DAL.DataLoaders
             }
 
             Assert.AreEqual(dto1.WorkspaceVariableIDs.Count, dto2.WorkspaceVariableIDs.Count);
-            for (int i = 0; i < dto1.WorkspaceVariableIDs.Count; i++)
+            if (!skipFieldsNotRestoredFromBackup)
             {
-                Assert.AreEqual(dto1.WorkspaceVariableIDs.ElementAt(i), dto2.WorkspaceVariableIDs.ElementAt(i));
+                for (int i = 0; i < dto1.WorkspaceVariableIDs.Count; i++)
+                {
+                    Assert.AreEqual(dto1.WorkspaceVariableIDs.ElementAt(i), dto2.WorkspaceVariableIDs.ElementAt(i));
+                }
             }
 
             Assert.AreEqual(dto1.CustomFieldValueContainers.Count, dto2.CustomFieldValueContainers.Count);
             for (int i = 0; i < dto1.CustomFieldValueContainers.Count; i++)
             {
-                Assert.AreEqual(dto1.CustomFieldValueContainers.ElementAt(i).ContainerID, dto2.CustomFieldValueContainers.ElementAt(i).ContainerID);
-                Assert.AreEqual(dto1.CustomFieldValueContainers.ElementAt(i).CustomFieldValueID, dto2.CustomFieldValueContainers.ElementAt(i).CustomFieldValueID);
+                if (!skipFieldsNotRestoredFromBackup)
+                {
+                    Assert.AreEqual(dto1.CustomFieldValueContainers.ElementAt(i).ContainerID, dto2.CustomFieldValueContainers.ElementAt(i).ContainerID);
+                    Assert.AreEqual(dto1.CustomFieldValueContainers.ElementAt(i).CustomFieldValueID, dto2.CustomFieldValueContainers.ElementAt(i).CustomFieldValueID);
+                    Assert.AreEqual(dto1.CustomFieldValueContainers.ElementAt(i).CustomFieldID, dto2.CustomFieldValueContainers.ElementAt(i).CustomFieldID);
+                }
+
                 Assert.AreEqual(dto1.CustomFieldValueContainers.ElementAt(i).UpdateDate, dto2.CustomFieldValueContainers.ElementAt(i).UpdateDate);
                 Assert.AreEqual(dto1.CustomFieldValueContainers.ElementAt(i).IsOpenEnded, dto2.CustomFieldValueContainers.ElementAt(i).IsOpenEnded);
                 Assert.AreEqual(dto1.CustomFieldValueContainers.ElementAt(i).OpenEndedValue, dto2.CustomFieldValueContainers.ElementAt(i).OpenEndedValue);
-                Assert.AreEqual(dto1.CustomFieldValueContainers.ElementAt(i).CustomFieldID, dto2.CustomFieldValueContainers.ElementAt(i).CustomFieldID);
             }
 
             Assert.AreEqual(dto1.OrdinaryVariables.Count, dto2.OrdinaryVariables.Count);
             for (int i = 0; i < dto1.OrdinaryVariables.Count; i++)
             {
-                Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).BoeID, dto2.OrdinaryVariables.ElementAt(i).BoeID);
+                if (!skipFieldsNotRestoredFromBackup)
+                {
+                    Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).Id, dto2.OrdinaryVariables.ElementAt(i).Id);
+                    Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).BoeID, dto2.OrdinaryVariables.ElementAt(i).BoeID);
+                    Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).TaskElementId, dto2.OrdinaryVariables.ElementAt(i).TaskElementId);
+                }
+
                 Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).DefaultSize, dto2.OrdinaryVariables.ElementAt(i).DefaultSize);
-                Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).Id, dto2.OrdinaryVariables.ElementAt(i).Id);
                 Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).IsPercentage, dto2.OrdinaryVariables.ElementAt(i).IsPercentage);
                 Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).OrdinaryVariableName, dto2.OrdinaryVariables.ElementAt(i).OrdinaryVariableName);
                 Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).OrdinaryVariableValue, dto2.OrdinaryVariables.ElementAt(i).OrdinaryVariableValue);
                 Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SortBOEBy, dto2.OrdinaryVariables.ElementAt(i).SortBOEBy);
-                Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).TaskElementId, dto2.OrdinaryVariables.ElementAt(i).TaskElementId);
                 Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).UpdateDate, dto2.OrdinaryVariables.ElementAt(i).UpdateDate);
                 Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).ValueType, dto2.OrdinaryVariables.ElementAt(i).ValueType);
                 Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).VariableType, dto2.OrdinaryVariables.ElementAt(i).VariableType);
@@ -1503,41 +1519,55 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).TaskElementIds.Count, dto2.OrdinaryVariables.ElementAt(i).TaskElementIds.Count);
                 for (int j = 0; j < dto1.OrdinaryVariables.ElementAt(i).TaskElementIds.Count; j++)
                 {
-                    Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).TaskElementIds.ElementAt(j), 
+                    if (!skipFieldsNotRestoredFromBackup)
+                    {
+
+                        Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).TaskElementIds.ElementAt(j),
                                     dto2.OrdinaryVariables.ElementAt(i).TaskElementIds.ElementAt(j));
+                    }
                 }
 
                 Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SumVariableResourceTypeIDs.Count, dto2.OrdinaryVariables.ElementAt(i).SumVariableResourceTypeIDs.Count);
-                for (int j = 0; j < dto1.OrdinaryVariables.ElementAt(i).SumVariableResourceTypeIDs.Count; j++)
+                if (!skipFieldsNotRestoredFromBackup)
                 {
-                    Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SumVariableResourceTypeIDs.ElementAt(j),
-                                    dto2.OrdinaryVariables.ElementAt(i).SumVariableResourceTypeIDs.ElementAt(j));
+                    for (int j = 0; j < dto1.OrdinaryVariables.ElementAt(i).SumVariableResourceTypeIDs.Count; j++)
+                    {
+                        Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SumVariableResourceTypeIDs.ElementAt(j),
+                                        dto2.OrdinaryVariables.ElementAt(i).SumVariableResourceTypeIDs.ElementAt(j));
+                    }
                 }
 
                 Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.Count, dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.Count);
                 for (int j = 0; j < dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.Count; j++)
                 {
-                    Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).BoeID,
+                    if (!skipFieldsNotRestoredFromBackup)
+                    {
+                        Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).BoeID,
                                     dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).BoeID);
-                    Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).CLINID,
-                                    dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).CLINID);
-                    Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).Id,
-                                    dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).Id);
-                    Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).OrdinaryVariableID,
-                                    dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).OrdinaryVariableID);
-                    Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).OVSumID,
-                                    dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).OVSumID);
-                    Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).UpdateDate,
-                                    dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).UpdateDate);
-                    Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).WBSID,
-                                    dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).WBSID);
+                        Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).CLINID,
+                                        dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).CLINID);
+                        Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).Id,
+                                        dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).Id);
+                        Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).OrdinaryVariableID,
+                                        dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).OrdinaryVariableID);
+                        Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).OVSumID,
+                                        dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).OVSumID);
+                        Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).UpdateDate,
+                                        dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).UpdateDate);
+                        Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).WBSID,
+                                        dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).WBSID);
+                    }
 
                     Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).ChildBoeIDs.Count,
                         dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).ChildBoeIDs.Count);
                     for (int k = 0; k < dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).ChildBoeIDs.Count; k++)
                     {
-                        Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).ChildBoeIDs.ElementAt(k),
+                        if (!skipFieldsNotRestoredFromBackup)
+                        {
+
+                            Assert.AreEqual(dto1.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).ChildBoeIDs.ElementAt(k),
                                         dto2.OrdinaryVariables.ElementAt(i).SelectedBOEsToSum.ElementAt(j).ChildBoeIDs.ElementAt(k));
+                        }
                     }
                 }
             }
@@ -1545,56 +1575,68 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(dto1.taskElementLabors.Count, dto2.taskElementLabors.Count);
             for (int i = 0; i < dto1.taskElementLabors.Count; i++)
             {
-                Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).BoeID, dto2.taskElementLabors.ElementAt(i).BoeID);
+                if (!skipFieldsNotRestoredFromBackup)
+                {
+                    Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).BoeID, dto2.taskElementLabors.ElementAt(i).BoeID);
+                    Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).Id, dto2.taskElementLabors.ElementAt(i).Id);
+                    Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).PerformingOrgID, dto2.taskElementLabors.ElementAt(i).PerformingOrgID);
+                    Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).ResourceID, dto2.taskElementLabors.ElementAt(i).ResourceID);
+                    Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).TaskElementId, dto2.taskElementLabors.ElementAt(i).TaskElementId);
+                    Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).LaborSortID, dto2.taskElementLabors.ElementAt(i).LaborSortID);
+                }
+
                 Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).EndDate, dto2.taskElementLabors.ElementAt(i).EndDate);
                 Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).EndDateValue, dto2.taskElementLabors.ElementAt(i).EndDateValue);
                 Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).HourSpreadLocked, dto2.taskElementLabors.ElementAt(i).HourSpreadLocked);
-                Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).Id, dto2.taskElementLabors.ElementAt(i).Id);
                 Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).PercentSpread, dto2.taskElementLabors.ElementAt(i).PercentSpread);
                 Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).PercentSpreadLocked, dto2.taskElementLabors.ElementAt(i).PercentSpreadLocked);
-                Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).PerformingOrgID, dto2.taskElementLabors.ElementAt(i).PerformingOrgID);
-                Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).ResourceID, dto2.taskElementLabors.ElementAt(i).ResourceID);
                 Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).SpreadCurveID, dto2.taskElementLabors.ElementAt(i).SpreadCurveID);
                 Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).SpreadType, dto2.taskElementLabors.ElementAt(i).SpreadType);
                 Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).StartDate, dto2.taskElementLabors.ElementAt(i).StartDate);
                 Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).StartDateValue, dto2.taskElementLabors.ElementAt(i).StartDateValue);
-                Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).TaskElementId, dto2.taskElementLabors.ElementAt(i).TaskElementId);
                 Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).UpdateDate, dto2.taskElementLabors.ElementAt(i).UpdateDate);
                 Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).ValueSpread, dto2.taskElementLabors.ElementAt(i).ValueSpread);
                 Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).CanOffload, dto2.taskElementLabors.ElementAt(i).CanOffload);
                 Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).TieredPercentage, dto2.taskElementLabors.ElementAt(i).TieredPercentage);
-                Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).LaborSortID, dto2.taskElementLabors.ElementAt(i).LaborSortID);
 
                 Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).CustomFieldValueContainers.Count, dto2.taskElementLabors.ElementAt(i).CustomFieldValueContainers.Count);
                 for (int j = 0; j < dto1.taskElementLabors.ElementAt(i).CustomFieldValueContainers.Count; j++)
                 {
-                    Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).ContainerID,
+                    if (!skipFieldsNotRestoredFromBackup)
+                    {
+                        Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).ContainerID,
                                     dto2.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).ContainerID);
-                    Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).CustomFieldValueID,
-                                    dto2.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).CustomFieldValueID);
+                        Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).CustomFieldValueID,
+                                        dto2.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).CustomFieldValueID);
+                        Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).CustomFieldID,
+                                        dto2.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).CustomFieldID);
+                    }
+
                     Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).UpdateDate,
                                     dto2.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).UpdateDate);
                     Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).IsOpenEnded,
                                     dto2.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).IsOpenEnded);
                     Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).OpenEndedValue,
                                     dto2.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).OpenEndedValue);
-                    Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).CustomFieldID,
-                                    dto2.taskElementLabors.ElementAt(i).CustomFieldValueContainers.ElementAt(j).CustomFieldID);
                 }
 
                 Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).LaborSpreads.Count, dto2.taskElementLabors.ElementAt(i).LaborSpreads.Count);
                 for (int j = 0; j < dto1.taskElementLabors.ElementAt(i).LaborSpreads.Count; j++)
                 {
-                    Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).BoeID,
+                    if (!skipFieldsNotRestoredFromBackup)
+                    {
+                        Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).BoeID,
                                     dto2.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).BoeID);
-                    Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).Id,
-                                    dto2.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).Id);
+                        Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).Id,
+                                        dto2.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).Id);
+                        Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).LaborTypeId,
+                                        dto2.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).LaborTypeId);
+                    }
+
                     Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).LaborSpreadDate,
                                     dto2.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).LaborSpreadDate);
                     Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).LaborSpreadValue,
                                     dto2.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).LaborSpreadValue);
-                    Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).LaborTypeId,
-                                    dto2.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).LaborTypeId);
                     Assert.AreEqual(dto1.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).UpdateDate,
                                     dto2.taskElementLabors.ElementAt(i).LaborSpreads.ElementAt(j).UpdateDate);
                 }

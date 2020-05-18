@@ -752,20 +752,23 @@ namespace GenBOE.Tests.DAL.DataLoaders
             //}
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Leaving this here for future test support")]
-        private void VerifyCollections(ICollection<WbsDTO> collection1, ICollection<WbsDTO> collection2)
+        public static void VerifyCollections(ICollection<WbsDTO> collection1, ICollection<WbsDTO> collection2, bool skipFieldsNotRestoredFromBackup = false)
         {
             Assert.AreEqual(collection1.Count, collection2.Count);
             for (int i = 0; i < collection1.Count; i++)
             {
-                this.VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i));
+                VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i), skipFieldsNotRestoredFromBackup);
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Leaving this here for future test support")]
-        private void VerifyDtos(WbsDTO dto1, WbsDTO dto2)
+        public static void VerifyDtos(WbsDTO dto1, WbsDTO dto2, bool skipFieldsNotRestoredFromBackup = false)
         {
-            Assert.AreEqual(dto1.Id, dto2.Id);
+            if (!skipFieldsNotRestoredFromBackup)
+            {
+                Assert.AreEqual(dto1.Id, dto2.Id);
+                Assert.AreEqual(dto1.WorkspaceID, dto2.WorkspaceID);
+            }
+
             Assert.AreEqual(dto1.inUse, dto2.inUse);
             Assert.AreEqual(dto1.Level, dto2.Level);
             Assert.AreEqual(dto1.Updateable, dto2.Updateable);
@@ -774,18 +777,23 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(dto1.WbsPaddedNumber, dto2.WbsPaddedNumber);
             Assert.AreEqual(dto1.WbsString, dto2.WbsString);
             Assert.AreEqual(dto1.WbsTitle, dto2.WbsTitle);
-            Assert.AreEqual(dto1.WorkspaceID, dto2.WorkspaceID);
 
             Assert.AreEqual(dto1.ClinIDs.Count, dto2.ClinIDs.Count);
-            for (int i = 0; i < dto1.ClinIDs.Count; i++)
+            if (!skipFieldsNotRestoredFromBackup)
             {
-                Assert.AreEqual(dto1.ClinIDs.ElementAt(i), dto2.ClinIDs.ElementAt(i));
+                for (int i = 0; i < dto1.ClinIDs.Count; i++)
+                {
+                    Assert.AreEqual(dto1.ClinIDs.ElementAt(i), dto2.ClinIDs.ElementAt(i));
+                }
             }
 
             Assert.AreEqual(dto1.ClinsInUse.Count, dto2.ClinsInUse.Count);
-            for (int i = 0; i < dto1.ClinsInUse.Count; i++)
+            if (!skipFieldsNotRestoredFromBackup)
             {
-                Assert.AreEqual(dto1.ClinsInUse.ElementAt(i), dto2.ClinsInUse.ElementAt(i));
+                for (int i = 0; i < dto1.ClinsInUse.Count; i++)
+                {
+                    Assert.AreEqual(dto1.ClinsInUse.ElementAt(i), dto2.ClinsInUse.ElementAt(i));
+                }
             }
         }
     }

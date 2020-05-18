@@ -408,8 +408,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             //}
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Leaving this here for future test support")]
-        private void VerifyCollections(ICollection<WorkspaceVariableDTO> collection1, ICollection<WorkspaceVariableDTO> collection2)
+        public static void VerifyCollections(ICollection<WorkspaceVariableDTO> collection1, ICollection<WorkspaceVariableDTO> collection2, bool skipFieldsNotRestoredFromBackup = false)
         {
             Assert.AreEqual(collection1.Count, collection2.Count);
             for (int i = 0; i < collection1.Count; i++)
@@ -420,52 +419,68 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 collection1.ElementAt(i).SumVariableResourceTypeIDs = collection1.ElementAt(i).SumVariableResourceTypeIDs.OrderBy(x => x).ToCollection();
                 collection2.ElementAt(i).SumVariableResourceTypeIDs = collection2.ElementAt(i).SumVariableResourceTypeIDs.OrderBy(x => x).ToCollection();
 
-                this.VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i));
+                VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i), skipFieldsNotRestoredFromBackup);
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Leaving this here for future test support")]
-        private void VerifyDtos(WorkspaceVariableDTO dto1, WorkspaceVariableDTO dto2)
+        public static void VerifyDtos(WorkspaceVariableDTO dto1, WorkspaceVariableDTO dto2, bool skipFieldsNotRestoredFromBackup = false)
         {
-            Assert.AreEqual(dto1.Id, dto2.Id);
+            if (!skipFieldsNotRestoredFromBackup)
+            {
+                Assert.AreEqual(dto1.Id, dto2.Id);
+                Assert.AreEqual(dto1.WorkspaceID, dto2.WorkspaceID);
+            }
+
             Assert.AreEqual(dto1.InUse, dto2.InUse);
             Assert.AreEqual(dto1.IsPercentage, dto2.IsPercentage);
             Assert.AreEqual(dto1.SortBOEBy, dto2.SortBOEBy);
             Assert.AreEqual(dto1.Updateable, dto2.Updateable);
             Assert.AreEqual(dto1.UpdateDate, dto2.UpdateDate);
             Assert.AreEqual(dto1.ValueType, dto2.ValueType);
-            Assert.AreEqual(dto1.WorkspaceID, dto2.WorkspaceID);
             Assert.AreEqual(dto1.WorkspaceVariableName, dto2.WorkspaceVariableName);
             Assert.AreEqual(dto1.WorkspaceVariableValue, dto2.WorkspaceVariableValue);
 
             Assert.AreEqual(dto1.SumVariableResourceTypeIDs.Count, dto2.SumVariableResourceTypeIDs.Count);
-            for (int i = 0; i < dto1.SumVariableResourceTypeIDs.Count; i++)
+            if (!skipFieldsNotRestoredFromBackup)
             {
-                Assert.AreEqual(dto1.SumVariableResourceTypeIDs.ElementAt(i), dto2.SumVariableResourceTypeIDs.ElementAt(i));
+                for (int i = 0; i < dto1.SumVariableResourceTypeIDs.Count; i++)
+                {
+                    Assert.AreEqual(dto1.SumVariableResourceTypeIDs.ElementAt(i), dto2.SumVariableResourceTypeIDs.ElementAt(i));
+                }
             }
 
             Assert.AreEqual(dto1.TaskElementIds.Count, dto2.TaskElementIds.Count);
-            for (int i = 0; i < dto1.TaskElementIds.Count; i++)
+            if (!skipFieldsNotRestoredFromBackup)
             {
-                Assert.AreEqual(dto1.TaskElementIds.ElementAt(i), dto2.TaskElementIds.ElementAt(i));
+                for (int i = 0; i < dto1.TaskElementIds.Count; i++)
+                {
+                    Assert.AreEqual(dto1.TaskElementIds.ElementAt(i), dto2.TaskElementIds.ElementAt(i));
+                }
             }
 
             Assert.AreEqual(dto1.SelectedBOEsToSum.Count, dto2.SelectedBOEsToSum.Count);
             for (int i = 0; i < dto1.SelectedBOEsToSum.Count; i++)
             {
-                Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).BoeID, dto2.SelectedBOEsToSum.ElementAt(i).BoeID);
-                Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).CLINID, dto2.SelectedBOEsToSum.ElementAt(i).CLINID);
-                Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).Id, dto2.SelectedBOEsToSum.ElementAt(i).Id);
-                Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).OrdinaryVariableID, dto2.SelectedBOEsToSum.ElementAt(i).OrdinaryVariableID);
-                Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).OVSumID, dto2.SelectedBOEsToSum.ElementAt(i).OVSumID);
+                if (!skipFieldsNotRestoredFromBackup)
+                {
+                    Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).BoeID, dto2.SelectedBOEsToSum.ElementAt(i).BoeID);
+                    Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).CLINID, dto2.SelectedBOEsToSum.ElementAt(i).CLINID);
+                    Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).Id, dto2.SelectedBOEsToSum.ElementAt(i).Id);
+                    Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).OrdinaryVariableID, dto2.SelectedBOEsToSum.ElementAt(i).OrdinaryVariableID);
+                    Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).OVSumID, dto2.SelectedBOEsToSum.ElementAt(i).OVSumID);
+                    Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).WBSID, dto2.SelectedBOEsToSum.ElementAt(i).WBSID);
+                }
+
                 Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).Updateable, dto2.SelectedBOEsToSum.ElementAt(i).Updateable);
                 Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).UpdateDate, dto2.SelectedBOEsToSum.ElementAt(i).UpdateDate);
-                Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).WBSID, dto2.SelectedBOEsToSum.ElementAt(i).WBSID);
 
                 Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).ChildBoeIDs.Count, dto2.SelectedBOEsToSum.ElementAt(i).ChildBoeIDs.Count);
-                for (int j = 0; j < dto1.SelectedBOEsToSum.ElementAt(i).ChildBoeIDs.Count; j++)
+                if (!skipFieldsNotRestoredFromBackup)
                 {
-                    Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).ChildBoeIDs.ElementAt(j), dto2.SelectedBOEsToSum.ElementAt(i).ChildBoeIDs.ElementAt(j));
+                    for (int j = 0; j < dto1.SelectedBOEsToSum.ElementAt(i).ChildBoeIDs.Count; j++)
+                    {
+                        Assert.AreEqual(dto1.SelectedBOEsToSum.ElementAt(i).ChildBoeIDs.ElementAt(j), dto2.SelectedBOEsToSum.ElementAt(i).ChildBoeIDs.ElementAt(j));
+                    }
                 }
             }
         }

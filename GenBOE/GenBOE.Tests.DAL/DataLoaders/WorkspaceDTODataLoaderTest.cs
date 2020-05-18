@@ -10,10 +10,20 @@ namespace GenBOE.Tests.DAL.DataLoaders
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using GenBOE.ActionLogic.BLL;
+    using GenBOE.ActionLogic.ControllerLogic;
+    using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Models;
+    using GenBOE.Objects;
+    using GenBOE.Tests.ActionLogic;
+    using GenBOE.Tests.DAL.DataLoaders;
     using IES.Common;
+    using IES.Common.classes;
+    using IES.Common.Exceptions;
+    using IES.Common.PickList;
+    using Microsoft.Practices.Unity;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
 
@@ -525,7 +535,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
             // change the export to whatever is in global
             workspaceModel.TemplateID = GlobalTestCaseSetup.GlobalWorkspaceTemplateID;
-            
+
             // add tracking number
             workspaceModel.TrackingNumber = "Mock Track";
 
@@ -743,13 +753,12 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(collection1.Count, collection2.Count);
             for (int i = 0; i < collection1.Count; i++)
             {
-                this.VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i));
+                VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i));
             }
         }
 
-        private void VerifyDtos(WorkspaceDTO dto1, WorkspaceDTO dto2)
+        public static void VerifyDtos(WorkspaceDTO dto1, WorkspaceDTO dto2, bool skipFieldsNotRestoredFromBackup = false)
         {
-            Assert.AreEqual(dto1.AllowSearch, dto2.AllowSearch);
             Assert.AreEqual(dto1.BOEExportSortByID, dto2.BOEExportSortByID);
             Assert.AreEqual(dto1.ContainsOCI, dto2.ContainsOCI);
             Assert.AreEqual(dto1.ContainsTemplate, dto2.ContainsTemplate);
@@ -758,30 +767,44 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(dto1.CostDecimalPrecision, dto2.CostDecimalPrecision);
             Assert.AreEqual(dto1.CostVolumeLeadPricerUserID, dto2.CostVolumeLeadPricerUserID);
             Assert.AreEqual(dto1.CreatedByUserID, dto2.CreatedByUserID);
-            Assert.AreEqual(dto1.DateDeleted, dto2.DateDeleted);
             Assert.AreEqual(dto1.DateRecalculationStarted, dto2.DateRecalculationStarted);
             Assert.AreEqual(dto1.DecimalPrecision, dto2.DecimalPrecision);
             Assert.AreEqual(dto1.Description, dto2.Description);
-            Assert.AreEqual(dto1.HasBeenDeleted, dto2.HasBeenDeleted);
-            Assert.AreEqual(dto1.Id, dto2.Id);
+
+            if (!skipFieldsNotRestoredFromBackup)
+            {
+                // IDs wouldn't be the same
+                Assert.AreEqual(dto1.Id, dto2.Id);
+                Assert.AreEqual(dto1.PerfOrgListID, dto2.PerfOrgListID);
+                Assert.AreEqual(dto1.ResourceListID, dto2.ResourceListID);
+                Assert.AreEqual(dto1.TemplateID, dto2.TemplateID);
+
+                // Names & update date are different
+                Assert.AreEqual(dto1.UpdateDate, dto2.UpdateDate);
+                Assert.AreEqual(dto1.WorkspaceName, dto2.WorkspaceName);
+                Assert.AreEqual(dto1.Shortname, dto2.Shortname);
+
+                // We are deleting it, so it's deleted & not searcheable
+                Assert.AreEqual(dto1.HasBeenDeleted, dto2.HasBeenDeleted);
+                Assert.AreEqual(dto1.AllowSearch, dto2.AllowSearch);
+                Assert.AreEqual(dto1.DateDeleted, dto2.DateDeleted);
+
+
+                // VERIFY ME
+                Assert.AreEqual(dto1.PerfOrgsChanged, dto2.PerfOrgsChanged);
+            }
+
+            Assert.AreEqual(string.IsNullOrEmpty(dto1.StatusComment), string.IsNullOrEmpty(dto2.StatusComment));
             Assert.AreEqual(dto1.NumberOfTimesExportedToProPricer, dto2.NumberOfTimesExportedToProPricer);
-            Assert.AreEqual(dto1.PerfOrgListID, dto2.PerfOrgListID);
-            Assert.AreEqual(dto1.PerfOrgsChanged, dto2.PerfOrgsChanged);
             Assert.AreEqual(dto1.ProposalClass.Id, dto2.ProposalClass.Id);
             Assert.AreEqual(dto1.ProposalStatus, dto2.ProposalStatus);
             Assert.AreEqual(dto1.ProposalSubmittalDate, dto2.ProposalSubmittalDate);
             Assert.AreEqual(dto1.ProposalTitle, dto2.ProposalTitle);
             Assert.AreEqual(dto1.ResourceDecimalPrecision, dto2.ResourceDecimalPrecision);
-            Assert.AreEqual(dto1.ResourceListID, dto2.ResourceListID);
             Assert.AreEqual(dto1.RFPNumber, dto2.RFPNumber);
             Assert.AreEqual(dto1.Segment, dto2.Segment);
-            Assert.AreEqual(dto1.Shortname, dto2.Shortname);
-            Assert.AreEqual(dto1.StatusComment, dto2.StatusComment);
-            Assert.AreEqual(dto1.TemplateID, dto2.TemplateID);
             Assert.AreEqual(dto1.TrackingNumber, dto2.TrackingNumber);
             Assert.AreEqual(dto1.Updateable, dto2.Updateable);
-            Assert.AreEqual(dto1.UpdateDate, dto2.UpdateDate);
-            Assert.AreEqual(dto1.WorkspaceName, dto2.WorkspaceName);
             Assert.AreEqual(dto1.WorkspaceState, dto2.WorkspaceState);
 
             Assert.AreEqual(dto1.SelectedContractTypes.Count, dto2.SelectedContractTypes.Count);
@@ -820,6 +843,136 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(1, result.Count(x => x.Field.Contains("Task MOQ Rationale")));
             Assert.AreEqual(1, result.Count(x => x.Field.Contains("BOE Sources Of Data")));
             Assert.AreEqual(1, result.Count(x => x.Field.Contains("BOE Description")));
+        }
+    }
+
+    /// <summary>
+    /// Separated this into a new class, so that way we don't automatically create all the objects which are carried via MOQLoaderObject
+    /// </summary>
+    [TestClass]
+    public class WorkspaceLoaderTestOnlyForCopy {
+
+        /// <summary>
+        /// Tests CopyWorkspaceVersion method.
+        /// </summary>
+        [TestMethod]
+        public void TestCopyWorkspaceVersion()
+        {
+            WorkspaceVersionMetaDataDTODataLoader versionLoader = new WorkspaceVersionMetaDataDTODataLoader();
+            WorkspaceDTODataLoader wsLoader = new WorkspaceDTODataLoader();
+            BoeDTODataLoader boeLoader = new BoeDTODataLoader();
+            ClinDTODataLoader clinLoader = new ClinDTODataLoader();
+            WbsDTODataLoader wbsLoader = new WbsDTODataLoader();
+            OtherDirectCostDTODataLoader odcLoader = new OtherDirectCostDTODataLoader();
+            ResourceDTODataLoader resourceLoder = new ResourceDTODataLoader();
+            PerformingOrgDTODataLoader perfOrgLoader = new PerformingOrgDTODataLoader();
+            WorkspaceVariableDTODataLoader wsVarLoader = new WorkspaceVariableDTODataLoader();
+            RteTemplateDataLoader rteLoader = new RteTemplateDataLoader();
+            ProPricerDTODataLoader ppLoader = new ProPricerDTODataLoader();
+            BoeTaskElementDTODataLoader taskLoader = new BoeTaskElementDTODataLoader(new ResourceTypeLoader(), new ResourceSpreadLoader(), new OrdinaryVariableLoader(), new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader());
+            IRetriever retriever = new Retriever(null, null, wsLoader, null, null, null, null, null, null, taskLoader, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+            FullObjectFactory fullObjectFactory = new FullObjectFactory(null, null, null, null, null, null, null, null, null, null, null, null);
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever);
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), fullObjectFactory);
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), new CommonDataMapper(new CommonDataLoader(), null));
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), new PermissionsDTODataLoader(new ActiveDirectoryUtilities()));
+
+            string backupComparisonWsName = "testws_4469_ini";
+            string originalWsName = "testws_4469_indup0001";
+            string backupName = "BACKUP";
+
+            int originalWsId = wsLoader.GetByShortname(originalWsName).Id;
+            int backupId = versionLoader.GetByWorkspaceID(originalWsId).First(x => x.VersionName == backupName).Id;
+
+            int wsRestoredFromBackupId = wsLoader.CopyWorkspaceVersion(originalWsId, "DELETED..TESTING " + DateTime.Now.ToLongTimeString().Replace(":", "_"), DateTime.Now.ToLongTimeString().Replace(":", "_"), backupId, string.Empty);
+
+            WorkspaceDTO wsFromDb = wsLoader.GetByShortname(backupComparisonWsName);
+            WorkspaceDTO wsRestoredFromBackup = wsLoader.GetById(wsRestoredFromBackupId);
+            WorkspaceRetrieveDataLoaderTest.VerifyDtos(wsFromDb, wsRestoredFromBackup, true);
+
+            var boesFromDb = boeLoader.GetByWorkspaceId(wsFromDb.Id);
+            var boesRestored = boeLoader.GetByWorkspaceId(wsRestoredFromBackupId);
+            BoeDTODataLoaderTest.VerifyCollections(boesFromDb, boesRestored, true);
+
+            var clinsFromDb = clinLoader.GetByWorkspaceId(wsFromDb.Id);
+            var clinsRestored = clinLoader.GetByWorkspaceId(wsRestoredFromBackupId);
+            ClinDTODataLoaderTest.VerifyCollections(clinsFromDb, clinsRestored, true);
+
+            var wbsFromDb = wbsLoader.GetByWorkspaceId(wsFromDb.Id);
+            var wbsRestored = wbsLoader.GetByWorkspaceId(wsRestoredFromBackupId);
+            WbsDTODataLoaderTest.VerifyCollections(wbsFromDb, wbsRestored, true);
+
+            var tasksFromDb = taskLoader.GetByWorkspaceId(wsFromDb.Id, true, wsFromDb.DecimalPrecision, wsFromDb.CostDecimalPrecision);
+            var tasksRestored = taskLoader.GetByWorkspaceId(wsRestoredFromBackupId, true, wsRestoredFromBackup.DecimalPrecision, wsRestoredFromBackup.CostDecimalPrecision);
+            BoeTaskElementDTODataLoaderTest.VerifyCollections(tasksFromDb, tasksRestored, true);
+
+            var odcsFromDb = odcLoader.GetByBoeIds(boesFromDb.Select(x => x.Id).ToList());
+            var odcsRestored = odcLoader.GetByBoeIds(boesRestored.Select(x => x.Id).ToList());
+            OtherDirectCostDTODataLoaderTest.VerifyCollections(odcsFromDb, odcsRestored, true);
+
+            var resourcesFromDb = resourceLoder.GetByIds(tasksFromDb.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID ?? -1).Distinct().ToList());
+            var resourcesRestored = resourceLoder.GetByIds(tasksRestored.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID ?? -1).Distinct().ToList());
+            ResourceDTODataLoaderTest.VerifyCollections(resourcesFromDb, resourcesRestored, true);
+
+            var wsVarsFromDb = wsVarLoader.GetByWorkspaceID(wsFromDb.Id);
+            var wsVarsRestored = wsVarLoader.GetByWorkspaceID(wsRestoredFromBackupId);
+            WorkspaceVariableDTODataLoaderTest.VerifyCollections(wsVarsFromDb, wsVarsRestored, true);
+
+            var ppFromDb = ppLoader.GetByWorkspaceId(wsFromDb.Id);
+            var ppRestored = ppLoader.GetByWorkspaceId(wsRestoredFromBackupId);
+            ProPricerDTODataLoaderTest.VerifyCollections(ppFromDb, ppRestored, true);
+
+            var perfOrgsFromDb = perfOrgLoader.GetByIds(tasksFromDb.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID ?? -1).Distinct().ToList());
+            var perfOrgsRestored = perfOrgLoader.GetByIds(tasksRestored.SelectMany(x => x.taskElementLabors).Select(z => z.ResourceID ?? -1).Distinct().ToList());
+            Assert.AreEqual(perfOrgsFromDb.Count, perfOrgsRestored.Count);
+            for (int i = 0; i < perfOrgsFromDb.Count; i++)
+            {
+                Assert.AreEqual(perfOrgsFromDb[i].IsSystemPerfOrg, perfOrgsRestored[i].IsSystemPerfOrg);
+                Assert.AreEqual(perfOrgsFromDb[i].PerformingOrgDesc, perfOrgsRestored[i].PerformingOrgDesc);
+                Assert.AreEqual(perfOrgsFromDb[i].PerformingOrgName, perfOrgsRestored[i].PerformingOrgName);
+                Assert.AreEqual(perfOrgsFromDb[i].UpdateDate, perfOrgsRestored[i].UpdateDate);
+            }
+
+            var rteTemplatesFromDb = rteLoader.GetTemplates(wsFromDb.Id);
+            var rteTemplatesRestored = rteLoader.GetTemplates(wsRestoredFromBackupId);
+            Assert.AreEqual(rteTemplatesFromDb.Count, rteTemplatesRestored.Count);
+            for (int i = 0; i < rteTemplatesFromDb.Count; i++)
+            {
+                Assert.AreEqual(rteTemplatesFromDb.ElementAt(i).Author, rteTemplatesRestored.ElementAt(i).Author);
+                Assert.AreEqual(rteTemplatesFromDb.ElementAt(i).AuthorId, rteTemplatesRestored.ElementAt(i).AuthorId);
+                Assert.AreEqual(rteTemplatesFromDb.ElementAt(i).CreationDate, rteTemplatesRestored.ElementAt(i).CreationDate);
+                Assert.AreEqual(rteTemplatesFromDb.ElementAt(i).Description, rteTemplatesRestored.ElementAt(i).Description);
+                Assert.AreEqual(rteTemplatesFromDb.ElementAt(i).InUse, rteTemplatesRestored.ElementAt(i).InUse);
+                Assert.AreEqual(rteTemplatesFromDb.ElementAt(i).LastUpdatedDate, rteTemplatesRestored.ElementAt(i).LastUpdatedDate);
+                Assert.AreEqual(rteTemplatesFromDb.ElementAt(i).UpdateDate, rteTemplatesRestored.ElementAt(i).UpdateDate);
+
+                Assert.AreEqual(rteTemplatesFromDb.ElementAt(i).Assigned.Count, rteTemplatesRestored.ElementAt(i).Assigned.Count);
+                for (int j = 0; j < rteTemplatesFromDb.ElementAt(i).Assigned.Count; i++)
+                {
+                    Assert.AreEqual(rteTemplatesFromDb.ElementAt(i).Assigned.ElementAt(j), rteTemplatesRestored.ElementAt(i).Assigned.ElementAt(j));
+                }
+
+                Assert.AreEqual(rteTemplatesFromDb.ElementAt(i).Questions.Count, rteTemplatesRestored.ElementAt(i).Questions.Count);
+                for (int j = 0; j < rteTemplatesFromDb.ElementAt(i).Questions.Count; i++)
+                {
+                    Assert.AreEqual(rteTemplatesFromDb.ElementAt(i).Questions.ElementAt(j).Required, rteTemplatesRestored.ElementAt(i).Questions.ElementAt(j).Required);
+                    Assert.AreEqual(rteTemplatesFromDb.ElementAt(i).Questions.ElementAt(j).SortOrder, rteTemplatesRestored.ElementAt(i).Questions.ElementAt(j).SortOrder);
+                    Assert.AreEqual(rteTemplatesFromDb.ElementAt(i).Questions.ElementAt(j).Text, rteTemplatesRestored.ElementAt(i).Questions.ElementAt(j).Text);
+                    Assert.AreEqual(rteTemplatesFromDb.ElementAt(i).Questions.ElementAt(j).UpdateDate, rteTemplatesRestored.ElementAt(i).Questions.ElementAt(j).UpdateDate);
+                }
+            }
+
+            var rteTemplateAnswersFromDb = rteLoader.GetByWorkspaceId(wsFromDb.Id, boesFromDb.Select(x => new FullBoe(x)).ToList());
+            var rteTemplateAnswersRestored = rteLoader.GetByWorkspaceId(wsRestoredFromBackupId, boesRestored.Select(x => new FullBoe(x)).ToList());
+            Assert.AreEqual(rteTemplateAnswersFromDb.Count, rteTemplateAnswersRestored.Count);
+            for (int i = 0; i < rteTemplateAnswersFromDb.Count; i++)
+            {
+                Assert.AreEqual(rteTemplateAnswersFromDb.ElementAt(i).AnswerText, rteTemplateAnswersRestored.ElementAt(i).AnswerText);
+                Assert.AreEqual(rteTemplateAnswersFromDb.ElementAt(i).QuestionText, rteTemplateAnswersRestored.ElementAt(i).QuestionText);
+                Assert.AreEqual(rteTemplateAnswersFromDb.ElementAt(i).Required, rteTemplateAnswersRestored.ElementAt(i).Required);
+                Assert.AreEqual(rteTemplateAnswersFromDb.ElementAt(i).SortOrder, rteTemplateAnswersRestored.ElementAt(i).SortOrder);
+                Assert.AreEqual(rteTemplateAnswersFromDb.ElementAt(i).SourceId, rteTemplateAnswersRestored.ElementAt(i).SourceId);
+            }
         }
     }
 }

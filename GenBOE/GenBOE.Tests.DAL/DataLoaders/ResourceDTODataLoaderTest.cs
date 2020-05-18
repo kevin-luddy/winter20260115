@@ -370,23 +370,25 @@ namespace GenBOE.Tests.DAL.DataLoaders
             //}
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Leaving this here for future test support")]
-        private void VerifyCollections(ICollection<ResourceDTO> collection1, ICollection<ResourceDTO> collection2)
+        public static void VerifyCollections(ICollection<ResourceDTO> collection1, ICollection<ResourceDTO> collection2, bool skipFieldsNotRestoredFromBackup = false)
         {
             Assert.AreEqual(collection1.Count, collection2.Count);
             for (int i = 0; i < collection1.Count; i++)
             {
-                this.VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i));
+                VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i), skipFieldsNotRestoredFromBackup);
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Leaving this here for future test support")]
-        private void VerifyDtos(ResourceDTO dto1, ResourceDTO dto2)
+        public static void VerifyDtos(ResourceDTO dto1, ResourceDTO dto2, bool skipFieldsNotRestoredFromBackup = false)
         {
+            if(!skipFieldsNotRestoredFromBackup)
+            {
+                Assert.AreEqual(dto1.Id, dto2.Id);
+            }
+
             Assert.AreEqual(dto1.BurdenPool, dto2.BurdenPool);
             Assert.AreEqual(dto1.CalculatedSegment, dto2.CalculatedSegment);
             Assert.AreEqual(dto1.ElementOfCost, dto2.ElementOfCost);
-            Assert.AreEqual(dto1.Id, dto2.Id);
             Assert.AreEqual(dto1.isSystemResource, dto2.isSystemResource);
             Assert.AreEqual(dto1.LaborType, dto2.LaborType);
             Assert.AreEqual(dto1.RateType, dto2.RateType);

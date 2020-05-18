@@ -347,31 +347,33 @@ namespace GenBOE.Tests.DAL.DataLoaders
             //}
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Leaving this here for future test support")]
-        private void VerifyCollections(ICollection<ClinDTO> collection1, ICollection<ClinDTO> collection2)
+        public static void VerifyCollections(ICollection<ClinDTO> collection1, ICollection<ClinDTO> collection2, bool skipFieldsNotRestoredFromBackup = false)
         {
             Assert.AreEqual(collection1.Count, collection2.Count);
             for (int i = 0; i < collection1.Count; i++)
             {
-                this.VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i));
+                VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i), skipFieldsNotRestoredFromBackup);
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Leaving this here for future test support")]
-        private void VerifyDtos(ClinDTO dto1, ClinDTO dto2)
+        public static void VerifyDtos(ClinDTO dto1, ClinDTO dto2, bool skipFieldsNotRestoredFromBackup = false)
         {
+            if(!skipFieldsNotRestoredFromBackup)
+            {
+                Assert.AreEqual(dto1.Id, dto2.Id);
+                Assert.AreEqual(dto1.WorkspaceID, dto2.WorkspaceID);
+            }
+
             Assert.AreEqual(dto1.ClinNumber, dto2.ClinNumber);
             Assert.AreEqual(dto1.ClinPaddedNumber, dto2.ClinPaddedNumber);
             Assert.AreEqual(dto1.ClinString, dto2.ClinString);
             Assert.AreEqual(dto1.ClinTitle, dto2.ClinTitle);
             Assert.AreEqual(dto1.EndDate, dto2.EndDate);
             Assert.AreEqual(dto1.ContractType, dto2.ContractType);
-            Assert.AreEqual(dto1.Id, dto2.Id);
             Assert.AreEqual(dto1.InUse, dto2.InUse);
             Assert.AreEqual(dto1.StartDate, dto2.StartDate);
             Assert.AreEqual(dto1.Updateable, dto2.Updateable);
             Assert.AreEqual(dto1.UpdateDate, dto2.UpdateDate);
-            Assert.AreEqual(dto1.WorkspaceID, dto2.WorkspaceID);
         }
     }
 }

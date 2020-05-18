@@ -570,39 +570,49 @@ namespace GenBOE.Tests.DAL.DataLoaders
             //}
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "Leaving this here for future test support")]
-        private void VerifyCollections(ICollection<ProPricerDTO> collection1, ICollection<ProPricerDTO> collection2)
+        public static void VerifyCollections(ICollection<ProPricerDTO> collection1, ICollection<ProPricerDTO> collection2, bool skipFieldsNotRestoredFromBackup = false)
         {
             Assert.AreEqual(collection1.Count, collection2.Count);
             for (int i = 0; i < collection1.Count; i++)
             {
-                this.VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i));
+                VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i), skipFieldsNotRestoredFromBackup);
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
-        private void VerifyDtos(ProPricerDTO dto1, ProPricerDTO dto2)
+        public static void VerifyDtos(ProPricerDTO dto1, ProPricerDTO dto2, bool skipFieldsNotRestoredFromBackup = false)
         {
-            Assert.AreEqual(dto1.ExportID, dto2.ExportID);
+            if(!skipFieldsNotRestoredFromBackup)
+            {
+                Assert.AreEqual(dto1.ExportID, dto2.ExportID);
+                Assert.AreEqual(dto1.WorkspaceID, dto2.WorkspaceID);
+            }
+
             Assert.AreEqual(dto1.FormatName, dto2.FormatName);
             Assert.AreEqual(dto1.Scope, dto2.Scope);
             Assert.AreEqual(dto1.UpdateDate, dto2.UpdateDate);
-            Assert.AreEqual(dto1.WorkspaceID, dto2.WorkspaceID);
 
             Assert.AreEqual(dto1.ProPricerResources.Count, dto2.ProPricerResources.Count);
             for (int i = 0; i < dto1.ProPricerResources.Count; i++)
             {
-                Assert.AreEqual(dto1.ProPricerResources.ElementAt(i).CustomFieldID, dto2.ProPricerResources.ElementAt(i).CustomFieldID);
+                if (!skipFieldsNotRestoredFromBackup)
+                {
+                    Assert.AreEqual(dto1.ProPricerResources.ElementAt(i).CustomFieldID, dto2.ProPricerResources.ElementAt(i).CustomFieldID);
+                    Assert.AreEqual(dto1.ProPricerResources.ElementAt(i).Resource, dto2.ProPricerResources.ElementAt(i).Resource);
+                }
+
                 Assert.AreEqual(dto1.ProPricerResources.ElementAt(i).ListOrder, dto2.ProPricerResources.ElementAt(i).ListOrder);
-                Assert.AreEqual(dto1.ProPricerResources.ElementAt(i).Resource, dto2.ProPricerResources.ElementAt(i).Resource);
                 Assert.AreEqual(dto1.ProPricerResources.ElementAt(i).Selection, dto2.ProPricerResources.ElementAt(i).Selection);
             }
 
             Assert.AreEqual(dto1.ProPricerTasks.Count, dto2.ProPricerTasks.Count);
             for (int i = 0; i < dto1.ProPricerTasks.Count; i++)
             {
-                Assert.AreEqual(dto1.ProPricerTasks.ElementAt(i).CustomFieldID, dto2.ProPricerTasks.ElementAt(i).CustomFieldID);
-                Assert.AreEqual(dto1.ProPricerTasks.ElementAt(i).ListOrder, dto2.ProPricerTasks.ElementAt(i).ListOrder);
+                if (!skipFieldsNotRestoredFromBackup)
+                {
+                    Assert.AreEqual(dto1.ProPricerTasks.ElementAt(i).CustomFieldID, dto2.ProPricerTasks.ElementAt(i).CustomFieldID);
+                    Assert.AreEqual(dto1.ProPricerTasks.ElementAt(i).ListOrder, dto2.ProPricerTasks.ElementAt(i).ListOrder);
+                }
+
                 Assert.AreEqual(dto1.ProPricerTasks.ElementAt(i).Selection, dto2.ProPricerTasks.ElementAt(i).Selection);
                 Assert.AreEqual(dto1.ProPricerTasks.ElementAt(i).Task, dto2.ProPricerTasks.ElementAt(i).Task);
             }

@@ -227,7 +227,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
             Assert.IsTrue(saveResults.Count == 3);
 
-            this.Check2CollectionsOfBoes(BoeCollection, actualDTOs);
+            VerifyCollections(BoeCollection, actualDTOs);
         }
 
         /// <summary>
@@ -530,7 +530,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.IsTrue(rteLoadedBoe.WasDataSourceSet);
             Assert.IsTrue(rteLoadedBoe.WasDescriptionSet);
 
-            this.Check2IndividualBoes(nonRteLoadedBoe, rteLoadedBoe);
+            VerifyDtos(nonRteLoadedBoe, rteLoadedBoe);
         }
 
         /// <summary>
@@ -538,13 +538,12 @@ namespace GenBOE.Tests.DAL.DataLoaders
         /// </summary>
         /// <param name="boes1">First set of Boes</param>
         /// <param name="boes2">Second set of Boes</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification = "These are left here if we need to do full BOE checks in the future..")]
-        private void Check2CollectionsOfBoes(ICollection<BoeDTO> boes1, ICollection<BoeDTO> boes2)
+        public static void VerifyCollections(ICollection<BoeDTO> boes1, ICollection<BoeDTO> boes2, bool skipFieldsNotRestoredFromBackup = false)
         {
             Assert.AreEqual(boes1.Count, boes2.Count);
             for (int i = 0; i < boes1.Count; i++)
             {
-                this.Check2IndividualBoes(boes1.ElementAt(i), boes2.ElementAt(i));
+                VerifyDtos(boes1.ElementAt(i), boes2.ElementAt(i), skipFieldsNotRestoredFromBackup);
             }
         }
 
@@ -553,9 +552,23 @@ namespace GenBOE.Tests.DAL.DataLoaders
         /// </summary>
         /// <param name="boe1">First Boe</param>
         /// <param name="boe2">Second Boe</param>
-        private void Check2IndividualBoes(BoeDTO boe1, BoeDTO boe2)
+        public static void VerifyDtos(BoeDTO boe1, BoeDTO boe2, bool skipFieldsNotRestoredFromBackup = false)
         {
-            Assert.AreEqual(boe1.Id, boe2.Id);
+            if (!skipFieldsNotRestoredFromBackup)
+            {
+                Assert.AreEqual(boe1.Id, boe2.Id);
+                Assert.AreEqual(boe1.WorkspaceID, boe2.WorkspaceID);
+                Assert.AreEqual(boe1.CLINID, boe2.CLINID);
+                Assert.AreEqual(boe1.WBSID, boe2.WBSID);
+                Assert.AreEqual(boe1.WCBID, boe2.WCBID);
+                Assert.AreEqual(boe1.State, boe2.State);
+                Assert.AreEqual(boe1.SubmitForApprovalDate, boe2.SubmitForApprovalDate);
+            }
+            else
+            {
+                Assert.AreEqual(boe1.State, BOEState.Draft);
+                Assert.AreEqual(boe1.SubmitForApprovalDate.Date, DateTime.MinValue.Date);
+            }
 
             Assert.AreEqual(boe1.AuthorIDs.Count, boe2.AuthorIDs.Count);
             for (int i = 0; i < boe1.AuthorIDs.Count; i++)
@@ -572,30 +585,27 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(boe1.CustomFieldValueContainers.Count, boe2.CustomFieldValueContainers.Count);
             for (int i = 0; i < boe1.CustomFieldValueContainers.Count; i++)
             {
-                Assert.AreEqual(boe1.CustomFieldValueContainers.ElementAt(i).ContainerID, boe2.CustomFieldValueContainers.ElementAt(i).ContainerID);
-                Assert.AreEqual(boe1.CustomFieldValueContainers.ElementAt(i).CustomFieldValueID, boe2.CustomFieldValueContainers.ElementAt(i).CustomFieldValueID);
+                if (!skipFieldsNotRestoredFromBackup)
+                {
+                    Assert.AreEqual(boe1.CustomFieldValueContainers.ElementAt(i).ContainerID, boe2.CustomFieldValueContainers.ElementAt(i).ContainerID);
+                    Assert.AreEqual(boe1.CustomFieldValueContainers.ElementAt(i).CustomFieldValueID, boe2.CustomFieldValueContainers.ElementAt(i).CustomFieldValueID);
+                    Assert.AreEqual(boe1.CustomFieldValueContainers.ElementAt(i).CustomFieldID, boe2.CustomFieldValueContainers.ElementAt(i).CustomFieldID);
+                }
+
                 Assert.AreEqual(boe1.CustomFieldValueContainers.ElementAt(i).UpdateDate, boe2.CustomFieldValueContainers.ElementAt(i).UpdateDate);
                 Assert.AreEqual(boe1.CustomFieldValueContainers.ElementAt(i).IsOpenEnded, boe2.CustomFieldValueContainers.ElementAt(i).IsOpenEnded);
                 Assert.AreEqual(boe1.CustomFieldValueContainers.ElementAt(i).OpenEndedValue, boe2.CustomFieldValueContainers.ElementAt(i).OpenEndedValue);
-                Assert.AreEqual(boe1.CustomFieldValueContainers.ElementAt(i).CustomFieldID, boe2.CustomFieldValueContainers.ElementAt(i).CustomFieldID);
             }
 
-            Assert.AreEqual(boe1.CLINID, boe2.CLINID);
             Assert.AreEqual(boe1.CopySourceBoeId, boe2.CopySourceBoeId);
-            Assert.AreEqual(boe1.CustomFieldValueContainers.Count, boe2.CustomFieldValueContainers.Count);
             Assert.AreEqual(boe1.EndDate, boe2.EndDate);
             Assert.AreEqual(boe1.HistoricMetricDisclosureChecked, boe2.HistoricMetricDisclosureChecked);
             Assert.AreEqual(boe1.isMaterial, boe2.isMaterial);
             Assert.AreEqual(boe1.NumAuthorReassigned, boe2.NumAuthorReassigned);
             Assert.AreEqual(boe1.StartDate, boe2.StartDate);
-            Assert.AreEqual(boe1.State, boe2.State);
-            Assert.AreEqual(boe1.SubmitForApprovalDate, boe2.SubmitForApprovalDate);
             Assert.AreEqual(boe1.Title, boe2.Title);
             Assert.AreEqual(boe1.UpdateDate, boe2.UpdateDate);
             Assert.AreEqual(boe1.UpdatedByUserId, boe2.UpdatedByUserId);
-            Assert.AreEqual(boe1.WBSID, boe2.WBSID);
-            Assert.AreEqual(boe1.WCBID, boe2.WCBID);
-            Assert.AreEqual(boe1.WorkspaceID, boe2.WorkspaceID);
             Assert.AreEqual(boe1.WasDataSourceSet, boe2.WasDataSourceSet);
 
             if (boe1.WasDataSourceSet && boe2.WasDataSourceSet)

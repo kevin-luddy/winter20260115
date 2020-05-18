@@ -74,28 +74,31 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.IsTrue(rteLoadedBoe.WasDescriptionSet);
             Assert.IsTrue(nonRteLoadedBoe.WasMoqTextSet);
 
-            this.VerifyDtos(nonRteLoadedBoe, rteLoadedBoe);
+            VerifyDtos(nonRteLoadedBoe, rteLoadedBoe);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode", Justification="Leaving this here for future test support")]
-        private void VerifyCollections(ICollection<OtherDirectCostDTO> collection1, ICollection<OtherDirectCostDTO> collection2)
+        public static void VerifyCollections(ICollection<OtherDirectCostDTO> collection1, ICollection<OtherDirectCostDTO> collection2, bool skipFieldsNotRestoredFromBackup = false)
         {
             Assert.AreEqual(collection1.Count, collection2.Count);
             for (int i = 0; i < collection1.Count; i++)
             {
-                this.VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i));
+                VerifyDtos(collection1.ElementAt(i), collection2.ElementAt(i), skipFieldsNotRestoredFromBackup);
             }
         }
 
-        private void VerifyDtos(OtherDirectCostDTO dto1, OtherDirectCostDTO dto2)
+        public static void VerifyDtos(OtherDirectCostDTO dto1, OtherDirectCostDTO dto2, bool skipFieldsNotRestoredFromBackup = false)
         {
-            Assert.AreEqual(dto1.BoeID, dto2.BoeID);
+            if (!skipFieldsNotRestoredFromBackup)
+            {
+                Assert.AreEqual(dto1.BoeID, dto2.BoeID);
+                Assert.AreEqual(dto1.BOETaskID, dto2.BOETaskID);
+                Assert.AreEqual(dto1.TaskID, dto2.TaskID);
+            }
+
             Assert.AreEqual(dto1.BOETaskElementOrder, dto2.BOETaskElementOrder);
-            Assert.AreEqual(dto1.BOETaskID, dto2.BOETaskID); 
             Assert.AreEqual(dto1.EndDate, dto2.EndDate);
             Assert.AreEqual(dto1.Id, dto2.Id);
             Assert.AreEqual(dto1.StartDate, dto2.StartDate);
-            Assert.AreEqual(dto1.TaskID, dto2.TaskID);
             Assert.AreEqual(dto1.TaskTitle, dto2.TaskTitle);
             Assert.AreEqual(dto1.UpdateDate, dto2.UpdateDate);
             Assert.AreEqual(dto1.WasDescriptionSet, dto2.WasDescriptionSet);
@@ -114,10 +117,14 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(dto1.ODCTypes.Count, dto2.ODCTypes.Count);
             for (int i = 0; i < dto1.ODCTypes.Count; i++)
             {
-                Assert.AreEqual(dto1.ODCTypes.ElementAt(i).BoeID, dto2.ODCTypes.ElementAt(i).BoeID);
+                if (!skipFieldsNotRestoredFromBackup)
+                {
+                    Assert.AreEqual(dto1.ODCTypes.ElementAt(i).BoeID, dto2.ODCTypes.ElementAt(i).BoeID);
+                    Assert.AreEqual(dto1.ODCTypes.ElementAt(i).Id, dto2.ODCTypes.ElementAt(i).Id);
+                }
+
                 Assert.AreEqual(dto1.ODCTypes.ElementAt(i).Cost, dto2.ODCTypes.ElementAt(i).Cost);
                 Assert.AreEqual(dto1.ODCTypes.ElementAt(i).EndDate, dto2.ODCTypes.ElementAt(i).EndDate);
-                Assert.AreEqual(dto1.ODCTypes.ElementAt(i).Id, dto2.ODCTypes.ElementAt(i).Id);
                 Assert.AreEqual(dto1.ODCTypes.ElementAt(i).ODCTypeID, dto2.ODCTypes.ElementAt(i).ODCTypeID);
                 Assert.AreEqual(dto1.ODCTypes.ElementAt(i).PerformingOrgID, dto2.ODCTypes.ElementAt(i).PerformingOrgID);
                 Assert.AreEqual(dto1.ODCTypes.ElementAt(i).ResourceID, dto2.ODCTypes.ElementAt(i).ResourceID);
@@ -128,12 +135,16 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 Assert.AreEqual(dto1.ODCTypes.ElementAt(i).ODCSpreads.Count, dto1.ODCTypes.ElementAt(i).ODCSpreads.Count);
                 for (int j = 0; j < dto1.ODCTypes.ElementAt(i).ODCSpreads.Count; j++)
                 {
-                    Assert.AreEqual(dto1.ODCTypes.ElementAt(i).ODCSpreads.ElementAt(j).BoeID, 
+                    if (!skipFieldsNotRestoredFromBackup)
+                    {
+                        Assert.AreEqual(dto1.ODCTypes.ElementAt(i).ODCSpreads.ElementAt(j).BoeID,
                                     dto2.ODCTypes.ElementAt(i).ODCSpreads.ElementAt(j).BoeID);
+                        Assert.AreEqual(dto1.ODCTypes.ElementAt(i).ODCSpreads.ElementAt(j).Id,
+                                        dto2.ODCTypes.ElementAt(i).ODCSpreads.ElementAt(j).Id);
+                    }
+
                     Assert.AreEqual(dto1.ODCTypes.ElementAt(i).ODCSpreads.ElementAt(j).CostSpreadValue, 
                                     dto2.ODCTypes.ElementAt(i).ODCSpreads.ElementAt(j).CostSpreadValue);
-                    Assert.AreEqual(dto1.ODCTypes.ElementAt(i).ODCSpreads.ElementAt(j).Id, 
-                                    dto2.ODCTypes.ElementAt(i).ODCSpreads.ElementAt(j).Id);
                     Assert.AreEqual(dto1.ODCTypes.ElementAt(i).ODCSpreads.ElementAt(j).ODCSpreadDate, 
                                     dto2.ODCTypes.ElementAt(i).ODCSpreads.ElementAt(j).ODCSpreadDate);
                     Assert.AreEqual(dto1.ODCTypes.ElementAt(i).ODCSpreads.ElementAt(j).ODCSpreadID, 
