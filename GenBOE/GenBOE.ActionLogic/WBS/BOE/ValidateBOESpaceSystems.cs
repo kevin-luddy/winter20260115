@@ -26,7 +26,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
             ITripDTODataLoader inTripDTODataLoader,
             IMiscTravelRateDTOLoader inMiscTravelRateDTOLoader,
             ILocationDTODataLoader inLocationDTODataLoader,
-            IOffloadRatesDTOLoader offloadRatesDTOLoader
+            IOffloadRatesDTOLoader offloadRatesDTOLoader,
+            IRteTemplateDataLoader rteTemplateDataLoader
             )
             : base(
             inVariableSelectBOEtoSumCalculation,
@@ -34,7 +35,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
             inTripDTODataLoader, 
             inMiscTravelRateDTOLoader, 
             inLocationDTODataLoader,  
-            offloadRatesDTOLoader)
+            offloadRatesDTOLoader, 
+            rteTemplateDataLoader)
         {
 
         }
@@ -65,29 +67,11 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// <summary>
         /// Tests if the Source of Data field is valid for SSC
         /// </summary>
-        /// <param name="sourcesOfData">The string to test</param>
         /// <returns>Always returns True</returns>
-        protected override bool IsSourcesOfDataValid(string sourcesOfData)
+        protected override bool IsSourcesOfDataValid(BoeDTO boe, int wsId)
         {
             // always return true since the field isn't required
             return true;
-        }
-
-        /// <summary>
-        /// Determines whether Description is valid.
-        /// </summary>
-        /// <param name="inBOE">The boe.</param>
-        /// <returns>
-        ///   <c>true</c> if description is valid; otherwise, <c>false</c>.
-        /// </returns>
-        protected override bool IsDescriptionValid(BoeDTO inBOE)
-        {
-            if (inBOE == null)
-            {
-                throw new ArgumentNullException(nameof(inBOE));
-            }
-            // validate description
-            return !string.IsNullOrEmpty(inBOE.Description);
         }
 
         /// <summary>

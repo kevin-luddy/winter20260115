@@ -1235,7 +1235,8 @@ namespace GenBOE
                                                                                                                                 new ResolvedParameter(typeof(ILocationDTODataLoader)),
                                                                                                                                 new ResolvedParameter(typeof(IMSTZoneTravelValidator)),
                                                                                                                                 new ResolvedParameter(typeof(RMSZoneTravelRatesFeesDataLoader)),
-                                                                                                                                new ResolvedParameter(typeof(IOffloadRatesDTOLoader))));
+                                                                                                                                new ResolvedParameter(typeof(IOffloadRatesDTOLoader)),
+                                                                                                                                new ResolvedParameter(typeof(IRteTemplateDataLoader))));
                     break;
                 case CompanyConfiguration.SpaceSystems:
                     GenBOEUnityContainer.Container.RegisterType(typeof(IValidateBOE), typeof(ValidateBOESpaceSystems), GetLifetimeManager(), new InjectionConstructor(
@@ -1244,7 +1245,8 @@ namespace GenBOE
                                                                                                                                 new ResolvedParameter(typeof(ITripDTODataLoader)),
                                                                                                                                 new ResolvedParameter(typeof(IMiscTravelRateDTOLoader)),
                                                                                                                                 new ResolvedParameter(typeof(ILocationDTODataLoader)),
-                                                                                                                                new ResolvedParameter(typeof(IOffloadRatesDTOLoader))));
+                                                                                                                                new ResolvedParameter(typeof(IOffloadRatesDTOLoader)),
+                                                                                                                                new ResolvedParameter(typeof(IRteTemplateDataLoader))));
                     break;
 
                 default:
@@ -1254,7 +1256,8 @@ namespace GenBOE
                                                                                                                                 new ResolvedParameter(typeof(ITripDTODataLoader)),
                                                                                                                                 new ResolvedParameter(typeof(IMiscTravelRateDTOLoader)),
                                                                                                                                 new ResolvedParameter(typeof(ILocationDTODataLoader)),
-                                                                                                                                new ResolvedParameter(typeof(IOffloadRatesDTOLoader))));
+                                                                                                                                new ResolvedParameter(typeof(IOffloadRatesDTOLoader)),
+                                                                                                                                new ResolvedParameter(typeof(IRteTemplateDataLoader))));
                     break;
             }
 

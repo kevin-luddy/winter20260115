@@ -39,14 +39,16 @@ namespace GenBOE.ActionLogic.WBS.BOE
             ILocationDTODataLoader inLocationDTODataLoader,
             IMSTZoneTravelValidator mstZoneTravelValidator,
             RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader,
-            IOffloadRatesDTOLoader offloadRatesDTOLoader)
+            IOffloadRatesDTOLoader offloadRatesDTOLoader,
+            IRteTemplateDataLoader rteTemplateDataLoader)
             : base(
             inVariableSelectBOEtoSumCalculation,
             inBOECommentsResponsesValidator, 
             inTripDTODataLoader, 
             inMiscTravelRateDTOLoader, 
             inLocationDTODataLoader,
-            offloadRatesDTOLoader)
+            offloadRatesDTOLoader,
+            rteTemplateDataLoader)
         {
             this.mstMetricsLoader = mstMetricsLoader;
             this.mstZoneTravelValidator = mstZoneTravelValidator;
@@ -107,7 +109,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// </summary>
         /// <param name="sourcesOfData">The string to test</param>
         /// <returns>Always returns True</returns>
-        protected override bool IsSourcesOfDataValid(string sourcesOfData)
+        protected override bool IsSourcesOfDataValid(BoeDTO boe, int wsId)
         {
             // always return true since the field isn't required
             return true;

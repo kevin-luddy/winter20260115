@@ -33,6 +33,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
         private IMiscTravelRateDTOLoader miscTravelRateDTOLoader;
         private ILocationDTODataLoader _LocationDTODataLoader;
         private IOffloadRatesDTOLoader offloadRatesDTOLoader;
+        private IRteTemplateDataLoader rteTemplateDataLoader;
 
         /// <summary>
         /// Default constructor
@@ -43,7 +44,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
             ITripDTODataLoader inTripDTODataLoader,
             IMiscTravelRateDTOLoader inMiscTravelRateDTOLoader,
             ILocationDTODataLoader inLocationDTODataLoader,
-            IOffloadRatesDTOLoader offloadRatesDTOLoader
+            IOffloadRatesDTOLoader offloadRatesDTOLoader,
+            IRteTemplateDataLoader rteTemplateDataLoader
             )
         {
             this.miscTravelRateDTOLoader = inMiscTravelRateDTOLoader;
@@ -53,6 +55,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
             this._BOECommentsResponsesValidator = inBOECommentsResponsesValidator;
 
             this.offloadRatesDTOLoader = offloadRatesDTOLoader;
+            this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
         /// <summary>
@@ -63,7 +66,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// <param name="ws">Full WS</param>
         /// <returns>all possible validation messages</returns>
         /// Suppressed the following messages because 1) I do use BoeLabor just not in the way the code analysis wants me too and 2) if you can make this less complex, go for it!
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         public virtual ValidationBOEModelView ValidateBOE_OnValidateBtnClick(FullBoe inBOE, FullWorkspace ws)
         {
             // See wireframes for what should be checked on "Validate" button click.
@@ -167,13 +169,13 @@ namespace GenBOE.ActionLogic.WBS.BOE
             this._CheckIfBOEDateIsValidAgainstContractDate(inBOE, ValidationBOE, ws);
             
             // validate BOE description
-            if (!this.IsDescriptionValid(inBOE))
+            if (!this.IsDescriptionValid(inBOE, ws.Id))
             {
                 ValidationBOE.BOEHeaderMsgs.Add(BoeDTO.BOE_DESC_REQUIRED);
             }
 
             // validate sources of data
-            if (!this.IsSourcesOfDataValid(inBOE.DataSource))
+            if (!this.IsSourcesOfDataValid(inBOE, ws.Id))
             {
                 ValidationBOE.BOEHeaderMsgs.Add(BoeDTO.DATA_SOURCE_REQUIRED);
             }
@@ -301,7 +303,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "3")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "5")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1062:Validate arguments of public methods", MessageId = "4")]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "5#"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "4#"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "3#")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "5#")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "4#")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "3#")]
         protected virtual void _ValidateTravel(FullBoe inBOE, FullWorkspace ws, ValidationBOEModelView ValidationBOE, ref ValidationBOETasks travelTasks, ref Collection<string> travelTaskElementMessages, ref Collection<string> TravelTypeMessages, ValidationBOELaborType travelType)
         {
             if (ws == null) { throw new ArgumentNullException(nameof(ws)); }
@@ -439,7 +443,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         private void _ValidateLaborTaskElement(FullWorkspace workspace, FullBoe inBOE, ValidationBOEModelView ValidationBOE, ref ValidationBOETasks boeTasks, ref Collection<string> TaskElementMessages, ValidationBOELaborType boeLabor, ref Collection<string> LaborTypeMessages, ref string MOQEquationCalc, ref decimal TotalLaborSpreadValue)
         {
             Collection<string> ReturnMsgs;
@@ -466,11 +470,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 if (boeTask.TaskElementType == TaskElementType.Labor && boeTask.MOQType.Equals(MOQType.None))
                 {
                     TaskElementMessages.Add(BoeDTO.MOQ_TYPE_REQUIRED);
-                }
-
-                if (boeTask.TaskElementType == TaskElementType.Labor && string.IsNullOrWhiteSpace(boeTask.Description))
-                {
-                    TaskElementMessages.Add(BoeDTO.TASK_DESCRIPTION_REQUIRED);
                 }
 
                 // (rule only valid for non summary Labor TE)
@@ -540,11 +539,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
                         break;
                 }
 
-                // Validate MOQ Text
-                if (string.IsNullOrEmpty(boeTask.MOQText))
-                {
-                    TaskElementMessages.Add(this.FormatMOQTextErrorMessage(BoeDTO.MOQ_TEXT_REQUIRED));
-                }
+                ValidateTaskMoqText(workspace, inBOE, TaskElementMessages, boeTask);
+                ValidateTaskDescription(workspace, inBOE, TaskElementMessages, boeTask);
 
                 if (boeTask.TaskElementType == TaskElementType.Labor)
                 {
@@ -596,6 +592,39 @@ namespace GenBOE.ActionLogic.WBS.BOE
                     // setting for the validation all boe to link the user to the task.
                     boeTasks.TaskId = boeTask.Id;
                     ValidationBOE.Tasks.Add(boeTasks);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Validates Tasks MOQ Text, including RTE Templates in the process
+        /// </summary>        
+        private void ValidateTaskMoqText(FullWorkspace workspace, FullBoe inBOE, Collection<string> TaskElementMessages, BoeTaskElementDTO boeTask)
+        {
+            if (string.IsNullOrEmpty(boeTask.MOQText)) // if no data in the field itself
+            {
+                // the field is valid if templates are being used, AND all required prompts are answered
+                var taskTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, inBOE.Id, boeTask.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ);
+                if (!taskTemplateWithPrompts.Any() || taskTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText)))
+                {
+                    TaskElementMessages.Add(this.FormatMOQTextErrorMessage(BoeDTO.MOQ_TEXT_REQUIRED));
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Validates Tasks Description, including RTE Templates in the process
+        /// </summary>        
+        private void ValidateTaskDescription(FullWorkspace workspace, FullBoe inBOE, Collection<string> TaskElementMessages, BoeTaskElementDTO boeTask)
+        {
+            if (string.IsNullOrEmpty(boeTask.Description)) // if no data in the field itself
+            {
+                // the field is valid if templates are being used, AND all required prompts are answered
+                var taskTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, inBOE.Id, boeTask.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskDescription);
+                if (!taskTemplateWithPrompts.Any() || taskTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText)))
+                {
+                    TaskElementMessages.Add(this.FormatMOQTextErrorMessage(BoeDTO.TASK_DESCRIPTION_REQUIRED));
                 }
             }
         }
@@ -1096,7 +1125,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// <param name="workspace">Workspace</param>
         /// <param name="inBoeTaskElement">the BOE Task Element</param>
         /// <returns>Custom field validation errors.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "x")]
         private Collection<string> _ValidateTaskCustomFields(FullWorkspace workspace, BoeTaskElementDTO inBoeTaskElement)
         {
             Collection<string> TaskCustomFieldMsgs = new Collection<string>();
@@ -1171,7 +1199,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// <param name="workspace">Workspace</param>
         /// <param name="inTravelTaskElement">the Travel Task Element</param>
         /// <returns>Custom field validation errors.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "selections"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "values")]
         private Collection<string> _ValidateTravelTaskCustomFields(FullWorkspace workspace, TravelDTO inTravelTaskElement)
         {
             Collection<string> TravelTaskCustomFieldMsgs = new Collection<string>();
@@ -1241,30 +1268,48 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// <summary>
         /// Determines whether Description is valid.
         /// </summary>
-        /// <param name="inBOE">The boe.</param>
         /// <returns>
         ///   <c>true</c> if description is valid; otherwise, <c>false</c>.
         /// </returns>
-        protected virtual bool IsDescriptionValid(BoeDTO inBOE)
+        protected virtual bool IsDescriptionValid(BoeDTO boe, int wsId)
         {
-            if (inBOE == null)
+            if (boe == null)
             {
-                throw new ArgumentNullException(nameof(inBOE));
+                throw new ArgumentNullException(nameof(boe));
             }
 
-            // validate description
-            return !string.IsNullOrEmpty(inBOE.Description);
+            bool valid = !string.IsNullOrEmpty(boe.Description);
+            if(!valid) // no data in the field itself
+            {
+                // the field is valid if templates are being used, AND all required prompts are answered
+                var boeTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeId(wsId, boe.Id).Where(t => t.SourceId == (int)RteTemplateSource.BoeDescription);
+                valid = boeTemplateWithPrompts.Any() && !boeTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText));
+            }
+
+            return valid;
         }
 
         /// <summary>
         /// Tests if the Source of Data field is valid
         /// </summary>
-        /// <param name="sourcesOfData">The string to test</param>
         /// <returns>True if valid false otherwise</returns>
-        protected virtual bool IsSourcesOfDataValid(string sourcesOfData)
+        protected virtual bool IsSourcesOfDataValid(BoeDTO boe, int wsId)
         {
-            // validate sources of data
-            return !string.IsNullOrEmpty(sourcesOfData);
+            if (boe == null)
+            {
+                throw new ArgumentNullException(nameof(boe));
+            }
+            
+            bool valid = !string.IsNullOrEmpty(boe.DataSource);
+            if (!valid) // no data in the field itself
+            {
+                // the field is valid if templates are being used, AND all required prompts are answered
+                var boeTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeId(wsId, boe.Id).Where(t => t.SourceId == (int)RteTemplateSource.BoeSources);
+                valid = boeTemplateWithPrompts.Any() && !boeTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText));
+            }
+
+
+            return valid;
         }
 
         /// <summary>
@@ -1337,7 +1382,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// <param name="errors">Errors to which we'll add errors</param>
         private static void ValidateRTEFieldLength(FullWorkspace workspace, string fieldValue, string fieldName, ICollection<string> errors)
         {
-            if (workspace.RteSizeLimit.HasValue && !string.IsNullOrEmpty(fieldValue) && workspace.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(fieldValue).Length)
+            if (workspace.RteSizeLimit.HasValue && workspace.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(fieldValue ?? string.Empty).Length)
             {
                 errors.Add($"The maximum length of {fieldName} is {workspace.RteSizeLimit.Value} characters.");
             }
