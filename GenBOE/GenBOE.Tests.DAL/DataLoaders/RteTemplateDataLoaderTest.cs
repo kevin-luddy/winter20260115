@@ -114,6 +114,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
             });
 
             sut.Save(templates);
+            foreach (RteCustomTemplateModelView template in templates)
+            {
+                sut.SaveQuestions(template.Questions, template.Id);
+            }
 
             // get the question/answers for the boe -- should return 4 (2x the first two questions)
             ICollection<RTECustomTemplateQuestionAnswerModelView> questions = sut.GetByBoeId(this.Boe1.WorkspaceID, this.Boe1.Id);
@@ -225,6 +229,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
             });
 
             sut.Save(templates);
+            foreach (RteCustomTemplateModelView template in templates)
+            {
+                sut.SaveQuestions(template.Questions, template.Id);
+            }
 
             WorkspaceDTODataLoader wsLoader = new WorkspaceDTODataLoader();
             this.Workspace.AllowSearch = false;

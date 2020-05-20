@@ -37,6 +37,16 @@
         deletedQuestions: [],
     };
 
+    $scope.deletePrompt = {
+        open: false,
+        isDirty: false,
+        errors: [],
+        notDeletedQuestions: [],
+        moveData: false,
+        moveToPrompt: null,
+        template: {}
+    };
+
     $scope.assign = {
         open: false,
         template: { questions: [] },
@@ -194,7 +204,7 @@
         $scope.edit.errors = [];
         $scope.edit.deletedQuestions = [];
         var date = new Date();
-        
+
         var template = {
             Questions: [],
             Description: '',
@@ -207,7 +217,7 @@
         };
         $scope.edit.template = angular.copy(template);
         $scope.edit.open = true;
-    }
+    };
 
     $scope.sortableOptions = {
         stop: function(e, ui) {
@@ -218,22 +228,30 @@
     $scope.onEditSave = function () {
         // set the order for the questions
         var template = angular.copy($scope.edit.template);
+        $scope.deletePrompt.notDeletedQuestions = [];
+
         for (var index in template.Questions) {
             template.Questions[index].SortOrder = index;
+            $scope.deletePrompt.notDeletedQuestions.push(template.Questions[index]);
         }
 
         $scope.edit.deletedQuestions.forEach(function (question) {
             template.Questions.push(question);
         });
 
-        var data = [];
-        data.push(template);
-        save(data, $scope.edit.errors, function () {
-            $scope.isLoading = true;
-            loadData();
-            $scope.onEditClose();
-        });
-
+        if ($scope.edit.template.InUse && $scope.edit.deletedQuestions.filter(x => x.Id > 0).length > 0) {
+            // Ask user how to handle existing deleted prompts for in-use templates
+            $scope.deletePrompt.open = true;  
+            $scope.deletePrompt.template = template;
+        } else {
+            var data = [];
+            data.push(template);
+            save(data, $scope.edit.errors, function () {
+                $scope.isLoading = true;
+                loadData();
+                $scope.onEditClose();
+            });
+        }
     };
 
     $scope.onEditClose = function () {
@@ -254,21 +272,49 @@
         $scope.edit.open = true;
     };
 
+    $scope.onDeleteClose = function () {
+        $scope.deletePrompt.open = false;
+        $scope.deletePrompt.isDirty = false;
+        $scope.deletePrompt.errors = [];
+        $scope.deletePrompt.moveToPrompt = null;
+        $scope.deletePrompt.moveData = false;
+        $scope.deletePrompt.template = {};
+        $('input[name=HandleData]').attr('checked', false);
+        $('input[name=MoveTo]').attr('checked', false);
+    };
+
+    $scope.onDeleteSelect = function () {
+        $scope.deletePrompt.moveData = false;
+        $scope.deletePrompt.isDirty = true;
+        $scope.deletePrompt.moveToPrompt = null;
+    };
+
+    $scope.onMoveDataSelect = function () {
+        $scope.deletePrompt.moveData = true;
+        $scope.deletePrompt.isDirty = true;
+    };
+
+    $scope.onMoveToSelect = function (promptId) {
+        $scope.deletePrompt.moveToPrompt = promptId;
+    };
+
+    $scope.onDeleteSave = function () {
+        var data = [];
+        data.push($scope.deletePrompt.template);
+
+        save(data, $scope.edit.errors, function () {
+            $scope.isLoading = true;
+            loadData();
+            $scope.onDeleteClose();
+            $scope.onEditClose();
+        });
+    };
+
     $scope.deleteQuestion = function (index) {
-        if ($scope.edit.template.InUse && $scope.edit.template.Questions[index].Id > 0) {
-            Session.confirmDialog('Delete Template Prompt', 'This Template is in use. Deletion of this prompt will remove all answers throughout the workspace. Are you sure you want to delete this prompt? This cannot be undone.', function () {
-                $timeout(function () {
-                    $scope.edit.template.Questions[index].Updateable = 2; // deleted
-                    $scope.edit.deletedQuestions.push($scope.edit.template.Questions[index]);
-                    $scope.edit.template.Questions.splice(index, 1);
-                }, 50);
-            });
-        } else {
-            $scope.edit.isDirty = true;
-            $scope.edit.template.Questions[index].Updateable = 2; // deleted
-            $scope.edit.deletedQuestions.push($scope.edit.template.Questions[index]);
-            $scope.edit.template.Questions.splice(index, 1);
-        }
+        $scope.edit.isDirty = true;
+        $scope.edit.template.Questions[index].Updateable = 2; // deleted
+        $scope.edit.deletedQuestions.push($scope.edit.template.Questions[index]);
+        $scope.edit.template.Questions.splice(index, 1);
     };
 
     $scope.onEditBlur = function () {
@@ -307,7 +353,7 @@
 
     $scope.searchButtonDisabled = function () {
         return $scope.search.isLoading || $scope.search.searchText === '';
-    }
+    };
 
     $scope.onSearchTemplate = function () {
         if (!$scope.searchButtonDisabled()) {
@@ -343,7 +389,7 @@
                 $scope.search.isLoading = false;
             });
         }
-    }
+    };
 
     $scope.copyTemplate = function (template) {
         var newDescription = $('#newTemplateName').val();
@@ -510,7 +556,7 @@
     var save = function (updatedData, errors, callback) {
         $(document).trigger("SHOW_LOADING_BOX");
 
-        var data = { templates: updatedData };
+        var data = { templates: updatedData, moveDeletedPromptData: $scope.deletePrompt.moveData, moveToPrompt: $scope.deletePrompt.moveToPrompt };
 
         return $http({
             method: 'POST',
@@ -536,9 +582,11 @@
                 addError(errors, "Error saving Templates.");
             }
 
+            $scope.onDeleteClose();
+
             $(document).trigger("HIDE_LOADING_BOX");
         });
-    }
+    };
     
     var loadData = function () {
         $scope.isLoading = true;

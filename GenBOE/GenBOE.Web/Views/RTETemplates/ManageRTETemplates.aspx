@@ -271,6 +271,49 @@
                     </div>
                 </div>
             </div>
+
+            <div gen-dialog id="DeleteRTETemplatePromptDialog" class="dialog form" data-width="500" data-open="deletePrompt.open" data-on-close="onDeleteClose()" data-title="Handle Deleted Template Prompts">
+                <gen-validation></gen-validation>
+                <div class="form-row">
+                    <div class="dialog-text">This Template is in use. The following Prompts are being deleted. Please select how to handle the text associated to these Prompts throughout the workspace. This cannot be undone.</div>
+                    <div class="dialog-text">
+                        <ul>
+                            <li data-ng-repeat="prompt in edit.deletedQuestions">{{prompt.Text}}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <html xmlns="http://www.w3.org/1999/xhtml">
+                    <head><title></title></head>
+                    <div class="dialog-text">
+                        <span style="display: block; padding: 5px;">
+                            <input type="radio" id="DeletePrompt-DeleteData" name="HandleData" data-ng-click="onDeleteSelect()" />
+                            <label for="DeletePrompt-DeleteData">Delete the data</label>
+                        </span>
+                        <span style="display: block; padding: 5px;">
+                            <input type="radio" id="DeletePrompt-MoveData" name="HandleData" data-ng-click="onMoveDataSelect()" />
+                            <label for="DeletePrompt-MoveData">Move the data to the selected Prompt</label>
+                        </span>
+                        <div style="margin-left: 20px" data-ng-if="deletePrompt.moveData">
+                            <span data-ng-repeat="question in deletePrompt.notDeletedQuestions" style="display: block; padding: 5px;">
+                                <input type="radio" id="DeletePrompt-Prompt{{question.Id}}" pkid="{{question.Id}}" name="MoveTo" data-ng-click="onMoveToSelect(question.Id)" />
+                                <label for="DeletePrompt-Prompt{{question.Id}}">{{question.Text}}</label>
+                            </span>
+                        </div>
+                    </div>
+                    </html>
+                </div>
+                <div class="form-row last-form-row">
+                    <div class="form-element">
+                        <div class="button-container">
+                            <div class="buttons">
+                                <button data-ng-click="onDeleteSave()" data-ng-disabled="!deletePrompt.isDirty" name="save-button" type="button" class="ies-action stateful_button">Save</button>
+                                <button class="ies" type="button" name="cancel-button" data-ng-click="onDeleteClose()">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

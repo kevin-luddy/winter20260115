@@ -66,5 +66,13 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="answers">The answers to save.</param>
         void SaveAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> answers);
+
+        /// <summary>
+        /// Saves the questions for an updated rte template
+        /// </summary>
+        /// <param name="questions">The questions to save.</param>
+        /// <param name="templateId">The template ID for the questions.</param>
+        /// <returns>Mapping of old and new IDs for the questions</returns>
+        Dictionary<int, int> SaveQuestions(ICollection<RteCustomTemplateQuestionModelView> questions, int templateId);
     }
 }

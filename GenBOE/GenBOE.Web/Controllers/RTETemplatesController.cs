@@ -84,15 +84,18 @@ namespace GenBOE.Web.Controllers
         /// <summary>
         /// Save the templates
         /// </summary>
-        /// <param name="templates"></param>
+        /// <param name="workspace">The Workspace</param>
+        /// <param name="templates">Templates being saved</param>
+        /// <param name="moveDeletedPromptData">Whether to move the deleted prompt data, or delete it if false</param>
+        /// <param name="moveToPrompt">Id of prompt to move deleted Prompt data to</param>
         /// <returns></returns>
-        public JsonResult SaveRTETemplatesModel(string workspace, ICollection<RteCustomTemplateModelView> templates)
+        public JsonResult SaveRTETemplatesModel(string workspace, ICollection<RteCustomTemplateModelView> templates, bool moveDeletedPromptData, int? moveToPrompt)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             Stopwatch sw = InitializeAction(this.logger, WebConstants.ACTION_SAVE_RTE_TEMPLATES, SecurityPage.RTETemplates, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
-            this.controllerLogic.ValidateTemplates(templates, ws.Id);
-            this.controllerLogic.SaveTemplates(templates, ws);
+            this.controllerLogic.ValidateTemplates(templates, ws.Id, moveDeletedPromptData, moveToPrompt);
+            this.controllerLogic.SaveTemplates(templates, ws, moveDeletedPromptData, moveToPrompt);
 
             // Finalize Action
             this.FinalizeAction(this.logger, WebConstants.ACTION_SAVE_RTE_TEMPLATES, sw);

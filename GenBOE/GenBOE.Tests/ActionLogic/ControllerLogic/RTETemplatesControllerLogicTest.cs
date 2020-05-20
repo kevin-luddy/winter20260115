@@ -730,7 +730,7 @@ namespace GenBOE.Tests.ActionLogic
         }
 
         /// <summary>
-        /// Deleting an in-use template's prompt, when WS is not in initialization
+        /// Deleting an in-use template's prompt, when WS is not in initialization, and delete prompt data has been selected
         /// 
         /// Template should be saved, backup should not be executed.
         /// </summary>
@@ -780,9 +780,110 @@ namespace GenBOE.Tests.ActionLogic
         }
 
         /// <summary>
+        /// Deleting an in-use template's prompt, when WS is not in initialization, and move prompt data has been selected with an existing prompt selected
+        /// 
+        /// Template should be saved, backup should not be executed.
+        /// </summary>
+        [TestMethod]
+        public void SaveTemplates_Test23()
+        {
+            RTETemplatesControllerLogic sut = this.CreateSUT();
+
+            #region Data Setup
+
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
+            {
+                new RteCustomTemplateModelView()
+                {
+                    Id = 22,
+                    Assigned = new List<int>() { 1 },
+                    InUse = true,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Deleted }, new RteCustomTemplateQuestionModelView() { Id = 45, Updateable = UpdateType.Upsert } },
+                    Updateable = UpdateType.Upsert
+                }
+            };
+            ICollection<RteCustomTemplateModelView> templatesFromDb = new List<RteCustomTemplateModelView>()
+            {
+                new RteCustomTemplateModelView()
+                {
+                    Id = 22,
+                    Assigned = new List<int>() { 1 },
+                    InUse = true,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert }, new RteCustomTemplateQuestionModelView() { Id = 45, Updateable = UpdateType.Upsert } }
+                }
+            };
+
+            #endregion
+
+            this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb, true, 45);
+
+            this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Once());
+            this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
+            this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
+            this.rteTemplateDataLoader.Verify(x => x.SaveAnswers(It.IsAny<ICollection<RTECustomTemplateQuestionAnswerModelView>>()), Times.Once());
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Once());
+        }
+
+        /// <summary>
+        /// Deleting an in-use template's prompt, when WS is not in initialization, and move prompt data has been selected with a new prompt selected
+        /// 
+        /// Template should be saved, backup should not be executed.
+        /// </summary>
+        [TestMethod]
+        public void SaveTemplates_Test24()
+        {
+            RTETemplatesControllerLogic sut = this.CreateSUT();
+
+            #region Data Setup
+
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
+            {
+                new RteCustomTemplateModelView()
+                {
+                    Id = 22,
+                    Assigned = new List<int>() { 1 },
+                    InUse = true,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Deleted }, new RteCustomTemplateQuestionModelView() { Id = -1, Updateable = UpdateType.Upsert } },
+                    Updateable = UpdateType.Upsert
+                }
+            };
+            ICollection<RteCustomTemplateModelView> templatesFromDb = new List<RteCustomTemplateModelView>()
+            {
+                new RteCustomTemplateModelView()
+                {
+                    Id = 22,
+                    Assigned = new List<int>() { 1 },
+                    InUse = true,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert } }
+                }
+            };
+
+            #endregion
+
+            this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb, true, -1);
+
+            this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Once());
+            this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
+            this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
+            this.rteTemplateDataLoader.Verify(x => x.SaveAnswers(It.IsAny<ICollection<RTECustomTemplateQuestionAnswerModelView>>()), Times.Once());
+
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateUnassigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned), Times.Never());
+            this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Once());
+        }
+
+        /// <summary>
         /// Code that repeats a lot.. It setups the mock objects & kicks off the Save Template test
         /// </summary>
-        private void SetupMockObjectsAndRunSaveTest(RTETemplatesControllerLogic sut, FullWorkspace ws, ICollection<RteCustomTemplateModelView> templatesToSave, ICollection<RteCustomTemplateModelView> templatesFromDb)
+        private void SetupMockObjectsAndRunSaveTest(RTETemplatesControllerLogic sut, FullWorkspace ws, ICollection<RteCustomTemplateModelView> templatesToSave, ICollection<RteCustomTemplateModelView> templatesFromDb,
+            bool moveDeletedPromptData = false, int? moveToPrompt = null)
         {
             this.rteTemplateDataLoader.Setup(x => x.Save(templatesToSave)).Verifiable();
             this.rteTemplateDataLoader.Setup(x => x.SaveAnswers(It.IsAny<ICollection<RTECustomTemplateQuestionAnswerModelView>>())).Verifiable();
@@ -804,7 +905,8 @@ namespace GenBOE.Tests.ActionLogic
 
             ICollection<RTECustomTemplateQuestionAnswerModelView> questionAnswerMV = new Collection<RTECustomTemplateQuestionAnswerModelView>()
             {
-                new RTECustomTemplateQuestionAnswerModelView() { QuestionText = "Q", AnswerText = "A", SourceId = 1 },
+                new RTECustomTemplateQuestionAnswerModelView() { QuestionText = "Q", AnswerText = "A", SourceId = 1, QuestionId = 44 },
+                new RTECustomTemplateQuestionAnswerModelView() { QuestionText = "Q", AnswerText = "A", SourceId = 1, QuestionId = 45 },
                 new RTECustomTemplateQuestionAnswerModelView() { QuestionText = "Q", AnswerText = "A", SourceId = 2 },
                 new RTECustomTemplateQuestionAnswerModelView() { QuestionText = "Q", AnswerText = "A", SourceId = 3 },
                 new RTECustomTemplateQuestionAnswerModelView() { QuestionText = "Q", AnswerText = "A", SourceId = 4 }
@@ -812,7 +914,26 @@ namespace GenBOE.Tests.ActionLogic
             this.rteTemplateDataLoader.Setup(x => x.GetByBoeId(It.IsAny<int>(), It.IsAny<int>())).Returns(questionAnswerMV);
             this.rteTemplateDataLoader.Setup(x => x.GetByBoeIdAndTaskId(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).Returns(questionAnswerMV);
 
-            sut.SaveTemplates(templatesToSave, ws);
+            
+            foreach(RteCustomTemplateModelView template in templatesToSave)
+            {
+                Dictionary<int, int> questionDictionary = new Dictionary<int, int>();
+                foreach (RteCustomTemplateQuestionModelView question in template.Questions)
+                {
+                    if (question.Id < 0)
+                    {
+                        questionDictionary.Add(question.Id, 45);
+                    }
+                    else
+                    {
+                        questionDictionary.Add(question.Id, question.Id);
+                    }
+                }
+
+                this.rteTemplateDataLoader.Setup(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), template.Id)).Returns(questionDictionary);
+            }
+
+            sut.SaveTemplates(templatesToSave, ws, moveDeletedPromptData, moveToPrompt);
         }
 
         #endregion
@@ -1048,17 +1169,58 @@ namespace GenBOE.Tests.ActionLogic
         }
 
         /// <summary>
+        /// Tests that a template is selected if deleting a prompt and selecting to move the data
+        /// </summary>
+        [TestMethod, ExpectedException(typeof(GenValidationException))]
+        public void Validate_MissingMoveToPrompt()
+        {
+            RTETemplatesControllerLogic sut = this.CreateSUT();
+
+            #region Data Setup
+
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            ICollection<RteCustomTemplateModelView> templatesToValidate = new List<RteCustomTemplateModelView>()
+            {
+                new RteCustomTemplateModelView()
+                {
+                    Id = 22,
+                    Assigned = new List<int>() { 1 },
+                    InUse = false,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert, Text = "hello" } },
+                    Updateable = UpdateType.Upsert,
+                    Description = "Test Description Pass"
+                }
+            };
+            ICollection<RteCustomTemplateModelView> templatesFromDb = new List<RteCustomTemplateModelView>()
+            {
+                new RteCustomTemplateModelView()
+                {
+                    Id = 22,
+                    Assigned = new List<int>() { 1 },
+                    InUse = false,
+                    Questions = new List<RteCustomTemplateQuestionModelView>() { new RteCustomTemplateQuestionModelView() { Id = 44, Updateable = UpdateType.Upsert, Text = "hello" } },
+                    Description = "Test Description Pass"
+                }
+            };
+
+            #endregion
+
+            this.SetupValidationAndExecuteTestMock(sut, ws, templatesToValidate, templatesFromDb, true, null);
+        }
+
+        /// <summary>
         /// Sets up Mock objects & executes validation test
         /// </summary>
         /// <param name="sut">System Under Test</param>
         /// <param name="ws">Workspace</param>
         /// <param name="templatesToValidate">Templates being validated</param>
         /// <param name="templatesFromDb">Templates in DB</param>
-        private void SetupValidationAndExecuteTestMock(RTETemplatesControllerLogic sut, FullWorkspace ws, ICollection<RteCustomTemplateModelView> templatesToValidate, ICollection<RteCustomTemplateModelView> templatesFromDb)
+        private void SetupValidationAndExecuteTestMock(RTETemplatesControllerLogic sut, FullWorkspace ws, ICollection<RteCustomTemplateModelView> templatesToValidate, ICollection<RteCustomTemplateModelView> templatesFromDb,
+            bool moveDeletedPromptData = false, int? moveToPrompt = null)
         {
             this.rteTemplateDataLoader.Setup(x => x.GetTemplates(ws.Id)).Returns(templatesFromDb);
 
-            sut.ValidateTemplates(templatesToValidate, ws.Id);
+            sut.ValidateTemplates(templatesToValidate, ws.Id, moveDeletedPromptData, moveToPrompt);
         }
     }
 }

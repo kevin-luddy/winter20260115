@@ -169,6 +169,12 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             }
 
             this.rteTemplateDataLoader.Save(templates);
+
+            // Save Questions (Prompts)
+            foreach (RteCustomTemplateModelView template in templates)
+            {
+                this.rteTemplateDataLoader.SaveQuestions(template.Questions, template.Id);
+            }
         }
 
         /// <summary>

@@ -376,6 +376,7 @@ namespace GenBOE.DataBridge.DTO
 
         /// <summary>
         /// Upsert a Template
+        /// Note: Does not save questions - SaveQuestions() will need to be called separately
         /// </summary>
         /// <param name="dtoToUpsert">dto to upsert</param>
         /// <returns>id of upserted entry</returns>
@@ -402,9 +403,6 @@ namespace GenBOE.DataBridge.DTO
                     int passedBackId = Convert.ToInt32(gbe.upsertRteTemplate(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.WorkspaceId, dtoToUpsert.Description, dtoToUpsert.AuthorId, joinedIds).ToList().FirstOrDefault());
                     dtoToUpsert.Id = passedBackId;
                     toReturn = passedBackId;
-
-                    // save questions
-                    this.SaveQuestions(gbe, dtoToUpsert.Questions, passedBackId);
                 }
             }
 
@@ -449,25 +447,38 @@ namespace GenBOE.DataBridge.DTO
         /// <summary>
         /// Saves the questions for an updated rte template
         /// </summary>
-        /// <param name="gbe">The Entity Connection.</param>
         /// <param name="questions">The questions to save.</param>
         /// <param name="templateId">The template ID for the questions.</param>
-        private void SaveQuestions(GenBoeEntities gbe, ICollection<RteCustomTemplateQuestionModelView> questions, int templateId)
+        /// <returns>Mapping of old and new IDs for the questions</returns>
+        public Dictionary<int, int> SaveQuestions(ICollection<RteCustomTemplateQuestionModelView> questions, int templateId)
         {
-            if (questions != null && questions.Any())
+            Dictionary<int, int> toReturn = new Dictionary<int, int>();
+
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
             {
-                foreach (RteCustomTemplateQuestionModelView question in questions)
+                // save
+                using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    if (question.Updateable == UpdateType.Deleted)
+
+                    if (questions != null && questions.Any())
                     {
-                        gbe.deleteRteTemplateQuestion(question.Id);
-                    }
-                    else // must be an update
-                    {
-                        gbe.upsertRteTemplateQuestion(question.Id, question.UpdateDate, templateId, question.Text, question.SortOrder, question.Required);
+                        foreach (RteCustomTemplateQuestionModelView question in questions)
+                        {
+                            if (question.Updateable == UpdateType.Deleted)
+                            {
+                                gbe.deleteRteTemplateQuestion(question.Id);
+                            }
+                            else // must be an update
+                            {
+                                int? newId = Convert.ToInt32(gbe.upsertRteTemplateQuestion(question.Id, question.UpdateDate, templateId, question.Text, question.SortOrder, question.Required).ToList().FirstOrDefault());
+                                toReturn.Add(question.Id, newId.Value);
+                            }
+                        }
                     }
                 }
             }
+
+            return toReturn;
         }
 
         /// <summary>

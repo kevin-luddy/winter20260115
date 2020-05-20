@@ -124,8 +124,10 @@ namespace GenBOE.ActionLogic
         /// </summary>
         /// <param name="templates">Templates to validate</param>
         /// <param name="wsId">Workspace Id</param>
+        /// <param name="moveDeletedPromptData">Whether to move the deleted prompt data, or delete it if false</param>
+        /// <param name="moveToPrompt">ID of the Prompt to move the deleted prompt data to</param>
         /// <exception cref="GenValidationException">Throws GenValidationException with validation errors, if any</exception>
-        public void ValidateTemplates(ICollection<RteCustomTemplateModelView> templates, int wsId)
+        public void ValidateTemplates(ICollection<RteCustomTemplateModelView> templates, int wsId, bool moveDeletedPromptData, int? moveToPrompt)
         {
             if (templates == null || templates.None()) { throw new ArgumentNullException(nameof(templates)); }
 
@@ -153,6 +155,11 @@ namespace GenBOE.ActionLogic
                 validationErrors.Add(new ValidationMessage("Template name must be unique."));
             }
 
+            if (moveDeletedPromptData && moveToPrompt == null)
+            {
+                validationErrors.Add(new ValidationMessage("A prompt must be selected if moving the deleted data to another prompt."));
+            }
+
             if (validationErrors.Any())
             {
                 throw new GenValidationException(validationErrors);
@@ -164,7 +171,9 @@ namespace GenBOE.ActionLogic
         /// </summary>
         /// <param name="templates">Templates to save</param>
         /// <param name="ws">WS to which the template belongs</param>
-        public void SaveTemplates(ICollection<RteCustomTemplateModelView> templates, FullWorkspace ws)
+        /// <param name="moveDeletedPromptData">Whether to move the deleted prompt data, or delete it if false</param>
+        /// <param name="moveToPrompt">ID of the Prompt to move the deleted prompt data to</param>
+        public void SaveTemplates(ICollection<RteCustomTemplateModelView> templates, FullWorkspace ws, bool moveDeletedPromptData, int? moveToPrompt)
         {
             if (templates == null || templates.None()) { throw new ArgumentNullException(nameof(templates)); }
             if (ws == null ) { throw new ArgumentNullException(nameof(ws)); }
@@ -185,9 +194,9 @@ namespace GenBOE.ActionLogic
             
             List<RteCustomTemplateModelView> templatesBeingAssigned = this.GetTemplatesBeingAssigned(templates, ws, templatesFromDb);
             List<RteCustomTemplateModelView> templatesBeingUnassigned = this.GetTemplatesBeingUnassigned(templates, ws, templatesFromDb);
-            this.ProcessTemplatesWithDeletedPrompts(templates, ws);
+            List<RteCustomTemplateModelView> templatesWithDeletedPrompts = this.GetTemplatesWithDeletedPrompts(templates, ws);
 
-            if(templatesBeingAssigned.Any() || templatesBeingUnassigned.Any())
+            if(templatesBeingAssigned.Any() || templatesBeingUnassigned.Any() || templatesWithDeletedPrompts.Any())
             {
                 using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
                 {
@@ -197,22 +206,59 @@ namespace GenBOE.ActionLogic
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
+                ICollection<BoeDTO> boes = new Collection<BoeDTO>();
+                ICollection<BoeTaskElementDTO> tasks = new Collection<BoeTaskElementDTO>();
+
+                // Get the boes and tasks if unassigning templates or deleting prompts so that their data can be updated
+                if(templatesBeingUnassigned.Any() || templatesWithDeletedPrompts.Any())
+                {
+                    boes = boeDtoDataLoader.GetByWorkspaceId(ws.Id, true);
+                    tasks = taskElementDtoDataLoader.GetByWorkspaceId(ws.Id, true, ws.DecimalPrecision, ws.CostDecimalPrecision);
+                }
+
                 // Process unassigned sources before saving templates so we can get template answer data before it's cleared
                 if (templatesBeingUnassigned.Any())
                 {
-                    this.ProcessUnassignedSources(templatesBeingUnassigned, templatesFromDb, ws);
+                    this.ProcessUnassignedSources(templatesBeingUnassigned, templatesFromDb, ws, boes, tasks);
                 }
 
-                // Get BOEs and Tasks before saving templates so the necessary source data can be used to populate the first template answer
-                ICollection<BoeDTO> boesBeforeTemplateSave = boeDtoDataLoader.GetByWorkspaceId(ws.Id, true);
-                ICollection<BoeTaskElementDTO> tasksBeforeTemplateSave = taskElementDtoDataLoader.GetByWorkspaceId(ws.Id, true, ws.DecimalPrecision, ws.CostDecimalPrecision);
+                ICollection<RTECustomTemplateQuestionAnswerModelView> deletedQandAs = new Collection<RTECustomTemplateQuestionAnswerModelView>();
+                if (templatesWithDeletedPrompts.Any() && moveDeletedPromptData)
+                {
+                    deletedQandAs = this.GetDeletedQandAs(templatesWithDeletedPrompts, ws, boes, tasks);
+                }
 
+                // Get BOE and Task data before saving templates if assigning templates so the necessary source data can be used to populate the first template answer
+                // Additionally, this will refresh the data if it was updated while unassigning a template
+                if (templatesBeingAssigned.Any())
+                {
+                    boes = boeDtoDataLoader.GetByWorkspaceId(ws.Id, true);
+                    tasks = taskElementDtoDataLoader.GetByWorkspaceId(ws.Id, true, ws.DecimalPrecision, ws.CostDecimalPrecision);
+                }
+
+                // Save Templates
                 this.rteTemplateDataLoader.Save(templates);
+
+                // Save Questions (Prompts)
+                Dictionary<int, int> templateQuestionIdMapping = new Dictionary<int, int>();
+                foreach(RteCustomTemplateModelView template in templates)
+                {
+                    Dictionary<int, int> currentQuestionIdMapping = this.rteTemplateDataLoader.SaveQuestions(template.Questions, template.Id);
+                    foreach(KeyValuePair<int, int> mapping in currentQuestionIdMapping)
+                    {
+                        templateQuestionIdMapping.Add(mapping.Key, mapping.Value);
+                    }
+                }
+
+                if (templatesWithDeletedPrompts.Any() && deletedQandAs.Any() && moveDeletedPromptData)
+                {
+                    this.ProcessTemplatesWithDeletedPrompts(templatesWithDeletedPrompts, deletedQandAs, ws, boes, tasks, templateQuestionIdMapping[moveToPrompt.Value]);
+                }
 
                 // Process assigned sources after saving templates because the Answers must exist before they can be saved to
                 if (templatesBeingAssigned.Any())
                 {
-                    this.ProcessAssignedSources(templatesBeingAssigned, templatesFromDb, ws, boesBeforeTemplateSave, tasksBeforeTemplateSave);
+                    this.ProcessAssignedSources(templatesBeingAssigned, templatesFromDb, ws, boes, tasks);
                 }
 
                 scope.Complete();
@@ -227,6 +273,11 @@ namespace GenBOE.ActionLogic
             if (templatesBeingAssigned.Any())
             {
                 this.emailer.SendRteTemplateEmail(ws, EmailTypes.TemplateAssigned);
+            }
+
+            if (templatesWithDeletedPrompts.Any())
+            {
+                this.emailer.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted);
             }
         }
 
@@ -277,6 +328,9 @@ namespace GenBOE.ActionLogic
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
                 this.rteTemplateDataLoader.Save(template);
+
+                // Save Questions (Prompts)
+                this.rteTemplateDataLoader.SaveQuestions(template.Questions, template.Id);
 
                 scope.Complete();
             }
@@ -361,11 +415,11 @@ namespace GenBOE.ActionLogic
         /// <param name="templatesBeingUnassigned">Templates being unassigned</param>
         /// <param name="templatesFromDb">Templates as they were prior to modification</param>
         /// <param name="ws">The workspace</param>
-        private void ProcessUnassignedSources(List<RteCustomTemplateModelView> templatesBeingUnassigned, ICollection<RteCustomTemplateModelView> templatesFromDb, FullWorkspace ws)
+        /// <param name="boes">The BOEs</param>
+        /// <param name="tasks">The Tasks</param>
+        private void ProcessUnassignedSources(List<RteCustomTemplateModelView> templatesBeingUnassigned, ICollection<RteCustomTemplateModelView> templatesFromDb, FullWorkspace ws,
+            ICollection<BoeDTO> boes, ICollection<BoeTaskElementDTO> tasks)
         {
-            ICollection<BoeDTO> boes = boeDtoDataLoader.GetByWorkspaceId(ws.Id);
-            ICollection<BoeTaskElementDTO> tasks = taskElementDtoDataLoader.GetByWorkspaceId(ws.Id, false, ws.DecimalPrecision, ws.CostDecimalPrecision);
-
             bool saveBoes = false;
             bool saveTasks = false;
 
@@ -545,28 +599,125 @@ namespace GenBOE.ActionLogic
         }
 
         /// <summary>
-        /// This method looks for in-use templates that have a prompt / question being deleted
+        /// Get Templates that have deleted prompts that will need to be processed
         /// </summary>
-        /// <param name="templates">Templates being saved</param>
-        /// <param name="ws">Workspace</param>
-        private void ProcessTemplatesWithDeletedPrompts(ICollection<RteCustomTemplateModelView> templates, FullWorkspace ws)
+        /// <param name="templates"></param>
+        /// <param name="ws"></param>
+        /// <param name="moveDeletedPromptData">Whether to move the deleted prompt data, or delete it if false</param>
+        /// <returns></returns>
+        private List<RteCustomTemplateModelView> GetTemplatesWithDeletedPrompts(ICollection<RteCustomTemplateModelView> templates, FullWorkspace ws)
         {
+            List<RteCustomTemplateModelView> templatesToProcess = new List<RteCustomTemplateModelView>();
+
             if (ws.WorkspaceState != WorkspaceState.Initialization)
             {
                 // In Use templates, with at least one prompt / question being deleted
-                ICollection<RteCustomTemplateModelView> templatesToProcess = templates.Where(x => x.InUse && x.Questions.Any(z => z.Updateable == UpdateType.Deleted)).ToList();
+                templatesToProcess = templates.Where(x => x.InUse && x.Questions.Any(z => z.Updateable == UpdateType.Deleted)).ToList();
+            }
 
-                if (templatesToProcess.Any())
+            return templatesToProcess;
+        }
+
+        /// <summary>
+        /// Get the QuestionAnswer Model Views for the deleted Prompts
+        /// </summary>
+        /// <param name="templates">Templates with deleted prompts</param>
+        /// <param name="ws">The Workspace</param>
+        /// <param name="boes">The BOEs</param>
+        /// <param name="tasks">The Tasks</param>
+        /// <returns>QuestionAnswer Model Views for the deleted Prompts</returns>
+        private ICollection<RTECustomTemplateQuestionAnswerModelView> GetDeletedQandAs(ICollection<RteCustomTemplateModelView> templates, FullWorkspace ws, 
+            ICollection<BoeDTO> boes, ICollection<BoeTaskElementDTO> tasks)
+        {
+            ICollection<RTECustomTemplateQuestionAnswerModelView> qAndAsBeingDeleted = new Collection<RTECustomTemplateQuestionAnswerModelView>();
+
+            foreach (RteCustomTemplateModelView template in templates)
+            {
+                ICollection<int> deletedPrompts = template.Questions.Where(x => x.Updateable == UpdateType.Deleted).Select(x => x.Id).ToCollection();
+
+                foreach (int assignment in template.Assigned)
                 {
-                    this.BackupWorkspace(ws, CommonConstants.AUTO_SYSTEM_BACKUP_TEMPLATE_PROMPT_DELETE);
+                    switch (assignment)
+                    {
+                        case (int)RteTemplateSource.BoeDescription:
+                        case (int)RteTemplateSource.BoeSources:
+                            foreach (BoeDTO boe in boes)
+                            {
+                                qAndAsBeingDeleted.AddRange(this.rteTemplateDataLoader.GetByBoeId(ws.Id, boe.Id).Where(x => x.SourceId == assignment && deletedPrompts.Contains(x.QuestionId)).ToCollection());
+                            }
+                            break;
+                        case (int)RteTemplateSource.TaskDescription:
+                        case (int)RteTemplateSource.TaskMOQ:
+                            foreach (BoeTaskElementDTO task in tasks)
+                            {
+                                qAndAsBeingDeleted.AddRange(this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, task.BoeID, task.Id).Where(x => x.SourceId == assignment && deletedPrompts.Contains(x.QuestionId)).ToCollection());                                
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+
+            return qAndAsBeingDeleted;
+        }
+
+        /// <summary>
+        /// Process the Templates with Deleted Prompts, moving the data from the deleted prompts to the selected Prompt
+        /// </summary>
+        /// <param name="templates">Templates with deleted Prompts</param>
+        /// <param name="qAndAsBeingDeleted">QuestionAnswer Modelviews for the Prompts being deleted</param>
+        /// <param name="ws">The Workspace</param>
+        /// <param name="boes">The BOEs</param>
+        /// <param name="tasks">The Tasks</param>
+        /// <param name="moveToPromptId">ID of the prompt to move the deleted Prompt data to</param>
+        private void ProcessTemplatesWithDeletedPrompts(ICollection<RteCustomTemplateModelView> templates, ICollection<RTECustomTemplateQuestionAnswerModelView> qAndAsBeingDeleted,
+            FullWorkspace ws, ICollection<BoeDTO> boes, ICollection<BoeTaskElementDTO> tasks, int moveToPromptId)
+        {
+            ICollection<RTECustomTemplateQuestionAnswerModelView> answersToSave = new Collection<RTECustomTemplateQuestionAnswerModelView>();
+
+            foreach (RteCustomTemplateModelView template in templates)
+            {
+                foreach (int assignment in template.Assigned)
+                {
+                    switch (assignment)
+                    {
+                        case (int)RteTemplateSource.BoeDescription:
+                        case (int)RteTemplateSource.BoeSources:
+                            foreach (BoeDTO boe in boes)
+                            {
+                                ICollection<RTECustomTemplateQuestionAnswerModelView> questionsAndAnswers = this.rteTemplateDataLoader.GetByBoeId(ws.Id, boe.Id).Where(x => x.SourceId == assignment).ToCollection();
+                                RTECustomTemplateQuestionAnswerModelView moveToQandA = questionsAndAnswers.First(x => x.QuestionId == moveToPromptId);
+
+                                foreach (RTECustomTemplateQuestionAnswerModelView qAndA in qAndAsBeingDeleted.Where(x => x.BoeId == boe.Id && x.SourceId == assignment))
+                                {
+                                    moveToQandA.AnswerText += "<br />" + qAndA.AnswerText;
+                                }
+
+                                answersToSave.Add(moveToQandA);
+                            }
+                            break;
+                        case (int)RteTemplateSource.TaskDescription:
+                        case (int)RteTemplateSource.TaskMOQ:
+                            foreach (BoeTaskElementDTO task in tasks)
+                            {
+                                ICollection<RTECustomTemplateQuestionAnswerModelView> questionsAndAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, task.BoeID, task.Id).Where(x => x.SourceId == assignment).ToCollection();
+                                RTECustomTemplateQuestionAnswerModelView moveToQandA = questionsAndAnswers.First(x => x.QuestionId == moveToPromptId);
+
+                                foreach (RTECustomTemplateQuestionAnswerModelView qAndA in qAndAsBeingDeleted.Where(x => x.BoeId == task.BoeID && x.TaskId == task.Id && x.SourceId == assignment))
+                                {
+                                    moveToQandA.AnswerText += "<br />" + qAndA.AnswerText;
+                                }
+
+                                answersToSave.Add(moveToQandA);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
 
-                // ToDo: RJ -> do what you need to do w/ templates that are in use, and their prompt is being deleted
-
-                if (templatesToProcess.Any())
-                {
-                    this.emailer.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted);
-                }
+                this.rteTemplateDataLoader.SaveAnswers(answersToSave);
             }
         }
 

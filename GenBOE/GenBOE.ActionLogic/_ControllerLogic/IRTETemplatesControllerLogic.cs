@@ -31,15 +31,19 @@ namespace GenBOE.ActionLogic
         /// </summary>
         /// <param name="templates">Templates to validate</param>
         /// <param name="wsId">Workspace Id</param>
+        /// <param name="moveDeletedPromptData">Whether to move the deleted prompt data, or delete it if false</param>
+        /// <param name="moveToPrompt">ID of the Prompt to move the deleted prompt data to</param>
         /// <exception cref="GenValidationException">Throws GenValidationException with validation errors, if any</exception>
-        void ValidateTemplates(ICollection<RteCustomTemplateModelView> templates, int wsId);
+        void ValidateTemplates(ICollection<RteCustomTemplateModelView> templates, int wsId, bool moveDeletedPromptData, int? moveToPrompt);
 
         /// <summary>
         /// Save Templates
         /// </summary>
         /// <param name="templates">Templates to save</param>
         /// <param name="ws">WS to which the template belongs</param>
-        void SaveTemplates(ICollection<RteCustomTemplateModelView> templates, FullWorkspace ws);
+        /// <param name="moveDeletedPromptData">Whether to move the deleted prompt data, or delete it if false</param>
+        /// <param name="moveToPrompt">ID of the Prompt to move the deleted prompt data to</param>
+        void SaveTemplates(ICollection<RteCustomTemplateModelView> templates, FullWorkspace ws, bool moveDeletedPromptData, int? moveToPrompt);
 
         /// <summary>
         /// Search templates
