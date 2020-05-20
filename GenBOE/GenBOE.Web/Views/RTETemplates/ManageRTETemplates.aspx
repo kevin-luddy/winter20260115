@@ -275,7 +275,7 @@
             <div gen-dialog id="DeleteRTETemplatePromptDialog" class="dialog form" data-width="500" data-open="deletePrompt.open" data-on-close="onDeleteClose()" data-title="Handle Deleted Template Prompts">
                 <gen-validation></gen-validation>
                 <div class="form-row">
-                    <div class="dialog-text">This Template is in use. The following Prompts are being deleted. Please select how to handle the text associated to these Prompts throughout the workspace. This cannot be undone.</div>
+                    <div class="dialog-text">This Template is in use. The following Prompts are being deleted. Please select how to handle the text associated with these Prompts throughout the workspace. This cannot be undone.</div>
                     <div class="dialog-text">
                         <ul>
                             <li data-ng-repeat="prompt in edit.deletedQuestions">{{prompt.Text}}</li>

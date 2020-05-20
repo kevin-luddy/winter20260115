@@ -140,7 +140,7 @@ namespace GenBOE.ActionLogic
 
             if (templates.Any(t => t.Updateable != UpdateType.Deleted && !t.Questions.Any(q => q.Updateable != UpdateType.Deleted)))
             {
-                validationErrors.Add(new ValidationMessage("At least one prompt is required for a Template."));
+                validationErrors.Add(new ValidationMessage("At least one prompt is required for a Template. If you intend to delete the template, close this dialog and do so on the Manage Custom RTE Templates page."));
             }
 
             if (templates.Any(t => t.Updateable != UpdateType.Deleted && t.Questions.Any(q => q.Updateable != UpdateType.Deleted && string.IsNullOrWhiteSpace(q.Text))))
