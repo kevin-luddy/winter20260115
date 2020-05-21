@@ -16,7 +16,7 @@
 </script>
 
 <div id="BoeHeaderDescription" class="form-row">
-    <div class="form-label">Description *</div>
+    <div class="form-label">BOE Description *</div>
     <div class="form-element" id="description-element">
         <% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(Model.RteTemplateAnswers, "Description", Model.Description));  %>
     </div>

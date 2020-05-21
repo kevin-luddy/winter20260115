@@ -92,7 +92,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             ICollection<ValidationMessage> messages = sut.ValidateRteAnswers(answers, sources, 2);
 
-            Assert.IsTrue(messages.Any(m => m.ValidationIssue.Contains("The maximum length of an RTE Custom Template Answer")));
+            Assert.IsTrue(messages.Any(m => m.ValidationIssue.Contains("The maximum length of a Custom RTE Template text")));
         }
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             ICollection<ValidationMessage> messages = sut.ValidateRteAnswers(answers, sources, 200);
 
-            Assert.IsTrue(messages.Any(m => m.ValidationIssue.Contains("are required")));
+            Assert.IsTrue(messages.Any(m => m.ValidationIssue.Contains("missing from required")));
         }
 
         /// <summary>

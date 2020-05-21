@@ -49,12 +49,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     RteCustomTemplateSourceModelView source = sources.First(s => s.SourceId == rteTemplateAnswer.SourceId);
                     if (string.IsNullOrEmpty(rteTemplateAnswer.AnswerText) && rteTemplateAnswer.Required)
                     {
-                        allValidationMessages.Add(new ValidationMessage(source.Description, string.Format("All RTE Custom Template Answers for {0} are required", source.Description)));
+                        allValidationMessages.Add(new ValidationMessage(source.Description, string.Format("Text is missing from required Custom RTE Template for {0}.", source.Description)));
                     }
 
                     if (rteSizeLimit.HasValue && !string.IsNullOrEmpty(rteTemplateAnswer.AnswerText) && rteTemplateAnswer.SourceId > 0 && rteSizeLimit < GenBOEUtilities.ConvertHtmlToText(rteTemplateAnswer.AnswerText).Length)
                     {
-                        allValidationMessages.Add(new ValidationMessage(source.Description, string.Format("The maximum length of an RTE Custom Template Answer for {0} is {1} characters.", source.Description, rteSizeLimit.Value)));
+                        allValidationMessages.Add(new ValidationMessage(source.Description, string.Format("The maximum length of a Custom RTE Template text for {0} is {1} characters.", source.Description, rteSizeLimit.Value)));
                     }
                 }
             }

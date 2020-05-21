@@ -100,7 +100,7 @@
                     <li><a onclick="GoToCustomFields()">Setup options for Resources and Performing Organizations. <span name="CustomFieldsText">Create custom fields if applicable.</span></a></li>
                     <li><a name="ClinsLink" onclick="GoToClins()">Setup the Contract Line Item Numbers (CLIN) if applicable.</a></li>
                     <li><a name="WBSLink" onclick="GoToWBS()">Setup the Work Breakdown Structure (WBS) if applicable.</a></li>
-                    <li><a name="RteTemplatesLink" onclick="GoToRteTemplates()">Setup the Rich Text Editor Custom Templates if applicable.</a></li>
+                    <li><a name="RteTemplatesLink" onclick="GoToRteTemplates()">Setup the Custom Rich Text Editor (RTE) Templates if applicable.</a></li>
                     <li><a name="BOELink" onclick="GoToBoes()">Create and assign BOEs.</a></li>
                     <li><a name="WorkspaceStatusLink" onclick="GoToWorkspaceStatus()">Change Workspace Status to Working to allow BOEs to be edited.</a></li>
                 </ol>

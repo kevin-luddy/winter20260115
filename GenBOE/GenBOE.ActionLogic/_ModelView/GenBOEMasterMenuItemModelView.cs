@@ -241,7 +241,7 @@ namespace GenBOE.ActionLogic.ModelView
             {
                 menuItems.First(x => x.linkText == "Workspace Administration").subMenuItems.Insert(6, new GenBOEMasterMenuItemModelView
                 {
-                    linkText = "Manage RTE Custom Templates",
+                    linkText = "Manage Custom RTE Templates",
                     actionName = WebConstants.ACTION_INDEX,
                     controllerName = WebConstants.CONTROLLER_RTE_TEMPLATES,
                     routeValues = new { workspace = ws.Shortname },
