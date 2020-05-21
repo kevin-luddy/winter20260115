@@ -4415,7 +4415,7 @@ namespace GenBOE.Web.Controllers
                 using (FileStream workspaceDataStream = new FileStream(workspaceDataReportLocation, FileMode.Open))
                 {
                     workspaceDataStream.Position = 0;
-                    zipContents.Add(Utilities.CleanFileName(string.Format("WorkspaceData-{0}-{1}.xlsx", ws.WorkspaceName, versionName)), workspaceDataStream);
+                    zipContents.Add(Utilities.CleanFileName(string.Format("WorkspaceData-{0}-{1}.xlsx", ws.Shortname, versionName)), workspaceDataStream);
 
                     using (Stream allBoesStream = new MemoryStream())
                     {
@@ -4442,10 +4442,10 @@ namespace GenBOE.Web.Controllers
                         }
 
                         allBoesStream.Position = 0;
-                        zipContents.Add(Utilities.CleanFileName(string.Format("AllBOEs-{0}-{1}.docx", ws.WorkspaceName, versionName)), allBoesStream);
+                        zipContents.Add(Utilities.CleanFileName(string.Format("AllBOEs-{0}-{1}.docx", ws.Shortname, versionName)), allBoesStream);
 
                         string zipFileName = Zip.ZipFiles(zipContents, Server.MapPath("~/Templates/Export"));
-                        toReturn = new ExportFileDownloadResult(zipFileName, Utilities.CleanFileName(string.Format("BackupExport_{0}_{1}.zip", ws.WorkspaceName, versionName)));
+                        toReturn = new ExportFileDownloadResult(zipFileName, Utilities.CleanFileName(string.Format("BackupExport_{0}_{1}.zip", ws.Shortname, versionName)));
                     }
                 }
             }
