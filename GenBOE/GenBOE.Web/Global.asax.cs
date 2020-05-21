@@ -748,7 +748,8 @@ namespace GenBOE
                                                                                                                             new ResolvedParameter(typeof(IBoeMediator)),
                                                                                                                             new ResolvedParameter(typeof(IBoeTaskElementDTODataLoader)),
                                                                                                                             new ResolvedParameter(typeof(IBoeTaskElementMediator)),
-                                                                                                                            new ResolvedParameter(typeof(IBoeEmailer))));
+                                                                                                                            new ResolvedParameter(typeof(IBoeEmailer)),
+                                                                                                                            new ResolvedParameter(typeof(IBOEStateMachine))));
 
             switch (SysConfig.CompanyMode)
             {

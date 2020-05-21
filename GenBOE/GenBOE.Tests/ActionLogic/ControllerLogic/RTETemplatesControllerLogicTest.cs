@@ -10,6 +10,7 @@ namespace GenBOE.Tests.ActionLogic
     using System.Collections.ObjectModel;
     using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.BLL;
+    using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common.Email;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
@@ -33,6 +34,7 @@ namespace GenBOE.Tests.ActionLogic
         private Mock<IBoeTaskElementMediator> taskElementMediator;
         private Mock<IRetriever> retriever;
         private Mock<IBoeEmailer> emailer;
+        private Mock<IBOEStateMachine> stateMachine;
 
         /// <summary>
         /// Creates System Under Test
@@ -46,8 +48,8 @@ namespace GenBOE.Tests.ActionLogic
             this.boeMediator = new Mock<IBoeMediator>();
             this.taskElementDtoDataLoader = new Mock<IBoeTaskElementDTODataLoader>();
             this.taskElementMediator = new Mock<IBoeTaskElementMediator>();
-
             this.emailer = new Mock<IBoeEmailer>();
+            this.stateMachine = new Mock<IBOEStateMachine>();
 
             Mock<ICommonDataMapper> commonDataMapper = new Mock<ICommonDataMapper>();
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
@@ -59,7 +61,7 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionDataLoader.Object);
 
             return new RTETemplatesControllerLogic(this.rteTemplateDataLoader.Object, this.versionLoader.Object, this.boeDtoDataLoader.Object, this.boeMediator.Object, 
-                this.taskElementDtoDataLoader.Object, this.taskElementMediator.Object, this.emailer.Object);
+                this.taskElementDtoDataLoader.Object, this.taskElementMediator.Object, this.emailer.Object, this.stateMachine.Object);
         }
 
         #region SaveTemplates
@@ -888,6 +890,7 @@ namespace GenBOE.Tests.ActionLogic
             this.rteTemplateDataLoader.Setup(x => x.Save(templatesToSave)).Verifiable();
             this.rteTemplateDataLoader.Setup(x => x.SaveAnswers(It.IsAny<ICollection<RTECustomTemplateQuestionAnswerModelView>>())).Verifiable();
             this.retriever.Setup(x => x.GetCurrentActiveUser()).Returns(new UserDTO() { UserID = 333 });
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new List<FullBoe>());
             this.versionLoader.Setup(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>())).Verifiable();
             this.rteTemplateDataLoader.Setup(x => x.GetTemplates(ws.Id)).Returns(templatesFromDb);
             this.boeMediator.Setup(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>())).Verifiable();

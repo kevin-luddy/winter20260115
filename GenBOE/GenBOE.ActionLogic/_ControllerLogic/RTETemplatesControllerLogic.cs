@@ -12,6 +12,7 @@ namespace GenBOE.ActionLogic
     using System.Linq;
     using System.Transactions;
     using GenBOE.ActionLogic.BLL;
+    using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common.Email;
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.DataBridge.DTO;
@@ -63,6 +64,11 @@ namespace GenBOE.ActionLogic
         /// </summary>
         private readonly IBoeEmailer emailer;
 
+        /// <summary>
+        /// The BOE state machine.
+        /// </summary>
+        private readonly IBOEStateMachine boeStateMachine;
+
         #endregion
 
         /// <summary>
@@ -77,7 +83,7 @@ namespace GenBOE.ActionLogic
         /// <param name="emailer">BOE Emailer</param>
         public RTETemplatesControllerLogic(IRteTemplateDataLoader rteTemplateDataLoader, IWorkspaceVersionMetaDataDTODataLoader versionLoader, 
             IBoeDTODataLoader boeDtoDataLoader, IBoeMediator boeMediator, IBoeTaskElementDTODataLoader taskElementDtoDataLoader, IBoeTaskElementMediator taskElementMediator,
-            IBoeEmailer emailer)
+            IBoeEmailer emailer, IBOEStateMachine boeStateMachine)
         {
             this.rteTemplateDataLoader = rteTemplateDataLoader;
             this.versionLoader = versionLoader;
@@ -86,6 +92,7 @@ namespace GenBOE.ActionLogic
             this.taskElementDtoDataLoader = taskElementDtoDataLoader;
             this.taskElementMediator = taskElementMediator;
             this.emailer = emailer;
+            this.boeStateMachine = boeStateMachine;
         }
 
         /// <summary>
@@ -177,6 +184,7 @@ namespace GenBOE.ActionLogic
         {
             if (templates == null || templates.None()) { throw new ArgumentNullException(nameof(templates)); }
             if (ws == null ) { throw new ArgumentNullException(nameof(ws)); }
+            bool changeBoeStates = false;
 
             ICollection<RteCustomTemplateModelView> templatesFromDb = this.rteTemplateDataLoader.GetTemplates(ws.Id);
             
@@ -198,6 +206,7 @@ namespace GenBOE.ActionLogic
 
             if(templatesBeingAssigned.Any() || templatesBeingUnassigned.Any() || templatesWithDeletedPrompts.Any())
             {
+                changeBoeStates = true;
                 using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
                 {
                     this.BackupWorkspace(ws, templatesWithDeletedPrompts.Any() ? CommonConstants.AUTO_SYSTEM_BACKUP_TEMPLATE_PROMPT_DELETE : CommonConstants.AUTO_SYSTEM_BACKUP_TEMPLATE_ASSIGN_CHANGE);
@@ -260,6 +269,22 @@ namespace GenBOE.ActionLogic
                 if (templatesBeingAssigned.Any())
                 {
                     this.ProcessAssignedSources(templatesBeingAssigned, templatesFromDb, ws, boes, tasks);
+                }
+
+                if (changeBoeStates)
+                {
+                    ws.RefreshBoes();
+
+                    foreach (FullBoe boe in ws.Boes)
+                    {
+                        BOEState originalState = boe.State;
+                        boe.Updateable = UpdateType.Upsert;
+                        boe.State = BOEState.Draft;
+                        boe.UpdatedByUserId = ws.CurrentActiveUser.UserID;
+
+                        this.boeDtoDataLoader.Save(boe);
+                        this.boeStateMachine.PerformStateTransitionAction(boe, ws, originalState, BOEState.Draft);
+                    }
                 }
 
                 scope.Complete();
@@ -518,7 +543,7 @@ namespace GenBOE.ActionLogic
         /// <param name="tasks">Tasks from before templates are saved</param>
         /// <returns>Answers that need to be saved</returns>
         private void ProcessAssignedSources(List<RteCustomTemplateModelView> templatesBeingAssigned, ICollection<RteCustomTemplateModelView> templatesFromDb, 
-            FullWorkspace ws, ICollection<BoeDTO> boes, ICollection<BoeTaskElementDTO> tasks)
+        FullWorkspace ws, ICollection<BoeDTO> boes, ICollection<BoeTaskElementDTO> tasks)
         {
             ICollection<RTECustomTemplateQuestionAnswerModelView> answersToSave = new Collection<RTECustomTemplateQuestionAnswerModelView>();
 
