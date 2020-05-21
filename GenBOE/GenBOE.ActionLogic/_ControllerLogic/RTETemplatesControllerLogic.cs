@@ -759,7 +759,7 @@ namespace GenBOE.ActionLogic
                 VersionID = -1,
                 CreatedByID = CommonConstants.SYSTEM_USER_ID,
                 Updateable = UpdateType.Upsert,
-                VersionName = $"{versionDescription} {DateTime.Now.ToShortDateString()} {DateTime.Now.ToShortTimeString()}",
+                VersionName = $"{versionDescription} {DateTime.Now.ToShortDateString()} {DateTime.Now.ToLongTimeString()}",
                 VersionState = ws.WorkspaceState,
                 WorkspaceID = ws.Id
             };
