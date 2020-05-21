@@ -213,3 +213,16 @@ GO
 		5/13/2020		Dusan		BOEJ-4612 - Fix a name of a template source
 		## END ##
 */
+
+
+/*
+		## START ##
+		5/21/2020		Dusan		BOEJ-4620 - Update some text
+*/
+UPDATE [RteTemplateSource] SET [Description] = 'MOQ Rationale' WHERE Description = 'Task MOQ Rationale';
+UPDATE [RteTemplateSource] SET [Description] = 'Sources of Data' WHERE Description = 'BOE Sources of Data';
+GO
+/*
+		5/21/2020		Dusan		BOEJ-4620 - Update some text
+		## END ##
+*/
