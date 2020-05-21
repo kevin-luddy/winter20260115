@@ -239,7 +239,7 @@
             template.Questions.push(question);
         });
 
-        if ($scope.edit.template.InUse && $scope.edit.deletedQuestions.filter(x => x.Id > 0).length > 0 && $scope.deletePrompt.notDeletedQuestions.length !== 0) {
+        if ($scope.edit.template.InUse && $scope.edit.deletedQuestions.filter(function (x) { return x.Id > 0; }).length > 0 && $scope.deletePrompt.notDeletedQuestions.length !== 0) {
             // Ask user how to handle existing deleted prompts for in-use templates
             // Skip this if all Prompts have been deleted so that validation for having no prompts is shown, as the data isn't able to be handled
             $scope.deletePrompt.open = true;  
