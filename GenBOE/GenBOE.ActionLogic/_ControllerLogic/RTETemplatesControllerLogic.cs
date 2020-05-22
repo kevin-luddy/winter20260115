@@ -184,7 +184,6 @@ namespace GenBOE.ActionLogic
         {
             if (templates == null || templates.None()) { throw new ArgumentNullException(nameof(templates)); }
             if (ws == null ) { throw new ArgumentNullException(nameof(ws)); }
-            bool changeBoeStates = false;
 
             ICollection<RteCustomTemplateModelView> templatesFromDb = this.rteTemplateDataLoader.GetTemplates(ws.Id);
             
@@ -206,7 +205,6 @@ namespace GenBOE.ActionLogic
 
             if(templatesBeingAssigned.Any() || templatesBeingUnassigned.Any() || templatesWithDeletedPrompts.Any())
             {
-                changeBoeStates = true;
                 using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
                 {
                     this.BackupWorkspace(ws, templatesWithDeletedPrompts.Any() ? CommonConstants.AUTO_SYSTEM_BACKUP_TEMPLATE_PROMPT_DELETE : CommonConstants.AUTO_SYSTEM_BACKUP_TEMPLATE_ASSIGN_CHANGE);
@@ -271,7 +269,8 @@ namespace GenBOE.ActionLogic
                     this.ProcessAssignedSources(templatesBeingAssigned, templatesFromDb, ws, boes, tasks);
                 }
 
-                if (changeBoeStates)
+                // change state if any in-use templates was changed (name, assignment), or any of its prompts changed (add, rename, delete, etc)
+                if (templates.Any(x => x.InUse && (x.Updateable != UpdateType.None || x.Questions.Any(z => z.Updateable != UpdateType.None))))
                 {
                     ws.RefreshBoes();
 
