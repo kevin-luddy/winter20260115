@@ -520,6 +520,9 @@
 
         $scope.errors = [];
 
+        data.moveDeletedPromptData = false;
+        data.moveToPrompt = null;
+
         $(document).trigger("SHOW_LOADING_BOX");
         $http({
             method: 'POST',

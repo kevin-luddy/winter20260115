@@ -249,7 +249,7 @@ namespace GenBOE.ActionLogic
 
                 // Save Questions (Prompts)
                 Dictionary<int, int> templateQuestionIdMapping = new Dictionary<int, int>();
-                foreach(RteCustomTemplateModelView template in templates)
+                foreach(RteCustomTemplateModelView template in templates.Where(x => x.Updateable != UpdateType.Deleted))
                 {
                     Dictionary<int, int> currentQuestionIdMapping = this.rteTemplateDataLoader.SaveQuestions(template.Questions, template.Id);
                     foreach(KeyValuePair<int, int> mapping in currentQuestionIdMapping)

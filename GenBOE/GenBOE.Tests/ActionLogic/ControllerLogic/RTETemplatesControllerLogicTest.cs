@@ -99,6 +99,7 @@ namespace GenBOE.Tests.ActionLogic
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb);
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Never());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
@@ -142,6 +143,7 @@ namespace GenBOE.Tests.ActionLogic
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb);
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Never());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
@@ -192,6 +194,7 @@ namespace GenBOE.Tests.ActionLogic
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb);
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Never());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
@@ -244,6 +247,7 @@ namespace GenBOE.Tests.ActionLogic
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb);
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), ws.Id), Times.Once());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
@@ -297,6 +301,7 @@ namespace GenBOE.Tests.ActionLogic
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb);
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), ws.Id), Times.Once());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Once());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
@@ -350,6 +355,7 @@ namespace GenBOE.Tests.ActionLogic
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb);
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), ws.Id), Times.Once());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Once());
@@ -419,6 +425,7 @@ namespace GenBOE.Tests.ActionLogic
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb);
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Exactly(2));
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), ws.Id), Times.Once());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
@@ -469,6 +476,7 @@ namespace GenBOE.Tests.ActionLogic
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb);
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Never());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
@@ -519,6 +527,7 @@ namespace GenBOE.Tests.ActionLogic
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb);
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Never());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
@@ -574,6 +583,7 @@ namespace GenBOE.Tests.ActionLogic
             this.emailer.Verify(x => x.SendRteTemplateEmail(ws, EmailTypes.TemplatePromptDeleted), Times.Never());
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Once());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Once());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Once());
@@ -621,6 +631,7 @@ namespace GenBOE.Tests.ActionLogic
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb);
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Never());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Once());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Once());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Once());
@@ -671,6 +682,7 @@ namespace GenBOE.Tests.ActionLogic
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb);
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Never());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
@@ -721,6 +733,7 @@ namespace GenBOE.Tests.ActionLogic
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb);
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Never());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
@@ -771,6 +784,7 @@ namespace GenBOE.Tests.ActionLogic
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb);
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Once());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
@@ -821,6 +835,7 @@ namespace GenBOE.Tests.ActionLogic
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb, true, 45);
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Once());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
@@ -871,6 +886,7 @@ namespace GenBOE.Tests.ActionLogic
             this.SetupMockObjectsAndRunSaveTest(sut, ws, templatesToSave, templatesFromDb, true, -1);
 
             this.rteTemplateDataLoader.Verify(x => x.Save(templatesToSave), Times.Once());
+            this.rteTemplateDataLoader.Verify(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>()), Times.Once());
             this.versionLoader.Verify(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>()), Times.Once());
             this.boeMediator.Verify(x => x.SaveEditBoeHeader(It.IsAny<BoeDTO>()), Times.Never());
             this.taskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(It.IsAny<ICollection<BoeTaskElementDTO>>(), It.IsAny<FullWorkspace>()), Times.Never());
@@ -889,6 +905,7 @@ namespace GenBOE.Tests.ActionLogic
         {
             this.rteTemplateDataLoader.Setup(x => x.Save(templatesToSave)).Verifiable();
             this.rteTemplateDataLoader.Setup(x => x.SaveAnswers(It.IsAny<ICollection<RTECustomTemplateQuestionAnswerModelView>>())).Verifiable();
+            this.rteTemplateDataLoader.Setup(x => x.SaveQuestions(It.IsAny<ICollection<RteCustomTemplateQuestionModelView>>(), It.IsAny<int>())).Verifiable();
             this.retriever.Setup(x => x.GetCurrentActiveUser()).Returns(new UserDTO() { UserID = 333 });
             this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new List<FullBoe>());
             this.versionLoader.Setup(x => x.Upsert(It.IsAny<WorkspaceVersionMetaDataDTO>(), It.IsAny<int>())).Verifiable();
