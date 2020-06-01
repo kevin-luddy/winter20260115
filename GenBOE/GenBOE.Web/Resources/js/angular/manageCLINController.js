@@ -769,7 +769,9 @@
 
         // check if any items are selected, but not currently displayed
         var itemsOnOtherPages = data.inDeletedClins.some(function (s) {
-            return currentPageItems.indexOf(s) < 0;
+            return currentPageItems.map(function (x) {
+                return x.ClinID;
+            }).indexOf(s.ClinID) < 0;
         });
 
         if (itemsOnOtherPages) {
