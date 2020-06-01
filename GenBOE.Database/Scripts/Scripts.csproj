@@ -308,9 +308,10 @@
     <Content Include="Release Scripts\Release 2019.5\Release 2019.5.sql" />
     <Content Include="Release Scripts\Release 2019.8\Release 2019.8.sql" />
     <Content Include="Release Scripts\Release 2020.1\Release 2020.1.sql" />
-    <Content Include="_Full Script Files For Specific Versions\BOE - Sql Script For Release 2019.4 Generated On 7_1_2019.sql" />
-    <Content Include="_Full Script Files For Specific Versions\BOE - Sql Script For Release 2019.5 Generated On 9_26_2019.sql" />
-    <Content Include="_Full Script Files For Specific Versions\BOE - Sql Script For Release 2019.8 Generated On 12_2_2019.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - Release 2020.1 Generated On 6_1_2020.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2019.4 Generated On 7_1_2019.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2019.5 Generated On 9_26_2019.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2019.8 Generated On 12_2_2019.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2018.1 Generated On 1_30_2018.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2018.2 Generated On 2_19_2018.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2018.3 Generated On 4_16_2018.sql" />
