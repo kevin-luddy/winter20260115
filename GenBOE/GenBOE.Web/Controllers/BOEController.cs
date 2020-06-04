@@ -865,7 +865,7 @@ namespace GenBOE.Web.Controllers
 
                 this.reportsControllerLogic.PrepareAllBOEsReport(ws, isSubcontractorUser, summarizeByCustomField, ids, ViewData, out isCustomExport, out wsExportFormatDTO,
                     out exportInputs, out boeExportModelViews, out boeSummaryGridModelViews, false);
-                this.reportsControllerLogic.ExportAllBOEsReport(ws, null, Response, false, isCustomExport, wsExportFormatDTO, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
+                this.reportsControllerLogic.ExportAllBOEsReport(ws, null, Response, isCustomExport, wsExportFormatDTO, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
             }
             catch (Exception ex)
             {

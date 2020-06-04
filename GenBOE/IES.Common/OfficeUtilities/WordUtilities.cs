@@ -51,7 +51,8 @@ namespace IES.Common.OfficeUtilities
             {
                 throw new ArgumentNullException(nameof(document));
             }
-            return document.MainDocumentPart.Document.Descendants<SdtElement>().FirstOrDefault(s => s.Descendants<Tag>().FirstOrDefault().Val.Value == tag);
+
+            return document.MainDocumentPart.Document.Descendants<SdtElement>().FirstOrDefault(s => s.Descendants<Tag>().FirstOrDefault()?.Val.Value == tag);
         }
 
         /// <summary>
@@ -64,7 +65,7 @@ namespace IES.Common.OfficeUtilities
         {
             if (element == null) { throw new ArgumentNullException(nameof(element)); }
 
-            return element.Descendants<SdtElement>().FirstOrDefault(s => s.Descendants<Tag>().FirstOrDefault().Val.Value == tag);
+            return element.Descendants<SdtElement>().FirstOrDefault(s => s.Descendants<Tag>().FirstOrDefault()?.Val.Value == tag);
         }
 
         #endregion

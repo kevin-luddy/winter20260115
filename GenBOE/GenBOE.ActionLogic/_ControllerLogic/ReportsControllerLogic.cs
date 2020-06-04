@@ -228,13 +228,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="workspace">The current workspace</param>
         /// <param name="selectedComponents">List of BOEs to be included in the report; if null, then include ALL</param>
         /// <param name="httpResponse">HTTP response object</param>
-        /// <param name="custom">Flag indicating whether the template file is based on the custom export template</param>
         /// <param name="isCustomExport">Flag indicating wheter the export is a custom export</param>
         /// <param name="wsExportFormatDTO">the Workspace Format DTO</param>
         /// <param name="exportInputs">the export inputs</param>
         /// <param name="boeExportModelViews">the boe export model views</param>
         /// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
-        public void ExportAllBOEsReport(FullWorkspace workspace, ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool custom, bool isCustomExport, 
+        public void ExportAllBOEsReport(FullWorkspace workspace, ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool isCustomExport, 
             WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, List<BOESummaryGridModelView> boeSummaryGridModelViews)
         {
             if (workspace == null)
@@ -256,7 +255,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 // distinguish between MASTER and legacy templates
                 // if legacy, use original MASTER, otherwise use selected template
-                WorkspaceExportFormatDTO exportFormat = custom && (wsExportFormatDTO.ExportFormat.ParentTemplateId < 9001 || wsExportFormatDTO.ExportFormat.ParentTemplateId >10000 || wsExportFormatDTO.ExportFormat.ParentTemplateId == null) ? this.workspaceExportFormatDTOLoader.GetById((int)ExcelReportTemplateType.MASTER) : wsExportFormatDTO;
+                WorkspaceExportFormatDTO exportFormat = wsExportFormatDTO.ExportFormat.ParentTemplateId < 9001 || wsExportFormatDTO.ExportFormat.ParentTemplateId >10000 || wsExportFormatDTO.ExportFormat.ParentTemplateId == null ? this.workspaceExportFormatDTOLoader.GetById((int)ExcelReportTemplateType.MASTER) : wsExportFormatDTO;
 
                 // Call the export function in the business layer and get back the file name of the populated template.
                 this.boeCustomExporter.ExportBOEToWordFile(exportInputs, boeExportModelViews, boeSummaryGridModelViews, selectedComponents, httpResponse, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty), exportFormat);

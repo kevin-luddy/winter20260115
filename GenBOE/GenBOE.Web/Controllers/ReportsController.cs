@@ -1494,7 +1494,7 @@ namespace GenBOE.Web.Controllers
 
                 this.reportsControllerLogic.PrepareAllBOEsReport(workspace, IsSubcontractorUser(workspace), summarizeByCustomField, selectedBOEs, ViewData, out isCustomExport, 
                     out wsExportFormatDTO, out exportInputs, out boeExportModelViews, out boeSummaryGridModelViews, custom);
-                this.reportsControllerLogic.ExportAllBOEsReport(workspace, selectedComponents, Response, false, isCustomExport, wsExportFormatDTO, exportInputs, 
+                this.reportsControllerLogic.ExportAllBOEsReport(workspace, selectedComponents, Response, isCustomExport, wsExportFormatDTO, exportInputs, 
                     boeExportModelViews, boeSummaryGridModelViews);
             }
             catch (GenValidationException ex)

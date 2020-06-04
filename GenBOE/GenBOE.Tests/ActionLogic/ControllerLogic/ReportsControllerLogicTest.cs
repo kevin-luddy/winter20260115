@@ -200,13 +200,13 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             //Act
             sut.PrepareAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
                 out boeExportModelViews, out boeSummaryGridModelViews, true);
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, true, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
             sut.PrepareAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
                 out boeExportModelViews, out boeSummaryGridModelViews, false);
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, true, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
             sut.PrepareAllBOEsReport(workspace, isSubContractorUser, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
                 out boeExportModelViews, out boeSummaryGridModelViews, true);
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, true, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
 
             //Assert
             rteTemplateLoader.Verify(x => x.GetByWorkspaceId(It.IsAny<int>(), It.IsAny<ICollection<FullBoe>>()), Times.Exactly(3));
@@ -307,10 +307,10 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             //Act
             sut.PrepareAllBOEsReport(workspace, true, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
                 out boeModelCollection, out boeSummaryGridModelViews, false);
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, true, isCustomExport, wsExportFormat, exportInputs, boeModelCollection, boeSummaryGridModelViews);
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeModelCollection, boeSummaryGridModelViews);
             sut.PrepareAllBOEsReport(workspace, true, null, selectBOEs, viewDataDictionary, out isCustomExport, out wsExportFormat, out exportInputs,
                 out boeModelCollection, out boeSummaryGridModelViews, false);
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, true, isCustomExport, wsExportFormat, exportInputs, boeModelCollection, boeSummaryGridModelViews);
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeModelCollection, boeSummaryGridModelViews);
 
             //Assert
             boeExporter.Verify(x => x.ExportBOEToWordFile(exportInputs, boeModelCollection, listOfBOEs, httpResponse.Object, string.Format("genBOEExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO.PhysicalFilePathCache, wsExportFormatDTO.ExportFormat.TemplateType), Times.Once());
@@ -399,7 +399,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             ReportsControllerLogic sut = CreateSut();
 
             //Act
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, true, false, null, null, null, null);
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, false, null, null, null, null);
         }
 
         /// <summary>
@@ -413,15 +413,13 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         {
             //Value Declarations
             FullWorkspace workspace = new FullWorkspace() { Id = 1 };
-            bool isSubContractorUser = true;
             ICollection<BoeCustomReportComponent> selectedComponents = new Collection<BoeCustomReportComponent>();
             HttpResponseBase httpResponse = null;
-            bool custom = false;
 
             ReportsControllerLogic sut = CreateSut();
 
             //Act
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse, isSubContractorUser, custom, null, null, null, null);
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse, true, null, null, null, null);
         }
 
         /// <summary>
@@ -435,17 +433,15 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         {
             //Value Declarations
             FullWorkspace workspace = new FullWorkspace();
-            bool isSubContractorUser = true;
             List<int> selectBOEs = new List<int>();
             ICollection<BoeCustomReportComponent> selectedComponents = new Collection<BoeCustomReportComponent>();
             ViewDataDictionary viewDataDictionary = new ViewDataDictionary();
             Mock<HttpResponseBase> httpResponse = new Mock<HttpResponseBase>();
-            bool custom = false;
 
             ReportsControllerLogic sut = CreateSut();
 
             //Act
-            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, true, false, null, null, null, null);
+            sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, false, null, null, null, null);
         }
         #endregion
 
