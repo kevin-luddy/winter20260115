@@ -516,19 +516,19 @@ namespace GenBOE.ActionLogic
                             break;
                     }
                 }
+            }
 
-                if (saveBoes)
+            if (saveBoes)
+            {
+                foreach (BoeDTO boe in boes)
                 {
-                    foreach (BoeDTO boe in boes)
-                    {
-                        this.boeMediator.SaveEditBoeHeader(boe);
-                    }
+                    this.boeMediator.SaveEditBoeHeader(boe);
                 }
+            }
 
-                if (saveTasks)
-                {
-                    this.taskElementMediator.MediatedBulkSaveTaskElements(tasks, ws);
-                }
+            if (saveTasks)
+            {
+                this.taskElementMediator.MediatedBulkSaveTaskElements(tasks, ws);
             }
         }
 

@@ -2111,6 +2111,7 @@ namespace GenBOE.Web.Controllers
             {
                 SetMOQEquationViewData(ws, boeID, MOQType.None);
                 _BoeLaborControllerLogic.SetShowMetricLink(theModelView);
+                theModelView.MoqTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, boeID, taskElementID).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ).ToList();
             }
 
             theModelView.HelpText = _BoeLaborControllerLogic.GetMOQTypesHelpText();

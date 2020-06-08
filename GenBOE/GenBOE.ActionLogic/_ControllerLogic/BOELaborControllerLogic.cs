@@ -28,6 +28,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using IES.Common;
     using IES.Common.classes;
     using IES.Common.Exceptions;
+    using Microsoft.Practices.ObjectBuilder2;
 
     /// <summary>
     /// Action Logic for the BOE Labor Controller
@@ -864,10 +865,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
-                this._BoeTaskElementMediator.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { dtoToSave }, ws);
+                int newTaskId = this._BoeTaskElementMediator.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { dtoToSave }, ws).First().Value;
 
                 if (answers != null && answers.Any())
                 {
+                    answers.ForEach(x => { x.TaskId = newTaskId; });
                     this.rteTemplateDataLoader.SaveAnswers(answers);
                 }
                 
