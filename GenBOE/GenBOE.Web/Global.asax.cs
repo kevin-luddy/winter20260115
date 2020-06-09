@@ -1348,7 +1348,8 @@ namespace GenBOE
                                                                                                                             new ResolvedParameter(typeof(IWorkspaceVariableDTODataLoader)),
                                                                                                                             new ResolvedParameter(typeof(IBoeTaskElementRecalculation)),
                                                                                                                             new ResolvedParameter(typeof(IClinDTODataLoader)),
-                                                                                                                            new ResolvedParameter(typeof(IWbsDTODataLoader))));
+                                                                                                                            new ResolvedParameter(typeof(IWbsDTODataLoader)),
+                                                                                                                            new ResolvedParameter(typeof(IRteTemplateDataLoader))));
 
             GenBOEUnityContainer.Container.RegisterType(typeof(TravelTripCostCalculation), typeof(TravelTripCostCalculation), GetLifetimeManager());
             GenBOEUnityContainer.Container.RegisterType(typeof(TMCalculator), typeof(TMCalculator), GetLifetimeManager());

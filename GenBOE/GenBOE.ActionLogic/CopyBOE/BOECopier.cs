@@ -37,6 +37,11 @@ namespace GenBOE.ActionLogic.CopyBOE
         private IWorkspaceVariableDTODataLoader _workspaceVariableLoader;
         private IBoeTaskElementRecalculation _boeTaskElementRecalculation;
 
+        /// <summary>
+        /// RTE Template Data Loader
+        /// </summary>
+        private IRteTemplateDataLoader rteTemplateDataLoader;
+
         public BOECopier(
             IBoeDTODataLoader boeLoader,
             ICustomFieldValueDTODataLoader inICustomFieldValueDTODataLoader,
@@ -52,7 +57,8 @@ namespace GenBOE.ActionLogic.CopyBOE
             IWorkspaceVariableDTODataLoader workspaceVariableLoader,
             IBoeTaskElementRecalculation inBoeTaskElementRecalculation,
             IClinDTODataLoader clinLoader,
-            IWbsDTODataLoader wbsLoader)
+            IWbsDTODataLoader wbsLoader,
+            IRteTemplateDataLoader rteTemplateDataLoader)
         {
             this.boeLoader = boeLoader;
             this.clinLoader = clinLoader;
@@ -70,6 +76,7 @@ namespace GenBOE.ActionLogic.CopyBOE
             this.perfOrgLoader = perfOrgLoader;
             this._workspaceVariableLoader = workspaceVariableLoader;
             this._boeTaskElementRecalculation = inBoeTaskElementRecalculation;
+            this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
         /// <summary>
@@ -218,16 +225,28 @@ namespace GenBOE.ActionLogic.CopyBOE
             {
                 ICollection<int> inUseMetricIDs = this._boeCopierCompany.GetMetricsUsedByTaskElement(task.Key); //dictionary key is the task id
 
+                ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(inSourceBOE.WorkspaceID, inSourceBOE.Id, task.Key);
+
                 for (int i = 1; i <= task.Value; i++)//dictionary value is number of times to duplicate task
                 {
                     // Create a new duplicate for each iteration so things like Open Ended Custom Field Values are unique
                     BoeTaskElementDTO taskDuplicate = this.GetDuplicateTask(inSourceBOE, task.Key);
+                    int taskDuplicateId = -1;
 
                     //Save the specified number of duplicates for the task
                     if (taskDuplicate != null)
                     {
+                        taskDuplicateId = this.SaveDuplicateTask(ws, taskDuplicate, inUseMetricIDs, i);
+                    }
 
-                        this.SaveDuplicateTask(ws, taskDuplicate, inUseMetricIDs, i);
+                    if (rteTemplateAnswers.Any() && taskDuplicateId > 0)
+                    {
+                        ICollection<RTECustomTemplateQuestionAnswerModelView> answerDuplicates = this.GetDuplicateRteTemplateAnswers(rteTemplateAnswers, taskDuplicateId); ;
+
+                        if (answerDuplicates.Any())
+                        {
+                            this.rteTemplateDataLoader.SaveAnswers(answerDuplicates);
+                        }
                     }
                 }   
             }
@@ -832,7 +851,8 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// <param name="taskElement">Task element to save. Task will be cloned, so it can be saved multiple times.</param>
         /// <param name="inUseMetricIDs">Metric IDs used by task element being saved.</param>
         /// <param name="duplicateNumber">Current duplicate number of the task being saved. This will be included in the new task title.</param>
-        private void SaveDuplicateTask(FullWorkspace inDestinationWorkspace, BoeTaskElementDTO taskElement, ICollection<int> inUseMetricIDs, int duplicateNumber)
+        /// <returns>ID of duplicate task</returns>
+        private int SaveDuplicateTask(FullWorkspace inDestinationWorkspace, BoeTaskElementDTO taskElement, ICollection<int> inUseMetricIDs, int duplicateNumber)
         {
             Collection<BoeTaskElementDTO> tasksToSave = new Collection<BoeTaskElementDTO>();
 
@@ -853,6 +873,8 @@ namespace GenBOE.ActionLogic.CopyBOE
                     this._boeCopierCompany.SaveMetricsToTaskElement(taskId, inUseMetricIDs);
                 }
             }
+
+            return savedTasks.First().Value;
         }
 
         /// <summary>
@@ -1236,6 +1258,29 @@ namespace GenBOE.ActionLogic.CopyBOE
 
                 this._ITravelDTODataLoader.SaveTravels(travelTasksToCopy);
             }
+        }
+
+        /// <summary>
+        /// Get duplicates of the RTE Template Answers for the given task
+        /// </summary>
+        /// <param name="templateAnswers">Answers to duplicate</param>
+        /// <param name="duplicateTaskId">ID of the duplicate task</param>
+        /// <returns>Duplicate RTE Answers</returns>
+        private ICollection<RTECustomTemplateQuestionAnswerModelView> GetDuplicateRteTemplateAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> templateAnswers, int duplicateTaskId)
+        {
+            ICollection<RTECustomTemplateQuestionAnswerModelView> toReturn = new Collection<RTECustomTemplateQuestionAnswerModelView>();
+
+            foreach(RTECustomTemplateQuestionAnswerModelView answer in templateAnswers)
+            {
+                RTECustomTemplateQuestionAnswerModelView duplicateAnswer = answer.DeepClone();
+                duplicateAnswer.Id = -1;
+                duplicateAnswer.TaskId = duplicateTaskId;
+                duplicateAnswer.Updateable = UpdateType.Upsert;
+
+                toReturn.Add(duplicateAnswer);
+            }
+
+            return toReturn;
         }
     }
 }

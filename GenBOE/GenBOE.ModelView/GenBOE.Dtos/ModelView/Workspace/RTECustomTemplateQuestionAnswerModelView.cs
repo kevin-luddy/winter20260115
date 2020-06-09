@@ -13,6 +13,7 @@ namespace GenBOE.Dtos
     /// <summary>
     /// Model View for RTE Custom Template Questions and Answers.
     /// </summary>
+    [Serializable()]
     public class RTECustomTemplateQuestionAnswerModelView : UpdateableDTO
     {
 
