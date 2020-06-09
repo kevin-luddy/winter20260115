@@ -28,7 +28,7 @@ namespace GenTRAC.Web.Controllers
         /// ApprovalsControllerLogic
         /// </summary>
         private readonly ApprovalsControllerLogic approvalsLogic = null;
-      
+              
         /// <summary>
         /// Constructor
         /// </summary>
@@ -69,6 +69,8 @@ namespace GenTRAC.Web.Controllers
         {
             this.ViewBag.proposalid = proposalId.ToString();
             this.ViewBag.IsProposalDeletedOrArchived = this.approvalsLogic.IsProposalDeletedOrArchived(proposalId);
+            this.ViewBag.HasAccessToSetNoBid = this.approvalsLogic.HasAccessToSetNoBid(proposalId);
+
             ApprovalSectionModelView model = this.approvalsLogic.GetApprovalModel(proposalId, role);
             if (model != null)
             {
@@ -137,6 +139,38 @@ namespace GenTRAC.Web.Controllers
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
             {
                 this.approvalsLogic.ResetWorkflow(proposalId);
+                scope.Complete();
+            }
+
+            return this.Json(new { Success = true });
+        }
+
+        /// <summary>
+        /// Set Proposal to No Bid Status
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <returns>json result</returns>
+        public JsonResult SetProposalAsNoBid(int proposalId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+            {
+                this.approvalsLogic.SetProposalToNoBid(proposalId);
+                scope.Complete();
+            }
+
+            return this.Json(new { Success = true });
+        }
+
+        /// <summary>
+        /// Set Proposal to No Bid Status
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <returns>json result</returns>
+        public JsonResult RevertProposalNoBidStatus(int proposalId)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+            {
+                this.approvalsLogic.RevertProposalFromNoBid(proposalId);
                 scope.Complete();
             }
 

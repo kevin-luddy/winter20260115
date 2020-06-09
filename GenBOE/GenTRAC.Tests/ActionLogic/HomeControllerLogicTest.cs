@@ -313,7 +313,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             HomeProposalFiltersModelView filtersView = sut.GetDataForProposalFilters();
 
-            Assert.AreEqual(3, filtersView.FilterOptions.Count);
+            Assert.AreEqual(4, filtersView.FilterOptions.Count);
             Assert.AreEqual(ProposalFilterOption.InProgress, filtersView.FilterOption);
             Assert.AreEqual(0, filtersView.ViewerFilterOptions.Count);
             Assert.AreEqual(ViewerProposalFilterOption.ShowOnlyMyProposals, filtersView.ViewerFilterOption);
@@ -321,7 +321,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.securityAccess.Setup(x => x.CurrentUserHasRole(PtmRole.Viewer, null)).Returns(true);
             filtersView = sut.GetDataForProposalFilters();
 
-            Assert.AreEqual(3, filtersView.FilterOptions.Count);
+            Assert.AreEqual(4, filtersView.FilterOptions.Count);
             Assert.AreEqual(ProposalFilterOption.InProgress, filtersView.FilterOption);
             Assert.AreEqual(2, filtersView.ViewerFilterOptions.Count);
             Assert.AreEqual(ViewerProposalFilterOption.ShowOnlyMyProposals, filtersView.ViewerFilterOption);

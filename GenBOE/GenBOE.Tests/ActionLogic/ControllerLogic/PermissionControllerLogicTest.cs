@@ -1,20 +1,27 @@
-﻿using GenBOE.ActionLogic.ModelView;
-using IES.Common;
-using IES.Common.classes;
-using IES.Common.Exceptions;
-using GenBOE.DataBridge.DTO;
-using GenBOE.DataBridge.Common;
-using GenBOE.Dtos;
-using GenBOE.Objects;
-using System;
-using System.Collections.ObjectModel;
-using GenBOE.ActionLogic;
-using Microsoft.Practices.Unity;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace GenBOE.Tests.ActionLogic.ControllerLogic
 {
+    using GenBOE.ActionLogic.ModelView;
+    using IES.Common;
+    using IES.Common.classes;
+    using IES.Common.Exceptions;
+    using GenBOE.DataBridge.DTO;
+    using GenBOE.DataBridge.Common;
+    using GenBOE.Dtos;
+    using GenBOE.Objects;
+    using System;
+    using System.Collections.ObjectModel;
+    using GenBOE.ActionLogic;
+    using Microsoft.Practices.Unity;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Moq;
+    using System.Collections.Generic;
+
     [TestClass]
     public class PermissionControllerLogicTest
     {
@@ -43,13 +50,13 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
         //All Tests associated with SavePotentialPermission in PermissionControllerLogic.cs
         #region SavePotentialPermission Tests
-        
+
         [TestMethod]
         public void SavePotentialPermissionTest()
         {
             //Arrange
-            PermissionsDTO inPermission = new PermissionsDTO() { ETIUserId = 123, Updateable = UpdateType.Deleted};
-            UserDTO myUser = new UserDTO(){ DisplayName = "John", EmailAddress = "john.test@testing.center", FirstName = "Johnson", LastName = "Doe", NTID = "j123456", PhoneNumber = "555-5555", UpdateDate = new System.DateTime(2014,2,12), UserID = 12345};
+            PermissionsDTO inPermission = new PermissionsDTO() { ETIUserId = 123, Updateable = UpdateType.Deleted };
+            UserDTO myUser = new UserDTO() { DisplayName = "John", EmailAddress = "john.test@testing.center", FirstName = "Johnson", LastName = "Doe", NTID = "j123456", PhoneNumber = "555-5555", UpdateDate = new System.DateTime(2014, 2, 12), UserID = 12345 };
 
             _UserDTODataLoader.Setup(x => x.GetUserByID(inPermission.ETIUserId)).Returns(myUser);
 
@@ -68,7 +75,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             //My Assert since no value is returned
             permissionLoader.Verify(x => x.SavePermission(inPermission), Times.Once());
         }
-        
+
         [TestMethod]
         public void SavePotentialPermissionTestNull()
         {
@@ -106,12 +113,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                     new PermissionsDTO(){ Id = 2, ETIUserId = 2, Updateable = UpdateType.None, BOEId = 2, NTID = "j123456", PermissionId = 2, Role = Role.Author, WorkspaceId = 2, HideWorkspaceHelp = false, UpdateDate = new DateTime(2014, 2, 12)}});
 
             permissionLoader.Setup(x => x.SavePermission(inPermission));
-            
+
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
             //Act
             sut.SavePotentialPermission(inPermission);
-            
+
             //My Assert since no value is returned
             permissionLoader.Verify(x => x.SavePermission(inPermission), Times.Once());
         }
@@ -165,7 +172,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             string EIds1 = "j123456"; string EIds2 = "k.123456"; string EIds3 = "j654321";
 
             //Class Setups
-            FullWorkspace ws = new FullWorkspace() { Id = 1};
+            FullWorkspace ws = new FullWorkspace() { Id = 1 };
             Collection<PermissionsDTO> currentWorkspacePermissions = new Collection<PermissionsDTO>(){
                  new PermissionsDTO() { Role = IES.Common.Role.Approver, ETIUserId = 1 },
                  new PermissionsDTO() { Role = IES.Common.Role.SystemAdmin, ETIUserId = 1 }};
@@ -176,9 +183,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             //For user EIds 1
             UserData EIds1Data = new UserData() { LastName = "Doe", FirstName = "John", DisplayName = "John", Email = "john.testing@testing.com", Ntid = EIds1, Phone = "555-5555", IsUsPerson = true, IsSubcontractor = false };
             UserDTO EIdsDTO = new UserDTO() { LastName = EIds1Data.LastName, FirstName = EIds1Data.FirstName, DisplayName = EIds1Data.DisplayName, NTID = EIds1Data.Ntid, PhoneNumber = EIds1Data.Phone, UserID = -1, UpdateDate = DateTime.Now, IsUsPerson = true, IsSubcontractor = false };
-            
+
             //For user EIds 2
-            UserData EIds2Data = new UserData() {LastName = "Marry", FirstName = "Jane", DisplayName = "Jane", Email = "jane.testing@testing.com", Ntid = EIds2,  Phone = "444-4444", IsUsPerson = true, IsSubcontractor = false };
+            UserData EIds2Data = new UserData() { LastName = "Marry", FirstName = "Jane", DisplayName = "Jane", Email = "jane.testing@testing.com", Ntid = EIds2, Phone = "444-4444", IsUsPerson = true, IsSubcontractor = false };
             UserDTO EIds2DTO = new UserDTO() { LastName = EIds2Data.LastName, FirstName = EIds2Data.FirstName, DisplayName = EIds2Data.DisplayName, NTID = EIds2Data.Ntid, PhoneNumber = EIds2Data.Phone, UserID = 2, UpdateDate = DateTime.Now, IsUsPerson = true, IsSubcontractor = false };
 
             //For User EIds 3
@@ -193,6 +200,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _ADUTils.Setup(x => x.GetUserByQualifiedAccount(EIds1, false)).Returns(new UserData());
             _ADUTils.Setup(x => x.IsGroup(EIds2)).Returns(true);
             _ADUTils.Setup(x => x.GetUserByQualifiedAccount(EIds3, false)).Returns(new UserData());
+            _ADUTils.Setup(x => x.GetAuthorizationGroupsFromWebConfig()).Returns(new Collection<GroupData>());
+            _ADUTils.Setup(x => x.CheckUsersBoeAccess(It.IsAny<ICollection<UserData>>(), It.IsAny<ICollection<GroupData>>())).Returns(new Dictionary<UserData, bool>());
 
             _UserDTODataLoader.Setup(x => x.GetOrCreateUserByNtid(EIds1)).Returns(EIdsDTO);
             _UserDTODataLoader.Setup(x => x.GetOrCreateUserByNtid(EIds2)).Returns(EIds2DTO);
@@ -231,7 +240,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _SecurityInformation.Verify(x => x.IsSubcontractorUser(EIds2, EIds2DTO.IsSubcontractor), Times.Exactly(2));
             _SecurityInformation.Verify(x => x.IsSubcontractorUser(EIds3, EIds3DTO.IsSubcontractor), Times.Exactly(2));
         }
-        
+
         [TestMethod]
         public void SaveNewPermissionTestAddSubcontractor()
         {
@@ -258,6 +267,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             permissionLoader.Setup(x => x.GetBOEPotentialPermissionsForWorkspace(ws.Id)).Returns(currentBoePermissions);
 
             _ADUTils.Setup(x => x.GetUserByQualifiedAccount(EIds1, false)).Returns(new UserData());
+            _ADUTils.Setup(x => x.GetAuthorizationGroupsFromWebConfig()).Returns(new Collection<GroupData>());
+            _ADUTils.Setup(x => x.CheckUsersBoeAccess(It.IsAny<ICollection<UserData>>(), It.IsAny<ICollection<GroupData>>())).Returns(new Dictionary<UserData, bool>());
 
             _UserDTODataLoader.Setup(x => x.GetOrCreateUserByNtid(EIds1)).Returns(EIdsDTO);
 
@@ -305,6 +316,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _ADUTils.Setup(x => x.GetUserByQualifiedAccount(EIds1, false)).Returns(EIds1Data);          //Since this is taking else path must be false(hard coded value)
             _UserDTODataLoader.Setup(x => x.SaveUser(It.IsAny<UserDTO>())).Returns(EIdsDTO); //Have to use It.IsAny since UpdateDate uses DateTime.Now
             _SecurityInformation.Setup(x => x.IsSubcontractorUser(EIds1, EIdsDTO.IsSubcontractor)).Returns(true);
+            _ADUTils.Setup(x => x.GetAuthorizationGroupsFromWebConfig()).Returns(new Collection<GroupData>());
+            _ADUTils.Setup(x => x.CheckUsersBoeAccess(It.IsAny<ICollection<UserData>>(), It.IsAny<ICollection<GroupData>>())).Returns(new Dictionary<UserData, bool>());
 
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
@@ -342,6 +355,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _ADUTils.Setup(x => x.GetUserByQualifiedAccount(EIds1, false)).Returns(EIds1Data);          //Since this is taking else path must be false(hard coded value)
             _UserDTODataLoader.Setup(x => x.SaveUser(It.IsAny<UserDTO>())).Returns(EIdsDTO); //Have to use It.IsAny since UpdateDate uses DateTime.Now
             _SecurityInformation.Setup(x => x.IsSubcontractorUser(EIds1, EIdsDTO.IsSubcontractor)).Returns(false);
+            _ADUTils.Setup(x => x.GetAuthorizationGroupsFromWebConfig()).Returns(new Collection<GroupData>());
+            _ADUTils.Setup(x => x.CheckUsersBoeAccess(It.IsAny<ICollection<UserData>>(), It.IsAny<ICollection<GroupData>>())).Returns(new Dictionary<UserData, bool>());
 
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
@@ -374,6 +389,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             permissionLoader.Setup(x => x.GetBOEPotentialPermissionsForWorkspace(ws.Id)).Returns(currentBoePermissions);
 
             _ADUTils.Setup(x => x.GetUserByQualifiedAccount(EIds1, false)).Returns(new UserData());
+            _ADUTils.Setup(x => x.GetAuthorizationGroupsFromWebConfig()).Returns(new Collection<GroupData>());
+            _ADUTils.Setup(x => x.CheckUsersBoeAccess(It.IsAny<ICollection<UserData>>(), It.IsAny<ICollection<GroupData>>())).Returns(new Dictionary<UserData, bool>());
 
             _UserDTODataLoader.Setup(x => x.GetOrCreateUserByNtid(EIds1)).Returns(new UserDTO());
 
@@ -451,7 +468,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         {
 
             string workspace = "MyWorkspace";
-            SavePermissionModelView inPermission = new SavePermissionModelView() { Roles = new Collection<Role>() { Role.Approver, Role.Author }, EntityIds = new Collection<string>() {""} };
+            SavePermissionModelView inPermission = new SavePermissionModelView() { Roles = new Collection<Role>() { Role.Approver, Role.Author }, EntityIds = new Collection<string>() { "" } };
 
             Factory.Setup(x => x.CreateFullWorkspace(workspace, It.IsAny<bool>())).Returns(new FullWorkspace() { Id = 1 });
 
@@ -466,7 +483,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         {
 
             string workspace = "MyWorkspace";
-            SavePermissionModelView inPermission = new SavePermissionModelView() { Roles = new Collection<Role>() { Role.Approver, Role.Author }, EntityIds = new Collection<string>()};
+            SavePermissionModelView inPermission = new SavePermissionModelView() { Roles = new Collection<Role>() { Role.Approver, Role.Author }, EntityIds = new Collection<string>() };
 
             Factory.Setup(x => x.CreateFullWorkspace(workspace, It.IsAny<bool>())).Returns(new FullWorkspace() { Id = 1 });
 
@@ -482,7 +499,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             string workspace = "MyWorkspace";
             SavePermissionModelView inPermission = new SavePermissionModelView() { Roles = new Collection<Role>(), EntityIds = new Collection<string>() { "1", "2" } };
 
-            Factory.Setup(x => x.CreateFullWorkspace(workspace, It.IsAny<bool>())).Returns(new FullWorkspace() { Id = 1 } );
+            Factory.Setup(x => x.CreateFullWorkspace(workspace, It.IsAny<bool>())).Returns(new FullWorkspace() { Id = 1 });
 
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
@@ -500,7 +517,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             sut.SaveNewPermission(workspace, inPermission);
         }
-        
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         [TestMethod]
         public void SaveNewPermissionTestDuplicateEntries()
@@ -538,6 +555,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _ADUTils.Setup(x => x.GetUserByQualifiedAccount(EIds1, false)).Returns(new UserData());
             _ADUTils.Setup(x => x.IsGroup(EIds2)).Returns(true);
             _ADUTils.Setup(x => x.GetUserByQualifiedAccount(EIds3, false)).Returns(new UserData());
+            _ADUTils.Setup(x => x.GetAuthorizationGroupsFromWebConfig()).Returns(new Collection<GroupData>());
+            _ADUTils.Setup(x => x.CheckUsersBoeAccess(It.IsAny<ICollection<UserData>>(), It.IsAny<ICollection<GroupData>>())).Returns(new Dictionary<UserData, bool>());
 
             _UserDTODataLoader.Setup(x => x.GetOrCreateUserByNtid(EIds1)).Returns(EIdsDTO);
             _UserDTODataLoader.Setup(x => x.GetOrCreateUserByNtid(EIds2)).Returns(EIds2DTO);
@@ -574,6 +593,97 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _SecurityInformation.Verify(x => x.IsSubcontractorUser(EIds1, EIdsDTO.IsSubcontractor), Times.Exactly(2));
             _SecurityInformation.Verify(x => x.IsSubcontractorUser(EIds2, EIds2DTO.IsSubcontractor), Times.Exactly(2));
             _SecurityInformation.Verify(x => x.IsSubcontractorUser(EIds3, EIds3DTO.IsSubcontractor), Times.Exactly(2));
+        }
+
+        /// <summary>
+        /// Test that an exception is thrown when a user does not have access to GenBOE
+        /// </summary>
+        [TestMethod, ExpectedException(typeof(GenValidationException))]
+        public void SaveNewPermission_NoGenBoeAccess_User()
+        {
+            //String setup
+            string workspace = "MyWorkspace";
+            string EIds1 = "j123456";
+
+            //Class Setups
+            FullWorkspace ws = new FullWorkspace() { Id = 1 };
+            Collection<PermissionsDTO> currentWorkspacePermissions = new Collection<PermissionsDTO>(){
+                 new PermissionsDTO() { Role = IES.Common.Role.Approver, ETIUserId = 1 },
+                 new PermissionsDTO() { Role = IES.Common.Role.SystemAdmin, ETIUserId = 1 }};
+            Collection<PermissionsDTO> currentBoePermissions = new Collection<PermissionsDTO>(){
+                 new PermissionsDTO() { Role = IES.Common.Role.Author, ETIUserId = 1}};
+            SavePermissionModelView inPermission = new SavePermissionModelView() { Roles = new Collection<Role>() { Role.Approver, Role.Author }, EntityIds = new Collection<string>() { EIds1 } };
+
+            //For user EIds 1
+            UserData EIds1Data = new UserData() { LastName = "Doe", FirstName = "John", DisplayName = "John", Email = "john.testing@testing.com", Ntid = EIds1, Phone = "555-5555", IsUsPerson = true, IsSubcontractor = false };
+            UserDTO EIdsDTO = new UserDTO() { LastName = EIds1Data.LastName, FirstName = EIds1Data.FirstName, DisplayName = EIds1Data.DisplayName, NTID = EIds1Data.Ntid, PhoneNumber = EIds1Data.Phone, UserID = -1, UpdateDate = DateTime.Now, IsUsPerson = true, IsSubcontractor = false };
+
+            //Mock Setups
+            Factory.Setup(x => x.CreateFullWorkspace(workspace, It.IsAny<bool>())).Returns(ws);
+            permissionLoader.Setup(x => x.GetWorkspacePermissions(ws.Id)).Returns(currentWorkspacePermissions);
+            permissionLoader.Setup(x => x.GetBOEPotentialPermissionsForWorkspace(ws.Id)).Returns(currentBoePermissions);
+
+            _ADUTils.Setup(x => x.GetUserByQualifiedAccount(EIds1, false)).Returns(new UserData());
+            _ADUTils.Setup(x => x.GetAuthorizationGroupsFromWebConfig()).Returns(new Collection<GroupData>());
+            _ADUTils.Setup(x => x.CheckUsersBoeAccess(It.IsAny<ICollection<UserData>>(), It.IsAny<ICollection<GroupData>>())).Returns(new Dictionary<UserData, bool>() { { new UserData() { Ntid = EIds1 }, false } });
+
+            _UserDTODataLoader.Setup(x => x.GetOrCreateUserByNtid(EIds1)).Returns(EIdsDTO);
+
+            int UserETID;
+            _UserDTODataLoader.Setup(x => x.UserExists(EIds1, out UserETID)).Returns(false);
+
+            _ADUTils.Setup(x => x.GetUserByQualifiedAccount(EIds1, false)).Returns(EIds1Data);          //Since this is taking else path must be false(hard coded value)
+
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+
+            //Act
+            sut.SaveNewPermission(workspace, inPermission);
+        }
+
+        /// <summary>
+        /// Test that an exception is thrown when a group member does not have access to GenBOE
+        /// </summary>
+        [TestMethod, ExpectedException(typeof(GenValidationException))]
+        public void SaveNewPermission_NoGenBoeAccess_Group()
+        {
+            //String setup
+            string workspace = "MyWorkspace";
+            string EIds1 = "j.123456";
+
+            //Class Setups
+            FullWorkspace ws = new FullWorkspace() { Id = 1 };
+            Collection<PermissionsDTO> currentWorkspacePermissions = new Collection<PermissionsDTO>(){
+                 new PermissionsDTO() { Role = IES.Common.Role.Approver, ETIUserId = 1 },
+                 new PermissionsDTO() { Role = IES.Common.Role.SystemAdmin, ETIUserId = 1 }};
+            Collection<PermissionsDTO> currentBoePermissions = new Collection<PermissionsDTO>(){
+                 new PermissionsDTO() { Role = IES.Common.Role.Author, ETIUserId = 1}};
+            SavePermissionModelView inPermission = new SavePermissionModelView() { Roles = new Collection<Role>() { Role.Approver, Role.Author }, EntityIds = new Collection<string>() { EIds1 } };
+
+            //For user EIds 1
+            UserData EIds1Data = new UserData() { LastName = "Doe", FirstName = "John", DisplayName = "John", Email = "john.testing@testing.com", Ntid = EIds1, Phone = "555-5555", IsUsPerson = true, IsSubcontractor = false };
+            UserDTO EIdsDTO = new UserDTO() { LastName = EIds1Data.LastName, FirstName = EIds1Data.FirstName, DisplayName = EIds1Data.DisplayName, NTID = EIds1Data.Ntid, PhoneNumber = EIds1Data.Phone, UserID = -1, UpdateDate = DateTime.Now, IsUsPerson = true, IsSubcontractor = false };
+
+            //Mock Setups
+            Factory.Setup(x => x.CreateFullWorkspace(workspace, It.IsAny<bool>())).Returns(ws);
+            permissionLoader.Setup(x => x.GetWorkspacePermissions(ws.Id)).Returns(currentWorkspacePermissions);
+            permissionLoader.Setup(x => x.GetBOEPotentialPermissionsForWorkspace(ws.Id)).Returns(currentBoePermissions);
+
+            _ADUTils.Setup(x => x.GetUserByQualifiedAccount(EIds1, false)).Returns(new UserData());
+            _ADUTils.Setup(x => x.GetAuthorizationGroupsFromWebConfig()).Returns(new Collection<GroupData>());
+            _ADUTils.Setup(x => x.CheckUsersBoeAccess(It.IsAny<ICollection<UserData>>(), It.IsAny<ICollection<GroupData>>())).Returns(new Dictionary<UserData, bool>() { { new UserData() { Ntid = EIds1 }, false } });
+            _ADUTils.Setup(x => x.IsGroup(EIds1)).Returns(true);
+
+            _UserDTODataLoader.Setup(x => x.GetOrCreateUserByNtid(EIds1)).Returns(EIdsDTO);
+
+            int UserETID;
+            _UserDTODataLoader.Setup(x => x.UserExists(EIds1, out UserETID)).Returns(false);
+
+            _ADUTils.Setup(x => x.GetUserByQualifiedAccount(EIds1, false)).Returns(EIds1Data);          //Since this is taking else path must be false(hard coded value)
+
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+
+            //Act
+            sut.SaveNewPermission(workspace, inPermission);
         }
         #endregion
     }

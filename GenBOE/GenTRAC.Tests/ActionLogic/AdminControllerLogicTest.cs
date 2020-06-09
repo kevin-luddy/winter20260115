@@ -165,7 +165,7 @@ namespace GenTRAC.Tests
                 this.userMapper.Object, this.adUtils.Object, this.userMediator.Object, this.permissionsMapper.Object, this.permissionsMediator.Object,
                 this.objectFactory.Object, this.orgStructureMapper.Object,
                 this.manageProposalInfoLoader.Object, this.bulkArchiveLoader.Object, this.approvalsLoader.Object,
-                this.proposalChecklistLoader.Object, this.checklistMediator.Object, this.proposalMediator.Object, this.workspaceLoader.Object);
+                this.proposalChecklistLoader.Object, this.checklistMediator.Object, this.proposalMediator.Object, this.workspaceLoader.Object, null);
 
             return sut;
         }
@@ -979,6 +979,16 @@ namespace GenTRAC.Tests
             Assert.IsTrue(validStates.Contains(ProposalStatus.Deleted));
             Assert.IsFalse(validStates.Contains(ProposalStatus.InProgress));
             Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
+
+            // No Bid
+            fullProposal.ProposalStatus = ProposalStatus.NoBid;
+            validStates = sut.GetValidStateTransitions(fullProposal);
+            Assert.IsTrue(validStates.Contains(ProposalStatus.NoBid));
+            Assert.IsTrue(validStates.Contains(ProposalStatus.Archived));
+            Assert.IsTrue(validStates.Contains(ProposalStatus.Deleted));
+            Assert.IsTrue(validStates.Contains(ProposalStatus.InProgress));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Completed));
 
             int contentId = 1;
             ChecklistContentDto checklistContent = new ChecklistContentDto()

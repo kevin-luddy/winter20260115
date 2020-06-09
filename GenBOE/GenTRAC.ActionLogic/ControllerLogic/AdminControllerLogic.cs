@@ -83,6 +83,11 @@ namespace GenTRAC.ActionLogic
         private readonly IBulkArchiveLoader bulkArchiveLoader = null;
 
         /// <summary>
+        /// Approvals Controller Logic
+        /// </summary>
+        private readonly ApprovalsControllerLogic approvalsControllerLogic = null;
+
+        /// <summary>
         /// The name of the manage proposal info form, needed for validation
         /// </summary>
         public const string MANAGE_PROPOSAL_INFO_FORM = "manageProposalInfoForm";
@@ -114,6 +119,7 @@ namespace GenTRAC.ActionLogic
         /// <param name="inChecklistMediator">Checklist Mediator</param>
         /// <param name="inProposalMediator">Proposal Mediator</param>
         /// <param name="workspaceDTODataLoader">The Workspace DTO Data Loader</param>
+        /// <param name="approvalsControllerLogic">Approvals controller logic</param>
         public AdminControllerLogic(
             ISecurityAccess inSecurityAccess,
             IProposalLoader inProposalLoader,
@@ -131,7 +137,8 @@ namespace GenTRAC.ActionLogic
             IProposalChecklistLoader proposalChecklistLoader,
             IChecklistMediator inChecklistMediator,
             IProposalMediator inProposalMediator,
-            IWorkspaceDTODataLoader workspaceDTODataLoader)
+            IWorkspaceDTODataLoader workspaceDTODataLoader,
+            ApprovalsControllerLogic approvalsControllerLogic)
             : base(inSecurityAccess, inProposalLoader, inUserMapper, objectFactory, approvalsLoader, proposalChecklistLoader, inChecklistMediator, inProposalMediator)
         {
             this.adUtils = activeDirectoryUtils;
@@ -143,6 +150,7 @@ namespace GenTRAC.ActionLogic
             this.manageProposalInfoLoader = inManageProposalInfoLoader;
             this.bulkArchiveLoader = inBulkArchiveLoader;
             this.workspaceDTODataLoader = workspaceDTODataLoader;
+            this.approvalsControllerLogic = approvalsControllerLogic;
         }
 
         #region System Admin
@@ -715,6 +723,8 @@ namespace GenTRAC.ActionLogic
             DateTime? checklistSubmittedDatePricer = this.DetermineIfDateChanged(manageProposalInfo.OldChecklistSubmittedDatePricer, manageProposalInfo.NewChecklistSubmittedDatePricer);
             DateTime? checklistSubmittedDatePeer = this.DetermineIfDateChanged(manageProposalInfo.OldChecklistSubmittedDatePeer, manageProposalInfo.NewChecklistSubmittedDatePeer);
 
+            int? toReturn;
+
             using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("AdminControllerLogic.SaveManageProposalInfoDetails", this.log))
             {
                 ManageProposalInfoDto manageProposalInfoDto = new ManageProposalInfoDto()
@@ -728,10 +738,16 @@ namespace GenTRAC.ActionLogic
                     ChecklistSubmittedDatePeer = checklistSubmittedDatePeer
                 };
 
-                int? toReturn = this.manageProposalInfoLoader.SaveProposalInfo(manageProposalInfoDto);
-
-                return toReturn;
+                toReturn = this.manageProposalInfoLoader.SaveProposalInfo(manageProposalInfoDto);
             }
+
+            if(manageProposalInfo.OldStatus == ProposalStatus.NoBid && manageProposalInfo.NewStatus == ProposalStatus.InProgress)
+            {
+                // reset workflow for setting to no bid
+                this.approvalsControllerLogic.ResetWorkflow(proposalId);
+            }
+
+            return toReturn;
         }
 
         /// <summary>
@@ -875,7 +891,7 @@ namespace GenTRAC.ActionLogic
                 {
                     // Forecasted proposals cannot have linked RDSB docs or BOE Workspaces 
                     // Because Forcasted proposals have a null Tracking Number, checking here can cause a false positive 
-                    // if there are BOEs without a proposal tracking number, prenting deletion
+                    // if there are BOEs without a proposal tracking number, preventing deletion
                     if (!fullProposal.IsForecastProposal)
                     {
                         // check for linked RDSB documents
@@ -915,8 +931,14 @@ namespace GenTRAC.ActionLogic
             // add current status as default
             validStates.Add(fullProposal.ProposalStatus);
 
-            if (fullProposal.ProposalStatus == ProposalStatus.InProgress || fullProposal.ProposalStatus == ProposalStatus.Completed || fullProposal.ProposalStatus == ProposalStatus.Submitted)
-            {
+            if (fullProposal.ProposalStatus == ProposalStatus.InProgress || fullProposal.ProposalStatus == ProposalStatus.Completed 
+                || fullProposal.ProposalStatus == ProposalStatus.Submitted || fullProposal.ProposalStatus == ProposalStatus.NoBid)
+            { 
+                if(fullProposal.ProposalStatus == ProposalStatus.NoBid)
+                {
+                    validStates.Add(ProposalStatus.InProgress);
+                }
+
                 validStates.Add(ProposalStatus.Archived);
                 validStates.Add(ProposalStatus.Deleted);
             }

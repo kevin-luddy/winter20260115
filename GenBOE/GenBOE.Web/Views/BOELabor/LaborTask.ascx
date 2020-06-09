@@ -1266,8 +1266,8 @@
                 <table id="DuplicateLaborTypesGrid" class="sortable grid readonly" style="width: 100%;">
                     <colgroup>
                         <col width="8%" />
-                        <col width="22%" />
-                        <col width="22%" />
+                        <col width="28%" />
+                        <col width="16%" />
                         <col width="12%" />
                         <col width="12%" />
                         <col width="12%" />
@@ -1290,7 +1290,7 @@
                                 <input class="duplicate-count" id="DuplicateCount" type="text" maxlength="1" data-ng-model="item.NumberOfDuplicates" data-ng-keypress="updateDuplicates(event)" />
                             </td>
                             <td>
-                                <span>{{item.ResourceName}}</span>
+                                <span title="{{item.ResourceDescription}}">{{item.ResourceDescription}}</span>
                             </td>
                             <td>
                                 <span>{{item.PerformingOrgName}}</span>

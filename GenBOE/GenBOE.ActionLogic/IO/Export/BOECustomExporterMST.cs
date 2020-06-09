@@ -257,7 +257,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             SdtElement currentInsertionElement = templateElement;
 
-            List<LaborRollupByDateNew> laborRollupData = this.GetRollupByYear(currentLaborTaskElementAsICollection, null, RateType.Hours);
+            List<LaborRollupByDateNew> laborRollupData = this.GetRollupByYear(currentLaborTaskElementAsICollection, null, RateType.Hours, useGfy);
             IList<RollupSummaryByYearTableRowData> laborHoursSummaryRollupData = laborRollupData.Convert();
 
             RollupSummaryByYearTableData laborRollupTableData = new RollupSummaryByYearTableData
@@ -296,7 +296,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
             #region Cost Spread Rollup Table
 
-            SdtElement costSpreadRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_CostSpreadRollup);
+            SdtElement costSpreadRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, 
+                useGfy ? BOEExporterConstants.Table_GfyCostSpreadRollup : BOEExporterConstants.Table_CostSpreadRollup);
 
             if (costSpreadRollupTableTemplateElement != null)
             {
@@ -307,8 +308,8 @@ namespace GenBOE.ActionLogic.IO.Export
                     currentLaborTaskElementAsICollection.Add(currentLaborTaskElement);
 
                     SdtElement currentInsertionElement = costSpreadRollupTableTemplateElement;
-                    
-                    List<LaborRollupByDateNew> laborRollupData = this.GetTaskCostRollup(currentLaborTaskElementAsICollection, exportInputs, null);
+
+                    List<LaborRollupByDateNew> laborRollupData = this.GetTaskCostRollup(currentLaborTaskElementAsICollection, exportInputs, null, useGfy);
                     IList<RollupSummaryByYearTableRowData> laborCostSummaryRollupData = laborRollupData.Convert();
 
                     RollupSummaryByYearTableData laborRollupTableData = new RollupSummaryByYearTableData
@@ -336,12 +337,13 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="odcTaskElement">Element for the ODC task</param>
         /// <param name="selectedComponents">Components selected for the output</param>
         /// <param name="exportInputs">The export inputs.</param>
+        /// <param name="useGfy">use government fiscal year?</param>
         /// <exception cref="System.ArgumentNullException">
         /// selectedComponents
         /// or
         /// exportInputs
         /// </exception>
-        protected override void ProcessODCTaskDirectCostRollupTable(SdtElement containerElement, BOEExportTaskElement odcTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs)
+        protected override void ProcessODCTaskDirectCostRollupTable(SdtElement containerElement, BOEExportTaskElement odcTaskElement, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, bool useGfy)
         {
             if (selectedComponents == null)
             {
@@ -355,7 +357,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
             #region ODC Cost Rollup Table
 
-            SdtElement costSpreadRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_DirectCostRollup);
+            SdtElement costSpreadRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, 
+                useGfy ? BOEExporterConstants.Table_GfyDirectCostRollup : BOEExporterConstants.Table_DirectCostRollup);
 
             if (costSpreadRollupTableTemplateElement != null)
             {
@@ -364,7 +367,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     SdtElement currentInsertionElement = costSpreadRollupTableTemplateElement;
 
                     OtherDirectCostDTO currentODCTaskElement = exportInputs.Odcs.First(x => x.Id == odcTaskElement.BOETaskElementID.Value);
-                    List<LaborRollupByDateNew> ODCRollupData = this.GetODCCostRollup(currentODCTaskElement);
+                    List<LaborRollupByDateNew> ODCRollupData = this.GetODCCostRollup(currentODCTaskElement, useGfy);
                     IList<RollupSummaryByYearTableRowData> ODCCostSummaryRollupData = ODCRollupData.Convert();
 
                     RollupSummaryByYearTableData ODCRollupTableData = new RollupSummaryByYearTableData
@@ -801,12 +804,13 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="travelResources">Resources used by the travel task</param>
         /// <param name="selectedComponents">Components selected for the output</param>
         /// <param name="exportInputs">The export inputs.</param>
+        /// <param name="useGfy">use government fiscal year?</param>
         /// <exception cref="System.ArgumentNullException">
         /// selectedComponents
         /// or
         /// exportInputs
         /// </exception>
-        protected override void ProcessTravelTaskDirectCostRollupTable(SdtElement containerElement, BOEExportTaskElement travelTaskElement, Collection<ResourceDTO> travelResources, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs)
+        protected override void ProcessTravelTaskDirectCostRollupTable(SdtElement containerElement, BOEExportTaskElement travelTaskElement, Collection<ResourceDTO> travelResources, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, bool useGfy)
         {
             if (selectedComponents == null)
             {
@@ -820,12 +824,13 @@ namespace GenBOE.ActionLogic.IO.Export
 
             #region Travel Direct Cost Rollup Table
 
-            SdtElement travelCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_DirectCostRollup);
+            SdtElement travelCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement, 
+                useGfy ? BOEExporterConstants.Table_GfyDirectCostRollup : BOEExporterConstants.Table_DirectCostRollup);
 
             if (selectedComponents.Contains(BoeCustomReportComponent.TaskSpreadTables) && travelCostRollupTableElement != null)
             {
                 TravelDTO currentTravelTaskElement = exportInputs.Travels.First(x => x.Id == travelTaskElement.BOETaskElementID.Value);
-                List<LaborRollupByDateNew> currentTravelTaskRollupData = this.GetNonzoneTravelCostRollup(currentTravelTaskElement, travelTaskElement);
+                List<LaborRollupByDateNew> currentTravelTaskRollupData = this.GetNonzoneTravelCostRollup(currentTravelTaskElement, travelTaskElement, useGfy);
                 RollupSummaryByYearTableData travelSummaryRollupData = currentTravelTaskRollupData.ConvertToRollupSummaryByYear();
                 this.PopulateRollupSummaryByYearTable(travelCostRollupTableElement, null, travelSummaryRollupData, this.DefaultCurrencyFormat, false);
             }
@@ -845,14 +850,16 @@ namespace GenBOE.ActionLogic.IO.Export
         /// Get the cost rollup for an ODC task
         /// </summary>
         /// <param name="ODCElement">DTO for the ODC task</param>
+        /// <param name="useGfy">Use Govt Fiscal Year</param>
         /// <returns>Cost rollup for an ODC task</returns>
-        private List<LaborRollupByDateNew> GetODCCostRollup(OtherDirectCostDTO ODCElement)
+        private List<LaborRollupByDateNew> GetODCCostRollup(OtherDirectCostDTO ODCElement, bool useGfy)
         {
             List<LaborRollupByDateNew> RollupList = new List<LaborRollupByDateNew>();
-            DateRange ODCDateRange = this.GetODCTravelDateRange(new Collection<OtherDirectCostDTO> { ODCElement }, null);
+            DateRange ODCDateRange = this.GetODCTravelDateRange(new Collection<OtherDirectCostDTO> { ODCElement }, null, useGfy);
             if (ODCDateRange.StartDate.HasValue && ODCDateRange.EndDate.HasValue)
             {
                 ICollection<int> odcResourceIds = ODCElement.ODCTypes.Where(t => t.ResourceID.HasValue).Select(t => t.ResourceID.Value).Distinct().ToList();
+
                 for (int i = ODCDateRange.StartDate.Value.Year; i <= ODCDateRange.EndDate.Value.Year; i++)
                 {
                     LaborRollupByDateNew Rollup = new LaborRollupByDateNew();
@@ -861,7 +868,15 @@ namespace GenBOE.ActionLogic.IO.Export
 
                     foreach(int resourceId in odcResourceIds)
                     {
-                        ICollection<OtherDirectCostSpread> odcSpreads = ODCElement.ODCTypes.Where(t => t.ResourceID == resourceId).SelectMany(t => t.ODCSpreads).ToList();
+                        ICollection<OtherDirectCostSpread> odcSpreads = ODCElement.ODCTypes.Where(t => t.ResourceID == resourceId).SelectMany(t => t.ODCSpreads).ToList().DeepClone();
+
+                        if(useGfy)
+                        {
+                            foreach(OtherDirectCostSpread spread in odcSpreads.Where(x => x.ODCSpreadDate.HasValue))
+                            {
+                                spread.ODCSpreadDate = this.AdjustDateForGovtFiscalYear(spread.ODCSpreadDate.Value);
+                            }
+                        }
 
                         Rollup.January += this.GetRollupForMonth(odcSpreads, i, 1);
                         Rollup.February += this.GetRollupForMonth(odcSpreads, i, 2);
@@ -1216,15 +1231,24 @@ namespace GenBOE.ActionLogic.IO.Export
         /// </summary>
         /// <param name="TravelElement">Travel dto containing the trips to rollup</param>
         /// <param name="element">BOE Export Task Element for the Travel Task</param>
+        /// <param name="useGfy">Use Govt Fiscal Year</param>
         /// <returns>The cost rollup data for the nonzone trips in the task</returns>
-        private List<LaborRollupByDateNew> GetNonzoneTravelCostRollup(TravelDTO TravelElement, BOEExportTaskElement element)
+        private List<LaborRollupByDateNew> GetNonzoneTravelCostRollup(TravelDTO TravelElement, BOEExportTaskElement element, bool useGfy)
         {
             List<LaborRollupByDateNew> toReturn = new List<LaborRollupByDateNew>();
 
-            DateRange TravelElementsDateRange = this.GetODCTravelDateRange(null, new Collection<TravelDTO> { TravelElement });
+            DateRange TravelElementsDateRange = this.GetODCTravelDateRange(null, new Collection<TravelDTO> { TravelElement }, false);
             if (TravelElementsDateRange.StartDate.HasValue && TravelElementsDateRange.EndDate.HasValue)
             {
-                ICollection<MSTTravelTripType> TravelTrips = TravelElement.MSTTravelTrips;
+                ICollection<MSTTravelTripType> TravelTrips = TravelElement.MSTTravelTrips.DeepClone();
+
+                if (useGfy)
+                {
+                    foreach(var trip in TravelTrips)
+                    {
+                        trip.TripDate = this.AdjustDateForGovtFiscalYear(trip.TripDate);
+                    }
+                }
                                
                 for (int i = TravelElementsDateRange.StartDate.Value.Year; i <= TravelElementsDateRange.EndDate.Value.Year; i++)
                 {

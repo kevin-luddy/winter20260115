@@ -197,6 +197,8 @@ namespace GenTRAC.Web.Common
             AddActionToController(WebConstants.Action.SAVE_APPROVAL, PtmSecurityPage.Approvals, SecurityAuthorization.ReadUpdate, approvalsControllerActions);
             AddActionToController(WebConstants.Action.RESET_WORKFLOW, PtmSecurityPage.Proposal, SecurityAuthorization.ReadUpdate, approvalsControllerActions);
             AddActionToController(WebConstants.Action.VALIDATE_COVER_SHEET_APPROVER, PtmSecurityPage.Approvals, SecurityAuthorization.Read, approvalsControllerActions);
+            AddActionToController(WebConstants.Action.SET_NO_BID, PtmSecurityPage.Approvals, SecurityAuthorization.ReadUpdate, approvalsControllerActions);
+            AddActionToController(WebConstants.Action.REVERT_NO_BID, PtmSecurityPage.Approvals, SecurityAuthorization.ReadUpdate, approvalsControllerActions);
             result.Add(WebConstants.Controller.APPROVALS, approvalsControllerActions);
         }
 

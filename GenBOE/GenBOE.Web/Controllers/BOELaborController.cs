@@ -152,7 +152,7 @@ namespace GenBOE.Web.Controllers
                             perfOrg = performingOrgsFromDb.First(x => x.Id == row.PerformingOrgID.Value);
                         }
 
-                        orderOfResourceTypes.Add(new SelectListItem { Text = resource.ResourceName + " " + perfOrg.PerformingOrgDesc, Value = row.Id.ToString() });
+                        orderOfResourceTypes.Add(new SelectListItem { Text = resource.ResourceDesc + " " + perfOrg.PerformingOrgDesc, Value = row.Id.ToString() });
                     }
                 }
             }

@@ -109,6 +109,7 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="ids">Proposal Id</param>
         /// <returns>The ProposalDto, null if none found</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         [DbQuery]
         public override ICollection<ProposalDto> GetByIds(ICollection<int> ids)
         {
@@ -183,7 +184,8 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationDate = entity.CertificationDate,
                             CutOffDateUtilization = entity.CutOffDateUtilization,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
-                            CertificationLastEmailed = entity.CertificationLastEmailed
+                            CertificationLastEmailed = entity.CertificationLastEmailed,
+                            NoBidDate = entity.NoBidDate
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -246,7 +248,8 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationDate = entity.CertificationDate,
                             CutOffDateUtilization = entity.CutOffDateUtilization.HasValue ? (CutOffDateUtilization?)entity.CutOffDateUtilization : null,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
-                            CertificationLastEmailed = entity.CertificationLastEmailed
+                            CertificationLastEmailed = entity.CertificationLastEmailed,
+                            NoBidDate = entity.NoBidDate
                         }).ToList();
                 }
             }
@@ -542,7 +545,8 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.CertificationDate,
                             (int?)dtoToUpsert.CutOffDateUtilization,
                             dtoToUpsert.CertificationTimelineCompleted,
-                            dtoToUpsert.CertificationLastEmailed).FirstOrDefault();
+                            dtoToUpsert.CertificationLastEmailed,
+                            dtoToUpsert.NoBidDate).FirstOrDefault();
                     }
                 }
             }
@@ -864,7 +868,8 @@ namespace GenTRAC.DataBridge.DTO
                         CertificationDate = entity.CertificationDate,
                         CutOffDateUtilization = entity.CutOffDateUtilization,
                         CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
-                        CertificationLastEmailed = entity.CertificationLastEmailed
+                        CertificationLastEmailed = entity.CertificationLastEmailed,
+                        NoBidDate = entity.NoBidDate
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -927,7 +932,8 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationDate = entity.CertificationDate,
                             CutOffDateUtilization = entity.CutOffDateUtilization.HasValue ? (CutOffDateUtilization?)entity.CutOffDateUtilization : null,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
-                            CertificationLastEmailed = entity.CertificationLastEmailed
+                            CertificationLastEmailed = entity.CertificationLastEmailed,
+                            NoBidDate = entity.NoBidDate
                         }).ToList();
                 }
             }
@@ -1010,7 +1016,8 @@ namespace GenTRAC.DataBridge.DTO
                         CertificationDate = entity.CertificationDate,
                         CutOffDateUtilization = entity.CutOffDateUtilization,
                         CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
-                        CertificationLastEmailed = entity.CertificationLastEmailed
+                        CertificationLastEmailed = entity.CertificationLastEmailed,
+                        NoBidDate = entity.NoBidDate
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1073,7 +1080,8 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationDate = entity.CertificationDate,
                             CutOffDateUtilization = entity.CutOffDateUtilization.HasValue ? (CutOffDateUtilization?)entity.CutOffDateUtilization : null,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
-                            CertificationLastEmailed = entity.CertificationLastEmailed
+                            CertificationLastEmailed = entity.CertificationLastEmailed,
+                            NoBidDate = entity.NoBidDate
                         }).ToList();
                 }
             }
@@ -1087,6 +1095,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="workflowStatus">The workflow status.</param>
         /// <param name="cutoffDate">The cutoff date for retrieving proposals.</param>
         /// <returns>A list of proposals.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         public ICollection<ProposalDto> GetProposalsByWorkflowStatusAndCutoffDate(WorkflowStatus workflowStatus, DateTime cutoffDate)
         {
             ICollection<ProposalDto> toReturn = new List<ProposalDto>();
@@ -1158,7 +1167,8 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationDate = entity.CertificationDate,
                             CutOffDateUtilization = entity.CutOffDateUtilization,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
-                            CertificationLastEmailed = entity.CertificationLastEmailed
+                            CertificationLastEmailed = entity.CertificationLastEmailed,
+                            NoBidDate = entity.NoBidDate
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1221,7 +1231,8 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationDate = entity.CertificationDate,
                             CutOffDateUtilization = entity.CutOffDateUtilization.HasValue ? (CutOffDateUtilization?)entity.CutOffDateUtilization : null,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
-                            CertificationLastEmailed = entity.CertificationLastEmailed
+                            CertificationLastEmailed = entity.CertificationLastEmailed,
+                            NoBidDate = entity.NoBidDate
                         }).ToList();
                 }
             }
@@ -1324,7 +1335,8 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationDate = entity.CertificationDate,
                             CutOffDateUtilization = entity.CutOffDateUtilization,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
-                            CertificationLastEmailed = entity.CertificationLastEmailed
+                            CertificationLastEmailed = entity.CertificationLastEmailed,
+                            NoBidDate = entity.NoBidDate
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1387,7 +1399,8 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationDate = entity.CertificationDate,
                             CutOffDateUtilization = entity.CutOffDateUtilization.HasValue ? (CutOffDateUtilization?)entity.CutOffDateUtilization : null,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
-                            CertificationLastEmailed = entity.CertificationLastEmailed
+                            CertificationLastEmailed = entity.CertificationLastEmailed,
+                            NoBidDate = entity.NoBidDate
                         }).ToList();
                 }
             }
@@ -1475,7 +1488,8 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationDate = entity.CertificationDate,
                             CutOffDateUtilization = entity.CutOffDateUtilization,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
-                            CertificationLastEmailed = entity.CertificationLastEmailed
+                            CertificationLastEmailed = entity.CertificationLastEmailed,
+                            NoBidDate = entity.NoBidDate
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1538,7 +1552,8 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationDate = entity.CertificationDate,
                             CutOffDateUtilization = entity.CutOffDateUtilization.HasValue ? (CutOffDateUtilization?)entity.CutOffDateUtilization : null,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
-                            CertificationLastEmailed = entity.CertificationLastEmailed
+                            CertificationLastEmailed = entity.CertificationLastEmailed,
+                            NoBidDate = entity.NoBidDate
                         }).ToList();
                 }
             }

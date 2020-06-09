@@ -195,6 +195,7 @@ namespace GenTRAC.Tests.ActionLogic
             expected.Comments = proposal.LeadEstimatorSignatureComment;
             expected.IsReadOnly = true;
             expected.ApproverRole = PtmRole.Pricer;
+            expected.IsNoBid = false;
 
             ApprovalSectionModelView actual = sut.GetApprovalModel(proposal.Id, PtmRole.Pricer);
 
@@ -205,6 +206,43 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(expected.ApproverRole, actual.ApproverRole);
             Assert.AreEqual(expected.ApproverHeader, actual.ApproverHeader);
             Assert.AreEqual(expected.SignatureString, actual.SignatureString);
+            Assert.AreEqual(expected.IsNoBid, actual.IsNoBid);
+        }
+
+        /// <summary>
+        /// Tests GetApprovalModel method for lead estimator
+        /// </summary>
+        [TestMethod]
+        public void GetApprovalModelTest_LeadEstimator_NoBid()
+        {
+            ApprovalsControllerLogic sut = this.CreateSystem();
+            UserDTO user = this.SetupUserForGetApprovalModelTest();
+            ProposalDto proposal = this.SetupProposalForGetApprovalModelTest();
+
+            // make no bid
+            proposal.ProposalStatus = ProposalStatus.NoBid;
+            FullProposal fullProposal = new FullProposal(proposal);
+            this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
+            this.objectFactory.Setup(x => x.CreateFullProposal(proposal)).Returns(fullProposal);
+
+            ApprovalSectionModelView expected = new ApprovalSectionModelView();
+            expected.ApproverName = user.DisplayName;
+            expected.DateOfApproval = proposal.LeadEstimatorSignedDate;
+            expected.Comments = proposal.LeadEstimatorSignatureComment;
+            expected.IsReadOnly = true;
+            expected.ApproverRole = PtmRole.Pricer;
+            expected.IsNoBid = true;
+
+            ApprovalSectionModelView actual = sut.GetApprovalModel(proposal.Id, PtmRole.Pricer);
+
+            Assert.AreEqual(expected.ApproverName, actual.ApproverName);
+            Assert.AreEqual(expected.DateOfApproval, actual.DateOfApproval);
+            Assert.AreEqual(expected.Comments, actual.Comments);
+            Assert.AreEqual(expected.IsReadOnly, actual.IsReadOnly);
+            Assert.AreEqual(expected.ApproverRole, actual.ApproverRole);
+            Assert.AreEqual(expected.ApproverHeader, actual.ApproverHeader);
+            Assert.AreEqual(expected.SignatureString, actual.SignatureString);
+            Assert.AreEqual(expected.IsNoBid, actual.IsNoBid);
         }
 
         /// <summary>
@@ -223,6 +261,7 @@ namespace GenTRAC.Tests.ActionLogic
             expected.Comments = proposal.CoverSheetApproverSignatureComment;
             expected.IsReadOnly = true;
             expected.ApproverRole = PtmRole.CoverSheetApprover;
+            expected.IsNoBid = false;
 
             ApprovalSectionModelView actual = sut.GetApprovalModel(proposal.Id, PtmRole.CoverSheetApprover);
 
@@ -297,6 +336,7 @@ namespace GenTRAC.Tests.ActionLogic
             expected.Comments = proposal.PricingVerifierSignatureComment;
             expected.IsReadOnly = true;
             expected.ApproverRole = PtmRole.PricingVerification;
+            expected.IsNoBid = false;
 
             ApprovalSectionModelView actual = sut.GetApprovalModel(proposal.Id, PtmRole.PricingVerification);
 
@@ -307,6 +347,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(expected.ApproverRole, actual.ApproverRole);
             Assert.AreEqual(expected.ApproverHeader, actual.ApproverHeader);
             Assert.AreEqual(expected.SignatureString, actual.SignatureString);
+            Assert.AreEqual(expected.IsNoBid, actual.IsNoBid);
         }
 
         /// <summary>
@@ -346,6 +387,7 @@ namespace GenTRAC.Tests.ActionLogic
             expected.Comments = proposal.IndependentReviewerSignatureComment;
             expected.IsReadOnly = true;
             expected.ApproverRole = PtmRole.PeerReviewer;
+            expected.IsNoBid = false;
 
             ApprovalSectionModelView actual = sut.GetApprovalModel(proposal.Id, PtmRole.PeerReviewer);
 
@@ -356,6 +398,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(expected.ApproverRole, actual.ApproverRole);
             Assert.AreEqual(expected.ApproverHeader, actual.ApproverHeader);
             Assert.AreEqual(expected.SignatureString, actual.SignatureString);
+            Assert.AreEqual(expected.IsNoBid, actual.IsNoBid);
         }
 
         /// <summary>
@@ -395,6 +438,7 @@ namespace GenTRAC.Tests.ActionLogic
             expected.Comments = proposal.LOBEstimatingLeadSignatureComment;
             expected.IsReadOnly = false;
             expected.ApproverRole = PtmRole.LOBEstLead;
+            expected.IsNoBid = false;
 
             ApprovalSectionModelView actual = sut.GetApprovalModel(proposal.Id, PtmRole.LOBEstLead);
 
@@ -405,6 +449,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(expected.ApproverRole, actual.ApproverRole);
             Assert.AreEqual(expected.ApproverHeader, actual.ApproverHeader);
             Assert.AreEqual(expected.SignatureString, actual.SignatureString);
+            Assert.AreEqual(expected.IsNoBid, actual.IsNoBid);
         }
 
         /// <summary>

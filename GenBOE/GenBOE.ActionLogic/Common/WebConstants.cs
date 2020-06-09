@@ -863,7 +863,7 @@ namespace GenBOE.ActionLogic.Common
 
         public static readonly string VIEW_MANAGE_PERMISSIONS = "ManagePermissions";
         public static readonly string VIEW_MANAGE_PERMISSIONS_GRID = "ManagePermissionsGrid";
-        public static readonly string ACTION_CHECK_IF_USER_WILL_LOOSE_ADMIN_ACCESS = "CheckIfUserWillLooseTheirAdminAccess";
+        public static readonly string ACTION_CHECK_IF_USER_WILL_LOSE_ADMIN_ACCESS = "CheckIfUserWillLoseTheirAdminAccess";
         public static readonly string ACTION_SAVE_PERMISSIONS = "SaveNewPermissions";
         public static readonly string ACTION_EDIT_PERMISSIONS = "EditPermissions";
         public static readonly string ACTION_DELETE_USER_PERMISSIONS = "DeleteUserPermissions";

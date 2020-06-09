@@ -1136,3 +1136,9 @@ button.ies-danger.disabled {
     width: 100%;
     height: 100px;
 }
+
+#no-bid-container button,
+#revert-no-bid-container button {
+    float: right;
+    top: -40px;
+}

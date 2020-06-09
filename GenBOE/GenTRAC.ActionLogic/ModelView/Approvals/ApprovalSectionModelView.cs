@@ -24,6 +24,7 @@ namespace GenTRAC.ActionLogic.ModelView
             this.Comments = string.Empty;
             this.AdditionalEmailText = string.Empty;
             this.IsReadOnly = true;
+            this.IsNoBid = false;
         }
 
         /// <summary>
@@ -60,6 +61,11 @@ namespace GenTRAC.ActionLogic.ModelView
         /// Gets or sets a value indicating whether this proposal has non preferred tool.
         /// </summary>
         public bool HasNonPreferredTool { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this proposal has a status of No Bid
+        /// </summary>
+        public bool IsNoBid { get; set; }
 
         /// <summary>
         /// Header for Approver section

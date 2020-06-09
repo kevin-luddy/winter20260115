@@ -395,7 +395,13 @@ namespace IES.Common
         /// Submitted
         /// </summary>
         [Description("Submitted")]
-        Submitted = 6 
+        Submitted = 6,
+
+        /// <summary>
+        /// No Bid
+        /// </summary>
+        [Description("No Bid")]
+        NoBid = 7
     }
 
     /// <summary>
@@ -783,10 +789,16 @@ namespace IES.Common
         Completed = 1,
 
         /// <summary>
+        /// No Bid
+        /// </summary>
+        [Description("No Bid")]
+        NoBid = 2,
+
+        /// <summary>
         /// All
         /// </summary>
         [Description("All")]
-        All = 2
+        All = 3
     }
 
     /// <summary>
@@ -1054,10 +1066,16 @@ namespace IES.Common
         Revision = 5,
 
         /// <summary>
+        /// No Bid
+        /// </summary>
+        [Description("No Bid")]
+        NoBid = 7,
+
+        /// <summary>
         /// All
         /// </summary>
         [Description("All")]
-        All = 6
+        All = 8
     }
 
     /// <summary>

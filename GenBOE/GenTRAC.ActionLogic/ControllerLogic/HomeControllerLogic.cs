@@ -203,6 +203,10 @@ namespace GenTRAC.ActionLogic
             {
                 statuses.Add((int)ProposalStatus.Completed);
             }
+            else if (filtersCookie.FilterOption == ProposalFilterOption.NoBid)
+            {
+                statuses.Add((int)ProposalStatus.NoBid);
+            }
 
             // Get the Proposal Class filter option as appropriate.  If less than zero, use null (which returns all Proposal Classes).
             int? proposalClassFilterID = null;

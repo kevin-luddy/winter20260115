@@ -350,5 +350,10 @@ namespace GenTRAC.DataBridge.DTO
         /// Gets or sets the certification last emailed date.
         /// </summary>
         public DateTime? CertificationLastEmailed { get; set; }
+
+        /// <summary>
+        /// Gets or sets the No Bid date
+        /// </summary>
+        public DateTime? NoBidDate { get; set; }
     }
 }

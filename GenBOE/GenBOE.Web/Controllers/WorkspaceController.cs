@@ -719,8 +719,8 @@ namespace GenBOE.Web.Controllers
                 bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
 
                 ICollection<GenTRAC.DataBridge.DTO.ProposalDto> proposals = isAdmin 
-                    ? this.proposalLoader.GetAllSlim().Where(p => !p.IsForecastProposal).ToList() 
-                    : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true).Where(p => !p.IsForecastProposal).ToList();
+                    ? this.proposalLoader.GetAllSlim().Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid).ToList() 
+                    : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true).Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid).ToList();
                 
                 foreach (GenTRAC.DataBridge.DTO.ProposalDto proposal in proposals)
                 {
@@ -1381,8 +1381,8 @@ namespace GenBOE.Web.Controllers
                     bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
                     
                     ICollection<GenTRAC.DataBridge.DTO.ProposalDto> proposals = isAdmin 
-                        ? this.proposalLoader.GetAllSlim().Where(p => !p.IsForecastProposal).ToList() 
-                        : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true).Where(p => !p.IsForecastProposal).ToList();
+                        ? this.proposalLoader.GetAllSlim().Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid).ToList() 
+                        : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true).Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid).ToList();
 
                     if (!string.IsNullOrWhiteSpace(spaceModel.TrackingNumber) && !proposals.Any(p => p.TrackingNumber == spaceModel.TrackingNumber))
                     {

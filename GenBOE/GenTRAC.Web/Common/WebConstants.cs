@@ -419,6 +419,16 @@ namespace GenTRAC.Web.Common
             /// </summary>
             public const string RESET_WORKFLOW = "ResetWorkflow";
 
+            /// <summary>
+            /// Sets the Proposal as No Bid
+            /// </summary>
+            public const string SET_NO_BID = "SetProposalAsNoBid";
+
+            /// <summary>
+            /// Reverts the Proposal No Bid status
+            /// </summary>
+            public const string REVERT_NO_BID = "RevertProposalNoBidStatus";
+
             #endregion
 
             #region Checklist

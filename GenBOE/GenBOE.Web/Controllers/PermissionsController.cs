@@ -97,7 +97,7 @@ namespace GenBOE.Web.Controllers
             FinalizeAction(_log, "GetManagePermissionsModel", sw);
             return toReturn;
         }
-      
+
         #endregion
 
         #region AJAX Calls
@@ -165,7 +165,7 @@ namespace GenBOE.Web.Controllers
             Stopwatch sw = InitializeAction(_log, "EditPermissions", SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
 
             Collection<ValidationMessage> ValidationErrors = new Collection<ValidationMessage>();
-            
+
             if (ModelState.IsValid)
             {
                 inRoles = new Collection<Role>(inRoles.Distinct().ToList());
@@ -189,7 +189,7 @@ namespace GenBOE.Web.Controllers
                                                       where permission.ETIUserId == inEntityId
                                                       select permission.Role).Distinct().ToList();
 
-                    var workspaceAdmins = (from r in this.PermissionsLoader.GetWorkspacePermissions(ws.Id)
+                    int workspaceAdmins = (from r in this.PermissionsLoader.GetWorkspacePermissions(ws.Id)
                                            where r.Role == Role.WorkspaceAdmin
                                            select r.ETIUserId).Count();
 
@@ -204,7 +204,7 @@ namespace GenBOE.Web.Controllers
                     // perform checks for the Subcontractor Author role
                     UserDTO currentUser = this.UserLoader.GetUserByID(inEntityId);
                     this.Factory.ClearPermissionsCache(currentUser.NTID);
-                    bool isSubcontractor = _SecurityInformation.IsSubcontractorUser(currentUser.NTID, currentUser.IsSubcontractor);
+                    bool isSubcontractor = _SecurityInformation.IsSubcontractorUser(currentUser.NTID, currentUser.IsSubcontractor ?? false);
 
                     if (isSubcontractor && (!inRoles.Contains(Role.SubcontractorAuthor) || inRoles.Count() > 1))
                     {
@@ -213,6 +213,28 @@ namespace GenBOE.Web.Controllers
                     if (!isSubcontractor && inRoles.Contains(Role.SubcontractorAuthor))
                     {
                         ValidationErrors.Add(new ValidationMessage("SubcontractorAuthor", "LM Users are not permitted Subcontractor Author permissions"));
+                    }
+
+                    // perform checks for genBOE access
+                    if (currentUser.NTID.Contains('.') && this._ADUtils.IsGroup(currentUser.NTID))
+                    {
+                        ICollection<UserData> groupMembers = this._ADUtils.GetAdGroupUsers(currentUser.NTID);
+                        Dictionary<UserData, bool> groupMemberAccess = this._permissionControllerLogic.GetGenBOEAccess(groupMembers);
+
+                        if (groupMemberAccess.Any(x => x.Value == false))
+                        {
+                            ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", string.Format("The following members of group {0} do not have access to genBOE and therefore the group's permissions cannot be changed: <ul><li>{1}</li></ul>Please contact your administrator if access is needed.",
+                                currentUser.NTID, string.Join("</li><li>", groupMemberAccess.Where(x => x.Value == false).Select(x => x.Key).Select(x => x.DisplayName)))));
+                            throw new GenValidationException(ValidationErrors);
+                        }
+                    }
+                    else
+                    {
+                        Dictionary<UserData, bool> genBoeAccess = this._permissionControllerLogic.GetGenBOEAccess(new Collection<UserData>() { new UserData() { Ntid = currentUser.NTID } });
+                        if (genBoeAccess.Any(x => x.Value == false))
+                        {
+                            ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", "The user does not have access to genBOE and their permissions cannot be changed. Please contact your administrator if this user needs access."));
+                        }
                     }
 
                     // Check the Workspace's BOEs for assignments using one of the roles being removed
@@ -241,10 +263,12 @@ namespace GenBOE.Web.Controllers
                 {
                     ValidationErrors.Add(new ValidationMessage("Delete Failed", String.Format(
                         "The following users are assigned to at least one BOE. BOE(s) must be reassigned through the <a href=\"{0}\">Manage BOEs</a> page before the roles can be removed.<BR/>{1}",
-                        Url.RouteUrl(WebConstants.ROUTE_WORKSPACE, new {
+                        Url.RouteUrl(WebConstants.ROUTE_WORKSPACE, new
+                        {
                             action = WebConstants.ACTION_INDEX,
                             controller = WebConstants.CONTROLLER_BOE,
-                            workspace = workspace }),
+                            workspace = workspace
+                        }),
                         String.Join("<BR/>", usersToReassign.Select(u => u.DisplayName).ToArray()))));
                 }
                 // Otherwise, we can go ahead and edit the roles.
@@ -288,8 +312,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="inEntityId">The entity ID</param>
         /// <param name="inRoles">The list of roles(if this is null a delete is being performed)</param>
         /// <returns></returns>
-        //public JsonResult CheckIfUserWillLooseTheirAdminAccess(String workspace, EntityType inType, int inEntityId, Collection<Role> inRoles)
-        public JsonResult CheckIfUserWillLooseTheirAdminAccess(String workspace, int inEntityId, Collection<Role> inRoles)
+        public JsonResult CheckIfUserWillLoseTheirAdminAccess(String workspace, int inEntityId, Collection<Role> inRoles)
         {
             if (workspace == null)
             {
@@ -298,8 +321,8 @@ namespace GenBOE.Web.Controllers
 
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            Stopwatch sw = InitializeAction(_log, "CheckIfUserWillLooseTheirAdminAccess", SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
-        
+            Stopwatch sw = InitializeAction(_log, "CheckIfUserWillLoseTheirAdminAccess", SecurityPage.WorkspaceAdminPermissions, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+
             int currentUserID = ws.CurrentActiveUser.UserID;
 
 
@@ -323,19 +346,19 @@ namespace GenBOE.Web.Controllers
                                                                                         UpdateDate = permission.UpdateDate
                                                                                     }).ToList();
 
-                if (inEntityId != currentUserID)
-                {
-                    return Json(new { Status = false });
-                }
+            if (inEntityId != currentUserID)
+            {
+                return Json(new { Status = false });
+            }
 
             if (allCurrentUsersAdminRoleForThisWorkspace.Count() > 1)
             {
-                FinalizeAction(_log, "CheckIfUserWillLooseTheirAdminAccess", sw);
+                FinalizeAction(_log, "CheckIfUserWillLoseTheirAdminAccess", sw);
                 return Json(new { Status = false });
             }
             else
             {
-                FinalizeAction(_log, "CheckIfUserWillLooseTheirAdminAccess", sw);
+                FinalizeAction(_log, "CheckIfUserWillLoseTheirAdminAccess", sw);
                 return Json(new { Status = true });
             }
         }
@@ -359,7 +382,7 @@ namespace GenBOE.Web.Controllers
             /** Valid Model Check */
             if (ModelState.IsValid)
             {
-                PermissionDeleteAction action = PermissionsDelete.CheckUserAssignments(ws,inUserID, this.PermissionsLoader);
+                PermissionDeleteAction action = PermissionsDelete.CheckUserAssignments(ws, inUserID, this.PermissionsLoader);
 
                 if (action >= PermissionDeleteAction.DeleteRoleRequireReassignment)
                 {
@@ -368,8 +391,8 @@ namespace GenBOE.Web.Controllers
                                 this.UserLoader.GetUserByID(inUserID).DisplayName,
                         Url.RouteUrl(WebConstants.ROUTE_WORKSPACE, new
                         {
-                                    action = WebConstants.ACTION_INDEX,
-                                    controller = WebConstants.CONTROLLER_BOE,
+                            action = WebConstants.ACTION_INDEX,
+                            controller = WebConstants.CONTROLLER_BOE,
                             workspace = workspace
                         })));
                 }
@@ -385,13 +408,13 @@ namespace GenBOE.Web.Controllers
                     UserDTO user = this.UserLoader.GetUserByID(inUserID);
 
                     // get this permissions for this user/group so we can delete it with the correct datetime
-                    var permissionsForUser = permissionsForWS
+                    IEnumerable<PermissionsDTO> permissionsForUser = permissionsForWS
                                                 .Where(x => x.ETIUserId == user.UserID)
                                                 .Select(x => x);
 
-                    var workspaceAdmins = (from r in workspacePermissions
-                                                       where r.Role == Role.WorkspaceAdmin
-                                                       select r.ETIUserId).Count();
+                    int workspaceAdmins = (from r in workspacePermissions
+                                           where r.Role == Role.WorkspaceAdmin
+                                           select r.ETIUserId).Count();
 
                     // now we have permissions for this user/group so we can delete it correctly
                     foreach (PermissionsDTO permissionForUser in permissionsForUser)
@@ -400,7 +423,7 @@ namespace GenBOE.Web.Controllers
                         permissionForUser.Updateable = UpdateType.Deleted;
                         permissionsToSave.Add(permissionForUser);
 
-                        
+
                         if (permissionForUser.Role == Role.WorkspaceAdmin)
                         {
                             if (workspaceAdmins <= 1)
@@ -410,7 +433,7 @@ namespace GenBOE.Web.Controllers
                         }
                     }
 
-                    
+
 
                     // perform all saves here
                     using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
@@ -444,9 +467,9 @@ namespace GenBOE.Web.Controllers
 
             // get all the distinct groups we have to organize by.  then loop over each group name
             List<int> distinctUsers = (from u in allPerms
-                                        where u.WorkspaceId == ws.Id 
-                                        select u.ETIUserId).Distinct().ToList();            
-            
+                                       where u.WorkspaceId == ws.Id
+                                       select u.ETIUserId).Distinct().ToList();
+
             ICollection<UserDTO> users = this.UserLoader.GetByIds(distinctUsers);
 
             //get current user info for use later
@@ -454,7 +477,7 @@ namespace GenBOE.Web.Controllers
             ICollection<GroupData> currentUserGroups = this._ADUtils.GetGroupsForUser(currentUser.NTID.ToString());
             IDictionary<int, RoleModelView> roleModelViews = this._CommonDataMapper.getRolesDictionary();
 
-            Dictionary<UserData, bool> usersBoeMembership = this.GetGenBOEAccess(users.Select(x => new UserData() { Ntid = x.NTID }).ToList());
+            Dictionary<UserData, bool> usersBoeMembership = this._permissionControllerLogic.GetGenBOEAccess(users.Select(x => new UserData() { Ntid = x.NTID }).ToList());
 
             foreach (int distinctUser in distinctUsers)
             {
@@ -477,18 +500,18 @@ namespace GenBOE.Web.Controllers
 
                 // The distinct roles for the workspace/user/group combo
                 Collection<Role> roles = new Collection<Role>((from u in allPerms
-                                                                where u.WorkspaceId == ws.Id && u.ETIUserId == distinctUser
-                                                                orderby u.ETIUserId, u.Role
-                                                                select u.Role).Distinct().ToArray());
+                                                               where u.WorkspaceId == ws.Id && u.ETIUserId == distinctUser
+                                                               orderby u.ETIUserId, u.Role
+                                                               select u.Role).Distinct().ToArray());
 
                 // convert the distinct roles into the proper modelview class
                 modelViewToAdd.Roles = new Collection<PermissionRoleModelView>(
                                             (from r in roles
-                                            select new PermissionRoleModelView
-                                            {
-                                                RoleID = (int)r,
-                                                RoleName = roleModelViews[(int)r].RoleName
-                                            }).ToArray());
+                                             select new PermissionRoleModelView
+                                             {
+                                                 RoleID = (int)r,
+                                                 RoleName = roleModelViews[(int)r].RoleName
+                                             }).ToArray());
 
                 //If current user is a member of the group, add them to group members for admin checking purposes
                 //move these higher to not do it every loop
@@ -504,7 +527,7 @@ namespace GenBOE.Web.Controllers
                     }
                 }
 
-                if(modelViewToAdd.isGroup)
+                if (modelViewToAdd.isGroup)
                 {
                     modelViewToAdd.genBOEAccess = "View Users";
                 }
@@ -516,10 +539,10 @@ namespace GenBOE.Web.Controllers
                 permissions.Add(modelViewToAdd);
             }
 
-            var nonGroups = from t in permissions
-                            from u in t.Users
-                            orderby u.DisplayName
-                            select t;
+            IEnumerable<PermissionsGridModelView> nonGroups = from t in permissions
+                                                              from u in t.Users
+                                                              orderby u.DisplayName
+                                                              select t;
 
             List<PermissionsGridModelView> reGrouping = new List<PermissionsGridModelView>();
             reGrouping.AddRange(nonGroups);
@@ -529,21 +552,7 @@ namespace GenBOE.Web.Controllers
             toReturn.CurrentUserId = ws.CurrentActiveUser.UserID;
             toReturn.CurrentUserDisplayName = ws.CurrentActiveUser.DisplayName;
 
-            return toReturn;   
-        }
-
-        /// <summary>
-        /// Checks if users have access to GenBoe
-        /// </summary>
-        /// <param name="usersToCheck">Users to check</param>
-        /// <returns>A dictionary of users and a bool indicating if they have access or not</returns>
-        private Dictionary<UserData, bool> GetGenBOEAccess(ICollection<UserData> usersToCheck)
-        {
-            ICollection<GroupData> groups = this._ADUtils.GetAuthorizationGroupsFromWebConfig();
-
-            Dictionary<UserData, bool> result = _ADUtils.CheckUsersBoeAccess(usersToCheck, groups);
-
-            return result;
+            return toReturn;
         }
 
         /// <summary>
@@ -648,10 +657,10 @@ namespace GenBOE.Web.Controllers
         {
             // Member list - string for user's name, bool for having genBOE access
             Dictionary<string, bool> memberList = new Dictionary<string, bool>();
-            var members = _ADUtils.GetAdGroupUsers(groupName);
+            ICollection<UserData> members = _ADUtils.GetAdGroupUsers(groupName);
             ICollection<UserData> orderedMembers = members.OrderBy(m => m.DisplayName).ToList();
 
-            Dictionary<UserData, bool> usersBoeMembership = this.GetGenBOEAccess(orderedMembers);
+            Dictionary<UserData, bool> usersBoeMembership = this._permissionControllerLogic.GetGenBOEAccess(orderedMembers);
             foreach (UserData member in orderedMembers)
             {
                 memberList.Add(member.DisplayName, usersBoeMembership[member]);

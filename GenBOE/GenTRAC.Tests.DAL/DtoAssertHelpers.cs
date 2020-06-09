@@ -47,8 +47,8 @@ namespace GenTRAC.Tests.DAL
 
             // 3 UNTESTABLE_PROPOERTIES properties we can't test (primary key, update date, updatable)
             // 2 untestable tracking number and revision number (assigned by DB)
-            // 59 testable DTO properties that are asserted below
-            Assert.AreEqual(UNTESTABLE_PROPERTIES + 2 + 59, numProperties, "Untested properties exist in the DTO.");
+            // 60 testable DTO properties that are asserted below
+            Assert.AreEqual(UNTESTABLE_PROPERTIES + 2 + 60, numProperties, "Untested properties exist in the DTO.");
 
             // 0
             Assert.AreEqual(expectedResult.ProposalTitle, actualResult.ProposalTitle);
@@ -148,6 +148,7 @@ namespace GenTRAC.Tests.DAL
             Assert.AreEqual(expectedResult.CertificationDate, actualResult.CertificationDate);
             Assert.AreEqual(expectedResult.CertificationLastEmailed, actualResult.CertificationLastEmailed);
             Assert.AreEqual(expectedResult.CertificationTimelineCompleted, actualResult.CertificationTimelineCompleted);
+            Assert.AreEqual(expectedResult.NoBidDate, actualResult.NoBidDate);
         }
 
         /// <summary>

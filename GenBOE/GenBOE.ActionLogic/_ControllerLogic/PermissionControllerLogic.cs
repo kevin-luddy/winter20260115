@@ -16,6 +16,7 @@ namespace GenBOE.ActionLogic
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
+    using System.Collections.Generic;
 
     public class PermissionControllerLogic
     {
@@ -37,7 +38,7 @@ namespace GenBOE.ActionLogic
             this.permissionLoader = inPermissionsLoader;
             this._ADUtils = inADUtils;
             this._SecurityInformation = inISecurityInformation;
-            this._UserDTODataLoader = inUserLoader;            
+            this._UserDTODataLoader = inUserLoader;
         }
 
         /// <summary>
@@ -69,6 +70,11 @@ namespace GenBOE.ActionLogic
             }
         }
 
+        /// <summary>
+        /// Saves a new permission
+        /// </summary>
+        /// <param name="workspace">Workspace</param>
+        /// <param name="inPermission">Permission to save</param>
         public void SaveNewPermission(string workspace, SavePermissionModelView inPermission)
         {
             if (inPermission == null)
@@ -76,11 +82,11 @@ namespace GenBOE.ActionLogic
                 throw new ArgumentNullException(nameof(inPermission));
             }
             Collection<ValidationMessage> ValidationErrors = new Collection<ValidationMessage>();
-            
+
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
             inPermission.WorkspaceId = ws.Id;
-            
+
             if (!inPermission.Roles.Any())
             {
                 ValidationErrors.Add(new ValidationMessage("AtLeastOneRole", "At Least one level of access is required."));
@@ -97,8 +103,8 @@ namespace GenBOE.ActionLogic
                 throw new GenValidationException(ValidationErrors);
             }
 
-            var currentWorkspacePermissions = this.permissionLoader.GetWorkspacePermissions(ws.Id);
-            var currentBoePermissions = this.permissionLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id);
+            ICollection<PermissionsDTO> currentWorkspacePermissions = this.permissionLoader.GetWorkspacePermissions(ws.Id);
+            ICollection<PermissionsDTO> currentBoePermissions = this.permissionLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id);
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
@@ -131,8 +137,18 @@ namespace GenBOE.ActionLogic
                             ValidationErrors.Add(new ValidationMessage("The group '" + entity + "' was not found"));
                             throw new GenValidationException(ValidationErrors);
                         }
-                        
+
                         userDTO = this._UserDTODataLoader.GetOrCreateUserByNtid(entity);
+
+                        ICollection<UserData> groupMembers = this._ADUtils.GetAdGroupUsers(entity);
+                        Dictionary<UserData, bool> groupMemberAccess = this.GetGenBOEAccess(groupMembers);
+
+                        if (groupMemberAccess.Any(x => x.Value == false))
+                        {
+                            ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", string.Format("The following members of group {0} do not have access to genBOE and cannot be added to this Workspace's permissions: <ul><li>{1}</li></ul>Please contact your administrator if access is needed.",
+                                entity, string.Join("</li><li>", groupMemberAccess.Where(x => x.Value == false).Select(x => x.Key).Select(x => x.DisplayName)))));
+                            throw new GenValidationException(ValidationErrors);
+                        }
                     }
                     else
                     {
@@ -142,6 +158,11 @@ namespace GenBOE.ActionLogic
                         {
                             ValidationErrors.Add(new ValidationMessage("UserNotFound", "User not found"));
                         }
+                        else if (this.GetGenBOEAccess(new Collection<UserData>() { user }).Any(x => !x.Value))
+                        {
+                            ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", user.DisplayName + " does not have access to genBOE and cannot be added to this Workspace's permissions. Please contact your administrator if access is needed."));
+                        }
+
                         if (ValidationErrors.Any())
                         {
                             throw new GenValidationException(ValidationErrors);
@@ -159,7 +180,7 @@ namespace GenBOE.ActionLogic
 
                     foreach (Role role in inPermission.Roles)
                     {
-                        bool isSubcontractor = this._SecurityInformation.IsSubcontractorUser(userDTO.NTID, userDTO.IsSubcontractor);
+                        bool isSubcontractor = this._SecurityInformation.IsSubcontractorUser(userDTO.NTID, userDTO.IsSubcontractor ?? false);
                         // throw exception (any pending inserts get rolled back) if attempt is made to grant any role other than Subcontractor Author to a Subcontractor
                         if (isSubcontractor && role != Role.SubcontractorAuthor)
                         {
@@ -207,7 +228,20 @@ namespace GenBOE.ActionLogic
 
                 scope.Complete();
             } // end transaction scope
+        }
 
+        /// <summary>
+        /// Checks if users have access to GenBoe
+        /// </summary>
+        /// <param name="usersToCheck">Users to check</param>
+        /// <returns>A dictionary of users and a bool indicating if they have access or not</returns>
+        public Dictionary<UserData, bool> GetGenBOEAccess(ICollection<UserData> usersToCheck)
+        {
+            ICollection<GroupData> groups = this._ADUtils.GetAuthorizationGroupsFromWebConfig();
+
+            Dictionary<UserData, bool> result = _ADUtils.CheckUsersBoeAccess(usersToCheck, groups);
+
+            return result;
         }
     }
 }

@@ -287,6 +287,44 @@
                 });
             });
         };
+        
+        ApproverSectionWidget.setNoBid = function () {
+            GenSession.confirmDialog("Confirm No Bid",
+                "If this Proposal is set as No Bid, it will no longer be able to be used to create new BOEs and RDSB records. Existing BOEs and RDSB records will not be affected. Are you sure you wish to continue?",
+                function () {
+                    $.ajax({
+                        type: 'POST',
+                        url: GenSession.CreateUrl({
+                            controller: '@WebConstants.Controller.APPROVALS',
+                            action: '@WebConstants.Action.SET_NO_BID',
+                            id: '@ViewBag.proposalid'
+                        }),
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (response) {
+                            ApprovalsIndexWidget.SaveSuccess();
+                        }
+                    });
+            }, null);
+        };
+
+        ApproverSectionWidget.revertNoBid = function () {
+            GenSession.confirmDialog("Confirm Revert No Bid",
+                "If this Proposal is reverted from No Bid, the approval process will be reset. Are you sure you wish to continue?",
+                function () {
+                    $.ajax({
+                        type: 'POST',
+                        url: GenSession.CreateUrl({
+                            controller: '@WebConstants.Controller.APPROVALS',
+                            action: '@WebConstants.Action.REVERT_NO_BID',
+                            id: '@ViewBag.proposalid'
+                        }),
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (response) {
+                            ApprovalsIndexWidget.SaveSuccess();
+                        }
+                    });
+            }, null);
+        };
     });
 </script>
 
@@ -295,57 +333,72 @@
     <div class="module-content-data expanded-content">
         @using (Html.BeginForm("", "", FormMethod.Post, new { id = "ApprovalForm", name = "ApprovalForm" }))
         {
-            if (Model.ShowResetWorkflowButton)
+        if (Model.ApproverRole == PtmRole.Pricer && ViewBag.HasAccessToSetNoBid == true)
+        {
+            if (Model.IsNoBid)
             {
-            <button type="button" id="ResetWorkflow" class="ies" title="@Html.Raw(@WebConstants.ApprovalDescription.RESET_WORKFLOW)">Reset Workflow</button>
-            <br/><br/>
-            }
-            <div>
-                <div class="form-row">
-                    <div id="@Model.ApproverRole-ApproverName" class="form-label"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-label">Signature</div>
-                    <br />
-                    <div id="@Model.ApproverRole-ApproverSignature"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-label">Comments</div>
-                    <br />
-                    <div class="form-element">
-                        <textarea rows="3" id="@Model.ApproverRole-ApproverComments" @(Model.ApproverRole == PtmRole.Pricer ? "disabled=\"disabled\"" : "") />
-                    </div>
-                </div>
-                @if (Model.ApproverRole == PtmRole.Pricer)
-                {
-                    <div class="form-row">
-                        <div class="form-label">Additional Approval Email Text</div>
-                        <br />
-                        <div class="form-element">
-                            <textarea rows="3" maxlength="1000" id="@Model.ApproverRole-AdditionalEmailText" disabled="disabled" />
-                        </div>
-                    </div>
-                }
+            <div id="revert-no-bid-container">
+                <button type="button" class="ies" title="Revert the status of this Proposal to In Progress" onclick="ApproverSectionWidget.revertNoBid()">Revert to In Progress</button>
             </div>
-            if ((Model.ApproverRole == PtmRole.Pricer || Model.ApproverRole == PtmRole.LOBEstLead) && !Model.AllAttachmentsHaveBeenUploaded)
+            }
+            else
             {
-                string approvalText = Model.ApproverRole == PtmRole.Pricer ? "be initiated" : "continue";
-                <div class="red" id="Pricer-psaMessage">
-                    Before the approval process can @approvalText all Post Submittal Attachments must be uploaded
-                    <br />
-                    (Navigate to the Post Submittal Attachments tab to upload the required attachments)
-                    <br />
-                    <br />
+            <div id="no-bid-container">
+                <button type="button" class="ies" title="Mark this Proposal as No Bid" onclick="ApproverSectionWidget.setNoBid()">No Bid</button>
+            </div>
+            }
+        }
+        if (Model.ShowResetWorkflowButton)
+        {
+        <button type="button" id="ResetWorkflow" class="ies" title="@Html.Raw(@WebConstants.ApprovalDescription.RESET_WORKFLOW)">Reset Workflow</button>
+        <br /><br />
+        }
+        <div>
+            <div class="form-row">
+                <div id="@Model.ApproverRole-ApproverName" class="form-label"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">Signature</div>
+                <br />
+                <div id="@Model.ApproverRole-ApproverSignature"></div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">Comments</div>
+                <br />
+                <div class="form-element">
+                    <textarea rows="3" id="@Model.ApproverRole-ApproverComments" @(Model.ApproverRole==PtmRole.Pricer ? "disabled=\"disabled\"" : "" ) />
                 </div>
-            }
-            if (Model.ApproverRole == PtmRole.Pricer)
+            </div>
+            @if (Model.ApproverRole == PtmRole.Pricer)
             {
-                <button type="button" class="ies" id="@Model.ApproverRole-ValidateButton">Validate</button>
+            <div class="form-row">
+                <div class="form-label">Additional Approval Email Text</div>
+                <br />
+                <div class="form-element">
+                    <textarea rows="3" maxlength="1000" id="@Model.ApproverRole-AdditionalEmailText" disabled="disabled" />
+                </div>
+            </div>
             }
-            <button type="button" class="ies" id="@Model.ApproverRole-ApproveButton" @(Model.ApproverRole == PtmRole.Pricer || (Model.ApproverRole == PtmRole.LOBEstLead && !Model.AllAttachmentsHaveBeenUploaded) ? "disabled=\"disabled\"" : "")>Approve</button>
-            <div class="loader display-none" id="@Model.ApproverRole-ApproveLoader"></div>
+        </div>
+        if ((Model.ApproverRole == PtmRole.Pricer || Model.ApproverRole == PtmRole.LOBEstLead) && !Model.AllAttachmentsHaveBeenUploaded)
+        {
+        string approvalText = Model.ApproverRole == PtmRole.Pricer ? "be initiated" : "continue";
+        <div class="red" id="Pricer-psaMessage">
+            Before the approval process can @approvalText all Post Submittal Attachments must be uploaded
+            <br />
+            (Navigate to the Post Submittal Attachments tab to upload the required attachments)
             <br />
             <br />
+        </div>
+        }
+        if (Model.ApproverRole == PtmRole.Pricer)
+        {
+        <button type="button" class="ies" id="@Model.ApproverRole-ValidateButton">Validate</button>
+        }
+        <button type="button" class="ies" id="@Model.ApproverRole-ApproveButton" @(Model.ApproverRole==PtmRole.Pricer || (Model.ApproverRole==PtmRole.LOBEstLead && !Model.AllAttachmentsHaveBeenUploaded) ? "disabled=\"disabled\"" : "" )>Approve</button>
+        <div class="loader display-none" id="@Model.ApproverRole-ApproveLoader"></div>
+        <br />
+        <br />
         }
     </div>
 </div>
