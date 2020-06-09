@@ -71,7 +71,8 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @CertificationDate datetime2 = NULL,
 	  @CutOffDateUtilization int = NULL,
 	  @CertificationTimelineCompleted datetime2 = NULL,
-      @CertificationLastEmailed datetime2 = NULL
+      @CertificationLastEmailed datetime2 = NULL,
+	  @NoBidDate datetime2 = NULL
 )
 AS
 /******************************************************************************
@@ -100,6 +101,7 @@ AS
 **			6/06/2018	brunworg				BOEJ-3480 Renamed ProductLine and LineOfBusiness tables.
 **			8/29/2018	twilson3				BOEJ-3756 Post Proposal redo
 **			9/27/2018	ranzalon				BOEJ-3739 Classified Cost Volume
+**			3/31/2020	ranzalon				BOEJ-4531 No Bid Date
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -237,6 +239,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,[CutOffDateUtilization]
 		,[CertificationTimelineCompleted]
 		,[CertificationLastEmailed]
+		,[NoBidDate]
 		)
 	OUTPUT inserted.ProposalID INTO @Inserted
 	VALUES
@@ -297,6 +300,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@CutOffDateUtilization
 		,@CertificationTimelineCompleted
 		,@CertificationLastEmailed
+		,@NoBidDate
 		)
 
 		SELECT @ProposalID = ID FROM @Inserted
@@ -391,6 +395,7 @@ ELSE
 						,[CutOffDateUtilization] = @CutOffDateUtilization
 						,[CertificationTimelineCompleted] = @CertificationTimelineCompleted
 						,[CertificationLastEmailed] = @CertificationLastEmailed
+						,[NoBidDate] = @NoBidDate
 
 						WHERE 
 							ProposalID = @ProposalID;

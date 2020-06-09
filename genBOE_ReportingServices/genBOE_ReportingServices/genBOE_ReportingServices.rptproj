@@ -87,6 +87,7 @@
     <Report Include="SummaryReportRMS.rdl" />
     <Report Include="SumOfBOEsVariable.rdl" />
     <Report Include="User Access Report.rdl" />
+    <Report Include="UsersWithRolesReport.rdl" />
     <Report Include="WorkbenchOffload.rdl" />
     <Report Include="Workspace Output Format Template.rdl" />
     <Report Include="WorkspaceUsers.rdl" />

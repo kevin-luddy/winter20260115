@@ -55,6 +55,7 @@
     <Content Include="Object Scripts\Stored Procedures\CreateCompliance_WorkspaceCreationReport.sql" />
     <Content Include="Object Scripts\Stored Procedures\CreateMetricAnalysisReport.sql" />
     <Content Include="Object Scripts\Stored Procedures\CreateUserAccessReport.sql" />
+    <Content Include="Object Scripts\Stored Procedures\CreateUsersWithRolesReport.sql" />
     <Content Include="Object Scripts\Stored Procedures\createWorkspaceVersion.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteAllBOEsInWs.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteAllMaterialTaskElements.sql" />
@@ -274,6 +275,7 @@
     <Content Include="Object Scripts\Table Based Processing\TaskElementCustomFieldViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\TaskElementViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\TaskElementWorkspaceVariableViaTable.sql" />
+    <Content Include="Object Scripts\Views\UsersWithRolesReport.sql" />
     <Content Include="Object Scripts\X_Data Cleanup\ErrorLogs.sql" />
     <Content Include="Object Scripts\X_Data Cleanup\Fix Boe Level Duplicated CF XREF Values.sql" />
     <Content Include="Object Scripts\X_Data Cleanup\Fix Labor Type Level Duplicated CF XREF Values.sql" />
@@ -308,7 +310,10 @@
     <Content Include="Release Scripts\Release 2019.5\Release 2019.5.sql" />
     <Content Include="Release Scripts\Release 2019.8\Release 2019.8.sql" />
     <Content Include="Release Scripts\Release 2020.1\Release 2020.1.sql" />
-    <Content Include="_Full Script Files For Specific Versions\BOE - Release 2020.1 Generated On 6_1_2020.sql" />
+    <Content Include="Release Scripts\Release 2020.2\Release 2020.2.sql" />
+    <Content Include="Release Scripts\Release 2020.3\Release 2020.3.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - 2020.2 Generated On 6_9_2020.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\BOE - Release 2020.1 Generated On 6_1_2020.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2019.4 Generated On 7_1_2019.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2019.5 Generated On 9_26_2019.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2019.8 Generated On 12_2_2019.sql" />

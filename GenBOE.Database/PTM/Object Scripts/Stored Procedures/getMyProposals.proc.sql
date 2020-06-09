@@ -48,6 +48,9 @@ AS
 **			5/23/2018	ranzalon				BOEJ-3516 - Add CustomerTypeId to result
 **			6/06/2018	brunworg				BOEJ-3480 Renamed ProductLine and LineOfBusiness tables.
 **			8/31/18		twilson3				BOEJ-3761: New Submitted Proposal Status
+**			8/31/18 twilson3					BOEJ-3761: New Submitted Proposal Status
+**			3/10/2020	ranzalon				BOEJ-4490 - No Bid
+**			3/31/2020	ranzalon				BOEJ-4531 No Bid Date
 **			6/5/20		Dusan					BOEJ-4657: Adding Forecasted proposals into field for search; cleaned up some formatting on text
 ******************************************************************************/
 	SET NOCOUNT ON 
@@ -162,37 +165,51 @@ AS
 				WHERE PUR.RoleID = 19
 			) PricingVerification ON P.ProposalID = PricingVerification.ProposalID		
 		LEFT JOIN 
-			(SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
-				FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
-				WHERE PUR.RoleID = 3
-			) LeadEstimator ON P.ProposalID = LeadEstimator.ProposalID
-		LEFT OUTER JOIN
-			(SELECT ProposalID, MAX(SubmitDate) AS MaxSubmitDate
-				FROM dbo.ProposalChecklistComplete
-				GROUP BY ProposalID
-			) [ProposalReviewCompleteDate] ON P.ProposalID = [ProposalReviewCompleteDate].ProposalID
-	WHERE ( 
 		(
-			(@ProposalStatusID IS NULL AND P.ProposalStatusID IN (1/*In Progress*/,2/*Completed*/,6/*Submitted*/)) 
+			SELECT
+				PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
+			FROM ProposalUserRole PUR
+				JOIN genTRACUser U ON PUR.UserID = U.UserID
+			WHERE
+				PUR.RoleID = 3
+		) LeadEstimator ON P.ProposalID = LeadEstimator.ProposalID
+
+	LEFT OUTER JOIN
+		(
+			SELECT 
+				ProposalID,
+				MAX(SubmitDate) AS MaxSubmitDate
+			FROM dbo.ProposalChecklistComplete
+			GROUP BY ProposalID
+		) [ProposalReviewCompleteDate] ON P.ProposalID = [ProposalReviewCompleteDate].ProposalID
+	WHERE
+	(
+		(
+			(@ProposalStatusID IS NULL AND P.ProposalStatusID IN (1/*In Progress*/,2/*Completed*/,6/*Submitted*/,7/*No Bid*/)) 
 			OR (@ProposalStatusID IS NOT NULL AND P.ProposalStatusID = @ProposalStatusID)
 		) AND (
 			(
 				(@ProposalStatusID = 1/*In Progress*/ OR @ProposalStatusID = 6/*Submitted*/) 
-				AND (@AssignedStart IS NULL OR CAST (P.DateAssigned AS Date) > = @AssignedStart)
+				AND (@AssignedStart IS NULL OR CAST (P.DateAssigned AS Date) > = @AssignedStart) 
 				AND (@AssignedEnd IS NULL OR CAST (P.DateAssigned AS Date) < = @AssignedEnd) 
 			) OR (
-				P.ProposalStatusID = 2/*Completed*/ 
+				P.ProposalStatusID = 2/*Completed*/
 				AND (@AssignedStart IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) > = @AssignedStart) 
 				AND (@AssignedEnd IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) < = @AssignedEnd) 
 			) OR (
-				@ProposalStatusID IS NULL 
-				AND (
-					(@AssignedStart IS NULL OR CAST (P.DateAssigned AS Date) > = @AssignedStart) 
-					AND (@AssignedEnd IS NULL OR CAST (P.DateAssigned AS Date) < = @AssignedEnd) 
-				) OR (
-					(@AssignedStart IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) > = @AssignedStart) 
-					AND (@AssignedEnd IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) < = @AssignedEnd) 
-				) 
+				P.ProposalStatusID = 7/*No Bid*/ 
+				AND (@AssignedStart IS NULL OR CAST (P.NoBidDate AS Date) > = @AssignedStart) 
+				AND (@AssignedEnd IS NULL OR CAST (P.NoBidDate AS Date) < = @AssignedEnd) 
+			) OR (
+				@ProposalStatusID IS NULL AND
+					(
+						(@AssignedStart IS NULL OR CAST (P.DateAssigned AS Date) > = @AssignedStart) 
+						AND (@AssignedEnd IS NULL OR CAST (P.DateAssigned AS Date) < = @AssignedEnd) 
+					) OR
+					(
+						(@AssignedStart IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) > = @AssignedStart) 
+						AND (@AssignedEnd IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) < = @AssignedEnd) 
+					) 
 			)
 		) AND (
 			(isnull(@ProposalClassFilterID,0) < 1) /* All */

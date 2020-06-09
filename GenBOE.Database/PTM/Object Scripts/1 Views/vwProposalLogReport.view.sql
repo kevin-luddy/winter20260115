@@ -34,6 +34,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		8/30/2018	Dusan				BOEJ-3757 SSRS Updates w/ Post Proposal Changes
 **		9/27/2018	ranzalon			BOEJ-3741 Classified Cost Volume
 **		8/5/2019	twilson3			BOEJ-4274 Add LOB Manager Comments
+**		4/22/2020	ranzalon			BOEJ-4535 Add Lead Estimator Approval Date
 *******************************************************************************/
 SELECT  
 	
@@ -66,6 +67,7 @@ SELECT
 	P.ProgramName AS [Program Name],
 
 	PC.ISGSTotalPrice AS [Submitted Value],
+	CONVERT(varchar, CONVERT(datetime2(7), P.LeadEstimatorSignedDT), 100) AS [Lead Estimator Approval Date],
 	CONVERT(varchar, CONVERT(datetime2(7), [Workflow Completed Date].MaxSubmitDate), 100) AS [Workflow Completed Date],
 	IndependentReviewer.DisplayName AS [IndependentReviewerName],
 	PricingVerification.DisplayName AS [PricingVerificationName],

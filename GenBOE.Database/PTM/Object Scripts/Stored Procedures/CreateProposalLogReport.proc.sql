@@ -55,6 +55,7 @@ AS
 **		8/30/2018	Dusan				BOEJ-3757 SSRS Updates w/ Post Proposal Changes
 **		9/27/2018	ranzalon			BOEJ-3741 - Classified Cost Volume
 **		8/5/2019	twilson3			BOEJ-4274 Add LOB Manager Comments
+**		4/22/2020	ranzalon			BOEJ-4535 Add Lead Estimator Approval Date
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -232,7 +233,26 @@ SELECT V.[ProposalID]
       ,V.[Estimated Value]
       ,V.[Estimated Ship Date]
       ,V.[Program Name]
-      ,V.[Submitted Value]      
+      ,V.[Submitted Value]  
+	  
+	  , CAST (
+			CASE 
+				WHEN LEN (DATEPART(MM, V.[Lead Estimator Approval Date])) = 1 
+					THEN '0' + CAST (DATEPART(MM, V.[Lead Estimator Approval Date]) AS CHAR(1)) 
+				ELSE 
+						CAST (DATEPART(MM, V.[Lead Estimator Approval Date]) AS CHAR(2))
+			END  + '/' + 
+			CASE 
+				WHEN LEN (DATEPART(DD, V.[Lead Estimator Approval Date])) = 1 
+					THEN '0' + CAST (DATEPART(DD, V.[Lead Estimator Approval Date]) AS CHAR(1)) 
+				ELSE 
+						CAST (DATEPART(DD, V.[Lead Estimator Approval Date]) AS CHAR(2))
+			END  + '/' + 
+			CAST (DATEPART(YYYY, V.[Lead Estimator Approval Date]) AS CHAR(4))
+      			AS varchar (10))	
+    		 + ' ' +
+			RIGHT (V.[Lead Estimator Approval Date], 7) 
+		AS  [Lead Estimator Approval Date] 
       
       , CAST (
 			CASE 
