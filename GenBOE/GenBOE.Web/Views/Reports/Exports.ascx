@@ -95,7 +95,7 @@
     ExportsWidget.ConfirmExport = function (reportName, reportID, ssrsUrl) {
         GenSession.confirmDialog("Export Report", "The export is a long running process. <br/>Please do not leave this page until the file is available to open/save. <br/>Continue with this export? <br/><br/>Please refrain from clicking the export link multiple times until the download is complete.",
             function () {
-                if ((reportID === '3' || reportID === '14' || reportID === '15' || reportID === '<%:(int)Reports.StandardReports%>')) {
+                if ((reportID === '3' || reportID === '14' || reportID === '15' || reportID === '<%:(int)Reports.StandardReports%>' || reportID === '<%:(int)Reports.WbsBoeReport%>')) {
                     ExportsWidget.doExport(reportName, reportID);
                 } else {
                     ExportsWidget.doExport(reportName, reportID, ssrsUrl);
@@ -249,7 +249,7 @@
         <table class="grid readonly">
             <thead>
                 <tr>
-                    <th class="report" style="width:175px">Report</th>
+                    <th class="report" style="width:181px">Report</th>
                     <th class="description">Description</th>
                     <th id="ActionHeader" class="last-child" style="width: 125px; text-align: right; padding-right: 15px;">Export</th>
                 </tr>

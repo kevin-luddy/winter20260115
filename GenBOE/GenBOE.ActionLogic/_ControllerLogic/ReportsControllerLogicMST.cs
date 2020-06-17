@@ -12,6 +12,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Linq;
     using System.Text;
     using System.Web.Configuration;
+    using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.Reporting;
@@ -50,6 +51,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="commonDataMapper"></param>
         /// <param name="proposalLoader">Proposal Loader</param>
         /// <param name="workspaceControllerLogic">Workspace Controller logic</param>
+        /// <param name="rteTemplateDataLoader">RTE Template data loader</param>
+        /// <param name="travelTripCostCalculator">Travel Trip Cost Calculator</param>
         public ReportsControllerLogicMST(
             IBOEExporter boeExporter,
             BOESummary boeSummary,
@@ -60,8 +63,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
             ICommonDataMapper commonDataMapper,
             IProposalLoader proposalLoader,
             IWorkspaceControllerLogic workspaceControllerLogic,
-            IRteTemplateDataLoader rteTemplateDataLoader)
-            : base(boeExporter, boeSummary, boeCustomExporter, workspaceExportFormatDTOLoader, boeDiscrepancyReport, proposalLoader, workspaceControllerLogic, rteTemplateDataLoader)
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            TravelTripCostCalculation travelTripCostCalculator)
+            : base(boeExporter, boeSummary, boeCustomExporter, workspaceExportFormatDTOLoader, boeDiscrepancyReport, proposalLoader, workspaceControllerLogic, rteTemplateDataLoader, travelTripCostCalculator)
         {
             this._metricLoader = metricLoader;
             this._CommonDataMapper = commonDataMapper;

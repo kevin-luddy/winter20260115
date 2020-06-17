@@ -183,9 +183,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App.config">
-      <SubType>Designer</SubType>
-    </Content>
+    <Content Include="App.config" />
     <Content Include="App.PTMDevSSC.config">
       <DependentUpon>App.config</DependentUpon>
     </Content>

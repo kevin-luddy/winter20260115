@@ -412,6 +412,7 @@ namespace GenBOE.DataBridge.Common
 
                             case (int)Reports.AllBOEs:
                             case (int)Reports.StandardReports:
+                            case (int)Reports.WbsBoeReport:
                                 report.ReportType = ReportType.Export;
                                 break;
                         }
