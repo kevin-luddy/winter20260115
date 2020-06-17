@@ -300,8 +300,25 @@
 
         });
 
-        ProposalDetailsWidget.LoadTab();
+        // TODO - BOEJ-4627 - also disabled when Certification Not Required has been selected
+        if ('@(Model.ProposalStatus == ProposalStatus.Completed && Model.CertificationCompletedDate != null)' == 'True') {
+            $('button[name="new-revision-button"]').addClass('disabled');
+        }
 
+        $('button[name="new-revision-button"]:not(.disabled)').click(function () {
+            GenSession.confirmDialog(
+                 "Confirm new Revision",
+                 "<div style='text-align: left'>Proposal Revision shall only be created for one of the following reasons:<ol><li>A revised RFP is issued</li><li>Customer direction requires a resubmittal</li><li>Customer directs LM to submit an FPR</li><li>Anytime a new Cover Sheet is required (for CCOPD)</li></ol>Would you like to continue?</div>",
+                 ProposalDetailsWidget.AddNewRevision,
+                 null);
+        });
+
+        ProposalDetailsWidget.AddNewRevision = function () {
+            // TODO - link to backend BOEJ-4636
+            console.log("Create revision");
+        }
+
+        ProposalDetailsWidget.LoadTab();
     });
 </script>
 
@@ -388,14 +405,20 @@
                             </div>
                         </text>
                     }
-               </div>
-               <ul class="inline-block proposalTabMenu">
+                </div>
+                @if (Model.WorksflowStatus == WorkflowStatus.AllApproved)
+                {
+                    <div class="revisionButtons">
+                        <button name="new-revision-button" type="button" class="ies stateful_button">+ New Revision</button>
+                    </div>
+                }
+                <ul class="inline-block proposalTabMenu">
                     <li class="active"><div class="tab-left"></div><a href="#Proposal" tab="Proposal">Proposal Setup</a><div class="tab-right"></div></li>
                     <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Checklist" tab="Checklist">Checklist</a><div class="tab-right"></div></li>
                     <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#PSA" tab="PSA">Post Submittal Attachments</a><div class="tab-right"></div></li>
                     <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Approvals" tab="Approvals">Approvals</a><div class="tab-right"></div></li>
                     <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#CertificationTimeline" tab="CertificationTimeline">Certification Timeline</a><div class="tab-right"></div></li>
-                </ul>  
+                </ul>
             </div>
             <div class="tabs-right"></div>
         </div>

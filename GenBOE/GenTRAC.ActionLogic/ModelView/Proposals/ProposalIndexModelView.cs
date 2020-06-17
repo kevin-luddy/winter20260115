@@ -39,6 +39,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public ProposalStatus ProposalStatus { get; set; }
 
         /// <summary>
+        /// Workflow Status
+        /// </summary>
+        public WorkflowStatus WorksflowStatus { get; set; }
+
+        /// <summary>
         /// Gets or sets Anticipated Delivery Date
         /// </summary>
         public string AnticipatedDeliveryDate { get; set; }
