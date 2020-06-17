@@ -1080,6 +1080,7 @@
     <Content Include="Templates\Export\Temp\RMS - NISSC - Landscape - with Non-labor Costs.xslx" />
     <None Include="Templates\Export\Temp\RMS - Portrait - CLIN-WBS with SOW ID.xslx" />
     <Content Include="Views\Admin\ManageSystemSettings.ascx" />
+    <Content Include="Templates\Export\WbsBoeReport.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

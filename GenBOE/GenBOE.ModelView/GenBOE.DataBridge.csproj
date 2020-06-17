@@ -183,6 +183,7 @@
     <Compile Include="GenBOE.Dtos\ModelView\Admin\MSTZoneTravelOriginModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Reporting\BOEActivityReportModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Reporting\BOEStatusReportModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Reporting\BoeWbsReportModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Reporting\WorkspaceActivityReportModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\BOEExportModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\BOEExportTaskElement.cs" />

@@ -2,6 +2,125 @@
 GO
 
 /*
+		## START ##
+		1/15/18 [ranzalon] - BOEJ-2889 - Template Backup Data
+*/
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[version].[OutputFormatTemplateVersionXREF]') AND type in (N'U'))
+BEGIN
+	--Create new table
+	CREATE TABLE [version].[OutputFormatTemplateVersionXREF] (
+		VersionID int not null,
+		BackupTemplateID int not null
+	);
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'[version].[OutputFormatTemplate]') AND name = N'version_OutputFormatTemplate_VersionID')
+BEGIN
+	--Add temporary id column for groups of UpdateDT and TemplateID to existing version table
+	--Add temporary identity column - used for deleting the duplicate rows
+	ALTER TABLE [version].[OutputFormatTemplate]
+	ADD [GroupTemplateID] int, [TempID] int;
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'[version].[OutputFormatTemplate]') AND name = N'version_OutputFormatTemplate_VersionID')
+BEGIN
+	--Populate tempid (not using identity to avoid issues with identity added later)
+	declare @temp int = 0
+	UPDATE [version].[OutputFormatTemplate]
+	SET [TempID] = @temp, @temp = @temp + 1;
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'[version].[OutputFormatTemplate]') AND name = N'version_OutputFormatTemplate_VersionID')
+BEGIN
+	--Populate GroupTemplateID, setting a unique ID for each pairing of TemplateID and UpdateDT
+	--Use DENSE_RANK() to get an id value for each UpdateDT-TemplateID pair
+	UPDATE [version].[OutputFormatTemplate]
+	SET [GroupTemplateID] = oft2.TemplateRank
+	FROM [version].[OutputFormatTemplate] oft1
+	LEFT OUTER JOIN
+	(
+		SELECT TemplateID, UpdateDT, DENSE_RANK() OVER (ORDER BY UpdateDT, TemplateID) AS TemplateRank
+		FROM [version].[OutputFormatTemplate]
+	) AS oft2
+	ON oft1.TemplateID = oft2.TemplateID
+	AND oft1.UpdateDT = oft2.UpdateDT;
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'[version].[OutputFormatTemplate]') AND name = N'version_OutputFormatTemplate_VersionID')
+BEGIN
+	--Populate OutputFormatTemplateVersionXREF
+	INSERT INTO [version].[OutputFormatTemplateVersionXREF] (VersionID, BackupTemplateID)
+	SELECT oft.VersionID, oft.GroupTemplateID 
+	FROM [version].[OutputFormatTemplate] oft
+	GROUP BY oft.VersionID, oft.GroupTemplateID;
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'[version].[OutputFormatTemplate]') AND name = N'version_OutputFormatTemplate_VersionID')
+BEGIN
+	--delete now duplicate rows in version.OutputFormatTemplate
+	DELETE FROM [version].[OutputFormatTemplate]
+	WHERE TempID in 
+	  (
+		SELECT b.TempID
+		FROM [version].[OutputFormatTemplate] a, [version].[OutputFormatTemplate] b
+		WHERE a.GroupTemplateID = b.GroupTemplateID and b.tempid > a.tempid
+	  );
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'[version].[OutputFormatTemplate]') AND name = N'version_OutputFormatTemplate_VersionID')
+BEGIN
+	-- Remove index so VersionID can be dropped
+	DROP INDEX [version_OutputFormatTemplate_VersionID] ON [version].[OutputFormatTemplate];
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.columns WHERE Name = N'VersionID' AND Object_ID = Object_ID(N'[version].[OutputFormatTemplate]'))
+BEGIN
+	--Remove VersionID and TempID from [version].[OutputFormatTemplate]
+	ALTER TABLE [version].[OutputFormatTemplate]
+	DROP COLUMN VersionID, TempID;
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.columns WHERE Name = N'BackupTemplateID' AND Object_ID = Object_ID(N'[version].[OutputFormatTemplate]'))
+BEGIN
+	--Add BackupTemplateID identity column
+	ALTER TABLE [version].[OutputFormatTemplate]
+	ADD [BackupTemplateID] int IDENTITY(1,1);
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.columns WHERE Name = N'GroupTemplateID' AND Object_ID = Object_ID(N'[version].[OutputFormatTemplate]'))
+BEGIN
+	--update xref table with new identity column values
+	UPDATE [version].[OutputFormatTemplateVersionXREF]
+	SET BackupTemplateID = OFT.BackupTemplateID
+	FROM [version].[OutputFormatTemplate] OFT
+	WHERE OFT.GroupTemplateID = version.OutputFormatTemplateVersionXREF.BackupTemplateID;
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.columns WHERE Name = N'GroupTemplateID' AND Object_ID = Object_ID(N'[version].[OutputFormatTemplate]'))
+BEGIN
+	--remove GroupTemplateID
+	ALTER TABLE [version].[OutputFormatTemplate]
+	DROP COLUMN GroupTemplateID;
+END
+GO
+
+/*
+		1/15/18 [ranzalon] - BOEJ-2889 - Template Backup Data
+		## END ##
+*/
+
+/*
 	   ## START ##
 	   1/16/18 [twilson3] - BOEJ-2887 Remove Historical Metrics
 */

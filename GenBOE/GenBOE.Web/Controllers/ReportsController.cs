@@ -289,19 +289,19 @@ namespace GenBOE.Web.Controllers
             if (reportsAvailable != null)
             {
                 // get the reports we are interested in and order the way we want
-                var boeStatusReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.BOEStatus).Single();
+                ReportDTO boeStatusReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.BOEStatus).Single();
                 theModelViews.Add(new ExportsModelView(boeStatusReport));
 
-                var boeActivityReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.BOEActivity).Single();
+                ReportDTO boeActivityReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.BOEActivity).Single();
                 theModelViews.Add(new ExportsModelView(boeActivityReport));
 
-                var workspaceActivityReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.WorkspaceActivity).Single();
+                ReportDTO workspaceActivityReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.WorkspaceActivity).Single();
                 theModelViews.Add(new ExportsModelView(workspaceActivityReport));
 
-                var discrepancyReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.BoeDiscrepancy).Single();
+                ReportDTO discrepancyReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.BoeDiscrepancy).Single();
                 theModelViews.Add(new ExportsModelView(discrepancyReport));
 
-                var validateAllReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.ValidateAllBOE).Single();
+                ReportDTO validateAllReport = reportsAvailable.Where(x => x.ReportType == ReportType.View && x.ReportID == (int)Reports.ValidateAllBOE).Single();
                 theModelViews.Add(new ExportsModelView(validateAllReport));
 
                 if (FullObjectHelper.ShowEquivalentPersonsOption && ws.IsUsingEquivalentPerson)
@@ -1531,6 +1531,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="reportID">The report ID</param>
         /// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template.</param>
         /// <returns>Report</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "reportModelView")]
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
         public ActionResult Export(string workspace, int reportID, string summarizeByCustomField)
         {
@@ -1550,20 +1551,7 @@ namespace GenBOE.Web.Controllers
                     reportID == (int)Reports.BOEStatusByCLIN)
                 {
                     // Call the BL to generate the status report
-                    List<FullBoe> boes = ws.Boes.ToList();
-                    List<BoeTaskElementDTO> tasks = ws.TaskElements.ToList();
-
-                    bool isOffloading = ws.ProjectMapType != ProjectMapType.StandardWithoutOffload;
-                    if (isOffloading)
-                    {
-                        OffloadLaborRates offloader = new OffloadLaborRates();
-                        List<int> selectedBoeIds = boes.Select(b => b.Id).ToList();
-                        OffloadLaborRatesResults results = offloader.OffloadWorkspace(boes.Where(b => selectedBoeIds.Contains(b.Id)).ToList(), ws);
-
-                        boes = results.Boes.ToList();
-                        tasks = boes.SelectMany(b => b.TaskElements).ToList();
-                    }
-                    BOEExportInputs exportInputs = new BOEExportInputs(boes, boes, tasks, ws);
+                    BOEExportInputs exportInputs = this.reportsControllerLogic.GetExportInputsForStatusAndWbsReports(ws);
                     Collection<BOEStatusReportModelView> theModelViews = this._BOEStatusReport.GenerateBOEStatusReport(exportInputs);
 
                     if (theModelViews.Count > 0)
@@ -1647,7 +1635,7 @@ namespace GenBOE.Web.Controllers
 
                     MetricNameTaskElementMappingDTO metricTaskElementMappings = this.reportsControllerLogic.GetMetricNameTaskElementMappingDTO(ws);
                     ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
-                    var exportedFileName = this.workspaceExporter.ExportToExcelFile(Server.MapPath(workspaceExporter.WORKSPACE_DATA_EXCEL_MAP_PATH), exportInputs, metricTaskElementMappings, contractTypes);
+                    string exportedFileName = this.workspaceExporter.ExportToExcelFile(Server.MapPath(workspaceExporter.WORKSPACE_DATA_EXCEL_MAP_PATH), exportInputs, metricTaskElementMappings, contractTypes);
 
                     // Generate a custom ActionResult to cause a file download to the client
                     toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_WorkspaceData.xlsx", ws.WorkspaceName));
@@ -1655,7 +1643,7 @@ namespace GenBOE.Web.Controllers
                 else if (reportID == (int)Reports.TravelUnitCost)
                 {
                     string fileName = (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) ? "~/Templates/Export/TravelUnitCostRMS.xlsx" : "~/Templates/Export/TravelUnitCost.xlsx";
-                    var exportedFileName = this.travelUnitCostExporter.ExportToExcelFile(Server.MapPath(fileName), ws);
+                    string exportedFileName = this.travelUnitCostExporter.ExportToExcelFile(Server.MapPath(fileName), ws);
 
                     // Generate a custom ActionResult to cause a file download to the client
                     toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_TravelUnitCost.xlsx", ws.WorkspaceName));
@@ -1663,10 +1651,19 @@ namespace GenBOE.Web.Controllers
                 else if (reportID == (int)Reports.TravelExtendedCost)
                 {
                     string fileName = (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) ? "~/Templates/Export/TravelExtendedCostRMS.xlsx" : "~/Templates/Export/TravelExtendedCost.xlsx";
-                    var exportedFileName = this.travelExtendedCostExporter.ExportToExcelFile(Server.MapPath(fileName), ws);
+                    string exportedFileName = this.travelExtendedCostExporter.ExportToExcelFile(Server.MapPath(fileName), ws);
 
                     // Generate a custom ActionResult to cause a file download to the client
                     toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_TravelExtendedCost.xlsx", ws.WorkspaceName));
+                }
+                else if (reportID == (int)Reports.WbsBoeReport)
+                {
+                    BOEExportInputs exportInputs = this.reportsControllerLogic.GetExportInputsForStatusAndWbsReports(ws);
+                    ICollection<BoeWbsReportModelView> reportModelView = this.reportsControllerLogic.GenerateWbsBoeReport(exportInputs);
+
+                    string exportedFileName = this.reportsControllerLogic.ExportWbsBoeReport(ws, Server.MapPath("~/Templates/Export/WbsBoeReport.xlsx"), reportModelView, exportInputs);
+
+                    toReturn = new ExportFileDownloadResult(exportedFileName, string.Format("{0}_WbsSummaryReport.xlsx", ws.WorkspaceName));
                 }
                 else
                 {
@@ -1712,8 +1709,8 @@ namespace GenBOE.Web.Controllers
             bool isOriginalSystemScope = original != null ? original.Scope == ProPricerScope.System : false;
             // Initialize Action
             Stopwatch sw = InitializeAction(log, WebConstants.ACTION_SAVE_PROPRICER_EXPORT_FORMAT, SecurityPage.ExportToProPricer, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
-            
-            var toReturn = Json(new { Status = true });
+
+            JsonResult toReturn = Json(new { Status = true });
 
             // throw validation error if this is for a system scope
             if (inModelView.Scope == ProPricerScope.System || isOriginalSystemScope)
@@ -1730,8 +1727,8 @@ namespace GenBOE.Web.Controllers
                 if (ModelState.IsValid)
                 {
                     // Validate Format
-                    var validator = new ExportToProPricerFormatValidator(this.Factory);
-                    var validationerrors = validator.validation(dto, (Collection<Dictionary<string, string>>)null);
+                    ExportToProPricerFormatValidator validator = new ExportToProPricerFormatValidator(this.Factory);
+                    Collection<string> validationerrors = validator.validation(dto, (Collection<Dictionary<string, string>>)null);
 
                     if (validationerrors.Count != 0)
                     {
@@ -1740,7 +1737,7 @@ namespace GenBOE.Web.Controllers
                 }
             }
 
-            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
                 proPricerLoader.SaveProPricerExport(dto);
                 scope.Complete();
@@ -1771,7 +1768,7 @@ namespace GenBOE.Web.Controllers
 
             if (inFormatsToDelete.Count() > 0)
             {
-                foreach (var format in inFormatsToDelete)
+                foreach (ExportToProPricerModelView format in inFormatsToDelete)
                 {
                     // Save each deleted format
                     if (format.Deleted)
@@ -1850,7 +1847,7 @@ namespace GenBOE.Web.Controllers
                             }
 
                             // Export the format to file
-                            var filePath = proPricerExporter.ExportReport(format, Server.MapPath("~/Templates/Export"), ws);
+                            string filePath = proPricerExporter.ExportReport(format, Server.MapPath("~/Templates/Export"), ws);
 
                             if (filePath.Length > 0)
                             {
@@ -1930,7 +1927,7 @@ namespace GenBOE.Web.Controllers
             try
             {
                 // Export the format to file
-                var filePath = this.ssrsControllerLogic.BulkDownloadReport(ws, downloadReports, Server.MapPath("~/Templates/Export"));
+                string filePath = this.ssrsControllerLogic.BulkDownloadReport(ws, downloadReports, Server.MapPath("~/Templates/Export"));
 
                 if (filePath.Length > 0)
                 {
@@ -2029,17 +2026,17 @@ namespace GenBOE.Web.Controllers
                         resource.CustomFieldID = null;
                     }
                 }
-                
+
                 // Validate Format
-                var validator = new SystemExportToProPricerFormatValidator(this.proPricerLoader);
-                var validationerrors = validator.validation(proPricerFormat, (Collection<Dictionary<string, string>>)null);
+                SystemExportToProPricerFormatValidator validator = new SystemExportToProPricerFormatValidator(this.proPricerLoader);
+                Collection<string> validationerrors = validator.validation(proPricerFormat, (Collection<Dictionary<string, string>>)null);
 
                 if (validationerrors.Count != 0)
                 {
                     throw new GenValidationException(SystemExportToProPricerFormatValidator.CreateValidationErrorResponse(validationerrors));
                 }
 
-                using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
                 {
                     this.proPricerLoader.SaveSystemProPricerExport(proPricerFormat);
                     scope.Complete();

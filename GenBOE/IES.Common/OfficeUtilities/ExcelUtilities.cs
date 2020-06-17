@@ -995,6 +995,23 @@ namespace IES.Common.OfficeUtilities
                     toReturn.CellValue = new CellValue(text);
                     toReturn.DataType = CellValues.Number;
                 }
+                else if (SetTextAsBold(ref text))
+                {
+                    // Create a run for the text
+                    Run run = new Run();
+                    run.Append(new Text(text));
+
+                    // Set the text as bold in the run properties
+                    RunProperties runProperties = new RunProperties();
+                    runProperties.Append(new Bold());
+                    run.RunProperties = runProperties;
+
+                    // Add run/text to the cell
+                    InlineString inlineString = new InlineString();
+                    inlineString.Append(run);
+                    toReturn.DataType = CellValues.InlineString;
+                    toReturn.Append(inlineString);
+                }
                 else
                 {
                     SetCellValue(document, toReturn, text);
@@ -1054,6 +1071,25 @@ namespace IES.Common.OfficeUtilities
             return forceAsNumber;
         }
 
+        /// <summary>
+        /// When true, forces the format of the cell to be a number.
+        /// </summary>
+        /// <param name="cellValue">Value of the cell to be formatted.</param>
+        /// <returns>true if the cell format should be forced to a number</returns>
+        internal static bool SetTextAsBold(ref string cellValue)
+        {
+            bool setBold = false;
+
+            // If the text starts w/ the constant, then force it.
+            if (cellValue.StartsWith(CommonConstants.SET_AS_BOLD_FOR_EXCEL))
+            {
+                // strip off the force & other text formattings
+                cellValue = cellValue.Replace(CommonConstants.SET_AS_BOLD_FOR_EXCEL, string.Empty);
+                setBold = true;
+            }
+
+            return setBold;
+        }
 
         /// <summary>
         /// Copies a column

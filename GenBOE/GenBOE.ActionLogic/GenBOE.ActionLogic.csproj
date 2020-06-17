@@ -7,10 +7,10 @@
     <ProjectGuid>{8B23113C-48A0-4F65-8ED5-0F725AC170E7}</ProjectGuid>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <TargetFrameworkProfile />
-    <SccProjectName>%24/genBOE/uat/GenBOE/GenBOE.ActionLogic</SccProjectName>
-    <SccLocalPath>.</SccLocalPath>
-    <SccAuxPath>https://idetfs01/estimating</SccAuxPath>
-    <SccProvider>{4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}</SccProvider>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

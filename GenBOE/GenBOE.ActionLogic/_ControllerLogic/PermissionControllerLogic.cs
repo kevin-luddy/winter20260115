@@ -145,7 +145,7 @@ namespace GenBOE.ActionLogic
 
                         if (groupMemberAccess.Any(x => x.Value == false))
                         {
-                            ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", string.Format("The following members of group {0} do not have access to genBOE and cannot be added to this Workspace's permissions: <ul><li>{1}</li></ul>Please contact your administrator if access is needed.",
+                            ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", string.Format("The following members of group {0} do not have access to genBOE and cannot be added to this Workspace's permissions: <ul><li>{1}</li></ul>Please have the user request access.",
                                 entity, string.Join("</li><li>", groupMemberAccess.Where(x => x.Value == false).Select(x => x.Key).Select(x => x.DisplayName)))));
                             throw new GenValidationException(ValidationErrors);
                         }
@@ -160,7 +160,7 @@ namespace GenBOE.ActionLogic
                         }
                         else if (this.GetGenBOEAccess(new Collection<UserData>() { user }).Any(x => !x.Value))
                         {
-                            ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", user.DisplayName + " does not have access to genBOE and cannot be added to this Workspace's permissions. Please contact your administrator if access is needed."));
+                            ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", user.DisplayName + " does not have access to genBOE and cannot be added to this Workspace's permissions. Please have the user request access."));
                         }
 
                         if (ValidationErrors.Any())
