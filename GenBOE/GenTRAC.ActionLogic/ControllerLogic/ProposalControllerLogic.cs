@@ -140,7 +140,7 @@ namespace GenTRAC.ActionLogic
             {
                 throw new ArgumentNullException(nameof(model));
             }
-            
+
             ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
             DateTime agreement;
             if (DateTime.TryParse(model.AgreementDate, out agreement))
@@ -164,7 +164,7 @@ namespace GenTRAC.ActionLogic
 
             proposal.CutOffDateUtilization = model.CutOffDateUtilization;
             proposal.Comments = model.Comments;
-            
+
             if (proposal.AgreementDate.HasValue && proposal.CertificationDate.HasValue)
             {
                 TimeSpan span = proposal.CertificationDate.Value - proposal.AgreementDate.Value;
@@ -336,8 +336,8 @@ namespace GenTRAC.ActionLogic
                     Customer = proposalInfo.Customer,
                     CustomerType = proposalInfo.CustomerType,
                     DeliveryDate = proposalInfo.AnticipatedDeliveryDate.ToDateTime("MM/dd/yyyy"),
-                    RevisedSubmittalDate = string.IsNullOrEmpty(proposalInfo.RevisedSubmittalDate) ? null : (DateTime?) proposalInfo.RevisedSubmittalDate.ToDateTime("MM/dd/yyyy"),
-                    EstimatedProposalValue = string.IsNullOrEmpty(proposalInfo.EstimatedProposalValue) ? null : (long?) long.Parse(proposalInfo.EstimatedProposalValue.Replace(",", string.Empty)),
+                    RevisedSubmittalDate = string.IsNullOrEmpty(proposalInfo.RevisedSubmittalDate) ? null : (DateTime?)proposalInfo.RevisedSubmittalDate.ToDateTime("MM/dd/yyyy"),
+                    EstimatedProposalValue = string.IsNullOrEmpty(proposalInfo.EstimatedProposalValue) ? null : (long?)long.Parse(proposalInfo.EstimatedProposalValue.Replace(",", string.Empty)),
                     ISGSRole = proposalInfo.ISGSRole,
                     IsScheduleProposal = proposalInfo.IsScheduleProposal,
                     ProgramAreaId = int.Parse(proposalGeneralInfo.ProgramArea),
@@ -639,7 +639,7 @@ namespace GenTRAC.ActionLogic
             this.AddAndDeletePermissions(fullProposalDto, backupPricerPermission, PtmRole.BackupPricer, permissionsToAdd, permissionsToDelete);
 
             ProposalPermissionDto genBoeWorkspaceCreatorPermission = null;
-            if(!string.IsNullOrEmpty(proposalUserInfo.GenBoeWorkspaceCreatorNtid))
+            if (!string.IsNullOrEmpty(proposalUserInfo.GenBoeWorkspaceCreatorNtid))
             {
                 // GenBOE Workspace Creator
                 UserDTO genBoeWorkspaceCreator = UserMapper.GetByNtid(proposalUserInfo.GenBoeWorkspaceCreatorNtid);
@@ -794,7 +794,7 @@ namespace GenTRAC.ActionLogic
                     UpdateDate = proposalUserInfo.UpdateDate
                 };
                 this.AddAndDeletePermissions(fullProposalDto, pricingVerificationPermission, PtmRole.PricingVerification, permissionsToAdd, permissionsToDelete);
-            }           
+            }
 
             // independent Reviewer
             if (string.IsNullOrWhiteSpace(proposalApprovalsInfo.IndependentReviewerNtid))
@@ -925,6 +925,7 @@ namespace GenTRAC.ActionLogic
                 }
 
                 model.ProposalStatus = fullProposalDto.ProposalStatus;
+                model.WorksflowStatus = fullProposalDto.WorkflowStatus;
                 DateTime? date = this.ProposalLoader.GetProposalCompletedDate(fullProposalDto.Id);
                 model.CompletedDate = date.HasValue ? date.Value.ToString("MM/dd/yyyy") : string.Empty;
                 date = fullProposalDto.CertificationTimelineCompleted;
@@ -1080,7 +1081,7 @@ namespace GenTRAC.ActionLogic
 
             model.CustomerTypesList = EnumUtilities.GetListItemsForEnumSorted(typeof(CustomerType), true, model.CustomerType.ToString());
             model.ISGSRolesList = EnumUtilities.GetListItemsForEnumSorted(typeof(ISGSRole), true, model.ISGSRole.ToString());
-            
+
             return model;
         }
 
@@ -1145,7 +1146,7 @@ namespace GenTRAC.ActionLogic
             }
 
             model.LinesOfBusinessList = this.pickListMapper.GetSelectListPickList(PickListEnum.LineOfBusiness, lobId);
-            
+
             model.PricingToolsList = EnumUtilities.GetListItemsForEnumSorted(typeof(PricingTool), false, model.PricingTool.ToString());
             model.BOEToolsList = EnumUtilities.GetListItemsForEnumSorted(typeof(BOETool), false, model.BOETool.ToString());
 
@@ -1177,7 +1178,7 @@ namespace GenTRAC.ActionLogic
                 model.ProgramAreaSelectedText = this.pickListMapper.GetById(PickListEnum.ProgramArea, fullProposalDto.ProgramAreaId).Text;
 
                 model.LineOfBusiness = fullProposalDto.LineOfBusinessID.ToString();
-                
+
                 model.ProgramAreaHtmlOptions = this.GetProgramAreasForLineOfBusiness(fullProposalDto.LineOfBusinessID, fullProposalDto.ProgramAreaId);
             }
             else
@@ -1223,7 +1224,7 @@ namespace GenTRAC.ActionLogic
                     groupName = IES.Common.ConfigurationUtilities.GetAppSetting("CoverSheetApprovers");
                     break;
             }
-            
+
             return this.userLoader.GetUserDTOsByADGroup(groupName.GetObjectName(), groupName.GetDomain());
         }
 
@@ -1355,7 +1356,7 @@ namespace GenTRAC.ActionLogic
 
             FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
             model.IsReadOnly = this.IsProposalReadOnly(proposalId, fullProposalDto);
-            
+
             if (fullProposalDto != null)
             {
                 model.UpdateDate = fullProposalDto.UpdateDate;
@@ -1553,7 +1554,7 @@ namespace GenTRAC.ActionLogic
             {
                 inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROPOSALMGR_REQUIRED));
             }
-            
+
             // if this is a saved proposal, this will only validate the changed users, else validate all of the users
 
             ProposalUserInformationModelView savedProposalUsers = this.GetDataForProposalUserInformation(proposalId);
@@ -1604,7 +1605,7 @@ namespace GenTRAC.ActionLogic
                     isValid = this.validationMethods.IsValidLMandUsEmployeeProperties(originalUser, requiredUsPerson, requiredLmEmployee) != false;
                 }
 
-                if(!isValid)
+                if (!isValid)
                 {
                     inValidationErrors.Add(new ValidationMessage(errorMessage));
                 }
@@ -1674,7 +1675,7 @@ namespace GenTRAC.ActionLogic
                 {
                     inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.TYPE_OF_REQUEST_REQUIRED));
                 }
-                
+
                 if (!string.IsNullOrEmpty(proposalInfo.RFPIssuedDate))
                 {
                     try
@@ -1730,7 +1731,7 @@ namespace GenTRAC.ActionLogic
 
                 if (string.IsNullOrWhiteSpace(proposalApprovalsInfo.LeadEstimatorNtid))
                 {
-                    inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.LEAD_ESTIMATOR_REQUIRED)); 
+                    inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.LEAD_ESTIMATOR_REQUIRED));
                 }
 
                 if (proposalUserInfo.AdditionalPricingResource1NtId != null &&
@@ -1795,7 +1796,7 @@ namespace GenTRAC.ActionLogic
                 {
                     inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.LEAD_ESTIMATOR_AND_LOB_LEAD_CANNOT_BE_SAME_PERSON));
                 }
-                
+
                 if (string.IsNullOrWhiteSpace(proposalInfo.RFPNumber))
                 {
                     inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.RFP_NUMBER_REQUIRED));
@@ -1813,7 +1814,7 @@ namespace GenTRAC.ActionLogic
 
                 if (!proposalInfo.IsScheduleProposal.HasValue)
                 {
-                    inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SCHEDULE_PROPOSAL_REQUIRED)); 
+                    inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SCHEDULE_PROPOSAL_REQUIRED));
                 }
             }
 
@@ -1880,7 +1881,7 @@ namespace GenTRAC.ActionLogic
         public string GetContractTypesForContractTypeGroup(string contractTypeGroup, bool includeIDIQ)
         {
             StringBuilder selectList = new StringBuilder();
-           
+
             if (!string.IsNullOrEmpty(contractTypeGroup))
             {
                 int group = int.Parse(contractTypeGroup);

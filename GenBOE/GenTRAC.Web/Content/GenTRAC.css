@@ -1142,3 +1142,8 @@ button.ies-danger.disabled {
     float: right;
     top: -40px;
 }
+
+.revisionButtons {
+    float: right;
+    margin-right: 135px;
+}
