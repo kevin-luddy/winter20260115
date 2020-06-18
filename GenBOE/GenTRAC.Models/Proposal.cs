@@ -88,6 +88,7 @@ namespace GenTRAC.Models
         public Nullable<System.DateTime> CertificationLastEmailed { get; set; }
         public Nullable<bool> CostVolumeClassified { get; set; }
         public Nullable<System.DateTime> NoBidDate { get; set; }
+        public bool IsRevision { get; set; }
     
         public virtual BOEToolLU BOEToolLU { get; set; }
         public virtual CustomerTypeLU CustomerTypeLU { get; set; }

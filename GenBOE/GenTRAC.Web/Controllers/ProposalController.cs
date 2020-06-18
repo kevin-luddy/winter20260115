@@ -15,6 +15,7 @@ namespace GenTRAC.Web.Controllers
     using ActionLogic.ModelView.Admin;
     using GenTRAC.ActionLogic;
     using GenTRAC.ActionLogic.ModelView.Proposals;
+    using GenTRAC.DataBridge.DTO;
     using GenTRAC.Web.Common;
     using IES.Common;
     using IES.Common.Exceptions;
@@ -240,7 +241,7 @@ namespace GenTRAC.Web.Controllers
             ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo,
             List<ValidationMessage> validationErrors)
         {
-            var proposalClassesList = this.pickListMapper.GetSelectListPickList(PickListEnum.ProposalClass, proposalInfo.ProposalClass);
+            ICollection<SelectListItem> proposalClassesList = this.pickListMapper.GetSelectListPickList(PickListEnum.ProposalClass, proposalInfo.ProposalClass);
             string proposalClassText = proposalClassesList.Any(x => x.Value == proposalInfo.ProposalClass.ToString()) ?
                     proposalClassesList.First(x => x.Value == proposalInfo.ProposalClass.ToString()).Text : "Not Set";
 
@@ -296,7 +297,7 @@ namespace GenTRAC.Web.Controllers
 
             ProposalGeneralInformationModelView originalProposalInfo = this.proposalLogic.GetDataForProposalGeneralInformation(proposalId);
 
-            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
             {
                 proposalId = this.proposalLogic.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo);
 
@@ -363,7 +364,7 @@ namespace GenTRAC.Web.Controllers
                 throw new ValidationException(validationErrors);
             }
 
-            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
             {
                 int? result = this.adminLogic.SaveManageProposalInfo(proposalId, manageProposalInfo);
                 if (result.HasValue && result.Value > 0)
@@ -405,5 +406,31 @@ namespace GenTRAC.Web.Controllers
             bool includeIDIQ = isScheduleProposal ?? true;
             return this.proposalLogic.GetContractTypesForContractTypeGroup(contractTypeGroup, includeIDIQ);
         }
+
+        #region Proposal Revisions
+
+        /// <summary>
+        /// Add a new revision for a Proposal
+        /// </summary>
+        /// <param name="proposalId">ID of Proposal</param>
+        /// <returns>Json result</returns>
+        public JsonResult SaveNewProposalRevision(int proposalId)
+        {
+            ProposalDto proposal = this.proposalLogic.GetByProposalId(proposalId);
+
+            this.proposalLogic.ValidateSaveNewRevision(proposal);
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+            {
+                this.proposalLogic.SetProposalRevised(proposal.Id, proposal.UpdateDate);
+
+                // TODO - BOEJ-4636 - create new revision
+                int revisionId = -1;
+                scope.Complete();
+                return this.Json(new { revisionId = revisionId });
+            }
+        }
+
+        #endregion
     }
 }

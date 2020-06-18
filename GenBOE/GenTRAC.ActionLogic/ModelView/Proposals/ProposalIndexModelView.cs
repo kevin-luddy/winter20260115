@@ -39,11 +39,6 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public ProposalStatus ProposalStatus { get; set; }
 
         /// <summary>
-        /// Workflow Status
-        /// </summary>
-        public WorkflowStatus WorksflowStatus { get; set; }
-
-        /// <summary>
         /// Gets or sets Anticipated Delivery Date
         /// </summary>
         public string AnticipatedDeliveryDate { get; set; }
@@ -95,5 +90,10 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Determines whether to hide/show CertificationTimeline tab
         /// </summary>
         public SecurityAuthorization CertificationTimelineVisibility { get; set; }
+
+        /// <summary>
+        /// Determines whether to show or hide the + New Revision button
+        /// </summary>
+        public bool DisplayNewRevisionButton { get; set; }
     }
 }

@@ -44,7 +44,7 @@ namespace IES.Common
         /// </summary>
         Checklist = 5,
 
-         /// <summary>
+        /// <summary>
         /// Checklist Report
         /// </summary>
         ChecklistReport = 6,
@@ -401,7 +401,13 @@ namespace IES.Common
         /// No Bid
         /// </summary>
         [Description("No Bid")]
-        NoBid = 7
+        NoBid = 7,
+
+        /// <summary>
+        /// Revised
+        /// </summary>
+        [Description("Revised")]
+        Revised = 8
     }
 
     /// <summary>
@@ -578,7 +584,7 @@ namespace IES.Common
         /// </summary>
         [Description("Other")]
         Other = 9,
-        
+
         /// <summary>
         /// Cape Canaveral, FL
         /// </summary>
@@ -609,7 +615,7 @@ namespace IES.Common
         [Description("Sunnyvale, CA")]
         SunnyvaleCA = 14
     }
-    
+
     /// <summary>
     /// Defines pricing tool
     /// "Other" allows free form Pricing Tool data to be entered
@@ -905,7 +911,7 @@ namespace IES.Common
         /// Pricer Comment
         /// </summary>
         PricerComment = 5,
-        
+
         /// <summary>
         /// Peer Comment
         /// </summary>
@@ -931,7 +937,7 @@ namespace IES.Common
         /// N/A
         /// </summary>
         NA = 3,
-      
+
         /// <summary>
         /// Not Set
         /// </summary>
@@ -957,7 +963,7 @@ namespace IES.Common
     /// <summary>
     /// Checklist response type: Pricer, Peer, ShowBoth
     /// </summary>
-    public enum ShowChecklistResponse 
+    public enum ShowChecklistResponse
     {
         /// <summary>
         /// Pricer

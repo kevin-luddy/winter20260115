@@ -527,6 +527,15 @@ namespace GenTRAC.Web.Common
             public const string COMPLETE_CERTIFICATION_TIMELINE = "CompleteCertificationTimeline";
 
             #endregion Certification Timeline
+
+            #region PTM Revisions
+
+            /// <summary>
+            /// Save new Proposal Revision
+            /// </summary>
+            public const string SAVE_NEW_PROPOSAL_REVISION = "SaveNewProposalRevision";
+
+            #endregion
         }
 
         #endregion Action
