@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<parameters>
+  <!--APP Settings-->
+  <parameter name="CompanyConfiguration" defaultvalue="__ERROR__">
+    <parameterentry kind="XmlFile" scope="\\app.config$" match="/configuration/appSettings/add[@key='CompanyConfiguration']/@value"></parameterentry>
+  </parameter>
+  <parameter name="LogType" defaultvalue="__ERROR__">
+    <parameterentry kind="XmlFile" scope="\\app.config$" match="/configuration/appSettings/add[@key='LogType']/@value"></parameterentry>
+  </parameter>
+  <parameter name="DisableAllEmails" defaultvalue="__ERROR__">
+    <parameterentry kind="XmlFile" scope="\\app.config$" match="/configuration/appSettings/add[@key='DisableAllEmails']/@value"></parameterentry>
+  </parameter>
+  <parameter name="EmailsToCurrentlyLoggedInUser" defaultvalue="__ERROR__">
+    <parameterentry kind="XmlFile" scope="\\app.config$" match="/configuration/appSettings/add[@key='EmailsToCurrentlyLoggedInUser']/@value"></parameterentry>
+  </parameter>
+  <parameter name="MaxDbQueries" defaultvalue="__ERROR__">
+    <parameterentry kind="XmlFile" scope="\\app.config$" match="/configuration/appSettings/add[@key='MaxDbQueries']/@value"></parameterentry>
+  </parameter>
+  <parameter name="PtmAuthGroups" defaultvalue="__ERROR__">
+    <parameterentry kind="XmlFile" scope="\\app.config$" match="/configuration/appSettings/add[@key='PtmAuthGroups']/@value"></parameterentry>
+  </parameter>
+
+  <!--Connection Strings-->
+  <parameter name="genTracEntities" defaultvalue="__ERROR__">
+    <parameterentry kind="XmlFile" scope="\\app.config$" match="/configuration/connectionStrings/add[@key='genTracEntities']/@value"></parameterentry>
+  </parameter>
+  <parameter name="GenBoeEntities" defaultvalue="__ERROR__">
+    <parameterentry kind="XmlFile" scope="\\app.config$" match="/configuration/connectionStrings/add[@key='GenBoeEntities']/@value"></parameterentry>
+  </parameter>
+  
+  <!--elmah-->
+  <parameter name="elmahConnectionString" defaultvalue="__ERROR__">
+    <parameterentry kind="XmlFile" scope="\\app.config$" match="/configuration/elmah/errorLog[@type='Elmah.SqlErrorLog, Elmah']/@connectionString"></parameterentry>
+  </parameter>
+  <parameter name="elmahApplicationName" defaultvalue="__ERROR__">
+    <parameterentry kind="XmlFile" scope="\\app.config$" match="/configuration/elmah/errorLog[@type='Elmah.SqlErrorLog, Elmah']/@applicationName"></parameterentry>
+  </parameter>
+</parameters>
