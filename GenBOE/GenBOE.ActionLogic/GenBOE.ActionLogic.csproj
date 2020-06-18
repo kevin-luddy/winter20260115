@@ -45,6 +45,9 @@
   <PropertyGroup>
     <RootNamespace>GenBOE.ActionLogic</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ConsoleRelease|AnyCPU'">
+    <OutputPath>bin\ConsoleRelease\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="DocumentFormat.OpenXml">
       <HintPath>..\libraries\DocumentFormat.OpenXml.dll</HintPath>
