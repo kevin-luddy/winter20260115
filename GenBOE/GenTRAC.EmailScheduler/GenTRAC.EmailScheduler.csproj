@@ -187,15 +187,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
-    <Content Include="App.PTMDevSSC.config">
-      <DependentUpon>App.config</DependentUpon>
-    </Content>
-    <Content Include="App.PTMProdSSC.config">
-      <DependentUpon>App.config</DependentUpon>
-    </Content>
-    <Content Include="App.PTMUatSSC.config">
-      <DependentUpon>App.config</DependentUpon>
-    </Content>
     <None Include="packages.config" />
     <None Include="Settings.StyleCop" />
   </ItemGroup>
