@@ -301,7 +301,7 @@
         });
 
         // TODO - BOEJ-4627 - also disabled when Certification Not Required has been selected
-        if ('@(Model.ProposalStatus == ProposalStatus.Completed && Model.CertificationCompletedDate != null)' == 'True') {
+        if ('@(Model.ProposalStatus == ProposalStatus.Revised || (Model.ProposalStatus == ProposalStatus.Completed && Model.CertificationCompletedDate != null))' == 'True') {
             $('button[name="new-revision-button"]').addClass('disabled');
         }
 
@@ -314,8 +314,20 @@
         });
 
         ProposalDetailsWidget.AddNewRevision = function () {
-            // TODO - link to backend BOEJ-4636
-            console.log("Create revision");
+            var newRevisionUrl =  GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PROPOSAL',
+                action: '@WebConstants.Action.SAVE_NEW_PROPOSAL_REVISION',
+                id: '@ViewBag.proposalid'
+            });
+
+            $.ajax({
+                type: "POST",
+                url: newRevisionUrl,
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+                    ProposalDetailsWidget.LoadTab;
+                }
+            });
         }
 
         ProposalDetailsWidget.LoadTab();
@@ -329,13 +341,13 @@
             @if (ViewBag.proposalid == "null")
             {
                 <text>
-                > New Proposal
+                    > New Proposal
                 </text>
             }
             else
             {
                 <text>
-                > @proposalLinkText
+                    > @proposalLinkText
                 </text>
             }
         </div>
@@ -361,7 +373,7 @@
                                             Due: @Model.AnticipatedDeliveryDate
                                         </text>
                                     }
-                                    else if (Model.ProposalStatus == ProposalStatus.Completed || Model.ProposalStatus == ProposalStatus.Submitted)
+                                    else if (Model.ProposalStatus == ProposalStatus.Completed || Model.ProposalStatus == ProposalStatus.Submitted || Model.ProposalStatus == ProposalStatus.Revised)
                                     {
                                         <text>
                                             Approval Workflow Completed: @Model.CompletedDate
@@ -373,7 +385,13 @@
                                     }
                                 </p>
                                 <p>
-                                    @if (Model.IsCCoPD)
+                                    @if (Model.ProposalStatus == ProposalStatus.Revised)
+                                    {
+                                        <text>
+                                            Proposal Revised
+                                        </text>
+                                    }
+                                    else if (Model.IsCCoPD)
                                     {
                                         if (Model.ProposalStatus == ProposalStatus.Submitted)
                                         {
@@ -406,7 +424,7 @@
                         </text>
                     }
                 </div>
-                @if (Model.WorksflowStatus == WorkflowStatus.AllApproved)
+                @if (Model.DisplayNewRevisionButton)
                 {
                     <div class="revisionButtons">
                         <button name="new-revision-button" type="button" class="ies stateful_button">+ New Revision</button>

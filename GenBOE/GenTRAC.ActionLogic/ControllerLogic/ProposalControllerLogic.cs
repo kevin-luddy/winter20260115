@@ -906,7 +906,7 @@ namespace GenTRAC.ActionLogic
 
             // Determine visibility status of CertificationTimeline tab
             model.CertificationTimelineVisibility = SecurityAuthorization.None;
-            if (fullProposalDto != null && (fullProposalDto.ProposalStatus == ProposalStatus.Submitted || (fullProposalDto.IsCCPDRequired.HasValue && fullProposalDto.IsCCPDRequired.Value && fullProposalDto.ProposalStatus == ProposalStatus.Completed)))
+            if (fullProposalDto != null && (fullProposalDto.ProposalStatus == ProposalStatus.Submitted || fullProposalDto.ProposalStatus == ProposalStatus.Revised || (fullProposalDto.IsCCPDRequired.HasValue && fullProposalDto.IsCCPDRequired.Value && fullProposalDto.ProposalStatus == ProposalStatus.Completed)))
             {
                 model.CertificationTimelineVisibility = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId).Authorization;
             }
@@ -925,7 +925,6 @@ namespace GenTRAC.ActionLogic
                 }
 
                 model.ProposalStatus = fullProposalDto.ProposalStatus;
-                model.WorksflowStatus = fullProposalDto.WorkflowStatus;
                 DateTime? date = this.ProposalLoader.GetProposalCompletedDate(fullProposalDto.Id);
                 model.CompletedDate = date.HasValue ? date.Value.ToString("MM/dd/yyyy") : string.Empty;
                 date = fullProposalDto.CertificationTimelineCompleted;
@@ -935,6 +934,18 @@ namespace GenTRAC.ActionLogic
                 {
                     // assuming all proposals that are completed without certification date were completed before certification was added to PTM
                     model.CompletedBeforeCertification = true;
+                }
+
+                // Display + New Revision button only if the user if the lead or backup estimator and approval workflow is completed
+                UserDTO activeUser = this.GetActiveUser();
+                if (fullProposalDto.WorkflowStatus == WorkflowStatus.ProposalLocked &&
+                    fullProposalDto.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer)))
+                {
+                    model.DisplayNewRevisionButton = true;
+                }
+                else
+                {
+                    model.DisplayNewRevisionButton = false;
                 }
             }
 
@@ -1993,5 +2004,61 @@ namespace GenTRAC.ActionLogic
             UserDTO lobEstMgrDel = this.userLoader.GetByNtid(lobEstMgrDelNtid);
             this.emailer.SendPreferredToolsEmail(this.securityInformation.ActiveUserData, lobEstMgrDel, proposalInfo);
         }
+
+        #region Proposal Revisions
+
+        /// <summary>
+        /// Validate the Proposal before creating a new Revision
+        /// </summary>
+        /// <param name="proposal">Proposal to validate</param>
+        public void ValidateSaveNewRevision(ProposalDto proposal)
+        {
+            if (proposal == null)
+            {
+                throw new ArgumentNullException(nameof(proposal));
+            }
+
+            ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+
+            if (proposal.WorkflowStatus != WorkflowStatus.ProposalLocked)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.WORKFLOW_NOT_COMPLETED));
+            }
+
+            if (proposal.ProposalStatus == ProposalStatus.Completed && proposal.CertificationTimelineCompleted.HasValue)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.CERT_TIMELINE_COMPLETE));
+            }
+
+            if (proposal.ProposalStatus == ProposalStatus.Revised)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_LATEST_VERSION));
+            }
+
+            UserDTO activeUser = this.GetActiveUser();
+            FullProposal fullProposal = new FullProposal(proposal);
+
+            if(!fullProposal.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer)))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED));
+            }
+
+            if (validationErrors.Any())
+            {
+                throw new ValidationException(validationErrors);
+            }
+        }
+
+        /// <summary>
+        /// Set the given proposal to the Revised Status when creating a new Revision
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <param name="proposalUpdateDate">Proposal DTO Update Date</param>
+        public void SetProposalRevised(int proposalId, DateTime proposalUpdateDate)
+        {
+            this.ProposalLoader.UpdateProposalStatus(proposalId, proposalUpdateDate, ProposalStatus.Revised);
+        }
+
+        #endregion
     }
 }

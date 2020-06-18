@@ -355,5 +355,10 @@ namespace GenTRAC.DataBridge.DTO
         /// Gets or sets the No Bid date
         /// </summary>
         public DateTime? NoBidDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether Proposal is a revision
+        /// </summary>
+        public bool IsRevision { get; set; }
     }
 }

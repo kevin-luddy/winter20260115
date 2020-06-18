@@ -945,5 +945,32 @@ namespace GenTRAC.ActionLogic.Validation
             /// </summary>
             public const string HAS_LINKED_BOE_WORKSPACE = "Delete operation not allowed. Proposal is linked to a BOE workspace.";
         }
+
+        /// <summary>
+        /// Validation messages for Proposal Revisions
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public static class ProposalRevisionConstants
+        {
+            /// <summary>
+            /// Approval Workflow is not complete
+            /// </summary>
+            public const string WORKFLOW_NOT_COMPLETED = "Approval Workflow must be completed before adding a new Revision.";
+
+            /// <summary>
+            /// Certification Timeline cannot be completed
+            /// </summary>
+            public const string CERT_TIMELINE_COMPLETE = "Certification Timeline cannot be completed before adding a new Revision.";
+
+            /// <summary>
+            /// Proposal can't have "Revised" status/must be most recent revision, or original if not revised
+            /// </summary>
+            public const string NOT_LATEST_VERSION = "A new Revision cannot be added from a Proposal that is alread Revised. It can only be added from the latest version of the Proposal.";
+
+            /// <summary>
+            /// A Revision can only be created by the Lead Estimator or Backup Estimator
+            /// </summary>
+            public const string NOT_PERMITTED = "Only the Lead Estimator or Backup Estimator is permitted to create a new Revision of a Proposal.";
+        }
     }
 }

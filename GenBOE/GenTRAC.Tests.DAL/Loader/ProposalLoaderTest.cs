@@ -129,7 +129,8 @@ namespace GenTRAC.Tests.DAL.Loader
                 CutOffDateUtilization = CutOffDateUtilization.NoRequestDenied,
                 CertificationDate = new DateTime(2013, 6, 7),
                 CertificationLastEmailed = new DateTime(2013, 6, 8),
-                CertificationTimelineCompleted = new DateTime(2013, 6, 9)
+                CertificationTimelineCompleted = new DateTime(2013, 6, 9),
+                IsRevision = false
             };
 
             int? newProposalID;

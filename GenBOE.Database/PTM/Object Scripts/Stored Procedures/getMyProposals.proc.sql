@@ -52,6 +52,7 @@ AS
 **			3/10/2020	ranzalon				BOEJ-4490 - No Bid
 **			3/31/2020	ranzalon				BOEJ-4531 No Bid Date
 **			6/5/20		Dusan					BOEJ-4657: Adding Forecasted proposals into field for search; cleaned up some formatting on text
+**			6/18/2020	ranzalon				BOEJ-4636 - Revised Proposals in All
 ******************************************************************************/
 	SET NOCOUNT ON 
 
@@ -185,11 +186,11 @@ AS
 	WHERE
 	(
 		(
-			(@ProposalStatusID IS NULL AND P.ProposalStatusID IN (1/*In Progress*/,2/*Completed*/,6/*Submitted*/,7/*No Bid*/)) 
+			(@ProposalStatusID IS NULL AND P.ProposalStatusID IN (1/*In Progress*/,2/*Completed*/,6/*Submitted*/,7/*No Bid*/,8/*Revised*/)) 
 			OR (@ProposalStatusID IS NOT NULL AND P.ProposalStatusID = @ProposalStatusID)
 		) AND (
 			(
-				(@ProposalStatusID = 1/*In Progress*/ OR @ProposalStatusID = 6/*Submitted*/) 
+				(@ProposalStatusID = 1/*In Progress*/ OR @ProposalStatusID = 6/*Submitted*/ OR @ProposalStatusID = 8/*Revised*/) 
 				AND (@AssignedStart IS NULL OR CAST (P.DateAssigned AS Date) > = @AssignedStart) 
 				AND (@AssignedEnd IS NULL OR CAST (P.DateAssigned AS Date) < = @AssignedEnd) 
 			) OR (
