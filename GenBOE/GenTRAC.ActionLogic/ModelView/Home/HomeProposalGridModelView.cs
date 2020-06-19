@@ -238,7 +238,7 @@ namespace GenTRAC.ActionLogic.ModelView.Home
                 }
                 else
                 {
-                    if (this.Status.Equals(ProposalStatus.Completed))
+                    if (this.Status.Equals(ProposalStatus.Completed) || this.Status.Equals(ProposalStatus.Revised))
                     {
                         return Constants.GREY_BACKGROUND_CSS_CLASS_STRING;
                     }

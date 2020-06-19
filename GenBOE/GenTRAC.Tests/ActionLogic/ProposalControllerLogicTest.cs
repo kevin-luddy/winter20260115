@@ -2930,5 +2930,147 @@ namespace GenTRAC.Tests.ActionLogic
             // missing cutoff utilization selection
             sut.ValidateCertification(5, model, true);
         }
+
+        #region PTM Revisions
+
+        /// <summary>
+        /// Test ValidateSaveNewRevision for a valid proposal
+        /// </summary>
+        [TestMethod]
+        public void TestValidateSaveNewRevision()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                WorkflowStatus = WorkflowStatus.ProposalLocked,
+                ProposalStatus = ProposalStatus.Submitted
+            };
+
+            this.userMapper.Setup(x => x.GetActiveUser()).Returns(new UserDTO() { Id = 1 });
+            ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>() { new ProposalPermissionDto() { UserId = 1, Role = PtmRole.Pricer } };
+            this.retriever.Setup(x => x.GetProposalPermissions(proposal.Id)).Returns(permissions);
+
+            sut.ValidateSaveNewRevision(proposal);
+
+            // Nothing to assert, just shouldn't throw any exceptions
+        }
+
+        /// <summary>
+        /// Test ValidateSaveNewRevision throws an exception when the approval workflow is not complete
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
+        public void TestValidateSaveNewRevision_WorkflowNotComplete()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                WorkflowStatus = WorkflowStatus.Started,
+                ProposalStatus = ProposalStatus.Submitted
+            };
+
+            this.userMapper.Setup(x => x.GetActiveUser()).Returns(new UserDTO() { Id = 1 });
+            ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>() { new ProposalPermissionDto() { UserId = 1, Role = PtmRole.Pricer } };
+            this.retriever.Setup(x => x.GetProposalPermissions(proposal.Id)).Returns(permissions);
+
+            sut.ValidateSaveNewRevision(proposal);
+        }
+
+        /// <summary>
+        /// Test ValidateSaveNewRevision throws an exception when the Certification Timeline is completed
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
+        public void TestValidateSaveNewRevision_CertTimelineComplete()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                WorkflowStatus = WorkflowStatus.ProposalLocked,
+                ProposalStatus = ProposalStatus.Completed,
+                CertificationTimelineCompleted = DateTime.Now
+            };
+
+            this.userMapper.Setup(x => x.GetActiveUser()).Returns(new UserDTO() { Id = 1 });
+            ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>() { new ProposalPermissionDto() { UserId = 1, Role = PtmRole.Pricer } };
+            this.retriever.Setup(x => x.GetProposalPermissions(proposal.Id)).Returns(permissions);
+
+            sut.ValidateSaveNewRevision(proposal);
+        }
+
+        /// <summary>
+        /// Test ValidateSaveNewRevision throws an exception when it is not the latest version
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
+        public void TestValidateSaveNewRevision_NotLatestVersion()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                WorkflowStatus = WorkflowStatus.ProposalLocked,
+                ProposalStatus = ProposalStatus.Revised
+            };
+            
+            this.userMapper.Setup(x => x.GetActiveUser()).Returns(new UserDTO() { Id = 1 });
+            ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>() { new ProposalPermissionDto() { UserId = 1, Role = PtmRole.Pricer } };
+            this.retriever.Setup(x => x.GetProposalPermissions(proposal.Id)).Returns(permissions);
+
+            sut.ValidateSaveNewRevision(proposal);
+        }
+        
+        /// <summary>
+        /// Test ValidateSaveNewRevision throws an exception when the user is not the lead or backup estimator
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
+        public void TestValidateSaveNewRevision_NotPermitted()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                WorkflowStatus = WorkflowStatus.ProposalLocked,
+                ProposalStatus = ProposalStatus.Submitted
+            };
+
+            this.userMapper.Setup(x => x.GetActiveUser()).Returns(new UserDTO() { Id = 1 });
+            ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>() { new ProposalPermissionDto() { UserId = 1, Role = PtmRole.CostVolumeLead } };
+            this.retriever.Setup(x => x.GetProposalPermissions(proposal.Id)).Returns(permissions);
+
+            sut.ValidateSaveNewRevision(proposal);
+        }
+
+        /// <summary>
+        /// Test SetProposalRevised
+        /// </summary>
+        [TestMethod]
+        public void TestSetProposalRevised()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                UpdateDate = DateTime.Now
+            };
+
+            this.proposalLoader.Setup(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Revised)).Verifiable();
+
+            sut.SetProposalRevised(proposal.Id, proposal.UpdateDate);
+
+            this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Revised), Times.Once());
+        }
+
+        #endregion
     }
 }

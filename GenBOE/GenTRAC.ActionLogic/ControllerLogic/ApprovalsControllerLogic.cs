@@ -167,7 +167,7 @@ namespace GenTRAC.ActionLogic
                         model.DateOfApproval = proposal.LeadEstimatorSignedDate;
                         model.AdditionalEmailText = proposal.ApprovalEmailText ?? string.Empty;
                         // only show the reset workflow button if the workflow has been started and the current user is the lead or backup estimator.
-                        model.ShowResetWorkflowButton = proposal.WorkflowStatus != WorkflowStatus.NotStarted && this.IsCurrentUserPricerOrBackupEstimator(proposal.Id);
+                        model.ShowResetWorkflowButton = proposal.WorkflowStatus != WorkflowStatus.NotStarted && proposal.ProposalStatus != ProposalStatus.Revised && this.IsCurrentUserPricerOrBackupEstimator(proposal.Id);
                         model.AllAttachmentsHaveBeenUploaded = this.attachmentLoader.AllRequiredAttachmentsHaveBeenUploaded(proposal.Id);
                         model.IsNoBid = proposal.ProposalStatus == ProposalStatus.NoBid;
                         break;
@@ -457,7 +457,7 @@ namespace GenTRAC.ActionLogic
             bool isLeadOrBackup = proposal.Permissions.Any(x => (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer) && x.UserId == proposal.CurrentUser.Id);
             bool isAdmin = this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
 
-            return isLeadOrBackup || isAdmin;
+            return (isLeadOrBackup || isAdmin) && proposal.ProposalStatus != ProposalStatus.Revised;
         }
 
         /// <summary>

@@ -292,6 +292,7 @@
           <Property Name="CertificationLastEmailed" Type="datetime2" Precision="7" />
           <Property Name="CostVolumeClassified" Type="bit" />
           <Property Name="NoBidDate" Type="datetime2" Precision="7" />
+          <Property Name="IsRevision" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -1472,6 +1473,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="CertificationTimelineCompleted" Type="datetime2" Mode="In" />
           <Parameter Name="CertificationLastEmailed" Type="datetime2" Mode="In" />
           <Parameter Name="NoBidDate" Type="datetime2" Mode="In" />
+          <Parameter Name="IsRevision" Type="bit" Mode="In" />
         </Function>
         <Function Name="upsertProposalChecklist" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalChecklistID" Type="int" Mode="In" />
@@ -2045,6 +2047,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <NavigationProperty Name="CutOffDateUtilizationLU" Relationship="genTRACModel.FK_CutOffDateUtilization" FromRole="Proposal" ToRole="CutOffDateUtilizationLU" />
           <Property Name="CostVolumeClassified" Type="Boolean" />
           <Property Name="NoBidDate" Type="DateTime" Precision="7" />
+          <Property Name="IsRevision" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -3093,6 +3096,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="CertificationTimelineCompleted" Mode="In" Type="DateTime" />
             <Parameter Name="CertificationLastEmailed" Mode="In" Type="DateTime" />
             <Parameter Name="NoBidDate" Mode="In" Type="DateTime" />
+            <Parameter Name="IsRevision" Mode="In" Type="Boolean" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalChecklist" ReturnType="Collection(Int32)">
             <Parameter Name="ProposalChecklistID" Mode="In" Type="Int32" />
@@ -3851,6 +3855,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="Proposals">
             <EntityTypeMapping TypeName="genTRACModel.Proposal">
               <MappingFragment StoreEntitySet="Proposal">
+                <ScalarProperty Name="IsRevision" ColumnName="IsRevision" />
                 <ScalarProperty Name="NoBidDate" ColumnName="NoBidDate" />
                 <ScalarProperty Name="CostVolumeClassified" ColumnName="CostVolumeClassified" />
                 <ScalarProperty Name="CertificationLastEmailed" ColumnName="CertificationLastEmailed" />
