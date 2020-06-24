@@ -550,7 +550,7 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.CertificationLastEmailed,
                             dtoToUpsert.NoBidDate,
                             dtoToUpsert.IsRevision,
-                            dtoToUpsert.ReasonCertificationNotRequired,
+                            (int?)dtoToUpsert.ReasonCertificationNotRequired,
                             dtoToUpsert.OtherReasonComment).FirstOrDefault();
                     }
                 }
@@ -945,7 +945,7 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationLastEmailed = entity.CertificationLastEmailed,
                             NoBidDate = entity.NoBidDate,
                             IsRevision = entity.IsRevision,
-                            ReasonCertificationNotRequired = entity.ReasonCertificationNotRequired,
+                            ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment
                         }).ToList();
                 }
@@ -1100,7 +1100,7 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationLastEmailed = entity.CertificationLastEmailed,
                             NoBidDate = entity.NoBidDate,
                             IsRevision = entity.IsRevision,
-                            ReasonCertificationNotRequired = entity.ReasonCertificationNotRequired,
+                            ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment
                         }).ToList();
                 }
@@ -1257,7 +1257,7 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationLastEmailed = entity.CertificationLastEmailed,
                             NoBidDate = entity.NoBidDate,
                             IsRevision = entity.IsRevision,
-                            ReasonCertificationNotRequired = entity.ReasonCertificationNotRequired,
+                            ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment
                         }).ToList();
                 }
@@ -1431,7 +1431,7 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationLastEmailed = entity.CertificationLastEmailed,
                             NoBidDate = entity.NoBidDate,
                             IsRevision = entity.IsRevision,
-                            ReasonCertificationNotRequired = entity.ReasonCertificationNotRequired,
+                            ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment
                         }).ToList();
                 }
@@ -1590,7 +1590,7 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationLastEmailed = entity.CertificationLastEmailed,
                             NoBidDate = entity.NoBidDate,
                             IsRevision = entity.IsRevision,
-                            ReasonCertificationNotRequired = entity.ReasonCertificationNotRequired,
+                            ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment
                         }).ToList();
                 }
