@@ -57,5 +57,20 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Comments
         /// </summary>
         public string Comments { get; set; }
+
+        /// <summary>
+        /// Reason Certification is Not Required
+        /// </summary>
+        public ReasonCertificationNotRequired? ReasonCertificationNotRequired { get; set; }
+
+        /// <summary>
+        /// Gets or sets the cut off date utilization list.
+        /// </summary>
+        public ICollection<SelectListItem> ReasonCertificationNotRequiredList { get; set; }
+
+        /// <summary>
+        /// Other text for ReasonCertificationNotRequiredComment
+        /// </summary>
+        public string OtherReasonCommentCertification { get; set; }
     }
 }
