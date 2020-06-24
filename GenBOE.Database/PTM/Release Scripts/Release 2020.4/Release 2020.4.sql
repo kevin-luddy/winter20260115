@@ -53,10 +53,9 @@ GO
 IF NOT EXISTS (SELECT 1 FROM ReasonCertificationNotRequiredLU)
 	BEGIN
 		INSERT INTO ReasonCertificationNotRequiredLU
-			VALUES (1, 'Not Set'),
-					(2, 'Lost / Not Awarded'),
-					(3, 'Awarded Under Threshold'),
-					(4, 'Other');
+			VALUES	(1, 'Lost / Not Awarded'),
+					(2, 'Awarded Under Threshold'),
+					(3, 'Other');
 	END
 GO
 
@@ -68,7 +67,7 @@ GO
 
 IF NOT EXISTS (SELECT * FROM sys.all_columns C INNER JOIN sys.tables T on C.object_id = T.object_id INNER JOIN sys.schemas S ON T.schema_id = S.schema_id WHERE S.name = 'dbo' AND T.name = 'Proposal' AND C.name = 'ReasonCertificationNotRequired')
 	BEGIN
-		ALTER TABLE Proposal ADD ReasonCertificationNotRequired INT REFERENCES ReasonCertificationNotRequiredLU(Id) DEFAULT 1 NOT NULL;
+		ALTER TABLE Proposal ADD ReasonCertificationNotRequired INT REFERENCES ReasonCertificationNotRequiredLU(Id)
 	END
 GO
 /*

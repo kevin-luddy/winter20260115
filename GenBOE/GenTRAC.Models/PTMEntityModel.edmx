@@ -294,7 +294,7 @@
           <Property Name="NoBidDate" Type="datetime2" Precision="7" />
           <Property Name="IsRevision" Type="bit" Nullable="false" />
           <Property Name="OtherReasonComment" Type="varchar" MaxLength="1000" />
-          <Property Name="ReasonCertificationNotRequired" Type="int" Nullable="false" />
+          <Property Name="ReasonCertificationNotRequired" Type="int" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -2053,7 +2053,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="NoBidDate" Type="DateTime" Precision="7" />
           <Property Name="IsRevision" Type="Boolean" Nullable="false" />
           <Property Name="OtherReasonComment" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="ReasonCertificationNotRequired" Type="Int32" Nullable="false" />
+          <Property Name="ReasonCertificationNotRequired" Type="Int32" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
