@@ -360,5 +360,17 @@ namespace GenTRAC.DataBridge.DTO
         /// Gets or sets whether Proposal is a revision
         /// </summary>
         public bool IsRevision { get; set; }
+
+        /// <summary>
+        /// ToDo: Dusan - replace w/ enum
+        /// 
+        /// Reason why certification is not required
+        /// </summary>
+        public int ReasonCertificationNotRequired { get; set; }
+
+        /// <summary>
+        /// Comment when "Other" was selected for Certification Not Required Reason
+        /// </summary>
+        public string OtherReasonComment { get; set; }
     }
 }

@@ -73,7 +73,9 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @CertificationTimelineCompleted datetime2 = NULL,
       @CertificationLastEmailed datetime2 = NULL,
 	  @NoBidDate datetime2 = NULL,
-	  @IsRevision bit
+	  @IsRevision bit,
+	  @ReasonCertificationNotRequired INT = 1,
+	  @OtherReasonComment VARCHAR(1000) = NULL
 )
 AS
 /******************************************************************************
@@ -104,6 +106,7 @@ AS
 **			9/27/2018	ranzalon				BOEJ-3739 Classified Cost Volume
 **			3/31/2020	ranzalon				BOEJ-4531 No Bid Date
 **			6/17/2020	ranzalon				BOEJ-4535 IsRevision
+**			6/23/2020	Dusan					BOEJ-4626 Add Certification Not Required
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -243,6 +246,8 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,[CertificationLastEmailed]
 		,[NoBidDate]
 		,[IsRevision]
+		,[ReasonCertificationNotRequired]
+		,[OtherReasonComment]
 		)
 	OUTPUT inserted.ProposalID INTO @Inserted
 	VALUES
@@ -305,6 +310,8 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@CertificationLastEmailed
 		,@NoBidDate
 		,@IsRevision
+		,@ReasonCertificationNotRequired
+		,@OtherReasonComment
 		)
 
 		SELECT @ProposalID = ID FROM @Inserted
@@ -401,6 +408,8 @@ ELSE
 						,[CertificationLastEmailed] = @CertificationLastEmailed
 						,[NoBidDate] = @NoBidDate
 						,[IsRevision] = @IsRevision
+						,[ReasonCertificationNotRequired] = @ReasonCertificationNotRequired
+						,[OtherReasonComment] = @OtherReasonComment
 
 						WHERE 
 							ProposalID = @ProposalID;

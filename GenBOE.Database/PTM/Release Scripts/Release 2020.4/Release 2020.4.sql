@@ -35,3 +35,44 @@ END
 
 	## END ##
 */
+
+/*
+	## START ##
+
+	6/23/2020 [Dusan]	BOEJ-4626 Add Certification Not Required
+*/
+IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[RateTypeLU]') AND type in (N'U'))
+	BEGIN
+		CREATE TABLE ReasonCertificationNotRequiredLU (
+			Id		INT				PRIMARY KEY,
+			Text	VARCHAR(50)		NOT NULL
+		);
+	END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM ReasonCertificationNotRequiredLU)
+	BEGIN
+		INSERT INTO ReasonCertificationNotRequiredLU
+			VALUES (1, 'Not Set'),
+					(2, 'Lost / Not Awarded'),
+					(3, 'Awarded Under Threshold'),
+					(4, 'Other');
+	END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.all_columns C INNER JOIN sys.tables T on C.object_id = T.object_id INNER JOIN sys.schemas S ON T.schema_id = S.schema_id WHERE S.name = 'dbo' AND T.name = 'Proposal' AND C.name = 'OtherReasonComment')
+	BEGIN
+		ALTER TABLE Proposal ADD OtherReasonComment VARCHAR(1000);
+	END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.all_columns C INNER JOIN sys.tables T on C.object_id = T.object_id INNER JOIN sys.schemas S ON T.schema_id = S.schema_id WHERE S.name = 'dbo' AND T.name = 'Proposal' AND C.name = 'ReasonCertificationNotRequired')
+	BEGIN
+		ALTER TABLE Proposal ADD ReasonCertificationNotRequired INT REFERENCES ReasonCertificationNotRequiredLU(Id) DEFAULT 1 NOT NULL;
+	END
+GO
+/*
+	6/23/2020 [Dusan]	BOEJ-4626 Add Certification Not Required
+
+	## END ##
+*/
