@@ -301,7 +301,7 @@
         });
 
         // TODO - BOEJ-4627 - also disabled when Certification Not Required has been selected
-        if ('@(Model.ProposalStatus == ProposalStatus.Revised || (Model.ProposalStatus == ProposalStatus.Completed && Model.CertificationCompletedDate != null))' == 'True') {
+        if ('@(Model.ProposalStatus == ProposalStatus.Revised || Model.ReasonCertificationNotRequired.HasValue || (Model.ProposalStatus == ProposalStatus.Completed && Model.CertificationCompletedDate != null))' == 'True') {
             $('button[name="new-revision-button"]').addClass('disabled');
         }
 
