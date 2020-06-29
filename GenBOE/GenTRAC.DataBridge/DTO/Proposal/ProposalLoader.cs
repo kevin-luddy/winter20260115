@@ -186,7 +186,9 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
                             CertificationLastEmailed = entity.CertificationLastEmailed,
                             NoBidDate = entity.NoBidDate,
-                            IsRevision = entity.IsRevision
+                            IsRevision = entity.IsRevision,
+                            entity.ReasonCertificationNotRequired,
+                            entity.OtherReasonComment
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -251,7 +253,9 @@ namespace GenTRAC.DataBridge.DTO
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
                             CertificationLastEmailed = entity.CertificationLastEmailed,
                             NoBidDate = entity.NoBidDate,
-                            IsRevision = entity.IsRevision
+                            IsRevision = entity.IsRevision,
+                            ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
+                            OtherReasonComment = entity.OtherReasonComment
                         }).ToList();
                 }
             }
