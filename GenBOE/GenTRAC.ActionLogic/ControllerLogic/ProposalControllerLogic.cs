@@ -9,10 +9,13 @@ namespace GenTRAC.ActionLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
+    using System.Transactions;
+    using System.Web.Configuration;
     using System.Web.Mvc;
     using GenBOE.DataBridge.DTO;
     using GenTRAC.ActionLogic.Email;
@@ -1035,6 +1038,11 @@ namespace GenTRAC.ActionLogic
                 model.ReasonCertificationNotRequiredList = reasonCertificationNotRequiredList;
 
                 model.Comments = fullProposalDto.Comments;
+                
+                // Read Only && certification not required reason set && has permissions to update it
+                model.DisplayCertificationReset = string.Equals(this.IsCertificationReadOnly(fullProposalDto).ToLower(), "true") 
+                                                                                    && model.ReasonCertificationNotRequired.HasValue
+                                                                                    && this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
             }
 
             return model;
@@ -1939,7 +1947,7 @@ namespace GenTRAC.ActionLogic
             UserDTO activeUser = this.GetActiveUser();
             FullProposal fullProposal = new FullProposal(proposal);
 
-            if(!fullProposal.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer)))
+            if (!fullProposal.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer)))
             {
                 validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED));
             }
@@ -1973,16 +1981,14 @@ namespace GenTRAC.ActionLogic
         {
             using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SaveCertificationTimeline", this.log))
             {
-                ProposalDto proposal = this.ValidateCertification(proposalId, model, false);
-                proposal.Updateable = UpdateType.Upsert;
+                this.ValidateCertification(proposalId, model, false);
+                ProposalDto proposal = this.ConvertCertificationModelToDto(proposalId, model, false);
 
-                if (proposal.ReasonCertificationNotRequired.HasValue)
+                using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
                 {
-                    proposal.ProposalStatus = ProposalStatus.Completed;
-                    proposal.CertificationTimelineCompleted = DateTime.Now;
+                    this.ProposalMediator.SaveProposal(proposal);
+                    scope.Complete();
                 }
-
-                this.ProposalMediator.SaveProposal(proposal);
             }
         }
 
@@ -1992,8 +1998,8 @@ namespace GenTRAC.ActionLogic
         /// <param name="proposalId">The proposal identifier.</param>
         /// <param name="model">The model.</param>
         /// <param name="isComplete">if set to <c>true</c> [is validating as complete].</param>
-        /// <returns>The validated, updated proposal</returns>
-        public ProposalDto ValidateCertification(int proposalId, ProposalCertificationTimelineModelView model, bool isComplete)
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "*")]
+        internal void ValidateCertification(int proposalId, ProposalCertificationTimelineModelView model, bool isComplete)
         {
             if (model == null)
             {
@@ -2019,37 +2025,14 @@ namespace GenTRAC.ActionLogic
 
             if (!model.ReasonCertificationNotRequired.HasValue)
             {
-                DateTime agreement;
-                if (DateTime.TryParse(model.AgreementDate, out agreement))
+                if (DateTime.TryParse(model.AgreementDate, out DateTime agreement) && DateTime.TryParse(model.AgreementDate, out DateTime certification))
                 {
-                    proposal.AgreementDate = agreement;
-                }
-                else
-                {
-                    proposal.AgreementDate = null;
-                }
-
-                DateTime certification;
-                if (DateTime.TryParse(model.CertificationDate, out certification))
-                {
-                    proposal.CertificationDate = certification;
-                }
-                else
-                {
-                    proposal.CertificationDate = null;
-                }
-
-                proposal.CutOffDateUtilization = model.CutOffDateUtilization;
-                proposal.Comments = model.Comments;
-
-                if (proposal.AgreementDate.HasValue && proposal.CertificationDate.HasValue)
-                {
-                    TimeSpan span = proposal.CertificationDate.Value - proposal.AgreementDate.Value;
+                    TimeSpan span = certification - agreement;
 
                     if (span.TotalDays > 5.0)
                     {
                         // Comments are now required
-                        if (string.IsNullOrWhiteSpace(proposal.Comments))
+                        if (string.IsNullOrWhiteSpace(model.Comments))
                         {
                             throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.COMMENTS_REQUIRED);
                         }
@@ -2075,6 +2058,56 @@ namespace GenTRAC.ActionLogic
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Converts the page viewmodel into the Dto
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <param name="model">Certification Model View</param>
+        /// <param name="isComplete">Are we completing the proposal</param>
+        /// <returns>Proposal DTO</returns>
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "*")]
+        internal ProposalDto ConvertCertificationModelToDto(int proposalId, ProposalCertificationTimelineModelView model, bool isComplete)
+        {
+            ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
+            proposal.Updateable = UpdateType.Upsert;
+
+            if (model.ReasonCertificationNotRequired.HasValue)
+            {
+                isComplete = true;
+                proposal.ReasonCertificationNotRequired = model.ReasonCertificationNotRequired;
+                proposal.OtherReasonComment = model.OtherReasonCommentCertification;
+
+                proposal.AgreementDate = null;
+                proposal.CertificationDate = null;
+                proposal.CutOffDateUtilization = null;
+                proposal.Comments = null;
+            }
+            else
+            {
+                // Marking the proposal required (when it was not required before) resets the flow
+                if (proposal.ReasonCertificationNotRequired.HasValue)
+                {
+                    proposal.ProposalStatus = ProposalStatus.Submitted;
+                    proposal.CertificationTimelineCompleted = null;
+                }
+
+                proposal.AgreementDate = DateTime.TryParse(model.AgreementDate, out DateTime agreementDate) ? (DateTime?)agreementDate : null;
+                proposal.CertificationDate = DateTime.TryParse(model.CertificationDate, out DateTime certificationDate) ? (DateTime?)certificationDate : null;
+
+                proposal.CutOffDateUtilization = model.CutOffDateUtilization;
+                proposal.Comments = model.Comments;
+
+                proposal.ReasonCertificationNotRequired = null;
+                proposal.OtherReasonComment = null;
+            }
+
+            if (isComplete)
+            {
+                proposal.ProposalStatus = ProposalStatus.Completed;
+                proposal.CertificationTimelineCompleted = DateTime.Now;
+            }
 
             return proposal;
         }
@@ -2088,12 +2121,14 @@ namespace GenTRAC.ActionLogic
         {
             using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.CompleteCertificationTimeline", this.log))
             {
-                ProposalDto proposal = this.ValidateCertification(proposalId, model, true);
-                proposal.ProposalStatus = ProposalStatus.Completed;
-                proposal.CertificationTimelineCompleted = DateTime.Now;
-                proposal.Updateable = UpdateType.Upsert;
+                this.ValidateCertification(proposalId, model, true);
+                ProposalDto proposal = this.ConvertCertificationModelToDto(proposalId, model, true);
 
-                this.ProposalMediator.SaveProposal(proposal);
+                using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+                {
+                    this.ProposalMediator.SaveProposal(proposal);
+                    scope.Complete();
+                }
             }
         }
 

@@ -440,7 +440,7 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// validation message for other and comment
             /// </summary>
-            public const string OTHER_REASON_COMMENT_REQUIRED = "When 'Other' is selected for 'Reason Certification is not required', the comment is required.";
+            public const string OTHER_REASON_COMMENT_REQUIRED = "When 'Reason Certification is not required' is set to 'Other', the comment is required.";
 
             /// <summary>
             /// validation message for wrong status and cert not required
