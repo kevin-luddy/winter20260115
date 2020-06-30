@@ -3,7 +3,61 @@
     ViewBag.Title = "Proposal Certification Timeline";
  }
 
-<script type="text/javascript">
+    <script type="text/javascript">
+    // toggles element visibility based on Certification Being / Not Being Required
+    function toggleCertification() {
+        if ('@Model.DisplayCertificationReset' == 'True') {
+            $('.certificationNotRequiredResetButton').show();
+        } else {
+            $('.certificationNotRequiredResetButton').hide();
+        }
+
+        var isCertificationNotRequired = $('#isCertNotRequired')[0].checked || (ProposalCertificationTimelineWidget.isReadOnly() && '@Model.ReasonCertificationNotRequired.HasValue' == 'True');
+        if (isCertificationNotRequired) {
+            showCertNotRequired();
+
+        } else {
+            showCertRequired();
+        }
+
+        ProposalCertificationTimelineWidget.refreshModule();
+    };
+
+    // Show certification Not Required section
+    function showCertNotRequired() {
+        $('.certificationRequired').hide();
+        $('.certificationNotRequired').show();
+        toggleCertificationOtherComments();
+        $('button[name="complete-button"]').hide();
+
+        $('#CertificationTimelineComment').val('');
+        $('#AgreementDate').val('');
+        $('#CertificationDate').val('');
+        $('#CutOffDateUtilization').val('');
+        $('#daysToCertification').text('');
+    }
+
+    // Show certification Required section
+    function showCertRequired() {
+        $('.certificationRequired').show();
+        $('.certificationNotRequired').hide();
+        $('button[name="complete-button"]').show();
+        $('#ReasonCertificationNotRequired').val('');
+        $('#OtherReasonCommentCertification').val('');
+    }
+
+    // Shows / hides comments when Other is selected for Certification Not Required Reason
+    function toggleCertificationOtherComments() {
+        if ($('#ReasonCertificationNotRequired').val() == @((int)ReasonCertificationNotRequired.Other)) {
+            $('#certificationOtherCommentParent').show();
+        }
+        else {
+            $('#certificationOtherCommentParent').hide();
+            $('#OtherReasonCommentCertification').val('')
+        }
+
+        ProposalCertificationTimelineWidget.refreshModule();
+    }
 
     var CertificationTimelineWidgetConfig;
 
@@ -21,6 +75,8 @@
             $('input[placeholder="mm/dd/yyyy"]').each(function() {
                 $(this).attr('placeholder', '');
             });
+
+            $('.certificationRequiredCheckbox').hide();
         }
 
         var FormConfigs = [];
@@ -112,6 +168,25 @@
             ProposalCertificationTimelineWidget.Save(buttonPressed, url, false);
         };
 
+        // Save the page
+        ProposalCertificationTimelineWidget.ResetCertificationNeeded = function (buttonPressed) {
+            GenSession.confirmDialog(
+                "Reset Certification Not Required",
+                "Are you sure you want to reset the Certification Not Required setting? This will return the proposal to Submitted state.",
+                function () {
+                    var url = GenSession.CreateUrl({
+                        controller: '@WebConstants.Controller.CERTIFICATION_TIMELINE',
+                        action: '@WebConstants.Action.SAVE_CERTIFICATION_TIMELINE',
+                        id: ProposalIdWhenPageRendered
+                    });
+
+                    $('#ReasonCertificationNotRequired').val('');
+
+                    ProposalCertificationTimelineWidget.Save(buttonPressed, url, false);
+                },
+                null);
+        };
+
         ProposalCertificationTimelineWidget.SaveAndCompletePage = function (buttonPressed) {
             var url = GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.CERTIFICATION_TIMELINE',
@@ -122,7 +197,7 @@
             ProposalCertificationTimelineWidget.Save(buttonPressed, url, true);
         };
 
-        ProposalCertificationTimelineWidget.Save = function(buttonPressed, postUrl, hideButtons){
+        ProposalCertificationTimelineWidget.Save = function (buttonPressed, postUrl, hideButtons) {
             var dataToSend = ProposalCertificationTimelineWidget.getForm("certificationTimelineForm").getData();
             dataToSend = JSON.stringify(dataToSend);
 
@@ -135,7 +210,7 @@
                 performDirtyProcessing: true,
                 success: function (response) {
                     ProposalCertificationTimelineWidget.cleanDirty();
-                    if (hideButtons){
+                    if (hideButtons) {
                         $("form[name=certificationTimelineForm] div.buttons button[name=save-button]").hide();
                         $("form[name=certificationTimelineForm] div.buttons button[name=complete-button]").hide();
                     }
@@ -205,9 +280,9 @@
 
             var end = moment(certDate, "MM/DD/YYYY");
             var start = moment(agreementDate, "MM/DD/YYYY");
-            
+
             var diff = "";
-            
+
             if (end.isValid() && start.isValid()){
                 start = start.startOf('day');
                 end = end.startOf('day');
@@ -216,39 +291,50 @@
                 if (diffDays >= 0) {
                     diff = diffDays.toString();
                 }
-            } 
+            }
 
             // Using .text since this is a span
             $("#daysToCertification").text(diff);
         };
 
+        toggleCertification();
     });
-</script>
+    </script>
 
 <div id="certificationTimelineWidget" class="module full composite cert-content">
-    <div class="module-header-data">Certification Timeline</div>
+    <div class="module-header-data">
+        Certification Timeline
+        <span class="form-row" style="font-weight:bold; font-size: 85%; float: right;">
+            <input class="certificationRequiredCheckbox" type="checkbox" style="margin: 11px 3px 0 0" id="isCertNotRequired" onchange="toggleCertification()" value="@Model.ReasonCertificationNotRequired.HasValue" />
+            <label class="certificationRequiredCheckbox" for="isCertNeeded">Certification is <i>Not</i> Required</label>
+            <button class="ies certificationNotRequiredResetButton" type="button" onclick="ProposalCertificationTimelineWidget.ResetCertificationNeeded(this)">Reset Certification Not Required</button>
+        </span>
+
+    </div>
     <div class="module-content-data expanded-content">
-       @using(Html.BeginForm("", "", FormMethod.Post, new { id= "certificationTimelineForm",
-           name = "certificationTimelineForm"
-       }))
-       {
-            <div class="form-row">
+        @using (Html.BeginForm("", "", FormMethod.Post, new
+        {
+            id = "certificationTimelineForm",
+            name = "certificationTimelineForm"
+        }))
+        {
+            <div class="form-row certificationRequired">
                 <div class="form-label">
                     <span>Date of Agreement on Final Price (Handshake)</span>
                 </div>
                 <div class="form-element">
-                    <input id="AgreementDate" name="AgreementDate" onchange="ProposalCertificationTimelineWidget.UpdateCertDays()" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.AgreementDate" maxlength="10"/>
+                    <input id="AgreementDate" name="AgreementDate" onchange="ProposalCertificationTimelineWidget.UpdateCertDays()" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.AgreementDate" maxlength="10" />
                 </div>
-            </div>   
-            <div class="form-row">
+            </div>
+            <div class="form-row certificationRequired">
                 <div class="form-label">
                     <span>Date that the Certificate of CCoPD and any additional disclosures were delivered to the customer</span>
                 </div>
                 <div class="form-element">
-                    <input id="CertificationDate" name="CertificationDate" onchange="ProposalCertificationTimelineWidget.UpdateCertDays()" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.CertificationDate" maxlength="10"/>
+                    <input id="CertificationDate" name="CertificationDate" onchange="ProposalCertificationTimelineWidget.UpdateCertDays()" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.CertificationDate" maxlength="10" />
                 </div>
             </div>
-            <div class="form-row">
+            <div class="form-row certificationRequired">
                 <div class="form-label">
                     <span>The number of days between Certification and Agreement</span>
                 </div>
@@ -256,7 +342,7 @@
                     <span id="daysToCertification">@Model.DaysToCertification</span><span> Days (calculated)</span>
                 </div>
             </div>
-            <div class="form-row" data-proposal-type="standard">
+            <div class="form-row certificationRequired" data-proposal-type="standard">
                 <div class="form-label">
                     Were cut-off dates utilized?
                 </div>
@@ -264,12 +350,12 @@
                     @Html.DropDownListFor(model => model.CutOffDateUtilization, Model.CutOffDateUtilizationList, new { maxlength = 50, @class = "selection-width", @name = "CutOffDateUtilization" })
                 </div>
             </div>
-            <div class="form-row">
+            <div class="form-row certificationRequired">
                 <div class="form-label">
                     <span>Comments</span> (Explanations for exceeding 5 days)
                 </div>
             </div>
-            <div class="form-row">
+            <div class="form-row certificationRequired">
                 <div class="form-element CertificationTimelineCommentRow">
                     <div>
                         <textarea name="Comments" maxlength="2500" class="resize" id="CertificationTimelineComment">@Model.Comments</textarea>
@@ -277,6 +363,17 @@
                     <div class="comments" id="PrintCertificationTimelineComment">@Model.Comments</div>
                 </div>
             </div>
-       }
+            <div class="form-row  certificationNotRequired">
+                <div class="form-label">Reason Certification is not required *</div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.ReasonCertificationNotRequired, Model.ReasonCertificationNotRequiredList,
+                                                    new { maxlength = 50, @class = "selection-width", @name = "ReasonCertificationNotRequired", @onChange = "toggleCertificationOtherComments()" })
+                </div>
+            </div>
+            <div class="form-row  certificationNotRequired" id="certificationOtherCommentParent">
+                <div class="form-label">Other Reason *</div>
+                <div class="form-element">@Html.TextAreaFor(model => model.OtherReasonCommentCertification, new { @class = "resize", @maxLength = "2500" })</div>
+            </div>
+        }
     </div>
-</div>
+    </div>

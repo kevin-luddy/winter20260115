@@ -72,5 +72,10 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Other text for ReasonCertificationNotRequiredComment
         /// </summary>
         public string OtherReasonCommentCertification { get; set; }
+
+        /// <summary>
+        /// Should we display the "Reset" button
+        /// </summary>
+        public bool DisplayCertificationReset { get; set; }
     }
 }

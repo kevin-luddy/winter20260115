@@ -2814,7 +2814,7 @@ namespace GenTRAC.Tests.ActionLogic
                 Comments = "55"
             };
 
-            ProposalDto prop = sut.ValidateCertification(5, model, true);
+            sut.ValidateCertification(5, model, true);
         }
 
         /// <summary>
@@ -2957,7 +2957,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ReasonCertificationNotRequired = ReasonCertificationNotRequired.LostNotAwarded
             };
 
-            ProposalDto prop = sut.ValidateCertification(5, model, false);
+            sut.ValidateCertification(5, model, false);
         }
 
         /// <summary>
@@ -2988,7 +2988,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ReasonCertificationNotRequired = ReasonCertificationNotRequired.Other
             };
 
-            ProposalDto prop = sut.ValidateCertification(5, model, false);
+            sut.ValidateCertification(5, model, false);
         }
 
         /// <summary>
@@ -3019,7 +3019,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ReasonCertificationNotRequired = ReasonCertificationNotRequired.LostNotAwarded
             };
 
-            ProposalDto prop = sut.ValidateCertification(5, model, true);
+            sut.ValidateCertification(5, model, true);
         }
 
         /// <summary>
@@ -3049,7 +3049,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ReasonCertificationNotRequired = ReasonCertificationNotRequired.LostNotAwarded
             };
 
-            ProposalDto prop = sut.ValidateCertification(5, model, false);
+            sut.ValidateCertification(5, model, false);
         }
 
         /// <summary>
@@ -3080,7 +3080,7 @@ namespace GenTRAC.Tests.ActionLogic
                 OtherReasonCommentCertification = "Boooo"
             };
 
-            ProposalDto prop = sut.ValidateCertification(5, model, false);
+            sut.ValidateCertification(5, model, false);
         }
 
         #region PTM Revisions
