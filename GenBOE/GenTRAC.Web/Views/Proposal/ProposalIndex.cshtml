@@ -114,7 +114,15 @@
 			ProposalIndexWidget = new GenWidget(widgetConfig);
 
 			var widgetCounter = 0;
-			GenSession.ShowLoadingBox();
+            GenSession.ShowLoadingBox();
+
+            data = {};
+            data.isnewrevision = '@ViewBag.isnewrevision';
+            var proposalId = '@ViewBag.proposalid';
+            
+            if ('@ViewBag.isnewrevision' == 'True') {
+                proposalId = '@ViewBag.oldproposalid';
+            }
 
 			// create the composite widgets
 			$.ajax({
@@ -122,10 +130,11 @@
 				url: GenSession.CreateUrl({
 					controller: '@WebConstants.Controller.PROPOSAL',
 					action: '@WebConstants.Action.DISPLAY_PROPOSAL_INFORMATION',
-					id: '@ViewBag.proposalid'
+					id: proposalId
 				}),
 				contentType: 'application/json; charset=utf-8',
-				dataType: 'html',
+                dataType: 'html',
+                data: JSON.stringify(data),
 				success: function (response) {
 					$('#proposalInfoDataPlaceholder').html(response);
 					ProposalIndexWidget.ShouldHideLoadingBox();
@@ -141,10 +150,11 @@
 				url: GenSession.CreateUrl({
 					controller: '@WebConstants.Controller.PROPOSAL',
 					action: '@WebConstants.Action.DISPLAY_PROPOSAL_GENERAL_INFORMATION',
-					id: '@ViewBag.proposalid'
+					id: proposalId
 				}),
 				contentType: 'application/json; charset=utf-8',
 				dataType: 'html',
+                data: JSON.stringify(data),
 				success: function (response) {
 					$('#proposalGeneralInfoDataPlaceholder').html(response);
 					ProposalIndexWidget.ShouldHideLoadingBox();
@@ -162,10 +172,11 @@
 				url: GenSession.CreateUrl({
 					controller: '@WebConstants.Controller.PROPOSAL',
 					action: '@WebConstants.Action.DISPLAY_PROPOSAL_APPROVALS',
-					id: '@ViewBag.proposalid'
+					id: proposalId
 				}),
 				contentType: 'application/json; charset=utf-8',
 				dataType: 'html',
+                data: JSON.stringify(data),
 				success: function (response) {
 					$('#proposalApprovalsPlaceholder').html(response);
 					ProposalIndexWidget.ShouldHideLoadingBox();
@@ -181,7 +192,7 @@
 				url: GenSession.CreateUrl({
 					controller: '@WebConstants.Controller.PROPOSAL',
 					action: '@WebConstants.Action.DISPLAY_PROPOSAL_USER_INFORMATION',
-					id: '@ViewBag.proposalid'
+					id: proposalId
 				}),
 				contentType: 'application/json; charset=utf-8',
 				dataType: 'html',
@@ -257,12 +268,13 @@
 			// returns all of the data from the child widgets.
 			ProposalIndexWidget.GetData = function () {
 				var dataToSave = {};
-				dataToSave.proposalId = @ViewBag.proposalid;
+				dataToSave.proposalId = @(ViewBag.isnewrevision ? ViewBag.oldproposalid : ViewBag.proposalid);
 				dataToSave.ProposalInfo = ProposalInfoWidget.getForm("proposalInfoForm").getData();
 				dataToSave.ProposalInfo.ProposalClassText = $('#ProposalClass option:selected').text();
 				dataToSave.ProposalGeneralInfo = ProposalGeneralInformationWidget.getForm("proposalGeneralInfoForm").getData();
 				dataToSave.ProposalApprovalsInfo = ProposalApprovalsWidget.getForm("proposalApprovalsForm").getData();
-				dataToSave.ProposalUserInfo = ProposalUserInfoWidget.getForm("proposalUserInfoForm").getData();
+                dataToSave.ProposalUserInfo = ProposalUserInfoWidget.getForm("proposalUserInfoForm").getData();
+                dataToSave.IsNewRevision = '@ViewBag.isnewrevision';
 				return dataToSave;
 			};
 
@@ -291,7 +303,7 @@
 
         ProposalIndexWidget.ContinueValidateAndSaveFullPage = function (buttonPressed, dataToSend) {
             dataToSend = JSON.stringify(dataToSend);
-
+            
             // Validate the proposal information.
             ProposalIndexWidget.saveRequest({
                 type: 'POST',
@@ -421,7 +433,7 @@
         ProposalIndexWidget.SaveFullPage = function (buttonPressed, isRedirectHome) {
             var dataToSend = ProposalIndexWidget.GetData();
             dataToSend = JSON.stringify(dataToSend);
-
+                        
             // Make the call
             ProposalIndexWidget.saveRequest({
                 type: 'POST',
