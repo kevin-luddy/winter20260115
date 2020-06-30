@@ -35,27 +35,11 @@ AS
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
-**		1/5/17		Dusan				Removing Revisions and LMIS
-**		1/5/17		pattoncr			Removing Segment
-**      1/5/2017	twilson3			BOEJ-1706 Remove ICE fields
-**		01/19/17	n99040				added fields TechLead, IndependentReviewer, LeadEstimator, ProposalMgr, CoverSheetApprover, PricingVErification
-										removed fields [2014 Line of Business], and [2014 Program Area]
-**		01/19/24	n99040				removed input parameter @AddCurrentOrgMapping, and associated code(but there was no associated code!)
-**		02/02/17	tglick				added new fields [Revised Submittal Date], [AbsoluteValue]
-**      02/17/17	twilson3			BOEJ-1903 Add LOB Estimating Manager
-**										BOEJ-1905 Remove IS&GS from Total Price column
-**		3/22/2017	twilson3			BOEJ-1909 Remove Profit Tracking #
-**		4/12/2017	ranzalon			BOEJ-2096 Update Line Of Business to use correct table (Product Line)
-**		10/18/2017	Dusan				BOEJ-2652 Add Proposal Class field to the report
-**		3/19/2018	twilson3			BOEJ-3126 Add Forecast Tracking # to SSRS
-**		4/17/2018   Dusan				BOEJ-3388 Remove 2 IWTA columns and tweak how another one works
-**		5/10/2018	Dusan				BOEJ-3402 Fixed labels for Workflow Submitted Date
-**		5/30/2018	ranzalon			BOEJ-3405 - Adjusted naming of Actual Submittal Date
-**		6/06/2018	brunworg			BOEJ-3480 Renamed ProductLine and LineOfBusiness tables.
-**		8/30/2018	Dusan				BOEJ-3757 SSRS Updates w/ Post Proposal Changes
-**		9/27/2018	ranzalon			BOEJ-3741 - Classified Cost Volume
 **		8/5/2019	twilson3			BOEJ-4274 Add LOB Manager Comments
 **		4/22/2020	ranzalon			BOEJ-4535 Add Lead Estimator Approval Date
+**		6/30/2020	Dusan				BOEJ-4639 Add Revision Type
+**										BOEJ-4590 Add Material POC and Subcontracts POC
+**										BOEJ-4631 Add Reason Cert Not Required
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -200,13 +184,6 @@ FROM dbo.Proposal
 WHERE LEN(LEFT (IsNULL(NULLIF(ProposalTrackingID,''), '00-00000'), CHARINDEX ('-',IsNULL(NULLIF(ProposalTrackingID,''), '00-00000')) -1)) = 2/*To Support 2 Digit Dates*/
 GROUP BY LEFT(IsNULL(NULLIF(ProposalTrackingID,''), '00-00000'), 8)
 
-/*
-FOR TESTING:
-SELECT * FROM @tblProposalStatus
-SELECT * FROM @tblYear
-SELECT * FROM @tblLineOfBusiness
-SELECT * FROM @tblLeadEstimator
-*/
 SELECT V.[ProposalID]
       ,V.[DateCreated]
       ,V.[Year]
@@ -234,7 +211,6 @@ SELECT V.[ProposalID]
       ,V.[Estimated Ship Date]
       ,V.[Program Name]
       ,V.[Submitted Value]  
-	  
 	  , CAST (
 			CASE 
 				WHEN LEN (DATEPART(MM, V.[Lead Estimator Approval Date])) = 1 
@@ -253,7 +229,6 @@ SELECT V.[ProposalID]
     		 + ' ' +
 			RIGHT (V.[Lead Estimator Approval Date], 7) 
 		AS  [Lead Estimator Approval Date] 
-      
       , CAST (
 			CASE 
 				WHEN LEN (DATEPART(MM, V.[Workflow Completed Date])) = 1 
@@ -272,7 +247,6 @@ SELECT V.[ProposalID]
     		 + ' ' +
 			RIGHT (V.[Workflow Completed Date], 7) 
 		AS  [Workflow Completed Date]     
-      
       ,V.[LMLaborHours]
       ,V.[LMLaborCost]
       ,V.[SubcontractorCost]
@@ -326,6 +300,10 @@ SELECT V.[ProposalID]
 	 ,V.[Certification Date]
 	 ,V.[CutOff Date Utilization]
 	 ,V.[LOBMgrComment]
+	 ,V.ReasonCertificationNotRequired
+	 ,V.RevisionType
+	 ,V.MaterialPOC
+	 ,V.SubcontractsPOC
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(
