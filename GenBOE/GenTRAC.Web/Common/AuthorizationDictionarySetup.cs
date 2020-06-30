@@ -161,9 +161,9 @@ namespace GenTRAC.Web.Common
             AddActionToController(WebConstants.Action.SAVE_PROPOSAL_INFORMATION, PtmSecurityPage.Proposal, SecurityAuthorization.ReadUpdate, proposalControllerActions);
             AddActionToController(WebConstants.Action.DELETE_PROPOSAL, PtmSecurityPage.Proposal, SecurityAuthorization.CreateReadUpdateDelete, proposalControllerActions);
             AddActionToController(WebConstants.Action.DISPLAY_PROPOSAL_DETAILS, PtmSecurityPage.Proposal, SecurityAuthorization.Read, proposalControllerActions);
+            AddActionToController(WebConstants.Action.DISPLAY_PROPOSAL_REVISION_DETAILS, PtmSecurityPage.Proposal, SecurityAuthorization.CreateReadUpdateDelete, proposalControllerActions);
             AddActionToController(WebConstants.Action.PROPOSAL_FILTER_PROGRAM_AREA, PtmSecurityPage.Proposal, SecurityAuthorization.Read, proposalControllerActions);
             AddActionToController(WebConstants.Action.PROPOSAL_FILTER_CONTRACT_TYPES, PtmSecurityPage.Proposal, SecurityAuthorization.Read, proposalControllerActions);
-            AddActionToController(WebConstants.Action.SAVE_NEW_PROPOSAL_REVISION, PtmSecurityPage.Proposal, SecurityAuthorization.CreateReadUpdateDelete, proposalControllerActions);
             result.Add(WebConstants.Controller.PROPOSAL, proposalControllerActions);
         }
 

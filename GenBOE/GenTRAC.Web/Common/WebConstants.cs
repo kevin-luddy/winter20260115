@@ -167,7 +167,7 @@ namespace GenTRAC.Web.Common
             /// Display Who's Online Popup
             /// </summary>
             public const string WHOS_ONLINE = "DisplayWhosOnline";
-
+            
             #region Admin
 
             /// <summary>
@@ -321,7 +321,12 @@ namespace GenTRAC.Web.Common
             /// <summary>
             /// Displays the proposal details, the tab form that shows the proposal, checklist, and revisions
             /// </summary>
-            public const string DISPLAY_PROPOSAL_DETAILS = "DisplayProposalDetails";
+            public const string DISPLAY_PROPOSAL_DETAILS = "DisplayProposalDetails"; 
+
+            /// <summary>
+            /// Displays the proposal details for creating a Revision
+            /// </summary>
+            public const string DISPLAY_PROPOSAL_REVISION_DETAILS = "DisplayProposalRevisionDetails";
 
             /// <summary>
             /// Filter Program Areas based on selected Line of Business
@@ -527,15 +532,6 @@ namespace GenTRAC.Web.Common
             public const string COMPLETE_CERTIFICATION_TIMELINE = "CompleteCertificationTimeline";
 
             #endregion Certification Timeline
-
-            #region PTM Revisions
-
-            /// <summary>
-            /// Save new Proposal Revision
-            /// </summary>
-            public const string SAVE_NEW_PROPOSAL_REVISION = "SaveNewProposalRevision";
-
-            #endregion
         }
 
         #endregion Action

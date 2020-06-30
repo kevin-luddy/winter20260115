@@ -34,6 +34,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public string ProposalTitle { get; set; }
 
         /// <summary>
+        /// Gets or sets the Revised Proposal Title
+        /// </summary>
+        public string RevisedProposalTitle { get; set; }
+
+        /// <summary>
         /// Proposal status
         /// </summary>
         public ProposalStatus ProposalStatus { get; set; }

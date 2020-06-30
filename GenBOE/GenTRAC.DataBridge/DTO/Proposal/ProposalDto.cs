@@ -366,7 +366,7 @@ namespace GenTRAC.DataBridge.DTO
         /// 
         /// Reason why certification is not required
         /// </summary>
-        public int ReasonCertificationNotRequired { get; set; }
+        public int? ReasonCertificationNotRequired { get; set; }
 
         /// <summary>
         /// Comment when "Other" was selected for Certification Not Required Reason
