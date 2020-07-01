@@ -122,27 +122,20 @@ namespace GenBOE.ActionLogic.IO.Export
             #region Labor Hours Rollup Table
 
             bool byQuarter = false;
-            SdtElement laborHoursRollupTableTemplateElement;
+            SdtElement laborHoursRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_LaborHoursRollup); ;
+            SdtElement gfyLaborHoursRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_GfyLaborHoursRollup);
 
-            if (useGfy)
+            if (laborHoursRollupTableTemplateElement == null)
             {
-                laborHoursRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_GfyLaborHoursRollup);
-            }
-            else
-            {
-                laborHoursRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_LaborHoursRollup);
+                laborHoursRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_LaborHoursRollupByYear);
                 if (laborHoursRollupTableTemplateElement == null)
                 {
-                    laborHoursRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_LaborHoursRollupByYear);
-                    if (laborHoursRollupTableTemplateElement == null)
-                    {
-                        laborHoursRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_LaborHoursRollupByQuarter);
-                        byQuarter = true;
-                    }
+                    laborHoursRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_LaborHoursRollupByQuarter);
+                    byQuarter = true;
                 }
             }
             
-            if (laborHoursRollupTableTemplateElement != null)
+            if (laborHoursRollupTableTemplateElement != null || gfyLaborHoursRollupTableTemplateElement != null)
             {
                 if (selectedComponents.Contains(BoeCustomReportComponent.TaskSpreadTables))
                 {
@@ -160,7 +153,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                                                                             .Ancestors<TableRow>().FirstOrDefault(), BOEExporterConstants.FieldName_ResourceDescription) 
                                                                                             != null;
 
-                    Dictionary<int, List<LaborRollupByDateNew>> currentLMLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, useGfy, ElementOfCostType.LMLabor, null);
+                    Dictionary<int, List<LaborRollupByDateNew>> currentLMLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, false, ElementOfCostType.LMLabor, null);
                     SdtElement lmLaborHoursRollupTableElement = laborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement;
                     bool populated = false;
 
@@ -181,7 +174,20 @@ namespace GenBOE.ActionLogic.IO.Export
                         currentInsertionElement = lmLaborHoursRollupTableElement;
                     }
 
-                    Dictionary<int, List<LaborRollupByDateNew>> currentSubLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, useGfy, ElementOfCostType.Sub, null);
+                    if(gfyLaborHoursRollupTableTemplateElement != null)
+                    {
+                        Dictionary<int, List<LaborRollupByDateNew>> gfyCurrentLMLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, true, ElementOfCostType.LMLabor, null);
+                        SdtElement gfyLaborHoursRollupTableElement = gfyLaborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement;
+                        RollupSummaryByGroupByYearTableData gfyLmLaborSummaryRollupData = gfyCurrentLMLaborTaskRollupData.Convert();
+                        populated = this.PopulateRollupSummaryByGroupByYearTable(gfyLaborHoursRollupTableElement, "LM Labor " + hoursLabel + " Spread", gfyLmLaborSummaryRollupData, this.DefaultHoursFormat, false);
+                        if (populated)
+                        {
+                            currentInsertionElement.InsertAfterSelf(gfyLaborHoursRollupTableElement);
+                            currentInsertionElement = gfyLaborHoursRollupTableElement;
+                        }
+                    }
+
+                    Dictionary<int, List<LaborRollupByDateNew>> currentSubLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, false, ElementOfCostType.Sub, null);
                     SdtElement subLaborHoursRollupTableElement = laborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement;
                     populated = false;
 
@@ -202,8 +208,20 @@ namespace GenBOE.ActionLogic.IO.Export
                         currentInsertionElement = subLaborHoursRollupTableElement;
                     }
 
-                    Dictionary<int, List<LaborRollupByDateNew>> currentIWTALaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, useGfy, ElementOfCostType.IWTA, null);
-                    
+                    if (gfyLaborHoursRollupTableTemplateElement != null)
+                    {
+                        Dictionary<int, List<LaborRollupByDateNew>> gfyCurrentSubLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, true, ElementOfCostType.Sub, null);
+                        SdtElement gfySubHoursRollupTableElement = gfyLaborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement;
+                        RollupSummaryByGroupByYearTableData gfySubLaborSummaryRollupData = gfyCurrentSubLaborTaskRollupData.Convert();
+                        populated = this.PopulateRollupSummaryByGroupByYearTable(gfySubHoursRollupTableElement, "Subcontractor Labor " + hoursLabel + " Spread", gfySubLaborSummaryRollupData, this.DefaultHoursFormat, false);
+                        if (populated)
+                        {
+                            currentInsertionElement.InsertAfterSelf(gfySubHoursRollupTableElement);
+                            currentInsertionElement = gfySubHoursRollupTableElement;
+                        }
+                    }
+
+                    Dictionary<int, List<LaborRollupByDateNew>> currentIWTALaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, false, ElementOfCostType.IWTA, null);    
                     SdtElement iwtaLaborHoursRollupTableElement = laborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement;
                     populated = false;
 
@@ -224,10 +242,25 @@ namespace GenBOE.ActionLogic.IO.Export
                         currentInsertionElement = iwtaLaborHoursRollupTableElement;
                     }
 
+                    if (gfyLaborHoursRollupTableTemplateElement != null)
+                    {
+                        Dictionary<int, List<LaborRollupByDateNew>> gfyCurrentIwtaLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, true, ElementOfCostType.IWTA, null);
+                        SdtElement gfyIwtaHoursRollupTableElement = gfyLaborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement;
+                        RollupSummaryByGroupByYearTableData gfyIwtaLaborSummaryRollupData = gfyCurrentIwtaLaborTaskRollupData.Convert();
+                        populated = this.PopulateRollupSummaryByGroupByYearTable(gfyIwtaHoursRollupTableElement, "IWTA Labor " + hoursLabel + " Spread", gfyIwtaLaborSummaryRollupData, this.DefaultHoursFormat, false);
+
+                        if (populated)
+                        {
+                            currentInsertionElement.InsertAfterSelf(gfyIwtaHoursRollupTableElement);
+                            currentInsertionElement = gfyIwtaHoursRollupTableElement;
+                        }
+                    }
+
                     #endregion
                 }
 
                 this.RemoveElement(laborHoursRollupTableTemplateElement);
+                this.RemoveElement(gfyLaborHoursRollupTableTemplateElement);
             }
 
             #endregion
@@ -651,28 +684,20 @@ namespace GenBOE.ActionLogic.IO.Export
             #region Labor Hours Summary By Date Table
 
             bool byQuarter = false;
-            SdtElement laborHoursSummaryTableTemplateElement = null;
+            SdtElement laborHoursSummaryTableTemplateElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_LaborHoursSummaryByDate); ;
+            SdtElement gfyLaborHoursSummaryTableTemplateElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_GfyLaborHoursSummaryByDate);
 
-            if(useGfy)
+            if (laborHoursSummaryTableTemplateElement == null)
             {
-                laborHoursSummaryTableTemplateElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_GfyLaborHoursSummaryByDate);
-            }
-            else
-            {
-                laborHoursSummaryTableTemplateElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_LaborHoursSummaryByDate);
+                laborHoursSummaryTableTemplateElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_LaborHoursSummaryByQuarter);
+                byQuarter = true;
+            }        
 
-                if (laborHoursSummaryTableTemplateElement == null)
-                {
-                    laborHoursSummaryTableTemplateElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_LaborHoursSummaryByQuarter);
-                    byQuarter = true;
-                }
-            }            
-
-            if (laborHoursSummaryTableTemplateElement != null)
+            if (laborHoursSummaryTableTemplateElement != null || gfyLaborHoursSummaryTableTemplateElement != null)
             {
                 if (selectedComponents.Contains(BoeCustomReportComponent.BOESpreadSummaryTables) && taskElementCollection.Any())
-                {                    
-                    SdtElement currentInsertionElement = laborHoursSummaryTableTemplateElement;
+                {
+                    SdtElement currentInsertionElement = gfyLaborHoursSummaryTableTemplateElement != null ? gfyLaborHoursSummaryTableTemplateElement : laborHoursSummaryTableTemplateElement;
 
                     #region Use one Summary table for each element of cost
 
@@ -682,18 +707,18 @@ namespace GenBOE.ActionLogic.IO.Export
                     {
                         rollupTableTitles = new Dictionary<ElementOfCostType, string>
                             {
-                                { ElementOfCostType.LMLabor, "LM Labor EPs Summary" },
+                                { ElementOfCostType.IWTA, "IWTA Labor EPs Summary" },
                                 { ElementOfCostType.Sub, "Subcontractor Labor EPs Summary" },
-                                { ElementOfCostType.IWTA, "IWTA Labor EPs Summary" }
+                                { ElementOfCostType.LMLabor, "LM Labor EPs Summary" }
                             };
                     }
                     else
                     {
                         rollupTableTitles = new Dictionary<ElementOfCostType, string>
                             {
-                                { ElementOfCostType.LMLabor, "LM Labor Hours Summary" },
+                                { ElementOfCostType.IWTA, "IWTA Labor Hours Summary" },
                                 { ElementOfCostType.Sub, "Subcontractor Labor Hours Summary" },
-                                { ElementOfCostType.IWTA, "IWTA Labor Hours Summary" }
+                                { ElementOfCostType.LMLabor, "LM Labor Hours Summary" }
                             };
                     }
 
@@ -702,49 +727,69 @@ namespace GenBOE.ActionLogic.IO.Export
                         Collection<ResourceDTO> laborResources = resourcesByElementOfCost[entry.Key];
 
                         // compile the rollup data
-                        List<LaborRollupByDateNew> laborRollupData = this.GetRollupByYear(taskElementCollection, laborResources, null, useGfy);
-                        IList<RollupSummaryByYearTableRowData> laborHoursSummaryRollupData = laborRollupData.Convert();
-
-                        RollupSummaryByYearTableData rollupTableData = new RollupSummaryByYearTableData
-                        {
-                            SummaryTotalComplete = laborHoursSummaryRollupData.Sum(d => d.YearTotal),
-                            YearlyData = laborHoursSummaryRollupData
-                        };
-
-                        bool printTable = true;
-                        if(rollupTableData.SummaryTotalComplete==0)
-                        {
-                            //check for any nonzero values in case the table totals 0 using negative values
-                            ICollection<int> resourceIds = laborResources.Select(r => r.Id).ToList();
-                            ResourceSpreadDto nonzero = taskElementCollection.SelectMany(x => x.taskElementLabors)
-                                .Where(r => r.ResourceID.HasValue && resourceIds.Contains(r.ResourceID.Value) && r.SpreadType == SpreadType.Hours)
-                                .SelectMany(y => y.LaborSpreads)
-                                .FirstOrDefault(z => z.LaborSpreadValue != 0);
-                            if(nonzero == null)
-                            {
-                                printTable = false;
-                            }
-                        }
-
-                        if (printTable)//only print if there are hours
-                        {
-                            SdtElement laborHoursSummaryByDateTableElement = laborHoursSummaryTableTemplateElement.CloneNode(true) as SdtElement;
-
-                            if (this.PopulateRollupSummaryByYearTable(laborHoursSummaryByDateTableElement, entry.Value, rollupTableData, this.DefaultHoursFormat, byQuarter))
-                            {
-                                currentInsertionElement.InsertAfterSelf(laborHoursSummaryByDateTableElement);
-                                currentInsertionElement = laborHoursSummaryByDateTableElement;
-                            }
-                        }
+                        this.PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, gfyLaborHoursSummaryTableTemplateElement, currentInsertionElement, entry, false, true);
+                        this.PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, laborHoursSummaryTableTemplateElement, currentInsertionElement, entry, byQuarter, false);
                     }
                     
                     #endregion
                 }
 
                 this.RemoveElement(laborHoursSummaryTableTemplateElement);
+                this.RemoveElement(gfyLaborHoursSummaryTableTemplateElement);
             }
 
             #endregion
+        }
+
+        /// <summary>
+        /// Populate the Labor Hours Summary Table
+        /// </summary>
+        /// <param name="taskElementCollection">Task Elements</param>
+        /// <param name="laborResources">Labor Resources</param>
+        /// <param name="templateElement">Table template element</param>
+        /// <param name="currentInsertionElement">current insertion element</param>
+        /// <param name="entry">table title entry</param>
+        /// <param name="byQuarter">table by Quarter?</param>
+        /// <param name="useGfy">Use Govt Fiscal Year?</param>
+        private void PopulateLaborHoursSummaryTable(ICollection<BoeTaskElementDTO> taskElementCollection, Collection<ResourceDTO> laborResources, SdtElement templateElement, SdtElement currentInsertionElement, KeyValuePair<ElementOfCostType, string> entry, bool byQuarter, bool useGfy)
+        {
+            if (templateElement != null)
+            {
+                List<LaborRollupByDateNew> laborRollupData = this.GetRollupByYear(taskElementCollection, laborResources, null, useGfy);
+                IList<RollupSummaryByYearTableRowData> laborHoursSummaryRollupData = laborRollupData.Convert();
+
+                RollupSummaryByYearTableData rollupTableData = new RollupSummaryByYearTableData
+                {
+                    SummaryTotalComplete = laborHoursSummaryRollupData.Sum(d => d.YearTotal),
+                    YearlyData = laborHoursSummaryRollupData
+                };
+
+                bool printTable = true;
+                if (rollupTableData.SummaryTotalComplete == 0)
+                {
+                    //check for any nonzero values in case the table totals 0 using negative values
+                    ICollection<int> resourceIds = laborResources.Select(r => r.Id).ToList();
+                    ResourceSpreadDto nonzero = taskElementCollection.SelectMany(x => x.taskElementLabors)
+                        .Where(r => r.ResourceID.HasValue && resourceIds.Contains(r.ResourceID.Value) && r.SpreadType == SpreadType.Hours)
+                        .SelectMany(y => y.LaborSpreads)
+                        .FirstOrDefault(z => z.LaborSpreadValue != 0);
+                    if (nonzero == null)
+                    {
+                        printTable = false;
+                    }
+                }
+
+                if (printTable)//only print if there are hours
+                {
+                    SdtElement laborHoursSummaryByDateTableElement = templateElement.CloneNode(true) as SdtElement;
+
+                    if (this.PopulateRollupSummaryByYearTable(laborHoursSummaryByDateTableElement, entry.Value, rollupTableData, this.DefaultHoursFormat, byQuarter))
+                    {
+                        currentInsertionElement.InsertAfterSelf(laborHoursSummaryByDateTableElement);
+                        currentInsertionElement = laborHoursSummaryByDateTableElement;
+                    }
+                }
+            }
         }
 
         /// <summary>
