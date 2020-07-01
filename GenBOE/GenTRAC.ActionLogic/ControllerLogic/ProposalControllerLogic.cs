@@ -2243,78 +2243,6 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
-        /// Create and save a New Revision for the given proposal
-        /// </summary>
-        /// <param name="proposal">Proposal</param>
-        /// <returns>New Revision ID</returns>
-        public int? SaveNewRevision(ProposalDto proposal)
-        {
-            if(proposal == null)
-            {
-                throw new ArgumentNullException(nameof(proposal));
-            }
-
-            int? newRevisionId = -1;
-            
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SaveNewRevision", this.log))
-            {
-                string newRevisionSuffix;
-                string newRevisionTrackingNumber = this.GetRevisionTrackingNumber(proposal.TrackingNumber, out newRevisionSuffix);
-
-                ProposalDto newRevision = new ProposalDto()
-                {
-                    Id = -1,
-                    IsRevision = true,
-                    TrackingNumber = newRevisionTrackingNumber,
-                    BoeTool = proposal.BoeTool,
-                    BoeToolName = proposal.BoeToolName,
-                    ContractTypeGroup = proposal.ContractTypeGroup,
-                    ContractTypeIds = proposal.ContractTypeIds,
-                    CostElementTypeIds = proposal.CostElementTypeIds,
-                    Customer = proposal.Customer,
-                    CustomerType = proposal.CustomerType,
-                    ISGSRole = proposal.ISGSRole,
-                    IsScheduleProposal = proposal.IsScheduleProposal,
-                    ProgramAreaId = proposal.ProgramAreaId,
-                    OTISOpportunityID = proposal.OTISOpportunityID,
-                    ProposalLocation = proposal.ProposalLocation,
-                    ProposalLocationName = proposal.ProposalLocationName,
-                    PricingTool = proposal.PricingTool,
-                    PricingToolName = proposal.PricingToolName,
-                    LineOfBusinessID = proposal.LineOfBusinessID,
-                    ProgramName = proposal.ProgramName,
-                    ProposalClass = proposal.ProposalClass,
-                    ProposalStatus = proposal.ProposalStatus,
-                    ProposalTitle = this.GetNewRevisionProposalTitle(proposal.ProposalTitle, newRevisionSuffix),
-                    Request = proposal.Request,
-                    UpdateDateAssigned = proposal.UpdateDateAssigned,
-                    CreatedByUserId = this.UserMapper.GetActiveUser().Id,
-                    ChangeChecklist = proposal.ChangeChecklist,
-                    ProgramProposalStatus = proposal.ProgramProposalStatus,
-                    IsCostVolumeClassified = proposal.IsCostVolumeClassified,
-                    IsForecastProposal = proposal.IsForecastProposal,
-                    DocumentId = proposal.DocumentId,
-                    OtherReasonComment = string.Empty,
-                    Updateable = UpdateType.Upsert
-                };
-
-                newRevisionId = this.ProposalMediator.SaveProposal(newRevision);
-
-                if (newRevisionId.HasValue)
-                {
-                    ProposalApprovalsModelView proposalApprovalsInfo = this.GetDataForProposalApprovals(proposal.Id, true);
-                    ProposalPermissionDto pricerPermission = null;
-                    this.IsNewPricer(proposal.Id, proposalApprovalsInfo, out pricerPermission);
-
-                    this.SaveProposalUsers(proposalApprovalsInfo, this.GetDataForProposalUserInformation(newRevisionId), 
-                        newRevisionId.Value, pricerPermission, false);
-                }
-            }
-
-            return newRevisionId;
-        }
-
-        /// <summary>
         /// Get the new tracking number for the Revision
         /// Tracking number will be appended with "-PRx" where x is the number of the revision
         /// </summary>
@@ -2337,7 +2265,7 @@ namespace GenTRAC.ActionLogic
             {
                 // Second or later revision
                 // extract the revision numbers
-                ICollection<string> revisionNumberStrings = trackingNumberData.Where(x => x.TrackingNumber.StartsWith(baseTrackingNumber))
+                ICollection<string> revisionNumberStrings = trackingNumberData.Where(x => x.TrackingNumber.StartsWith(baseTrackingNumber) && x.TrackingNumber != baseTrackingNumber)
                     .Select(x => x.TrackingNumber.Substring(suffixIndex + REVISION_SUFFIX.Length)).ToCollection();
                 ICollection<int> revisionNumbers = new Collection<int>();
 
