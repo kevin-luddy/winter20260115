@@ -11,6 +11,7 @@ namespace GenTRAC.Tests.ActionLogic
     using System.Collections.ObjectModel;
     using System.ComponentModel.DataAnnotations;
     using System.Linq;
+    using System.Security.Principal;
     using System.Web.Mvc;
     using GenBOE.DataBridge.DTO;
     using GenTRAC.ActionLogic;
@@ -308,11 +309,76 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(user);
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(user);
 
-            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo);
+            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, false);
             Assert.IsNotNull(savedProposalId);
             Assert.AreEqual(proposalId, savedProposalId.Value);
             this.proposalPermissionMediator.Verify(x => x.SaveProposalPermissionDtos(It.IsAny<ICollection<ProposalPermissionDto>>()), Times.Once());
            // this.proposalPermissionMediator.Verify(x => x.SaveProposalPermissionDtos(It.Is<ICollection<ProposalPermissionDto>>(l => l.Count == 9)), Times.Once());
+        }
+        
+        /// <summary>
+        /// Test Save New Proposal when saving a new Revision
+        /// </summary>
+        [TestMethod]
+        public void SaveNewProposalTest_NewRevision()
+        {
+            var sut = this.CreateSystem();
+
+            int? proposalId = 1;
+            ProposalInformationModelView proposalInfo = new ProposalInformationModelView()
+            {
+                ProposalID = proposalId.Value,
+                ProposalTrackingNumber = "20-00001-PR1",
+                ProposalTitle = "New Revision Test-PR1",
+                AnticipatedDeliveryDate = "01/01/2020",
+                RevisedSubmittalDate = null,
+                RFPIssuedDate = "01/01/2020",
+                RFPReceivedDate = "01/01/2020",
+                IsScheduleProposal = false,
+                EstimatedProposalValue = "100",
+                ISGSRole = ISGSRole.Prime,
+                RequestType = 0
+            };
+
+            ProposalGeneralInformationModelView proposalGeneralInfo = new ProposalGeneralInformationModelView()
+            {
+                ProgramArea = "1",
+                LineOfBusiness = "1",
+                IsCostVolumeClassified = false
+            };
+
+            // setup all 9 user ids
+            string ntid = "test";
+            ProposalApprovalsModelView proposalApprovalsInfo = new ProposalApprovalsModelView()
+            {
+                LeadEstimatorNtid = ntid
+            };
+
+            ProposalUserInformationModelView proposalUserInfo = new ProposalUserInformationModelView()
+            {
+                AdditionalPricingResource1NtId = ntid,
+                AdditionalPricingResource2NtId = ntid,
+                BackupPricerNtId = ntid,
+                CaptureManagerNtid = ntid,
+                ContractsPOCNtId = ntid,
+                CostVolumeLeadNtid = ntid,
+                SupplyChainPOCMaterialsNtId = ntid,
+                SupplyChainPOCSubsNtId = ntid
+            };
+
+            UserDTO user = new UserDTO()
+            {
+                Id = 1
+            };
+
+            this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<ProposalDto>())).Returns(proposalId);
+            this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(user);
+            this.userMapper.Setup(x => x.GetActiveUser()).Returns(user);
+
+            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, true);
+            Assert.IsNotNull(savedProposalId);
+            Assert.AreEqual(proposalId, savedProposalId.Value);
+            this.proposalPermissionMediator.Verify(x => x.SaveProposalPermissionDtos(It.IsAny<ICollection<ProposalPermissionDto>>()), Times.Once());
         }
 
         /// <summary>
@@ -410,7 +476,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(user);
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(user);
 
-            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo);
+            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, false);
             Assert.IsNotNull(savedProposalId);
             Assert.AreEqual(proposalId, savedProposalId.Value);
             this.proposalPermissionMediator.Verify(x => x.SaveProposalPermissionDtos(It.IsAny<ICollection<ProposalPermissionDto>>()), Times.Once());
@@ -1406,6 +1472,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(proposal.RFPNumber, proposalInfo.RFPNumber);
             Assert.AreEqual(proposal.RFPIssuedDate.Value.ToString("MM/dd/yyyy"), proposalInfo.RFPIssuedDate);
             Assert.AreEqual(proposal.RFPReceivedDate.Value.ToString("MM/dd/yyyy"), proposalInfo.RFPReceivedDate);
+            Assert.IsFalse(proposalInfo.IsNewRevision);
 
             // test null dates (should never happen with proposal created through UI)
             fullProposal.RFPIssuedDate = null;
@@ -1565,7 +1632,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.pickListMapper.Setup(x => x.GetSelectListPickList(PickListEnum.LineOfBusiness, It.IsAny<int?>(), true, false)).Returns(new List<SelectListItem> { lob });
             this.pickListMapper.Setup(x => x.GetById(PickListEnum.ProgramArea, programArea.Id)).Returns(programArea);
 
-            ProposalGeneralInformationModelView proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(proposalId);
+            ProposalGeneralInformationModelView proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(proposalId, false);
 
             Assert.IsTrue(proposalGeneralInfo.BOEToolsList.Any());
             Assert.IsTrue(proposalGeneralInfo.ProposalLocationsList.Any());
@@ -1605,7 +1672,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLoader.Setup(x => x.GetById(proposalId.Value)).Returns(proposal);
             this.objectFactory.Setup(x => x.CreateFullProposal(proposal)).Returns(fullProposal);
 
-            proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(proposalId);
+            proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(proposalId, false);
 
             Assert.AreEqual(proposal.ProposalLocation, proposalGeneralInfo.ProposalLocation);
             Assert.AreEqual(proposal.ProposalLocationName, proposalGeneralInfo.ProposalLocationName);
@@ -1615,7 +1682,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(proposal.BoeToolName, proposalGeneralInfo.BOEToolName);
 
             // verify values for new proposal
-            proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(null);
+            proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(null, false);
             Assert.AreEqual(-1, proposalGeneralInfo.ProposalID);
             Assert.IsTrue(string.IsNullOrEmpty(proposalGeneralInfo.ProposalLocationName));
             Assert.AreEqual(BOETool.NotSet, proposalGeneralInfo.BOETool);
@@ -1629,6 +1696,11 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(ProgramProposalStatus.LMRetainedSSC, proposalGeneralInfo.ProgramProposalStatus);
             Assert.IsNull(proposalGeneralInfo.IsCCPDRequired);
             Assert.IsNull(proposalGeneralInfo.IsCostVolumeClassified);
+
+            // Assert CCoPD is cleared when getting data for a new revision
+            proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(proposalId, true);
+            Assert.IsNull(proposalGeneralInfo.IsCCPDRequired);
+            Assert.IsFalse(proposalGeneralInfo.IsCCPDReadOnly);
         }
 
         /// <summary>
@@ -1674,7 +1746,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.genBoePermissionsLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("TestNtid", "TestDisplayName") });
             this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<UserDTO>() { user });
 
-            ProposalApprovalsModelView proposalApprovalsInfo = sut.GetDataForProposalApprovals(proposalId);
+            ProposalApprovalsModelView proposalApprovalsInfo = sut.GetDataForProposalApprovals(proposalId, false);
             ProposalUserInformationModelView proposalUserInfo = sut.GetDataForProposalUserInformation(proposalId);
 
             Assert.IsTrue(proposalUserInfo.AdditionalPricingResourceTypeList.Any());
@@ -1707,6 +1779,58 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(proposalApprovalsInfo.LOBEstimatingLeadList.Any(x => x.Ntid == user.Ntid));
             Assert.IsTrue(proposalApprovalsInfo.CoverSheetApproverList.Any(x => x.Ntid == user.Ntid));
             Assert.IsTrue(proposalApprovalsInfo.IndependentReviewerList.Any(x => x.Ntid == user.Ntid));
+        }
+
+        /// <summary>
+        /// Test GetDataForProposalApprovals for a new revision
+        /// </summary>
+        [TestMethod]
+        public void TestGetDataForProposalApprovals_NewRevision()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            int? proposalId = 1;
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = proposalId.Value
+            };
+
+            UserDTO user = new UserDTO()
+            {
+                Id = 1,
+                Ntid = "testuser",
+                DisplayName = "User, Test (US)"
+            };
+
+            List<ProposalPermissionDto> permissions = new List<ProposalPermissionDto>();
+            for (int i = 1; i < 23; i++)
+            {
+                permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = (PtmRole)i, ProposalID = proposal.Id });
+            }
+
+            FullProposal fullProposal = new FullProposal(proposal);
+
+            this.proposalLoader.Setup(x => x.GetById(proposalId.Value)).Returns(proposal);
+            this.objectFactory.Setup(x => x.CreateFullProposal(proposal)).Returns(fullProposal);
+            this.userMapper.Setup(x => x.GetById(user.Id)).Returns(user);
+            this.retriever.Setup(x => x.GetProposalPermissions(proposalId.Value)).Returns(permissions);
+            this.genBoePermissionsLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("TestNtid", "TestDisplayName") });
+            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<UserDTO>() { user });
+
+            ProposalApprovalsModelView proposalApprovalsInfo = sut.GetDataForProposalApprovals(proposalId, true);
+
+            // Assert roles are set and not readonly
+            Assert.AreEqual(user.Ntid, proposalApprovalsInfo.LeadEstimatorNtid);
+            Assert.AreEqual(user.Ntid, proposalApprovalsInfo.PricingVerificationNtid);
+            Assert.AreEqual(user.Ntid, proposalApprovalsInfo.LOBEstimatingLeadMgrNtid);
+            Assert.AreEqual(user.Ntid, proposalApprovalsInfo.CoverSheetApproverNtid);
+            Assert.AreEqual(user.Ntid, proposalApprovalsInfo.IndependentReviewerNtid);
+            Assert.IsFalse(proposalApprovalsInfo.IsLeadEstimatorReadOnly);
+            Assert.IsFalse(proposalApprovalsInfo.IsPricingVerificationReadOnly);
+            Assert.IsFalse(proposalApprovalsInfo.IsLOBEstimatingLeadMgrReadOnly);
+            Assert.IsFalse(proposalApprovalsInfo.IsCoverSheetApproverReadOnly);
+            Assert.IsFalse(proposalApprovalsInfo.IsIndependentReviewerReadOnly);
         }
 
         /// <summary>
@@ -1834,14 +1958,14 @@ namespace GenTRAC.Tests.ActionLogic
             this.pickListMapper.Setup(x => x.GetSelectListPickList(PickListEnum.LineOfBusiness, null, true, false)).Returns(lobs);
             this.orgStructureDataMapper.Setup(x => x.GetAllLinesOfBusiness()).Returns(new List<PickListDto>() { lineOfBusiness1, lineOfBusiness2, lineOfBusiness3 });
 
-            ProposalGeneralInformationModelView proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(null);
+            ProposalGeneralInformationModelView proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(null, false);
 
             // should contain 3 active lines of business + default entry
             Assert.AreEqual(4, proposalGeneralInfo.LinesOfBusinessList.Count);
 
             // make 1 line of business inactive
             lineOfBusiness3.IsActive = false;
-            proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(null);
+            proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(null, false);
             lobs.RemoveAt(3);
 
             // should contain 2 active lines of business + default entry
@@ -1892,7 +2016,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.orgStructureDataMapper.Setup(x => x.GetLineOfBusinessById(lineOfBusiness.Id)).Returns(lineOfBusiness);
             this.orgStructureDataMapper.Setup(x => x.GetAllProgramAreas()).Returns(new List<PickListDto>() { programArea1, programArea2 });
 
-            ProposalGeneralInformationModelView proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(proposalId);
+            ProposalGeneralInformationModelView proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(proposalId, false);
 
             // should contain both program Area entries
             Assert.IsFalse(string.IsNullOrEmpty(proposalGeneralInfo.ProgramAreaHtmlOptions));
@@ -1902,7 +2026,7 @@ namespace GenTRAC.Tests.ActionLogic
             // make 1 program Area inactive
             programArea2.IsActive = false;
 
-            proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(proposalId);
+            proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(proposalId, false);
 
             // should contain first program Area but not second
             Assert.IsFalse(string.IsNullOrEmpty(proposalGeneralInfo.ProgramAreaHtmlOptions));
@@ -1957,7 +2081,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.pickListMapper.Setup(x => x.GetById(PickListEnum.LineOfBusiness, lineOfBusiness1.Id)).Returns(lineOfBusiness1);
             this.pickListMapper.Setup(x => x.GetById(PickListEnum.ProgramArea, programArea1.Id)).Returns(programArea1);
 
-            ProposalGeneralInformationModelView proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(proposalId);
+            ProposalGeneralInformationModelView proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(proposalId, false);
 
             // line of business should come back as the real value now even when inactive
             Assert.AreEqual("2", proposalGeneralInfo.LineOfBusiness);
@@ -2646,7 +2770,7 @@ namespace GenTRAC.Tests.ActionLogic
         public void C_SaveNewProposal_ExceptionTest1()
         {
             var sut = this.CreateSystem();
-            sut.SaveProposal(null, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView());
+            sut.SaveProposal(null, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), false);
         }
 
         /// <summary>
@@ -2657,7 +2781,7 @@ namespace GenTRAC.Tests.ActionLogic
         public void C_SaveNewProposal_ExceptionTest2()
         {
             var sut = this.CreateSystem();
-            sut.SaveProposal(new ProposalInformationModelView(), null, new ProposalApprovalsModelView(), new ProposalUserInformationModelView());
+            sut.SaveProposal(new ProposalInformationModelView(), null, new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), false);
         }
 
         /// <summary>
@@ -2668,7 +2792,7 @@ namespace GenTRAC.Tests.ActionLogic
         public void C_SaveNewProposal_ExceptionTest3()
         {
             var sut = this.CreateSystem();
-            sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView());
+            sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), false);
         }
 
         /// <summary>
@@ -2679,7 +2803,7 @@ namespace GenTRAC.Tests.ActionLogic
         public void C_SaveNewProposal_ExceptionTest4()
         {
             var sut = this.CreateSystem();
-            sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), null, null);
+            sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), null, null, false);
         }
 
         /// <summary>
@@ -3103,8 +3227,9 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(new UserDTO() { Id = 1 });
             ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>() { new ProposalPermissionDto() { UserId = 1, Role = PtmRole.Pricer } };
             this.retriever.Setup(x => x.GetProposalPermissions(proposal.Id)).Returns(permissions);
+            this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
 
-            sut.ValidateSaveNewRevision(proposal);
+            sut.ValidateSaveNewRevision(proposal.Id);
 
             // Nothing to assert, just shouldn't throw any exceptions
         }
@@ -3128,8 +3253,9 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(new UserDTO() { Id = 1 });
             ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>() { new ProposalPermissionDto() { UserId = 1, Role = PtmRole.Pricer } };
             this.retriever.Setup(x => x.GetProposalPermissions(proposal.Id)).Returns(permissions);
+            this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
 
-            sut.ValidateSaveNewRevision(proposal);
+            sut.ValidateSaveNewRevision(proposal.Id);
         }
 
         /// <summary>
@@ -3152,8 +3278,9 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(new UserDTO() { Id = 1 });
             ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>() { new ProposalPermissionDto() { UserId = 1, Role = PtmRole.Pricer } };
             this.retriever.Setup(x => x.GetProposalPermissions(proposal.Id)).Returns(permissions);
+            this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
 
-            sut.ValidateSaveNewRevision(proposal);
+            sut.ValidateSaveNewRevision(proposal.Id);
         }
 
         /// <summary>
@@ -3175,8 +3302,9 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(new UserDTO() { Id = 1 });
             ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>() { new ProposalPermissionDto() { UserId = 1, Role = PtmRole.Pricer } };
             this.retriever.Setup(x => x.GetProposalPermissions(proposal.Id)).Returns(permissions);
+            this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
 
-            sut.ValidateSaveNewRevision(proposal);
+            sut.ValidateSaveNewRevision(proposal.Id);
         }
         
         /// <summary>
@@ -3198,8 +3326,9 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(new UserDTO() { Id = 1 });
             ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>() { new ProposalPermissionDto() { UserId = 1, Role = PtmRole.CostVolumeLead } };
             this.retriever.Setup(x => x.GetProposalPermissions(proposal.Id)).Returns(permissions);
+            this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
 
-            sut.ValidateSaveNewRevision(proposal);
+            sut.ValidateSaveNewRevision(proposal.Id);
         }
 
         /// <summary>
@@ -3222,6 +3351,240 @@ namespace GenTRAC.Tests.ActionLogic
 
             this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Revised), Times.Once());
         }
+
+        /// <summary>
+        /// Test GetDataForProposalRevisionIndex
+        /// </summary>
+        [TestMethod]
+        public void TestGetDataForProposalRevisionIndex()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                UpdateDate = DateTime.Now,
+                TrackingNumber = "20-00001",
+                ProposalTitle = "Test",
+                ProposalStatus = ProposalStatus.Submitted
+            };
+
+            FullProposal fullProposal = new FullProposal(proposal);
+
+            this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
+            this.proposalLoader.Setup(x => x.GetAllSlim()).Returns(new Collection<ProposalDto>());
+            this.proposalLoader.Setup(x => x.IsProposalTitleUnique(-1, It.IsAny<string>())).Returns(true);
+            this.objectFactory.Setup(x => x.CreateFullProposal(proposal)).Returns(fullProposal);
+            this.securityInformation.Setup(x => x.IsDomesticUser(It.IsAny<IPrincipal>())).Returns(true);
+
+            ProposalIndexModelView result = sut.GetDataForProposalRevisionIndex(proposal.Id);
+
+            Assert.AreEqual(-1, result.ProposalID);
+            Assert.AreEqual(proposal.TrackingNumber + "-PR1", result.ProposalTrackingNumber);
+            Assert.AreEqual(proposal.ProposalTitle + "-PR1", result.ProposalTitle);
+            Assert.AreEqual(proposal.ProposalTitle, result.RevisedProposalTitle);
+            Assert.AreEqual(ProposalStatus.InProgress, result.ProposalStatus);
+            Assert.IsFalse(result.DisplayNewRevisionButton);
+            Assert.AreEqual("false", result.IsReadOnly);
+            Assert.IsTrue(result.IsUsUser);
+            Assert.AreEqual(SecurityAuthorization.None, result.PsaVisibility);
+            Assert.AreEqual(SecurityAuthorization.None, result.CertificationTimelineVisibility);
+        }
+
+        /// <summary>
+        /// Test GetDataForProposalRevisionIndex when making a revision off of a previous revision
+        /// Testing that the tracking number and title are updated to PR2 propoerly
+        /// </summary>
+        [TestMethod]
+        public void TestGetDataForProposalRevisionIndex_SecondRevision()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            string baseTrackingNumber = "20-00001";
+            string baseTitle = "Test";
+
+            ProposalDto oldProposal = new ProposalDto()
+            {
+                Id = 1,
+                UpdateDate = DateTime.Now,
+                TrackingNumber = baseTrackingNumber,
+                ProposalTitle = baseTitle,
+                ProposalStatus = ProposalStatus.Submitted
+            };
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                UpdateDate = DateTime.Now,
+                TrackingNumber = baseTrackingNumber + "-PR1",
+                ProposalTitle = baseTitle + "-PR1",
+                ProposalStatus = ProposalStatus.Submitted
+            };
+
+            FullProposal fullProposal = new FullProposal(proposal);
+
+            this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
+            this.proposalLoader.Setup(x => x.GetAllSlim()).Returns(new Collection<ProposalDto>() { oldProposal, proposal });
+            this.proposalLoader.Setup(x => x.IsProposalTitleUnique(-1, It.IsAny<string>())).Returns(true);
+            this.objectFactory.Setup(x => x.CreateFullProposal(proposal)).Returns(fullProposal);
+            this.securityInformation.Setup(x => x.IsDomesticUser(It.IsAny<IPrincipal>())).Returns(true);
+
+            ProposalIndexModelView result = sut.GetDataForProposalRevisionIndex(proposal.Id);
+
+            Assert.AreEqual(-1, result.ProposalID);
+            Assert.AreEqual(baseTrackingNumber + "-PR2", result.ProposalTrackingNumber);
+            Assert.AreEqual(baseTitle + "-PR2", result.ProposalTitle);
+        }
+
+        /// <summary>
+        /// Test GetDataForProposalRevisionIndex when making a revision off of a previous revision
+        /// Testing that the tracking number and title are updated to PR2 propoerly
+        /// </summary>
+        [TestMethod]
+        public void TestGetDataForProposalRevisionIndex_TitleNotUnique()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            string baseTrackingNumber = "20-00001";
+            string baseTitle = "Test";
+
+            ProposalDto oldProposal = new ProposalDto()
+            {
+                Id = 1,
+                UpdateDate = DateTime.Now,
+                TrackingNumber = baseTrackingNumber,
+                ProposalTitle = baseTitle,
+                ProposalStatus = ProposalStatus.Submitted
+            };
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                UpdateDate = DateTime.Now,
+                TrackingNumber = baseTrackingNumber + "-PR1",
+                ProposalTitle = baseTitle + "-PR1",
+                ProposalStatus = ProposalStatus.Submitted
+            };
+
+            FullProposal fullProposal = new FullProposal(proposal);
+
+            this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
+            this.proposalLoader.Setup(x => x.GetAllSlim()).Returns(new Collection<ProposalDto>() { oldProposal, proposal });
+            this.proposalLoader.Setup(x => x.IsProposalTitleUnique(-1, baseTitle + "-PR2")).Returns(false);
+            this.proposalLoader.Setup(x => x.IsProposalTitleUnique(-1, baseTitle + "-PR2_0")).Returns(true);
+            this.objectFactory.Setup(x => x.CreateFullProposal(proposal)).Returns(fullProposal);
+            this.securityInformation.Setup(x => x.IsDomesticUser(It.IsAny<IPrincipal>())).Returns(true);
+
+            ProposalIndexModelView result = sut.GetDataForProposalRevisionIndex(proposal.Id);
+
+            Assert.AreEqual(-1, result.ProposalID);
+            Assert.AreEqual(baseTrackingNumber + "-PR2", result.ProposalTrackingNumber);
+            Assert.AreEqual(baseTitle + "-PR2_0", result.ProposalTitle);
+        }
+
+        /// <summary>
+        /// Test GetDataForProposalRevisionInformation
+        /// </summary>
+        [TestMethod]
+        public void TestGetDataForProposalRevisionInformation()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            int? proposalId = 1;
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = proposalId.Value,
+                TrackingNumber = "20-00001",
+                ProposalTitle = "test revision",
+                UpdateDate = DateTime.Now,
+                DeliveryDate = new DateTime(2020, 1, 1),
+                ContractTypeGroup = 1,
+                ContractTypeIds = new List<int> { 1, 2 },
+                CostElementTypeIds = new List<int> { 1, 2, 3 },
+                Customer = "myCustomer",
+                CustomerType = CustomerType.InternationalCommercial,
+                EstimatedProposalValue = 400,
+                ISGSRole = ISGSRole.Prime,
+                IsScheduleProposal = false,
+                ProposalType = 2,
+                Request = 1,
+                ProposalClass = 1,
+                RFPNumber = "myRFP",
+                RFPIssuedDate = new DateTime(2020, 2, 2),
+                RFPReceivedDate = new DateTime(2020, 3, 3)
+            };
+
+            FullProposal fullProposal = new FullProposal(proposal);
+
+            this.proposalLoader.Setup(x => x.GetById(proposalId.Value)).Returns(proposal);
+            this.proposalLoader.Setup(x => x.GetAllSlim()).Returns(new Collection<ProposalDto>());
+            this.proposalLoader.Setup(x => x.IsProposalTitleUnique(-1, It.IsAny<string>())).Returns(true);
+            this.objectFactory.Setup(x => x.CreateFullProposal(proposal)).Returns(fullProposal);
+            this.pickListMapper.Setup(x => x.IsPickListActive(It.IsAny<PickListEnum>(), It.IsAny<int>())).Returns(true);
+            this.validationMethods.Setup(x => x.IsEnumActive(It.IsAny<CostElementType>())).Returns(true);
+            this.pickListMapper.Setup(x => x.GetSelectListPickList(PickListEnum.ProposalClass, 1, It.IsAny<bool>(), It.IsAny<bool>())).Returns(new List<SelectListItem>() { new SelectListItem() { Text = "a", Value = "a" } });
+            this.pickListMapper.Setup(x => x.GetChildren(PickListEnum.ContractType, 1)).Returns(new List<PickListDto>
+            {
+                new PickListDto { Id = 1, Text = "CPAF", IsActive = true },
+                new PickListDto { Id = 2, Text = "CPPF", IsActive = true },
+                new PickListDto { Id = 3, Text = "CPIF", IsActive = true }
+            });
+
+            ProposalInformationModelView result = sut.GetDataForProposalRevisionInformation(proposalId);
+
+            Assert.AreEqual(-1, result.ProposalID);
+            Assert.AreEqual(proposal.ProposalTitle + "-PR1", result.ProposalTitle);
+            Assert.AreEqual(proposal.TrackingNumber + "-PR1", result.ProposalTrackingNumber);
+            Assert.AreEqual(ProposalStatus.InProgress, result.ProposalStatus);
+
+            Assert.AreEqual(fullProposal.ContractTypeGroup, result.ContractTypeGroup);
+            Assert.AreEqual(fullProposal.ContractTypeIds, result.ContractType);
+            Assert.AreEqual(fullProposal.CostElementTypeIds, result.CostElements);
+            Assert.AreEqual(fullProposal.Customer, result.Customer);
+            Assert.AreEqual(fullProposal.CustomerType, result.CustomerType);
+            Assert.AreEqual(fullProposal.ISGSRole, result.ISGSRole);
+            Assert.AreEqual(fullProposal.IsScheduleProposal, result.IsScheduleProposal);
+            Assert.AreEqual(fullProposal.Request, result.RequestType);
+            Assert.AreEqual(fullProposal.ProposalClass, result.ProposalClass);
+            Assert.AreEqual("Not Set", result.ProposalTypeText);
+            Assert.AreEqual("Not Set", result.ProposalClassText);
+            Assert.AreEqual("Not Set", result.RequestTypeText);
+            Assert.AreEqual(fullProposal.DocumentId, result.DocumentId);
+            Assert.IsTrue(result.CostElementsList.Any());
+            Assert.IsTrue(result.CustomerTypesList.Any());
+            Assert.IsTrue(result.ISGSRolesList.Any());
+            Assert.IsTrue(result.ProposalClassesList.Any());
+
+            // all ContractType values are active, first 2 are selected
+            Assert.IsTrue(result.ContractTypeHtmlOptions.Contains(string.Format("<option value=\"{0}\" selected=\"selected\">{1}</option>",
+                1, "CPAF")));
+            Assert.IsTrue(result.ContractTypeHtmlOptions.Contains(string.Format("<option value=\"{0}\" selected=\"selected\">{1}</option>",
+                2, "CPPF")));
+            Assert.IsTrue(result.ContractTypeHtmlOptions.Contains(string.Format("<option value=\"{0}\">{1}</option>",
+                3, "CPIF")));
+            Assert.AreEqual(string.Empty, result.InactiveContractTypes);
+
+            // all CostElement values are active
+            Assert.IsTrue(result.CostElementsList.Where(x => x.ID == 1).Any());
+            Assert.IsTrue(result.CostElementsList.Where(x => x.ID == 2).Any());
+            Assert.IsTrue(result.CostElementsList.Where(x => x.ID == 3).Any());
+            Assert.AreEqual(string.Empty, result.InactiveCostElements);
+
+            // Assert the following fields were not set
+            Assert.AreEqual(0, result.ProposalType);
+            Assert.IsNull(result.RFPNumber);
+            Assert.IsNull(result.RFPIssuedDate);
+            Assert.IsNull(result.RFPReceivedDate);
+            Assert.IsNull(result.AnticipatedDeliveryDate);
+            Assert.IsNull(result.RevisedSubmittalDate);
+            Assert.IsNull(result.EstimatedProposalValue);
+
+            Assert.IsTrue(result.IsNewRevision);
+        }
+
+        [TestMethod]
+        public void TestSaveNewRevision
 
         #endregion
     }
