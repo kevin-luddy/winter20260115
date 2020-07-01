@@ -14,14 +14,19 @@ namespace GenTRAC.Models
     
     public partial class Attachment
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Attachment()
+        {
+            this.ProposalsAttachments = new HashSet<ProposalsAttachment>();
+        }
+    
         public int ID { get; set; }
         public System.DateTime UpdateDate { get; set; }
         public string Name { get; set; }
         public byte[] Contents { get; set; }
         public string UploadedBy { get; set; }
-        public int AttachmentType { get; set; }
-        public int ProposalID { get; set; }
     
-        public virtual Proposal Proposal { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProposalsAttachment> ProposalsAttachments { get; set; }
     }
 }
