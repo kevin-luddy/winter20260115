@@ -188,5 +188,6 @@
     <None Include="Release Scripts\Release 2019.2\Release 2019.2.sql" />
     <None Include="Release Scripts\Release 2019.4\Release 2019.4.sql" />
     <None Include="Object Scripts\Table Based Processing\DataMart.sql" />
+    <None Include="Object Scripts\X_Data Cleanup\DeleteOrphanedAttachments.sql" />
   </ItemGroup>
 </Project>
