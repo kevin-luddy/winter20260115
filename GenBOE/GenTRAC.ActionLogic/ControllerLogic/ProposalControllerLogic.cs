@@ -9,10 +9,13 @@ namespace GenTRAC.ActionLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
+    using System.Transactions;
+    using System.Web.Configuration;
     using System.Web.Mvc;
     using GenBOE.DataBridge.DTO;
     using GenTRAC.ActionLogic.Email;
@@ -954,6 +957,8 @@ namespace GenTRAC.ActionLogic
                 {
                     model.DisplayNewRevisionButton = false;
                 }
+
+                model.ReasonCertificationNotRequired = fullProposalDto.ReasonCertificationNotRequired;
             }
 
             return model;
@@ -1300,14 +1305,26 @@ namespace GenTRAC.ActionLogic
                     model.DaysToCertification = string.Empty;
                 }
 
+                model.ReasonCertificationNotRequired = fullProposalDto.ReasonCertificationNotRequired;
+                model.OtherReasonCommentCertification = fullProposalDto.OtherReasonComment;
+
                 model.CutOffDateUtilization = fullProposalDto.CutOffDateUtilization;
                 List<SelectListItem> cutoffList = EnumUtilities.GetListItemsForEnumSorted(typeof(CutOffDateUtilization), false, model.CutOffDateUtilization.ToString()).ToList();
+                List<SelectListItem> reasonCertificationNotRequiredList = EnumUtilities.GetListItemsForEnumSorted(typeof(ReasonCertificationNotRequired), false, model.ReasonCertificationNotRequired.ToString()).ToList();
 
                 // Add Blank to top of list
                 cutoffList.Insert(0, new SelectListItem { Text = string.Empty });
                 model.CutOffDateUtilizationList = cutoffList;
 
+                reasonCertificationNotRequiredList.Insert(0, new SelectListItem { Text = string.Empty });
+                model.ReasonCertificationNotRequiredList = reasonCertificationNotRequiredList;
+
                 model.Comments = fullProposalDto.Comments;
+                
+                // Read Only && certification not required reason set && has permissions to update it
+                model.DisplayCertificationReset = string.Equals(this.IsCertificationReadOnly(fullProposalDto).ToLower(), "true") 
+                                                                                    && model.ReasonCertificationNotRequired.HasValue
+                                                                                    && this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
             }
 
             return model;
@@ -2218,7 +2235,7 @@ namespace GenTRAC.ActionLogic
             UserDTO activeUser = this.GetActiveUser();
             FullProposal fullProposal = new FullProposal(proposal);
 
-            if(!fullProposal.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer)))
+            if (!fullProposal.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer)))
             {
                 validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED));
             }
@@ -2335,6 +2352,170 @@ namespace GenTRAC.ActionLogic
             while (!titleUnique);
 
             return newTitle;
+        }
+
+        #endregion
+
+        #region Certification Timeline Validate / Save
+
+        /// <summary>
+        /// Saves the certification timeline.
+        /// </summary>
+        /// <param name="proposalId">The proposal identifier.</param>
+        /// <param name="model">The model.</param>
+        public void SaveCertificationTimeline(int proposalId, ProposalCertificationTimelineModelView model)
+        {
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SaveCertificationTimeline", this.log))
+            {
+                this.ValidateCertification(proposalId, model, false);
+                ProposalDto proposal = this.ConvertCertificationModelToDto(proposalId, model, false);
+
+                using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+                {
+                    this.ProposalMediator.SaveProposal(proposal);
+                    scope.Complete();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Validates the certification timeline.
+        /// </summary>
+        /// <param name="proposalId">The proposal identifier.</param>
+        /// <param name="model">The model.</param>
+        /// <param name="isComplete">if set to <c>true</c> [is validating as complete].</param>
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "*")]
+        internal void ValidateCertification(int proposalId, ProposalCertificationTimelineModelView model, bool isComplete)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
+
+            if (model.ReasonCertificationNotRequired.HasValue && isComplete)
+            {
+                throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.COMPLETE_FAILED_PROPOSAL);
+            }
+
+            if (model.ReasonCertificationNotRequired.HasValue && proposal.ProposalStatus != ProposalStatus.Submitted)
+            {
+                throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CERTIFICATION_NOT_REQUIRED_WRONG_STATE);
+            }
+
+            if (model.ReasonCertificationNotRequired == ReasonCertificationNotRequired.Other && string.IsNullOrEmpty(model.OtherReasonCommentCertification))
+            {
+                throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.OTHER_REASON_COMMENT_REQUIRED);
+            }
+
+            if (!model.ReasonCertificationNotRequired.HasValue)
+            {
+                if (DateTime.TryParse(model.AgreementDate, out DateTime agreement) && DateTime.TryParse(model.AgreementDate, out DateTime certification))
+                {
+                    TimeSpan span = certification - agreement;
+
+                    if (span.TotalDays > 5.0)
+                    {
+                        // Comments are now required
+                        if (string.IsNullOrWhiteSpace(model.Comments))
+                        {
+                            throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.COMMENTS_REQUIRED);
+                        }
+                    }
+                }
+
+                if (isComplete)
+                {
+                    // validate that all 3 required fields are set
+                    if (!proposal.AgreementDate.HasValue)
+                    {
+                        throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.AGREEMENT_DATE_REQUIRED);
+                    }
+
+                    if (!proposal.CertificationDate.HasValue)
+                    {
+                        throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CERTIFICATION_DATE_REQUIRED);
+                    }
+
+                    if (!proposal.CutOffDateUtilization.HasValue)
+                    {
+                        throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CUTOFF_DATE_UTILIZATION_REQUIRED);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Converts the page viewmodel into the Dto
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <param name="model">Certification Model View</param>
+        /// <param name="isComplete">Are we completing the proposal</param>
+        /// <returns>Proposal DTO</returns>
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "*")]
+        internal ProposalDto ConvertCertificationModelToDto(int proposalId, ProposalCertificationTimelineModelView model, bool isComplete)
+        {
+            ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
+            proposal.Updateable = UpdateType.Upsert;
+
+            if (model.ReasonCertificationNotRequired.HasValue)
+            {
+                isComplete = true;
+                proposal.ReasonCertificationNotRequired = model.ReasonCertificationNotRequired;
+                proposal.OtherReasonComment = model.OtherReasonCommentCertification;
+
+                proposal.AgreementDate = null;
+                proposal.CertificationDate = null;
+                proposal.CutOffDateUtilization = null;
+                proposal.Comments = null;
+            }
+            else
+            {
+                // Marking the proposal required (when it was not required before) resets the flow
+                if (proposal.ReasonCertificationNotRequired.HasValue)
+                {
+                    proposal.ProposalStatus = ProposalStatus.Submitted;
+                    proposal.CertificationTimelineCompleted = null;
+                }
+
+                proposal.AgreementDate = DateTime.TryParse(model.AgreementDate, out DateTime agreementDate) ? (DateTime?)agreementDate : null;
+                proposal.CertificationDate = DateTime.TryParse(model.CertificationDate, out DateTime certificationDate) ? (DateTime?)certificationDate : null;
+
+                proposal.CutOffDateUtilization = model.CutOffDateUtilization;
+                proposal.Comments = model.Comments;
+
+                proposal.ReasonCertificationNotRequired = null;
+                proposal.OtherReasonComment = null;
+            }
+
+            if (isComplete)
+            {
+                proposal.ProposalStatus = ProposalStatus.Completed;
+                proposal.CertificationTimelineCompleted = DateTime.Now;
+            }
+
+            return proposal;
+        }
+
+        /// <summary>
+        /// Completes the certification timeline.
+        /// </summary>
+        /// <param name="proposalId">The proposal identifier.</param>
+        /// <param name="model">The model.</param>
+        public void CompleteCertificationTimeline(int proposalId, ProposalCertificationTimelineModelView model)
+        {
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.CompleteCertificationTimeline", this.log))
+            {
+                this.ValidateCertification(proposalId, model, true);
+                ProposalDto proposal = this.ConvertCertificationModelToDto(proposalId, model, true);
+
+                using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+                {
+                    this.ProposalMediator.SaveProposal(proposal);
+                    scope.Complete();
+                }
+            }
         }
 
         #endregion

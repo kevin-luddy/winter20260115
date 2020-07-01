@@ -90,7 +90,7 @@ namespace GenTRAC.Models
         public Nullable<System.DateTime> NoBidDate { get; set; }
         public bool IsRevision { get; set; }
         public string OtherReasonComment { get; set; }
-        public int ReasonCertificationNotRequired { get; set; }
+        public Nullable<int> ReasonCertificationNotRequired { get; set; }
     
         public virtual BOEToolLU BOEToolLU { get; set; }
         public virtual CustomerTypeLU CustomerTypeLU { get; set; }

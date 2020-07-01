@@ -362,11 +362,9 @@ namespace GenTRAC.DataBridge.DTO
         public bool IsRevision { get; set; }
 
         /// <summary>
-        /// ToDo: Dusan - replace w/ enum
-        /// 
         /// Reason why certification is not required
         /// </summary>
-        public int? ReasonCertificationNotRequired { get; set; }
+        public ReasonCertificationNotRequired? ReasonCertificationNotRequired { get; set; }
 
         /// <summary>
         /// Comment when "Other" was selected for Certification Not Required Reason

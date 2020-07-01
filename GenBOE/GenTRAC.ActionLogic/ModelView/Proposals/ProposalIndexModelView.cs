@@ -100,5 +100,10 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Determines whether to show or hide the + New Revision button
         /// </summary>
         public bool DisplayNewRevisionButton { get; set; }
+
+        /// <summary>
+        /// Reason Certification is Not Required
+        /// </summary>
+        public ReasonCertificationNotRequired? ReasonCertificationNotRequired { get; set; }
     }
 }

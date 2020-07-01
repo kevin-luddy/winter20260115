@@ -1272,4 +1272,19 @@ namespace IES.Common
         [Description("Other")]
         Other
     }
+
+    /// <summary>
+    /// Enumeration for Reason why Certification is Not Required
+    /// </summary>
+    public enum ReasonCertificationNotRequired
+    {
+        [Description("Lost / Not Awarded")]
+        LostNotAwarded = 1,
+
+        [Description("Awarded Under Threshold")]
+        AwardedUnderThreshold = 2,
+
+        [Description("Other")]
+        Other = 3
+    }
 }

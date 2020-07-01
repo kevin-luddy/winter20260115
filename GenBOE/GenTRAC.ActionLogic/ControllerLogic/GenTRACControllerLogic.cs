@@ -1648,13 +1648,23 @@ namespace GenTRAC.ActionLogic
         private bool DisplayExportButton(int proposalId, bool showNA, FullProposal fullProposalDto)
         {
             // Display export button?
-            bool exportUser = this.SecurityAccess.CurrentUserHasRole(PtmRole.Pricer, proposalId) ||
-                              this.SecurityAccess.CurrentUserHasRole(PtmRole.BackupPricer, proposalId) ||
-                              this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
+            bool exportUser = this.IsCurrentUserPricerOrBackupOrSysAdmin(proposalId);
 
             return exportUser &&
                 !showNA &&
                 this.ShouldChecklistPARSectionBeDisplayed(proposalId, fullProposalDto);
+        }
+
+        /// <summary>
+        /// Is current user in lead pricer, backup, or system admin role
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Does current user have lead pricer, backup, or system admin role</returns>
+        protected bool IsCurrentUserPricerOrBackupOrSysAdmin(int proposalId)
+        {
+            return this.SecurityAccess.CurrentUserHasRole(PtmRole.Pricer, proposalId) ||
+                              this.SecurityAccess.CurrentUserHasRole(PtmRole.BackupPricer, proposalId) ||
+                              this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
         }
     }
 }
