@@ -178,6 +178,9 @@
     <Compile Include="ProposalPricingReview.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="ProposalsAttachment.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="ProposalStatusLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>

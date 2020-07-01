@@ -47,8 +47,6 @@
           <Property Name="Name" Type="varchar" MaxLength="100" />
           <Property Name="Contents" Type="varbinary(max)" Nullable="false" />
           <Property Name="UploadedBy" Type="varchar" MaxLength="1000" Nullable="false" />
-          <Property Name="AttachmentType" Type="int" Nullable="false" />
-          <Property Name="ProposalID" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="BOEToolLU">
           <Key>
@@ -421,6 +419,16 @@ warning 6002: The table/view 'genTrac.dbo.ProposalPPRChecklistXREF' does not hav
           <Property Name="IsCurrent" Type="bit" Nullable="false" />
           <Property Name="ProposalChecklistTypeID" Type="int" />
         </EntityType>
+        <EntityType Name="ProposalsAttachments">
+          <Key>
+            <PropertyRef Name="ProposalId" />
+            <PropertyRef Name="AttachmentId" />
+          </Key>
+          <Property Name="ProposalId" Type="int" Nullable="false" />
+          <Property Name="AttachmentId" Type="int" Nullable="false" />
+          <Property Name="AttachmentType" Type="int" Nullable="false" />
+          <Property Name="IsRevisionReference" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="ProposalStatusLU">
           <Key>
             <PropertyRef Name="ProposalStatusID" />
@@ -590,6 +598,30 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK__Proposals__Attac__5B4E756C">
+          <End Role="Attachment" Type="Self.Attachment" Multiplicity="1" />
+          <End Role="ProposalsAttachments" Type="Self.ProposalsAttachments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Attachment">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProposalsAttachments">
+              <PropertyRef Name="AttachmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Proposals__Propo__5A5A5133">
+          <End Role="Proposal" Type="Self.Proposal" Multiplicity="1" />
+          <End Role="ProposalsAttachments" Type="Self.ProposalsAttachments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="ProposalsAttachments">
+              <PropertyRef Name="ProposalId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_ContractTypeGroupXREF_ContractType">
           <End Role="ContractTypeLU" Type="Self.ContractTypeLU" Multiplicity="1" />
           <End Role="ContractTypeGroupXREF" Type="Self.ContractTypeGroupXREF" Multiplicity="*" />
@@ -707,18 +739,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Principal>
             <Dependent Role="ProgramAreaLU">
               <PropertyRef Name="LineOfBusinessID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Proposal_Attachment">
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="1" />
-          <End Role="Attachment" Type="Self.Attachment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Proposal">
-              <PropertyRef Name="ProposalID" />
-            </Principal>
-            <Dependent Role="Attachment">
-              <PropertyRef Name="ProposalID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1233,6 +1253,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
         <Function Name="deleteAttachment" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="AttachmentID" Type="int" Mode="In" />
           <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
+          <Parameter Name="ProposalId" Type="int" Mode="In" />
+          <Parameter Name="DeleteAttachmentRecord" Type="bit" Mode="In" />
         </Function>
         <Function Name="deleteChecklist" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalID" Type="int" Mode="In" />
@@ -1376,6 +1398,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="UploadedBy" Type="varchar" Mode="In" />
           <Parameter Name="AttachmentType" Type="int" Mode="In" />
           <Parameter Name="ProposalID" Type="int" Mode="In" />
+          <Parameter Name="IsRevisionReference" Type="bit" Mode="In" />
         </Function>
         <Function Name="upsertContractType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
@@ -1549,6 +1572,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySet Name="ProposalCostElementXREF" EntityType="Self.ProposalCostElementXREF" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalLocationLU" EntityType="Self.ProposalLocationLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalPricingReview" EntityType="Self.ProposalPricingReview" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProposalsAttachments" EntityType="Self.ProposalsAttachments" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalStatusLU" EntityType="Self.ProposalStatusLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalTrackingGenerator" EntityType="Self.ProposalTrackingGenerator" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalTypeLU" EntityType="Self.ProposalTypeLU" Schema="dbo" store:Type="Tables" />
@@ -1627,6 +1651,14 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <End Role="CannedResponsesPAR" EntitySet="CannedResponsesPAR" />
             <End Role="ProposalPARChecklistXREF" EntitySet="ProposalPARChecklistXREF" />
           </AssociationSet>
+          <AssociationSet Name="FK__Proposals__Attac__5B4E756C" Association="Self.FK__Proposals__Attac__5B4E756C">
+            <End Role="Attachment" EntitySet="Attachment" />
+            <End Role="ProposalsAttachments" EntitySet="ProposalsAttachments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Proposals__Propo__5A5A5133" Association="Self.FK__Proposals__Propo__5A5A5133">
+            <End Role="Proposal" EntitySet="Proposal" />
+            <End Role="ProposalsAttachments" EntitySet="ProposalsAttachments" />
+          </AssociationSet>
           <AssociationSet Name="FK_ContractTypeGroupXREF_ContractType" Association="Self.FK_ContractTypeGroupXREF_ContractType">
             <End Role="ContractTypeLU" EntitySet="ContractTypeLU" />
             <End Role="ContractTypeGroupXREF" EntitySet="ContractTypeGroupXREF" />
@@ -1666,10 +1698,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <AssociationSet Name="FK_ProgramAreaLU_LineOfBusinessLU" Association="Self.FK_ProgramAreaLU_LineOfBusinessLU">
             <End Role="LineOfBusinessLU" EntitySet="LineOfBusinessLU" />
             <End Role="ProgramAreaLU" EntitySet="ProgramAreaLU" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Proposal_Attachment" Association="Self.FK_Proposal_Attachment">
-            <End Role="Proposal" EntitySet="Proposal" />
-            <End Role="Attachment" EntitySet="Attachment" />
           </AssociationSet>
           <AssociationSet Name="FK_Proposal_BOEToolLU" Association="Self.FK_Proposal_BOEToolLU">
             <End Role="BOEToolLU" EntitySet="BOEToolLU" />
@@ -2033,7 +2061,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="ApprovalEmailText" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
           <Property Name="RevisedSubmittalDate" Type="DateTime" Precision="0" />
           <Property Name="CCPDRequired" Type="Boolean" />
-          <NavigationProperty Name="Attachments" Relationship="genTRACModel.FK_Proposal_Attachment" FromRole="Proposal" ToRole="Attachment" />
           <Property Name="DocumentId" Type="Int32" />
           <Property Name="ForecastedTrackingID" Type="String" MaxLength="13" FixedLength="false" Unicode="false" />
           <Property Name="ForecastEmailSent" Type="Boolean" Nullable="false" />
@@ -2054,6 +2081,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="IsRevision" Type="Boolean" Nullable="false" />
           <Property Name="OtherReasonComment" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
           <Property Name="ReasonCertificationNotRequired" Type="Int32" />
+          <NavigationProperty Name="ProposalsAttachments" Relationship="genTRACModel.FK__Proposals__Propo__5A5A5133" FromRole="Proposal" ToRole="ProposalsAttachment" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -3147,6 +3175,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <FunctionImport Name="deleteAttachment">
             <Parameter Name="AttachmentID" Mode="In" Type="Int32" />
             <Parameter Name="UpdateDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ProposalId" Mode="In" Type="Int32" />
+            <Parameter Name="DeleteAttachmentRecord" Mode="In" Type="Boolean" />
           </FunctionImport>
           <FunctionImport Name="upsertAttachment" ReturnType="Collection(Int32)">
             <Parameter Name="AttachmentID" Mode="In" Type="Int32" />
@@ -3156,12 +3186,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="UploadedBy" Mode="In" Type="String" />
             <Parameter Name="AttachmentType" Mode="In" Type="Int32" />
             <Parameter Name="ProposalID" Mode="In" Type="Int32" />
+            <Parameter Name="IsRevisionReference" Mode="In" Type="Boolean" />
           </FunctionImport>
-          <EntitySet Name="Attachments" EntityType="genTRACModel.Attachment" />
-          <AssociationSet Name="FK_Proposal_Attachment" Association="genTRACModel.FK_Proposal_Attachment">
-            <End Role="Proposal" EntitySet="Proposals" />
-            <End Role="Attachment" EntitySet="Attachments" />
-          </AssociationSet>
           <EntitySet Name="genTracDatas" EntityType="genTRACModel.genTracData" />
           <FunctionImport Name="updateProposalForecastEmailSent">
             <Parameter Name="ProposalID" Mode="In" Type="Int32" />
@@ -3258,6 +3284,16 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           </AssociationSet>
           <EntitySet Name="DataMartEmployees" EntityType="genTRACModel.DataMartEmployee" />
           <FunctionImport Name="insertDataMartEmployees" />
+          <EntitySet Name="ProposalsAttachments" EntityType="genTRACModel.ProposalsAttachment" />
+          <AssociationSet Name="FK__Proposals__Propo__5A5A5133" Association="genTRACModel.FK__Proposals__Propo__5A5A5133">
+            <End Role="Proposal" EntitySet="Proposals" />
+            <End Role="ProposalsAttachment" EntitySet="ProposalsAttachments" />
+          </AssociationSet>
+          <EntitySet Name="Attachments" EntityType="genTRACModel.Attachment" />
+          <AssociationSet Name="FK__Proposals__Attac__5B4E756C" Association="genTRACModel.FK__Proposals__Attac__5B4E756C">
+            <End Role="Attachment" EntitySet="Attachments" />
+            <End Role="ProposalsAttachment" EntitySet="ProposalsAttachments" />
+          </AssociationSet>
         </EntityContainer>
         <ComplexType Name="CreatePARChecklistReport_Result">
           <Property Type="String" Name="QuestionNumber" Nullable="true" MaxLength="50" />
@@ -3428,31 +3464,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Type="Int32" Name="CustomerTypeId" Nullable="false" />
           <Property Type="DateTime" Name="ChecklistCompleteDate" Nullable="true" />
         </ComplexType>
-        <EntityType Name="Attachment">
-          <Key>
-            <PropertyRef Name="ID" />
-          </Key>
-          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="Contents" Type="Binary" Nullable="false" MaxLength="Max" FixedLength="false" />
-          <Property Name="UploadedBy" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="AttachmentType" Type="Int32" Nullable="false" />
-          <Property Name="ProposalID" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK_Proposal_Attachment" FromRole="Attachment" ToRole="Proposal" />
-        </EntityType>
-        <Association Name="FK_Proposal_Attachment">
-          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
-          <End Type="genTRACModel.Attachment" Role="Attachment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Proposal">
-              <PropertyRef Name="ProposalID" />
-            </Principal>
-            <Dependent Role="Attachment">
-              <PropertyRef Name="ProposalID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="genTracData">
           <Key>
             <PropertyRef Name="genTracProposalID" />
@@ -3730,6 +3741,53 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="BUS_AREA_SHORT_NM" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
           <Property Name="BUS_AREA_LONG_NM" Type="String" MaxLength="55" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="ProposalsAttachment">
+          <Key>
+            <PropertyRef Name="ProposalId" />
+            <PropertyRef Name="AttachmentId" />
+          </Key>
+          <Property Name="ProposalId" Type="Int32" Nullable="false" />
+          <Property Name="AttachmentId" Type="Int32" Nullable="false" />
+          <Property Name="AttachmentType" Type="Int32" Nullable="false" />
+          <Property Name="IsRevisionReference" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK__Proposals__Propo__5A5A5133" FromRole="ProposalsAttachment" ToRole="Proposal" />
+          <NavigationProperty Name="Attachment" Relationship="genTRACModel.FK__Proposals__Attac__5B4E756C" FromRole="ProposalsAttachment" ToRole="Attachment" />
+        </EntityType>
+        <Association Name="FK__Proposals__Propo__5A5A5133">
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
+          <End Type="genTRACModel.ProposalsAttachment" Role="ProposalsAttachment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="ProposalsAttachment">
+              <PropertyRef Name="ProposalId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Attachment">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Contents" Type="Binary" Nullable="false" MaxLength="Max" FixedLength="false" />
+          <Property Name="UploadedBy" Type="String" Nullable="false" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ProposalsAttachments" Relationship="genTRACModel.FK__Proposals__Attac__5B4E756C" FromRole="Attachment" ToRole="ProposalsAttachment" />
+        </EntityType>
+        <Association Name="FK__Proposals__Attac__5B4E756C">
+          <End Type="genTRACModel.Attachment" Role="Attachment" Multiplicity="1" />
+          <End Type="genTRACModel.ProposalsAttachment" Role="ProposalsAttachment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Attachment">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProposalsAttachment">
+              <PropertyRef Name="AttachmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -4253,19 +4311,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <FunctionImportMapping FunctionImportName="upsertRequestTypes" FunctionName="genTRACModel.Store.upsertRequestTypes" />
           <FunctionImportMapping FunctionImportName="deleteAttachment" FunctionName="genTRACModel.Store.deleteAttachment" />
           <FunctionImportMapping FunctionImportName="upsertAttachment" FunctionName="genTRACModel.Store.upsertAttachment" />
-          <EntitySetMapping Name="Attachments">
-            <EntityTypeMapping TypeName="genTRACModel.Attachment">
-              <MappingFragment StoreEntitySet="Attachment">
-                <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
-                <ScalarProperty Name="AttachmentType" ColumnName="AttachmentType" />
-                <ScalarProperty Name="UploadedBy" ColumnName="UploadedBy" />
-                <ScalarProperty Name="Contents" ColumnName="Contents" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
-                <ScalarProperty Name="ID" ColumnName="ID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="genTracDatas">
             <EntityTypeMapping TypeName="genTRACModel.genTracData">
               <MappingFragment StoreEntitySet="genTracData">
@@ -4453,6 +4498,27 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="insertDataMartEmployees" FunctionName="genTRACModel.Store.insertDataMartEmployees" />
+          <EntitySetMapping Name="ProposalsAttachments">
+            <EntityTypeMapping TypeName="genTRACModel.ProposalsAttachment">
+              <MappingFragment StoreEntitySet="ProposalsAttachments">
+                <ScalarProperty Name="IsRevisionReference" ColumnName="IsRevisionReference" />
+                <ScalarProperty Name="AttachmentType" ColumnName="AttachmentType" />
+                <ScalarProperty Name="AttachmentId" ColumnName="AttachmentId" />
+                <ScalarProperty Name="ProposalId" ColumnName="ProposalId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Attachments">
+            <EntityTypeMapping TypeName="genTRACModel.Attachment">
+              <MappingFragment StoreEntitySet="Attachment">
+                <ScalarProperty Name="UploadedBy" ColumnName="UploadedBy" />
+                <ScalarProperty Name="Contents" ColumnName="Contents" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
