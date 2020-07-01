@@ -363,8 +363,10 @@
                     <div class="comments" id="PrintCertificationTimelineComment">@Model.Comments</div>
                 </div>
             </div>
-            <div class="form-row  certificationNotRequired">
-                <div class="form-label">Reason Certification is not required *</div>
+            <div class="form-row certificationNotRequired">
+                <div class="form-label">
+                    <span helptext="In those instances when proposal certification is not required, choose the most appropriate reason from the drop down list. Upon selection of the applicable reason certification is not required, your proposal will be set to a “Completed” status.">Reason Certification is Not Required *</span>
+                </div>
                 <div class="form-element">
                     @Html.DropDownListFor(model => model.ReasonCertificationNotRequired, Model.ReasonCertificationNotRequiredList,
                                                     new { maxlength = 50, @class = "selection-width", @name = "ReasonCertificationNotRequired", @onChange = "toggleCertificationOtherComments()" })
