@@ -333,18 +333,18 @@
     <div class="module-content-data expanded-content">
         @using (Html.BeginForm("", "", FormMethod.Post, new { id = "ApprovalForm", name = "ApprovalForm" }))
         {
-        if (Model.ApproverRole == PtmRole.Pricer && ViewBag.HasAccessToSetNoBid == true)
+        if (Model.ApproverRole == PtmRole.Pricer && ViewBag.HasAccessToSetNoBid)
         {
             if (Model.IsNoBid)
             {
             <div id="revert-no-bid-container">
-                <button type="button" class="ies" title="Revert the status of this Proposal to In Progress" onclick="ApproverSectionWidget.revertNoBid()">Revert to In Progress</button>
+                <button type="button" class="ies" title="Revert the status of this Proposal to In Progress" onclick="ApproverSectionWidget.revertNoBid()">Revert from No Bid to In Progress</button>
             </div>
             }
             else
             {
             <div id="no-bid-container">
-                <button type="button" class="ies" title="Mark this Proposal as No Bid" onclick="ApproverSectionWidget.setNoBid()">No Bid</button>
+                <button type="button" class="ies" title="Mark this Proposal as No Bid" onclick="ApproverSectionWidget.setNoBid()" @(ViewBag.IsNoBidEnabled ? string.Empty : "disabled")>No Bid</button>
             </div>
             }
         }
