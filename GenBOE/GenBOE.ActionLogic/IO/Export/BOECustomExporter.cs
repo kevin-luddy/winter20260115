@@ -475,7 +475,6 @@ namespace GenBOE.ActionLogic.IO.Export
 
                         // Called twice, once for Calendar Year table, once for Govt Fiscal Year version of the table since both can be included
                         this.ProcessLaborHoursSummaryTable(boeContainer, taskElementCollection, resourcesByElementOfCost, selectedComponents, FullObjectHelper.ShowEquivalentPersonsOption && exportInputs.Workspace.IsUsingEquivalentPerson, false);
-                        this.ProcessLaborHoursSummaryTable(boeContainer, taskElementCollection, resourcesByElementOfCost, selectedComponents, FullObjectHelper.ShowEquivalentPersonsOption && exportInputs.Workspace.IsUsingEquivalentPerson, true);
 
                         // Called twice, once for Calendar Year table, once for Govt Fiscal Year version of the table since both can be included
                         List<LaborRollupByDateNew> laborTasksRollupCostData = this.ProcessLaborCostSummaryTable(boeContainer, exportInputs, boe, taskElementCollection, resourcesByElementOfCost, selectedComponents, false);
@@ -1427,7 +1426,6 @@ namespace GenBOE.ActionLogic.IO.Export
                     this.ProcessLaborTaskCustomFields(containerElement, laborTaskElement, exportInputs.CustomFields, selectedComponents, exportInputs);
                     this.ProcessLaborTaskResourceTable(containerElement, laborTaskElement, allLaborTaskElements, exportInputs.CustomFields, selectedComponents, exportInputs);
                     this.ProcessLaborTaskHoursRollupTable(containerElement, laborTaskElement, allLaborTaskElements, selectedComponents, exportInputs, boeExportModelView, true);
-                    this.ProcessLaborTaskHoursRollupTable(containerElement, laborTaskElement, allLaborTaskElements, selectedComponents, exportInputs, boeExportModelView, false);
                     this.ProcessLaborTaskCostSpreadRollupTable(containerElement, exportInputs, boeExportModelView, laborTaskElement, allLaborTaskElements, selectedComponents, true);
                     this.ProcessLaborTaskCostSpreadRollupTable(containerElement, exportInputs, boeExportModelView, laborTaskElement, allLaborTaskElements, selectedComponents, false);
                     this.ProcessLaborTaskResources(containerElement, exportInputs, laborTaskElement, allLaborTaskElements, selectedComponents, exportBoe.IsMultiClinWbs);
@@ -3529,7 +3527,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             bool populated;
 
-            if (data.GroupData != null && data.GroupData.Any())
+            if (data.GroupData != null && data.GroupData.Any() && tableContainerElement != null)
             {
                 /*
                  * SdtBlock (tag = "BOECostSummaryTable")
