@@ -105,5 +105,15 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Reason Certification is Not Required
         /// </summary>
         public ReasonCertificationNotRequired? ReasonCertificationNotRequired { get; set; }
+
+        /// <summary>
+        /// Whether creating a new Revision
+        /// </summary>
+        public bool IsNewRevision { get; set; }
+
+        /// <summary>
+        /// ID of the revised proposal if this proposal is a revision
+        /// </summary>
+        public int? RevisedProposalId { get; set; }
     }
 }

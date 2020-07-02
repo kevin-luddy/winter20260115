@@ -89,27 +89,14 @@ namespace GenTRAC.Web.Controllers
         /// <returns>create new proposal view</returns>
         public ViewResult DisplayProposalIndex(int? proposalId, bool? isNewRevision, int? oldProposalId)
         {
-            if (proposalId.HasValue)
-            {
-                this.ViewBag.proposalid = proposalId.Value.ToString();
-            }
-            else
-            {
-                this.ViewBag.proposalid = "null";
-            }
-
             ProposalIndexModelView model;
 
             if (isNewRevision.HasValue && isNewRevision.Value)
             {
-                this.ViewBag.oldproposalid = oldProposalId.Value.ToString();
-                this.ViewBag.isnewrevision = true;
                 model = this.proposalLogic.GetDataForProposalRevisionIndex(oldProposalId.Value);
             }
             else
             {
-                this.ViewBag.oldproposalid = "null";
-                this.ViewBag.isnewrevision = false;
                 model = this.proposalLogic.GetDataForProposalIndex(proposalId);
             }
  
@@ -120,31 +107,9 @@ namespace GenTRAC.Web.Controllers
         /// Display proposal details tabs
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
-        /// <param name="oldProposalId">ID of the old proposal if creating a new Revision</param>
-        /// <param name="isNewRevision">If displaying Proposal Index for creating a new Revision</param>
         /// <returns>create new proposal view</returns>
-        public ActionResult DisplayProposalDetails(int? proposalId, int? oldProposalId, bool? isNewRevision = false)
+        public ActionResult DisplayProposalDetails(int? proposalId)
         {
-            if (proposalId.HasValue)
-            {
-                this.ViewBag.proposalid = proposalId.Value.ToString();
-            }
-            else
-            {
-                this.ViewBag.proposalid = "null";
-            }
-
-            if (isNewRevision.HasValue && isNewRevision.Value)
-            {
-                this.ViewBag.oldproposalid = oldProposalId.Value.ToString();
-                this.ViewBag.isnewrevision = true;
-            }
-            else
-            {
-                this.ViewBag.oldproposalid = "null";
-                this.ViewBag.isnewrevision = false;
-            }
-
             ProposalIndexModelView model = this.proposalLogic.GetDataForProposalIndex(proposalId);
             return this.View(WebConstants.View.PROPOSAL_DETAILS, model); // this is for the tabs
         }
@@ -157,10 +122,6 @@ namespace GenTRAC.Web.Controllers
         public ActionResult DisplayProposalRevisionDetails(int proposalId)
         {
             this.proposalLogic.ValidateSaveNewRevision(proposalId);
-
-            this.ViewBag.proposalid = "null";
-            this.ViewBag.oldproposalid = proposalId;
-            this.ViewBag.isnewrevision = true;
 
             ProposalIndexModelView model = this.proposalLogic.GetDataForProposalRevisionIndex(proposalId);
             return this.View(WebConstants.View.PROPOSAL_DETAILS, model);

@@ -116,6 +116,11 @@ namespace GenTRAC.ActionLogic
         public const string PROPOSAL_USER_INFO_FORM = "proposalUserInfoForm";
 
         /// <summary>
+        /// Suffix for Proposal Revision Tracking Numbers
+        /// </summary>
+        public const string REVISION_SUFFIX = "-PR";
+        
+        /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="inSecurityAccess">Security Access</param>
@@ -846,6 +851,9 @@ namespace GenTRAC.ActionLogic
                 }
 
                 model.ReasonCertificationNotRequired = fullProposalDto.ReasonCertificationNotRequired;
+                
+                model.RevisedProposalId = null;
+                model.IsNewRevision = false;
             }
 
             return model;
@@ -880,6 +888,8 @@ namespace GenTRAC.ActionLogic
                 model.ProposalTitle = this.GetNewRevisionProposalTitle(fullProposalDto.ProposalTitle, newRevisionSuffix);
                 model.ProposalStatus = ProposalStatus.InProgress;
                 model.DisplayNewRevisionButton = false;
+                model.RevisedProposalId = proposalId;
+                model.IsNewRevision = true;
             }
 
             return model;
