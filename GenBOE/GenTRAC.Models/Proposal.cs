@@ -22,9 +22,9 @@ namespace GenTRAC.Models
             this.ProposalPPRChecklistXREFs = new HashSet<ProposalPPRChecklistXREF>();
             this.ProposalUserRoles = new HashSet<ProposalUserRole>();
             this.CostElementLUs = new HashSet<CostElementLU>();
-            this.Attachments = new HashSet<Attachment>();
             this.ContractTypeLUs = new HashSet<ContractTypeLU>();
             this.ProposalChecklists = new HashSet<ProposalChecklist>();
+            this.ProposalsAttachments = new HashSet<ProposalsAttachment>();
         }
     
         public int ProposalID { get; set; }
@@ -113,8 +113,6 @@ namespace GenTRAC.Models
         public virtual ICollection<ProposalUserRole> ProposalUserRoles { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CostElementLU> CostElementLUs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Attachment> Attachments { get; set; }
         public virtual ContractTypeGroupLU ContractTypeGroupLU { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ContractTypeLU> ContractTypeLUs { get; set; }
@@ -123,5 +121,7 @@ namespace GenTRAC.Models
         public virtual LineOfBusinessLU LineOfBusinessLU { get; set; }
         public virtual ProgramAreaLU ProgramAreaLU { get; set; }
         public virtual CutOffDateUtilizationLU CutOffDateUtilizationLU { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProposalsAttachment> ProposalsAttachments { get; set; }
     }
 }

@@ -41,7 +41,7 @@ END
 
 	6/23/2020 [Dusan]	BOEJ-4626 Add Certification Not Required
 */
-IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[RateTypeLU]') AND type in (N'U'))
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ReasonCertificationNotRequiredLU]') AND type in (N'U'))
 	BEGIN
 		CREATE TABLE ReasonCertificationNotRequiredLU (
 			Id		INT				PRIMARY KEY,
@@ -75,3 +75,43 @@ GO
 
 	## END ##
 */
+
+/*
+	## START ##
+
+	7/1/2020 [Dusan]	BOEJ-4638 Post submittal attachments working with Revisioned Proposal
+*/
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ProposalsAttachments]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE ProposalsAttachments (
+		ProposalId			INT		REFERENCES Proposal(ProposalId)		NOT NULL,
+		AttachmentId		INT		REFERENCES Attachment(Id)			NOT NULL,
+		AttachmentType		INT		REFERENCES AttachmentTypeLU(Id)		NOT NULL,
+		IsRevisionReference	BIT		NOT NULL
+	);
+	ALTER TABLE ProposalsAttachments ADD CONSTRAINT PK_ProposalsAttachments PRIMARY KEY (ProposalId, AttachmentId);
+END
+GO
+BEGIN TRY
+	BEGIN TRAN AttachmentDataMigration
+		INSERT INTO ProposalsAttachments(ProposalId, AttachmentId, AttachmentType, IsRevisionReference)
+			SELECT ProposalId, Id, AttachmentType, 0 FROM Attachment;
+
+		DROP INDEX Attachment.[IX_Attachment_ProposalID];
+		ALTER TABLE Attachment DROP [FK_Proposal_Attachment];
+		ALTER TABLE Attachment DROP [FK_AttachmentType];
+		ALTER TABLE Attachment DROP COLUMN ProposalId;
+		ALTER TABLE Attachment DROP COLUMN AttachmentType;
+	COMMIT TRAN AttachmentDataMigration;
+END TRY
+BEGIN CATCH
+	ROLLBACK TRAN AttachmentDataMigration;
+	PRINT '!!! FAILED AttachmentDataMigration !!!';
+END CATCH
+/*
+	7/1/2020 [Dusan]	BOEJ-4638 Post submittal attachments working with Revisioned Proposal
+
+	## END ##
+*/
+
+
