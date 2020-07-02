@@ -226,5 +226,10 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Document Id (RDSB)
         /// </summary>
         public int? DocumentId { get; set; }
+
+        /// <summary>
+        /// Whether this is the proposal info for creating a new revision
+        /// </summary>
+        public bool IsNewRevision { get; set; }
     }
 }

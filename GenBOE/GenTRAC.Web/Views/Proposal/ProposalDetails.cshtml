@@ -103,7 +103,7 @@
                 if (currentTab == 'Proposal') {
 
                     var data = {};
-                    data.proposalid = @ViewBag.proposalid;
+                    data.proposalid = @Model.ProposalID; 
                     $(document).trigger('LOAD_PROPOSAL_TAB', data);
 
                 }
@@ -139,54 +139,72 @@
                 });
 
                 // if this is a new proposal, do not show the checklist or approvals tabs
-                var proposalID = @ViewBag.proposalid;
-                if (proposalID == null)
+                var proposalID =  @Model.ProposalID; 
+                if (proposalID < 0)
                 {
                     $('[tab*=Checklist]').parents("li").addClass('display-none');
                     $('[tab*=Approvals]').parents("li").addClass('display-none');
                 }
 
-                if (proposalID == null || @Json.Encode(Model.PsaVisibility == SecurityAuthorization.None)) {
+                if (proposalID < 0 || @Json.Encode(Model.PsaVisibility == SecurityAuthorization.None)) {
                     $('[tab*=PSA]').parents("li").addClass('display-none');
                 }
 
-                if (proposalID == null || @Json.Encode(Model.CertificationTimelineVisibility == SecurityAuthorization.None)) {
+                if (proposalID < 0 || @Json.Encode(Model.CertificationTimelineVisibility == SecurityAuthorization.None)) {
                     $('[tab*=CertificationTimeline]').parents("li").addClass('display-none');
                 }
             }
         };
 
+        ProposalDetailsWidget.AddNewRevision = function () {
+            var url = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PROPOSAL',
+                action: '@WebConstants.Action.DISPLAY_PROPOSAL_REVISION_DETAILS',
+                id:  '@Model.ProposalID' 
+            });
+            window.location = url;
+        };
+
         window.onhashchange = ProposalDetailsWidget.LoadTab;
         ProposalDetailsWidget.on('LOAD_PROPOSAL_TAB', function (e, params) {
             var proposalID = params.proposalid;
+            console.log(proposalID);
             if (proposalID == null)
             {
                 proposalID = -1;
+            }
+
+            var oldProposalId = params.oldProposalId;
+            if (oldProposalId == null) {
+                oldProposalId = -1;
+            }
+
+            var isNewRevision = params.isNewRevision;
+            if (isNewRevision == null) {
+                isNewRevision = false;
             }
 
             $("div[tab*=Proposal] .proposal-details").children().remove();
             $("div[tab*=Proposal] .proposal-details").html(ProposalDetailsWidget.LoadingHtml);
             $("div[tab*=Proposal] .proposal-details").removeClass("display-none");
             var proposalURL = "";
-            if (proposalID < 0 ) {
-
+            if (proposalID < 0) {
                 proposalURL =  GenSession.CreateUrl({
                     controller: '@WebConstants.Controller.PROPOSAL',
                     action: '@WebConstants.Action.DISPLAY_PROPOSAL_INDEX'
                 });
-
             }
             else {
-
                 proposalURL = GenSession.CreateUrl({
                     controller: '@WebConstants.Controller.PROPOSAL',
                     action: '@WebConstants.Action.DISPLAY_PROPOSAL_INDEX',
                     id: JSON.stringify(proposalID)
                 });
-
             }
 
             var data = {};
+            data.isNewRevision = '@Model.IsNewRevision';
+            data.oldProposalId = '@Model.RevisedProposalId';
 
             $.ajax({
                 type: "POST",
@@ -209,7 +227,7 @@
             var checklistURL =  GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.CHECKLIST',
                 action: '@WebConstants.Action.DISPLAY_CHECKLIST_INDEX',
-                id: '@ViewBag.proposalid'
+                id: '@Model.ProposalID' 
             });
 
             var data = {};
@@ -235,7 +253,7 @@
             var approvalsURL =  GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.APPROVALS',
                 action: '@WebConstants.Action.DISPLAY_APPROVALS_INDEX',
-                id: '@ViewBag.proposalid'
+                id:  '@Model.ProposalID' 
             });
 
             var data = {};
@@ -260,7 +278,7 @@
             var psaUrl =  GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.PSA',
                 action: '@WebConstants.Action.DISPLAY_POST_SUBMITTAL_ATTACHMENTS',
-                id: '@ViewBag.proposalid'
+                id: '@Model.ProposalID' 
             });
 
             var data = {psaVisibility: '@Model.PsaVisibility'};
@@ -285,7 +303,7 @@
             var psaUrl =  GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.CERTIFICATION_TIMELINE',
                 action: '@WebConstants.Action.DISPLAY_CERTIFICATION_TIMELINE',
-                id: '@ViewBag.proposalid'
+                id: '@Model.ProposalID'
             });
 
             $.ajax({
@@ -300,7 +318,6 @@
 
         });
 
-        // TODO - BOEJ-4627 - also disabled when Certification Not Required has been selected
         if ('@(Model.ProposalStatus == ProposalStatus.Revised || Model.ReasonCertificationNotRequired.HasValue || (Model.ProposalStatus == ProposalStatus.Completed && Model.CertificationCompletedDate != null))' == 'True') {
             $('button[name="new-revision-button"]').addClass('disabled');
         }
@@ -313,23 +330,6 @@
                  null);
         });
 
-        ProposalDetailsWidget.AddNewRevision = function () {
-            var newRevisionUrl =  GenSession.CreateUrl({
-                controller: '@WebConstants.Controller.PROPOSAL',
-                action: '@WebConstants.Action.SAVE_NEW_PROPOSAL_REVISION',
-                id: '@ViewBag.proposalid'
-            });
-
-            $.ajax({
-                type: "POST",
-                url: newRevisionUrl,
-                contentType: 'application/json; charset=utf-8',
-                success: function (response) {
-                    ProposalDetailsWidget.LoadTab;
-                }
-            });
-        }
-
         ProposalDetailsWidget.LoadTab();
     });
 </script>
@@ -338,10 +338,16 @@
     <div id="ProposalTabs">
         <div class="breadcrumb">
             @Html.RouteLink("Proposals", WebConstants.Route.Name.HOME, new { action = WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME, controller = WebConstants.Controller.HOME })
-            @if (ViewBag.proposalid == "null")
+            @if (Model.ProposalID < 0 && !Model.IsNewRevision)
             {
                 <text>
                     > New Proposal
+                </text>
+            }
+            else if (Model.IsNewRevision) 
+            {
+                <text>
+                    > New Revision
                 </text>
             }
             else
@@ -355,10 +361,16 @@
             <div class="tabs-left"></div>
             <div class="tabs-center" style="width: 976px">
                 <div class="proposal-text" style="text-align:left;padding:5px;">
-                    @if (ViewBag.proposalid == "null")
+                    @if (Model.ProposalID < 0  && !Model.IsNewRevision)
                     {
                         <text>
                             <div style="color: #FFFFFF">New Proposal</div>
+                        </text>
+                    }
+                    else if (Model.IsNewRevision)
+                    {
+                        <text>
+                            <div style="color: #FFFFFF">New Revision for @Model.RevisedProposalTitle</div>
                         </text>
                     }
                     else

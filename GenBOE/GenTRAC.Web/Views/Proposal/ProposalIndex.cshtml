@@ -9,7 +9,7 @@
 
 		$(function () {
 			var readOnly = @Model.IsReadOnly;
-			var ProposalIdWhenPageRendered = @ViewBag.proposalid;
+			var ProposalIdWhenPageRendered = @Model.ProposalID;
 			var ExistingProposal = ProposalIdWhenPageRendered != null;
 			var widgetConfig = {};
 			widgetConfig.ContextID = "newProposal";
@@ -114,37 +114,50 @@
 			ProposalIndexWidget = new GenWidget(widgetConfig);
 
 			var widgetCounter = 0;
-			GenSession.ShowLoadingBox();
+            GenSession.ShowLoadingBox();
+
+            data = {};
+            data.isnewrevision = '@Model.IsNewRevision';
+            var proposalId = '@Model.ProposalID';
+            
+            @if (Model.IsNewRevision)
+            {
+                <text>
+                    proposalId = @Model.RevisedProposalId;
+                </text>
+            }
 
 			// create the composite widgets
 			$.ajax({
-				type: 'POST',
+                type: 'POST',
 				url: GenSession.CreateUrl({
-					controller: '@WebConstants.Controller.PROPOSAL',
+                    controller: '@WebConstants.Controller.PROPOSAL',
 					action: '@WebConstants.Action.DISPLAY_PROPOSAL_INFORMATION',
-					id: '@ViewBag.proposalid'
-				}),
+					id: proposalId
+                }),
 				contentType: 'application/json; charset=utf-8',
-				dataType: 'html',
+                dataType: 'html',
+                data: JSON.stringify(data),
 				success: function (response) {
 					$('#proposalInfoDataPlaceholder').html(response);
-					ProposalIndexWidget.ShouldHideLoadingBox();
-					ProposalIndexWidget.refreshModule();
-				},
+                    ProposalIndexWidget.ShouldHideLoadingBox();
+                    ProposalIndexWidget.refreshModule();
+                },
 				error: function () {
-					ProposalIndexWidget.ShouldHideLoadingBox();
-				}
-			});
+                    ProposalIndexWidget.ShouldHideLoadingBox();
+                }
+            });
 
 			$.ajax({
 				type: 'POST',
 				url: GenSession.CreateUrl({
 					controller: '@WebConstants.Controller.PROPOSAL',
 					action: '@WebConstants.Action.DISPLAY_PROPOSAL_GENERAL_INFORMATION',
-					id: '@ViewBag.proposalid'
+					id: proposalId
 				}),
 				contentType: 'application/json; charset=utf-8',
 				dataType: 'html',
+                data: JSON.stringify(data),
 				success: function (response) {
 					$('#proposalGeneralInfoDataPlaceholder').html(response);
 					ProposalIndexWidget.ShouldHideLoadingBox();
@@ -162,10 +175,11 @@
 				url: GenSession.CreateUrl({
 					controller: '@WebConstants.Controller.PROPOSAL',
 					action: '@WebConstants.Action.DISPLAY_PROPOSAL_APPROVALS',
-					id: '@ViewBag.proposalid'
+					id: proposalId
 				}),
 				contentType: 'application/json; charset=utf-8',
 				dataType: 'html',
+                data: JSON.stringify(data),
 				success: function (response) {
 					$('#proposalApprovalsPlaceholder').html(response);
 					ProposalIndexWidget.ShouldHideLoadingBox();
@@ -181,7 +195,7 @@
 				url: GenSession.CreateUrl({
 					controller: '@WebConstants.Controller.PROPOSAL',
 					action: '@WebConstants.Action.DISPLAY_PROPOSAL_USER_INFORMATION',
-					id: '@ViewBag.proposalid'
+					id: proposalId
 				}),
 				contentType: 'application/json; charset=utf-8',
 				dataType: 'html',
@@ -257,12 +271,13 @@
 			// returns all of the data from the child widgets.
 			ProposalIndexWidget.GetData = function () {
 				var dataToSave = {};
-				dataToSave.proposalId = @ViewBag.proposalid;
+                dataToSave.proposalId = @(Model.IsNewRevision ? Model.RevisedProposalId : Model.ProposalID); 
 				dataToSave.ProposalInfo = ProposalInfoWidget.getForm("proposalInfoForm").getData();
 				dataToSave.ProposalInfo.ProposalClassText = $('#ProposalClass option:selected').text();
 				dataToSave.ProposalGeneralInfo = ProposalGeneralInformationWidget.getForm("proposalGeneralInfoForm").getData();
 				dataToSave.ProposalApprovalsInfo = ProposalApprovalsWidget.getForm("proposalApprovalsForm").getData();
-				dataToSave.ProposalUserInfo = ProposalUserInfoWidget.getForm("proposalUserInfoForm").getData();
+                dataToSave.ProposalUserInfo = ProposalUserInfoWidget.getForm("proposalUserInfoForm").getData();
+                dataToSave.IsNewRevision = '@Model.IsNewRevision';
 				return dataToSave;
 			};
 
@@ -291,7 +306,7 @@
 
         ProposalIndexWidget.ContinueValidateAndSaveFullPage = function (buttonPressed, dataToSend) {
             dataToSend = JSON.stringify(dataToSend);
-
+            
             // Validate the proposal information.
             ProposalIndexWidget.saveRequest({
                 type: 'POST',
@@ -421,7 +436,7 @@
         ProposalIndexWidget.SaveFullPage = function (buttonPressed, isRedirectHome) {
             var dataToSend = ProposalIndexWidget.GetData();
             dataToSend = JSON.stringify(dataToSend);
-
+                        
             // Make the call
             ProposalIndexWidget.saveRequest({
                 type: 'POST',
