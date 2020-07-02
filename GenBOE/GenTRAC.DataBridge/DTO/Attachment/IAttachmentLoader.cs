@@ -41,5 +41,12 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="proposalId">ID of proposal to check</param>
         /// <returns>true if the optional DelegationOfAuthority attachment has been uploaded</returns>
         bool OptionalAttachmentHasBeenUploaded(int proposalId);
+
+        /// <summary>
+        /// Save a reference to an attachment
+        /// </summary>
+        /// <param name="proposalId">Current Proposal Id</param>
+        /// <param name="attachmentType">Attachment type that you want to reference</param>
+        void SaveAttachmentReferenceForRevisedProposal(int proposalId, AttachmentType attachmentType);
     }
 }

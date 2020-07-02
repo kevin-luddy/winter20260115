@@ -128,7 +128,7 @@ namespace GenTRAC.Tests.DAL.Loader
         /// Tests revisioning and attachments
         /// </summary>
         [TestMethod]
-        public void L_AttachmentsTestRevision()
+        public void L_AttachmentsTestRevisionFullSave()
         {
             var sut = this.CreateSystem();
 

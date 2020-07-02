@@ -1,7 +1,7 @@
 ﻿@model PostSubmittalAttachmentModelView
 @using GenTRAC.ActionLogic.ModelView.PostSubmittalAttachments
 @using GenTRAC.DataBridge.DTO
-<script>
+    <script>
     var psaWidget;
 
     $(function () {
@@ -171,6 +171,50 @@
             return url;
         };
 
+        psaWidget.AddFile = function (fileInputId, attachmentType) {
+        // TO DO -> need to only pop the dialog if it's REVISED
+
+            GenSession.commonDialog('Revision File Upload', 'Would you like to upload a new file, or is the document provided in the previous version and is still up to date?',
+                [{
+                    buttonClass: 'ies-action',
+                    ButtonText: 'Upload New File',
+                    ButtonName: "new-button",
+                    callbackMethod: function () { psaWidget.SelectFile(fileInputId); }
+                }, {
+                    buttonClass: 'ies-warning',
+                    ButtonText: 'Use Previous Version',
+                    ButtonName: "link-button",
+                    callbackMethod: function () { psaWidget.AddReferenceToRevision(attachmentType); }
+                }, {
+                    buttonClass: 'ies',
+                    ButtonText: 'Cancel',
+                    ButtonName: "cancel-button",
+                    callbackMethod: null
+                }], 450, null, null);
+        };
+
+        psaWidget.AddReferenceToRevision = function (attachmentType) {
+            var url = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PSA',
+                action: '@WebConstants.Action.UPLOAD_ATTACHMENT',
+                id: '@Model.ProposalId'
+            });
+
+            var formData = new FormData();
+            formData.append('IsRevisionReference', true);
+            formData.append('attachmentType', attachmentType);
+
+            $.ajax({
+                url: url,
+                data: formData,
+                type: 'POST',
+                contentType: false,
+                processData: false
+            }).done(function () {
+                psaWidget.refreshPage();
+            });
+        }
+
         psaWidget.DeleteAttachment = function (attachmentType, idOfExisting) {
             var deleteOtherAttachment = attachmentType == @((int)AttachmentType.Other);
 
@@ -226,7 +270,7 @@
             }, 50);
         });
     });
-</script>
+    </script>
 
 <div class="module full composite psa-content" id="psaWidget">
     <div class="module-header-data">
@@ -259,12 +303,16 @@
         <p>
             Use the <span style="font-weight: bold;">+ Add Other Attachment</span> button to add a new custom attachment.  A maximum of <span style="font-weight: bold;">@Model.MaxOtherFileCount.ToString()</span> of these additional files with the Attachment Type of "Other" are allowed for upload.
         </p>
+        @if (ViewBag.IsRevision)
+        {
+            <p>For revisions: Please replace/add any updated or new documents to support your proposal below.</p>
+        }
         <br />
         <h3>Attachments</h3>
         <br />
         @if (Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete && Model.PostSubmittalAttachments.Count(file => file.AttachmentType == AttachmentType.Other) < Model.MaxOtherFileCount) // Only show the button if the max number of files has not been uploaded.
         {
-            <button id="add-attachment" class="ies-action" type="button" onclick="psaWidget.SelectFile('add-attachment-file')">+ Add Other Attachment</button>
+            <button id="add-attachment" class="ies-action" type="button" onclick="psaWidget.AddFile('add-attachment-file', '@((int) AttachmentType.Other)')">+ Add Other Attachment</button>
             <div id="add-attachment-loader" class="loader display-none"></div>
             <input type="file" id="add-attachment-file" onchange="psaWidget.UploadAttachment(this, '@((int) AttachmentType.Other)')" style="display: none;">
             <br />
@@ -313,7 +361,7 @@
                         <td style="text-align: center;">
                             @if (attachment.AttachmentType != AttachmentType.Other) // The upload button should not be visible for 'Other' attachments.  These should be added via the Add Attachment button.
                             {
-                                <a onclick="psaWidget.SelectFile('@attachmentIdentifier-file')">
+                                <a onclick="psaWidget.AddFile('@attachmentIdentifier-file', '@((int) attachment.AttachmentType)')">
                                     <img id="uploadButton-@attachmentIdentifier" src="~/Content/images/UploadFile_16x.png" />
                                 </a>
                             }
