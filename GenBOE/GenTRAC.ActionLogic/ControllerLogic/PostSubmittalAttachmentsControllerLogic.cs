@@ -208,6 +208,20 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
+        /// Save only a reference to an attachment, for a revised proposal
+        /// </summary>
+        /// <param name="proposalId">Current Proposal Id</param>
+        /// <param name="attachmentType">Attachment type that you want to reference</param>
+        public void SaveAttachmentReferenceForRevisedProposal(int proposalId, AttachmentType attachmentType)
+        {
+            using (TransactionScope scope = new TransactionScope())
+            {
+                this.attachmentLoader.SaveAttachmentReferenceForRevisedProposal(proposalId, attachmentType);
+                scope.Complete();
+            }
+        }
+
+        /// <summary>
         /// Retrieves file from the database
         /// </summary>
         /// <param name="fileId">ID of file to retrieve</param>

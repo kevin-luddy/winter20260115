@@ -397,23 +397,6 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
-        /// Get the full proposal DTO
-        /// </summary>
-        /// <param name="proposalId">Proposal Id</param>
-        /// <returns>full Proposal DTO</returns>
-        private FullProposal GetFullProposalDto(int? proposalId)
-        {
-            FullProposal fullProposal = null;
-            if (proposalId.HasValue && proposalId >= 0)
-            {
-                ProposalDto proposal = this.ProposalLoader.GetById(proposalId.Value);
-                fullProposal = this.ObjectFactory.CreateFullProposal(proposal);
-            }
-
-            return fullProposal;
-        }
-
-        /// <summary>
         /// Determines if Approval section should be shown based on workflow
         /// </summary>
         /// <param name="proposal">Proposal</param>
