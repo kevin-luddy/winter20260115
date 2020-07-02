@@ -290,9 +290,9 @@
           <Property Name="CertificationLastEmailed" Type="datetime2" Precision="7" />
           <Property Name="CostVolumeClassified" Type="bit" />
           <Property Name="NoBidDate" Type="datetime2" Precision="7" />
-          <Property Name="IsRevision" Type="bit" Nullable="false" />
           <Property Name="OtherReasonComment" Type="varchar" MaxLength="1000" />
           <Property Name="ReasonCertificationNotRequired" Type="int" />
+          <Property Name="RevisionOfId" Type="int" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -1499,6 +1499,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="CertificationLastEmailed" Type="datetime2" Mode="In" />
           <Parameter Name="NoBidDate" Type="datetime2" Mode="In" />
           <Parameter Name="IsRevision" Type="bit" Mode="In" />
+          <Parameter Name="RevisionOfId" Type="int" Mode="In" />
           <Parameter Name="ReasonCertificationNotRequired" Type="int" Mode="In" />
           <Parameter Name="OtherReasonComment" Type="varchar" Mode="In" />
         </Function>
@@ -2078,10 +2079,10 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <NavigationProperty Name="CutOffDateUtilizationLU" Relationship="genTRACModel.FK_CutOffDateUtilization" FromRole="Proposal" ToRole="CutOffDateUtilizationLU" />
           <Property Name="CostVolumeClassified" Type="Boolean" />
           <Property Name="NoBidDate" Type="DateTime" Precision="7" />
-          <Property Name="IsRevision" Type="Boolean" Nullable="false" />
           <Property Name="OtherReasonComment" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
           <Property Name="ReasonCertificationNotRequired" Type="Int32" />
           <NavigationProperty Name="ProposalsAttachments" Relationship="genTRACModel.FK__Proposals__Propo__5A5A5133" FromRole="Proposal" ToRole="ProposalsAttachment" />
+          <Property Name="RevisionOfId" Type="Int32" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -3131,6 +3132,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="CertificationLastEmailed" Mode="In" Type="DateTime" />
             <Parameter Name="NoBidDate" Mode="In" Type="DateTime" />
             <Parameter Name="IsRevision" Mode="In" Type="Boolean" />
+            <Parameter Name="RevisionOfId" Mode="In" Type="Int32" />
             <Parameter Name="ReasonCertificationNotRequired" Mode="In" Type="Int32" />
             <Parameter Name="OtherReasonComment" Mode="In" Type="String" />
           </FunctionImport>
@@ -3921,9 +3923,9 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="Proposals">
             <EntityTypeMapping TypeName="genTRACModel.Proposal">
               <MappingFragment StoreEntitySet="Proposal">
+                <ScalarProperty Name="RevisionOfId" ColumnName="RevisionOfId" />
                 <ScalarProperty Name="ReasonCertificationNotRequired" ColumnName="ReasonCertificationNotRequired" />
                 <ScalarProperty Name="OtherReasonComment" ColumnName="OtherReasonComment" />
-                <ScalarProperty Name="IsRevision" ColumnName="IsRevision" />
                 <ScalarProperty Name="NoBidDate" ColumnName="NoBidDate" />
                 <ScalarProperty Name="CostVolumeClassified" ColumnName="CostVolumeClassified" />
                 <ScalarProperty Name="CertificationLastEmailed" ColumnName="CertificationLastEmailed" />
