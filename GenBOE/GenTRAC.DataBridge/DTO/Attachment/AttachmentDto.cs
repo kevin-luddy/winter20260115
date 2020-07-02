@@ -84,5 +84,13 @@ namespace GenTRAC.DataBridge.DTO
         {
             get { return this.Id > 0; }
         }
+
+        /// <summary>
+        /// Is Revision Reference? 
+        /// 
+        /// False -> means you own the file
+        /// True -> means you are referencing previous revision's file
+        /// </summary>
+        public bool IsRevisionReference { get; set; } = false;
     }
 }

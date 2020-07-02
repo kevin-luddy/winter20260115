@@ -58,7 +58,6 @@ namespace GenTRAC.Models
         public virtual DbSet<TextTypeLU> TextTypeLUs { get; set; }
         public virtual DbSet<ProposalPARChecklistXREF> ProposalPARChecklistXREFs { get; set; }
         public virtual DbSet<ProposalPPRChecklistXREF> ProposalPPRChecklistXREFs { get; set; }
-        public virtual DbSet<Attachment> Attachments { get; set; }
         public virtual DbSet<genTracData> genTracDatas { get; set; }
         public virtual DbSet<ContractTypeGroupLU> ContractTypeGroupLUs { get; set; }
         public virtual DbSet<ContractTypeLU> ContractTypeLUs { get; set; }
@@ -68,6 +67,8 @@ namespace GenTRAC.Models
         public virtual DbSet<CutOffDateUtilizationLU> CutOffDateUtilizationLUs { get; set; }
         public virtual DbSet<CannedResponsesPAR> CannedResponsesPARs { get; set; }
         public virtual DbSet<DataMartEmployee> DataMartEmployees { get; set; }
+        public virtual DbSet<ProposalsAttachment> ProposalsAttachments { get; set; }
+        public virtual DbSet<Attachment> Attachments { get; set; }
     
         public virtual ObjectResult<Nullable<int>> archiveProposal(Nullable<System.DateTime> createStartDate, Nullable<System.DateTime> createEndDate, string lineOfBusinessID, string programAreaID)
         {
@@ -1066,7 +1067,7 @@ namespace GenTRAC.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertRequestTypes", idParameter, textParameter, isActiveParameter);
         }
     
-        public virtual int deleteAttachment(Nullable<int> attachmentID, Nullable<System.DateTime> updateDate)
+        public virtual int deleteAttachment(Nullable<int> attachmentID, Nullable<System.DateTime> updateDate, Nullable<int> proposalId, Nullable<bool> deleteAttachmentRecord)
         {
             var attachmentIDParameter = attachmentID.HasValue ?
                 new ObjectParameter("AttachmentID", attachmentID) :
@@ -1076,10 +1077,18 @@ namespace GenTRAC.Models
                 new ObjectParameter("UpdateDate", updateDate) :
                 new ObjectParameter("UpdateDate", typeof(System.DateTime));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteAttachment", attachmentIDParameter, updateDateParameter);
+            var proposalIdParameter = proposalId.HasValue ?
+                new ObjectParameter("ProposalId", proposalId) :
+                new ObjectParameter("ProposalId", typeof(int));
+    
+            var deleteAttachmentRecordParameter = deleteAttachmentRecord.HasValue ?
+                new ObjectParameter("DeleteAttachmentRecord", deleteAttachmentRecord) :
+                new ObjectParameter("DeleteAttachmentRecord", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteAttachment", attachmentIDParameter, updateDateParameter, proposalIdParameter, deleteAttachmentRecordParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertAttachment(Nullable<int> attachmentID, Nullable<System.DateTime> updateDate, string name, byte[] contents, string uploadedBy, Nullable<int> attachmentType, Nullable<int> proposalID)
+        public virtual ObjectResult<Nullable<int>> upsertAttachment(Nullable<int> attachmentID, Nullable<System.DateTime> updateDate, string name, byte[] contents, string uploadedBy, Nullable<int> attachmentType, Nullable<int> proposalID, Nullable<bool> isRevisionReference)
         {
             var attachmentIDParameter = attachmentID.HasValue ?
                 new ObjectParameter("AttachmentID", attachmentID) :
@@ -1109,7 +1118,11 @@ namespace GenTRAC.Models
                 new ObjectParameter("ProposalID", proposalID) :
                 new ObjectParameter("ProposalID", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertAttachment", attachmentIDParameter, updateDateParameter, nameParameter, contentsParameter, uploadedByParameter, attachmentTypeParameter, proposalIDParameter);
+            var isRevisionReferenceParameter = isRevisionReference.HasValue ?
+                new ObjectParameter("IsRevisionReference", isRevisionReference) :
+                new ObjectParameter("IsRevisionReference", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertAttachment", attachmentIDParameter, updateDateParameter, nameParameter, contentsParameter, uploadedByParameter, attachmentTypeParameter, proposalIDParameter, isRevisionReferenceParameter);
         }
     
         public virtual int updateProposalForecastEmailSent(Nullable<int> proposalID, Nullable<System.DateTime> updateDate)
