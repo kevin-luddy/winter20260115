@@ -309,7 +309,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(user);
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(user);
 
-            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, false);
+            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, false, null);
             Assert.IsNotNull(savedProposalId);
             Assert.AreEqual(proposalId, savedProposalId.Value);
             this.proposalPermissionMediator.Verify(x => x.SaveProposalPermissionDtos(It.IsAny<ICollection<ProposalPermissionDto>>()), Times.Once());
@@ -375,7 +375,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(user);
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(user);
 
-            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, true);
+            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, true, proposalId.Value);
             Assert.IsNotNull(savedProposalId);
             Assert.AreEqual(proposalId, savedProposalId.Value);
             this.proposalPermissionMediator.Verify(x => x.SaveProposalPermissionDtos(It.IsAny<ICollection<ProposalPermissionDto>>()), Times.Once());
@@ -476,7 +476,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(user);
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(user);
 
-            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, false);
+            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, false, null);
             Assert.IsNotNull(savedProposalId);
             Assert.AreEqual(proposalId, savedProposalId.Value);
             this.proposalPermissionMediator.Verify(x => x.SaveProposalPermissionDtos(It.IsAny<ICollection<ProposalPermissionDto>>()), Times.Once());
@@ -2770,7 +2770,7 @@ namespace GenTRAC.Tests.ActionLogic
         public void C_SaveNewProposal_ExceptionTest1()
         {
             var sut = this.CreateSystem();
-            sut.SaveProposal(null, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), false);
+            sut.SaveProposal(null, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), false, null);
         }
 
         /// <summary>
@@ -2781,7 +2781,7 @@ namespace GenTRAC.Tests.ActionLogic
         public void C_SaveNewProposal_ExceptionTest2()
         {
             var sut = this.CreateSystem();
-            sut.SaveProposal(new ProposalInformationModelView(), null, new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), false);
+            sut.SaveProposal(new ProposalInformationModelView(), null, new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), false, null);
         }
 
         /// <summary>
@@ -2792,7 +2792,7 @@ namespace GenTRAC.Tests.ActionLogic
         public void C_SaveNewProposal_ExceptionTest3()
         {
             var sut = this.CreateSystem();
-            sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), false);
+            sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), false, null);
         }
 
         /// <summary>
@@ -2803,7 +2803,7 @@ namespace GenTRAC.Tests.ActionLogic
         public void C_SaveNewProposal_ExceptionTest4()
         {
             var sut = this.CreateSystem();
-            sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), null, null, false);
+            sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), null, null, false, null);
         }
 
         /// <summary>
@@ -3582,10 +3582,6 @@ namespace GenTRAC.Tests.ActionLogic
 
             Assert.IsTrue(result.IsNewRevision);
         }
-
-        [TestMethod]
-        public void TestSaveNewRevision
-
         #endregion
     }
 }

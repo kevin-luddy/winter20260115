@@ -357,9 +357,16 @@ namespace GenTRAC.DataBridge.DTO
         public DateTime? NoBidDate { get; set; }
 
         /// <summary>
-        /// Gets or sets whether Proposal is a revision
+        /// Gets whether Proposal is a revision
+        /// Determined by RevisionOfId being set
         /// </summary>
-        public bool IsRevision { get; set; }
+        public bool IsRevision { get { return RevisionOfId.HasValue; } }
+
+        /// <summary>
+        /// ID of the Proposal that this Proposal is a revision of
+        /// (null if not a revision)
+        /// </summary>
+        public int? RevisionOfId { get; set; }
 
         /// <summary>
         /// Reason why certification is not required

@@ -182,9 +182,10 @@ namespace GenTRAC.ActionLogic
         /// <param name="proposalApprovalsInfo">Proposal approvals model view</param>
         /// <param name="proposalUserInfo">Proposal user information model view</param>
         /// <param name="isNewRevision">Whether saving new revision</param>
+        /// <param name="revisionOfId">ID of the revised Proposal if this is a Revision</param>
         /// <returns>true if success else false</returns>
         public int? SaveProposal(ProposalInformationModelView proposalInfo, ProposalGeneralInformationModelView proposalGeneralInfo,
-            ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, bool isNewRevision)
+            ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, bool isNewRevision, int? revisionOfId)
         {
             if (proposalInfo == null)
             {
@@ -267,7 +268,7 @@ namespace GenTRAC.ActionLogic
                     IsCostVolumeClassified = proposalGeneralInfo.IsCostVolumeClassified,
                     IsForecastProposal = isForecasted,
                     DocumentId = proposalInfo.DocumentId,
-                    IsRevision = isNewRevision
+                    RevisionOfId = isNewRevision ? revisionOfId : null
                 };
 
                 // copy the old values for approvals/certification (comments, workflow status, signatures, additionalapprovalemailtext)
