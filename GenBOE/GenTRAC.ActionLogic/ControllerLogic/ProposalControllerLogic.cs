@@ -119,115 +119,7 @@ namespace GenTRAC.ActionLogic
         /// Suffix for Proposal Revision Tracking Numbers
         /// </summary>
         public const string REVISION_SUFFIX = "-PR";
-
-        /// <summary>
-        /// Saves the certification timeline.
-        /// </summary>
-        /// <param name="proposalId">The proposal identifier.</param>
-        /// <param name="model">The model.</param>
-        public void SaveCertificationTimeline(int proposalId, ProposalCertificationTimelineModelView model)
-        {
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SaveCertificationTimeline", this.log))
-            {
-                ProposalDto proposal = this.ValidateCertification(proposalId, model, false);
-
-                this.ProposalMediator.SaveProposal(proposal);
-            }
-        }
-
-        /// <summary>
-        /// Validates the certification timeline.
-        /// </summary>
-        /// <param name="proposalId">The proposal identifier.</param>
-        /// <param name="model">The model.</param>
-        /// <param name="isComplete">if set to <c>true</c> [is validating as complete].</param>
-        /// <returns>The validated, updated proposal</returns>
-        public ProposalDto ValidateCertification(int proposalId, ProposalCertificationTimelineModelView model, bool isComplete)
-        {
-            if (model == null)
-            {
-                throw new ArgumentNullException(nameof(model));
-            }
-
-            ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
-            DateTime agreement;
-            if (DateTime.TryParse(model.AgreementDate, out agreement))
-            {
-                proposal.AgreementDate = agreement;
-            }
-            else
-            {
-                proposal.AgreementDate = null;
-            }
-
-            DateTime certification;
-            if (DateTime.TryParse(model.CertificationDate, out certification))
-            {
-                proposal.CertificationDate = certification;
-            }
-            else
-            {
-                proposal.CertificationDate = null;
-            }
-
-            proposal.CutOffDateUtilization = model.CutOffDateUtilization;
-            proposal.Comments = model.Comments;
-
-            if (proposal.AgreementDate.HasValue && proposal.CertificationDate.HasValue)
-            {
-                TimeSpan span = proposal.CertificationDate.Value - proposal.AgreementDate.Value;
-
-                if (span.TotalDays > 5.0)
-                {
-                    // Comments are now required
-                    if (string.IsNullOrWhiteSpace(proposal.Comments))
-                    {
-                        throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.COMMENTS_REQUIRED);
-                    }
-                }
-            }
-
-            if (isComplete)
-            {
-                proposal.ProposalStatus = ProposalStatus.Completed;
-                proposal.CertificationTimelineCompleted = DateTime.Now;
-
-                // validate that all 3 required fields are set
-                if (!proposal.AgreementDate.HasValue)
-                {
-                    throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.AGREEMENT_DATE_REQUIRED);
-                }
-
-                if (!proposal.CertificationDate.HasValue)
-                {
-                    throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CERTIFICATION_DATE_REQUIRED);
-                }
-
-                if (!proposal.CutOffDateUtilization.HasValue)
-                {
-                    throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CUTOFF_DATE_UTILIZATION_REQUIRED);
-                }
-            }
-
-            proposal.Updateable = UpdateType.Upsert;
-            return proposal;
-        }
-
-        /// <summary>
-        /// Completes the certification timeline.
-        /// </summary>
-        /// <param name="proposalId">The proposal identifier.</param>
-        /// <param name="model">The model.</param>
-        public void CompleteCertificationTimeline(int proposalId, ProposalCertificationTimelineModelView model)
-        {
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.CompleteCertificationTimeline", this.log))
-            {
-                ProposalDto proposal = this.ValidateCertification(proposalId, model, true);
-
-                this.ProposalMediator.SaveProposal(proposal);
-            }
-        }
-
+        
         /// <summary>
         /// Constructor
         /// </summary>
@@ -959,6 +851,9 @@ namespace GenTRAC.ActionLogic
                 }
 
                 model.ReasonCertificationNotRequired = fullProposalDto.ReasonCertificationNotRequired;
+                
+                model.RevisedProposalId = null;
+                model.IsNewRevision = false;
             }
 
             return model;
@@ -993,6 +888,8 @@ namespace GenTRAC.ActionLogic
                 model.ProposalTitle = this.GetNewRevisionProposalTitle(fullProposalDto.ProposalTitle, newRevisionSuffix);
                 model.ProposalStatus = ProposalStatus.InProgress;
                 model.DisplayNewRevisionButton = false;
+                model.RevisedProposalId = proposalId;
+                model.IsNewRevision = true;
             }
 
             return model;
