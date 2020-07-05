@@ -549,12 +549,15 @@ namespace GenBOE.ActionLogic.Common
 
                 results.Boes.Enqueue(boe);
 
-                decimal originalBoeHours = 0;
-                decimal offloadedBoeHours = 0;
+                decimal originalTaskHours = 0;
+                decimal offloadedTaskHours = 0;
                 decimal percentOffload = 0;
 
                 foreach (BoeTaskElementDTO taskElement in boe.TaskElements)
                 {
+                    originalTaskHours = 0;
+                    offloadedTaskHours = 0;
+
                     decimal taskElementTotalHoursOffloaded = 0m;
                     Collection<ResourceTypeDto> resources = taskElement.taskElementLabors;
                     // Create a new list that is ordered with new sub resources inserted directly after the resources they were created from.
@@ -562,7 +565,7 @@ namespace GenBOE.ActionLogic.Common
                     foreach (ResourceTypeDto laborResource in resources)
                     {
                         newResourceList.Add(laborResource);
-                        originalBoeHours += laborResource.SpreadType == SpreadType.Hours ? laborResource.ValueSpread ?? 0 : 0;
+                        originalTaskHours += laborResource.SpreadType == SpreadType.Hours ? laborResource.ValueSpread ?? 0 : 0;
                         decimal offloadedHours;
                         decimal? percent;
                         ResourceTypeDto newResource = this.OffloadLaborResource(workspace, offloadRates, laborResource, out offloadedHours, out percent);
@@ -576,7 +579,7 @@ namespace GenBOE.ActionLogic.Common
                             taskElementTotalHoursOffloaded += offloadedHours;
                         }
 
-                        offloadedBoeHours += offloadedHours;
+                        offloadedTaskHours += offloadedHours;
                         percentOffload = percent ?? 0;
 
                     }
@@ -592,10 +595,10 @@ namespace GenBOE.ActionLogic.Common
 
                     taskElement.taskElementLabors = newResourceList;
 
-                    if (offloadedBoeHours != 0)
+                    if (offloadedTaskHours != 0)
                     {
-                        taskElement.MOQText += string.Format(this.EXISTING_TASK_RATIONALE, justifyingPublication, projectMapOffloadText, originalBoeHours.ToString("F"),
-                                    offloadedBoeHours.ToString("F"), (originalBoeHours - offloadedBoeHours).ToString("F"));
+                        taskElement.MOQText += string.Format(this.EXISTING_TASK_RATIONALE, justifyingPublication, projectMapOffloadText, originalTaskHours.ToString("F"),
+                                    offloadedTaskHours.ToString("F"), (originalTaskHours - offloadedTaskHours).ToString("F"));
                     }
                 }
             }

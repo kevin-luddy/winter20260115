@@ -223,7 +223,7 @@ namespace GenBOE.Web.Controllers
 
                         if (groupMemberAccess.Any(x => x.Value == false))
                         {
-                            ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", string.Format("The following members of group {0} do not have access to genBOE and therefore the group's permissions cannot be changed: <ul><li>{1}</li></ul>Please contact your administrator if access is needed.",
+                            ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", string.Format("The following members of group {0} do not have access to genBOE and therefore the group's permissions cannot be changed: <ul><li>{1}</li></ul>Please have the user request access.",
                                 currentUser.NTID, string.Join("</li><li>", groupMemberAccess.Where(x => x.Value == false).Select(x => x.Key).Select(x => x.DisplayName)))));
                             throw new GenValidationException(ValidationErrors);
                         }
@@ -233,7 +233,7 @@ namespace GenBOE.Web.Controllers
                         Dictionary<UserData, bool> genBoeAccess = this._permissionControllerLogic.GetGenBOEAccess(new Collection<UserData>() { new UserData() { Ntid = currentUser.NTID } });
                         if (genBoeAccess.Any(x => x.Value == false))
                         {
-                            ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", "The user does not have access to genBOE and their permissions cannot be changed. Please contact your administrator if this user needs access."));
+                            ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", "The user does not have access to genBOE and their permissions cannot be changed. Please have the user request access."));
                         }
                     }
 
