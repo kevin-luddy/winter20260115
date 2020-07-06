@@ -330,7 +330,7 @@ namespace GenTRAC.Web.Controllers
                     this.proposalLogic.SetProposalRevised(proposal.Id, proposal.UpdateDate);
                 }
 
-                proposalId = this.proposalLogic.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, isNewRevision, revisedProposalId);
+                proposalId = this.proposalLogic.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, revisedProposalId);
 
                 if (proposalId.HasValue)
                 {
