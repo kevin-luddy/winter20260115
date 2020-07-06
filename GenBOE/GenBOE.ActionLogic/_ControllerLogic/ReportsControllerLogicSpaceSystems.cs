@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Collections.ObjectModel;
     using System.Linq;
     using DataBridge.Reference;
+    using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.Reporting;
     using GenBOE.ActionLogic.WBS.BOE;
@@ -28,6 +29,22 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private IResourceDTODataLoader resourceDTODataLoader;
         private IInUseDataLoader iInUseDataLoader;
 
+        /// <summary>
+        /// Injection contstructor
+        /// </summary>
+        /// <param name="boeExporter">BOE Exporter</param>
+        /// <param name="boeSummary">BOE Summary</param>
+        /// <param name="boeCustomExporter">BOE Custom Exporter</param>
+        /// <param name="workspaceExportFormatDTOLoader">Workspace Export Format DTO loader</param>
+        /// <param name="boeDiscrepancyReport">BOE Discrepancy Report</param>
+        /// <param name="resourceDTODataLoader">Resource DTO loader</param>
+        /// <param name="iboeFormDataLoader">IBOE Form loader</param>
+        /// <param name="pboeFormDataLoader">PBOE Form loader</param>
+        /// <param name="iInUseDataLoader">in use data loader</param>
+        /// <param name="proposalLoader">proposal loader</param>
+        /// <param name="workspaceControllerLogic">workspace controller logic</param>
+        /// <param name="rteTemplateDataLoader">RTE Template loader</param>
+        /// <param name="travelTripCostCalculator">Travel Trip Cost Calculator</param>
         public ReportsControllerLogicSpaceSystems(
             IBOEExporter boeExporter,
             BOESummary boeSummary,
@@ -40,8 +57,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IInUseDataLoader iInUseDataLoader,
             IProposalLoader proposalLoader,
             IWorkspaceControllerLogic workspaceControllerLogic,
-            IRteTemplateDataLoader rteTemplateDataLoader)
-            : base(boeExporter, boeSummary, boeCustomExporter, workspaceExportFormatDTOLoader, boeDiscrepancyReport, proposalLoader, workspaceControllerLogic, rteTemplateDataLoader)
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            TravelTripCostCalculation travelTripCostCalculator)
+            : base(boeExporter, boeSummary, boeCustomExporter, workspaceExportFormatDTOLoader, boeDiscrepancyReport, proposalLoader, workspaceControllerLogic, rteTemplateDataLoader, travelTripCostCalculator)
         {
             this.iboeFormDataLoader = iboeFormDataLoader;
             this.pboeFormDataLoader = pboeFormDataLoader;

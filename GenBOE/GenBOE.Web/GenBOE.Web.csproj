@@ -1080,6 +1080,7 @@
     <Content Include="Templates\Export\Temp\RMS - NISSC - Landscape - with Non-labor Costs.xslx" />
     <None Include="Templates\Export\Temp\RMS - Portrait - CLIN-WBS with SOW ID.xslx" />
     <Content Include="Views\Admin\ManageSystemSettings.ascx" />
+    <Content Include="Templates\Export\WbsBoeReport.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -1130,6 +1131,9 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>..\rules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ConsoleRelease|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

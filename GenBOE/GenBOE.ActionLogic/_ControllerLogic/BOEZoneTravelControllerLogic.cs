@@ -212,11 +212,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 {
                     if (travelTripToAdd.NonZoneResourceID.HasValue && travelTripToAdd.NonZoneResourceID > 0)
                     {
-                        ResourceDTO nonZoneResource = nonZoneResourcesFromDb.FirstOrDefault(x => x.Id == travelTripToAdd.NonZoneResourceID);
-                        if (nonZoneResource != null)
-                        {
-                            travelTripToAdd.NonZoneResourceName = nonZoneResource.ResourceName;
-                        }
+                        travelTripToAdd.NonZoneResourceName = nonZoneResourcesFromDb.First(x => x.Id == travelTripToAdd.NonZoneResourceID).ResourceName;
                     }
                 }
                 toReturn.Add(travelTripToAdd);

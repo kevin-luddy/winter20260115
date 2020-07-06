@@ -1,6 +1,5 @@
 ﻿IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[copyWorkspace]') AND type in (N'P', N'PC'))
 	DROP PROCEDURE [dbo].[copyWorkspace];
-
 GO
 
 SET ANSI_NULLS ON
@@ -48,6 +47,7 @@ AS
 **		12/13/19	twilson3			BOEJ-4434 - RTE Template Answers
 **		12/17/19	twilson3			BOEJ-4434 Fix Assigned
 **		1/22/20		ranzalon			Fixed bug with missing RteTemplateSourceId
+**		6/11/20		Dusan				BOEJ-4655 Exact copy should copy WS email settings
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -55,7 +55,6 @@ BEGIN TRANSACTION
 
 BEGIN TRY
 
---DECLARE @WorkspaceID int=2534
 DECLARE @CopyFromWorkspaceID int = @WorkspaceID
 
 DECLARE @ResourceListID int
@@ -455,125 +454,10 @@ SELECT
       ,[WorkspaceID]
 FROM @WorkspaceResource WHERE NewSystemResourceID IS NULL
 
-/*
-TESTING
-SELECT * FROM WorkspaceResource WHERE WorkspaceID=@WorkspaceID
-SELECT * FROM WorkspaceResource WHERE WorkspaceID=@NewWorkspaceID
-*/
-
-
-
-/* Do not need to map any longer*/
-/*
-DECLARE @ResourceMapping TABLE
-(
-OriginalResourceID int,
-NewResourceID int
-)
-INSERT INTO @ResourceMapping
-SELECT Original.ResourceID, New.ResourceID
-FROM 
-	(
-	SELECT R.[ResourceID]
-      ,R.[UpdateDT]
-      ,R.[ResourceName]
-      ,R.[ResourceDescription]
-      ,R.[SegmentRegion]
-      ,R.[LaborType]
-      ,R.[SegmentID]
-      ,R.[ResourceListID]
-      ,R.[ResourceInUseFlag]
-      ,R.[CostElementID]
-	FROM [dbo].[Resource] R
-		INNER JOIN [dbo].[ResourceList] RL ON R.ResourceListID = RL.ResourceListID
-		INNER JOIN [dbo].[Workspace] W ON RL.ResourceListID = W.ResourceListID
-	WHERE W.WorkspaceID = @WorkspaceID	
-	) Original
-	INNER JOIN 
-	(
-	SELECT R.[ResourceID]
-      ,R.[UpdateDT]
-      ,R.[ResourceName]
-      ,R.[ResourceDescription]
-      ,R.[SegmentRegion]
-      ,R.[LaborType]
-      ,R.[SegmentID]
-      ,R.[ResourceListID]
-      ,R.[ResourceInUseFlag]
-      ,R.[CostElementID]
-	FROM [dbo].[Resource] R
-		INNER JOIN [dbo].[ResourceList] RL ON R.ResourceListID = RL.ResourceListID
-		INNER JOIN [dbo].[Workspace] W ON RL.ResourceListID = W.ResourceListID
-	WHERE W.WorkspaceID = @NewWorkspaceID	
-	)New ON 
-		New.[UpdateDT] = Original.UpdateDT AND
-		New.[ResourceName] = Original.ResourceName AND
-		New.[ResourceDescription] = Original.ResourceDescription AND
-		New.[SegmentRegion] = Original.SegmentRegion AND
-		New.[LaborType] = Original.LaborType AND
-		New.[SegmentID] = Original.SegmentID AND
-		New.[ResourceInUseFlag] = Original.ResourceInUseFlag AND
-		New.[CostElementID]	 = Original.CostElementID
-*/	
-
-
-/*REPLACE:
-INSERT INTO [dbo].[PerformingOrganization]
-           ([UpdateDT]
-           ,[PerformingOrganizationName]
-           ,[PerformingOrganizationDescription]
-           ,[PerformingOrganizationListID]
-           ,[PerformingOrganizationInUseFlag])
-SELECT PO.[UpdateDT]
-      ,PO.[PerformingOrganizationName]
-      ,PO.[PerformingOrganizationDescription]
-      ,@PerformingOrganizationListID--[PerformingOrganizationListID]
-      ,PO.[PerformingOrganizationInUseFlag]
-  FROM [dbo].[PerformingOrganization] PO
-	INNER JOIN [dbo].[PerformingOrganizationList] PL ON PO.PerformingOrganizationListID = PL.PerformingOrganizationListID
-	INNER JOIN [dbo].[Workspace] W ON PL.PerformingOrganizationListID = W.PerformingOrganizationListID
-WHERE W.WorkspaceID = @WorkspaceID	
-
-
-DECLARE @POMapping TABLE
-(
-	OriginalPOID int,
-	NewPOID int
-)
-INSERT INTO @POMapping
-SELECT Original.PerformingOrganizationID, New.PerformingOrganizationID
-FROM 
-	(
-	SELECT PO.[PerformingOrganizationID]
-      ,PO.[UpdateDT]
-      ,PO.[PerformingOrganizationName]
-      ,PO.[PerformingOrganizationDescription]
-      ,PO.[PerformingOrganizationListID]
-      ,PO.[PerformingOrganizationInUseFlag]
-	FROM [dbo].[PerformingOrganization] PO
-		INNER JOIN [dbo].[PerformingOrganizationList] PL ON PO.PerformingOrganizationListID = PL.PerformingOrganizationListID
-		INNER JOIN [dbo].[Workspace] W ON PL.PerformingOrganizationListID = W.PerformingOrganizationListID
-	WHERE W.WorkspaceID = @WorkspaceID	
-	) Original
-	INNER JOIN 
-	(
-	SELECT PO.[PerformingOrganizationID]
-      ,PO.[UpdateDT]
-      ,PO.[PerformingOrganizationName]
-      ,PO.[PerformingOrganizationDescription]
-      ,PO.[PerformingOrganizationListID]
-      ,PO.[PerformingOrganizationInUseFlag]
-	FROM [dbo].[PerformingOrganization] PO
-		INNER JOIN [dbo].[PerformingOrganizationList] PL ON PO.PerformingOrganizationListID = PL.PerformingOrganizationListID
-		INNER JOIN [dbo].[Workspace] W ON PL.PerformingOrganizationListID = W.PerformingOrganizationListID
-	WHERE W.WorkspaceID = @NewWorkspaceID	
-	)New ON 
-      Original.[UpdateDT] = New.UpdateDT AND
-      Original.[PerformingOrganizationName] = New.PerformingOrganizationName AND
-      Original.[PerformingOrganizationDescription] = New.PerformingOrganizationDescription AND
-      Original.[PerformingOrganizationInUseFlag] = New.PerformingOrganizationInUseFlag
-
-*/
+INSERT INTO WorkspaceEmailXREF
+	SELECT EmailId, @NewWorkspaceID, TurnOn, UpdateDT
+			FROM WorkspaceEmailXREF
+			WHERE WorkspaceId = @WorkspaceID
 
 DECLARE @PerformingOrganization TABLE
 (
@@ -2894,20 +2778,14 @@ IF @@ERROR = 0
            (@CopyFromWorkspaceID
            ,@NewWorkspaceID
            ,@CreateDate)
-
-		
 		END
 
 		SELECT @NewWorkspaceID AS WorkspaceID
 	END
 
 END TRY
-
-
 BEGIN CATCH
 	ROLLBACK TRANSACTION
-	
-
 	DECLARE @ErrorMessage varchar (500)
 	SELECT @ErrorMessage = ERROR_MESSAGE()
 	RAISERROR (
@@ -2915,10 +2793,6 @@ BEGIN CATCH
 	        11, -- Severity,/*Severity Changed to 11*/
 			1 -- State,
 			)
-
-
-		
 	RETURN
-	
 END CATCH
 GO

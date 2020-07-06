@@ -45,6 +45,9 @@
     <DebugSymbols>true</DebugSymbols>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ConsoleRelease|AnyCPU'">
+    <OutputPath>bin\ConsoleRelease\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="DocumentFormat.OpenXml, Version=2.0.5022.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -365,6 +368,7 @@
     <None Include="Resources\LaborTypesAndSpread.xlsx" />
     <None Include="Resources\ProjectMap.xlsx" />
     <EmbeddedResource Include="Resources\TINATraining.xlsx" />
+    <None Include="Resources\WbsBoeReport.xlsx" />
     <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>

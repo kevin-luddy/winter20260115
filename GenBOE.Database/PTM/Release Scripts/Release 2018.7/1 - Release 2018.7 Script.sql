@@ -46,7 +46,7 @@ BEGIN
 	   ALTER TABLE [dbo].[Proposal] DROP COLUMN [ProposalDeemedInadequate]
 	   UPDATE [dbo].[Proposal] SET [Comments] = NULL
 END
-GO
+GO;
 
 IF NOT EXISTS (
                            SELECT * FROM sys.all_columns C

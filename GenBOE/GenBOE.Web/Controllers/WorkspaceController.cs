@@ -297,7 +297,6 @@ namespace GenBOE.Web.Controllers
 
             // Action Initialize
             Stopwatch sw = InitializeAction(_log, "Index", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
-            ViewBag.IsBucketized = ws.ProjectMapType == ProjectMapType.TimePhasedProjectMap;
 
             if (ws.IsProjectMapWorkspace)
             {
@@ -2920,19 +2919,6 @@ namespace GenBOE.Web.Controllers
                         // send response back to UI indicating that user confirmation is needed
                         result = Json(new { Status = false, NeedUserConfirmation = true,
                             UserConfirmationMessage = "Adding or editing a required Custom Field, or changing a custom field level, will set all BOEs in this workspace back to Draft.  Do you wish to continue?" });
-                    }
-                }
-                else if (customFieldTypeChanged && customFieldValueInUse)
-                {
-                    /*
-                     * If the custom field level changed and the field is in use, 
-                     * then make sure the user is aware the usages will be cleared and agrees with this before continuing.
-                     */
-                    if ((okToProceed = customFieldsMV.UserHasConfirmed) == false)
-                    {
-                        // send response back to UI indicating that user confirmation is needed
-                        result = Json(new { Status = false, NeedUserConfirmation = true,
-                            UserConfirmationMessage = "This custom field is currently in use.  Changing the level from " + customFieldDisplayIdOriginal.ToDescription() + " to " + customFieldDisplayId.ToDescription() + " will clear all existing usages.  Do you wish to continue?" });
                     }
                 }
                 else if (customFieldTypeChanged && customFieldValueInUse)

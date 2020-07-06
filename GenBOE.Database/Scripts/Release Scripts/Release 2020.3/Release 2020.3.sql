@@ -4,17 +4,17 @@ GO
 /*
 	## START ##
 
-	4/28/2020 [ranzalon] - BOEJ-4412 - Workspace Author role
+	6/3/2020 [ranzalon] - BOEJ-4607 - BOE/WBS Report
 */
 
-IF NOT EXISTS (SELECT * FROM [dbo].[RoleLU] WHERE [RoleName] = 'Workspace Author')
+IF NOT EXISTS (SELECT * FROM [dbo].[ReportLU] WHERE [ReportID] = 38)
 BEGIN
-	INSERT INTO [dbo].[RoleLU] ([RoleID],[RoleName]) VALUES (11, 'Workspace Author')
+	INSERT INTO [dbo].[ReportLU] ([ReportID],[ReportName],[Description]) VALUES (38, 'WBS Summary of Hours, ODC Costs', 'Export the WBS, Total Hours, and Total Cost for each BOE including WBS Title')
 END
 GO
 
 /*
-	4/28/2020 [ranzalon] - BOEJ-4412 - Workspace Author role
+	6/3/2020 [ranzalon] - BOEJ-4607 - BOE/WBS Report
 
 	## END ##
 */

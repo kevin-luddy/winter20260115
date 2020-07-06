@@ -47,6 +47,11 @@ namespace IES.Common.classes
         readonly static public string FORCE_AS_NUMBER_FOR_EXCEL = "FORCE_EXCEL_NUMBER";
 
         /// <summary>
+        /// Set the text in the export as bold
+        /// </summary>
+        readonly static public string SET_AS_BOLD_FOR_EXCEL = "SET_BOLD_EXCEL";
+
+        /// <summary>
         /// An additional header required for ISGS on the Manage BOE page.
         /// </summary>
         readonly static public string MANAGE_BOE_HEADER_ISGS = "Note:  If there are multiple functional estimates in one BOE, a unique functional approver must be assigned to approve each functional estimate (i.e. a BOE with estimates for PM, Finance & Contracts requires 3 functional approvers).";

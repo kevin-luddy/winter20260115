@@ -13,6 +13,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Web;
     using System.Web.Mvc;
     using GenBOE.ActionLogic.Common;
+    using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.ModelView;
@@ -24,7 +25,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.Objects;
     using GenTRAC.DataBridge.DTO;
     using IES.Common;
+    using IES.Common.classes;
     using IES.Common.Exceptions;
+    using IES.Common.OfficeUtilities;
 
     /// <summary>
     /// Action Logic for the Reports Controller
@@ -42,6 +45,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IProposalLoader proposalLoader;
         private readonly IWorkspaceControllerLogic workspaceControllerLogic;
         private readonly IRteTemplateDataLoader rteTemplateDataLoader;
+        private readonly TravelTripCostCalculation travelTripCostCalculator;
 
         #region Cache Setup
 
@@ -76,6 +80,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="proposalLoader">Proposal Loader</param>
         /// <param name="workspaceControllerLogic">Workspace Controller Logic</param>
         /// <param name="rteTemplateDataLoader">The RTE Template dto loader.</param>
+        /// <param name="travelTripCostCalculator">Travel Trip Cost Calculator</param>
         public ReportsControllerLogic(
             IBOEExporter boeExporter,
             BOESummary boeSummary,
@@ -84,7 +89,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             BOEDiscrepancyReport boeDiscrepancyReport,
             IProposalLoader proposalLoader,
             IWorkspaceControllerLogic workspaceControllerLogic,
-            IRteTemplateDataLoader rteTemplateDataLoader)
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            TravelTripCostCalculation travelTripCostCalculator)
         {
             this.boeExporter = boeExporter;
             this.boeSummary = boeSummary;
@@ -94,6 +100,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.proposalLoader = proposalLoader;
             this.workspaceControllerLogic = workspaceControllerLogic;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
+            this.travelTripCostCalculator = travelTripCostCalculator;
 
             this.cache = new MemoryCache();
         }
@@ -531,6 +538,182 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     toReturn.Add("PTM Tracking #");
                 }
             }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Get the BOE Export Inputs used for the BOE Status and BOE/WBS Reports
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <returns>BOE Export Inputs</returns>
+        public BOEExportInputs GetExportInputsForStatusAndWbsReports(FullWorkspace ws)
+        {
+            if(ws == null)
+            {
+                throw new ArgumentNullException(nameof(ws));
+            }
+
+            List<FullBoe> boes = ws.Boes.ToList();
+            List<BoeTaskElementDTO> tasks = ws.TaskElements.ToList();
+
+            bool isOffloading = ws.ProjectMapType != ProjectMapType.StandardWithoutOffload;
+            if (isOffloading)
+            {
+                OffloadLaborRates offloader = new OffloadLaborRates();
+                List<int> selectedBoeIds = boes.Select(b => b.Id).ToList();
+                OffloadLaborRatesResults results = offloader.OffloadWorkspace(boes.Where(b => selectedBoeIds.Contains(b.Id)).ToList(), ws);
+
+                boes = results.Boes.ToList();
+                tasks = boes.SelectMany(b => b.TaskElements).ToList();
+            }
+
+            return new BOEExportInputs(boes, boes, tasks, ws);
+        }
+
+        /// <summary>
+        /// Generates a ModelView for the WBS/BOE Report
+        /// </summary>
+        /// <param name="exportInputs">The export inputs.</param>
+        /// <returns>
+        /// WBS/BOE Report Modelview
+        /// </returns>
+        public ICollection<BoeWbsReportModelView> GenerateWbsBoeReport(BOEExportInputs exportInputs)
+        {
+            if (exportInputs == null)
+            {
+                throw new ArgumentNullException(nameof(exportInputs));
+            }
+
+            ICollection<BoeWbsReportModelView> toReturn = new Collection<BoeWbsReportModelView>();
+
+            // Get all BOEs in the Workspace
+            IReadOnlyCollection<BoeDTO> allBOEsInWorkspace = exportInputs.Boes;
+            HashSet<TripDTO> allTravelTrips = new HashSet<TripDTO>(exportInputs.TravelTrips);
+            HashSet<PerDiemDTO> allPerDiems = new HashSet<PerDiemDTO>(exportInputs.PerDiemsForTravelTrips);
+            HashSet<EscalationRatesDTO> allEscalations = new HashSet<EscalationRatesDTO>(exportInputs.EscalationRates);
+            HashSet<MiscTravelRateDTO> allMiscTravelRates = new HashSet<MiscTravelRateDTO>(exportInputs.MiscTravelRatesForTravelTrips);
+            
+            // Create a report model view for each BOE
+            foreach (BoeDTO boe in allBOEsInWorkspace)
+            {
+                BoeWbsReportModelView modelView = new BoeWbsReportModelView();
+
+                // Set WBS Data
+                WbsDTO wbs = exportInputs.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
+
+                modelView.WBSNumber = (wbs == null ? string.Empty : wbs.WbsNumber);
+                modelView.WBSTitle = (wbs == null ? "No WBS" : wbs.WbsTitle);
+
+                // Set BOE Data
+                modelView.BOETitle = boe.Title ?? string.Empty;
+
+                ICollection<BoeTaskElementDTO> tasks = exportInputs.TaskElements.Where(x => x.BoeID == boe.Id).ToCollection();
+                ICollection<TravelDTO> travelElements = exportInputs.Travels.Where(x => x.BoeID == boe.Id).ToCollection();
+                ICollection<OtherDirectCostDTO> odcs = exportInputs.Odcs.Where(x => x.BoeID == boe.Id).ToCollection();
+
+                modelView.TotalHours = (from taskElement in tasks
+                                        from laborType in taskElement.taskElementLabors
+                                        where laborType.SpreadType == SpreadType.Hours
+                                              && laborType.ValueSpread.HasValue
+                                        select laborType.ValueSpread.Value).Sum();
+
+                decimal taskCost = 0;
+
+                // calculate labor cost
+                foreach (ResourceTypeDto boeResource in tasks.SelectMany(x => x.taskElementLabors))
+                {
+                    taskCost += boeResource.SpreadType == SpreadType.Cost ? Convert.ToDecimal(boeResource.ValueSpread) : 0m;
+                }
+
+                decimal odcCost = ((decimal)(odcs.Sum(odc => odc.ODCTypes.Sum(odcTypes => odcTypes.ODCSpreads.Sum(odcSpreads => odcSpreads.CostSpreadValue))))) / 100;
+                // Sum the trip data for all travel elements.
+                decimal travelCost = 0;
+                foreach (TravelDTO travel in travelElements)
+                {
+                    foreach (TravelTripType tripType in travel.TravelTrips)
+                    {
+                        TripDTO trip = allTravelTrips.First(i => i.TripID == tripType.SystemTripID);
+                        MiscTravelRateDTO miscRateDTO = allMiscTravelRates.First(i => i.Id == trip.MiscTravelRateID);
+                        PerDiemDTO perDiem = allPerDiems.First(i => i.Id == trip.PerDiemID);
+                        travelCost += this.travelTripCostCalculator.CalculateTravelCost(tripType, exportInputs.FullWorkspace, trip, miscRateDTO.MiscTravelRate, perDiem, allEscalations).CostTotal;
+                    }
+                }
+
+                modelView.TotalCost = taskCost + odcCost + travelCost;
+
+                // Add the model view to the list to sort and return
+                toReturn.Add(modelView);
+            }
+
+            // Sort the modelViews by WBS and BOE Title
+            toReturn = toReturn.OrderBy(x => x.WBSNumber).ThenBy(x => x.BOETitle).ToCollection();
+
+            // Get totals
+            toReturn.Add(new BoeWbsReportModelView() {
+                BOETitle = CommonConstants.SET_AS_BOLD_FOR_EXCEL + "Totals",
+                TotalHours = toReturn.Sum(x => x.TotalHours),
+                TotalCost = toReturn.Sum(x => x.TotalCost)
+            });
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Export the WBS/BOE Report for the given workspace
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="fileLocation">Location of the template file</param>
+        /// <param name="reportModelView">Report model view</param>
+        /// <param name="exportInputs">export inputs</param>
+        /// <returns>Report filename</returns>
+        public string ExportWbsBoeReport(FullWorkspace ws, string fileLocation, ICollection<BoeWbsReportModelView> reportModelView, BOEExportInputs exportInputs)
+        {
+            if(ws == null)
+            {
+                throw new ArgumentNullException(nameof(ws));
+            }
+
+            string toReturn = string.Empty;
+
+            if(reportModelView.Any())
+            {
+                // Create rows for the export file
+                ExcelExportWorksheet worksheet = this.GetWbsBoeReportWorksheet(reportModelView, exportInputs);
+
+                // pass to the generic excel exporter
+                toReturn = ExcelExporter.ExportToExcelFile(fileLocation, true, new List<ExcelExportWorksheet> { worksheet }, new int?[] { 1 }, ws.IsUsingEquivalentPerson);
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Get the worksheet for the WBS/BOE report, populated with data from the modelview
+        /// </summary>
+        /// <param name="reportModelView">modelview for the report</param>
+        /// <param name="exportInputs">export inputs</param>
+        /// <returns>Worksheet for the report</returns>
+        private ExcelExportWorksheet GetWbsBoeReportWorksheet(ICollection<BoeWbsReportModelView> reportModelView, BOEExportInputs exportInputs)
+        {
+            ExcelExportWorksheet toReturn = new ExcelExportWorksheet();
+
+            string hoursFormatString = Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision);
+            string hoursLabel = "Total " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
+
+            // Add headers
+            toReturn.Add(ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.WBS_TITLE_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER,
+                hoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER);
+
+            toReturn.AddRange(from mv in reportModelView
+                              select new Collection<string>
+                              {
+                                  mv.WBSNumber,
+                                  mv.WBSTitle,
+                                  mv.BOETitle,
+                                  CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + mv.TotalHours.ToString(hoursFormatString),
+                                  CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, mv.TotalCost)
+                              });
 
             return toReturn;
         }
