@@ -74,6 +74,7 @@ CREATE PROCEDURE [dbo].[upsertProposal]
       @CertificationLastEmailed datetime2 = NULL,
 	  @NoBidDate datetime2 = NULL,
 	  @IsRevision bit,
+	  @RevisionOfId int,
 	  @ReasonCertificationNotRequired INT = 1,
 	  @OtherReasonComment VARCHAR(1000) = NULL
 )
@@ -108,6 +109,7 @@ AS
 **			6/17/2020	ranzalon				BOEJ-4535 IsRevision
 **			6/23/2020	Dusan					BOEJ-4626 Add Certification Not Required
 **			6/23/2020	ranzalon				BOEJ-4669 No new tracking number when IsRevision 
+**			7/2/2020	ranzalon				BOEJ-4687 Link Revisions to Revised Proposal
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -246,7 +248,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,[CertificationTimelineCompleted]
 		,[CertificationLastEmailed]
 		,[NoBidDate]
-		,[IsRevision]
+		,[RevisionOfId]
 		,[ReasonCertificationNotRequired]
 		,[OtherReasonComment]
 		)
@@ -310,7 +312,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@CertificationTimelineCompleted
 		,@CertificationLastEmailed
 		,@NoBidDate
-		,@IsRevision
+		,@RevisionOfId
 		,@ReasonCertificationNotRequired
 		,@OtherReasonComment
 		)
@@ -408,7 +410,7 @@ ELSE
 						,[CertificationTimelineCompleted] = @CertificationTimelineCompleted
 						,[CertificationLastEmailed] = @CertificationLastEmailed
 						,[NoBidDate] = @NoBidDate
-						,[IsRevision] = @IsRevision
+						,[RevisionOfId] = @RevisionOfId
 						,[ReasonCertificationNotRequired] = @ReasonCertificationNotRequired
 						,[OtherReasonComment] = @OtherReasonComment
 

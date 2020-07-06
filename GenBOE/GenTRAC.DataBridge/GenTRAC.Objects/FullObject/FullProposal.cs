@@ -71,7 +71,10 @@ namespace GenTRAC.Objects.FullObject
             {
                 foreach (PropertyInfo prop in proposal.GetType().GetProperties())
                 {
-                    this.GetType().GetProperty(prop.Name).SetValue(this, prop.GetValue(proposal, null), null);
+                    if (prop.CanWrite)
+                    {
+                        this.GetType().GetProperty(prop.Name).SetValue(this, prop.GetValue(proposal, null), null);
+                    }
                 }
             }
         }

@@ -130,7 +130,7 @@ namespace GenTRAC.Tests.DAL.Loader
                 CertificationDate = new DateTime(2013, 6, 7),
                 CertificationLastEmailed = new DateTime(2013, 6, 8),
                 CertificationTimelineCompleted = new DateTime(2013, 6, 9),
-                IsRevision = false,
+                RevisionOfId = null,
                 ReasonCertificationNotRequired = ReasonCertificationNotRequired.Other,
                 OtherReasonComment = "Other comment"
             };
