@@ -211,12 +211,17 @@ namespace GenTRAC.ActionLogic
         /// Save only a reference to an attachment, for a revised proposal
         /// </summary>
         /// <param name="proposalId">Current Proposal Id</param>
-        /// <param name="attachmentType">Attachment type that you want to reference</param>
-        public void SaveAttachmentReferenceForRevisedProposal(int proposalId, AttachmentType attachmentType)
+        /// <param name="attachment">Attachment that you are saving</param>
+        public void SaveAttachmentReferenceForRevisedProposal(int proposalId, AttachmentDto attachment)
         {
+            if (attachment == null)
+            {
+                throw new ArgumentNullException(nameof(attachment));
+            }
+
             using (TransactionScope scope = new TransactionScope())
             {
-                this.attachmentLoader.SaveAttachmentReferenceForRevisedProposal(proposalId, attachmentType);
+                attachment.Id = this.attachmentLoader.SaveAttachmentReferenceForRevisedProposal(proposalId, attachment.AttachmentType).Value;
                 scope.Complete();
             }
         }

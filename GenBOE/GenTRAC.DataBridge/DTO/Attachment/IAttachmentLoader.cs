@@ -43,10 +43,11 @@ namespace GenTRAC.DataBridge.DTO
         bool OptionalAttachmentHasBeenUploaded(int proposalId);
 
         /// <summary>
-        /// Save a reference to an attachment
+        /// Save only a reference to an attachment, for a revised proposal
         /// </summary>
         /// <param name="proposalId">Current Proposal Id</param>
         /// <param name="attachmentType">Attachment type that you want to reference</param>
-        void SaveAttachmentReferenceForRevisedProposal(int proposalId, AttachmentType attachmentType);
+        /// <returns>Attachment Id</returns>
+        int? SaveAttachmentReferenceForRevisedProposal(int proposalId, AttachmentType attachmentType);
     }
 }

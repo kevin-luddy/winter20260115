@@ -147,6 +147,7 @@
                 $('#updateDate-' + attachmentIdentifier).text('');
                 $('#filenameLink-' + attachmentIdentifier).hide();
                 $('#filenameLabel-' + attachmentIdentifier).show();
+                $('#filenameLabelRevision-' + attachmentIdentifier).hide();
                 $('#deleteEnabled-' + attachmentIdentifier).hide();
                 $('#deleteDisabled-' + attachmentIdentifier).show();
             } else {
@@ -158,6 +159,12 @@
                 $('#filenameLabel-' + attachmentIdentifier).hide();
                 $('#deleteEnabled-' + attachmentIdentifier).show();
                 $('#deleteDisabled-' + attachmentIdentifier).hide();
+            }
+
+            if (attachment.IsRevisionReference === true) {
+                $('#filenameLabelRevision-' + attachmentIdentifier).show();
+                $('#updateDate-' + attachmentIdentifier).text('');
+                $('#uploadButton-' + attachmentIdentifier).hide();
             }
         };
 
@@ -171,26 +178,28 @@
             return url;
         };
 
-        psaWidget.AddFile = function (fileInputId, attachmentType) {
-        // TO DO -> need to only pop the dialog if it's REVISED
-
-            GenSession.commonDialog('Revision File Upload', 'Would you like to upload a new file, or is the document provided in the previous version and is still up to date?',
-                [{
-                    buttonClass: 'ies-action',
-                    ButtonText: 'Upload New File',
-                    ButtonName: "new-button",
-                    callbackMethod: function () { psaWidget.SelectFile(fileInputId); }
-                }, {
-                    buttonClass: 'ies-warning',
-                    ButtonText: 'Use Previous Version',
-                    ButtonName: "link-button",
-                    callbackMethod: function () { psaWidget.AddReferenceToRevision(attachmentType); }
-                }, {
-                    buttonClass: 'ies',
-                    ButtonText: 'Cancel',
-                    ButtonName: "cancel-button",
-                    callbackMethod: null
-                }], 450, null, null);
+        psaWidget.AddAttachment = function (fileInputId, attachmentType) {
+            if ('@(ViewBag.IsRevision)' == 'True') {
+                GenSession.commonDialog('Revision File Upload', 'Would you like to upload a new file, or is the document provided in the previous version and is still up to date?',
+                    [{
+                        buttonClass: 'ies-action',
+                        ButtonText: 'Upload New File',
+                        ButtonName: "new-button",
+                        callbackMethod: function () { psaWidget.SelectFile(fileInputId); }
+                    }, {
+                        buttonClass: 'ies-warning',
+                        ButtonText: 'Use Previous Version',
+                        ButtonName: "link-button",
+                        callbackMethod: function () { psaWidget.AddReferenceToRevision(attachmentType); }
+                    }, {
+                        buttonClass: 'ies',
+                        ButtonText: 'Cancel',
+                        ButtonName: "cancel-button",
+                        callbackMethod: null
+                    }], 450, null, null);
+            } else {
+                psaWidget.SelectFile(fileInputId);
+            }
         };
 
         psaWidget.AddReferenceToRevision = function (attachmentType) {
@@ -210,8 +219,8 @@
                 type: 'POST',
                 contentType: false,
                 processData: false
-            }).done(function () {
-                psaWidget.refreshPage();
+            }).done(function (attachment) {
+                psaWidget.updateFields(attachment);
             });
         }
 
@@ -240,6 +249,7 @@
                     formData.append('attachmentType', attachmentType);
                     formData.append('id', id);
                     formData.append('updateDateLong', $('#updateDateLong-' + attachmentIdentifier).val().toString());
+                    formData.append('IsRevisionReference', $('#IsRevision-' + attachmentIdentifier).val());
 
                     $.ajax({
                         url: url,
@@ -312,7 +322,7 @@
         <br />
         @if (Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete && Model.PostSubmittalAttachments.Count(file => file.AttachmentType == AttachmentType.Other) < Model.MaxOtherFileCount) // Only show the button if the max number of files has not been uploaded.
         {
-            <button id="add-attachment" class="ies-action" type="button" onclick="psaWidget.AddFile('add-attachment-file', '@((int) AttachmentType.Other)')">+ Add Other Attachment</button>
+            <button id="add-attachment" class="ies-action" type="button" onclick="psaWidget.AddAttachment('add-attachment-file', '@((int) AttachmentType.Other)')">+ Add Other Attachment</button>
             <div id="add-attachment-loader" class="loader display-none"></div>
             <input type="file" id="add-attachment-file" onchange="psaWidget.UploadAttachment(this, '@((int) AttachmentType.Other)')" style="display: none;">
             <br />
@@ -351,7 +361,9 @@
                     }
                     <td>@Html.Raw(attachment.AttachmentTypeDisplayString)</td>
                     <td>
-                        <a id="filenameLink-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "" : "display:none")" href="/@WebConstants.Controller.PSA/@WebConstants.Action.DOWNLOAD_ATTACHMENT/id/@Model.ProposalId/?fileId=@attachment.Id">
+                        @Html.Hidden("IsRevision-" + attachmentIdentifier, attachment.IsRevisionReference, new { id = "IsRevision-" + attachmentIdentifier })
+                        <span id="filenameLabelRevision-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded && attachment.IsRevisionReference ? "" : "display:none"); font-style:italic; ">This document is provided in the previous version and is still up to date</span>
+                        <a id="filenameLink-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded && !attachment.IsRevisionReference ? "" : "display:none")" href="/@WebConstants.Controller.PSA/@WebConstants.Action.DOWNLOAD_ATTACHMENT/id/@Model.ProposalId/?fileId=@attachment.Id">
                             @attachment.Name
                         </a>
                         <span id="filenameLabel-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "display:none" : "")">Select File</span>
@@ -361,7 +373,7 @@
                         <td style="text-align: center;">
                             @if (attachment.AttachmentType != AttachmentType.Other) // The upload button should not be visible for 'Other' attachments.  These should be added via the Add Attachment button.
                             {
-                                <a onclick="psaWidget.AddFile('@attachmentIdentifier-file', '@((int) attachment.AttachmentType)')">
+                                <a onclick="psaWidget.AddAttachment('@attachmentIdentifier-file', '@((int) attachment.AttachmentType)')">
                                     <img id="uploadButton-@attachmentIdentifier" src="~/Content/images/UploadFile_16x.png" />
                                 </a>
                             }
@@ -370,8 +382,8 @@
                             <input id="updateDateLong-@attachmentIdentifier" value="@attachment.UpdateDateLong" type="hidden" />
                         </td>
                     }
-                    <td id="uploadedBy-@attachmentIdentifier">@attachment.UploadedBy</td>
-                    <td id="updateDate-@attachmentIdentifier" data-utcdate="@(attachment.FileHasBeenUploaded ? attachment.UpdateDate.ToUniversalTime().ToString("s", System.Globalization.CultureInfo.InvariantCulture) : "")"></td>
+                    <td id="uploadedBy-@attachmentIdentifier">@(attachment.IsRevisionReference ? string.Empty : attachment.UploadedBy)</td>
+                    <td id="updateDate-@attachmentIdentifier" data-utcdate="@(attachment.FileHasBeenUploaded && !attachment.IsRevisionReference? attachment.UpdateDate.ToUniversalTime().ToString("s", System.Globalization.CultureInfo.InvariantCulture) : string.Empty)"></td>
                 </tr>
             }
         </table>

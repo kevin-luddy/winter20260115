@@ -91,8 +91,8 @@ namespace GenTRAC.Web.Controllers
 
             if (attachment.IsRevisionReference)
             {
-                this.psaLogic.SaveAttachmentReferenceForRevisedProposal(proposalId, attachment.AttachmentType);
-                return this.Json(true);
+                this.psaLogic.SaveAttachmentReferenceForRevisedProposal(proposalId, attachment);
+                return this.Json(attachment);
             }
             else
             {
