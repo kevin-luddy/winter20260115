@@ -50,6 +50,7 @@ x64/
 *.pidb
 *.log
 *.scc
+*.jfm
 
 # Application Logs
 [Ll]ogs/*.csv
