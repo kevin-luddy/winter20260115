@@ -391,7 +391,7 @@
                                             Approval Workflow Completed: @Model.CompletedDate
                                         </text>
                                     }
-                                    else if (Model.ProposalStatus == ProposalStatus.Revision || Model.ProposalStatus == ProposalStatus.Archived || Model.ProposalStatus == ProposalStatus.Deleted)
+                                    else if (Model.ProposalStatus == ProposalStatus.Revision || Model.ProposalStatus == ProposalStatus.Archived || Model.ProposalStatus == ProposalStatus.Deleted || Model.ProposalStatus == ProposalStatus.NoBid)
                                     {
                                         @Model.ProposalStatus.GetDescription();
                                     }
