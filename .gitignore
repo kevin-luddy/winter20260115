@@ -51,9 +51,6 @@ x64/
 *.scc
 *.jfm
 
-# App Logs (e.g. performance logs)
-logs/
-
 # Application Logs
 [Ll]ogs/*.csv
 
