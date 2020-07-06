@@ -27,6 +27,13 @@ BEGIN
 ALTER TABLE [dbo].[Proposal]
 ADD [RevisionOfId] int NULL;
 
+ALTER TABLE [dbo].[Proposal]
+ADD CONSTRAINT [FK_Proposal_Proposal]
+FOREIGN KEY ([RevisionOfId]) REFERENCES [dbo].[Proposal]([ProposalID]);
+
+ALTER TABLE [dbo].[Proposal]
+CHECK CONSTRAINT [FK_Proposal_Proposal];
+
 END
 
 /*
