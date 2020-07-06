@@ -1,10 +1,12 @@
 namespace GenBOE.Dtos
 {
+    using System;
     using System.Collections.ObjectModel;
 
     /// <summary>
     /// Subclass of ResourceTypeDto that captures additional details specific to off-loaded resources
     /// </summary>
+    [Serializable]
     public class SubResourceTypeDto : ResourceTypeDto
     {
         /// <summary>
