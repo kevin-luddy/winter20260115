@@ -207,8 +207,11 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="proposalId">Current Proposal Id</param>
         /// <param name="attachmentType">Attachment type that you want to reference</param>
-        public void SaveAttachmentReferenceForRevisedProposal(int proposalId, AttachmentType attachmentType)
+        /// <returns>Attachment Id</returns>
+        public int? SaveAttachmentReferenceForRevisedProposal(int proposalId, AttachmentType attachmentType)
         {
+            int? toReturn = null;
+
             using (StopwatchTimer sw = new StopwatchTimer("AttachmentLoader.SaveAttachmentReferenceForRevisedProposal", this.Log))
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
@@ -216,11 +219,14 @@ namespace GenTRAC.DataBridge.DTO
                     // ToDo: Dusan / RJ - replace ".ProposalID" with OriginalProposalId, once it's ready
                     // will need to write unit test for it as well. 
                     int originalProposalId = dbModel.Proposals.First(x => x.ProposalID == proposalId).ProposalID;
+originalProposalId = 74825;
                     int attachmentId = dbModel.ProposalsAttachments.First(x => x.AttachmentType == (int)attachmentType && x.Proposal.ProposalID == originalProposalId).AttachmentId;
 
-                    dbModel.upsertAttachment(attachmentId, null, null, null, null, (int)attachmentType, proposalId, true);
+                    toReturn = dbModel.upsertAttachment(attachmentId, null, null, null, null, (int)attachmentType, proposalId, true).FirstOrDefault();
                 }
             }
+
+            return toReturn;
         }
     }
 }
