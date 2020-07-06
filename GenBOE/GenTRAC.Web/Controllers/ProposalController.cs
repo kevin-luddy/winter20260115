@@ -84,20 +84,22 @@ namespace GenTRAC.Web.Controllers
         /// Display proposal index
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
+        /// <param name="isNewRevision">If displaying Proposal Index for creating a new Revision</param>
+        /// <param name="oldProposalId">ID of the old proposal if creating a new Revision</param>
         /// <returns>create new proposal view</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "model")]
-        public ViewResult DisplayProposalIndex(int? proposalId)
+        public ViewResult DisplayProposalIndex(int? proposalId, bool? isNewRevision, int? oldProposalId)
         {
-            if (proposalId.HasValue)
+            ProposalIndexModelView model;
+
+            if (isNewRevision.HasValue && isNewRevision.Value)
             {
-                this.ViewBag.proposalid = proposalId.Value.ToString();
+                model = this.proposalLogic.GetDataForProposalRevisionIndex(oldProposalId.Value);
             }
             else
             {
-                this.ViewBag.proposalid = "null";
+                model = this.proposalLogic.GetDataForProposalIndex(proposalId);
             }
-
-            ProposalIndexModelView model = this.proposalLogic.GetDataForProposalIndex(proposalId);
+ 
             return this.View(WebConstants.View.PROPOSAL_INDEX, model);
         }
 
@@ -108,25 +110,30 @@ namespace GenTRAC.Web.Controllers
         /// <returns>create new proposal view</returns>
         public ActionResult DisplayProposalDetails(int? proposalId)
         {
-            if (proposalId.HasValue)
-            {
-                this.ViewBag.proposalid = proposalId.Value.ToString();
-            }
-            else
-            {
-                this.ViewBag.proposalid = "null";
-            }
-
             ProposalIndexModelView model = this.proposalLogic.GetDataForProposalIndex(proposalId);
             return this.View(WebConstants.View.PROPOSAL_DETAILS, model); // this is for the tabs
+        }
+
+        /// <summary>
+        /// Display proposal info for creating a new Revision
+        /// </summary>
+        /// <param name="proposalId">ID of the proposal being revised</param>
+        /// <returns>create new revision view</returns>
+        public ActionResult DisplayProposalRevisionDetails(int proposalId)
+        {
+            this.proposalLogic.ValidateSaveNewRevision(proposalId);
+
+            ProposalIndexModelView model = this.proposalLogic.GetDataForProposalRevisionIndex(proposalId);
+            return this.View(WebConstants.View.PROPOSAL_DETAILS, model);
         }
 
         /// <summary>
         /// Display proposal information
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
+        /// <param name="isNewRevision">Whether creating a new revision</param>
         /// <returns>proposal information view</returns>
-        public PartialViewResult DisplayProposalInformation(int? proposalId)
+        public PartialViewResult DisplayProposalInformation(int? proposalId, bool isNewRevision = false)
         {
             if (proposalId.HasValue)
             {
@@ -137,7 +144,16 @@ namespace GenTRAC.Web.Controllers
                 this.ViewBag.proposalid = "null";
             }
 
-            ProposalInformationModelView model = this.proposalLogic.GetDataForProposalInformation(proposalId);
+            ProposalInformationModelView model;
+            if (isNewRevision)
+            {
+                model = this.proposalLogic.GetDataForProposalRevisionInformation(proposalId);
+            }
+            else
+            {
+                model = this.proposalLogic.GetDataForProposalInformation(proposalId);
+            }
+
             return this.PartialView(WebConstants.View.PROPOSAL_INFORMATION, model);
         }
 
@@ -145,8 +161,9 @@ namespace GenTRAC.Web.Controllers
         /// Display proposal general information
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
+        /// <param name="isNewRevision">Whether creating a new revision</param>
         /// <returns>proposal general information view</returns>
-        public PartialViewResult DisplayProposalGeneralInformation(int? proposalId)
+        public PartialViewResult DisplayProposalGeneralInformation(int? proposalId, bool isNewRevision = false)
         {
             if (proposalId.HasValue)
             {
@@ -157,7 +174,7 @@ namespace GenTRAC.Web.Controllers
                 this.ViewBag.proposalid = "null";
             }
 
-            ProposalGeneralInformationModelView model = this.proposalLogic.GetDataForProposalGeneralInformation(proposalId);
+            ProposalGeneralInformationModelView model = this.proposalLogic.GetDataForProposalGeneralInformation(proposalId, isNewRevision);
             return this.PartialView(WebConstants.View.PROPOSAL_GENERAL_INFORMATION, model);
         }
 
@@ -165,8 +182,9 @@ namespace GenTRAC.Web.Controllers
         /// Display proposal user information
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
+        /// <param name="isNewRevision">Whether creating a new revision</param>
         /// <returns>proposal user information view</returns>
-        public PartialViewResult DisplayProposalApprovals(int? proposalId)
+        public PartialViewResult DisplayProposalApprovals(int? proposalId, bool isNewRevision = false)
         {
             if (proposalId.HasValue)
             {
@@ -177,7 +195,7 @@ namespace GenTRAC.Web.Controllers
                 this.ViewBag.proposalid = "null";
             }
 
-            ProposalApprovalsModelView model = this.proposalLogic.GetDataForProposalApprovals(proposalId);
+            ProposalApprovalsModelView model = this.proposalLogic.GetDataForProposalApprovals(proposalId, isNewRevision);
             return this.PartialView(WebConstants.View.PROPOSAL_APPROVALS, model);
         }
 
@@ -278,9 +296,10 @@ namespace GenTRAC.Web.Controllers
         /// <param name="proposalGeneralInfo">Proposal general information model view</param>
         /// <param name="proposalApprovalsInfo">Proposal approvals model view</param>
         /// <param name="proposalUserInfo">Proposal user information model view</param>
+        /// <param name="isNewRevision">Whether creating a new revision</param>
         /// <returns>true if success else false</returns>
         public JsonResult SaveProposal(int? proposalId, ProposalInformationModelView proposalInfo, ProposalGeneralInformationModelView proposalGeneralInfo,
-            ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo)
+            ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, bool isNewRevision = false)
         {
             if (proposalGeneralInfo == null)
             {
@@ -292,14 +311,26 @@ namespace GenTRAC.Web.Controllers
                 throw new ArgumentNullException(nameof(proposalApprovalsInfo));
             }
 
+            int? revisedProposalId = proposalId;
+            if (isNewRevision)
+            {
+                proposalId = null;
+            }
+
             List<ValidationMessage> validationErrors = HttpContext.Items["ValidationErrors"] as List<ValidationMessage>;
             bool invalidUnsavedUsers = this.ValidateProposalFields(proposalId, proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, validationErrors);
 
-            ProposalGeneralInformationModelView originalProposalInfo = this.proposalLogic.GetDataForProposalGeneralInformation(proposalId);
+            ProposalGeneralInformationModelView originalProposalInfo = this.proposalLogic.GetDataForProposalGeneralInformation(proposalId, false);
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
             {
-                proposalId = this.proposalLogic.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo);
+                if (isNewRevision && revisedProposalId.HasValue)
+                {
+                    ProposalDto proposal = this.proposalLogic.GetByProposalId(revisedProposalId.Value);
+                    this.proposalLogic.SetProposalRevised(proposal.Id, proposal.UpdateDate);
+                }
+
+                proposalId = this.proposalLogic.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, revisedProposalId);
 
                 if (proposalId.HasValue)
                 {
@@ -406,31 +437,5 @@ namespace GenTRAC.Web.Controllers
             bool includeIDIQ = isScheduleProposal ?? true;
             return this.proposalLogic.GetContractTypesForContractTypeGroup(contractTypeGroup, includeIDIQ);
         }
-
-        #region Proposal Revisions
-
-        /// <summary>
-        /// Add a new revision for a Proposal
-        /// </summary>
-        /// <param name="proposalId">ID of Proposal</param>
-        /// <returns>Json result</returns>
-        public JsonResult SaveNewProposalRevision(int proposalId)
-        {
-            ProposalDto proposal = this.proposalLogic.GetByProposalId(proposalId);
-
-            this.proposalLogic.ValidateSaveNewRevision(proposal);
-
-            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
-            {
-                this.proposalLogic.SetProposalRevised(proposal.Id, proposal.UpdateDate);
-
-                // TODO - BOEJ-4636 - create new revision
-                int revisionId = -1;
-                scope.Complete();
-                return this.Json(new { revisionId = revisionId });
-            }
-        }
-
-        #endregion
     }
 }

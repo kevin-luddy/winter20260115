@@ -218,6 +218,17 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
+        /// Determines if the No Bid button will be enabled
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <returns>True if user no bid should be enabled</returns>
+        public bool IsNoBidEnabled(int proposalId)
+        {
+            FullProposal proposal = this.GetFullProposalDto(proposalId);
+            return proposal.ProposalStatus == ProposalStatus.InProgress;
+        }
+
+        /// <summary>
         /// Validate that the Cover Sheet approver is still approved
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>

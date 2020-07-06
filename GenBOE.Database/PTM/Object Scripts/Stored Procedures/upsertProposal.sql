@@ -74,6 +74,7 @@ CREATE PROCEDURE [dbo].[upsertProposal]
       @CertificationLastEmailed datetime2 = NULL,
 	  @NoBidDate datetime2 = NULL,
 	  @IsRevision bit,
+	  @RevisionOfId int,
 	  @ReasonCertificationNotRequired INT = 1,
 	  @OtherReasonComment VARCHAR(1000) = NULL
 )
@@ -107,6 +108,8 @@ AS
 **			3/31/2020	ranzalon				BOEJ-4531 No Bid Date
 **			6/17/2020	ranzalon				BOEJ-4535 IsRevision
 **			6/23/2020	Dusan					BOEJ-4626 Add Certification Not Required
+**			6/23/2020	ranzalon				BOEJ-4669 No new tracking number when IsRevision 
+**			7/2/2020	ranzalon				BOEJ-4687 Link Revisions to Revised Proposal
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -154,7 +157,7 @@ IF @IsForecast = 1
 ELSE
 	BEGIN
 	/* Generate new Tracking ID if this is a new Non-Forecast proposal or editing a Non-Forecast proposal that used to be Forecast */
-		IF @ProposalID < 0 OR @TrackingID = '' OR @TrackingID is NULL
+		IF (@ProposalID < 0 AND @IsRevision = 0) OR @TrackingID = '' OR @TrackingID is NULL
 			BEGIN
 				SELECT TOP 1 
 						@TrackingID = CAST(ProposalYear AS varchar(4)) + '-' + CASE LEN(ProposalNumber) 
@@ -245,7 +248,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,[CertificationTimelineCompleted]
 		,[CertificationLastEmailed]
 		,[NoBidDate]
-		,[IsRevision]
+		,[RevisionOfId]
 		,[ReasonCertificationNotRequired]
 		,[OtherReasonComment]
 		)
@@ -309,7 +312,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@CertificationTimelineCompleted
 		,@CertificationLastEmailed
 		,@NoBidDate
-		,@IsRevision
+		,@RevisionOfId
 		,@ReasonCertificationNotRequired
 		,@OtherReasonComment
 		)
@@ -407,7 +410,7 @@ ELSE
 						,[CertificationTimelineCompleted] = @CertificationTimelineCompleted
 						,[CertificationLastEmailed] = @CertificationLastEmailed
 						,[NoBidDate] = @NoBidDate
-						,[IsRevision] = @IsRevision
+						,[RevisionOfId] = @RevisionOfId
 						,[ReasonCertificationNotRequired] = @ReasonCertificationNotRequired
 						,[OtherReasonComment] = @OtherReasonComment
 

@@ -233,7 +233,7 @@ namespace GenBOE.Web.Controllers
                         Dictionary<UserData, bool> genBoeAccess = this._permissionControllerLogic.GetGenBOEAccess(new Collection<UserData>() { new UserData() { Ntid = currentUser.NTID } });
                         if (genBoeAccess.Any(x => x.Value == false))
                         {
-                            ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", "The user does not have access to genBOE and their permissions cannot be changed. Please contact your administrator if this user needs access."));
+                            ValidationErrors.Add(new ValidationMessage("NoGenBoeAccess", "The user does not have access to genBOE and their permissions cannot be changed. Please have the user request access."));
                         }
                     }
 

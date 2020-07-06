@@ -34,6 +34,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public string ProposalTitle { get; set; }
 
         /// <summary>
+        /// Gets or sets the Revised Proposal Title
+        /// </summary>
+        public string RevisedProposalTitle { get; set; }
+
+        /// <summary>
         /// Proposal status
         /// </summary>
         public ProposalStatus ProposalStatus { get; set; }
@@ -100,5 +105,15 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Reason Certification is Not Required
         /// </summary>
         public ReasonCertificationNotRequired? ReasonCertificationNotRequired { get; set; }
+
+        /// <summary>
+        /// Whether creating a new Revision
+        /// </summary>
+        public bool IsNewRevision { get; set; }
+
+        /// <summary>
+        /// ID of the revised proposal if this proposal is a revision
+        /// </summary>
+        public int? RevisedProposalId { get; set; }
     }
 }

@@ -21,12 +21,18 @@ SET IDENTITY_INSERT [dbo].[ProposalStatusLU] OFF
 END
 
 IF NOT EXISTS (SELECT * FROM sys.all_columns C INNER JOIN sys.tables T on C.object_id = T.object_id INNER JOIN sys.schemas S ON T.schema_id = S.schema_id WHERE S.name = 'dbo' AND 
-	T.name = 'Proposal' AND C.name = 'IsRevision')
+	T.name = 'Proposal' AND C.name = 'RevisionOfId')
 BEGIN 
 
 ALTER TABLE [dbo].[Proposal]
-ADD [IsRevision] bit NOT NULL
-DEFAULT 0;
+ADD [RevisionOfId] int NULL;
+
+ALTER TABLE [dbo].[Proposal]
+ADD CONSTRAINT [FK_Proposal_Proposal]
+FOREIGN KEY ([RevisionOfId]) REFERENCES [dbo].[Proposal]([ProposalID]);
+
+ALTER TABLE [dbo].[Proposal]
+CHECK CONSTRAINT [FK_Proposal_Proposal];
 
 END
 
