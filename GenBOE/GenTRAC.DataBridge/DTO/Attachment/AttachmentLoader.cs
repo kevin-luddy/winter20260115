@@ -216,10 +216,7 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    // ToDo: Dusan / RJ - replace ".ProposalID" with OriginalProposalId, once it's ready
-                    // will need to write unit test for it as well. 
-                    int originalProposalId = dbModel.Proposals.First(x => x.ProposalID == proposalId).ProposalID;
-originalProposalId = 74825;
+                    int originalProposalId = dbModel.Proposals.First(x => x.ProposalID == proposalId).RevisionOfId.Value;
                     int attachmentId = dbModel.ProposalsAttachments.First(x => x.AttachmentType == (int)attachmentType && x.Proposal.ProposalID == originalProposalId).AttachmentId;
 
                     toReturn = dbModel.upsertAttachment(attachmentId, null, null, null, null, (int)attachmentType, proposalId, true).FirstOrDefault();
