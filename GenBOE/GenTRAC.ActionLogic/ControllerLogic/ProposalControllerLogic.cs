@@ -2291,9 +2291,12 @@ namespace GenTRAC.ActionLogic
 
             if (!model.ReasonCertificationNotRequired.HasValue)
             {
-                if (DateTime.TryParse(model.AgreementDate, out DateTime agreement) && DateTime.TryParse(model.AgreementDate, out DateTime certification))
+                DateTime? agreement = DateTime.TryParse(model.AgreementDate, out DateTime agreementDt) ? (DateTime?)agreementDt : null;
+                DateTime? certification = DateTime.TryParse(model.CertificationDate, out DateTime certificationDt) ? (DateTime?)certificationDt : null;
+
+                if (agreement.HasValue && certification.HasValue)
                 {
-                    TimeSpan span = certification - agreement;
+                    TimeSpan span = certification.Value - agreement.Value;
 
                     if (span.TotalDays > 5.0)
                     {
@@ -2308,17 +2311,17 @@ namespace GenTRAC.ActionLogic
                 if (isComplete)
                 {
                     // validate that all 3 required fields are set
-                    if (!proposal.AgreementDate.HasValue)
+                    if (!agreement.HasValue)
                     {
                         throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.AGREEMENT_DATE_REQUIRED);
                     }
 
-                    if (!proposal.CertificationDate.HasValue)
+                    if (!certification.HasValue)
                     {
                         throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CERTIFICATION_DATE_REQUIRED);
                     }
 
-                    if (!proposal.CutOffDateUtilization.HasValue)
+                    if (!model.CutOffDateUtilization.HasValue)
                     {
                         throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CUTOFF_DATE_UTILIZATION_REQUIRED);
                     }
