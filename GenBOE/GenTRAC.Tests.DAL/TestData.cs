@@ -427,8 +427,9 @@ namespace GenTRAC.Tests.DAL
         /// <param name="inProposalDto">The proposal to create</param>
         /// <param name="inAnticipatedDeliveryDate">The anticipated delivery date.</param>
         /// <param name="isForecasted">Boolean to tell whether to create a forecast proposal or a regular one.</param>
+        /// <param name="revisionOfId">Optional proposal id, for revision testing</param>
         /// <returns>The proposal</returns>
-        public ProposalDto GetProposal(bool inCreateNew = false, ProposalDto inProposalDto = null, DateTime? inAnticipatedDeliveryDate = null, bool isForecasted = false)
+        public ProposalDto GetProposal(bool inCreateNew = false, ProposalDto inProposalDto = null, DateTime? inAnticipatedDeliveryDate = null, bool isForecasted = false, int? revisionOfId = null)
         {
             ProposalDto toReturn = null;
 
@@ -474,6 +475,7 @@ namespace GenTRAC.Tests.DAL
                         newProposal.CreatedByUserId = userId;
                         newProposal.ProgramProposalStatus = ProgramProposalStatus.UnderStrategicReviewISGS;
                         newProposal.IsCostVolumeClassified = false;
+                        newProposal.RevisionOfId = revisionOfId;
 
                         if (isForecasted)
                         {

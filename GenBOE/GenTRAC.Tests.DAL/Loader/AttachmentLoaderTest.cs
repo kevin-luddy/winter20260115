@@ -152,7 +152,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             dto1.UpdateDate = sut.GetAttachmentsForProposal(proposal1.Id).ToList()[0].UpdateDate;
 
-            ProposalDto proposal2 = this.testData.GetProposal(true);
+            ProposalDto proposal2 = this.testData.GetProposal(true, revisionOfId: proposal1.Id);
             AttachmentDto dto2 = new AttachmentDto
             {
                 Id = dto1.Id,
@@ -221,6 +221,25 @@ namespace GenTRAC.Tests.DAL.Loader
             attachments = sut.GetAttachmentsForProposal(proposal1.Id).ToList();
             Assert.AreEqual(1, attachments.Count);
             this.AssertAreEqual(dto1, attachments[0]);
+
+            // Create a new reference, using the specific method
+            dto2.Id = sut.SaveAttachmentReferenceForRevisedProposal(proposal2.Id, dto1.AttachmentType).Value;
+            attachments = sut.GetAttachmentsForProposal(proposal2.Id).ToList();
+            Assert.AreEqual(1, attachments.Count);
+            this.AssertAreEqual(dto2, attachments[0]);
+
+            // delete the reference
+            dto2.Updateable = UpdateType.Deleted;
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                sut.Save(dto2);
+                scope.Complete();
+            }
+
+            // verify revision was deleted
+            attachments = sut.GetAttachmentsForProposal(proposal2.Id).ToList();
+            Assert.AreEqual(0, attachments.Count);
 
             // delete the full attachment
             // delete the reference
