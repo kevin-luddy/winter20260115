@@ -1951,8 +1951,6 @@ namespace GenTRAC.ActionLogic
             {
                 inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CONTRACT_TYPE_REQUIRED));
             }
-
-            // validate prop type here?
         }
 
         /// <summary>
