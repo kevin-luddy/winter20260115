@@ -287,7 +287,7 @@ namespace GenTRAC.ActionLogic
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
         /// <returns>full Proposal DTO</returns>
-        private FullProposal GetFullProposalDto(int? proposalId)
+        public FullProposal GetFullProposalDto(int? proposalId)
         {
             FullProposal fullProposal = null;
             if (proposalId.HasValue && proposalId >= 0)

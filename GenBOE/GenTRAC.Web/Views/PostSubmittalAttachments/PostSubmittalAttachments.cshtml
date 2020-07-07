@@ -1,7 +1,8 @@
 ﻿@model PostSubmittalAttachmentModelView
 @using GenTRAC.ActionLogic.ModelView.PostSubmittalAttachments
 @using GenTRAC.DataBridge.DTO
-<script>
+@{ string referencePrefix = "(REFERENCE) "; }
+    <script>
     var psaWidget;
 
     $(function () {
@@ -18,10 +19,6 @@
                 $(this).html(d.tz('America/New_York').format('M/D/YYYY, h:mm A zz'));
             }
         });
-
-        psaWidget.SelectFile = function(fileInputId) {
-            document.getElementById(fileInputId).click();
-        };
 
         psaWidget.ValidateFileTypeAndSize = function(e) {
             var errors = [];
@@ -43,7 +40,6 @@
             return errors;
         };
 
-        // Refresh the page.  Used following uploads/deletions of 'Other' attachments.
         psaWidget.refreshPage = function() {
             var url = GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.PROPOSAL',
@@ -53,7 +49,85 @@
             window.location = url + '#PSA';
             window.location.reload();
         };
+        psaWidget.UpdateFields = function(attachment) {
+            // The attachment identifier is <AttachmentType> (as an int) for standard attachments.  For 'Other' attachments, it is <AttachmentType>-<AttachmentId>.
+            var attachmentIdentifier = attachment.AttachmentType;
+            attachmentIdentifier += attachment.AttachmentType == @((int)AttachmentType.Other) ? '-' + attachment.Id : '';
 
+            $('#filenameLink-' + attachmentIdentifier).text((attachment.IsRevisionReference ? '@referencePrefix' : '') + attachment.Name);
+            $('#fileId-' + attachmentIdentifier).val(attachment.Id);
+            $('#updateDateLong-' + attachmentIdentifier).val(attachment.UpdateDateLong);
+            $('#IsRevisionReference-' + attachmentIdentifier).val(attachment.IsRevisionReference);
+
+            if (attachment.Name === null) {
+                $('#uploadedBy-' + attachmentIdentifier).text('');
+                $('#updateDate-' + attachmentIdentifier).text('');
+                $('#filenameLink-' + attachmentIdentifier).hide();
+                $('#filenameLabel-' + attachmentIdentifier).show();
+                $('#filenameLabelRevision-' + attachmentIdentifier).hide();
+                $('#deleteEnabled-' + attachmentIdentifier).hide();
+                $('#deleteDisabled-' + attachmentIdentifier).show();
+            } else {
+                $('#uploadedBy-' + attachmentIdentifier).text(attachment.UploadedBy);
+                $('#updateDate-' + attachmentIdentifier).text(moment(attachment.UpdateDate).tz('America/New_York').format('M/D/YYYY, h:mm A zz'));
+                $('#filenameLink-' + attachmentIdentifier).show();
+                $('#filenameLink-' + attachmentIdentifier).attr("href", psaWidget.GetDownloadFileUrl(attachment.Id));
+                $('#filenameLabel-' + attachmentIdentifier).hide();
+                $('#deleteEnabled-' + attachmentIdentifier).show();
+                $('#deleteDisabled-' + attachmentIdentifier).hide();
+            }
+        };
+
+        psaWidget.GetDownloadFileUrl = function(fileId) {
+            var url = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PSA',
+                action: '@WebConstants.Action.DOWNLOAD_ATTACHMENT',
+                id: '@Model.ProposalId'
+            });
+            url += "?fileId=" + fileId;
+            return url;
+        };
+
+        // Add an attachment - first method in the chain, here to deal with a potential revision options
+        psaWidget.AddAttachment = function (fileInputId, attachmentType) {
+            if ('@(ViewBag.IsRevision)' == 'True' && attachmentType != @((int)AttachmentType.Other)) {
+                GenSession.commonDialog('Revision File Upload', 'Would you like to upload a new file, or is the document provided in the previous version and is still up to date?',
+                    [{
+                        buttonClass: 'ies-action',
+                        ButtonText: 'Upload New File',
+                        ButtonName: "new-button",
+                        callbackMethod: function () { psaWidget.SelectFile(fileInputId); }
+                    }, {
+                        buttonClass: 'ies-warning',
+                        ButtonText: 'Use Previous Version',
+                        ButtonName: "link-button",
+                        callbackMethod: function () { psaWidget.AddFileReference(attachmentType); }
+                    }, {
+                        buttonClass: 'ies',
+                        ButtonText: 'Cancel',
+                        ButtonName: "cancel-button",
+                        callbackMethod: null
+                    }], 450, null, null);
+            } else {
+                psaWidget.SelectFile(fileInputId);
+            }
+        };
+
+        // Method called to add a file reference
+        psaWidget.AddFileReference = function (attachmentType) {
+            var formData = new FormData();
+            formData.append('IsRevisionReference', true);
+            formData.append('attachmentType', attachmentType);
+
+            psaWidget.SaveFile(formData, true);
+        };
+
+        // Method called to kick off file input selectionm
+        psaWidget.SelectFile = function (fileInputId) {
+            document.getElementById(fileInputId).click();
+        };
+
+        // Method called from the file input to process the selected file
         psaWidget.UploadAttachment = function(e, attachmentType) {
             if (e.files[0] === null) {
                 return;
@@ -74,7 +148,6 @@
 
             var validationErrors = psaWidget.ValidateFileTypeAndSize(e);
             if (validationErrors.length === 0) {
-
                 // This is an 'Other' attachment, so hide the Add Attachment button.
                 if (!addStandardAttachment) {
                     $('#add-attachment').attr("disabled", "disabled");
@@ -84,43 +157,13 @@
                 }
 
                 var formData = new FormData();
+                    formData.append('file', e.files[0]);
+                    formData.append('attachmentType', attachmentType);
+                    formData.append('id', attachId);
+                    formData.append('updateDateLong', updateDateLong);
+                    formData.append('IsRevisionReference', 'false');
 
-                // Attach file
-                formData.append('file', e.files[0]);
-                formData.append('attachmentType', attachmentType);
-                formData.append('id', attachId);
-                formData.append('updateDateLong', updateDateLong);
-
-                var psaUploadUrl = GenSession.CreateUrl({
-                    controller: '@WebConstants.Controller.PSA',
-                    action: '@WebConstants.Action.UPLOAD_ATTACHMENT',
-                    id: '@Model.ProposalId'
-                });
-
-                $.ajax({
-                    url: psaUploadUrl,
-                    data: formData,
-                    type: 'POST',
-                    contentType: false,
-                    processData: false
-                })
-                    .done(function(result) {
-                        if (addStandardAttachment) {
-                            psaWidget.updateFields(result);
-                        } else {
-                            if (result.AttachmentType != null) {
-                                psaWidget.refreshPage();
-                            } else {
-                                GenSession.alertDialog('File Validation', result, psaWidget.refreshPage); // Errors occurred, likely exceeding the maximum file count.
-                            }
-                        }
-                    })
-                    .always(function(attachment) {
-                        if (addStandardAttachment)
-                        {
-                            $('#uploadButton-' + attachment.AttachmentType).attr("src", "/Content/images/UploadFile_16x.png");
-                        }
-                    });
+                psaWidget.SaveFile(formData, addStandardAttachment);
             } else {
                 if (addStandardAttachment)
                 {
@@ -132,43 +175,37 @@
             e.value = '';
         };
 
-        psaWidget.updateFields = function(attachment) {
-            // The attachment identifier is <AttachmentType> (as an int) for standard attachments.  For 'Other' attachments, it is <AttachmentType>-<AttachmentId>.
-            var attachmentIdentifier = attachment.AttachmentType;
-            attachmentIdentifier += attachment.AttachmentType == @((int)AttachmentType.Other) ? '-' + attachment.Id : '';
-
-            $('#filenameLink-' + attachmentIdentifier).text(attachment.Name);
-
-            $('#fileId-' + attachmentIdentifier).val(attachment.Id);
-            $('#updateDateLong-' + attachmentIdentifier).val(attachment.UpdateDateLong);
-
-            if (attachment.Name === null) {
-                $('#uploadedBy-' + attachmentIdentifier).text('');
-                $('#updateDate-' + attachmentIdentifier).text('');
-                $('#filenameLink-' + attachmentIdentifier).hide();
-                $('#filenameLabel-' + attachmentIdentifier).show();
-                $('#deleteEnabled-' + attachmentIdentifier).hide();
-                $('#deleteDisabled-' + attachmentIdentifier).show();
-            } else {
-                $('#uploadedBy-' + attachmentIdentifier).text(attachment.UploadedBy);
-                var momentDate = moment(attachment.UpdateDate);
-                $('#updateDate-' + attachmentIdentifier).text(momentDate.tz('America/New_York').format('M/D/YYYY, h:mm A zz'));
-                $('#filenameLink-' + attachmentIdentifier).show();
-                $('#filenameLink-' + attachmentIdentifier).attr("href", psaWidget.GetDownloadFileUrl(attachment.Id));
-                $('#filenameLabel-' + attachmentIdentifier).hide();
-                $('#deleteEnabled-' + attachmentIdentifier).show();
-                $('#deleteDisabled-' + attachmentIdentifier).hide();
-            }
-        };
-
-        psaWidget.GetDownloadFileUrl = function(fileId) {
-            var url = GenSession.CreateUrl({
+        // Saves a new file into the back end. This is the final method in the chain
+        psaWidget.SaveFile = function (formData, addStandardAttachment) {
+            var psaUploadUrl = GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.PSA',
-                action: '@WebConstants.Action.DOWNLOAD_ATTACHMENT',
+                action: '@WebConstants.Action.UPLOAD_ATTACHMENT',
                 id: '@Model.ProposalId'
             });
-            url += "?fileId=" + fileId;
-            return url;
+
+            $.ajax({
+                url: psaUploadUrl,
+                data: formData,
+                type: 'POST',
+                contentType: false,
+                processData: false
+            })
+                .done(function (result) {
+                    if (addStandardAttachment === true) {
+                        psaWidget.UpdateFields(result);
+                    } else {
+                        if (result.AttachmentType != null) {
+                            psaWidget.refreshPage();
+                        } else {
+                            GenSession.alertDialog('File Validation', result, psaWidget.refreshPage); // Errors occurred, likely exceeding the maximum file count.
+                        }
+                    }
+                })
+                .always(function (attachment) {
+                    if (addStandardAttachment === true) {
+                        $('#uploadButton-' + attachment.AttachmentType).attr("src", "/Content/images/UploadFile_16x.png");
+                    }
+                });
         };
 
         psaWidget.DeleteAttachment = function (attachmentType, idOfExisting) {
@@ -176,7 +213,7 @@
 
             // The attachment identifier is <AttachmentType> (as an int) for standard attachments.  For 'Other' attachments, it is <AttachmentType>-<AttachmentId>.
             var attachmentIdentifier = attachmentType;
-            attachmentIdentifier += deleteOtherAttachment ? '-' + idOfExisting : '';
+                attachmentIdentifier += deleteOtherAttachment ? '-' + idOfExisting : '';
 
             GenSession.confirmDialog('Delete Attachment?', 'Are you sure you want to delete this attachment?',
                 function () {
@@ -185,6 +222,7 @@
                     if (id < 0) {
                         return;
                     }
+
                     var url = GenSession.CreateUrl({
                         controller: '@WebConstants.Controller.PSA',
                         action: '@WebConstants.Action.DELETE_ATTACHMENT',
@@ -192,10 +230,10 @@
                     });
 
                     var formData = new FormData();
-                    // Attach file
-                    formData.append('attachmentType', attachmentType);
-                    formData.append('id', id);
-                    formData.append('updateDateLong', $('#updateDateLong-' + attachmentIdentifier).val().toString());
+                        formData.append('attachmentType', attachmentType);
+                        formData.append('id', id);
+                        formData.append('updateDateLong', $('#updateDateLong-' + attachmentIdentifier).val().toString());
+                        formData.append('IsRevisionReference', $('#IsRevisionReference-' + attachmentIdentifier).val());
 
                     $.ajax({
                         url: url,
@@ -206,7 +244,7 @@
                     })
                         .done(function (attachment) {
                             if (!deleteOtherAttachment) {
-                                psaWidget.updateFields(attachment);
+                                psaWidget.UpdateFields(attachment);
                             } else {
                                 psaWidget.refreshPage();
                             }
@@ -216,8 +254,7 @@
                                 $('#deleteButton-' + attachmentIdentifier).attr("src", "/Content/images/Cancel_16x.png");
                             }
                         });
-                }
-            );
+                });
         };
 
         $(document).ready(function () {
@@ -226,7 +263,7 @@
             }, 50);
         });
     });
-</script>
+    </script>
 
 <div class="module full composite psa-content" id="psaWidget">
     <div class="module-header-data">
@@ -259,12 +296,16 @@
         <p>
             Use the <span style="font-weight: bold;">+ Add Other Attachment</span> button to add a new custom attachment.  A maximum of <span style="font-weight: bold;">@Model.MaxOtherFileCount.ToString()</span> of these additional files with the Attachment Type of "Other" are allowed for upload.
         </p>
+        @if (ViewBag.IsRevision)
+        {
+            <p>For revisions: Please replace/add any updated or new documents to support your proposal below.</p>
+        }
         <br />
         <h3>Attachments</h3>
         <br />
         @if (Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete && Model.PostSubmittalAttachments.Count(file => file.AttachmentType == AttachmentType.Other) < Model.MaxOtherFileCount) // Only show the button if the max number of files has not been uploaded.
         {
-            <button id="add-attachment" class="ies-action" type="button" onclick="psaWidget.SelectFile('add-attachment-file')">+ Add Other Attachment</button>
+            <button id="add-attachment" class="ies-action" type="button" onclick="psaWidget.AddAttachment('add-attachment-file', '@((int) AttachmentType.Other)')">+ Add Other Attachment</button>
             <div id="add-attachment-loader" class="loader display-none"></div>
             <input type="file" id="add-attachment-file" onchange="psaWidget.UploadAttachment(this, '@((int) AttachmentType.Other)')" style="display: none;">
             <br />
@@ -303,8 +344,9 @@
                     }
                     <td>@Html.Raw(attachment.AttachmentTypeDisplayString)</td>
                     <td>
+                        @Html.Hidden("IsRevisionReference-" + attachmentIdentifier, attachment.IsRevisionReference, new { id = "IsRevisionReference-" + attachmentIdentifier })
                         <a id="filenameLink-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "" : "display:none")" href="/@WebConstants.Controller.PSA/@WebConstants.Action.DOWNLOAD_ATTACHMENT/id/@Model.ProposalId/?fileId=@attachment.Id">
-                            @attachment.Name
+                            @(attachment.IsRevisionReference ? @referencePrefix : string.Empty) @attachment.Name
                         </a>
                         <span id="filenameLabel-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "display:none" : "")">Select File</span>
                     </td>
@@ -313,7 +355,7 @@
                         <td style="text-align: center;">
                             @if (attachment.AttachmentType != AttachmentType.Other) // The upload button should not be visible for 'Other' attachments.  These should be added via the Add Attachment button.
                             {
-                                <a onclick="psaWidget.SelectFile('@attachmentIdentifier-file')">
+                                <a onclick="psaWidget.AddAttachment('@attachmentIdentifier-file', '@((int) attachment.AttachmentType)')">
                                     <img id="uploadButton-@attachmentIdentifier" src="~/Content/images/UploadFile_16x.png" />
                                 </a>
                             }
@@ -323,7 +365,7 @@
                         </td>
                     }
                     <td id="uploadedBy-@attachmentIdentifier">@attachment.UploadedBy</td>
-                    <td id="updateDate-@attachmentIdentifier" data-utcdate="@(attachment.FileHasBeenUploaded ? attachment.UpdateDate.ToUniversalTime().ToString("s", System.Globalization.CultureInfo.InvariantCulture) : "")"></td>
+                    <td id="updateDate-@attachmentIdentifier" data-utcdate="@(attachment.FileHasBeenUploaded ? attachment.UpdateDate.ToUniversalTime().ToString("s", System.Globalization.CultureInfo.InvariantCulture) : string.Empty)"></td>
                 </tr>
             }
         </table>

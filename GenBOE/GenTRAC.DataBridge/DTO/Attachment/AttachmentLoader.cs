@@ -201,5 +201,29 @@ namespace GenTRAC.DataBridge.DTO
 
             return toReturn;
         }
+
+        /// <summary>
+        /// Save only a reference to an attachment, for a revised proposal
+        /// </summary>
+        /// <param name="proposalId">Current Proposal Id</param>
+        /// <param name="attachmentType">Attachment type that you want to reference</param>
+        /// <returns>Attachment Id</returns>
+        public int? SaveAttachmentReferenceForRevisedProposal(int proposalId, AttachmentType attachmentType)
+        {
+            int? toReturn = null;
+
+            using (StopwatchTimer sw = new StopwatchTimer("AttachmentLoader.SaveAttachmentReferenceForRevisedProposal", this.Log))
+            {
+                using (genTRACEntities dbModel = new genTRACEntities())
+                {
+                    int originalProposalId = dbModel.Proposals.First(x => x.ProposalID == proposalId).RevisionOfId.Value;
+                    int attachmentId = dbModel.ProposalsAttachments.First(x => x.AttachmentType == (int)attachmentType && x.Proposal.ProposalID == originalProposalId).AttachmentId;
+
+                    toReturn = dbModel.upsertAttachment(attachmentId, null, null, null, null, (int)attachmentType, proposalId, true).FirstOrDefault();
+                }
+            }
+
+            return toReturn;
+        }
     }
 }
