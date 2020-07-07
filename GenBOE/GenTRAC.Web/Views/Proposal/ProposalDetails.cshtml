@@ -173,7 +173,7 @@
         window.onhashchange = ProposalDetailsWidget.LoadTab;
         ProposalDetailsWidget.on('LOAD_PROPOSAL_TAB', function (e, params) {
             var proposalID = params.proposalid;
-            console.log(proposalID);
+
             if (proposalID == null)
             {
                 proposalID = -1;

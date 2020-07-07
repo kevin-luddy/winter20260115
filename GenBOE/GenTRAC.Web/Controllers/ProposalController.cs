@@ -297,10 +297,11 @@ namespace GenTRAC.Web.Controllers
         /// <param name="proposalGeneralInfo">Proposal general information model view</param>
         /// <param name="proposalApprovalsInfo">Proposal approvals model view</param>
         /// <param name="proposalUserInfo">Proposal user information model view</param>
+        /// <param name="revisionOfId">RevisionOfId for the Proposal</param>
         /// <param name="isNewRevision">Whether creating a new revision</param>
         /// <returns>true if success else false</returns>
         public JsonResult SaveProposal(int? proposalId, ProposalInformationModelView proposalInfo, ProposalGeneralInformationModelView proposalGeneralInfo,
-            ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, bool isNewRevision = false)
+            ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, int? revisionOfId, bool isNewRevision = false)
         {
             if (proposalGeneralInfo == null)
             {
@@ -312,7 +313,6 @@ namespace GenTRAC.Web.Controllers
                 throw new ArgumentNullException(nameof(proposalApprovalsInfo));
             }
 
-            int? revisedProposalId = proposalId;
             if (isNewRevision)
             {
                 proposalId = null;
@@ -325,13 +325,13 @@ namespace GenTRAC.Web.Controllers
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
             {
-                if (isNewRevision && revisedProposalId.HasValue)
+                if (isNewRevision && revisionOfId.HasValue)
                 {
-                    ProposalDto proposal = this.proposalLogic.GetByProposalId(revisedProposalId.Value);
+                    ProposalDto proposal = this.proposalLogic.GetByProposalId(revisionOfId.Value);
                     this.proposalLogic.SetProposalRevised(proposal.Id, proposal.UpdateDate);
                 }
 
-                proposalId = this.proposalLogic.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, revisedProposalId);
+                proposalId = this.proposalLogic.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, revisionOfId);
 
                 if (proposalId.HasValue)
                 {

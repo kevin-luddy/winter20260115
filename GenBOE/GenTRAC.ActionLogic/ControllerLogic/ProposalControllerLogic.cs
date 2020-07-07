@@ -860,7 +860,7 @@ namespace GenTRAC.ActionLogic
 
                 model.ReasonCertificationNotRequired = fullProposalDto.ReasonCertificationNotRequired;
                 
-                model.RevisedProposalId = null;
+                model.RevisedProposalId = fullProposalDto.RevisionOfId;
                 model.IsNewRevision = false;
             }
 
@@ -1260,7 +1260,7 @@ namespace GenTRAC.ActionLogic
             model.BOEToolsList = EnumUtilities.GetListItemsForEnumSorted(typeof(BOETool), false, model.BOETool.ToString());
 
             model.IsReadOnly = this.IsProposalReadOnly(proposalId, fullProposalDto);
-            model.IsPTMChecklistUIEnabled = (!proposalId.HasValue || fullProposalDto.ProposalChecklistPPRData == null) ? true : this.IsPTMChecklistUIEnabled(fullProposalDto.ProposalChecklistPPRData.Version);
+            model.IsPTMChecklistUIEnabled = (!proposalId.HasValue || proposalId < 0 || fullProposalDto.ProposalChecklistPPRData == null) ? true : this.IsPTMChecklistUIEnabled(fullProposalDto.ProposalChecklistPPRData.Version);
 
             if (fullProposalDto != null)
             {
@@ -1943,6 +1943,8 @@ namespace GenTRAC.ActionLogic
             {
                 inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CONTRACT_TYPE_REQUIRED));
             }
+
+            // validate prop type here?
         }
 
         /// <summary>
