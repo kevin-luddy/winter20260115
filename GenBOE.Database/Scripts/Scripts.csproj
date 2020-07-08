@@ -313,7 +313,7 @@
     <Content Include="Release Scripts\Release 2020.2\Release 2020.2.sql" />
     <Content Include="Release Scripts\Release 2020.3\Release 2020.3.sql" />
     <Content Include="Release Scripts\Release 2020.5\Release 2020.5.sql" />
-    <Content Include="_Full Script Files For Specific Versions\BOE - 2020.2 Generated On 6_9_2020.sql" />
+    <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2020.2 Generated On 6_9_2020.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - Release 2020.1 Generated On 6_1_2020.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2019.4 Generated On 7_1_2019.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - Sql Script For Release 2019.5 Generated On 9_26_2019.sql" />
@@ -340,6 +340,7 @@
     <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.17 Generated On 9_11_2017.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.18 Generated On 10_19_2017.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 2.19 Generated On 12_19_2017.sql" />
+    <Content Include="_Full Script Files For Specific Versions\BOE - Release 2020.3 Generated On 7_8_2020.sql" />
     <Content Include="_Other Scripts\Create Default WS.sql" />
     <Content Include="_Other Scripts\Custom Field Stuff\Abandoned Open Ended CF Values.sql" />
     <Content Include="_Other Scripts\Custom Field Stuff\Duplicated CF XREF Values.sql" />
