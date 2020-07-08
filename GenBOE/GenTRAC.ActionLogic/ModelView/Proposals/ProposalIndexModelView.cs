@@ -79,6 +79,8 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public ProposalIndexModelView()
         {
             this.ProposalID = -1;
+            this.DisplayNewRevisionButton = false;
+            this.DisplayRevertRevisionButton = false;
         }
 
         /// <summary>
