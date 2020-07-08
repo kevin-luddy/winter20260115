@@ -848,8 +848,9 @@ namespace GenTRAC.ActionLogic
 
                 // Display + New Revision button only if the user if the lead or backup estimator and approval workflow is completed
                 UserDTO activeUser = this.GetActiveUser();
-                if (fullProposalDto.WorkflowStatus == WorkflowStatus.ProposalLocked &&
-                    fullProposalDto.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer)))
+                bool userIsLeadOrBackupPricer = fullProposalDto.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer));
+
+                if (fullProposalDto.WorkflowStatus == WorkflowStatus.ProposalLocked && userIsLeadOrBackupPricer)
                 {
                     model.DisplayNewRevisionButton = true;
                 }
@@ -858,9 +859,9 @@ namespace GenTRAC.ActionLogic
                     model.DisplayNewRevisionButton = false;
                 }
 
+                // Display Revert to Prior Version button only if user is lead or backup estimator and in latest revision
                 if ((fullProposalDto.ProposalStatus == ProposalStatus.InProgress || fullProposalDto.ProposalStatus == ProposalStatus.Completed || 
-                    fullProposalDto.ProposalStatus == ProposalStatus.Submitted) && fullProposalDto.IsRevision &&
-                    fullProposalDto.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer)))
+                    fullProposalDto.ProposalStatus == ProposalStatus.Submitted) && fullProposalDto.IsRevision && userIsLeadOrBackupPricer)
                 {
                     model.DisplayRevertRevisionButton = true;
                 }
