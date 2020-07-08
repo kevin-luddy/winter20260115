@@ -8,7 +8,7 @@ CREATE VIEW dbo.UsersWithRolesReport AS
 		SELECT
 			DISTINCT 
 				u.DisplayName, u.NTID, r.RoleName, w.WorkspaceName, wS.WorkspaceState,
-				w.UpdateDT AS WorkspaceLastModifiedDate, w.WorkspaceCreationDate
+				w.UpdateDT AS WorkspaceLastModifiedDate, w.WorkspaceCreationDate, w.IsDeleted
 				FROM BOEPotentialRole br
 						INNER JOIN RoleLU r ON bR.RoleId = r.RoleID
 						INNER JOIN ETIuser u ON u.ETIUserID = bR.ETIUserID
@@ -19,7 +19,7 @@ CREATE VIEW dbo.UsersWithRolesReport AS
 		SELECT
 			DISTINCT 
 				u.DisplayName, u.NTID, r.RoleName, w.WorkspaceName, wS.WorkspaceState,
-				w.UpdateDT AS WorkspaceLastModifiedDate, w.WorkspaceCreationDate
+				w.UpdateDT AS WorkspaceLastModifiedDate, w.WorkspaceCreationDate, w.IsDeleted
 				FROM WorkspaceUserRole bR 
 						INNER JOIN RoleLU r ON bR.RoleId = r.RoleID
 						INNER JOIN ETIuser u ON u.ETIUserID = bR.ETIUserID
