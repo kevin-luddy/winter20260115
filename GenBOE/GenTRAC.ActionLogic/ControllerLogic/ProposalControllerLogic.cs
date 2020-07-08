@@ -850,6 +850,17 @@ namespace GenTRAC.ActionLogic
                     model.DisplayNewRevisionButton = false;
                 }
 
+                if ((fullProposalDto.ProposalStatus == ProposalStatus.InProgress || fullProposalDto.ProposalStatus == ProposalStatus.Completed || 
+                    fullProposalDto.ProposalStatus == ProposalStatus.Submitted) && fullProposalDto.IsRevision &&
+                    fullProposalDto.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer)))
+                {
+                    model.DisplayRevertRevisionButton = true;
+                }
+                else
+                {
+                    model.DisplayRevertRevisionButton = false;
+                }
+
                 model.ReasonCertificationNotRequired = fullProposalDto.ReasonCertificationNotRequired;
                 
                 model.RevisedProposalId = fullProposalDto.RevisionOfId;
@@ -888,6 +899,7 @@ namespace GenTRAC.ActionLogic
                 model.ProposalTitle = this.GetNewRevisionProposalTitle(fullProposalDto.ProposalTitle, newRevisionSuffix);
                 model.ProposalStatus = ProposalStatus.InProgress;
                 model.DisplayNewRevisionButton = false;
+                model.DisplayRevertRevisionButton = false;
                 model.RevisedProposalId = proposalId;
                 model.IsNewRevision = true;
             }

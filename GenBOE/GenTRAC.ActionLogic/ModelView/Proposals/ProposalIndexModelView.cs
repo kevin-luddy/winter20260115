@@ -102,6 +102,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public bool DisplayNewRevisionButton { get; set; }
 
         /// <summary>
+        /// Determines whether to show or hide the "Revert to Prior Version" button
+        /// </summary>
+        public bool DisplayRevertRevisionButton { get; set; }
+
+        /// <summary>
         /// Reason Certification is Not Required
         /// </summary>
         public ReasonCertificationNotRequired? ReasonCertificationNotRequired { get; set; }

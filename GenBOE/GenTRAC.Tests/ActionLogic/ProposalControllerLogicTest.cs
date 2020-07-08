@@ -3384,6 +3384,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(proposal.ProposalTitle, result.RevisedProposalTitle);
             Assert.AreEqual(ProposalStatus.InProgress, result.ProposalStatus);
             Assert.IsFalse(result.DisplayNewRevisionButton);
+            Assert.IsFalse(result.DisplayRevertRevisionButton);
             Assert.AreEqual("false", result.IsReadOnly);
             Assert.IsTrue(result.IsUsUser);
             Assert.AreEqual(SecurityAuthorization.None, result.PsaVisibility);
