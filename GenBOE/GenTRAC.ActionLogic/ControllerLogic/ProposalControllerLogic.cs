@@ -854,20 +854,12 @@ namespace GenTRAC.ActionLogic
                 {
                     model.DisplayNewRevisionButton = true;
                 }
-                else
-                {
-                    model.DisplayNewRevisionButton = false;
-                }
 
                 // Display Revert to Prior Version button only if user is lead or backup estimator and in latest revision
                 if ((fullProposalDto.ProposalStatus == ProposalStatus.InProgress || fullProposalDto.ProposalStatus == ProposalStatus.Completed || 
                     fullProposalDto.ProposalStatus == ProposalStatus.Submitted) && fullProposalDto.IsRevision && userIsLeadOrBackupPricer)
                 {
                     model.DisplayRevertRevisionButton = true;
-                }
-                else
-                {
-                    model.DisplayRevertRevisionButton = false;
                 }
 
                 model.ReasonCertificationNotRequired = fullProposalDto.ReasonCertificationNotRequired;
@@ -908,8 +900,6 @@ namespace GenTRAC.ActionLogic
                 model.RevisedProposalTitle = fullProposalDto.ProposalTitle;
                 model.ProposalTitle = this.GetNewRevisionProposalTitle(fullProposalDto.ProposalTitle, newRevisionSuffix);
                 model.ProposalStatus = ProposalStatus.InProgress;
-                model.DisplayNewRevisionButton = false;
-                model.DisplayRevertRevisionButton = false;
                 model.RevisedProposalId = proposalId;
                 model.IsNewRevision = true;
             }
