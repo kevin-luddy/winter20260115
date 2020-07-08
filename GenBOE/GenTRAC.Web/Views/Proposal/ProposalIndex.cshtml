@@ -277,6 +277,7 @@
 				dataToSave.ProposalGeneralInfo = ProposalGeneralInformationWidget.getForm("proposalGeneralInfoForm").getData();
 				dataToSave.ProposalApprovalsInfo = ProposalApprovalsWidget.getForm("proposalApprovalsForm").getData();
                 dataToSave.ProposalUserInfo = ProposalUserInfoWidget.getForm("proposalUserInfoForm").getData();
+                dataToSave.RevisionOfId = '@Model.RevisedProposalId';
                 dataToSave.IsNewRevision = '@Model.IsNewRevision';
 				return dataToSave;
 			};
@@ -491,10 +492,23 @@
         };
 
         ProposalIndexWidget.RedirectHome = function () {
-            window.location = GenSession.CreateUrl({
-                controller: '@WebConstants.Controller.HOME',
-                action: '@WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME'
-            });
+            @if (Model.IsNewRevision && Model.RevisedProposalId.HasValue) {
+                <text>
+                // Redirect Revisions back to original proposal
+                window.location = GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.PROPOSAL',
+                    action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
+                    id: '@Model.RevisedProposalId'
+                });
+                </text>
+            } else {
+                <text>
+                window.location = GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.HOME',
+                    action: '@WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME'
+                });
+                </text>
+            }
         };
     });
     </script>
