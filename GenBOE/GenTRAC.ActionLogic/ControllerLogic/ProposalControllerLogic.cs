@@ -301,6 +301,25 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
+        /// Hard deletes a Proposal
+        /// Currently should only be used when revering a revision to a prior version
+        /// </summary>
+        /// <param name="proposal">Proposal to delete</param>
+        public void DeleteProposal(ProposalDto proposal)
+        {
+            if (proposal == null)
+            {
+                throw new ArgumentNullException(nameof(proposal));
+            }
+
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.DeleteProposal", this.log))
+            {
+                proposal.Updateable = UpdateType.Deleted;
+                this.ProposalLoader.Save(proposal);
+            }
+        }
+
+        /// <summary>
         /// Updates the forecast proposal information before a save.
         /// </summary>
         /// <param name="proposalInfo">The proposal information.</param>
@@ -2147,7 +2166,7 @@ namespace GenTRAC.ActionLogic
         {
             ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
 
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SetProposalRevised", this.log))
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.RevertRevisedProposal", this.log))
             {
                 if(proposal.IsCCPDRequired.HasValue && proposal.IsCCPDRequired.Value)
                 {
@@ -2258,7 +2277,7 @@ namespace GenTRAC.ActionLogic
         /// <summary>
         /// Validate that a Proposal is able to be reverted to the prior version
         /// </summary>
-        /// <param name="proposalId">ID of Proposal being reverted</param>
+        /// <param name="proposal">Proposal being reverted</param>
         public void ValidateRevertRevisionToPriorVersion(ProposalDto proposal)
         {
             ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();

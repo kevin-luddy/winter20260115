@@ -166,7 +166,25 @@
         };
 
         ProposalDetailsWidget.RevertRevision = function () {
-            // TODO - RJ - update to call backend in BOEJ-4642
+            var url = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PROPOSAL',
+                action: '@WebConstants.Action.REVERT_PROPOSAL_TO_PRIOR_VERSION',
+                id:  '@Model.ProposalID' 
+            });
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+                    console.log(response);
+                    window.location = GenSession.CreateUrl({
+                        controller: '@WebConstants.Controller.PROPOSAL',
+                        action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
+                        id: response.proposalId
+                    });
+                }
+            });
         };
 
         window.onhashchange = ProposalDetailsWidget.LoadTab;
@@ -349,7 +367,7 @@
         $('button[name="revert-revision-button"]:not(.disabled)').click(function () {
             GenSession.confirmDialog(
                  "Confirm revert to prior version",
-                 "Reverting to the prior version of this Proposal will delete this Proposal and all of its contents. Are you sure you would like to continue?",
+                 "Reverting to the prior version of this Proposal will delete this Proposal and all of its contents. <strong>This cannot be undone.</strong> Are you sure you would like to continue?",
                  ProposalDetailsWidget.RevertRevision,
                  null);
         });

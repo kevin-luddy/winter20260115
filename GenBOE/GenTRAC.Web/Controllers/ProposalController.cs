@@ -410,22 +410,20 @@ namespace GenTRAC.Web.Controllers
         }
 
         /// <summary>
-        /// Revert a Proposal Revision to the prior version
+        /// Revert a Proposal Revision to the prior version, deleting this version
         /// </summary>
         /// <param name="proposalId">ID of Proposal to be reverted</param>
         /// <returns>JSON result with ID of prior version</returns>
         public JsonResult RevertProposalToPriorVersion(int proposalId)
         {
             ProposalDto proposal = this.proposalLogic.GetByProposalId(proposalId);
-            ManageProposalInfoDetailsView manageProposalInfo = this.adminLogic.GetManageProposalInfoDetailsView(proposalId);
-            manageProposalInfo.NewStatus = ProposalStatus.Deleted;
 
             // validate reverting to prior version
             this.proposalLogic.ValidateRevertRevisionToPriorVersion(proposal);
 
             // validate deleting proposal 
+            ManageProposalInfoDetailsView manageProposalInfo = this.adminLogic.GetManageProposalInfoDetailsView(proposalId);
             ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
-            this.adminLogic.ValidateManageProposalInfo(manageProposalInfo, validationErrors);
             this.adminLogic.ValidateDeleteProposal(manageProposalInfo.ProposalID, validationErrors);
             
             if (validationErrors.Any())
@@ -436,7 +434,7 @@ namespace GenTRAC.Web.Controllers
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
             {
                 // delete proposal
-                int? deleteResult = this.adminLogic.SaveManageProposalInfo(proposalId, manageProposalInfo);
+                this.proposalLogic.DeleteProposal(proposal);
 
                 // set status of prior version
                 this.proposalLogic.RevertRevisedProposal(proposal.RevisionOfId.Value);

@@ -343,6 +343,11 @@ namespace GenTRAC.Web.Common
             /// </summary>
             public const string DELETE_PROPOSAL = "DeleteProposal";
 
+            /// <summary>
+            /// Reverts the Proposal to the prior version
+            /// </summary>
+            public const string REVERT_PROPOSAL_TO_PRIOR_VERSION = "RevertProposalToPriorVersion";
+
             #endregion Proposal
 
             #region Permissions
