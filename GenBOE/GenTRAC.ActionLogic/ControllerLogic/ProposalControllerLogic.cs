@@ -1094,7 +1094,7 @@ namespace GenTRAC.ActionLogic
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView();
 
             FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
-            model.IsReadOnly = this.IsCertificationReadOnly(fullProposalDto);
+            model.IsReadOnly = this.IsCertificationReadOnly(proposalId ?? -1);
 
             if (fullProposalDto != null)
             {
@@ -1929,24 +1929,17 @@ namespace GenTRAC.ActionLogic
         /// <summary>
         /// Determines whether certification of proposal is read only based on proposal state and current user
         /// </summary>
-        /// <param name="proposal">The proposal.</param>
+        /// <param name="proposalId">The proposal Id.</param>
         /// <returns>"true" if readonly, "false" if editable</returns>
-        public string IsCertificationReadOnly(ProposalDto proposal)
+        public string IsCertificationReadOnly(int proposalId)
         {
             bool readOnly = false;
 
-            if (proposal == null || proposal.ProposalStatus != ProposalStatus.Submitted)
+            // check permission of current user
+            SecurityAuthorizationAndRole authorization = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId);
+            if (authorization.Authorization == SecurityAuthorization.Read)
             {
                 readOnly = true;
-            }
-            else
-            {
-                // check permission of current user
-                SecurityAuthorizationAndRole authorization = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposal.Id);
-                if (authorization.Authorization == SecurityAuthorization.Read)
-                {
-                    readOnly = true;
-                }
             }
 
             return readOnly.ToString().ToLower();
