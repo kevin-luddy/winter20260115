@@ -484,7 +484,7 @@
         </div>
         <div class="form-row">
             <div class="form-label">
-                Revised Submittal Date
+                Revised Anticipated Delivery Date
             </div>
             <div class="form-element">
                 <%: Html.TextBox("RevisedSubmittalDate", Model.RevisedSubmittalDate, new { @class = "normal-date disabled", @readonly="readonly" })%>
