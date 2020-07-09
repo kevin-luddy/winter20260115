@@ -91,7 +91,7 @@ namespace GenTRAC.ActionLogic
         /// The emailer
         /// </summary>
         private IPtmEmailer emailer;
-
+        
         /// <summary>
         /// Create static Regex object for FreeText.
         /// </summary>
@@ -2114,15 +2114,12 @@ namespace GenTRAC.ActionLogic
 
             if (proposal.ProposalStatus == ProposalStatus.Revised)
             {
-                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_LATEST_VERSION));
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_LATEST_VERSION_NEW_REVISION));
             }
-
-            UserDTO activeUser = this.GetActiveUser();
-            FullProposal fullProposal = new FullProposal(proposal);
-
-            if (!fullProposal.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer)))
+                        
+            if (!this.IsCurrentUserPricerOrBackupOrSysAdmin(proposal.Id))
             {
-                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED));
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED_NEW_REVISION));
             }
 
             if (validationErrors.Any())
@@ -2141,6 +2138,27 @@ namespace GenTRAC.ActionLogic
             using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SetProposalRevised", this.log))
             {
                 this.ProposalLoader.UpdateProposalStatus(proposalId, proposalUpdateDate, ProposalStatus.Revised);
+            }
+        }
+
+        /// <summary>
+        /// Revert a Revised Proposal to its previous state - Submitted for CCoPD "Yes", Completed for CCoPD "No"
+        /// </summary>
+        /// <param name="proposalId">ID of Revised Proposal</param>
+        public void RevertRevisedProposal(int proposalId)
+        {
+            ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
+
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SetProposalRevised", this.log))
+            {
+                if(proposal.IsCCPDRequired.HasValue && proposal.IsCCPDRequired.Value)
+                {
+                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Submitted);
+                } 
+                else
+                {
+                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Completed);
+                }
             }
         }
 
@@ -2240,25 +2258,37 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
-        /// Gets Revision History for the specific proposal
+        /// Validate that a Proposal is able to be reverted to the prior version
         /// </summary>
-        /// <param name="proposalId">Proposal Id</param>
-        /// <returns>Revision History</returns>
-        public ICollection<RevisionHistoryModelView> GetRevisionHistory(int proposalId)
+        /// <param name="proposalId">ID of Proposal being reverted</param>
+        public void ValidateRevertRevisionToPriorVersion(ProposalDto proposal)
         {
-            ICollection<RevisionHistoryModelView> result = this.ProposalLoader.GetRevisionHistory(proposalId);
+            ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 
-            foreach (RevisionHistoryModelView prop in result)
+            if (proposal.RevisionOfId == null)
             {
-                prop.DisplayProposalSetupTab &= this.CheckPermissions(PtmSecurityPage.Proposal, prop.ProposalId).Authorization != SecurityAuthorization.None;
-                prop.DisplayChecklistTab &= this.CheckPermissions(PtmSecurityPage.Checklist, prop.ProposalId).Authorization != SecurityAuthorization.None;
-                prop.DisplayPSATab &= this.CheckPermissions(PtmSecurityPage.PostSubmittalAttachments, prop.ProposalId).Authorization != SecurityAuthorization.None;
-                prop.DisplayApprovalsTab &= this.CheckPermissions(PtmSecurityPage.Approvals, prop.ProposalId).Authorization != SecurityAuthorization.None;
-                prop.DisplayCertificationTab &= this.CheckPermissions(PtmSecurityPage.CertificationTimeline, prop.ProposalId).Authorization != SecurityAuthorization.None;
-                prop.DisplayRevisionTab &= this.CheckPermissions(PtmSecurityPage.RevisionHistory, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NO_PRIOR_VERSION));
             }
 
-            return result;
+            if (this.ProposalLoader.GetAllSlim().Any(x => x.RevisionOfId == proposal.Id))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_LATEST_VERSION_PRIOR_VERSION));
+            }
+
+            if (proposal.ProposalStatus != ProposalStatus.InProgress)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_IN_PROGRESS));
+            }
+
+            if (!this.IsCurrentUserPricerOrBackupOrSysAdmin(proposal.Id))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED_PRIOR_VERSION));
+            }
+
+            if (validationErrors.Any())
+            {
+                throw new ValidationException(validationErrors);
+            }
         }
 
         #endregion
