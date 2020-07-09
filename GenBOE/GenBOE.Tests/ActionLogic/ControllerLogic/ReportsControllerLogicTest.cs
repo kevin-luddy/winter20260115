@@ -686,7 +686,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             Assert.AreEqual("Proposal Class", result.ElementAt(1));
             Assert.AreEqual("Contract Types", result.ElementAt(2));
             Assert.AreEqual("Anticipated Delivery Date", result.ElementAt(3));
-            Assert.AreEqual("Revised Submittal Date", result.ElementAt(4));
+            Assert.AreEqual("Revised Anticipated Delivery Date", result.ElementAt(4));
             Assert.AreEqual("RFP Number", result.ElementAt(5));
             Assert.AreEqual("PTM Proposal Title", result.ElementAt(6));
         }

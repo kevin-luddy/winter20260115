@@ -512,7 +512,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
                         if (proposal.RevisedSubmittalDate != ws.RevisedSubmittalDate)
                         {
-                            toReturn.Add("Revised Submittal Date");
+                            toReturn.Add("Revised Anticipated Delivery Date");
                         }
 
                         if (proposal.RFPNumber != ws.RFPNumber)
