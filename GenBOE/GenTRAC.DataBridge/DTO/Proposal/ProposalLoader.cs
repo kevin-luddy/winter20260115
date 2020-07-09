@@ -619,7 +619,8 @@ namespace GenTRAC.DataBridge.DTO
                             ProposalTitle = x.ProposalTitle,
                             DocumentId = x.DocumentId,
                             CustomerType = (CustomerType)x.CustomerTypeID,
-                            IsForecastProposal = x.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED
+                            IsForecastProposal = x.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                            RevisionOfId = x.RevisionOfId
                         }).ToList();
                 }
             }
