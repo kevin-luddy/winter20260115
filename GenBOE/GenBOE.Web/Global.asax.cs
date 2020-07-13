@@ -764,7 +764,8 @@ namespace GenBOE
                         new ResolvedParameter(typeof(ICommonDataMapper)),
                         new ResolvedParameter(typeof(IProposalLoader)),
                         new ResolvedParameter(typeof(IWorkspaceControllerLogic)),
-                        new ResolvedParameter(typeof(IRteTemplateDataLoader))
+                        new ResolvedParameter(typeof(IRteTemplateDataLoader)),
+                        new ResolvedParameter(typeof(TravelTripCostCalculation))
                         ));
                     break;
                 case CompanyConfiguration.SpaceSystems:
@@ -780,7 +781,8 @@ namespace GenBOE
                         new ResolvedParameter(typeof(IInUseDataLoader)),
                         new ResolvedParameter(typeof(IProposalLoader)),
                         new ResolvedParameter(typeof(IWorkspaceControllerLogic)),
-                        new ResolvedParameter(typeof(IRteTemplateDataLoader))
+                        new ResolvedParameter(typeof(IRteTemplateDataLoader)),
+                        new ResolvedParameter(typeof(TravelTripCostCalculation))
                         ));
                     break;
 
@@ -794,7 +796,8 @@ namespace GenBOE
                         new ResolvedParameter(typeof(BOEDiscrepancyReport)),
                         new ResolvedParameter(typeof(IProposalLoader)),
                         new ResolvedParameter(typeof(IWorkspaceControllerLogic)),
-                        new ResolvedParameter(typeof(IRteTemplateDataLoader))
+                        new ResolvedParameter(typeof(IRteTemplateDataLoader)),
+                        new ResolvedParameter(typeof(TravelTripCostCalculation))
                         ));
                     break;
             }

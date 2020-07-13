@@ -136,5 +136,31 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="ws"></param>
         /// <returns></returns>
         ICollection<string> GetPtmDataOutOfSyncMessages(FullWorkspace ws);
+
+        /// <summary>
+        /// Get the BOE Export Inputs used for the BOE Status and BOE/WBS Reports
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <returns>BOE Export Inputs</returns>
+        BOEExportInputs GetExportInputsForStatusAndWbsReports(FullWorkspace ws);
+        
+        /// <summary>
+        /// Generates a ModelView for the WBS/BOE Report
+        /// </summary>
+        /// <param name="exportInputs">The export inputs.</param>
+        /// <returns>
+        /// WBS/BOE Report Modelview
+        /// </returns>
+        ICollection<BoeWbsReportModelView> GenerateWbsBoeReport(BOEExportInputs exportInputs);
+        
+        /// <summary>
+        /// Export the WBS/BOE Report for the given workspace
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="fileLocation">Location of the template file</param>
+        /// <param name="reportModelView">Report model view</param>
+        /// <param name="exportInputs">export inputs</param>
+        /// <returns>Report filename</returns>
+        string ExportWbsBoeReport(FullWorkspace ws, string fileLocation, ICollection<BoeWbsReportModelView> reportModelView, BOEExportInputs exportInputs);
     }
 }

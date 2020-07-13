@@ -320,7 +320,9 @@ namespace IES.Common
         [Description("Flattened Cost by CLIN, Res, Act & Yr (8yrs)")]
         CostByClinResActYrFlat = 36,
         [Description("Offload Detailed Report")]
-        OffloadDetailedReport = 37
+        OffloadDetailedReport = 37,
+        [Description("WBS Summary of Hours, ODC Costs")]
+        WbsBoeReport = 38
     }
 
     /// <summary>
@@ -1306,7 +1308,7 @@ namespace IES.Common
     /// </summary>
     public enum ProjectMapType
     {
-        [Description("Standard")] // without Offload
+        [Description("Standard without Offload")]
         StandardWithoutOffload = 1,
         [Description("Standard with Offload")]
         StandardWithOffload = 2,
