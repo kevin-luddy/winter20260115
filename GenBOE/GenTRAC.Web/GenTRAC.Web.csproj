@@ -376,6 +376,7 @@
     <Content Include="Views\CertificationTimeline\CertificationTimeline.cshtml" />
     <Content Include="Views\Reports\DfarsReport.cshtml" />
     <Content Include="Views\Reports\DfarsReportParameters.cshtml" />
+    <Content Include="Views\Proposal\RevisionHistory.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

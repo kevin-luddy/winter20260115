@@ -25,6 +25,7 @@ namespace GenTRAC.Models
             this.ContractTypeLUs = new HashSet<ContractTypeLU>();
             this.ProposalChecklists = new HashSet<ProposalChecklist>();
             this.ProposalsAttachments = new HashSet<ProposalsAttachment>();
+            this.Proposal1 = new HashSet<Proposal>();
         }
     
         public int ProposalID { get; set; }
@@ -123,5 +124,8 @@ namespace GenTRAC.Models
         public virtual CutOffDateUtilizationLU CutOffDateUtilizationLU { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProposalsAttachment> ProposalsAttachments { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Proposal> Proposal1 { get; set; }
+        public virtual Proposal Proposal2 { get; set; }
     }
 }

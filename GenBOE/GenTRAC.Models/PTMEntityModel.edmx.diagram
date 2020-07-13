@@ -96,6 +96,7 @@
         <AssociationConnector Association="genTRACModel.FK__Proposals__Propo__5A5A5133" />
         <EntityTypeShape EntityType="genTRACModel.Attachment" Width="1.5" PointX="14.375" PointY="7.875" />
         <AssociationConnector Association="genTRACModel.FK__Proposals__Attac__5B4E756C" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_Proposal" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

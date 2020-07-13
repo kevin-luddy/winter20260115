@@ -153,5 +153,12 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <returns>The next forecasted tracking number.</returns>
         string GetNextForecastedTrackingNumber();
+
+        /// <summary>
+        /// Gets Revision History for the specific proposal
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Revision History</returns>
+        ICollection<RevisionHistoryModelView> GetRevisionHistory(int proposalId);
     }
 }

@@ -15,6 +15,7 @@ namespace GenTRAC.Web.Controllers
     using ActionLogic.ModelView.Admin;
     using GenTRAC.ActionLogic;
     using GenTRAC.ActionLogic.ModelView.Proposals;
+    using GenTRAC.DataBridge;
     using GenTRAC.DataBridge.DTO;
     using GenTRAC.Web.Common;
     using IES.Common;
@@ -436,6 +437,17 @@ namespace GenTRAC.Web.Controllers
         {
             bool includeIDIQ = isScheduleProposal ?? true;
             return this.proposalLogic.GetContractTypesForContractTypeGroup(contractTypeGroup, includeIDIQ);
+        }
+
+        /// <summary>
+        /// Displays the Proposal's Revision History
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Revision History Partial View</returns>
+        public PartialViewResult DisplayRevisionHistory(int proposalId)
+        {
+            ICollection<RevisionHistoryModelView> model = this.proposalLogic.GetRevisionHistory(proposalId);
+            return this.PartialView(WebConstants.View.PROPOSAL_RevisionHistory, model);
         }
     }
 }

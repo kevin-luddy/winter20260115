@@ -1271,5 +1271,14 @@ namespace GenTRAC.Models
         {
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("insertDataMartEmployees");
         }
+    
+        public virtual ObjectResult<GetProposalRevisionHistory_Result> GetProposalRevisionHistory(Nullable<int> proposalId)
+        {
+            var proposalIdParameter = proposalId.HasValue ?
+                new ObjectParameter("ProposalId", proposalId) :
+                new ObjectParameter("ProposalId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetProposalRevisionHistory_Result>("GetProposalRevisionHistory", proposalIdParameter);
+        }
     }
 }
