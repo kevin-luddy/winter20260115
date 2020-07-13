@@ -20,8 +20,10 @@ namespace GenTRAC.ActionLogic
     using GenBOE.DataBridge.DTO;
     using GenTRAC.ActionLogic.Email;
     using GenTRAC.ActionLogic.Mediator;
+    using GenTRAC.ActionLogic.ModelView;
     using GenTRAC.ActionLogic.ModelView.Proposals;
     using GenTRAC.ActionLogic.Validation;
+    using GenTRAC.DataBridge;
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
     using GenTRAC.Objects;
@@ -813,6 +815,12 @@ namespace GenTRAC.ActionLogic
                 model.CertificationTimelineVisibility = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId).Authorization;
             }
 
+            model.RevisionHistoryVisibility = SecurityAuthorization.None;
+            if (fullProposalDto != null && (fullProposalDto.IsRevision || fullProposalDto.HasRevision))
+            {
+                model.RevisionHistoryVisibility = this.CheckPermissions(PtmSecurityPage.RevisionHistory, proposalId).Authorization;
+            }
+
             if (fullProposalDto != null)
             {
                 model.ProposalID = fullProposalDto.Id;
@@ -876,7 +884,8 @@ namespace GenTRAC.ActionLogic
 
             model.PsaVisibility = SecurityAuthorization.None;
             model.CertificationTimelineVisibility = SecurityAuthorization.None;
-            
+            model.RevisionHistoryVisibility = SecurityAuthorization.None;
+
             if (fullProposalDto != null)
             {
                 string newRevisionSuffix;
@@ -2232,6 +2241,28 @@ namespace GenTRAC.ActionLogic
             while (!titleUnique);
 
             return newTitle;
+        }
+
+        /// <summary>
+        /// Gets Revision History for the specific proposal
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Revision History</returns>
+        public ICollection<RevisionHistoryModelView> GetRevisionHistory(int proposalId)
+        {
+            ICollection<RevisionHistoryModelView> result = this.ProposalLoader.GetRevisionHistory(proposalId);
+
+            foreach (RevisionHistoryModelView prop in result)
+            {
+                prop.DisplayProposalSetupTab &= this.CheckPermissions(PtmSecurityPage.Proposal, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                prop.DisplayChecklistTab &= this.CheckPermissions(PtmSecurityPage.Checklist, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                prop.DisplayPSATab &= this.CheckPermissions(PtmSecurityPage.PostSubmittalAttachments, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                prop.DisplayApprovalsTab &= this.CheckPermissions(PtmSecurityPage.Approvals, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                prop.DisplayCertificationTab &= this.CheckPermissions(PtmSecurityPage.CertificationTimeline, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                prop.DisplayRevisionTab &= this.CheckPermissions(PtmSecurityPage.RevisionHistory, prop.ProposalId).Authorization != SecurityAuthorization.None;
+            }
+
+            return result;
         }
 
         #endregion

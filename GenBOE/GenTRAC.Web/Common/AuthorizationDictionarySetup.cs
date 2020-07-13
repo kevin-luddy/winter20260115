@@ -164,6 +164,7 @@ namespace GenTRAC.Web.Common
             AddActionToController(WebConstants.Action.DISPLAY_PROPOSAL_REVISION_DETAILS, PtmSecurityPage.Proposal, SecurityAuthorization.CreateReadUpdateDelete, proposalControllerActions);
             AddActionToController(WebConstants.Action.PROPOSAL_FILTER_PROGRAM_AREA, PtmSecurityPage.Proposal, SecurityAuthorization.Read, proposalControllerActions);
             AddActionToController(WebConstants.Action.PROPOSAL_FILTER_CONTRACT_TYPES, PtmSecurityPage.Proposal, SecurityAuthorization.Read, proposalControllerActions);
+            AddActionToController(WebConstants.Action.DISPLAY_REVISION_HISTORY, PtmSecurityPage.Proposal, SecurityAuthorization.Read, proposalControllerActions);
             result.Add(WebConstants.Controller.PROPOSAL, proposalControllerActions);
         }
 

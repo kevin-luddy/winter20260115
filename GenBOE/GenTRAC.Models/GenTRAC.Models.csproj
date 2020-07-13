@@ -124,6 +124,9 @@
     <Compile Include="getMyProposals_Result.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="GetProposalRevisionHistory_Result.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="ISGSRoleLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>

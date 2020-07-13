@@ -343,6 +343,11 @@ namespace GenTRAC.Web.Common
             /// </summary>
             public const string DELETE_PROPOSAL = "DeleteProposal";
 
+            /// <summary>
+            /// Displays Revision History Tab
+            /// </summary>
+            public const string DISPLAY_REVISION_HISTORY = "DisplayRevisionHistory";
+
             #endregion Proposal
 
             #region Permissions
@@ -862,6 +867,11 @@ namespace GenTRAC.Web.Common
             /// Proposal post information
             /// </summary>
             public const string PROPOSAL_CERTIFICATION_TIMELINE = "CertificationTimeline";
+
+            /// <summary>
+            /// Proposal Revision History
+            /// </summary>
+            public const string PROPOSAL_RevisionHistory = "RevisionHistory";
 
             #endregion Proposal
 

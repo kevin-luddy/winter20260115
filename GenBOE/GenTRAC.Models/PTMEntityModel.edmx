@@ -850,6 +850,18 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Proposal_Proposal">
+          <End Role="Proposal" Type="Self.Proposal" Multiplicity="0..1" />
+          <End Role="Proposal1" Type="Self.Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="Proposal1">
+              <PropertyRef Name="RevisionOfId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Proposal_ProposalClassLU">
           <End Role="ProposalClassLU" Type="Self.ProposalClassLU" Multiplicity="1" />
           <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
@@ -1339,6 +1351,9 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="UserAndGroupIDs" Type="xml" Mode="In" />
           <Parameter Name="ProposalClassFilterID" Type="int" Mode="In" />
         </Function>
+        <Function Name="GetProposalRevisionHistory" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ProposalId" Type="int" Mode="In" />
+        </Function>
         <Function Name="insertDataMartEmployees" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
         <Function Name="insertProposalUserRole" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalID" Type="int" Mode="In" />
@@ -1736,6 +1751,10 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <End Role="ProgramProposalStatusLU" EntitySet="ProgramProposalStatusLU" />
             <End Role="Proposal" EntitySet="Proposal" />
           </AssociationSet>
+          <AssociationSet Name="FK_Proposal_Proposal" Association="Self.FK_Proposal_Proposal">
+            <End Role="Proposal" EntitySet="Proposal" />
+            <End Role="Proposal1" EntitySet="Proposal" />
+          </AssociationSet>
           <AssociationSet Name="FK_Proposal_ProposalClassLU" Association="Self.FK_Proposal_ProposalClassLU">
             <End Role="ProposalClassLU" EntitySet="ProposalClassLU" />
             <End Role="Proposal" EntitySet="Proposal" />
@@ -2083,6 +2102,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="ReasonCertificationNotRequired" Type="Int32" />
           <NavigationProperty Name="ProposalsAttachments" Relationship="genTRACModel.FK__Proposals__Propo__5A5A5133" FromRole="Proposal" ToRole="ProposalsAttachment" />
           <Property Name="RevisionOfId" Type="Int32" />
+          <NavigationProperty Name="Proposal1" Relationship="genTRACModel.FK_Proposal_Proposal" FromRole="Proposal" ToRole="Proposal1" />
+          <NavigationProperty Name="Proposal2" Relationship="genTRACModel.FK_Proposal_Proposal" FromRole="Proposal1" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -3296,6 +3317,13 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <End Role="Attachment" EntitySet="Attachments" />
             <End Role="ProposalsAttachment" EntitySet="ProposalsAttachments" />
           </AssociationSet>
+          <AssociationSet Name="FK_Proposal_Proposal" Association="genTRACModel.FK_Proposal_Proposal">
+            <End Role="Proposal" EntitySet="Proposals" />
+            <End Role="Proposal1" EntitySet="Proposals" />
+          </AssociationSet>
+          <FunctionImport Name="GetProposalRevisionHistory" ReturnType="Collection(genTRACModel.GetProposalRevisionHistory_Result)">
+            <Parameter Name="ProposalId" Mode="In" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="CreatePARChecklistReport_Result">
           <Property Type="String" Name="QuestionNumber" Nullable="true" MaxLength="50" />
@@ -3790,6 +3818,23 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Proposal_Proposal">
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="0..1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="Proposal1">
+              <PropertyRef Name="RevisionOfId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="GetProposalRevisionHistory_Result">
+          <Property Type="Int32" Name="ProposalId" Nullable="true" />
+          <Property Type="Int32" Name="RevisionOfId" Nullable="true" />
+          <Property Type="String" Name="ProposalTrackingId" Nullable="true" MaxLength="13" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -4521,6 +4566,15 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="GetProposalRevisionHistory" FunctionName="genTRACModel.Store.GetProposalRevisionHistory">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="genTRACModel.GetProposalRevisionHistory_Result">
+                <ScalarProperty Name="ProposalId" ColumnName="ProposalId" />
+                <ScalarProperty Name="RevisionOfId" ColumnName="RevisionOfId" />
+                <ScalarProperty Name="ProposalTrackingId" ColumnName="ProposalTrackingId" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
