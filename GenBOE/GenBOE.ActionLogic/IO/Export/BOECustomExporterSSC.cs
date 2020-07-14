@@ -134,27 +134,33 @@ namespace GenBOE.ActionLogic.IO.Export
                     byQuarter = true;
                 }
             }
+
+            if (gfyLaborHoursRollupTableTemplateElement == null)
+            {
+                gfyLaborHoursRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_GfyLaborHoursRollupByQuarter);
+                byQuarter = true;
+            }
             
             if (laborHoursRollupTableTemplateElement != null || gfyLaborHoursRollupTableTemplateElement != null)
             {
                 if (selectedComponents.Contains(BoeCustomReportComponent.TaskSpreadTables))
                 {
                     string hoursLabel = FullObjectHelper.HoursLabel(exportInputs.Workspace);
-                    string tag = laborHoursRollupTableTemplateElement.Descendants<Tag>().FirstOrDefault().Val.Value;
+                    string tag = laborHoursRollupTableTemplateElement != null ? laborHoursRollupTableTemplateElement.Descendants<Tag>().FirstOrDefault().Val?.Value : string.Empty;
 
                     BoeTaskElementDTO currentLaborTaskElement = allLaborTaskElements.FirstOrDefault(x => x.Id == laborTaskElement.BOETaskElementID.Value);
 
-                    SdtElement currentInsertionElement = laborHoursRollupTableTemplateElement;
+                    SdtElement currentInsertionElement = laborHoursRollupTableTemplateElement != null ? laborHoursRollupTableTemplateElement : gfyLaborHoursRollupTableTemplateElement;
 
                     #region Repeat for each element of cost
 
                     // if description is present, then it should be used instead of resource id.
-                    bool useDescriptionInsteadOfName = WordUtilities.GetTaggedChildElement(WordUtilities.GetTaggedChildElement(currentInsertionElement, BOEExporterConstants.Marker_DataRow)
+                    bool useDescriptionInsteadOfName = laborHoursRollupTableTemplateElement != null ? WordUtilities.GetTaggedChildElement(WordUtilities.GetTaggedChildElement(currentInsertionElement, BOEExporterConstants.Marker_DataRow)
                                                                                             .Ancestors<TableRow>().FirstOrDefault(), BOEExporterConstants.FieldName_ResourceDescription) 
-                                                                                            != null;
+                                                                                            != null : false;
 
                     Dictionary<int, List<LaborRollupByDateNew>> currentLMLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, false, ElementOfCostType.LMLabor, null);
-                    SdtElement lmLaborHoursRollupTableElement = laborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement;
+                    SdtElement lmLaborHoursRollupTableElement = laborHoursRollupTableTemplateElement != null ? laborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement : null;
                     bool populated = false;
 
                     if (tag == BOEExporterConstants.Table_LaborHoursRollupByYear)
@@ -179,7 +185,8 @@ namespace GenBOE.ActionLogic.IO.Export
                         Dictionary<int, List<LaborRollupByDateNew>> gfyCurrentLMLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, true, ElementOfCostType.LMLabor, null);
                         SdtElement gfyLaborHoursRollupTableElement = gfyLaborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement;
                         RollupSummaryByGroupByYearTableData gfyLmLaborSummaryRollupData = gfyCurrentLMLaborTaskRollupData.Convert();
-                        populated = this.PopulateRollupSummaryByGroupByYearTable(gfyLaborHoursRollupTableElement, "LM Labor " + hoursLabel + " Spread", gfyLmLaborSummaryRollupData, this.DefaultHoursFormat, false);
+                        string tableTitle = "LM Labor " + hoursLabel + " Spread" + (byQuarter ? " - GFY Quarter" : string.Empty);
+                        populated = this.PopulateRollupSummaryByGroupByYearTable(gfyLaborHoursRollupTableElement, tableTitle, gfyLmLaborSummaryRollupData, this.DefaultHoursFormat, byQuarter, true);
                         if (populated)
                         {
                             currentInsertionElement.InsertAfterSelf(gfyLaborHoursRollupTableElement);
@@ -188,7 +195,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     }
 
                     Dictionary<int, List<LaborRollupByDateNew>> currentSubLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, false, ElementOfCostType.Sub, null);
-                    SdtElement subLaborHoursRollupTableElement = laborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement;
+                    SdtElement subLaborHoursRollupTableElement = laborHoursRollupTableTemplateElement != null ? laborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement : null;
                     populated = false;
 
                     if (tag == BOEExporterConstants.Table_LaborHoursRollupByYear)
@@ -213,7 +220,8 @@ namespace GenBOE.ActionLogic.IO.Export
                         Dictionary<int, List<LaborRollupByDateNew>> gfyCurrentSubLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, true, ElementOfCostType.Sub, null);
                         SdtElement gfySubHoursRollupTableElement = gfyLaborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement;
                         RollupSummaryByGroupByYearTableData gfySubLaborSummaryRollupData = gfyCurrentSubLaborTaskRollupData.Convert();
-                        populated = this.PopulateRollupSummaryByGroupByYearTable(gfySubHoursRollupTableElement, "Subcontractor Labor " + hoursLabel + " Spread", gfySubLaborSummaryRollupData, this.DefaultHoursFormat, false);
+                        string tableTitle = "Subcontractor Labor " + hoursLabel + " Spread" + (byQuarter ? " - GFY Quarter" : string.Empty);
+                        populated = this.PopulateRollupSummaryByGroupByYearTable(gfySubHoursRollupTableElement, tableTitle, gfySubLaborSummaryRollupData, this.DefaultHoursFormat, byQuarter, true);
                         if (populated)
                         {
                             currentInsertionElement.InsertAfterSelf(gfySubHoursRollupTableElement);
@@ -222,7 +230,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     }
 
                     Dictionary<int, List<LaborRollupByDateNew>> currentIWTALaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, false, ElementOfCostType.IWTA, null);    
-                    SdtElement iwtaLaborHoursRollupTableElement = laborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement;
+                    SdtElement iwtaLaborHoursRollupTableElement = laborHoursRollupTableTemplateElement != null ? laborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement : null;
                     populated = false;
 
                     if (tag == BOEExporterConstants.Table_LaborHoursRollupByYear)
@@ -247,7 +255,8 @@ namespace GenBOE.ActionLogic.IO.Export
                         Dictionary<int, List<LaborRollupByDateNew>> gfyCurrentIwtaLaborTaskRollupData = this.GetTaskHourRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useDescriptionInsteadOfName, true, ElementOfCostType.IWTA, null);
                         SdtElement gfyIwtaHoursRollupTableElement = gfyLaborHoursRollupTableTemplateElement.CloneNode(true) as SdtElement;
                         RollupSummaryByGroupByYearTableData gfyIwtaLaborSummaryRollupData = gfyCurrentIwtaLaborTaskRollupData.Convert();
-                        populated = this.PopulateRollupSummaryByGroupByYearTable(gfyIwtaHoursRollupTableElement, "IWTA Labor " + hoursLabel + " Spread", gfyIwtaLaborSummaryRollupData, this.DefaultHoursFormat, false);
+                        string tableTitle = "IWTA Labor " + hoursLabel + " Spread" + (byQuarter ? " - GFY Quarter" : string.Empty);
+                        populated = this.PopulateRollupSummaryByGroupByYearTable(gfyIwtaHoursRollupTableElement, tableTitle, gfyIwtaLaborSummaryRollupData, this.DefaultHoursFormat, byQuarter, true);
 
                         if (populated)
                         {
@@ -292,6 +301,11 @@ namespace GenBOE.ActionLogic.IO.Export
             if (useGfy)
             {
                 costSpreadRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_GfyCostSpreadRollup);
+                if (costSpreadRollupTableTemplateElement == null)
+                {
+                    costSpreadRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_GfyCostSpreadRollupByQuarter);
+                    byQuarter = true;
+                }
             }
             else
             {
@@ -330,7 +344,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     else
                     {
                         RollupSummaryByGroupByYearTableData lmLaborSummaryRollupData = currentLMLaborTaskRollupData.Convert();
-                        populated = this.PopulateRollupSummaryByGroupByYearTable(lmLaborCostRollupTableElement, "LM Labor Cost Spread", lmLaborSummaryRollupData, this.DefaultCurrencyFormat, byQuarter);
+                        populated = this.PopulateRollupSummaryByGroupByYearTable(lmLaborCostRollupTableElement, "LM Labor Cost Spread", lmLaborSummaryRollupData, this.DefaultCurrencyFormat, byQuarter, useGfy);
                     }
 
                     if (populated)
@@ -349,7 +363,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     else
                     {
                         RollupSummaryByGroupByYearTableData subLaborSummaryRollupData = currentSubLaborTaskRollupData.Convert();
-                        populated = this.PopulateRollupSummaryByGroupByYearTable(subLaborCostRollupTableElement, "Subcontractor Cost Spread", subLaborSummaryRollupData, this.DefaultCurrencyFormat, byQuarter);
+                        populated = this.PopulateRollupSummaryByGroupByYearTable(subLaborCostRollupTableElement, "Subcontractor Cost Spread", subLaborSummaryRollupData, this.DefaultCurrencyFormat, byQuarter, useGfy);
                     }
                     
                     if (populated)
@@ -368,7 +382,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     else
                     {
                         RollupSummaryByGroupByYearTableData iwtaLaborSummaryRollupData = currentIWTALaborTaskRollupData.Convert();
-                        populated = this.PopulateRollupSummaryByGroupByYearTable(iwtaLaborCostRollupTableElement, "IWTA Cost Spread", iwtaLaborSummaryRollupData, this.DefaultCurrencyFormat, byQuarter);
+                        populated = this.PopulateRollupSummaryByGroupByYearTable(iwtaLaborCostRollupTableElement, "IWTA Cost Spread", iwtaLaborSummaryRollupData, this.DefaultCurrencyFormat, byQuarter, useGfy);
                     }
 
                     if (populated)
@@ -387,7 +401,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     else
                     {
                         RollupSummaryByGroupByYearTableData materialLaborSummaryRollupData = currentMaterialLaborTaskRollupData.Convert();
-                        populated = this.PopulateRollupSummaryByGroupByYearTable(materialLaborCostRollupTableElement, "Material Cost Spread", materialLaborSummaryRollupData, this.DefaultCurrencyFormat, byQuarter);
+                        populated = this.PopulateRollupSummaryByGroupByYearTable(materialLaborCostRollupTableElement, "Material Cost Spread", materialLaborSummaryRollupData, this.DefaultCurrencyFormat, byQuarter, useGfy);
                     }
 
                     if (populated)
@@ -398,16 +412,17 @@ namespace GenBOE.ActionLogic.IO.Export
                     Dictionary<int, List<LaborRollupByDateNew>> currentODCLaborTaskRollupData = this.GetLaborTaskCostRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useGfy, ElementOfCostType.ODC, RateType.Cost);
                     SdtElement odcLaborCostRollupTableElement = costSpreadRollupTableTemplateElement.CloneNode(true) as SdtElement;
                     populated = false;
-                    if (tag == BOEExporterConstants.Table_CostSpreadRollup || tag == BOEExporterConstants.Table_CostSpreadRollupByQuarter)
-                    {
-                        RollupSummaryByGroupByYearTableData odcLaborSummaryRollupData = currentODCLaborTaskRollupData.Convert();
-                        populated = this.PopulateRollupSummaryByGroupByYearTable(odcLaborCostRollupTableElement, "ODC Cost Spread", odcLaborSummaryRollupData, this.DefaultCurrencyFormat, byQuarter);
-                    }
-                    else if (tag == BOEExporterConstants.Table_CostSpreadRollupByYear)
+                    if (tag == BOEExporterConstants.Table_CostSpreadRollupByYear)
                     {
                         RollupSummaryByYearTableData odcLaborSummaryRollupData = currentODCLaborTaskRollupData.ConvertToRollupSummaryByYear();
                         populated = this.PopulateRollupSummaryByYearTable(odcLaborCostRollupTableElement, "ODC Cost Spread", odcLaborSummaryRollupData, this.DefaultCurrencyFormat, false);
                     }
+                    else
+                    {
+                        RollupSummaryByGroupByYearTableData odcLaborSummaryRollupData = currentODCLaborTaskRollupData.Convert();
+                        populated = this.PopulateRollupSummaryByGroupByYearTable(odcLaborCostRollupTableElement, "ODC Cost Spread", odcLaborSummaryRollupData, this.DefaultCurrencyFormat, byQuarter, useGfy);
+                    }
+
                     if (populated)
                     {
                         currentInsertionElement = currentInsertionElement.InsertAfterSelf(odcLaborCostRollupTableElement);
@@ -416,16 +431,17 @@ namespace GenBOE.ActionLogic.IO.Export
                     Dictionary<int, List<LaborRollupByDateNew>> currentTravelLaborTaskRollupData = this.GetLaborTaskCostRollup(new Collection<BoeTaskElementDTO> { currentLaborTaskElement }, laborTaskElement.taskElementLabors, boeExportModelView, useGfy, ElementOfCostType.Travel, RateType.Cost);
                     SdtElement travelLaborCostRollupTableElement = costSpreadRollupTableTemplateElement.CloneNode(true) as SdtElement;
                     populated = false;
-                    if (tag == BOEExporterConstants.Table_CostSpreadRollup || tag == BOEExporterConstants.Table_CostSpreadRollupByQuarter)
-                    {
-                        RollupSummaryByGroupByYearTableData travelLaborSummaryRollupData = currentTravelLaborTaskRollupData.Convert();
-                        populated = this.PopulateRollupSummaryByGroupByYearTable(travelLaborCostRollupTableElement, "Travel Cost Spread", travelLaborSummaryRollupData, this.DefaultCurrencyFormat, byQuarter);
-                    }
-                    else if (tag == BOEExporterConstants.Table_CostSpreadRollupByYear)
+                    if (tag == BOEExporterConstants.Table_CostSpreadRollupByYear)
                     {
                         RollupSummaryByYearTableData travelLaborSummaryRollupData = currentTravelLaborTaskRollupData.ConvertToRollupSummaryByYear();
                         populated = this.PopulateRollupSummaryByYearTable(travelLaborCostRollupTableElement, "Travel Cost Spread", travelLaborSummaryRollupData, this.DefaultCurrencyFormat, false);
                     }
+                    else
+                    {
+                        RollupSummaryByGroupByYearTableData travelLaborSummaryRollupData = currentTravelLaborTaskRollupData.Convert();
+                        populated = this.PopulateRollupSummaryByGroupByYearTable(travelLaborCostRollupTableElement, "Travel Cost Spread", travelLaborSummaryRollupData, this.DefaultCurrencyFormat, byQuarter, useGfy);
+                    }
+
                     if (populated)
                     {
                         currentInsertionElement = currentInsertionElement.InsertAfterSelf(travelLaborCostRollupTableElement);
@@ -473,6 +489,11 @@ namespace GenBOE.ActionLogic.IO.Export
             if (useGfy)
             {
                 odcCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_GfyDirectCostRollup);
+                if (odcCostRollupTableElement == null)
+                {
+                    odcCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_GfyDirectCostRollupByQuarter);
+                    byQuarter = true;
+                }
             }
             else
             {
@@ -502,7 +523,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 else
                 {
                     RollupSummaryByGroupByYearTableData odcSummaryRollupData = currentODCTaskRollupData.Convert();
-                    this.PopulateRollupSummaryByGroupByYearTable(odcCostRollupTableElement, null, odcSummaryRollupData, this.DefaultCurrencyFormat, byQuarter);
+                    this.PopulateRollupSummaryByGroupByYearTable(odcCostRollupTableElement, null, odcSummaryRollupData, this.DefaultCurrencyFormat, byQuarter, useGfy);
                 }
             }
             else
@@ -546,6 +567,11 @@ namespace GenBOE.ActionLogic.IO.Export
             if (useGfy)
             {
                 travelCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_GfyDirectCostRollup);
+                if (travelCostRollupTableElement == null)
+                {
+                    travelCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_GfyDirectCostRollupByQuarter);
+                    byQuarter = true;
+                }
             }
             else
             {
@@ -575,7 +601,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 else
                 {
                     RollupSummaryByGroupByYearTableData travelSummaryRollupData = currentTravelTaskRollupData.Convert();
-                    this.PopulateRollupSummaryByGroupByYearTable(travelCostRollupTableElement, null, travelSummaryRollupData, this.DefaultCurrencyFormat, byQuarter);
+                    this.PopulateRollupSummaryByGroupByYearTable(travelCostRollupTableElement, null, travelSummaryRollupData, this.DefaultCurrencyFormat, byQuarter, useGfy);
                 }
             }
             else
@@ -617,7 +643,12 @@ namespace GenBOE.ActionLogic.IO.Export
             SdtElement materialCostRollupTableElement;
             if (useGfy)
             {
-                materialCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_DirectCostRollup);
+                materialCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_GfyDirectCostRollup);
+                if (materialCostRollupTableElement == null)
+                {
+                    materialCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_GfyDirectCostRollupByQuarter);
+                    byQuarter = true;
+                }
             }
             else
             {
@@ -646,7 +677,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 else
                 {
                     RollupSummaryByGroupByYearTableData travelSummaryRollupData = currentMaterialRollupData.Convert();
-                    this.PopulateRollupSummaryByGroupByYearTable(materialCostRollupTableElement, null, travelSummaryRollupData, this.DefaultCurrencyFormat, byQuarter);
+                    this.PopulateRollupSummaryByGroupByYearTable(materialCostRollupTableElement, null, travelSummaryRollupData, this.DefaultCurrencyFormat, byQuarter, useGfy);
                 }
             }
             else
@@ -691,7 +722,13 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 laborHoursSummaryTableTemplateElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_LaborHoursSummaryByQuarter);
                 byQuarter = true;
-            }        
+            }
+
+            if (gfyLaborHoursSummaryTableTemplateElement == null)
+            {
+                gfyLaborHoursSummaryTableTemplateElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_GfyLaborHoursSummaryByQuarter);
+                byQuarter = true;
+            }
 
             if (laborHoursSummaryTableTemplateElement != null || gfyLaborHoursSummaryTableTemplateElement != null)
             {
@@ -727,7 +764,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         Collection<ResourceDTO> laborResources = resourcesByElementOfCost[entry.Key];
 
                         // compile the rollup data
-                        this.PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, gfyLaborHoursSummaryTableTemplateElement, currentInsertionElement, entry, false, true);
+                        this.PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, gfyLaborHoursSummaryTableTemplateElement, currentInsertionElement, entry, byQuarter, true);
                         this.PopulateLaborHoursSummaryTable(taskElementCollection, laborResources, laborHoursSummaryTableTemplateElement, currentInsertionElement, entry, byQuarter, false);
                     }
                     
@@ -783,7 +820,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     SdtElement laborHoursSummaryByDateTableElement = templateElement.CloneNode(true) as SdtElement;
 
-                    if (this.PopulateRollupSummaryByYearTable(laborHoursSummaryByDateTableElement, entry.Value, rollupTableData, this.DefaultHoursFormat, byQuarter))
+                    if (this.PopulateRollupSummaryByYearTable(laborHoursSummaryByDateTableElement, entry.Value, rollupTableData, this.DefaultHoursFormat, byQuarter, useGfy))
                     {
                         currentInsertionElement.InsertAfterSelf(laborHoursSummaryByDateTableElement);
                         currentInsertionElement = laborHoursSummaryByDateTableElement;
@@ -833,6 +870,11 @@ namespace GenBOE.ActionLogic.IO.Export
             if (useGfy)
             {
                 costSummaryTableTemplateElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_GfyLaborCostSummaryByDate);
+                if (costSummaryTableTemplateElement == null)
+                {
+                    costSummaryTableTemplateElement = WordUtilities.GetTaggedChildElement(boeContainer, BOEExporterConstants.Table_GfyLaborCostSummaryByQuarter);
+                    byQuarter = true;
+                }
             }
             else
             {
@@ -887,7 +929,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         {
                             SdtElement costSummaryByDateTableElement = costSummaryTableTemplateElement.CloneNode(true) as SdtElement;
 
-                            if (this.PopulateRollupSummaryByYearTable(costSummaryByDateTableElement, entry.Value, costSummaryRollupData, this.DefaultCurrencyFormat, byQuarter))
+                            if (this.PopulateRollupSummaryByYearTable(costSummaryByDateTableElement, entry.Value, costSummaryRollupData, this.DefaultCurrencyFormat, byQuarter, useGfy))
                             {
                                 currentInsertionElement.InsertAfterSelf(costSummaryByDateTableElement);
                                 currentInsertionElement = costSummaryByDateTableElement;
