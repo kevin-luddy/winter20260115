@@ -3229,7 +3229,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             SdtElement materialCostRollupTableElement = WordUtilities.GetTaggedChildElement(containerElement,
                 useGfy ? BOEExporterConstants.Table_GfyDirectCostRollup : BOEExporterConstants.Table_DirectCostRollup);
-
+            
             if (materialCostRollupTableElement != null && selectedComponents.Contains(BoeCustomReportComponent.TaskSpreadTables))
             {
                 Dictionary<int, List<LaborRollupByDateNew>> currentMaterialTaskRollupData = new Dictionary<int, List<LaborRollupByDateNew>>();
@@ -3488,13 +3488,14 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="tableRow">Row to be populated</param>
         /// <param name="monthlyValues">Values for each month</param>
         /// <param name="numericFormat">format for numbers</param>
-        private void PopulateTableRowWithQuarterlyData(TableRow tableRow, ValuesByMonth<decimal> monthlyValues, string numericFormat)
+        /// <param name="useGfy">if using Government Fiscal Year</param>
+        private void PopulateTableRowWithQuarterlyData(TableRow tableRow, ValuesByMonth<decimal> monthlyValues, string numericFormat, bool useGfy)
         {
             //get quarter values by adding up monthly values
-            decimal Q1 = monthlyValues.January + monthlyValues.February + monthlyValues.March;
-            decimal Q2 = monthlyValues.April + monthlyValues.May + monthlyValues.June;
-            decimal Q3 = monthlyValues.July + monthlyValues.August + monthlyValues.September;
-            decimal Q4 = monthlyValues.October + monthlyValues.November + monthlyValues.December;
+            decimal Q1 = useGfy ? monthlyValues.October + monthlyValues.November + monthlyValues.December : monthlyValues.January + monthlyValues.February + monthlyValues.March;
+            decimal Q2 = useGfy ? monthlyValues.January + monthlyValues.February + monthlyValues.March : monthlyValues.April + monthlyValues.May + monthlyValues.June;
+            decimal Q3 = useGfy ? monthlyValues.April + monthlyValues.May + monthlyValues.June : monthlyValues.July + monthlyValues.August + monthlyValues.September;
+            decimal Q4 = useGfy ? monthlyValues.July + monthlyValues.August + monthlyValues.September : monthlyValues.October + monthlyValues.November + monthlyValues.December;
             //populate the fields
             WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Q1), (numericFormat == null) ? Q1.ToString() : Q1.ToString(numericFormat));
             WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Q2), (numericFormat == null) ? Q2.ToString() : Q2.ToString(numericFormat));
@@ -3510,6 +3511,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="data">The data.</param>
         /// <param name="numericFormat">The numeric format.</param>
         /// <param name="byQuarter">if set to <c>true</c> [by quarter].</param>
+        /// <param name="useGfy">if using Government Fiscal Year</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">data</exception>
         /// <remarks>
@@ -3518,7 +3520,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// BOEHoursSummaryTable
         /// BOECostSummaryTable
         /// </remarks>
-        protected bool PopulateRollupSummaryByGroupByYearTable(SdtElement tableContainerElement, string tableTitle, RollupSummaryByGroupByYearTableData data, string numericFormat, bool byQuarter)
+        protected bool PopulateRollupSummaryByGroupByYearTable(SdtElement tableContainerElement, string tableTitle, RollupSummaryByGroupByYearTableData data, string numericFormat, bool byQuarter, bool useGfy = false)
         {
             if (data == null)
             {
@@ -3578,7 +3580,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 foreach (RollupSummaryByGroupByYearTableGroupData group in data.GroupData)
                 {
-                    currentInsertionRow = this.SummaryRowHelper(numericFormat, byQuarter, templateDataRow, currentInsertionRow, group.YearlyData, group.GroupName);
+                    currentInsertionRow = this.SummaryRowHelper(numericFormat, byQuarter, templateDataRow, currentInsertionRow, group.YearlyData, group.GroupName, useGfy);
 
                     // create a new total row for this group
                     TableRow totalRow = this.CloneMarkedTemplateRow(templateTotalsRow);
@@ -3604,7 +3606,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Year), rowData.Year);
                     if (byQuarter)
                     {
-                        this.PopulateTableRowWithQuarterlyData(tableRow, rowData.MonthlyValues, numericFormat);
+                        this.PopulateTableRowWithQuarterlyData(tableRow, rowData.MonthlyValues, numericFormat, useGfy);
                     }
                     else
                     {
@@ -3652,7 +3654,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 // populate the summary total
                 if (byQuarter)
                 {
-                    this.PopulateTableRowWithQuarterlyData(summaryTotalRow, data.SummaryTotalsByMonth, numericFormat);
+                    this.PopulateTableRowWithQuarterlyData(summaryTotalRow, data.SummaryTotalsByMonth, numericFormat, useGfy);
                 }
                 else
                 {
@@ -3681,7 +3683,18 @@ namespace GenBOE.ActionLogic.IO.Export
             return populated;
         }
 
-        private TableRow SummaryRowHelper(string numericFormat, bool byQuarter, TableRow templateDataRow, TableRow currentInsertionRow, ICollection<RollupSummaryByYearTableRowData> data, string resource = null)
+        /// <summary>
+        /// Method to populate the summary row
+        /// </summary>
+        /// <param name="numericFormat">Numeric format</param>
+        /// <param name="byQuarter">If table is by quarter</param>
+        /// <param name="templateDataRow">template data row</param>
+        /// <param name="currentInsertionRow">current insertion row</param>
+        /// <param name="data">data</param>
+        /// <param name="resource">resource</param>
+        /// <param name="useGfy">if using Government Fiscal Year</param>
+        /// <returns>the current insertion row</returns>
+        private TableRow SummaryRowHelper(string numericFormat, bool byQuarter, TableRow templateDataRow, TableRow currentInsertionRow, ICollection<RollupSummaryByYearTableRowData> data, string resource = null, bool useGfy = false)
         {
             foreach (RollupSummaryByYearTableRowData rowData in data)
             {
@@ -3695,7 +3708,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Year), rowData.Year);
                 if (byQuarter)
                 {
-                    this.PopulateTableRowWithQuarterlyData(tableRow, rowData.MonthlyValues, numericFormat);
+                    this.PopulateTableRowWithQuarterlyData(tableRow, rowData.MonthlyValues, numericFormat, useGfy);
                 }
                 else
                 {
@@ -3719,6 +3732,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="data">The data.</param>
         /// <param name="numericFormat">The numeric format.</param>
         /// <param name="byQuarter">if set to <c>true</c> [by quarter].</param>
+        /// <param name="useGfy">if using Goverment Fiscal Year for the table</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentNullException">data</exception>
         /// <remarks>
@@ -3729,7 +3743,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// LaborAndNonLaborCostSummaryByDateTable
         /// LaborHoursSummaryByCustomFieldTable
         /// </remarks>
-        protected virtual bool PopulateRollupSummaryByYearTable(SdtElement tableContainerElement, string tableTitle, RollupSummaryByYearTableData data, string numericFormat, bool byQuarter)
+        protected virtual bool PopulateRollupSummaryByYearTable(SdtElement tableContainerElement, string tableTitle, RollupSummaryByYearTableData data, string numericFormat, bool byQuarter, bool useGfy = false)
         {
             if (data == null)
             {
@@ -3768,7 +3782,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 this.SetCantSplit(templateDataRow);
                 TableRow currentInsertionRow = templateDataRow;
 
-                currentInsertionRow = this.SummaryRowHelper(numericFormat, byQuarter, templateDataRow, currentInsertionRow, data.YearlyData);
+                currentInsertionRow = this.SummaryRowHelper(numericFormat, byQuarter, templateDataRow, currentInsertionRow, data.YearlyData, null, useGfy);
 
                 // remove template rows
                 templateDataRow.Remove();
