@@ -848,19 +848,23 @@ namespace GenTRAC.ActionLogic
 
                 // Display + New Revision button only if the user if the lead or backup estimator and approval workflow is completed
                 UserDTO activeUser = this.GetActiveUser();
-                if (fullProposalDto.WorkflowStatus == WorkflowStatus.ProposalLocked &&
-                    fullProposalDto.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer)))
+                bool userIsLeadOrBackupPricer = fullProposalDto.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer));
+
+                if (fullProposalDto.WorkflowStatus == WorkflowStatus.ProposalLocked && userIsLeadOrBackupPricer)
                 {
                     model.DisplayNewRevisionButton = true;
                 }
-                else
+
+                // Display Revert to Prior Version button only if user is lead or backup estimator and in latest revision
+                if ((fullProposalDto.ProposalStatus == ProposalStatus.InProgress || fullProposalDto.ProposalStatus == ProposalStatus.Completed || 
+                    fullProposalDto.ProposalStatus == ProposalStatus.Submitted) && fullProposalDto.IsRevision && userIsLeadOrBackupPricer)
                 {
-                    model.DisplayNewRevisionButton = false;
+                    model.DisplayRevertRevisionButton = true;
                 }
 
                 model.ReasonCertificationNotRequired = fullProposalDto.ReasonCertificationNotRequired;
                 
-                model.RevisedProposalId = null;
+                model.RevisedProposalId = fullProposalDto.RevisionOfId;
                 model.IsNewRevision = false;
             }
 
@@ -896,7 +900,6 @@ namespace GenTRAC.ActionLogic
                 model.RevisedProposalTitle = fullProposalDto.ProposalTitle;
                 model.ProposalTitle = this.GetNewRevisionProposalTitle(fullProposalDto.ProposalTitle, newRevisionSuffix);
                 model.ProposalStatus = ProposalStatus.InProgress;
-                model.DisplayNewRevisionButton = false;
                 model.RevisedProposalId = proposalId;
                 model.IsNewRevision = true;
             }
@@ -1260,7 +1263,7 @@ namespace GenTRAC.ActionLogic
             model.BOEToolsList = EnumUtilities.GetListItemsForEnumSorted(typeof(BOETool), false, model.BOETool.ToString());
 
             model.IsReadOnly = this.IsProposalReadOnly(proposalId, fullProposalDto);
-            model.IsPTMChecklistUIEnabled = (!proposalId.HasValue || fullProposalDto.ProposalChecklistPPRData == null) ? true : this.IsPTMChecklistUIEnabled(fullProposalDto.ProposalChecklistPPRData.Version);
+            model.IsPTMChecklistUIEnabled = (!proposalId.HasValue || proposalId < 0 || fullProposalDto.ProposalChecklistPPRData == null) ? true : this.IsPTMChecklistUIEnabled(fullProposalDto.ProposalChecklistPPRData.Version);
 
             if (fullProposalDto != null)
             {

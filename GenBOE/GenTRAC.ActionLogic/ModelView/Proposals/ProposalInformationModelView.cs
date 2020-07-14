@@ -53,7 +53,7 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// <summary>
         /// Gets or sets Proposal Type
         /// </summary>
-        [Required(ErrorMessage = ValidationConstants.ProposalValidationConstants.PROPOSAL_TYPE_REQUIRED)]
+        [Range(1, int.MaxValue, ErrorMessage = ValidationConstants.ProposalValidationConstants.PROPOSAL_TYPE_REQUIRED)]
         public int ProposalType { get; set; }
 
         /// <summary>

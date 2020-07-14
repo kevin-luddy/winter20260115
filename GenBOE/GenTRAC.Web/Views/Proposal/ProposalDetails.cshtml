@@ -170,10 +170,14 @@
             window.location = url;
         };
 
+        ProposalDetailsWidget.RevertRevision = function () {
+            // TODO - RJ - update to call backend in BOEJ-4642
+        };
+
         window.onhashchange = ProposalDetailsWidget.LoadTab;
         ProposalDetailsWidget.on('LOAD_PROPOSAL_TAB', function (e, params) {
             var proposalID = params.proposalid;
-            console.log(proposalID);
+
             if (proposalID == null)
             {
                 proposalID = -1;
@@ -348,11 +352,31 @@
             $('button[name="new-revision-button"]').addClass('disabled');
         }
 
+        if ('@(Model.ProposalStatus == ProposalStatus.Completed || Model.ProposalStatus == ProposalStatus.Submitted)' == 'True') {
+            $('button[name="revert-revision-button"]').addClass('disabled');
+        }
+
+        // Adjust margins for revision buttons
+        if ('@(Model.DisplayRevertRevisionButton)' == 'True') {
+            $('#revisionButtons').removeClass('newRevisionButtonMargin');
+            if ('@(!Model.DisplayNewRevisionButton)' == 'True') {
+                $('#revisionButtons').addClass('revertRevisionMargin');
+            }
+        }
+
         $('button[name="new-revision-button"]:not(.disabled)').click(function () {
             GenSession.confirmDialog(
                  "Confirm new Revision",
                  "<div style='text-align: left'>Proposal Revision shall only be created for one of the following reasons:<ol><li>A revised RFP is issued</li><li>Customer direction requires a resubmittal</li><li>Customer directs LM to submit an FPR</li><li>Anytime a new Cover Sheet is required (for CCOPD)</li></ol>Would you like to continue?</div>",
                  ProposalDetailsWidget.AddNewRevision,
+                 null);
+        });
+
+        $('button[name="revert-revision-button"]:not(.disabled)').click(function () {
+            GenSession.confirmDialog(
+                 "Confirm revert to prior version",
+                 "Reverting to the prior version of this Proposal will delete this Proposal and all of its contents. Are you sure you would like to continue?",
+                 ProposalDetailsWidget.RevertRevision,
                  null);
         });
 
@@ -462,21 +486,25 @@
                         </text>
                     }
                 </div>
-                @if (Model.DisplayNewRevisionButton)
-                {
-                    <div class="revisionButtons">
+                <div id="revisionButtons" class="newRevisionButtonMargin">
+                    @if (Model.DisplayNewRevisionButton)
+                    {
                         <button name="new-revision-button" type="button" class="ies stateful_button">+ New Revision</button>
-                    </div>
-                }
-                <ul class="inline-block proposalTabMenu">
-                    <li class="active"><div class="tab-left"></div><a href="#Proposal" tab="Proposal">Proposal Setup</a><div class="tab-right"></div></li>
-                    <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Checklist" tab="Checklist">Checklist</a><div class="tab-right"></div></li>
-                    <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#PSA" tab="PSA">Post Submittal Attachments</a><div class="tab-right"></div></li>
-                    <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Approvals" tab="Approvals">Approvals</a><div class="tab-right"></div></li>
-                    <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#CertificationTimeline" tab="CertificationTimeline">Certification Timeline</a><div class="tab-right"></div></li>
-                    <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#RevisionHistory" tab="RevisionHistory">Revision History</a><div class="tab-right"></div></li>
-                </ul>
-            </div>
+                    }
+                    @if (Model.DisplayRevertRevisionButton)
+                    {
+                        <button name="revert-revision-button" type="button" class="ies stateful_button">Revert to Prior Version</button>
+                    }
+                </div>
+                    <ul class="inline-block proposalTabMenu">
+                        <li class="active"><div class="tab-left"></div><a href="#Proposal" tab="Proposal">Proposal Setup</a><div class="tab-right"></div></li>
+                        <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Checklist" tab="Checklist">Checklist</a><div class="tab-right"></div></li>
+                        <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#PSA" tab="PSA">Post Submittal Attachments</a><div class="tab-right"></div></li>
+                        <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Approvals" tab="Approvals">Approvals</a><div class="tab-right"></div></li>
+                        <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#CertificationTimeline" tab="CertificationTimeline">Certification Timeline</a><div class="tab-right"></div></li>
+                        <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#RevisionHistory" tab="RevisionHistory">Revision History</a><div class="tab-right"></div></li>
+                    </ul>
+                </div>
             <div class="tabs-right"></div>
         </div>
     </div>
