@@ -717,10 +717,11 @@ namespace GenBOE.Web.Controllers
                 IReadOnlyCollection<GenTRAC.DataBridge.Common.Security.SecurityPermissionsResponse> roles = this.ptmSecurityMapper.GetRolesForLoggedInUser();
                 bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
 
-                ICollection<GenTRAC.DataBridge.DTO.ProposalDto> proposals = isAdmin 
-                    ? this.proposalLoader.GetAllSlim().Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid).ToList() 
-                    : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true).Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid).ToList();
-                
+                ICollection<GenTRAC.DataBridge.DTO.ProposalDto> proposals = isAdmin ? this.proposalLoader.GetAllSlim() 
+                                                                                : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true);
+
+                proposals = proposals.Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid && p.ProposalStatus != ProposalStatus.Revised).ToList();
+
                 foreach (GenTRAC.DataBridge.DTO.ProposalDto proposal in proposals)
                 {
                     trackingNumbers.Add(new SelectListItem
@@ -1378,10 +1379,11 @@ namespace GenBOE.Web.Controllers
                     // retrieve valid tracking numbers for the current user
                     IReadOnlyCollection<GenTRAC.DataBridge.Common.Security.SecurityPermissionsResponse> roles = this.ptmSecurityMapper.GetRolesForLoggedInUser();
                     bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
-                    
-                    ICollection<GenTRAC.DataBridge.DTO.ProposalDto> proposals = isAdmin 
-                        ? this.proposalLoader.GetAllSlim().Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid).ToList() 
-                        : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true).Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid).ToList();
+
+                    ICollection<GenTRAC.DataBridge.DTO.ProposalDto> proposals = isAdmin ? this.proposalLoader.GetAllSlim()
+                                                                                    : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true);
+
+                    proposals = proposals.Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid && p.ProposalStatus != ProposalStatus.Revised).ToList();
 
                     if (!string.IsNullOrWhiteSpace(spaceModel.TrackingNumber) && !proposals.Any(p => p.TrackingNumber == spaceModel.TrackingNumber))
                     {

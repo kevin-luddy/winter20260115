@@ -835,7 +835,7 @@ namespace GenTRAC.ActionLogic
             }
 
             model.RevisionHistoryVisibility = SecurityAuthorization.None;
-            if (fullProposalDto != null && (fullProposalDto.IsRevision || fullProposalDto.HasRevision))
+            if (fullProposalDto != null && (fullProposalDto.IsRevision || fullProposalDto.ProposalStatus == ProposalStatus.Revised))
             {
                 model.RevisionHistoryVisibility = this.CheckPermissions(PtmSecurityPage.RevisionHistory, proposalId).Authorization;
             }
