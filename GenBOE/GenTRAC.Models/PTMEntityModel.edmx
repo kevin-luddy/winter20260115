@@ -3322,7 +3322,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <End Role="Proposal1" EntitySet="Proposals" />
           </AssociationSet>
           <FunctionImport Name="GetProposalRevisionHistory" ReturnType="Collection(genTRACModel.GetProposalRevisionHistory_Result)">
-            <Parameter Name="ProposalId" Mode="In" Type="Int32" />
+          <Parameter Name="ProposalId" Mode="In" Type="Int32" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="CreatePARChecklistReport_Result">
@@ -3456,7 +3456,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
         </ComplexType>
         <ComplexType Name="getMyProposals_Result">
           <Property Type="Int32" Name="ProposalID" Nullable="false" />
-          <Property Type="String" Name="Tracking_Number" Nullable="false" MaxLength="13" />
+          <Property Type="String" Name="Tracking_Number" Nullable="true" MaxLength="13" />
           <Property Type="String" Name="Proposal_Title" Nullable="false" MaxLength="100" />
           <Property Type="String" Name="Program_Area" Nullable="false" MaxLength="50" />
           <Property Type="String" Name="Customer" Nullable="false" MaxLength="50" />
@@ -3489,10 +3489,11 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Type="String" Name="LeadEstimatorNtId" Nullable="true" MaxLength="1000" />
           <Property Type="String" Name="LeadEstimatorName" Nullable="true" MaxLength="256" />
           <Property Type="DateTime" Name="Revised_Submittal_Date" Nullable="true" />
-          <Property Type="String" Name="ProposalClass" Nullable="false" />
-          <Property Type="String" Name="Forecasted_Tracking_Number" Nullable="false" />
+          <Property Type="String" Name="ProposalClass" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Forecasted_Tracking_Number" Nullable="true" MaxLength="13" />
           <Property Type="Int32" Name="CustomerTypeId" Nullable="false" />
           <Property Type="DateTime" Name="ChecklistCompleteDate" Nullable="true" />
+          <Property Type="Int32" Name="HasOrIsRevision" Nullable="false" />
         </ComplexType>
         <EntityType Name="genTracData">
           <Key>
@@ -4339,6 +4340,9 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
                 <ScalarProperty Name="Revised_Submittal_Date" ColumnName="Revised Submittal Date" />
                 <ScalarProperty Name="ProposalClass" ColumnName="ProposalClass" />
                 <ScalarProperty Name="Forecasted_Tracking_Number" ColumnName="Forecasted Tracking Number" />
+                <ScalarProperty Name="CustomerTypeId" ColumnName="CustomerTypeId" />
+                <ScalarProperty Name="ChecklistCompleteDate" ColumnName="ChecklistCompleteDate" />
+                <ScalarProperty Name="HasOrIsRevision" ColumnName="HasOrIsRevision" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

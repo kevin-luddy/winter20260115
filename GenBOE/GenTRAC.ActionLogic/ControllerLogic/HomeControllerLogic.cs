@@ -13,6 +13,7 @@ namespace GenTRAC.ActionLogic
     using System.Text;
     using System.Web.Configuration;
     using System.Web.Mvc;
+    using GenBOE.Dtos;
     using GenTRAC.ActionLogic.CacheWarming;
     using GenTRAC.ActionLogic.Mediator;
     using GenTRAC.ActionLogic.ModelView.Home;
@@ -177,12 +178,25 @@ namespace GenTRAC.ActionLogic
                 throw new ArgumentNullException(nameof(filtersCookie));
             }
 
-            HomeProposalModelView result = new HomeProposalModelView();
+            string currentUserNtid = this.UserMapper.GetActiveUser().Ntid;
 
-            // get the current user
-            UserDTO currentUser = this.UserMapper.GetActiveUser();
-            bool isSystemAdmin = this.CheckPermissions(PtmSecurityPage.Admin, null).Role == PtmRole.Admin;
+            ICollection<HomeProposalViewDto> allProposalData = this.GetProposalGridFilteredData(filtersCookie, searchText, currentUserNtid);
+            ICollection<GenBOE.Dtos.WorkspaceDTO> workspaces = this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo();
 
+            HomeProposalModelView result = this.BuildProposalGridMV(allProposalData, workspaces, currentUserNtid, sortField, order);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets data for the home page Proposal Grid, based on user selected filters (if any)
+        /// </summary>
+        /// <param name="filtersCookie">Filters cookie</param>
+        /// <param name="searchText">Search Text</param>
+        /// <param name="currentUserNtid">Current User's NTID</param>
+        /// <returns>Data for the grid</returns>
+        private ICollection<HomeProposalViewDto> GetProposalGridFilteredData(ProposalFiltersCookie filtersCookie, string searchText, string currentUserNtid)
+        {
             // Get the dates from the filter if they exist.
             DateTime? filterStartDate = null;
             DateTime? filterEndDate = null;
@@ -217,7 +231,7 @@ namespace GenTRAC.ActionLogic
 
             // if user wants to showProposalsForMyOrganization, then generate a list of their AD groups (as XML) to pass to proposal search.
             bool showProposalsForMyOrganization = filtersCookie.ViewerFilterOption == ViewerProposalFilterOption.ShowProposalsForMyOrganization;
-            string userAndGroupIdsAsXml = showProposalsForMyOrganization ? this.activeDirectoryUtils.GetUserAndGroupIdsAsXml(currentUser.Ntid, this.activeDirectoryUtils.GetGroupsForUser(currentUser.Ntid)) : string.Empty;
+            string userAndGroupIdsAsXml = showProposalsForMyOrganization ? this.activeDirectoryUtils.GetUserAndGroupIdsAsXml(currentUserNtid, this.activeDirectoryUtils.GetGroupsForUser(currentUserNtid)) : string.Empty;
 
             ICollection<HomeProposalViewDto> allProposalData;
             if (statuses.Any())
@@ -225,7 +239,7 @@ namespace GenTRAC.ActionLogic
                 List<HomeProposalViewDto> allProposalDataList = new List<HomeProposalViewDto>();
                 foreach (int status in statuses)
                 {
-                    ICollection<HomeProposalViewDto> data = this.ProposalLoader.GetProposalsByUser(status, filterStartDate, filterEndDate, searchText, currentUser.Ntid, showProposalsForMyOrganization, userAndGroupIdsAsXml, proposalClassFilterID);
+                    ICollection<HomeProposalViewDto> data = this.ProposalLoader.GetProposalsByUser(status, filterStartDate, filterEndDate, searchText, currentUserNtid, showProposalsForMyOrganization, userAndGroupIdsAsXml, proposalClassFilterID);
                     if (data != null && data.Any())
                     {
                         allProposalDataList.AddRange(data);
@@ -236,15 +250,35 @@ namespace GenTRAC.ActionLogic
             }
             else
             {
-                allProposalData = this.ProposalLoader.GetProposalsByUser(null, filterStartDate, filterEndDate, searchText, currentUser.Ntid, showProposalsForMyOrganization, userAndGroupIdsAsXml, proposalClassFilterID);
+                allProposalData = this.ProposalLoader.GetProposalsByUser(null, filterStartDate, filterEndDate, searchText, currentUserNtid, showProposalsForMyOrganization, userAndGroupIdsAsXml, proposalClassFilterID);
             }
-            
-            #region Setup Row Data
+
+            return allProposalData;
+        }
+
+        /// <summary>
+        /// Builds and sorts the MV for the home page Proposal Grid
+        /// </summary>
+        /// <param name="allProposalData">Proposal Data</param>
+        /// <param name="workspaces">All Workspace data</param>
+        /// <param name="userNtid">NTID</param>
+        /// <param name="sortField">Sort Field</param>
+        /// <param name="order">Sort Order</param>
+        /// <returns>Sorted home page grid data</returns>
+        private HomeProposalModelView BuildProposalGridMV(ICollection<HomeProposalViewDto> allProposalData, ICollection<WorkspaceDTO> workspaces, string userNtid, string sortField, System.Data.SqlClient.SortOrder? order)
+        {
+            bool isSystemAdmin = this.CheckPermissions(PtmSecurityPage.Admin, null).Role == PtmRole.Admin;
+
+            HomeProposalModelView result = new HomeProposalModelView()
+            {
+                ProgramAreaHelpText = this.orgStructureMapper.GetProgramAreaDynamicHelpText(),
+                SortField = string.IsNullOrEmpty(sortField) ? HomeProposalModelView.DEFAULT_SORT : sortField,
+                Order = string.IsNullOrEmpty(sortField) || !order.HasValue ? System.Data.SqlClient.SortOrder.Ascending : order.Value,
+                CanCreateBOEWorkspace = this.CanUserCreateWorkspaces(userNtid)
+            };
 
             foreach (HomeProposalViewDto proposal in allProposalData)
             {
-                #region Setup a new MV Row
-
                 result.DataRows.Add(new HomeProposalGridModelView()
                 {
                     ProposalId = proposal.ProposalId,
@@ -266,55 +300,30 @@ namespace GenTRAC.ActionLogic
                     IsCommercialCustomer = proposal.IsCommercialCustomer,
                     HasLinkedDocument = proposal.HasLinkedDocument,
                     IsForecastProposal = proposal.IsForecastProposal,
+                    HasOrIsRevision = proposal.HasOrIsRevision,
                     HasWriteAccessToLinkedDocument = isSystemAdmin || proposal.HasWriteAccessToLinkedDocument,
-                    IsDeleteAllowed = (isSystemAdmin || this.SecurityAccess.CurrentUserHasRole(PtmRole.Pricer, proposal.ProposalId)) && !proposal.HasLinkedDocument
+                    Workspaces = workspaces.Where(n => n.TrackingNumber == proposal.TrackingNumber && !proposal.IsForecastProposal).Select(t => t.Shortname).OrderBy(s => s).ToList(),
+                    PermissionedToDelete = isSystemAdmin || this.SecurityAccess.CurrentUserHasRole(PtmRole.Pricer, proposal.ProposalId)
                 });
-
-                #endregion
-            }
-
-            #endregion
-
-            if (string.IsNullOrEmpty(sortField))
-            {
-                result.SortField = HomeProposalModelView.DEFAULT_SORT;
-                result.Order = System.Data.SqlClient.SortOrder.Ascending;
-            }
-            else
-            {
-                result.SortField = sortField;
-                result.Order = order ?? System.Data.SqlClient.SortOrder.Ascending;
             }
 
             result.Sort();
 
-            // get dynamic help text for ProgramAreas
-            result.ProgramAreaHelpText = this.orgStructureMapper.GetProgramAreaDynamicHelpText();
-
-            // pull information from BOE
-            ICollection<GenBOE.Dtos.WorkspaceDTO> workspaces = this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo();
-            foreach (HomeProposalGridModelView row in result.DataRows)
-            {
-                if (row.TrackingNumber != null)
-                {
-                    row.Workspaces = workspaces.Where(n => n.TrackingNumber == row.TrackingNumber).Select(t => t.Shortname).OrderBy(s => s).ToList();
-                    if (row.Workspaces.Any())
-                    {
-                        row.IsDeleteAllowed = false;
-                    }
-                }
-            }
-
-            // Figure out if user has access to show the Create WS link
-            string activeUserNtid = this.UserMapper.GetActiveUser().Ntid;
-            IReadOnlyCollection<GenBOE.DataBridge.Common.SecurityPermissionsResponse> rolesForUser = this.GetBOEPermissionsForUser(activeUserNtid);
-
-            IES.Common.SecurityAuthorization authorizationForUser = this.boeSecurityAccess.IsAuthorized(
-                    new GenBOE.DataBridge.Common.SecurityPermissionsRequested { PageToCheck = IES.Common.SecurityPage.CreateWorkspacePermissions }, null, rolesForUser);
-            
-            result.CanCreateBOEWorkspace = authorizationForUser == IES.Common.SecurityAuthorization.CreateReadUpdateDelete;
-
             return result;
+        }
+
+        /// <summary>
+        /// Can a user create workspaces in GenBOE
+        /// </summary>
+        /// <param name="userNtid">NTID</param>
+        /// <returns>Can user create workspaces</returns>
+        private bool CanUserCreateWorkspaces(string userNtid)
+        {
+            var permissionToCheck = new GenBOE.DataBridge.Common.SecurityPermissionsRequested { PageToCheck = SecurityPage.CreateWorkspacePermissions };
+
+            SecurityAuthorization userAuthorization = this.boeSecurityAccess.IsAuthorized(permissionToCheck, null, this.GetBOEPermissionsForUser(userNtid));
+
+            return userAuthorization == SecurityAuthorization.CreateReadUpdateDelete;
         }
 
         /// <summary>
@@ -435,7 +444,7 @@ namespace GenTRAC.ActionLogic
                 sb.Append(string.Format("&{0}={1}", Constants.Report.SEARCH_TEXT, reportParameters.SearchText));
             }
 
-            UserDTO user = this.UserMapper.GetActiveUser();
+            DataBridge.DTO.UserDTO user = this.UserMapper.GetActiveUser();
             sb.Append(string.Format("&{0}={1}", Constants.Report.NTID, user.Ntid));
             
             Uri toReturn = new Uri(string.Format("{0}/{1}/{2}{3}", WebConfigurationManager.AppSettings["ReportServerLocation"], WebConfigurationManager.AppSettings["ReportServerFolderName"], "Proposal Dashboard Report", sb));
