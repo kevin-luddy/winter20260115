@@ -1158,3 +1158,48 @@ button.ies-danger.disabled {
 .revertRevisionMargin {
     margin-right: 88px;
 }
+
+/* Revision Tab */
+.module-content-data.revision {
+    font-size: 14px;
+}
+
+.tabs-left.revision {
+    clear: both;
+    height: 75px;
+}
+
+.tabs-center.revision {
+    width: 948px;
+    height: 75px;
+}
+
+.tabs-right.revision {
+    height: 75px;
+    margin-bottom: 5px;
+}
+
+.inline-block.proposalTabMenu.revision {
+    font-size: 11px;
+}
+
+.proposal-text.revision {
+    text-align: left;
+    padding: 5px;
+}
+
+p.revision {
+    padding-bottom: 2px;
+}
+
+.proposalStatusDates.revision {
+    float: right;
+    width: 250px;
+}
+
+.proposalTitle.revision {
+    width: 550px;
+    margin-bottom: 20px;
+    float: left;
+}
+/* End of Revision Tab*/
