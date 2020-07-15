@@ -680,6 +680,10 @@ div.delete-document-div {
     color: #a94442;
 }
 
+.disabled-icon {
+    color: #D3D3D3;
+}
+
 /* stacked font-awesome styling for add document icon */
 .add-document-div {
     display: inline-block !important;

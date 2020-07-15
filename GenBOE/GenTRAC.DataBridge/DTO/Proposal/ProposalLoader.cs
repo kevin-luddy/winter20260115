@@ -408,7 +408,8 @@ namespace GenTRAC.DataBridge.DTO
                                 IsForecastProposal = entity.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
                                 HasWriteAccessToLinkedDocument = proposalIdsWithWriteAccess.Contains(entity.ProposalID),
                                 IsCommercialCustomer = entity.CustomerTypeId == (int)CustomerType.Commercial ||
-                                                       entity.CustomerTypeId == (int)CustomerType.InternationalCommercial
+                                                       entity.CustomerTypeId == (int)CustomerType.InternationalCommercial,
+                                HasOrIsRevision = entity.HasOrIsRevision == 1
                             }).ToList();
                 }
             }
