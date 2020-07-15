@@ -1,0 +1,101 @@
+﻿@model ICollection<RevisionHistoryModelView>
+@using GenTRAC.DataBridge;
+@{
+    ViewBag.Title = "Proposal Revision History";
+}
+
+<script type="text/javascript">
+    var ChecklistIndexWidget;
+
+    $(function () {
+        var widgetConfig = {};
+        widgetConfig.ContextID = "revisions";
+        widgetConfig.IsModule = true;
+        widgetConfig.isReadOnly = true;
+
+        var FormConfigs = [];
+        FormConfigs.push({
+            ElementID: "revisionsForm",
+            Buttons: [],
+            IsClassEnvironment: isClassEnvironment
+        });
+
+        widgetConfig.FormConfigs = FormConfigs;
+
+        ChecklistIndexWidget = new GenWidget(widgetConfig);
+
+        $(document).ready(function () {
+            setTimeout(function () {
+                ChecklistIndexWidget.refreshModule();
+            }, 50);
+        });
+    });
+</script>
+
+<div class="module full composite psa-content" id="revisions">
+    <div class="module-header-data">
+        Revision History
+    </div>
+    <div class="module-content-data" style="font-size:14px;">
+        <div style="display: inline-block;">
+            @using (Html.BeginForm("", "", FormMethod.Post, new { id = "revisionsForm", name = "revisionsForm" }))
+            {
+            }
+        </div>
+        <div class="tabs">
+            @foreach (RevisionHistoryModelView revision in Model)
+            {
+                <div class="tabs-left" style="clear:both; height: 75px;"></div>
+                <div class="tabs-center" style="width:948px; height: 75px;">
+                    <div class="proposal-text" style="text-align:left; padding:5px;">
+                        <div class="proposalTitle" style="width:550px; margin-bottom:20px; float:left; @if (revision.IsCurrentlySelected) { <text>font-style:italic;</text>}">@revision.TrackingNumber - @revision.ProposalTitle</div>
+                        <div class="proposalStatusDates" style="float:right; width:250px;">
+                            <p style="padding-bottom: 2px;">@revision.WorkflowCompletedLine</p>
+                            <p>@revision.CertificationCompletedLine</p>
+                        </div>
+                    </div>
+                    <ul class="inline-block proposalTabMenu" style="font-size: 11px">
+                        @if (revision.DisplayProposalSetupTab)
+                        {
+                        <li>
+                            <div class="tab-left"></div><a href="@Url.Action(WebConstants.Action.DISPLAY_PROPOSAL_DETAILS, WebConstants.Controller.PROPOSAL)/id/@revision.ProposalId/#Proposal" target="_blank">Proposal Setup</a><div class="tab-right"></div>
+                        </li>
+                        }
+                        @if (revision.DisplayChecklistTab)
+                        {
+                        <li>
+                            <div class="tab-left"></div><a href="@Url.Action(WebConstants.Action.DISPLAY_PROPOSAL_DETAILS, WebConstants.Controller.PROPOSAL)/id/@revision.ProposalId/#Checklist" target="_blank">Checklist</a><div class="tab-right"></div>
+                        </li>
+                        }
+                        @if (revision.DisplayPSATab)
+                        {
+                        <li>
+                            <div class="tab-left"></div><a href="@Url.Action(WebConstants.Action.DISPLAY_PROPOSAL_DETAILS, WebConstants.Controller.PROPOSAL)/id/@revision.ProposalId/#PSA" target="_blank">Post Submittal Attachments</a><div class="tab-right"></div>
+                        </li>
+                        }
+                        @if (revision.DisplayApprovalsTab)
+                        {
+                        <li>
+                            <div class="tab-left"></div><a href="@Url.Action(WebConstants.Action.DISPLAY_PROPOSAL_DETAILS, WebConstants.Controller.PROPOSAL)/id/@revision.ProposalId/#Approvals" target="_blank">Approvals</a><div class="tab-right"></div>
+                        </li>
+                        }
+                        @if (revision.DisplayCertificationTab)
+                        {
+                        <li>
+                            <div class="tab-left"></div><a href="@Url.Action(WebConstants.Action.DISPLAY_PROPOSAL_DETAILS, WebConstants.Controller.PROPOSAL)/id/@revision.ProposalId/#CertificationTimeline" target="_blank">Certification Timeline</a><div class="tab-right"></div>
+                        </li>
+                        }
+                        @if (revision.DisplayRevisionTab)
+                        {
+                        <li>
+                            <div class="tab-left"></div><a href="@Url.Action(WebConstants.Action.DISPLAY_PROPOSAL_DETAILS, WebConstants.Controller.PROPOSAL)/id/@revision.ProposalId/#RevisionHistory" target="_blank">Revision History</a><div class="tab-right"></div>
+                        </li>
+                        }
+                    </ul>
+                </div>
+                <div class="tabs-right" style="height: 75px; margin-bottom:5px;"></div>
+            }
+        </div>
+        <div style="clear:both;">&nbsp;</div>
+    </div>
+</div>

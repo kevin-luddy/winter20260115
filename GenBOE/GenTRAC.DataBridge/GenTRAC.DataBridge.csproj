@@ -156,6 +156,7 @@
     <Compile Include="DTO\Proposal\IProposalLoader.cs" />
     <Compile Include="DTO\Proposal\ProposalDto.cs" />
     <Compile Include="DTO\Proposal\ProposalLoader.cs" />
+    <Compile Include="DTO\Proposal\RevisionHistoryModelView.cs" />
     <Compile Include="DTO\Reports\IReportsLoader.cs" />
     <Compile Include="DTO\Reports\ReportsLoader.cs" />
     <Compile Include="DTO\User\CacheWarmingUserMapper.cs" />

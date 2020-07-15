@@ -62,7 +62,12 @@ namespace IES.Common
         /// <summary>
         /// Proposal Certification Timeline
         /// </summary>
-        CertificationTimeline = 11
+        CertificationTimeline = 11,
+
+        /// <summary>
+        /// Revision History Tab
+        /// </summary>
+        RevisionHistory = 12
     }
 
     /// <summary>

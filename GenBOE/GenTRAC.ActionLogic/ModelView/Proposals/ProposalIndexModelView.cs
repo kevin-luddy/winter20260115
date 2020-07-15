@@ -99,6 +99,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public SecurityAuthorization CertificationTimelineVisibility { get; set; }
 
         /// <summary>
+        /// Determines whether to hide/show Revision History tab
+        /// </summary>
+        public SecurityAuthorization RevisionHistoryVisibility { get; set; }        
+
+        /// <summary>
         /// Determines whether to show or hide the + New Revision button
         /// </summary>
         public bool DisplayNewRevisionButton { get; set; }

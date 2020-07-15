@@ -147,6 +147,10 @@ namespace GenTRAC.DataBridge.Common.Security
             this.InitializeMatrix(new[] { PtmSecurityPage.CertificationTimeline },
                 new[] { PtmRole.CoverSheetApprover, PtmRole.PricingVerification, PtmRole.PeerReviewer, PtmRole.Viewer },
                 SecurityAuthorization.Read);
+
+            // Revision History
+            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.RevisionHistory },
+                new PtmRole[] { PtmRole.Admin, PtmRole.CostVolumeLead, PtmRole.Pricer, PtmRole.BackupPricer, PtmRole.CaptureManager, PtmRole.CostVolumeLead }, SecurityAuthorization.Read);
         }
 
         /// <summary>
@@ -243,6 +247,7 @@ namespace GenTRAC.DataBridge.Common.Security
                 case PtmSecurityPage.Approvals:
                 case PtmSecurityPage.PostSubmittalAttachments:
                 case PtmSecurityPage.CertificationTimeline:
+                case PtmSecurityPage.RevisionHistory:
                     proposalRequired = true;
                     break;
                 default:

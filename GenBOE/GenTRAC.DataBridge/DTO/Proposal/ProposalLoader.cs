@@ -188,7 +188,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             entity.ReasonCertificationNotRequired,
-                            entity.OtherReasonComment
+                            entity.OtherReasonComment,
+                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -255,7 +256,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
-                            OtherReasonComment = entity.OtherReasonComment
+                            OtherReasonComment = entity.OtherReasonComment,
+                            HasRevision = entity.HasRevision
                         }).ToList();
                 }
             }
@@ -884,7 +886,8 @@ namespace GenTRAC.DataBridge.DTO
                         NoBidDate = entity.NoBidDate,
                         RevisionOfId = entity.RevisionOfId,
                         entity.ReasonCertificationNotRequired,
-                        entity.OtherReasonComment
+                        entity.OtherReasonComment,
+                        HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -951,7 +954,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
-                            OtherReasonComment = entity.OtherReasonComment
+                            OtherReasonComment = entity.OtherReasonComment,
+                            HasRevision = entity.HasRevision
                         }).ToList();
                 }
             }
@@ -1039,7 +1043,8 @@ namespace GenTRAC.DataBridge.DTO
                         NoBidDate = entity.NoBidDate,
                         RevisionOfId = entity.RevisionOfId,
                         entity.ReasonCertificationNotRequired,
-                        entity.OtherReasonComment
+                        entity.OtherReasonComment,
+                        HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1106,7 +1111,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
-                            OtherReasonComment = entity.OtherReasonComment
+                            OtherReasonComment = entity.OtherReasonComment,
+                            HasRevision = entity.HasRevision
                         }).ToList();
                 }
             }
@@ -1196,7 +1202,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             entity.ReasonCertificationNotRequired,
-                            entity.OtherReasonComment
+                            entity.OtherReasonComment,
+                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1263,7 +1270,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
-                            OtherReasonComment = entity.OtherReasonComment
+                            OtherReasonComment = entity.OtherReasonComment,
+                            HasRevision = entity.HasRevision
                         }).ToList();
                 }
             }
@@ -1370,7 +1378,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             entity.ReasonCertificationNotRequired,
-                            entity.OtherReasonComment
+                            entity.OtherReasonComment,
+                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1437,7 +1446,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
-                            OtherReasonComment = entity.OtherReasonComment
+                            OtherReasonComment = entity.OtherReasonComment,
+                            HasRevision = entity.HasRevision
                         }).ToList();
                 }
             }
@@ -1529,7 +1539,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             entity.ReasonCertificationNotRequired,
-                            entity.OtherReasonComment
+                            entity.OtherReasonComment,
+                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1596,7 +1607,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
-                            OtherReasonComment = entity.OtherReasonComment
+                            OtherReasonComment = entity.OtherReasonComment,
+                            HasRevision = entity.HasRevision
                         }).ToList();
                 }
             }
@@ -1641,6 +1653,149 @@ namespace GenTRAC.DataBridge.DTO
             max++;
 
             return max;
+        }
+
+        /// <summary>
+        /// Gets Revision History for the specific proposal
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Revision History</returns>
+        [DbQuery]
+        public ICollection<RevisionHistoryModelView> GetRevisionHistory(int proposalId)
+        {
+            ICollection<RevisionHistoryModelView> toReturn = null;
+
+            using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetRevisionHistory", Log))
+            {
+                using (genTRACEntities dbModel = new genTRACEntities())
+                {
+                    IEnumerable<int?> proposalIds = dbModel.GetProposalRevisionHistory(proposalId).Select(x => x.ProposalId);
+
+                    toReturn = dbModel.Proposals.Where(x => proposalIds.Contains(x.ProposalID) && x.ProposalStatusID != (int)ProposalStatus.Deleted)
+                        .Select(x => new
+                        {
+                            x.ProposalID,
+                            x.ProposalTrackingID,
+                            x.ProposalTitle,
+                            x.AnticipatedDeliveryDate,
+                            ProposalStatus = (ProposalStatus)x.ProposalStatusID,
+                            MaxCompleteDate = x.ProposalChecklistCompletes.Max(z => z.SubmitDate),
+                            x.CCPDRequired,
+                            x.CertificationTimelineCompleted,
+                            IsRevision = x.RevisionOfId != null,
+                            HasRevision = dbModel.Proposals.Any(z => z.RevisionOfId == x.ProposalID)
+                        }).ToList()
+                        // some of the more complicating operations (below) need to be done in C#, not in SQL, hence the approach
+                        .Select(x => new RevisionHistoryModelView() 
+                        { 
+                            ProposalId = x.ProposalID,
+                            IsCurrentlySelected = x.ProposalID == proposalId,
+                            TrackingNumber = x.ProposalTrackingID,
+                            ProposalTitle = x.ProposalTitle,
+                            WorkflowCompletedLine = this.SetWorkflowCompletedLine(x.ProposalStatus, x.AnticipatedDeliveryDate, x.MaxCompleteDate),
+                            CertificationCompletedLine = this.SetCertificationCompletedLine(x.ProposalStatus, x.CCPDRequired, x.CertificationTimelineCompleted),
+
+                            DisplayProposalSetupTab = true,
+                            DisplayChecklistTab = true,
+                            DisplayPSATab = true,
+                            DisplayApprovalsTab = true,
+                            DisplayCertificationTab = this.DisplayCertificationTab(x.ProposalStatus, x.CCPDRequired),
+                            DisplayRevisionTab = this.DisplayRevisionTab(x.IsRevision, x.HasRevision)
+                        }).ToList();
+                }
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Sets Workspace Completed Line for the Revision History
+        /// </summary>
+        /// <param name="proposalStatus">Proposal Status</param>
+        /// <param name="anticipatedDeliveryDate">Anticipated Delivery Date</param>
+        /// <param name="maxCompleteDate">Max Completed Date</param>
+        /// <returns>Text for the WS completed line</returns>
+        private string SetWorkflowCompletedLine(ProposalStatus proposalStatus, DateTime anticipatedDeliveryDate, DateTime? maxCompleteDate)
+        {
+            string result = string.Empty;
+
+            switch(proposalStatus)
+            {
+                case ProposalStatus.InProgress:
+                    result = "Due: " + anticipatedDeliveryDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR); 
+                    break;
+                case ProposalStatus.Completed:
+                case ProposalStatus.Submitted:
+                case ProposalStatus.Revised:
+                    result = "Approval Workflow Completed: " + maxCompleteDate?.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? string.Empty;
+                    break;
+                case ProposalStatus.Revision:
+                case ProposalStatus.Archived:
+                case ProposalStatus.Deleted:
+                case ProposalStatus.NoBid:
+                    result = proposalStatus.GetDescription();
+                    break;
+            }
+           
+            return result;
+        }
+
+        /// <summary>
+        /// Sets Certification Completed Line for the Revision History
+        /// </summary>
+        /// <param name="proposalStatus">Proposal Status</param>
+        /// <param name="cCoPDRequired">CCOPD Requirewd</param>
+        /// <param name="certificationTimelineCompleted">Certification Timeline Completed Date</param>
+        /// <returns>Text for the Cert completed line</returns>
+        private string SetCertificationCompletedLine(ProposalStatus proposalStatus, bool? cCoPDRequired, DateTime? certificationTimelineCompleted)
+        {
+            string result = string.Empty;
+
+            if (proposalStatus == ProposalStatus.Revised)
+            {
+                result = "Proposal Revised";
+            }
+            else if (cCoPDRequired == true)
+            {
+                if (proposalStatus == ProposalStatus.Submitted)
+                {
+                    result = "Certification In Progress";
+                }
+                else if (proposalStatus == ProposalStatus.Completed)
+                {
+                    result = "Certification Completed: " + (certificationTimelineCompleted.HasValue ? certificationTimelineCompleted.Value.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) : "N/A");
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Initial setting for whether the Certification tab should be displayed.
+        /// 
+        /// If false, it'll be hidden
+        /// If true, it'll get set based on permissions in the controller logic
+        /// </summary>
+        /// <param name="proposalStatus">Proposal Status</param>
+        /// <param name="cCoPDRequired">CCOPD required</param>
+        /// <returns>Should Certification Tab be displayed</returns>
+        private bool DisplayCertificationTab(ProposalStatus proposalStatus, bool? cCoPDRequired)
+        {
+            return proposalStatus == ProposalStatus.Submitted || proposalStatus == ProposalStatus.Revised || (proposalStatus == ProposalStatus.Completed && cCoPDRequired == true);
+        }
+
+        /// <summary>
+        /// Initial setting for whether the Revision tab should be displayed.
+        /// 
+        /// If false, it'll be hidden
+        /// If true, it'll get set based on permissions in the controller logic
+        /// </summary>
+        /// <param name="isRevision">Is Revision</param>
+        /// <param name="hasRevision">Has Revision</param>
+        /// <returns>Should Display Revision Tab be displayed</returns>
+        private bool DisplayRevisionTab(bool isRevision, bool hasRevision)
+        {
+            return isRevision || hasRevision;
         }
     }
 }
