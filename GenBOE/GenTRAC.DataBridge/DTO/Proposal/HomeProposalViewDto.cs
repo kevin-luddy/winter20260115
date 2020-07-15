@@ -114,5 +114,10 @@ namespace GenTRAC.DataBridge.DTO
         /// Gets or sets a value indicating whether this instance is forecast proposal.
         /// </summary>
         public bool IsForecastProposal { get; set; }
+
+        /// <summary>
+        /// Proposal either has, or is, a revision
+        /// </summary>
+        public bool HasOrIsRevision { get; set; }
     }
 }
