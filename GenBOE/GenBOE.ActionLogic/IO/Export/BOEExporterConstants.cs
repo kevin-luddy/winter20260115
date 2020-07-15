@@ -367,6 +367,8 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string LMPI_OCI_LABEL_TEXT = "Organizational Conflict of Interest - Lockheed Martin Proprietary Information";
         internal const string LMPI_LABEL_TEXT = "Lockheed Martin Proprietary Information";
 
+        internal const string GFY_QUARTERLY_TABLE_SUFFIX = " - GFY Quarter";
+
         /// <summary>
         /// BOEJ-2791 - Name of special template used on the "High Side" to summarize labor hours by custom field.
         /// </summary>
