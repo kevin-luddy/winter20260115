@@ -36,7 +36,7 @@
     <div class="module-header-data">
         Revision History
     </div>
-    <div class="module-content-data" style="font-size:14px;">
+    <div class="module-content-data revision">
         <div style="display: inline-block;">
             @using (Html.BeginForm("", "", FormMethod.Post, new { id = "revisionsForm", name = "revisionsForm" }))
             {
@@ -45,16 +45,16 @@
         <div class="tabs">
             @foreach (RevisionHistoryModelView revision in Model)
             {
-                <div class="tabs-left" style="clear:both; height: 75px;"></div>
-                <div class="tabs-center" style="width:948px; height: 75px;">
-                    <div class="proposal-text" style="text-align:left; padding:5px;">
-                        <div class="proposalTitle" style="width:550px; margin-bottom:20px; float:left; @if (revision.IsCurrentlySelected) { <text>font-style:italic;</text>}">@revision.TrackingNumber - @revision.ProposalTitle</div>
-                        <div class="proposalStatusDates" style="float:right; width:250px;">
-                            <p style="padding-bottom: 2px;">@revision.WorkflowCompletedLine</p>
+                <div class="tabs-left revision"></div>
+                <div class="tabs-center revision">
+                    <div class="proposal-text revision">
+                        <div class="proposalTitle revision" style="@if (revision.IsCurrentlySelected) { <text>font-style:italic;</text>}">@revision.TrackingNumber - @revision.ProposalTitle</div>
+                        <div class="proposalStatusDates revision">
+                            <p class="revision">@revision.WorkflowCompletedLine</p>
                             <p>@revision.CertificationCompletedLine</p>
                         </div>
                     </div>
-                    <ul class="inline-block proposalTabMenu" style="font-size: 11px">
+                    <ul class="inline-block proposalTabMenu revision">
                         @if (revision.DisplayProposalSetupTab)
                         {
                         <li>
@@ -93,7 +93,7 @@
                         }
                     </ul>
                 </div>
-                <div class="tabs-right" style="height: 75px; margin-bottom:5px;"></div>
+                <div class="tabs-right revision"></div>
             }
         </div>
         <div style="clear:both;">&nbsp;</div>
