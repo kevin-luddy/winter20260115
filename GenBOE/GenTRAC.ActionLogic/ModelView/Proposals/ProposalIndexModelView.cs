@@ -6,6 +6,8 @@
 
 namespace GenTRAC.ActionLogic.ModelView.Proposals
 {
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using IES.Common;
 
     /// <summary>
@@ -81,6 +83,8 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
             this.ProposalID = -1;
             this.DisplayNewRevisionButton = false;
             this.DisplayRevertRevisionButton = false;
+            this.HasRdsbDocument = false;
+            this.GenBoeWorkspaces = new Collection<string>();
         }
 
         /// <summary>
@@ -112,6 +116,16 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Determines whether to show or hide the "Revert to Prior Version" button
         /// </summary>
         public bool DisplayRevertRevisionButton { get; set; }
+
+        /// <summary>
+        /// Determines if there is an RDSB Document for this Proposal
+        /// </summary>
+        public bool HasRdsbDocument { get; set; }
+
+        /// <summary>
+        /// Gets/Sets list of any Workspaces using this Proposal
+        /// </summary>
+        public ICollection<string> GenBoeWorkspaces { get; set; }
 
         /// <summary>
         /// Reason Certification is Not Required
