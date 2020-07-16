@@ -347,12 +347,12 @@ namespace GenBOE.ActionLogic.ModelView
         /// <summary>
         /// RMS Help URL - Author Training
         /// </summary>
-        private const string RMS_HELP_AUTHOR_LINK = "file://us.lmco.com\\mst\\depot\\depot_public\\pricing-controller\\genBOE%20Author%20Training.pptx";
+        private const string RMS_HELP_AUTHOR_LINK = "https://lmsp4-lmi.external.lmco.com/sites/estimating/Shared%20Documents/PCE-TOOLS/genBOE%20Author%20Training.pptx";
 
         /// <summary>
         /// RMS Help URL - Admin Training
         /// </summary>
-        private const string RMS_HELP_WS_ADMIN_LINK = "file://us.lmco.com\\mst\\depot\\depot_public\\pricing-controller\\genBOE-Workspace%20Administrator%20Training-RMS.pptx";
+        private const string RMS_HELP_WS_ADMIN_LINK = "https://lmsp4-lmi.external.lmco.com/sites/estimating/Shared%20Documents/PCE-TOOLS/genBOE-Workspace%20Administrator%20Training-RMS.pptx";
 
         /// <summary>
         /// Appends the help menu items to the menu

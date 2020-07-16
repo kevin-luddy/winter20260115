@@ -200,7 +200,7 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// revised submittal date 
             /// </summary>
-            public const string REVISED_SUBMITTAL_DATE_FORMAT = PROPOSAL_INFO_VALDIATION + "Revised Submittal Date format must be mm/dd/yyyy";
+            public const string REVISED_SUBMITTAL_DATE_FORMAT = PROPOSAL_INFO_VALDIATION + "Revised Anticipated Delivery Date format must be mm/dd/yyyy";
 
             /// <summary>
             /// Space role is required
