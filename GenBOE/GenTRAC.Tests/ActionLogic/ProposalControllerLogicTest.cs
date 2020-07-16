@@ -381,6 +381,38 @@ namespace GenTRAC.Tests.ActionLogic
         }
 
         /// <summary>
+        /// Test Delete Proposal
+        /// </summary>
+        [TestMethod]
+        public void TestDeleteProposal()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto();
+
+            this.proposalLoader.Setup(x => x.Save(It.IsAny<ProposalDto>())).Returns(1);
+            this.proposalLoader.Setup(x => x.Save(It.IsAny<ProposalDto>())).Verifiable();
+
+            sut.DeleteProposal(proposal);
+
+            // set to deleted after the call to make sure it was set when we verify
+            proposal.Updateable = UpdateType.Deleted;
+
+            this.proposalLoader.Verify(x => x.Save(proposal), Times.Once());
+        }
+
+        /// <summary>
+        /// Test Delete Proposal throws an exception when proposal is null
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TestDeleteProposal_Exception()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+            sut.DeleteProposal(null);
+        }
+
+        /// <summary>
         /// Validates a new proposal, with empty required lists
         /// </summary>
         [TestMethod]
@@ -3223,9 +3255,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalStatus = ProposalStatus.Submitted
             };
 
-            this.userMapper.Setup(x => x.GetActiveUser()).Returns(new UserDTO() { Id = 1 });
-            ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>() { new ProposalPermissionDto() { UserId = 1, Role = PtmRole.Pricer } };
-            this.retriever.Setup(x => x.GetProposalPermissions(proposal.Id)).Returns(permissions);
+            this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(true);
             this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
 
             sut.ValidateSaveNewRevision(proposal.Id);
@@ -3249,9 +3279,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalStatus = ProposalStatus.Submitted
             };
 
-            this.userMapper.Setup(x => x.GetActiveUser()).Returns(new UserDTO() { Id = 1 });
-            ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>() { new ProposalPermissionDto() { UserId = 1, Role = PtmRole.Pricer } };
-            this.retriever.Setup(x => x.GetProposalPermissions(proposal.Id)).Returns(permissions);
+            this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(true);
             this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
 
             sut.ValidateSaveNewRevision(proposal.Id);
@@ -3274,9 +3302,7 @@ namespace GenTRAC.Tests.ActionLogic
                 CertificationTimelineCompleted = DateTime.Now
             };
 
-            this.userMapper.Setup(x => x.GetActiveUser()).Returns(new UserDTO() { Id = 1 });
-            ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>() { new ProposalPermissionDto() { UserId = 1, Role = PtmRole.Pricer } };
-            this.retriever.Setup(x => x.GetProposalPermissions(proposal.Id)).Returns(permissions);
+            this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(true);
             this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
 
             sut.ValidateSaveNewRevision(proposal.Id);
@@ -3297,10 +3323,8 @@ namespace GenTRAC.Tests.ActionLogic
                 WorkflowStatus = WorkflowStatus.ProposalLocked,
                 ProposalStatus = ProposalStatus.Revised
             };
-            
-            this.userMapper.Setup(x => x.GetActiveUser()).Returns(new UserDTO() { Id = 1 });
-            ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>() { new ProposalPermissionDto() { UserId = 1, Role = PtmRole.Pricer } };
-            this.retriever.Setup(x => x.GetProposalPermissions(proposal.Id)).Returns(permissions);
+
+            this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(true);
             this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
 
             sut.ValidateSaveNewRevision(proposal.Id);
@@ -3322,9 +3346,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalStatus = ProposalStatus.Submitted
             };
 
-            this.userMapper.Setup(x => x.GetActiveUser()).Returns(new UserDTO() { Id = 1 });
-            ICollection<ProposalPermissionDto> permissions = new Collection<ProposalPermissionDto>() { new ProposalPermissionDto() { UserId = 1, Role = PtmRole.CostVolumeLead } };
-            this.retriever.Setup(x => x.GetProposalPermissions(proposal.Id)).Returns(permissions);
+            this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(false);
             this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
 
             sut.ValidateSaveNewRevision(proposal.Id);
@@ -3581,6 +3603,226 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsNull(result.EstimatedProposalValue);
 
             Assert.IsTrue(result.IsNewRevision);
+        }
+
+        /// <summary>
+        /// Test RevertRevisedProposal for a Proposal with CCoPD set to Yes
+        /// </summary>
+        [TestMethod]
+        public void TestRevertRevisedProposal()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                UpdateDate = DateTime.Now,
+                IsCCPDRequired = true
+            };
+
+            this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
+            this.proposalLoader.Setup(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, It.IsAny<ProposalStatus>())).Returns(1);
+            this.proposalLoader.Setup(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, It.IsAny<ProposalStatus>())).Verifiable();
+
+            sut.RevertRevisedProposal(proposal.Id);
+
+            this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Submitted), Times.Once());
+            this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Completed), Times.Never());
+        }
+
+        /// <summary>
+        /// Test RevertRevisedProposal for a Proposal with CCoPD set to No
+        /// </summary>
+        [TestMethod]
+        public void TestRevertRevisedProposal_CcopdNo()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                UpdateDate = DateTime.Now,
+                IsCCPDRequired = false
+            };
+
+            this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
+            this.proposalLoader.Setup(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, It.IsAny<ProposalStatus>())).Returns(1);
+            this.proposalLoader.Setup(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, It.IsAny<ProposalStatus>())).Verifiable();
+
+            sut.RevertRevisedProposal(proposal.Id);
+
+            this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Submitted), Times.Never());
+            this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Completed), Times.Once());
+        }
+
+        /// <summary>
+        /// Test ValidateRevertRevisionToPriorVersion for a fully valid proposal
+        /// </summary>
+        [TestMethod]
+        public void TestValidateRevertRevisionToPriorVersion()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                RevisionOfId = 2,
+                ProposalStatus = ProposalStatus.InProgress,
+                DocumentId = null
+            };
+
+            this.securityAccess.Setup(x => x.CurrentUserHasRole(PtmRole.Pricer, proposal.Id)).Returns(true);
+            this.proposalLoader.Setup(x => x.GetAllSlim()).Returns(new Collection<ProposalDto>());
+            this.workspaceLoader.Setup(x => x.GetAllWsNamesAndTrackingNumberInfo()).Returns(new Collection<GenBOE.Dtos.WorkspaceDTO>());
+
+            sut.ValidateRevertRevisionToPriorVersion(proposal);
+
+            // Nothing to assert, just shouldn't throw any exceptions
+        }
+
+        /// <summary>
+        /// Test ValidateRevertRevisionToPriorVersion for a Proposal missing a prior version to revert to
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
+        public void TestValidateRevertRevisionToPriorVersion_NoPriorVersion()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                RevisionOfId = null,
+                ProposalStatus = ProposalStatus.InProgress,
+                DocumentId = null
+            };
+
+            this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(true);
+            this.proposalLoader.Setup(x => x.GetAllSlim()).Returns(new Collection<ProposalDto>());
+            this.workspaceLoader.Setup(x => x.GetAllWsNamesAndTrackingNumberInfo()).Returns(new Collection<GenBOE.Dtos.WorkspaceDTO>());
+
+            sut.ValidateRevertRevisionToPriorVersion(proposal);
+        }
+
+        /// <summary>
+        /// Test ValidateRevertRevisionToPriorVersion for a Proposal that isn't the latest version
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
+        public void TestValidateRevertRevisionToPriorVersion_NotLatest()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                RevisionOfId = 2,
+                ProposalStatus = ProposalStatus.InProgress,
+                DocumentId = null
+            };
+
+            this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(true);
+            this.proposalLoader.Setup(x => x.GetAllSlim()).Returns(new Collection<ProposalDto>() { new ProposalDto() { RevisionOfId = proposal.Id } });
+            this.workspaceLoader.Setup(x => x.GetAllWsNamesAndTrackingNumberInfo()).Returns(new Collection<GenBOE.Dtos.WorkspaceDTO>());
+
+            sut.ValidateRevertRevisionToPriorVersion(proposal);
+        }
+
+        /// <summary>
+        /// Test ValidateRevertRevisionToPriorVersion for a Proposal that's not in progress
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
+        public void TestValidateRevertRevisionToPriorVersion_NotInProgress()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                RevisionOfId = 2,
+                ProposalStatus = ProposalStatus.Submitted,
+                DocumentId = null
+            };
+
+            this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(true);
+            this.proposalLoader.Setup(x => x.GetAllSlim()).Returns(new Collection<ProposalDto>());
+            this.workspaceLoader.Setup(x => x.GetAllWsNamesAndTrackingNumberInfo()).Returns(new Collection<GenBOE.Dtos.WorkspaceDTO>());
+
+            sut.ValidateRevertRevisionToPriorVersion(proposal);
+        }
+
+        /// <summary>
+        /// Test ValidateRevertRevisionToPriorVersion for a Proposal where the user is not permitted to revert
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
+        public void TestValidateRevertRevisionToPriorVersion_NotPermitted()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                RevisionOfId = 2,
+                ProposalStatus = ProposalStatus.InProgress,
+                DocumentId = null
+            };
+
+            this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(false);
+            this.proposalLoader.Setup(x => x.GetAllSlim()).Returns(new Collection<ProposalDto>());
+            this.workspaceLoader.Setup(x => x.GetAllWsNamesAndTrackingNumberInfo()).Returns(new Collection<GenBOE.Dtos.WorkspaceDTO>());
+
+            sut.ValidateRevertRevisionToPriorVersion(proposal);
+        }
+
+        /// <summary>
+        /// Test ValidateRevertRevisionToPriorVersion for a Proposal that has an associated RDSB document
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
+        public void TestValidateRevertRevisionToPriorVersion_HasDocument()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                RevisionOfId = 2,
+                ProposalStatus = ProposalStatus.InProgress,
+                DocumentId = 1
+            };
+
+            this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(true);
+            this.proposalLoader.Setup(x => x.GetAllSlim()).Returns(new Collection<ProposalDto>());
+            this.workspaceLoader.Setup(x => x.GetAllWsNamesAndTrackingNumberInfo()).Returns(new Collection<GenBOE.Dtos.WorkspaceDTO>());
+
+            sut.ValidateRevertRevisionToPriorVersion(proposal);
+        }
+
+        /// <summary>
+        /// Test ValidateRevertRevisionToPriorVersion for a Proposal that has one or more associated Workspaces
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
+        public void TestValidateRevertRevisionToPriorVersion_HasWorkspace()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 1,
+                RevisionOfId = 2,
+                ProposalStatus = ProposalStatus.InProgress,
+                DocumentId = null,
+                TrackingNumber = "20-00001-PR1"
+            };
+
+            this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(true);
+            this.proposalLoader.Setup(x => x.GetAllSlim()).Returns(new Collection<ProposalDto>());
+            this.workspaceLoader.Setup(x => x.GetAllWsNamesAndTrackingNumberInfo()).Returns(new Collection<GenBOE.Dtos.WorkspaceDTO>() { new GenBOE.Dtos.WorkspaceDTO() { TrackingNumber = proposal.TrackingNumber } });
+
+            sut.ValidateRevertRevisionToPriorVersion(proposal);
         }
         #endregion
     }
