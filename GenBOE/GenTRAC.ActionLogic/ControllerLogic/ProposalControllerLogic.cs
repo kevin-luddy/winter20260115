@@ -2191,6 +2191,50 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
+        /// Validate that a Proposal is able to be reverted to the prior version
+        /// </summary>
+        /// <param name="proposal">Proposal being reverted</param>
+        public void ValidateRevertRevisionToPriorVersion(ProposalDto proposal)
+        {
+            ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+
+            if (proposal.RevisionOfId == null)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NO_PRIOR_VERSION));
+            }
+
+            if (this.ProposalLoader.GetAllSlim().Any(x => x.RevisionOfId == proposal.Id))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_LATEST_VERSION_PRIOR_VERSION));
+            }
+
+            if (proposal.ProposalStatus != ProposalStatus.InProgress)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_IN_PROGRESS));
+            }
+
+            if (!this.IsCurrentUserPricerOrBackupOrSysAdmin(proposal.Id))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED_PRIOR_VERSION));
+            }
+
+            if (proposal.DocumentId.HasValue)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.CANNOT_HAVE_DOCUMENT));
+            }
+
+            if (this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo().Any(x => x.TrackingNumber == proposal.TrackingNumber))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.CANNOT_HAVE_WORKSPACE));
+            }
+
+            if (validationErrors.Any())
+            {
+                throw new ValidationException(validationErrors);
+            }
+        }
+
+        /// <summary>
         /// Get the new tracking number for the Revision
         /// Tracking number will be appended with "-PRx" where x is the number of the revision
         /// </summary>
@@ -2283,50 +2327,6 @@ namespace GenTRAC.ActionLogic
             while (!titleUnique);
 
             return newTitle;
-        }
-
-        /// <summary>
-        /// Validate that a Proposal is able to be reverted to the prior version
-        /// </summary>
-        /// <param name="proposal">Proposal being reverted</param>
-        public void ValidateRevertRevisionToPriorVersion(ProposalDto proposal)
-        {
-            ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
-
-            if (proposal.RevisionOfId == null)
-            {
-                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NO_PRIOR_VERSION));
-            }
-
-            if (this.ProposalLoader.GetAllSlim().Any(x => x.RevisionOfId == proposal.Id))
-            {
-                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_LATEST_VERSION_PRIOR_VERSION));
-            }
-
-            if (proposal.ProposalStatus != ProposalStatus.InProgress)
-            {
-                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_IN_PROGRESS));
-            }
-
-            if (!this.IsCurrentUserPricerOrBackupOrSysAdmin(proposal.Id))
-            {
-                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED_PRIOR_VERSION));
-            }
-
-            if (proposal.DocumentId.HasValue)
-            {
-                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.CANNOT_HAVE_DOCUMENT));
-            }
-
-            if (this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo().Any(x => x.TrackingNumber == proposal.TrackingNumber))
-            {
-                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.CANNOT_HAVE_WORKSPACE));
-            }
-
-            if (validationErrors.Any())
-            {
-                throw new ValidationException(validationErrors);
-            }
         }
 
         #endregion
