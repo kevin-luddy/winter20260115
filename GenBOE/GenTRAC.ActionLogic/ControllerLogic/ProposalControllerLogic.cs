@@ -1231,7 +1231,7 @@ namespace GenTRAC.ActionLogic
                 model.Comments = fullProposalDto.Comments;
                 
                 // Read Only && certification not required reason set && has permissions to update it
-                model.DisplayCertificationReset = string.Equals(this.IsCertificationReadOnly(fullProposalDto).ToLower(), "true") 
+                model.DisplayCertificationReset = string.Equals(this.IsCertificationReadOnly(fullProposalDto.Id).ToLower(), "true") 
                                                                                     && model.ReasonCertificationNotRequired.HasValue
                                                                                     && this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
             }
