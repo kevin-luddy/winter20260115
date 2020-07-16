@@ -877,6 +877,15 @@ namespace GenTRAC.ActionLogic
                 
                 model.RevisedProposalId = fullProposalDto.RevisionOfId;
                 model.IsNewRevision = false;
+
+                model.HasRdsbDocument = fullProposalDto.DocumentId.HasValue;
+
+                // Only get this if revert button is available, since it won't be needed otherwise and we can save a db call
+                if (model.DisplayRevertRevisionButton)
+                {
+                    ICollection<GenBOE.Dtos.WorkspaceDTO> workspaces = this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo();
+                    model.GenBoeWorkspaces = workspaces.Where(x => x.TrackingNumber == fullProposalDto.TrackingNumber).Select(x => x.Shortname).OrderBy(x => x).ToCollection();
+                }
             }
 
             return model;
@@ -2300,6 +2309,16 @@ namespace GenTRAC.ActionLogic
             if (!this.IsCurrentUserPricerOrBackupOrSysAdmin(proposal.Id))
             {
                 validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED_PRIOR_VERSION));
+            }
+
+            if (proposal.DocumentId.HasValue)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.CANNOT_HAVE_DOCUMENT));
+            }
+
+            if (this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo().Any(x => x.TrackingNumber == proposal.TrackingNumber))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.CANNOT_HAVE_WORKSPACE));
             }
 
             if (validationErrors.Any())

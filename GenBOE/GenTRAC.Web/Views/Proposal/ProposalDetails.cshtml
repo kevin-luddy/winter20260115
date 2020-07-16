@@ -348,6 +348,10 @@
             $('button[name="revert-revision-button"]').addClass('disabled');
         }
 
+        if ('@(Model.HasRdsbDocument || Model.GenBoeWorkspaces.Any())' == 'True') {
+            $('button[name="revert-revision-button"]').addClass('hasDocumentOrWorkspace');
+        }
+
         // Adjust margins for revision buttons
         if ('@(Model.DisplayRevertRevisionButton)' == 'True') {
             $('#revisionButtons').removeClass('newRevisionButtonMargin');
@@ -364,12 +368,32 @@
                  null);
         });
 
-        $('button[name="revert-revision-button"]:not(.disabled)').click(function () {
+        $('button[name="revert-revision-button"]:not(.disabled,.hasDocumentOrWorkspace)').click(function () {
             GenSession.confirmDialog(
                  "Confirm revert to prior version",
                  "Reverting to the prior version of this Proposal will delete this Proposal and all of its contents. <strong>This cannot be undone.</strong> Are you sure you would like to continue?",
                  ProposalDetailsWidget.RevertRevision,
                  null);
+        });
+
+        $('button[name="revert-revision-button"].hasDocumentOrWorkspace:not(.disabled)').click(function () {
+            var alertText = "<div style='text-align: left'><p>You may not revert this PTM Record to the previous version until the following genBOE Workspace(s) and/or RDSB Document associated with this PTM Record have been deleted. Please contact the System Administrator for assistance if you would like to retain the genBOE Workspace(s).</p><br><p><ul>";
+
+            if ('@Model.HasRdsbDocument' == 'True') {
+                var rdsbUrl = "@IES.Common.ConfigurationUtilities.GetAppSetting("RDSBUrl")" + "Document/Edit/" + @Model.ProposalID;
+                alertText += "<li><a href='" + rdsbUrl + "' target='_blank'>RDSB Document</a></li>";
+            }
+
+            @foreach(string workspace in Model.GenBoeWorkspaces)
+            {
+                <text>
+                    var boeUrl = "@IES.Common.ConfigurationUtilities.GetAppSetting("BOEUrl")" + "@workspace";
+                    alertText += "<li><a href='" + boeUrl + "' target='_blank'>" + "@workspace" + "</a></li>";
+                </text>
+            }
+
+            alertText += "</ul></p></div>"
+            GenSession.alertDialog("Proposal cannot be reverted", alertText);
         });
 
         ProposalDetailsWidget.LoadTab();

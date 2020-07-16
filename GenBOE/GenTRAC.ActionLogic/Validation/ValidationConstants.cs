@@ -1006,6 +1006,16 @@ namespace GenTRAC.ActionLogic.Validation
             /// A Revision can only be reverted by the Lead Estimator or Backup Estimator
             /// </summary>
             public const string NOT_PERMITTED_PRIOR_VERSION = "Only the Lead Estimator or Backup Estimator is permitted to revert a Revision of a Proposal to the prior version.";
+
+            /// <summary>
+            /// Proposal can't be reverted while RDSB Document for it exists
+            /// </summary>
+            public const string CANNOT_HAVE_DOCUMENT = "A Proposal cannot be reverted to the prior version if there is an RDSB Document associated with it.";
+
+            /// <summary>
+            /// Proposal can't be reverted while genBOE Workspace for it exists
+            /// </summary>
+            public const string CANNOT_HAVE_WORKSPACE = "A Proposal cannot be reverted to the prior version if there is a genBOE Workspace associated with it.";
         }
     }
 }
