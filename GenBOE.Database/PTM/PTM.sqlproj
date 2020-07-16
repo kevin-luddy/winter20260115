@@ -175,8 +175,9 @@
     <Build Include="Release Scripts\Release 2020.2\Release 2020.2.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2019.8 Generated On 12_2_2019.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2019.4 Generated On 7_1_2019.sql" />
-    <Build Include="_Full Script Files For Specific Versions\PTM - 2020.2 Generated On 6_9_2020.sql" />
     <Build Include="Release Scripts\Release 2020.4\Release 2020.4.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2020.2 Generated On 6_9_2020.sql" />
+    <Build Include="_Full Script Files For Specific Versions\PTM - 2020.4 Generated On 7_16_2020.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Release Scripts\Release 1.3\Release 1.3 Script.sql" />
