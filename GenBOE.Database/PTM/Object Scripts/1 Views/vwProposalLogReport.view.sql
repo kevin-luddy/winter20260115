@@ -1,4 +1,5 @@
-﻿DROP VIEW [dbo].[vwProposalLogReport];
+﻿IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[dbo].[vwProposalLogReport]') AND type in (N'V'))
+	DROP VIEW [dbo].[vwProposalLogReport]
 GO
 
 CREATE VIEW [dbo].[vwProposalLogReport] AS
@@ -136,9 +137,9 @@ SELECT
 		WHEN 3 THEN p.OtherReasonComment -- Other
 		ELSE rCNR.Text
 	END AS ReasonCertificationNotRequired,
-	CASE p.IsRevision
-		WHEN 1 THEN 'Proposal Revision'
-		ELSE 'Original'
+	CASE p.RevisionOfId
+		WHEN NULL THEN 'Original'
+		ELSE 'Proposal Revision'
 	END AS RevisionType,
 	MaterialPOC.DisplayName AS MaterialPOC,
 	SubcontractsPOC.DisplayName AS SubcontractsPOC
