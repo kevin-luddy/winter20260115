@@ -25,7 +25,7 @@ namespace GenBOE.DataBridge.DTO
         Dictionary<int, int> SaveOrdinaryVariables(Collection<OrdinaryVariableDto> inOrdinaryVars);
 
         OrdinaryVariableDto GetTaskVariableByTaskVariableID(int inTaskVariableID);
-        
+
         /// <summary>
         /// Gets the by identifier.
         /// </summary>

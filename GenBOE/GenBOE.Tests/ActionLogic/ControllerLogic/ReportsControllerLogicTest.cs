@@ -9,9 +9,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.IO;
     using System.Linq;
     using System.Web;
     using System.Web.Mvc;
+    using DocumentFormat.OpenXml.Packaging;
+    using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.IO.Export;
@@ -26,6 +29,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
     using GenTRAC.DataBridge.DTO;
     using IES.Common;
     using IES.Common.classes;
+    using IES.Common.OfficeUtilities;
     using Microsoft.Practices.Unity;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
@@ -49,6 +53,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         Mock<IProposalLoader> proposalLoader = new Mock<IProposalLoader>();
         Mock<IWorkspaceControllerLogic> workspaceControllerLogic = new Mock<IWorkspaceControllerLogic>();
         Mock<IRteTemplateDataLoader> rteTemplateLoader = new Mock<IRteTemplateDataLoader>();
+        Mock<TravelTripCostCalculation> travelTripCostCalculation = new Mock<TravelTripCostCalculation>();
         
         [TestInitialize]
         public void Init()
@@ -74,7 +79,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 this.boeCustomExporter.Object,
                 this.workspaceExportFormatDTOLoader.Object, this.boeDiscrepancyReport.Object,
                 this.proposalLoader.Object,
-                this.workspaceControllerLogic.Object, rteTemplateLoader.Object);
+                this.workspaceControllerLogic.Object, this.rteTemplateLoader.Object, this.travelTripCostCalculation.Object);
         }
 
         #region ExportAllBOEsReport
@@ -700,6 +705,200 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         {
             ReportsControllerLogic sut = this.CreateSut();
             ICollection<string> result = sut.GetPtmDataOutOfSyncMessages(null);
+        }
+
+        #endregion
+
+        #region WBS/BOE Report
+
+        /// <summary>
+        /// Test GetExportInputsForStatusAndWbsReports
+        /// </summary>
+        [TestMethod]
+        public void TestGetExportInputsForStatusAndWbsReports()
+        {
+            ReportsControllerLogic sut = CreateSut();
+
+            FullWorkspace workspace = new FullWorkspace() { Id = 1, BOEExportSortByID = 2, TemplateID = 2, ProjectMapType = ProjectMapType.StandardWithoutOffload };
+            boes = new Collection<FullBoe>(){
+                new FullBoe() { Id = 1 },
+                new FullBoe() { Id = 2 },
+                new FullBoe() { Id = 3 },
+                new FullBoe() { Id = 4 }};
+            ICollection<int> BoeIds = boes.Select(x => x.Id).ToCollection();
+            TaskElementsID = new Collection<BoeTaskElementDTO>(){
+                new BoeTaskElementDTO() { Id = 1, taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto(){ ResourceID = 1}, new ResourceTypeDto() }},
+                new BoeTaskElementDTO() { Id = 2, taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto(){ ResourceID = 2}, new ResourceTypeDto() }},
+                new BoeTaskElementDTO() { Id = 3, taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto()}}};
+            dtoID = new Collection<OtherDirectCostDTO>(){
+                new OtherDirectCostDTO() { Id = 1, ODCTypes = new Collection<OtherDirectCostType>() { new OtherDirectCostType(){ ResourceID = 3}, new OtherDirectCostType() }},
+                new OtherDirectCostDTO() { Id = 2, ODCTypes = new Collection<OtherDirectCostType>() { new OtherDirectCostType(), new OtherDirectCostType(){ ResourceID = 2} }},
+                new OtherDirectCostDTO() { Id = 3, ODCTypes = new Collection<OtherDirectCostType>() { new OtherDirectCostType()}}};
+            ICollection<ResourceDTO> resourcesFromDB = new Collection<ResourceDTO>(){
+                new ResourceDTO(){ Id = 1 },
+                new ResourceDTO(){ Id = 2 }};
+
+            _retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(boes);
+            _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
+            _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);
+            this._retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);
+
+            BOEExportInputs result = sut.GetExportInputsForStatusAndWbsReports(workspace);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(workspace.Id, result.Workspace.Id);
+            Assert.IsTrue(result.Boes.Any(x => x.Id == BoeIds.First()));
+            Assert.IsTrue(result.TaskElements.Any(x => x.Id == TaskElementsID.First().Id));
+            Assert.IsTrue(result.Odcs.Any(x => x.Id == dtoID.First().Id));
+        }
+
+        /// <summary>
+        /// Test GenerateWbsBoeReport
+        /// </summary>
+        [TestMethod]
+        public void TestGenerateWbsBoeReport()
+        {
+            ReportsControllerLogic sut = CreateSut();
+
+            FullWorkspace workspace = new FullWorkspace() { Id = 1, BOEExportSortByID = 2, TemplateID = 2, ProjectMapType = ProjectMapType.StandardWithoutOffload };
+            boes = new Collection<FullBoe>(){
+                new FullBoe() { Id = 1, WBSID = 1, Title = "BOE1" },
+                new FullBoe() { Id = 2, Title = "BOE2" },
+                new FullBoe() { Id = 3, WBSID = 2, Title = "BOE3" },
+                new FullBoe() { Id = 4, WBSID = 3, Title = "BOE4" }};
+            ICollection<int> BoeIds = boes.Select(x => x.Id).ToCollection();
+            TaskElementsID = new Collection<BoeTaskElementDTO>(){
+                new BoeTaskElementDTO() { Id = 1, BoeID = 1, taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto(){ ResourceID = 1, ValueSpread = 10, SpreadType = SpreadType.Hours}, new ResourceTypeDto() { ResourceID = 1, ValueSpread = 20, SpreadType = SpreadType.Hours } } },
+                new BoeTaskElementDTO() { Id = 2, BoeID = 2, taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto(){ ResourceID = 2, ValueSpread = 10, SpreadType = SpreadType.Cost }, new ResourceTypeDto(){ ResourceID = 2, ValueSpread = 20, SpreadType = SpreadType.Cost } }},
+                new BoeTaskElementDTO() { Id = 3, BoeID = 3, taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto(){ ResourceID = 1, ValueSpread = 10, SpreadType = SpreadType.Hours}, new ResourceTypeDto() { ResourceID = 2, ValueSpread = 10, SpreadType = SpreadType.Cost }}}};
+            dtoID = new Collection<OtherDirectCostDTO>(){
+                new OtherDirectCostDTO() { Id = 1, ODCTypes = new Collection<OtherDirectCostType>() { new OtherDirectCostType(){ ResourceID = 3}, new OtherDirectCostType() }},
+                new OtherDirectCostDTO() { Id = 2, ODCTypes = new Collection<OtherDirectCostType>() { new OtherDirectCostType(), new OtherDirectCostType(){ ResourceID = 2} }},
+                new OtherDirectCostDTO() { Id = 3, ODCTypes = new Collection<OtherDirectCostType>() { new OtherDirectCostType()}}};
+            ICollection<ResourceDTO> resourcesFromDB = new Collection<ResourceDTO>(){
+                new ResourceDTO(){ Id = 1 },
+                new ResourceDTO(){ Id = 2 }};
+            ICollection<FullWbs> wbs = new Collection<FullWbs>()
+            {
+                new FullWbs() { Id = 1, WbsNumber = "1", WbsTitle = "WBS1" },
+                new FullWbs() { Id = 2, WbsNumber = "1.1", WbsTitle = "WBS11" },
+                new FullWbs() { Id = 3, WbsNumber = "2", WbsTitle = "WBS2" }
+            };
+
+            _retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(boes);
+            _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
+            _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);
+            this._retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);
+            _retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO>());
+            _retriever.Setup(x => x.GetEscalationRatesByWorkspace(workspace)).Returns(new Collection<EscalationRatesDTO>());
+            _retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(workspace.Id)).Returns(wbs);
+
+            BOEExportInputs inputs = new BOEExportInputs(boes, boes, TaskElementsID, workspace, null);
+
+
+            ICollection<BoeWbsReportModelView> result = sut.GenerateWbsBoeReport(inputs);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(boes.Count + 1, result.Count); // +1 for totals row
+
+            // Assert each row for each boe
+            foreach(FullBoe boe in boes)
+            {
+                BoeWbsReportModelView row = result.FirstOrDefault(x => x.BOETitle == boe.Title);
+                string expectedWbsNumber = boe.WBSID != null ? wbs.First(x => x.Id == boe.WBSID).WbsNumber : string.Empty;
+                string expectedWbsTitle = boe.WBSID != null ? wbs.First(x => x.Id == boe.WBSID).WbsTitle : "No WBS";
+                BoeTaskElementDTO task = TaskElementsID.FirstOrDefault(x => x.BoeID == boe.Id);
+                decimal? expectedTotalHours = task != null ? task.taskElementLabors.Where(x => x.SpreadType == SpreadType.Hours).Sum(x => x.ValueSpread) : 0;
+                decimal? expectedTotalCost = task != null ? task.taskElementLabors.Where(x => x.SpreadType == SpreadType.Cost).Sum(x => x.ValueSpread) : 0;
+
+                Assert.IsNotNull(row);
+                Assert.AreEqual(expectedWbsNumber, row.WBSNumber);
+                Assert.AreEqual(expectedWbsTitle, row.WBSTitle);
+                Assert.AreEqual(expectedTotalHours, row.TotalHours);
+                Assert.AreEqual(expectedTotalCost, row.TotalCost);
+            }
+            
+            // Assert totals row
+            Assert.AreEqual(CommonConstants.SET_AS_BOLD_FOR_EXCEL + "Totals", result.Last().BOETitle);
+            Assert.AreEqual(string.Empty, result.Last().WBSNumber);
+            Assert.AreEqual(string.Empty, result.Last().WBSTitle);
+            Assert.AreEqual(40, result.Last().TotalHours);
+            Assert.AreEqual(40, result.Last().TotalCost);
+        }
+
+        /// <summary>
+        /// Test ExportWbsBoeReport
+        /// </summary>
+        [TestMethod]
+        public void TestExportWbsBoeReport()
+        {
+            ReportsControllerLogic sut = CreateSut();
+
+            FullWorkspace workspace = new FullWorkspace() { Id = 1 };
+            boes = new Collection<FullBoe>();
+            ICollection<int> BoeIds = new Collection<int>();
+            TaskElementsID = new Collection<BoeTaskElementDTO>();
+            dtoID = new Collection<OtherDirectCostDTO>();
+            ICollection<ResourceDTO> resourcesFromDB = new Collection<ResourceDTO>();
+
+            _retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(boes);
+            _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
+            _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);
+            this._retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(resourcesFromDB);
+
+            BOEExportInputs inputs = new BOEExportInputs(boes, boes, TaskElementsID, workspace, null);
+            ICollection<BoeWbsReportModelView> reportModelView = new Collection<BoeWbsReportModelView>()
+            {
+                new BoeWbsReportModelView()
+                {
+                    BOETitle = "Test",
+                    WBSNumber = "1",
+                    WBSTitle = "ONE",
+                    TotalHours = 1000,
+                    TotalCost = 2000
+                }
+            };
+
+            string fileLocation = Path.Combine(System.Environment.CurrentDirectory, Path.GetRandomFileName() + ".xlsx");
+            File.WriteAllBytes(fileLocation, Properties.Resources.WbsBoeReport);
+
+            string result = sut.ExportWbsBoeReport(workspace, fileLocation, reportModelView, inputs);
+
+            // Wrapping in try/finally to ensure file is deleted even if test fails
+            try
+            {
+                // Assert file was created
+                Assert.IsFalse(string.IsNullOrEmpty(result));
+                Assert.IsTrue(File.Exists(result));
+
+                ICollection<string> columns = new Collection<string>() { ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.WBS_TITLE_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER,
+                "Total Hours", ImportExportConstants.TOTAL_COST_COLUMN_HEADER };
+                string hoursFormatString = Utilities.PrecisionFormattingStringNoComma(workspace.DecimalPrecision);
+                string costFormatString = Utilities.CostPrecisionFormattingString(workspace.CostDecimalPrecision).Replace(",", "");
+
+                using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(result, false))
+                {
+                    ICollection<Dictionary<string, string>> rows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(spreadsheet, string.Empty, columns.ToArray(), columns.ToArray()).ToCollection();
+
+                    // Assert that there is only one row that matches the modelview
+                    Assert.IsTrue(rows.Count == 1);
+
+                    BoeWbsReportModelView expected = reportModelView.First();
+                    Dictionary<string, string> actual = rows.First();
+
+                    // Assert column values for the row
+                    Assert.AreEqual(expected.BOETitle, actual[ImportExportConstants.BOE_TITLE_COLUMN_HEADER]);
+                    Assert.AreEqual(expected.WBSNumber, actual[ImportExportConstants.WBS_NUMBER_COLUMN_HEADER]);
+                    Assert.AreEqual(expected.WBSTitle, actual[ImportExportConstants.WBS_TITLE_COLUMN_HEADER]);
+                    Assert.AreEqual(expected.TotalHours.ToString(hoursFormatString), actual["Total Hours"]);
+                    Assert.AreEqual(expected.TotalCost.ToString(costFormatString), actual[ImportExportConstants.TOTAL_COST_COLUMN_HEADER]);
+                }
+            }
+            finally
+            {
+                // Delete the file now that testing is done
+                File.Delete(result);
+            }
         }
 
         #endregion

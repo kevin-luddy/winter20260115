@@ -3776,31 +3776,3 @@ GO
        12/22/17 [brunworg] - BOEJ-2885 Add an extra field of "Resource Class" into ProPricer Direct Rate Mappings
        ## END ##
 */
-
-/*
-	   ## START ##
-       1/15/18 [brunworg] - Additional Cobra Mappings
-*/
-update dbo.RateCode set CobraRateSet = 'FRINGE', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'FRBENGRS';
-update dbo.RateCode set CobraRateSet = 'FRINGEU', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'FR2BNGRS';
-update dbo.RateCode set CobraRateSet = 'GA', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'GENADGRS';
-update dbo.RateCode set CobraRateSet = 'GAG', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'SVGAGRS';
-update dbo.RateCode set CobraRateSet = 'LDOH1', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'OHDEVNET-G';
-update dbo.RateCode set CobraRateSet = 'LFOH1', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'OHFBMNET-G';
-update dbo.RateCode set CobraRateSet = 'LGFOH1', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'OHSERV1_2OFFNET-G';
-update dbo.RateCode set CobraRateSet = 'LGNOH1', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'OHSERV1_2ONNET-G';
-update dbo.RateCode set CobraRateSet = 'LHOH1', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'OHHNTNET-G';
-update dbo.RateCode set CobraRateSet = 'LLOH1', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'OHOFFNET-G';
-update dbo.RateCode set CobraRateSet = 'LMOH1', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'OHMICNET-G';
-update dbo.RateCode set CobraRateSet = 'LPOH1', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'OHPRDNET-G';
-update dbo.RateCode set CobraRateSet = 'LUOH1', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'OHPRUNET-G';
-update dbo.RateCode set CobraRateSet = 'LVSOH1', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'OHLVSNET';
-update dbo.RateCode set CobraRateSet = 'LVSOH1', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'OHLVSNET-G';
-update dbo.RateCode set CobraRateSet = 'LVSOHCS', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'CASLVNET';
-update dbo.RateCode set CobraRateSet = 'PCGOH1', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'OHSERVPRONET-G';
-update dbo.RateCode set CobraRateSet = 'PCOH1', CobraCode1ID = 1 from dbo.RateCode rc join dbo.Revision r on r.ID = rc.RevisionID and r.DatePublished is null where rc.RateCode = 'OHPRONET-G';
-
-/*
-       1/15/18 [brunworg] - Additional Cobra Mappings
-       ## END ##
-*/

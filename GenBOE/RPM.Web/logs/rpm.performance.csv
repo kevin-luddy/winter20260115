@@ -1,0 +1,54 @@
+12/7/2017 11:47:17,ACCT04\paliderd,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+12/7/2017 11:47:17,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+12/7/2017 11:47:19,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,1790
+12/7/2017 11:47:19,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+12/7/2017 11:47:19,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,128
+12/7/2017 11:47:19,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+12/7/2017 11:47:21,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,2261
+12/7/2017 11:47:21,ACCT04\paliderd,RPM.Web.Controllers.HomeController.RetrieveProposalData ,4635
+3/15/2018 7:11:29,ACCT04\paliderd,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+3/15/2018 7:11:29,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+3/15/2018 7:11:30,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,1693
+3/15/2018 7:11:30,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+3/15/2018 7:11:31,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,83
+3/15/2018 7:11:31,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+3/15/2018 7:11:32,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,1855
+3/15/2018 7:11:32,ACCT04\paliderd,RPM.Web.Controllers.HomeController.RetrieveProposalData ,3904
+5/9/2019 10:53:18,ACCT04\paliderd,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+5/9/2019 10:53:18,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+5/9/2019 10:53:20,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,1750
+5/9/2019 10:53:20,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+5/9/2019 10:53:20,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,121
+5/9/2019 10:53:20,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+5/9/2019 10:53:20,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,126
+5/9/2019 10:53:20,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+5/9/2019 10:53:26,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,5977
+5/9/2019 10:53:26,ACCT04\paliderd,RPM.Web.Controllers.HomeController.RetrieveProposalData ,8586
+5/9/2019 10:59:52,ACCT04\paliderd,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+5/9/2019 10:59:52,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+5/9/2019 10:59:53,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,704
+5/9/2019 10:59:53,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+5/9/2019 10:59:53,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,86
+5/9/2019 10:59:53,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+5/9/2019 10:59:53,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,130
+5/9/2019 10:59:53,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+5/9/2019 10:59:55,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,1684
+5/9/2019 10:59:55,ACCT04\paliderd,RPM.Web.Controllers.HomeController.RetrieveProposalData ,2614
+5/9/2019 10:59:56,ACCT04\paliderd,BEGIN - RPM.Web.Controllers.HomeController.RetrieveOpportunityData ,0
+5/9/2019 10:59:56,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.OTISOpportunityDataMVDataLoader.GetTestOTISOppCollection ,0
+5/9/2019 11:00:39,ACCT04\paliderd,RPM.DataBridge.DataLoaders.OTISOpportunityDataMVDataLoader.GetTestOTISOppCollection ,42977
+5/9/2019 11:00:39,ACCT04\paliderd,Finished RetrieveOpportunityData().,42980
+5/9/2019 11:00:39,ACCT04\paliderd,RPM.Web.Controllers.HomeController.RetrieveOpportunityData ,42980
+5/9/2019 11:00:40,ACCT04\paliderd,BEGIN - RPM.Web.Controllers.HomeController.RetrieveOpportunityData ,0
+5/9/2019 11:00:40,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.OTISOpportunityDataMVDataLoader.GetTestOTISOppCollection ,0
+5/9/2019 11:01:15,ACCT04\paliderd,RPM.DataBridge.DataLoaders.OTISOpportunityDataMVDataLoader.GetTestOTISOppCollection ,35120
+5/9/2019 11:01:15,ACCT04\paliderd,Finished RetrieveOpportunityData().,35120
+5/9/2019 11:01:15,ACCT04\paliderd,RPM.Web.Controllers.HomeController.RetrieveOpportunityData ,35120
+5/9/2019 12:00:33,ACCT04\paliderd,BEGIN - RPM.Web.Controllers.HomeController.RetrieveMetricsData ,0
+5/9/2019 12:00:33,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBShortNames ,0
+5/9/2019 12:00:33,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBShortNames ,841
+5/9/2019 12:00:33,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreaShortNames ,0
+5/9/2019 12:00:34,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreaShortNames ,85
+5/9/2019 12:00:34,ACCT04\paliderd,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetMetricsModelView ,0
+5/9/2019 12:00:34,ACCT04\paliderd,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetMetricsModelView ,683
+5/9/2019 12:00:34,ACCT04\paliderd,RPM.Web.Controllers.HomeController.RetrieveMetricsData ,1616

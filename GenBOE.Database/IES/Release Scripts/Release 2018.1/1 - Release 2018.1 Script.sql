@@ -51,10 +51,8 @@ IF NOT EXISTS (
 )
 BEGIN
 	ALTER TABLE [dbo].[BurdenPoolLU] ADD [IsCommercial] BIT NOT NULL DEFAULT 0;
+	UPDATE [dbo].[BurdenPoolLU] SET [IsCommercial] = 1 WHERE [BurdenPool] like '%-G';
 END
-GO
-
-UPDATE [dbo].[BurdenPoolLU] SET [IsCommercial] = 1 WHERE [BurdenPool] like '%-G';
 GO
 
 /*

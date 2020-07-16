@@ -848,9 +848,6 @@
                         if (item.HourSpreadLocked) {
                             // reset the percentage in case it changed
                             item.PercentSpread = output.percentSpread;
-                        } else {
-                            // reset the hours in case it changed
-                            item.HourSpread = output.value;
                         }
                     }
                 });
