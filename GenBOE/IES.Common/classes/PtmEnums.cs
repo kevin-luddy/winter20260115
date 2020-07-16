@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ namespace IES.Common
         /// </summary>
         Checklist = 5,
 
-         /// <summary>
+        /// <summary>
         /// Checklist Report
         /// </summary>
         ChecklistReport = 6,
@@ -62,7 +62,12 @@ namespace IES.Common
         /// <summary>
         /// Proposal Certification Timeline
         /// </summary>
-        CertificationTimeline = 11
+        CertificationTimeline = 11,
+
+        /// <summary>
+        /// Revision History Tab
+        /// </summary>
+        RevisionHistory = 12
     }
 
     /// <summary>
@@ -401,7 +406,13 @@ namespace IES.Common
         /// No Bid
         /// </summary>
         [Description("No Bid")]
-        NoBid = 7
+        NoBid = 7,
+
+        /// <summary>
+        /// Revised
+        /// </summary>
+        [Description("Revised")]
+        Revised = 8
     }
 
     /// <summary>
@@ -578,7 +589,7 @@ namespace IES.Common
         /// </summary>
         [Description("Other")]
         Other = 9,
-        
+
         /// <summary>
         /// Cape Canaveral, FL
         /// </summary>
@@ -609,7 +620,7 @@ namespace IES.Common
         [Description("Sunnyvale, CA")]
         SunnyvaleCA = 14
     }
-    
+
     /// <summary>
     /// Defines pricing tool
     /// "Other" allows free form Pricing Tool data to be entered
@@ -905,7 +916,7 @@ namespace IES.Common
         /// Pricer Comment
         /// </summary>
         PricerComment = 5,
-        
+
         /// <summary>
         /// Peer Comment
         /// </summary>
@@ -931,7 +942,7 @@ namespace IES.Common
         /// N/A
         /// </summary>
         NA = 3,
-      
+
         /// <summary>
         /// Not Set
         /// </summary>
@@ -957,7 +968,7 @@ namespace IES.Common
     /// <summary>
     /// Checklist response type: Pricer, Peer, ShowBoth
     /// </summary>
-    public enum ShowChecklistResponse 
+    public enum ShowChecklistResponse
     {
         /// <summary>
         /// Pricer
@@ -1265,5 +1276,20 @@ namespace IES.Common
 
         [Description("Other")]
         Other
+    }
+
+    /// <summary>
+    /// Enumeration for Reason why Certification is Not Required
+    /// </summary>
+    public enum ReasonCertificationNotRequired
+    {
+        [Description("Lost / Not Awarded")]
+        LostNotAwarded = 1,
+
+        [Description("Awarded Under Threshold")]
+        AwardedUnderThreshold = 2,
+
+        [Description("Other")]
+        Other = 3
     }
 }

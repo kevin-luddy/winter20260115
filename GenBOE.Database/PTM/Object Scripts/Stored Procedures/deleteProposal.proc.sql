@@ -1,6 +1,5 @@
 ﻿IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[deleteProposal]') AND type in (N'P', N'PC'))
 	DROP PROCEDURE [dbo].[deleteProposal];
-
 GO
 
 SET ANSI_NULLS ON
@@ -19,7 +18,6 @@ AS
 **		Name: [deleteProposal]
 **		Desc: Delete Proposal
 **			
-**		
 **
 **		Auth: Don Canuso
 **		Date: 04/3/13
@@ -28,16 +26,17 @@ AS
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
-**      12/21/2016	twilson3			BOEJ-1143 Approval Emailer -- remove old Email tables/stored procs
-**		1/12/2017	gbrunwo				BOEJ-1688 Update PTM SPs to not display technical details to the user
 **		9/7/2017	twilson3			BOEJ-2459 Add Attachment table
+**		7/6/2020	Dusan				Attachment Proposals table
 *******************************************************************************/
 SET NOCOUNT ON 
 
-
 	IF (SELECT UpdateDate FROM [dbo].[Proposal] WHERE ProposalID = @ProposalID ) = @UpdateDate
 		BEGIN
-			DELETE FROM dbo.Attachment WHERE ProposalID = @ProposalID
+			DECLARE @attachmentIds AS Table (Id int)
+			INSERT INTO @attachmentIds SELECT AttachmentId FROM dbo.ProposalsAttachments WHERE ProposalId = @ProposalId AND IsRevisionReference = 0
+			DELETE FROM dbo.ProposalsAttachments WHERE ProposalID = @ProposalID
+			DELETE FROM dbo.Attachment WHERE Id IN (SELECT * FROM @attachmentIds)
 			DELETE FROM dbo.ProposalUserRole WHERE ProposalID = @ProposalID
 			DELETE FROM dbo.ProposalContractTypeXREF WHERE ProposalID = @ProposalID
 			DELETE FROM dbo.ProposalCostElementXREF WHERE ProposalID = @ProposalID
@@ -50,13 +49,8 @@ SET NOCOUNT ON
 	ELSE
 		BEGIN
 			DECLARE @ErrorMessage varchar (500)
-				SET @ErrorMessage =   'The Proposal with ID ' + CAST(@ProposalID  AS varchar(10)) + ' has been updated and is out of sync with the data in your browser.  Please refresh your data.'
-			RAISERROR (
-					@ErrorMessage, -- Message text.
-			        11, -- Severity,/*Severity Changed to 11*/
-					1 -- State,
-					)
+			SET @ErrorMessage =   'The Proposal with ID ' + CAST(@ProposalID  AS varchar(10)) + ' has been updated and is out of sync with the data in your browser.  Please refresh your data.'
+			RAISERROR (@ErrorMessage, 11, 1)
 			RETURN
-
 		END
 GO

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -185,7 +185,11 @@ namespace GenTRAC.DataBridge.DTO
                             CutOffDateUtilization = entity.CutOffDateUtilization,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
                             CertificationLastEmailed = entity.CertificationLastEmailed,
-                            NoBidDate = entity.NoBidDate
+                            NoBidDate = entity.NoBidDate,
+                            RevisionOfId = entity.RevisionOfId,
+                            entity.ReasonCertificationNotRequired,
+                            entity.OtherReasonComment,
+                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -249,7 +253,11 @@ namespace GenTRAC.DataBridge.DTO
                             CutOffDateUtilization = entity.CutOffDateUtilization.HasValue ? (CutOffDateUtilization?)entity.CutOffDateUtilization : null,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
                             CertificationLastEmailed = entity.CertificationLastEmailed,
-                            NoBidDate = entity.NoBidDate
+                            NoBidDate = entity.NoBidDate,
+                            RevisionOfId = entity.RevisionOfId,
+                            ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
+                            OtherReasonComment = entity.OtherReasonComment,
+                            HasRevision = entity.HasRevision
                         }).ToList();
                 }
             }
@@ -375,7 +383,7 @@ namespace GenTRAC.DataBridge.DTO
                 {
                     ICollection<int> proposalIdsWithWriteAccess = GetProposalIdsWithLinkedDocumentWriteAccess(ntID, dbModel);
 
-                    toReturn = dbModel.getMyProposals(proposalStatus, filterStartDate, filterEndDate, searchString ?? string.Empty, ntID, 
+                    toReturn = dbModel.getMyProposals(proposalStatus, filterStartDate, filterEndDate, searchString ?? string.Empty, ntID,
                         showProposalsForMyOrganization, userAndGroupIDs, proposalClassFilterID)
                         .Select(
                             entity => new HomeProposalViewDto
@@ -399,8 +407,9 @@ namespace GenTRAC.DataBridge.DTO
                                 HasLinkedDocument = entity.DocumentId.HasValue,
                                 IsForecastProposal = entity.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
                                 HasWriteAccessToLinkedDocument = proposalIdsWithWriteAccess.Contains(entity.ProposalID),
-                                IsCommercialCustomer = entity.CustomerTypeId == (int)CustomerType.Commercial || 
-                                                       entity.CustomerTypeId == (int)CustomerType.InternationalCommercial
+                                IsCommercialCustomer = entity.CustomerTypeId == (int)CustomerType.Commercial ||
+                                                       entity.CustomerTypeId == (int)CustomerType.InternationalCommercial,
+                                HasOrIsRevision = entity.HasOrIsRevision == 1
                             }).ToList();
                 }
             }
@@ -437,7 +446,7 @@ namespace GenTRAC.DataBridge.DTO
             ICollection<ProposalDto> toReturn = null;
 
             List<int> roles = new List<int>() { (int)PtmRole.Pricer, (int)PtmRole.BackupPricer, (int)PtmRole.CostVolumeLead, (int)PtmRole.CoverSheetApprover, (int)PtmRole.PricingVerification, (int)PtmRole.PeerReviewer, (int)PtmRole.LOBEstLead };
-            if(includeWorkpaceCreator)
+            if (includeWorkpaceCreator)
             {
                 roles.Add((int)PtmRole.GenBoeWorkspaceCreator);
             }
@@ -546,7 +555,11 @@ namespace GenTRAC.DataBridge.DTO
                             (int?)dtoToUpsert.CutOffDateUtilization,
                             dtoToUpsert.CertificationTimelineCompleted,
                             dtoToUpsert.CertificationLastEmailed,
-                            dtoToUpsert.NoBidDate).FirstOrDefault();
+                            dtoToUpsert.NoBidDate,
+                            dtoToUpsert.IsRevision,
+                            dtoToUpsert.RevisionOfId,
+                            (int?)dtoToUpsert.ReasonCertificationNotRequired,
+                            dtoToUpsert.OtherReasonComment).FirstOrDefault();
                     }
                 }
             }
@@ -617,11 +630,11 @@ namespace GenTRAC.DataBridge.DTO
             return toReturn;
         }
 
-         /// <summary>
-         /// Get the proposal completed date.
-         /// </summary>
-         /// <param name="inProposalId">proposal id</param>
-         /// <returns>date of completed</returns>
+        /// <summary>
+        /// Get the proposal completed date.
+        /// </summary>
+        /// <param name="inProposalId">proposal id</param>
+        /// <returns>date of completed</returns>
         [DbQuery(2)]
         public DateTime? GetProposalCompletedDate(int inProposalId)
         {
@@ -636,7 +649,7 @@ namespace GenTRAC.DataBridge.DTO
                                      select p.ProposalStatusID).First();
 
                     // as long as the proposal is not in progress, grab the approval completed date
-                    if (completed == (int)ProposalStatus.Completed || completed == (int)ProposalStatus.Submitted)
+                    if (completed == (int)ProposalStatus.Completed || completed == (int)ProposalStatus.Submitted || completed == (int)ProposalStatus.Revised)
                     {
                         toReturn = (from c in dbModel.ProposalChecklistCompletes
                                     where c.ProposalID == inProposalId
@@ -677,7 +690,8 @@ namespace GenTRAC.DataBridge.DTO
                                 on p.ProposalID equals c.ProposalID
                                 where (p.ProposalStatusID == (int)ProposalStatus.Completed || p.ProposalStatusID == (int)ProposalStatus.Submitted)
                                 && c.SubmitDate >= cutoffDate && c.ChecklistTypeID == (int)ProposalChecklistType.Default
-                                select new ProposalDto {
+                                select new ProposalDto
+                                {
                                     Id = p.ProposalID,
                                     DateCreated = p.DateCreated,
                                     LineOfBusinessID = p.LineOfBusinessID,
@@ -785,8 +799,8 @@ namespace GenTRAC.DataBridge.DTO
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
                     toReturn = (ProposalStatus?)(from p in dbModel.Proposals
-                                where p.ProposalID == inProposalId
-                                select p.ProposalStatusID).FirstOrDefault();
+                                                 where p.ProposalID == inProposalId
+                                                 select p.ProposalStatusID).FirstOrDefault();
                 }
             }
 
@@ -798,6 +812,7 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="workflowStatus">The workflow status.</param>
         /// <returns>A list of proposals.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         public ICollection<ProposalDto> GetProposalsByWorkflowStatus(WorkflowStatus workflowStatus)
         {
             ICollection<ProposalDto> toReturn = new List<ProposalDto>();
@@ -808,68 +823,72 @@ namespace GenTRAC.DataBridge.DTO
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
                     toReturn = toReturn = dbModel.Proposals.Where(p => p.WorkflowStatus == workflowStatusAsInteger).Select(entity => new
-                        {
-                            Id = entity.ProposalID,
-                            TrackingNumber = entity.ProposalTrackingID,
-                            ProposalTitle = entity.ProposalTitle,
-                            OTISOpportunityID = entity.OTISOpportunityID,
-                            ProposalStatus = (ProposalStatus)entity.ProposalStatusID,
-                            UpdateDate = entity.UpdateDate,
-                            ProposalType = entity.ProposalTypeID,
-                            ProgramName = entity.ProgramName,
-                            Customer = entity.Customer,
-                            ISGSRole = (ISGSRole)entity.ISGSRoleID,
-                            Request = entity.RequestTypeID,
-                            ProposalClass = entity.ProposalClassID,
-                            RFPNumber = entity.RFPNumber,
-                            LineOfBusinessID = entity.LineOfBusinessID,
-                            ProgramAreaId = entity.ProgramAreaID,
-                            ProposalLocation = (ProposalLocation)entity.ProposalLocationID,
-                            ProposalLocationName = entity.ProposalLocationName,
-                            PricingTool = (PricingTool)entity.PricingToolID,
-                            PricingToolName = entity.PricingToolName,
-                            BoeTool = (BOETool)entity.BOEToolID,
-                            BoeToolName = entity.BOEToolName,
-                            DeliveryDate = entity.AnticipatedDeliveryDate,
-                            RevisedSubmittalDate = entity.RevisedSubmittalDate,
-                            EstimatedProposalValue = entity.EstimatedProposalValue,
-                            CustomerType = (CustomerType)entity.CustomerTypeID,
-                            DateAssigned = entity.DateAssigned,
-                            DateCreated = entity.DateCreated,
-                            RFPIssuedDate = entity.RFPIssuedDate,
-                            RFPReceivedDate = entity.RFPReceivedDate,
-                            Comments = entity.Comments,
-                            ContractTypeGroup = entity.ContractTypeGroupID.HasValue ? entity.ContractTypeGroupID.Value : 0, // 0 is Not Set
-                            CreatedByUserId = entity.CreatedByUserID,
-                            IsScheduleProposal = entity.IsScheduleProposal,
-                            ProgramProposalStatus = entity.ProgramProposalStatusID.HasValue ? (ProgramProposalStatus)entity.ProgramProposalStatusID.Value : ProgramProposalStatus.NotSet,
-                            WorkflowStatus = (WorkflowStatus)entity.WorkflowStatus,
-                            WorkflowStatusLastUpdated = entity.WorkflowStatusLastUpdated,
-                            LeadEstimatorSignedDate = entity.LeadEstimatorSignedDT,
-                            LeadEstimatorSignatureComment = entity.LeadEstimatorSignComment,
-                            CoverSheetApproverSignedDate = entity.CoverSheetApproverSignedDT,
-                            CoverSheetApproverSignatureComment = entity.CoverSheetApproverSignComment,
-                            PricingVerifierSignedDate = entity.PricingVerifierSignedDT,
-                            PricingVerifierSignatureComment = entity.PricingVerifierSignComment,
-                            IndependentReviewerSignedDate = entity.IndependentReviewerSignedDT,
-                            IndependentReviewerSignatureComment = entity.IndependentReviewerSignComment,
-                            LOBEstimatingLeadSignedDate = entity.LOBEstimatingLeadSignedDT,
-                            LOBEstimatingLeadSignatureComment = entity.LOBEstimatingLeadSignComment,
-                            ApprovalEmailText = entity.ApprovalEmailText,
-                            IsCCPDRequired = entity.CCPDRequired,
-                            IsCostVolumeClassified = entity.CostVolumeClassified,
-                            DocumentId = entity.DocumentId,
-                            ForecastedTrackingNumber = entity.ForecastedTrackingID,
-                            IsForecastProposal = entity.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
-                            ForecastEmailSent = entity.ForecastEmailSent,
-                            ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
-                            CostElementTypeIds = entity.CostElementLUs.Select(x => x.CostElementID),
+                    {
+                        Id = entity.ProposalID,
+                        TrackingNumber = entity.ProposalTrackingID,
+                        ProposalTitle = entity.ProposalTitle,
+                        OTISOpportunityID = entity.OTISOpportunityID,
+                        ProposalStatus = (ProposalStatus)entity.ProposalStatusID,
+                        UpdateDate = entity.UpdateDate,
+                        ProposalType = entity.ProposalTypeID,
+                        ProgramName = entity.ProgramName,
+                        Customer = entity.Customer,
+                        ISGSRole = (ISGSRole)entity.ISGSRoleID,
+                        Request = entity.RequestTypeID,
+                        ProposalClass = entity.ProposalClassID,
+                        RFPNumber = entity.RFPNumber,
+                        LineOfBusinessID = entity.LineOfBusinessID,
+                        ProgramAreaId = entity.ProgramAreaID,
+                        ProposalLocation = (ProposalLocation)entity.ProposalLocationID,
+                        ProposalLocationName = entity.ProposalLocationName,
+                        PricingTool = (PricingTool)entity.PricingToolID,
+                        PricingToolName = entity.PricingToolName,
+                        BoeTool = (BOETool)entity.BOEToolID,
+                        BoeToolName = entity.BOEToolName,
+                        DeliveryDate = entity.AnticipatedDeliveryDate,
+                        RevisedSubmittalDate = entity.RevisedSubmittalDate,
+                        EstimatedProposalValue = entity.EstimatedProposalValue,
+                        CustomerType = (CustomerType)entity.CustomerTypeID,
+                        DateAssigned = entity.DateAssigned,
+                        DateCreated = entity.DateCreated,
+                        RFPIssuedDate = entity.RFPIssuedDate,
+                        RFPReceivedDate = entity.RFPReceivedDate,
+                        Comments = entity.Comments,
+                        ContractTypeGroup = entity.ContractTypeGroupID.HasValue ? entity.ContractTypeGroupID.Value : 0, // 0 is Not Set
+                        CreatedByUserId = entity.CreatedByUserID,
+                        IsScheduleProposal = entity.IsScheduleProposal,
+                        ProgramProposalStatus = entity.ProgramProposalStatusID.HasValue ? (ProgramProposalStatus)entity.ProgramProposalStatusID.Value : ProgramProposalStatus.NotSet,
+                        WorkflowStatus = (WorkflowStatus)entity.WorkflowStatus,
+                        WorkflowStatusLastUpdated = entity.WorkflowStatusLastUpdated,
+                        LeadEstimatorSignedDate = entity.LeadEstimatorSignedDT,
+                        LeadEstimatorSignatureComment = entity.LeadEstimatorSignComment,
+                        CoverSheetApproverSignedDate = entity.CoverSheetApproverSignedDT,
+                        CoverSheetApproverSignatureComment = entity.CoverSheetApproverSignComment,
+                        PricingVerifierSignedDate = entity.PricingVerifierSignedDT,
+                        PricingVerifierSignatureComment = entity.PricingVerifierSignComment,
+                        IndependentReviewerSignedDate = entity.IndependentReviewerSignedDT,
+                        IndependentReviewerSignatureComment = entity.IndependentReviewerSignComment,
+                        LOBEstimatingLeadSignedDate = entity.LOBEstimatingLeadSignedDT,
+                        LOBEstimatingLeadSignatureComment = entity.LOBEstimatingLeadSignComment,
+                        ApprovalEmailText = entity.ApprovalEmailText,
+                        IsCCPDRequired = entity.CCPDRequired,
+                        IsCostVolumeClassified = entity.CostVolumeClassified,
+                        DocumentId = entity.DocumentId,
+                        ForecastedTrackingNumber = entity.ForecastedTrackingID,
+                        IsForecastProposal = entity.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                        ForecastEmailSent = entity.ForecastEmailSent,
+                        ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
+                        CostElementTypeIds = entity.CostElementLUs.Select(x => x.CostElementID),
                         AgreementDate = entity.AgreementDate,
                         CertificationDate = entity.CertificationDate,
                         CutOffDateUtilization = entity.CutOffDateUtilization,
                         CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
                         CertificationLastEmailed = entity.CertificationLastEmailed,
-                        NoBidDate = entity.NoBidDate
+                        NoBidDate = entity.NoBidDate,
+                        RevisionOfId = entity.RevisionOfId,
+                        entity.ReasonCertificationNotRequired,
+                        entity.OtherReasonComment,
+                        HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -933,7 +952,11 @@ namespace GenTRAC.DataBridge.DTO
                             CutOffDateUtilization = entity.CutOffDateUtilization.HasValue ? (CutOffDateUtilization?)entity.CutOffDateUtilization : null,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
                             CertificationLastEmailed = entity.CertificationLastEmailed,
-                            NoBidDate = entity.NoBidDate
+                            NoBidDate = entity.NoBidDate,
+                            RevisionOfId = entity.RevisionOfId,
+                            ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
+                            OtherReasonComment = entity.OtherReasonComment,
+                            HasRevision = entity.HasRevision
                         }).ToList();
                 }
             }
@@ -947,6 +970,7 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="workflowStatus">The proposal status.</param>
         /// <returns>A list of proposals.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         public ICollection<ProposalDto> GetProposalsByProposalStatus(ProposalStatus proposalStatus)
         {
             ICollection<ProposalDto> toReturn = new List<ProposalDto>();
@@ -1017,7 +1041,11 @@ namespace GenTRAC.DataBridge.DTO
                         CutOffDateUtilization = entity.CutOffDateUtilization,
                         CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
                         CertificationLastEmailed = entity.CertificationLastEmailed,
-                        NoBidDate = entity.NoBidDate
+                        NoBidDate = entity.NoBidDate,
+                        RevisionOfId = entity.RevisionOfId,
+                        entity.ReasonCertificationNotRequired,
+                        entity.OtherReasonComment,
+                        HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1081,7 +1109,11 @@ namespace GenTRAC.DataBridge.DTO
                             CutOffDateUtilization = entity.CutOffDateUtilization.HasValue ? (CutOffDateUtilization?)entity.CutOffDateUtilization : null,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
                             CertificationLastEmailed = entity.CertificationLastEmailed,
-                            NoBidDate = entity.NoBidDate
+                            NoBidDate = entity.NoBidDate,
+                            RevisionOfId = entity.RevisionOfId,
+                            ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
+                            OtherReasonComment = entity.OtherReasonComment,
+                            HasRevision = entity.HasRevision
                         }).ToList();
                 }
             }
@@ -1168,7 +1200,11 @@ namespace GenTRAC.DataBridge.DTO
                             CutOffDateUtilization = entity.CutOffDateUtilization,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
                             CertificationLastEmailed = entity.CertificationLastEmailed,
-                            NoBidDate = entity.NoBidDate
+                            NoBidDate = entity.NoBidDate,
+                            RevisionOfId = entity.RevisionOfId,
+                            entity.ReasonCertificationNotRequired,
+                            entity.OtherReasonComment,
+                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1232,7 +1268,11 @@ namespace GenTRAC.DataBridge.DTO
                             CutOffDateUtilization = entity.CutOffDateUtilization.HasValue ? (CutOffDateUtilization?)entity.CutOffDateUtilization : null,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
                             CertificationLastEmailed = entity.CertificationLastEmailed,
-                            NoBidDate = entity.NoBidDate
+                            NoBidDate = entity.NoBidDate,
+                            RevisionOfId = entity.RevisionOfId,
+                            ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
+                            OtherReasonComment = entity.OtherReasonComment,
+                            HasRevision = entity.HasRevision
                         }).ToList();
                 }
             }
@@ -1253,7 +1293,7 @@ namespace GenTRAC.DataBridge.DTO
             // xxx being the number for the year
 
             string currentYear = string.Format(FORECAST_NUMBER_FORMAT, DateTime.Now.ToString("yy"));
-            
+
             return currentYear + NextGenerationNumber.ToString();
         }
 
@@ -1336,7 +1376,11 @@ namespace GenTRAC.DataBridge.DTO
                             CutOffDateUtilization = entity.CutOffDateUtilization,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
                             CertificationLastEmailed = entity.CertificationLastEmailed,
-                            NoBidDate = entity.NoBidDate
+                            NoBidDate = entity.NoBidDate,
+                            RevisionOfId = entity.RevisionOfId,
+                            entity.ReasonCertificationNotRequired,
+                            entity.OtherReasonComment,
+                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1400,7 +1444,11 @@ namespace GenTRAC.DataBridge.DTO
                             CutOffDateUtilization = entity.CutOffDateUtilization.HasValue ? (CutOffDateUtilization?)entity.CutOffDateUtilization : null,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
                             CertificationLastEmailed = entity.CertificationLastEmailed,
-                            NoBidDate = entity.NoBidDate
+                            NoBidDate = entity.NoBidDate,
+                            RevisionOfId = entity.RevisionOfId,
+                            ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
+                            OtherReasonComment = entity.OtherReasonComment,
+                            HasRevision = entity.HasRevision
                         }).ToList();
                 }
             }
@@ -1425,7 +1473,7 @@ namespace GenTRAC.DataBridge.DTO
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
                     toReturn = dbModel.Proposals.Where(p => p.ProposalStatusID == (int)ProposalStatus.Submitted &&
-                    (p.CertificationLastEmailed == null || p.CertificationLastEmailed < thirtyDaysAgo) && 
+                    (p.CertificationLastEmailed == null || p.CertificationLastEmailed < thirtyDaysAgo) &&
                     (!p.ProposalChecklists.Any() || (p.ProposalChecklists.Select(c => c.ProposalSubmittalDate).Max() < sixtyDaysAgo)))
                         .Select(entity => new
                         {
@@ -1489,7 +1537,11 @@ namespace GenTRAC.DataBridge.DTO
                             CutOffDateUtilization = entity.CutOffDateUtilization,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
                             CertificationLastEmailed = entity.CertificationLastEmailed,
-                            NoBidDate = entity.NoBidDate
+                            NoBidDate = entity.NoBidDate,
+                            RevisionOfId = entity.RevisionOfId,
+                            entity.ReasonCertificationNotRequired,
+                            entity.OtherReasonComment,
+                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1553,7 +1605,11 @@ namespace GenTRAC.DataBridge.DTO
                             CutOffDateUtilization = entity.CutOffDateUtilization.HasValue ? (CutOffDateUtilization?)entity.CutOffDateUtilization : null,
                             CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
                             CertificationLastEmailed = entity.CertificationLastEmailed,
-                            NoBidDate = entity.NoBidDate
+                            NoBidDate = entity.NoBidDate,
+                            RevisionOfId = entity.RevisionOfId,
+                            ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
+                            OtherReasonComment = entity.OtherReasonComment,
+                            HasRevision = entity.HasRevision
                         }).ToList();
                 }
             }
@@ -1598,6 +1654,149 @@ namespace GenTRAC.DataBridge.DTO
             max++;
 
             return max;
+        }
+
+        /// <summary>
+        /// Gets Revision History for the specific proposal
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Revision History</returns>
+        [DbQuery]
+        public ICollection<RevisionHistoryModelView> GetRevisionHistory(int proposalId)
+        {
+            ICollection<RevisionHistoryModelView> toReturn = null;
+
+            using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetRevisionHistory", Log))
+            {
+                using (genTRACEntities dbModel = new genTRACEntities())
+                {
+                    IEnumerable<int?> proposalIds = dbModel.GetProposalRevisionHistory(proposalId).Select(x => x.ProposalId);
+
+                    toReturn = dbModel.Proposals.Where(x => proposalIds.Contains(x.ProposalID) && x.ProposalStatusID != (int)ProposalStatus.Deleted)
+                        .Select(x => new
+                        {
+                            x.ProposalID,
+                            x.ProposalTrackingID,
+                            x.ProposalTitle,
+                            x.AnticipatedDeliveryDate,
+                            ProposalStatus = (ProposalStatus)x.ProposalStatusID,
+                            MaxCompleteDate = x.ProposalChecklistCompletes.Max(z => z.SubmitDate),
+                            x.CCPDRequired,
+                            x.CertificationTimelineCompleted,
+                            IsRevision = x.RevisionOfId != null,
+                            HasRevision = dbModel.Proposals.Any(z => z.RevisionOfId == x.ProposalID)
+                        }).ToList()
+                        // some of the more complicating operations (below) need to be done in C#, not in SQL, hence the approach
+                        .Select(x => new RevisionHistoryModelView() 
+                        { 
+                            ProposalId = x.ProposalID,
+                            IsCurrentlySelected = x.ProposalID == proposalId,
+                            TrackingNumber = x.ProposalTrackingID,
+                            ProposalTitle = x.ProposalTitle,
+                            WorkflowCompletedLine = this.SetWorkflowCompletedLine(x.ProposalStatus, x.AnticipatedDeliveryDate, x.MaxCompleteDate),
+                            CertificationCompletedLine = this.SetCertificationCompletedLine(x.ProposalStatus, x.CCPDRequired, x.CertificationTimelineCompleted),
+
+                            DisplayProposalSetupTab = true,
+                            DisplayChecklistTab = true,
+                            DisplayPSATab = true,
+                            DisplayApprovalsTab = true,
+                            DisplayCertificationTab = this.DisplayCertificationTab(x.ProposalStatus, x.CCPDRequired),
+                            DisplayRevisionTab = this.DisplayRevisionTab(x.IsRevision, x.HasRevision)
+                        }).ToList();
+                }
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Sets Workspace Completed Line for the Revision History
+        /// </summary>
+        /// <param name="proposalStatus">Proposal Status</param>
+        /// <param name="anticipatedDeliveryDate">Anticipated Delivery Date</param>
+        /// <param name="maxCompleteDate">Max Completed Date</param>
+        /// <returns>Text for the WS completed line</returns>
+        private string SetWorkflowCompletedLine(ProposalStatus proposalStatus, DateTime anticipatedDeliveryDate, DateTime? maxCompleteDate)
+        {
+            string result = string.Empty;
+
+            switch(proposalStatus)
+            {
+                case ProposalStatus.InProgress:
+                    result = "Due: " + anticipatedDeliveryDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR); 
+                    break;
+                case ProposalStatus.Completed:
+                case ProposalStatus.Submitted:
+                case ProposalStatus.Revised:
+                    result = "Approval Workflow Completed: " + maxCompleteDate?.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? string.Empty;
+                    break;
+                case ProposalStatus.Revision:
+                case ProposalStatus.Archived:
+                case ProposalStatus.Deleted:
+                case ProposalStatus.NoBid:
+                    result = proposalStatus.GetDescription();
+                    break;
+            }
+           
+            return result;
+        }
+
+        /// <summary>
+        /// Sets Certification Completed Line for the Revision History
+        /// </summary>
+        /// <param name="proposalStatus">Proposal Status</param>
+        /// <param name="cCoPDRequired">CCOPD Requirewd</param>
+        /// <param name="certificationTimelineCompleted">Certification Timeline Completed Date</param>
+        /// <returns>Text for the Cert completed line</returns>
+        private string SetCertificationCompletedLine(ProposalStatus proposalStatus, bool? cCoPDRequired, DateTime? certificationTimelineCompleted)
+        {
+            string result = string.Empty;
+
+            if (proposalStatus == ProposalStatus.Revised)
+            {
+                result = "Proposal Revised";
+            }
+            else if (cCoPDRequired == true)
+            {
+                if (proposalStatus == ProposalStatus.Submitted)
+                {
+                    result = "Certification In Progress";
+                }
+                else if (proposalStatus == ProposalStatus.Completed)
+                {
+                    result = "Certification Completed: " + (certificationTimelineCompleted.HasValue ? certificationTimelineCompleted.Value.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) : "N/A");
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Initial setting for whether the Certification tab should be displayed.
+        /// 
+        /// If false, it'll be hidden
+        /// If true, it'll get set based on permissions in the controller logic
+        /// </summary>
+        /// <param name="proposalStatus">Proposal Status</param>
+        /// <param name="cCoPDRequired">CCOPD required</param>
+        /// <returns>Should Certification Tab be displayed</returns>
+        private bool DisplayCertificationTab(ProposalStatus proposalStatus, bool? cCoPDRequired)
+        {
+            return proposalStatus == ProposalStatus.Submitted || proposalStatus == ProposalStatus.Revised || (proposalStatus == ProposalStatus.Completed && cCoPDRequired == true);
+        }
+
+        /// <summary>
+        /// Initial setting for whether the Revision tab should be displayed.
+        /// 
+        /// If false, it'll be hidden
+        /// If true, it'll get set based on permissions in the controller logic
+        /// </summary>
+        /// <param name="isRevision">Is Revision</param>
+        /// <param name="hasRevision">Has Revision</param>
+        /// <returns>Should Display Revision Tab be displayed</returns>
+        private bool DisplayRevisionTab(bool isRevision, bool hasRevision)
+        {
+            return isRevision || hasRevision;
         }
     }
 }

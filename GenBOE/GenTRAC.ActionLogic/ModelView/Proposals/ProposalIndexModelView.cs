@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -32,6 +32,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Gets or sets Proposal Title
         /// </summary>
         public string ProposalTitle { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Revised Proposal Title
+        /// </summary>
+        public string RevisedProposalTitle { get; set; }
 
         /// <summary>
         /// Proposal status
@@ -74,6 +79,8 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public ProposalIndexModelView()
         {
             this.ProposalID = -1;
+            this.DisplayNewRevisionButton = false;
+            this.DisplayRevertRevisionButton = false;
         }
 
         /// <summary>
@@ -90,5 +97,35 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Determines whether to hide/show CertificationTimeline tab
         /// </summary>
         public SecurityAuthorization CertificationTimelineVisibility { get; set; }
+
+        /// <summary>
+        /// Determines whether to hide/show Revision History tab
+        /// </summary>
+        public SecurityAuthorization RevisionHistoryVisibility { get; set; }        
+
+        /// <summary>
+        /// Determines whether to show or hide the + New Revision button
+        /// </summary>
+        public bool DisplayNewRevisionButton { get; set; }
+
+        /// <summary>
+        /// Determines whether to show or hide the "Revert to Prior Version" button
+        /// </summary>
+        public bool DisplayRevertRevisionButton { get; set; }
+
+        /// <summary>
+        /// Reason Certification is Not Required
+        /// </summary>
+        public ReasonCertificationNotRequired? ReasonCertificationNotRequired { get; set; }
+
+        /// <summary>
+        /// Whether creating a new Revision
+        /// </summary>
+        public bool IsNewRevision { get; set; }
+
+        /// <summary>
+        /// ID of the revised proposal if this proposal is a revision
+        /// </summary>
+        public int? RevisedProposalId { get; set; }
     }
 }

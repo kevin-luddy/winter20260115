@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -355,5 +355,32 @@ namespace GenTRAC.DataBridge.DTO
         /// Gets or sets the No Bid date
         /// </summary>
         public DateTime? NoBidDate { get; set; }
+
+        /// <summary>
+        /// Gets whether Proposal is a revision
+        /// Determined by RevisionOfId being set
+        /// </summary>
+        public bool IsRevision { get { return RevisionOfId.HasValue; } }
+
+        /// <summary>
+        /// Indicates if the proposal has a revision
+        /// </summary>
+        public bool HasRevision { get; set; } = false;
+
+        /// <summary>
+        /// ID of the Proposal that this Proposal is a revision of
+        /// (null if not a revision)
+        /// </summary>
+        public int? RevisionOfId { get; set; }
+
+        /// <summary>
+        /// Reason why certification is not required
+        /// </summary>
+        public ReasonCertificationNotRequired? ReasonCertificationNotRequired { get; set; }
+
+        /// <summary>
+        /// Comment when "Other" was selected for Certification Not Required Reason
+        /// </summary>
+        public string OtherReasonComment { get; set; }
     }
 }

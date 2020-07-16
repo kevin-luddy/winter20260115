@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -69,6 +69,8 @@ namespace GenTRAC.Web.Controllers
                 MaxOtherFileCount = SiteMasterUtilities.MaxOtherFileCount
             };
 
+            this.ViewBag.IsRevision = this.psaLogic.GetFullProposalDto(proposalId).IsRevision;
+
             return this.View(WebConstants.View.POST_SUBMITTAL_ATTACHMENTS, model);
         }
 
@@ -80,26 +82,33 @@ namespace GenTRAC.Web.Controllers
         /// <param name="attachment">attachment data</param>
         /// <returns>File upload status</returns>
         [HttpPost]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "proposalId")]
         public JsonResult UploadAttachment(int proposalId, HttpPostedFileBase file, AttachmentDto attachment)
         {
-            if (file == null || attachment == null)
+            if (attachment == null || (file == null && !attachment.IsRevisionReference))
             {
                 return this.Json("There was a problem uploading the file");
             }
 
-            ICollection<string> errors = this.psaLogic.ValidateFileTypeAndSize(file, SiteMasterUtilities.AllowedFileTypes, SiteMasterUtilities.MaxFileSize);
-            errors = errors.Concat(this.psaLogic.ValidateOtherFileCount(proposalId, attachment, SiteMasterUtilities.MaxOtherFileCount)).ToList();
-
-            if (errors.Any())
+            if (attachment.IsRevisionReference)
             {
-                return this.Json(string.Join("\n", errors.ToArray()));
+                AttachmentDto result = this.psaLogic.SaveAttachmentReferenceForRevisedProposal(proposalId, attachment.AttachmentType);
+                return this.Json(result);
             }
+            else
+            {
+                ICollection<string> errors = this.psaLogic.ValidateFileTypeAndSize(file, SiteMasterUtilities.AllowedFileTypes, SiteMasterUtilities.MaxFileSize);
+                errors = errors.Concat(this.psaLogic.ValidateOtherFileCount(proposalId, attachment, SiteMasterUtilities.MaxOtherFileCount)).ToList();
 
-            attachment.UploadedBy = this.securityInformation.ActiveUserData.DisplayName;
-            this.psaLogic.UploadAttachment(file, attachment);
-            attachment.Contents = null;
-            return this.Json(attachment);
+                if (errors.Any())
+                {
+                    return this.Json(string.Join("\n", errors.ToArray()));
+                }
+
+                attachment.UploadedBy = this.securityInformation.ActiveUserData.DisplayName;
+                this.psaLogic.UploadAttachment(file, attachment);
+                attachment.Contents = null;
+                return this.Json(attachment);
+            }
         }
 
         /// <summary>

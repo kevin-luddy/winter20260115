@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -45,71 +45,117 @@ namespace GenTRAC.Tests.DAL
             Type dtoType = typeof(ProposalDto);
             int numProperties = dtoType.GetProperties().Count();
 
-            // 3 UNTESTABLE_PROPOERTIES properties we can't test (primary key, update date, updatable)
-            // 2 untestable tracking number and revision number (assigned by DB)
-            // 60 testable DTO properties that are asserted below
-            Assert.AreEqual(UNTESTABLE_PROPERTIES + 2 + 60, numProperties, "Untested properties exist in the DTO.");
+            // 4 UNTESTABLE_PROPOERTIES properties we can't test from UpdateableDTO
+            // 67 testable DTO properties that are asserted below
+            Assert.AreEqual(UNTESTABLE_PROPERTIES + 67, numProperties, "Untested properties exist in the DTO.");
 
             // 0
             Assert.AreEqual(expectedResult.ProposalTitle, actualResult.ProposalTitle);
-            Assert.AreEqual(expectedResult.ProposalStatus, actualResult.ProposalStatus);
+            Assert.IsTrue(actualResult.TrackingNumber.Contains("-"));
             Assert.AreEqual(expectedResult.OTISOpportunityID, actualResult.OTISOpportunityID);
+            Assert.AreEqual(expectedResult.ProposalStatus, actualResult.ProposalStatus);
+            Assert.AreEqual(expectedResult.ProposalType, actualResult.ProposalType);
+            // 5
+            Assert.AreEqual(expectedResult.ProgramName, actualResult.ProgramName);
+            Assert.AreEqual(expectedResult.Customer, actualResult.Customer);
+            Assert.AreEqual(expectedResult.CustomerType, actualResult.CustomerType);
+            Assert.AreEqual(expectedResult.ISGSRole, actualResult.ISGSRole);
+            Assert.AreEqual(expectedResult.ProposalClass, actualResult.ProposalClass);
+            // 10
+            Assert.AreEqual(expectedResult.Request, actualResult.Request);
+            Assert.AreEqual(expectedResult.RFPNumber, actualResult.RFPNumber);
+            Assert.AreEqual(expectedResult.RFPIssuedDate, actualResult.RFPIssuedDate);
+            Assert.AreEqual(expectedResult.RFPReceivedDate, actualResult.RFPReceivedDate);
+            Assert.AreEqual(expectedResult.ProgramAreaId, actualResult.ProgramAreaId);
+            // 15
+            Assert.AreEqual(expectedResult.LineOfBusinessID, actualResult.LineOfBusinessID);
+            Assert.AreEqual(expectedResult.BoeTool, actualResult.BoeTool);
+            Assert.AreEqual(expectedResult.BoeToolName, actualResult.BoeToolName);
+            Assert.AreEqual(expectedResult.ContractTypeGroup, actualResult.ContractTypeGroup);
+            Assert.AreEqual(expectedResult.ContractTypeIds.Count(), actualResult.ContractTypeIds.Count());
+            // 20
+            Assert.AreEqual(expectedResult.DeliveryDate, actualResult.DeliveryDate);
+            Assert.AreEqual(expectedResult.RevisedSubmittalDate, actualResult.RevisedSubmittalDate);
             Assert.AreEqual(expectedResult.CostElementTypeIds.Count(), actualResult.CostElementTypeIds.Count());
+            Assert.AreEqual(expectedResult.EstimatedProposalValue, actualResult.EstimatedProposalValue);
+            Assert.AreEqual(expectedResult.ProposalLocation, actualResult.ProposalLocation);
+            // 25
+            Assert.AreEqual(expectedResult.ProposalLocationName, actualResult.ProposalLocationName);
+            Assert.AreEqual(expectedResult.PricingTool, actualResult.PricingTool);
+            Assert.AreEqual(expectedResult.PricingToolName, actualResult.PricingToolName);
+            Assert.AreEqual(expectedResult.IsScheduleProposal, actualResult.IsScheduleProposal);
+            if (expectedResult.DateAssigned.HasValue)
+            {
+                Assert.AreEqual(expectedResult.DateAssigned.Value.ToString("MM/dd/yyyy"), actualResult.DateAssigned.Value.ToString("MM/dd/yyyy"));
+            }
+
+            // 30
+            if (expectedResult.DateCreated.HasValue)
+            {
+                Assert.AreEqual(expectedResult.DateCreated.Value.ToString("MM/dd/yyyy"), actualResult.DateCreated.Value.ToString("MM/dd/yyyy"));
+            }
+
+            Assert.AreEqual(expectedResult.UpdateDateAssigned, actualResult.UpdateDateAssigned);
+            Assert.AreEqual(expectedResult.Comments, actualResult.Comments);
+            Assert.AreEqual(expectedResult.CreatedByUserId, actualResult.CreatedByUserId);
+            Assert.AreEqual(expectedResult.ChangeChecklist, actualResult.ChangeChecklist);
+            // 35
+            Assert.AreEqual(expectedResult.ProgramProposalStatus, actualResult.ProgramProposalStatus);
+            Assert.AreEqual(expectedResult.WorkflowStatus, actualResult.WorkflowStatus);
+            Assert.AreEqual(expectedResult.WorkflowStatusLastUpdated, actualResult.WorkflowStatusLastUpdated);
+            Assert.AreEqual(expectedResult.LeadEstimatorSignedDate, actualResult.LeadEstimatorSignedDate);
+            Assert.AreEqual(expectedResult.LeadEstimatorSignatureComment, actualResult.LeadEstimatorSignatureComment);
+            // 40
+            Assert.AreEqual(expectedResult.CoverSheetApproverSignedDate, actualResult.CoverSheetApproverSignedDate);
+            Assert.AreEqual(expectedResult.CoverSheetApproverSignatureComment, actualResult.CoverSheetApproverSignatureComment);
+            Assert.AreEqual(expectedResult.PricingVerifierSignedDate, actualResult.PricingVerifierSignedDate);
+            Assert.AreEqual(expectedResult.PricingVerifierSignatureComment, actualResult.PricingVerifierSignatureComment);
+            Assert.AreEqual(expectedResult.IndependentReviewerSignedDate, actualResult.IndependentReviewerSignedDate);
+            // 45
+            Assert.AreEqual(expectedResult.IndependentReviewerSignatureComment, actualResult.IndependentReviewerSignatureComment);
+            Assert.AreEqual(expectedResult.LOBEstimatingLeadSignedDate, actualResult.LOBEstimatingLeadSignedDate);
+            Assert.AreEqual(expectedResult.LOBEstimatingLeadSignatureComment, actualResult.LOBEstimatingLeadSignatureComment);
+            Assert.AreEqual(expectedResult.ApprovalEmailText, actualResult.ApprovalEmailText);
+            Assert.AreEqual(expectedResult.IsCCPDRequired, actualResult.IsCCPDRequired);
+            // 50
+            Assert.AreEqual(expectedResult.IsCostVolumeClassified, actualResult.IsCostVolumeClassified);
+            Assert.AreEqual(expectedResult.DocumentId, actualResult.DocumentId);
+            Assert.AreEqual(expectedResult.ForecastedTrackingNumber, actualResult.ForecastedTrackingNumber);
+            Assert.AreEqual(expectedResult.IsForecastProposal, actualResult.IsForecastProposal);
+            Assert.AreEqual(expectedResult.ForecastEmailSent, actualResult.ForecastEmailSent);
+            // 55
+            Assert.AreEqual(expectedResult.HasWriteAccessToLinkedDocument, actualResult.HasWriteAccessToLinkedDocument);
+            Assert.AreEqual(expectedResult.AgreementDate, actualResult.AgreementDate);
+            Assert.AreEqual(expectedResult.CertificationDate, actualResult.CertificationDate);
+            Assert.AreEqual(expectedResult.CutOffDateUtilization, actualResult.CutOffDateUtilization);
+            Assert.AreEqual(expectedResult.CertificationTimelineCompleted, actualResult.CertificationTimelineCompleted);
+            // 60
+            Assert.AreEqual(expectedResult.CertificationLastEmailed, actualResult.CertificationLastEmailed);
+            Assert.AreEqual(expectedResult.NoBidDate, actualResult.NoBidDate);
+            Assert.AreEqual(expectedResult.IsRevision, actualResult.IsRevision);
+            Assert.AreEqual(expectedResult.HasRevision, actualResult.HasRevision);
+            Assert.AreEqual(expectedResult.RevisionOfId, actualResult.RevisionOfId);
+            // 65
+            Assert.AreEqual(expectedResult.ReasonCertificationNotRequired, actualResult.ReasonCertificationNotRequired);
+            Assert.AreEqual(expectedResult.OtherReasonComment, actualResult.OtherReasonComment);
+
+            #region Additional Verification
+
+            // Primary Key
+            Assert.AreEqual(expectedResult.Id, expectedResult.GetPrimaryKeyID());
+
+            // Collections
             if (expectedResult.CostElementTypeIds.Any())
             {
                 Assert.AreEqual(expectedResult.CostElementTypeIds.First(), actualResult.CostElementTypeIds.First());
             }
-
-            Assert.AreEqual(expectedResult.ContractTypeIds.Count(), actualResult.ContractTypeIds.Count());
 
             if (expectedResult.ContractTypeIds.Any())
             {
                 Assert.AreEqual(expectedResult.ContractTypeIds.First(), actualResult.ContractTypeIds.First());
             }
 
-            Assert.AreEqual(expectedResult.ContractTypeGroup, actualResult.ContractTypeGroup);
-            Assert.AreEqual(expectedResult.Customer, actualResult.Customer);
-            Assert.AreEqual(expectedResult.CustomerType, actualResult.CustomerType);
-            Assert.AreEqual(expectedResult.DeliveryDate, actualResult.DeliveryDate);
-            Assert.AreEqual(expectedResult.EstimatedProposalValue, actualResult.EstimatedProposalValue);
-            Assert.AreEqual(expectedResult.ISGSRole, actualResult.ISGSRole);
-            Assert.AreEqual(expectedResult.ProgramAreaId, actualResult.ProgramAreaId);
-            Assert.AreEqual(expectedResult.ProposalLocation, actualResult.ProposalLocation);
-            Assert.AreEqual(expectedResult.ProposalLocationName, actualResult.ProposalLocationName);
-            Assert.AreEqual(expectedResult.PricingTool, actualResult.PricingTool);
-            Assert.AreEqual(expectedResult.PricingToolName, actualResult.PricingToolName);
-            Assert.AreEqual(expectedResult.LineOfBusinessID, actualResult.LineOfBusinessID);
-            Assert.AreEqual(expectedResult.ProgramName, actualResult.ProgramName);
-            Assert.AreEqual(expectedResult.ProposalType, actualResult.ProposalType);
-            Assert.AreEqual(expectedResult.Request, actualResult.Request);
-            Assert.AreEqual(expectedResult.ProposalClass, actualResult.ProposalClass);
-            Assert.AreEqual(expectedResult.RFPNumber, actualResult.RFPNumber);
-            Assert.AreEqual(expectedResult.BoeTool, actualResult.BoeTool);
-            Assert.AreEqual(expectedResult.BoeToolName, actualResult.BoeToolName);
-            Assert.AreEqual(expectedResult.IsScheduleProposal, actualResult.IsScheduleProposal);
-            Assert.AreEqual(expectedResult.UpdateDateAssigned, actualResult.UpdateDateAssigned);
-            Assert.AreEqual(expectedResult.CreatedByUserId, actualResult.CreatedByUserId);
-            Assert.AreEqual(expectedResult.ProgramProposalStatus, actualResult.ProgramProposalStatus);
-            Assert.AreEqual(expectedResult.IsCCPDRequired, actualResult.IsCCPDRequired);
-            Assert.AreEqual(expectedResult.IsCostVolumeClassified, actualResult.IsCostVolumeClassified);
-            Assert.AreEqual(expectedResult.DocumentId, actualResult.DocumentId);
-            Assert.AreEqual(expectedResult.ForecastedTrackingNumber, actualResult.ForecastedTrackingNumber);
-            Assert.AreEqual(expectedResult.HasWriteAccessToLinkedDocument, actualResult.HasWriteAccessToLinkedDocument);
-
-            if (expectedResult.DateCreated.HasValue)
-            {
-                Assert.AreEqual(expectedResult.DateCreated.Value.ToString("MM/dd/yyyy"), actualResult.DateCreated.Value.ToString("MM/dd/yyyy"));
-            }
-
-            if (expectedResult.DateAssigned.HasValue)
-            {
-                Assert.AreEqual(expectedResult.DateAssigned.Value.ToString("MM/dd/yyyy"), actualResult.DateAssigned.Value.ToString("MM/dd/yyyy"));
-            }
-
-            // test primary key
-            Assert.AreEqual(expectedResult.Id, expectedResult.GetPrimaryKeyID());
-
-            // check the proposal tracking number format
+            // Tracking Number
             if (legacy)
             {
                 Assert.IsTrue(actualResult.TrackingNumber.StartsWith(DateTime.Now.Year.ToString()));
@@ -120,35 +166,8 @@ namespace GenTRAC.Tests.DAL
                 Assert.IsTrue(actualResult.TrackingNumber.StartsWith(DateTime.Now.ToString("yy")));
                 Assert.IsTrue(actualResult.TrackingNumber.Length <= 11);
             }
- 
-            Assert.IsTrue(actualResult.TrackingNumber.Contains("-"));
 
-            Assert.AreEqual(expectedResult.RFPIssuedDate, actualResult.RFPIssuedDate);
-            Assert.AreEqual(expectedResult.RFPReceivedDate, actualResult.RFPReceivedDate);
-            Assert.AreEqual(expectedResult.Comments, actualResult.Comments);
-            Assert.AreEqual(expectedResult.ChangeChecklist, actualResult.ChangeChecklist);
-
-            Assert.AreEqual(expectedResult.WorkflowStatus, actualResult.WorkflowStatus);
-            Assert.AreEqual(expectedResult.WorkflowStatusLastUpdated, actualResult.WorkflowStatusLastUpdated);
-            Assert.AreEqual(expectedResult.LeadEstimatorSignatureComment, actualResult.LeadEstimatorSignatureComment);
-            Assert.AreEqual(expectedResult.LeadEstimatorSignedDate, actualResult.LeadEstimatorSignedDate);
-            Assert.AreEqual(expectedResult.CoverSheetApproverSignatureComment, actualResult.CoverSheetApproverSignatureComment);
-            Assert.AreEqual(expectedResult.CoverSheetApproverSignedDate, actualResult.CoverSheetApproverSignedDate);
-            Assert.AreEqual(expectedResult.PricingVerifierSignatureComment, actualResult.PricingVerifierSignatureComment);
-            Assert.AreEqual(expectedResult.PricingVerifierSignedDate, actualResult.PricingVerifierSignedDate);
-            Assert.AreEqual(expectedResult.IndependentReviewerSignatureComment, actualResult.IndependentReviewerSignatureComment);
-            Assert.AreEqual(expectedResult.IndependentReviewerSignedDate, actualResult.IndependentReviewerSignedDate);
-            Assert.AreEqual(expectedResult.LOBEstimatingLeadSignatureComment, actualResult.LOBEstimatingLeadSignatureComment);
-            Assert.AreEqual(expectedResult.LOBEstimatingLeadSignedDate, actualResult.LOBEstimatingLeadSignedDate);
-            Assert.AreEqual(expectedResult.ApprovalEmailText, actualResult.ApprovalEmailText);
-            Assert.AreEqual(expectedResult.ForecastedTrackingNumber, actualResult.ForecastedTrackingNumber);
-            Assert.AreEqual(expectedResult.ForecastEmailSent, actualResult.ForecastEmailSent);
-            Assert.AreEqual(expectedResult.AgreementDate, actualResult.AgreementDate);
-            Assert.AreEqual(expectedResult.CutOffDateUtilization, actualResult.CutOffDateUtilization);
-            Assert.AreEqual(expectedResult.CertificationDate, actualResult.CertificationDate);
-            Assert.AreEqual(expectedResult.CertificationLastEmailed, actualResult.CertificationLastEmailed);
-            Assert.AreEqual(expectedResult.CertificationTimelineCompleted, actualResult.CertificationTimelineCompleted);
-            Assert.AreEqual(expectedResult.NoBidDate, actualResult.NoBidDate);
+            #endregion
         }
 
         /// <summary>

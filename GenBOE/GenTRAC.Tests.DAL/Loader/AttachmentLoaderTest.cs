@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -44,6 +44,7 @@ namespace GenTRAC.Tests.DAL.Loader
                 Name = "dto1",
                 UploadedBy = "Tim W.",
                 ProposalId = proposal.Id,
+                IsRevisionReference = false,
                 Updateable = UpdateType.Upsert
             };
 
@@ -54,6 +55,7 @@ namespace GenTRAC.Tests.DAL.Loader
                 Name = "dto2",
                 UploadedBy = "Timothy W.",
                 ProposalId = proposal.Id,
+                IsRevisionReference = false,
                 Updateable = UpdateType.Upsert
             };
 
@@ -107,6 +109,153 @@ namespace GenTRAC.Tests.DAL.Loader
             
             attachments = sut.GetAttachmentsForProposal(proposal.Id);
             Assert.AreEqual(1, attachments.Count);
+
+            // testing revision handling
+            ProposalDto proposal2 = this.testData.GetProposal(true);
+            dto1.IsRevisionReference = true;
+            dto1.ProposalId = proposal2.Id;
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                dto1.Id = sut.Save(dto1).Value;
+                scope.Complete();
+            }
+
+            attachments = sut.GetAttachmentsForProposal(proposal.Id);
+        }
+
+        /// <summary>
+        /// Tests revisioning and attachments
+        /// </summary>
+        [TestMethod]
+        public void L_AttachmentsTestRevisionFullSave()
+        {
+            var sut = this.CreateSystem();
+
+            ProposalDto proposal1 = this.testData.GetProposal(true);
+            AttachmentDto dto1 = new AttachmentDto
+            {
+                AttachmentType = AttachmentType.DelegationOfAuthority,
+                Contents = new byte[10],
+                Name = "dto1",
+                UploadedBy = "Tim W.",
+                ProposalId = proposal1.Id,
+                IsRevisionReference = false,
+                Updateable = UpdateType.Upsert
+            };
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                dto1.Id = sut.Save(dto1).Value;
+                scope.Complete();
+            }
+
+            dto1.UpdateDate = sut.GetAttachmentsForProposal(proposal1.Id).ToList()[0].UpdateDate;
+
+            ProposalDto proposal2 = this.testData.GetProposal(true, revisionOfId: proposal1.Id);
+            AttachmentDto dto2 = new AttachmentDto
+            {
+                Id = dto1.Id,
+                AttachmentType = dto1.AttachmentType,
+                Contents = dto1.Contents,
+                Name = dto1.Name,
+                UploadedBy = dto1.UploadedBy,
+                ProposalId = proposal2.Id,
+                IsRevisionReference = true,
+                Updateable = UpdateType.Upsert
+            };
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                dto2.Id = sut.Save(dto2).Value;
+                scope.Complete();
+            }
+
+            dto2.UpdateDate = sut.GetAttachmentsForProposal(proposal2.Id).ToList()[0].UpdateDate;
+
+            // revision link created
+            List<AttachmentDto> attachments = sut.GetAttachmentsForProposal(proposal2.Id).ToList();
+            Assert.AreEqual(1, attachments.Count);
+            this.AssertAreEqual(dto2, attachments[0]);
+
+            // verify that the original is still the same
+            attachments = sut.GetAttachmentsForProposal(proposal1.Id).ToList();
+            Assert.AreEqual(1, attachments.Count);
+            this.AssertAreEqual(dto1, attachments[0]);
+
+            // modify underlying file
+            dto1.Name = "NEW NAME";
+            dto2.Name = dto1.Name;
+            using (TransactionScope scope = new TransactionScope())
+            {
+                sut.Save(dto1);
+                scope.Complete();
+            }
+
+            dto1.UpdateDate = sut.GetAttachmentsForProposal(proposal1.Id).ToList()[0].UpdateDate;
+            dto2.UpdateDate = dto1.UpdateDate;
+
+            // check that things look correct
+            attachments = sut.GetAttachmentsForProposal(proposal1.Id).ToList();
+            Assert.AreEqual(1, attachments.Count);
+            this.AssertAreEqual(dto1, attachments[0]);
+
+            attachments = sut.GetAttachmentsForProposal(proposal2.Id).ToList();
+            Assert.AreEqual(1, attachments.Count);
+            this.AssertAreEqual(dto2, attachments[0]);
+
+            // delete the reference
+            dto2.Updateable = UpdateType.Deleted;
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                sut.Save(dto2);
+                scope.Complete();
+            }
+
+            // verify revision was deleted
+            attachments = sut.GetAttachmentsForProposal(proposal2.Id).ToList();
+            Assert.AreEqual(0, attachments.Count);
+
+            // verify that the original is still the same
+            attachments = sut.GetAttachmentsForProposal(proposal1.Id).ToList();
+            Assert.AreEqual(1, attachments.Count);
+            this.AssertAreEqual(dto1, attachments[0]);
+
+            // Create a new reference, using the specific method
+            dto2.Id = sut.SaveAttachmentReferenceForRevisedProposal(proposal2.Id, dto1.AttachmentType).Value;
+            attachments = sut.GetAttachmentsForProposal(proposal2.Id).ToList();
+            Assert.AreEqual(1, attachments.Count);
+            this.AssertAreEqual(dto2, attachments[0]);
+
+            // delete the reference
+            dto2.Updateable = UpdateType.Deleted;
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                sut.Save(dto2);
+                scope.Complete();
+            }
+
+            // verify revision was deleted
+            attachments = sut.GetAttachmentsForProposal(proposal2.Id).ToList();
+            Assert.AreEqual(0, attachments.Count);
+
+            // delete the full attachment
+            // delete the reference
+            dto1.Updateable = UpdateType.Deleted;
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                sut.Save(dto1);
+                scope.Complete();
+            }
+
+            // verify all was deleted
+            attachments = sut.GetAttachmentsForProposal(proposal1.Id).ToList();
+            Assert.AreEqual(0, attachments.Count);
+            attachments = sut.GetAttachmentsForProposal(proposal2.Id).ToList();
+            Assert.AreEqual(0, attachments.Count);
         }
 
         /// <summary>
@@ -144,7 +293,8 @@ namespace GenTRAC.Tests.DAL.Loader
                 Name = "dto1",
                 UploadedBy = "test",
                 ProposalId = proposal.Id,
-                Updateable = UpdateType.Upsert
+                IsRevisionReference = false,
+                Updateable = UpdateType.Upsert                
             };
 
             AttachmentDto dto2 = new AttachmentDto
@@ -154,6 +304,7 @@ namespace GenTRAC.Tests.DAL.Loader
                 Name = "dto2",
                 UploadedBy = "test",
                 ProposalId = proposal.Id,
+                IsRevisionReference = false,
                 Updateable = UpdateType.Upsert
             };
 
@@ -193,6 +344,7 @@ namespace GenTRAC.Tests.DAL.Loader
                 Name = "dto1",
                 UploadedBy = "test",
                 ProposalId = proposal.Id,
+                IsRevisionReference = false,
                 Updateable = UpdateType.Upsert
             };
             
@@ -221,7 +373,7 @@ namespace GenTRAC.Tests.DAL.Loader
             Assert.AreEqual(expected.Name, actual.Name);
             Assert.AreEqual(expected.UploadedBy, actual.UploadedBy);
             Assert.AreEqual(expected.ProposalId, actual.ProposalId);
-            Assert.AreNotEqual(expected.UpdateDate, actual.UpdateDate);
+            Assert.AreEqual(expected.IsRevisionReference, actual.IsRevisionReference);
             Assert.IsNull(actual.Contents);
         }
 

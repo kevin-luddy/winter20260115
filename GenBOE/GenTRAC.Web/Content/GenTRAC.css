@@ -680,6 +680,10 @@ div.delete-document-div {
     color: #a94442;
 }
 
+.disabled-icon {
+    color: #D3D3D3;
+}
+
 /* stacked font-awesome styling for add document icon */
 .add-document-div {
     display: inline-block !important;
@@ -1142,3 +1146,60 @@ button.ies-danger.disabled {
     float: right;
     top: -40px;
 }
+
+#revisionButtons {
+    float: right;
+}
+
+.newRevisionButtonMargin {
+    margin-right: 135px;
+}
+
+.revertRevisionMargin {
+    margin-right: 88px;
+}
+
+/* Revision Tab */
+.module-content-data.revision {
+    font-size: 14px;
+}
+
+.tabs-left.revision {
+    clear: both;
+    height: 75px;
+}
+
+.tabs-center.revision {
+    width: 948px;
+    height: 75px;
+}
+
+.tabs-right.revision {
+    height: 75px;
+    margin-bottom: 5px;
+}
+
+.inline-block.proposalTabMenu.revision {
+    font-size: 11px;
+}
+
+.proposal-text.revision {
+    text-align: left;
+    padding: 5px;
+}
+
+p.revision {
+    padding-bottom: 2px;
+}
+
+.proposalStatusDates.revision {
+    float: right;
+    width: 250px;
+}
+
+.proposalTitle.revision {
+    width: 550px;
+    margin-bottom: 20px;
+    float: left;
+}
+/* End of Revision Tab*/

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -53,7 +53,7 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// <summary>
         /// Gets or sets Proposal Type
         /// </summary>
-        [Required(ErrorMessage = ValidationConstants.ProposalValidationConstants.PROPOSAL_TYPE_REQUIRED)]
+        [Range(1, int.MaxValue, ErrorMessage = ValidationConstants.ProposalValidationConstants.PROPOSAL_TYPE_REQUIRED)]
         public int ProposalType { get; set; }
 
         /// <summary>
@@ -226,5 +226,10 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Document Id (RDSB)
         /// </summary>
         public int? DocumentId { get; set; }
+
+        /// <summary>
+        /// Whether this is the proposal info for creating a new revision
+        /// </summary>
+        public bool IsNewRevision { get; set; }
     }
 }

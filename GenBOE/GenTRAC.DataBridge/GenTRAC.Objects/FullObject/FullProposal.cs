@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -71,7 +71,10 @@ namespace GenTRAC.Objects.FullObject
             {
                 foreach (PropertyInfo prop in proposal.GetType().GetProperties())
                 {
-                    this.GetType().GetProperty(prop.Name).SetValue(this, prop.GetValue(proposal, null), null);
+                    if (prop.CanWrite)
+                    {
+                        this.GetType().GetProperty(prop.Name).SetValue(this, prop.GetValue(proposal, null), null);
+                    }
                 }
             }
         }

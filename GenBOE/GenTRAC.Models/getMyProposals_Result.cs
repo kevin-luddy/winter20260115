@@ -51,5 +51,6 @@ namespace GenTRAC.Models
         public string Forecasted_Tracking_Number { get; set; }
         public int CustomerTypeId { get; set; }
         public Nullable<System.DateTime> ChecklistCompleteDate { get; set; }
+        public int HasOrIsRevision { get; set; }
     }
 }

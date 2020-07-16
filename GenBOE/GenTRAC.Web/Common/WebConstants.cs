@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -167,7 +167,7 @@ namespace GenTRAC.Web.Common
             /// Display Who's Online Popup
             /// </summary>
             public const string WHOS_ONLINE = "DisplayWhosOnline";
-
+            
             #region Admin
 
             /// <summary>
@@ -321,7 +321,12 @@ namespace GenTRAC.Web.Common
             /// <summary>
             /// Displays the proposal details, the tab form that shows the proposal, checklist, and revisions
             /// </summary>
-            public const string DISPLAY_PROPOSAL_DETAILS = "DisplayProposalDetails";
+            public const string DISPLAY_PROPOSAL_DETAILS = "DisplayProposalDetails"; 
+
+            /// <summary>
+            /// Displays the proposal details for creating a Revision
+            /// </summary>
+            public const string DISPLAY_PROPOSAL_REVISION_DETAILS = "DisplayProposalRevisionDetails";
 
             /// <summary>
             /// Filter Program Areas based on selected Line of Business
@@ -337,6 +342,11 @@ namespace GenTRAC.Web.Common
             /// Marks the proposal for deletion
             /// </summary>
             public const string DELETE_PROPOSAL = "DeleteProposal";
+
+            /// <summary>
+            /// Displays Revision History Tab
+            /// </summary>
+            public const string DISPLAY_REVISION_HISTORY = "DisplayRevisionHistory";
 
             #endregion Proposal
 
@@ -857,6 +867,11 @@ namespace GenTRAC.Web.Common
             /// Proposal post information
             /// </summary>
             public const string PROPOSAL_CERTIFICATION_TIMELINE = "CertificationTimeline";
+
+            /// <summary>
+            /// Proposal Revision History
+            /// </summary>
+            public const string PROPOSAL_RevisionHistory = "RevisionHistory";
 
             #endregion Proposal
 

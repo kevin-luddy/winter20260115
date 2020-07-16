@@ -7,7 +7,7 @@
     string naHelpText = "Proposal was submitted before Certification Functionality<br/> was introduced into PTM.";
 }
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
     // tabs class will stop float after breadcrumb
     $('div[name=stop_float]').css('clear', 'none');
@@ -41,7 +41,6 @@
     });
 
     $(function () {
-
         var DetailWidget = {};
         DetailWidget.ContextID = "proposalsetup-details";
         DetailWidget.IsModule = true;
@@ -66,7 +65,6 @@
         });
 
         ProposalDetailsWidget.FinishTabClicked = function () {
-
             // change tabs
             window.location = window.location.protocol + "//" + window.location.host + window.location.pathname + ProposalDetailsWidget.href;
             ProposalDetailsWidget.cleanDirty("proposalInfoForm");
@@ -85,13 +83,13 @@
         };
 
         ProposalDetailsWidget.LoadTab = function () {
-
             if (window.location.hash != ProposalDetailsWidget.currentHash && window.location.hash != '#users') {
                 $('div[tab*=Proposal]').hide();
                 $('div[tab*=Checklist]').hide();
                 $('div[tab*=Approvals]').hide();
                 $('div[tab*=PSA]').hide();
                 $('div[tab*=CertificationTimeline]').hide();
+                $('div[tab*=RevisionHistory]').hide();
 
                 var urlHash = window.location.hash.substring(1).split('/');
                 var currentTab = urlHash[0];
@@ -101,9 +99,8 @@
 
                 // Load the detail pages if needed.
                 if (currentTab == 'Proposal') {
-
                     var data = {};
-                    data.proposalid = @ViewBag.proposalid;
+                    data.proposalid = @Model.ProposalID;
                     $(document).trigger('LOAD_PROPOSAL_TAB', data);
 
                 }
@@ -123,6 +120,10 @@
                     var data = {};
                     $(document).trigger('LOAD_CERTIFICATION_TIMELINE_TAB', data);
                 }
+                else if (currentTab == 'RevisionHistory') {
+                    var data = {};
+                    $(document).trigger('LOAD_REVISION_HISTORY_TAB', data);
+                }
 
                 var currentTabDiv = $('div[tab*=' + currentTab + ']');
                 $(currentTabDiv).parent().find('li.active').removeClass('active');
@@ -139,54 +140,80 @@
                 });
 
                 // if this is a new proposal, do not show the checklist or approvals tabs
-                var proposalID = @ViewBag.proposalid;
-                if (proposalID == null)
+                var proposalID =  @Model.ProposalID;
+                if (proposalID < 0)
                 {
                     $('[tab*=Checklist]').parents("li").addClass('display-none');
                     $('[tab*=Approvals]').parents("li").addClass('display-none');
                 }
 
-                if (proposalID == null || @Json.Encode(Model.PsaVisibility == SecurityAuthorization.None)) {
+                if (proposalID < 0 || @Json.Encode(Model.PsaVisibility == SecurityAuthorization.None)) {
                     $('[tab*=PSA]').parents("li").addClass('display-none');
                 }
 
-                if (proposalID == null || @Json.Encode(Model.CertificationTimelineVisibility == SecurityAuthorization.None)) {
+                if (proposalID < 0 || @Json.Encode(Model.CertificationTimelineVisibility == SecurityAuthorization.None)) {
                     $('[tab*=CertificationTimeline]').parents("li").addClass('display-none');
                 }
+
+                if (proposalID < 0 || @Json.Encode(Model.RevisionHistoryVisibility == SecurityAuthorization.None)) {
+                    $('[tab*=RevisionHistory]').parents("li").addClass('display-none');
+                }
             }
+        };
+
+        ProposalDetailsWidget.AddNewRevision = function () {
+            var url = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PROPOSAL',
+                action: '@WebConstants.Action.DISPLAY_PROPOSAL_REVISION_DETAILS',
+                id:  '@Model.ProposalID'
+            });
+            window.location = url;
+        };
+
+        ProposalDetailsWidget.RevertRevision = function () {
+            // TODO - RJ - update to call backend in BOEJ-4642
         };
 
         window.onhashchange = ProposalDetailsWidget.LoadTab;
         ProposalDetailsWidget.on('LOAD_PROPOSAL_TAB', function (e, params) {
             var proposalID = params.proposalid;
+
             if (proposalID == null)
             {
                 proposalID = -1;
+            }
+
+            var oldProposalId = params.oldProposalId;
+            if (oldProposalId == null) {
+                oldProposalId = -1;
+            }
+
+            var isNewRevision = params.isNewRevision;
+            if (isNewRevision == null) {
+                isNewRevision = false;
             }
 
             $("div[tab*=Proposal] .proposal-details").children().remove();
             $("div[tab*=Proposal] .proposal-details").html(ProposalDetailsWidget.LoadingHtml);
             $("div[tab*=Proposal] .proposal-details").removeClass("display-none");
             var proposalURL = "";
-            if (proposalID < 0 ) {
-
+            if (proposalID < 0) {
                 proposalURL =  GenSession.CreateUrl({
                     controller: '@WebConstants.Controller.PROPOSAL',
                     action: '@WebConstants.Action.DISPLAY_PROPOSAL_INDEX'
                 });
-
             }
             else {
-
                 proposalURL = GenSession.CreateUrl({
                     controller: '@WebConstants.Controller.PROPOSAL',
                     action: '@WebConstants.Action.DISPLAY_PROPOSAL_INDEX',
                     id: JSON.stringify(proposalID)
                 });
-
             }
 
             var data = {};
+            data.isNewRevision = '@Model.IsNewRevision';
+            data.oldProposalId = '@Model.RevisedProposalId';
 
             $.ajax({
                 type: "POST",
@@ -209,7 +236,7 @@
             var checklistURL =  GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.CHECKLIST',
                 action: '@WebConstants.Action.DISPLAY_CHECKLIST_INDEX',
-                id: '@ViewBag.proposalid'
+                id: '@Model.ProposalID'
             });
 
             var data = {};
@@ -235,7 +262,7 @@
             var approvalsURL =  GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.APPROVALS',
                 action: '@WebConstants.Action.DISPLAY_APPROVALS_INDEX',
-                id: '@ViewBag.proposalid'
+                id:  '@Model.ProposalID'
             });
 
             var data = {};
@@ -260,7 +287,7 @@
             var psaUrl =  GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.PSA',
                 action: '@WebConstants.Action.DISPLAY_POST_SUBMITTAL_ATTACHMENTS',
-                id: '@ViewBag.proposalid'
+                id: '@Model.ProposalID'
             });
 
             var data = {psaVisibility: '@Model.PsaVisibility'};
@@ -285,7 +312,7 @@
             var psaUrl =  GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.CERTIFICATION_TIMELINE',
                 action: '@WebConstants.Action.DISPLAY_CERTIFICATION_TIMELINE',
-                id: '@ViewBag.proposalid'
+                id: '@Model.ProposalID'
             });
 
             $.ajax({
@@ -300,25 +327,83 @@
 
         });
 
-        ProposalDetailsWidget.LoadTab();
+        ProposalDetailsWidget.on('LOAD_REVISION_HISTORY_TAB', function (e, params) {
+            $("div[tab*=RevisionHistory] .revision-history").children().remove();
+            $("div[tab*=RevisionHistory] .revision-history").html(ProposalDetailsWidget.LoadingHtml);
+            $("div[tab*=RevisionHistory] .revision-history").removeClass("display-none");
+            var psaUrl =  GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PROPOSAL',
+                action: '@WebConstants.Action.DISPLAY_REVISION_HISTORY',
+                id: '@Model.ProposalID'
+            });
 
+            $.ajax({
+                type: "POST",
+                url: psaUrl,
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+                    $('div[tab*=RevisionHistory] .revision-history').html(response);
+
+                }
+            });
+        });
+
+        if ('@(Model.ProposalStatus == ProposalStatus.Revised || Model.ReasonCertificationNotRequired.HasValue || (Model.ProposalStatus == ProposalStatus.Completed && Model.CertificationCompletedDate != null))' == 'True') {
+            $('button[name="new-revision-button"]').addClass('disabled');
+        }
+
+        if ('@(Model.ProposalStatus == ProposalStatus.Completed || Model.ProposalStatus == ProposalStatus.Submitted)' == 'True') {
+            $('button[name="revert-revision-button"]').addClass('disabled');
+        }
+
+        // Adjust margins for revision buttons
+        if ('@(Model.DisplayRevertRevisionButton)' == 'True') {
+            $('#revisionButtons').removeClass('newRevisionButtonMargin');
+            if ('@(!Model.DisplayNewRevisionButton)' == 'True') {
+                $('#revisionButtons').addClass('revertRevisionMargin');
+            }
+        }
+
+        $('button[name="new-revision-button"]:not(.disabled)').click(function () {
+            GenSession.confirmDialog(
+                 "Confirm new Revision",
+                 "<div style='text-align: left'>Proposal Revision shall only be created for one of the following reasons:<ol><li>A revised RFP is issued</li><li>Customer direction requires a resubmittal</li><li>Customer directs LM to submit an FPR</li><li>Anytime a new Cover Sheet is required (for CCOPD)</li></ol>Would you like to continue?</div>",
+                 ProposalDetailsWidget.AddNewRevision,
+                 null);
+        });
+
+        $('button[name="revert-revision-button"]:not(.disabled)').click(function () {
+            GenSession.confirmDialog(
+                 "Confirm revert to prior version",
+                 "Reverting to the prior version of this Proposal will delete this Proposal and all of its contents. Are you sure you would like to continue?",
+                 ProposalDetailsWidget.RevertRevision,
+                 null);
+        });
+
+        ProposalDetailsWidget.LoadTab();
     });
-</script>
+    </script>
 
 <div class="proposalsetup-details module full">
     <div id="ProposalTabs">
         <div class="breadcrumb">
             @Html.RouteLink("Proposals", WebConstants.Route.Name.HOME, new { action = WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME, controller = WebConstants.Controller.HOME })
-            @if (ViewBag.proposalid == "null")
+            @if (Model.ProposalID < 0 && !Model.IsNewRevision)
             {
                 <text>
-                > New Proposal
+                    > New Proposal
+                </text>
+            }
+            else if (Model.IsNewRevision)
+            {
+                <text>
+                    > New Revision
                 </text>
             }
             else
             {
                 <text>
-                > @proposalLinkText
+                    > @proposalLinkText
                 </text>
             }
         </div>
@@ -326,10 +411,16 @@
             <div class="tabs-left"></div>
             <div class="tabs-center" style="width: 976px">
                 <div class="proposal-text" style="text-align:left;padding:5px;">
-                    @if (ViewBag.proposalid == "null")
+                    @if (Model.ProposalID < 0 && !Model.IsNewRevision)
                     {
                         <text>
                             <div style="color: #FFFFFF">New Proposal</div>
+                        </text>
+                    }
+                    else if (Model.IsNewRevision)
+                    {
+                        <text>
+                            <div style="color: #FFFFFF">New Revision for @Model.RevisedProposalTitle</div>
                         </text>
                     }
                     else
@@ -344,7 +435,7 @@
                                             Due: @Model.AnticipatedDeliveryDate
                                         </text>
                                     }
-                                    else if (Model.ProposalStatus == ProposalStatus.Completed || Model.ProposalStatus == ProposalStatus.Submitted)
+                                    else if (Model.ProposalStatus == ProposalStatus.Completed || Model.ProposalStatus == ProposalStatus.Submitted || Model.ProposalStatus == ProposalStatus.Revised)
                                     {
                                         <text>
                                             Approval Workflow Completed: @Model.CompletedDate
@@ -356,6 +447,12 @@
                                     }
                                 </p>
                                 <p>
+                                    @if (Model.ProposalStatus == ProposalStatus.Revised)
+                                    {
+                                        <text>
+                                            Proposal Revised
+                                        </text>
+                                    }
                                     @if (Model.IsCCoPD)
                                     {
                                         if (Model.ProposalStatus == ProposalStatus.Submitted)
@@ -388,15 +485,26 @@
                             </div>
                         </text>
                     }
-               </div>
-               <ul class="inline-block proposalTabMenu">
-                    <li class="active"><div class="tab-left"></div><a href="#Proposal" tab="Proposal">Proposal Setup</a><div class="tab-right"></div></li>
-                    <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Checklist" tab="Checklist">Checklist</a><div class="tab-right"></div></li>
-                    <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#PSA" tab="PSA">Post Submittal Attachments</a><div class="tab-right"></div></li>
-                    <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Approvals" tab="Approvals">Approvals</a><div class="tab-right"></div></li>
-                    <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#CertificationTimeline" tab="CertificationTimeline">Certification Timeline</a><div class="tab-right"></div></li>
-                </ul>  
-            </div>
+                </div>
+                <div id="revisionButtons" class="newRevisionButtonMargin">
+                    @if (Model.DisplayNewRevisionButton)
+                    {
+                        <button name="new-revision-button" type="button" class="ies stateful_button">+ New Revision</button>
+                    }
+                    @if (Model.DisplayRevertRevisionButton)
+                    {
+                        <button name="revert-revision-button" type="button" class="ies stateful_button">Revert to Prior Version</button>
+                    }
+                </div>
+                    <ul class="inline-block proposalTabMenu">
+                        <li class="active"><div class="tab-left"></div><a href="#Proposal" tab="Proposal">Proposal Setup</a><div class="tab-right"></div></li>
+                        <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Checklist" tab="Checklist">Checklist</a><div class="tab-right"></div></li>
+                        <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#PSA" tab="PSA">Post Submittal Attachments</a><div class="tab-right"></div></li>
+                        <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Approvals" tab="Approvals">Approvals</a><div class="tab-right"></div></li>
+                        <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#CertificationTimeline" tab="CertificationTimeline">Certification Timeline</a><div class="tab-right"></div></li>
+                        <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#RevisionHistory" tab="RevisionHistory">Revision History</a><div class="tab-right"></div></li>
+                    </ul>
+                </div>
             <div class="tabs-right"></div>
         </div>
     </div>
@@ -414,5 +522,8 @@
     </div>
     <div tab="CertificationTimeline">
         <div class="ct-details"></div>
+    </div>
+    <div tab="RevisionHistory">
+        <div class="revision-history"></div>
     </div>
 </div>

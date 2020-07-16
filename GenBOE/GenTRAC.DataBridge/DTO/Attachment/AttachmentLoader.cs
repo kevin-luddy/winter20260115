@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -25,7 +25,7 @@ namespace GenTRAC.DataBridge.DTO
         }
 
         /// <summary>
-        /// Gets all Attachments for the proposal, not including the File Contents.
+        /// Gets all Attachments for the proposal, excluding the File Contents.
         /// </summary>
         /// <param name="proposalId">The proposal ID.</param>
         /// <returns>
@@ -38,15 +38,16 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    toReturn = dbModel.Attachments.Where(x => x.ProposalID == proposalId)
+                    toReturn = dbModel.ProposalsAttachments.Where(x => x.ProposalId == proposalId)
                         .Select(x => new AttachmentDto()
                         {
+                            Id = x.AttachmentId,
+                            ProposalId = x.ProposalId,
+                            IsRevisionReference = x.IsRevisionReference,
                             AttachmentType = (AttachmentType)x.AttachmentType,
-                            Id = x.ID,
-                            Name = x.Name,
-                            ProposalId = x.ProposalID,
-                            UpdateDate = x.UpdateDate,
-                            UploadedBy = x.UploadedBy
+                            Name = x.Attachment.Name,
+                            UpdateDate = x.Attachment.UpdateDate,
+                            UploadedBy = x.Attachment.UploadedBy
                         }).ToList();
                 }
             }
@@ -69,16 +70,17 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    toReturn = dbModel.Attachments.Where(x => ids.Contains(x.ID))
+                    toReturn = dbModel.ProposalsAttachments.Where(x => ids.Contains(x.AttachmentId))
                         .Select(x => new AttachmentDto
                         {
+                            Id = x.AttachmentId,
+                            ProposalId = x.ProposalId,
+                            IsRevisionReference = x.IsRevisionReference,
                             AttachmentType = (AttachmentType)x.AttachmentType,
-                            Id = x.ID,
-                            Name = x.Name,
-                            ProposalId = x.ProposalID,
-                            UpdateDate = x.UpdateDate,
-                            UploadedBy = x.UploadedBy,
-                            Contents = x.Contents
+                            Name = x.Attachment.Name,
+                            UpdateDate = x.Attachment.UpdateDate,
+                            UploadedBy = x.Attachment.UploadedBy,
+                            Contents = x.Attachment.Contents
                         }).ToList();
                 }
             }
@@ -98,15 +100,16 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    toReturn = dbModel.Attachments.Where(x => x.ID == attachmentId)
+                    toReturn = dbModel.ProposalsAttachments.Where(x => x.AttachmentId == attachmentId)
                         .Select(x => new AttachmentDto
                         {
+                            Id = x.AttachmentId,
+                            ProposalId = x.ProposalId,
+                            IsRevisionReference = x.IsRevisionReference,
                             AttachmentType = (AttachmentType)x.AttachmentType,
-                            Id = x.ID,
-                            Name = x.Name,
-                            ProposalId = x.ProposalID,
-                            UpdateDate = x.UpdateDate,
-                            UploadedBy = x.UploadedBy
+                            Name = x.Attachment.Name,
+                            UpdateDate = x.Attachment.UpdateDate,
+                            UploadedBy = x.Attachment.UploadedBy
                         }).FirstOrDefault();
                 }
             }
@@ -126,8 +129,8 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    toReturn = dbModel.Attachments.Any(x => x.ProposalID == proposalId && x.AttachmentType == (int)AttachmentType.CostKickOffPackage)
-                            && dbModel.Attachments.Any(x => x.ProposalID == proposalId && x.AttachmentType == (int)AttachmentType.ResponsibilityAssignmentsMatrix);
+                    toReturn = dbModel.ProposalsAttachments.Any(x => x.ProposalId == proposalId && x.AttachmentType == (int)AttachmentType.CostKickOffPackage)
+                            && dbModel.ProposalsAttachments.Any(x => x.ProposalId == proposalId && x.AttachmentType == (int)AttachmentType.ResponsibilityAssignmentsMatrix);
                 }
             }
 
@@ -146,7 +149,7 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    toReturn = dbModel.Attachments.Any(x => x.ProposalID == proposalId && x.AttachmentType == (int)AttachmentType.DelegationOfAuthority);
+                    toReturn = dbModel.ProposalsAttachments.Any(x => x.ProposalId == proposalId && x.AttachmentType == (int)AttachmentType.DelegationOfAuthority);
                 }
             }
 
@@ -168,7 +171,7 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    dbModel.deleteAttachment(dtoToDelete.Id, dtoToDelete.UpdateDate);
+                    dbModel.deleteAttachment(dtoToDelete.Id, dtoToDelete.UpdateDate, dtoToDelete.ProposalId, !dtoToDelete.IsRevisionReference);
                 }
 
                 toReturn = dtoToDelete.Id;
@@ -192,7 +195,31 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    toReturn = dbModel.upsertAttachment(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.Name, dtoToUpsert.Contents, dtoToUpsert.UploadedBy, (int)dtoToUpsert.AttachmentType, dtoToUpsert.ProposalId).FirstOrDefault();
+                    toReturn = dbModel.upsertAttachment(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.Name, dtoToUpsert.Contents, dtoToUpsert.UploadedBy, (int)dtoToUpsert.AttachmentType, dtoToUpsert.ProposalId, dtoToUpsert.IsRevisionReference).FirstOrDefault();
+                }
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Save only a reference to an attachment, for a revised proposal
+        /// </summary>
+        /// <param name="proposalId">Current Proposal Id</param>
+        /// <param name="attachmentType">Attachment type that you want to reference</param>
+        /// <returns>Attachment Id</returns>
+        public int? SaveAttachmentReferenceForRevisedProposal(int proposalId, AttachmentType attachmentType)
+        {
+            int? toReturn = null;
+
+            using (StopwatchTimer sw = new StopwatchTimer("AttachmentLoader.SaveAttachmentReferenceForRevisedProposal", this.Log))
+            {
+                using (genTRACEntities dbModel = new genTRACEntities())
+                {
+                    int originalProposalId = dbModel.Proposals.First(x => x.ProposalID == proposalId).RevisionOfId.Value;
+                    int attachmentId = dbModel.ProposalsAttachments.First(x => x.AttachmentType == (int)attachmentType && x.Proposal.ProposalID == originalProposalId).AttachmentId;
+
+                    toReturn = dbModel.upsertAttachment(attachmentId, null, null, null, null, (int)attachmentType, proposalId, true).FirstOrDefault();
                 }
             }
 

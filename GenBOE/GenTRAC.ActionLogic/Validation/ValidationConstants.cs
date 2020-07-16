@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -436,6 +436,21 @@ namespace GenTRAC.ActionLogic.Validation
             /// The cutoff date utilization required message.
             /// </summary>
             public const string CUTOFF_DATE_UTILIZATION_REQUIRED = "Cut-off Date Utilization is required.";
+
+            /// <summary>
+            /// validation message for other and comment
+            /// </summary>
+            public const string OTHER_REASON_COMMENT_REQUIRED = "When 'Reason Certification is not required' is set to 'Other', the comment is required.";
+
+            /// <summary>
+            /// validation message for wrong status and cert not required
+            /// </summary>
+            public const string CERTIFICATION_NOT_REQUIRED_WRONG_STATE = "Proposal's certification cannot be marked as not-required if the proposal is not in 'Submitted' state.";
+
+            /// <summary>
+            /// This should never happen, but just in case.
+            /// </summary>
+            public const string COMPLETE_FAILED_PROPOSAL = "You cannot complete a proposal with a 'Certification not required' reason. Please save it instead.";
         }
 
         /// <summary>
@@ -944,6 +959,33 @@ namespace GenTRAC.ActionLogic.Validation
             /// Proposal linked to a BOE workspace 
             /// </summary>
             public const string HAS_LINKED_BOE_WORKSPACE = "Delete operation not allowed. Proposal is linked to a BOE workspace.";
+        }
+
+        /// <summary>
+        /// Validation messages for Proposal Revisions
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public static class ProposalRevisionConstants
+        {
+            /// <summary>
+            /// Approval Workflow is not complete
+            /// </summary>
+            public const string WORKFLOW_NOT_COMPLETED = "Approval Workflow must be completed before adding a new Revision.";
+
+            /// <summary>
+            /// Certification Timeline cannot be completed
+            /// </summary>
+            public const string CERT_TIMELINE_COMPLETE = "Certification Timeline cannot be completed before adding a new Revision.";
+
+            /// <summary>
+            /// Proposal can't have "Revised" status/must be most recent revision, or original if not revised
+            /// </summary>
+            public const string NOT_LATEST_VERSION = "A new Revision cannot be added from a Proposal that is alread Revised. It can only be added from the latest version of the Proposal.";
+
+            /// <summary>
+            /// A Revision can only be created by the Lead Estimator or Backup Estimator
+            /// </summary>
+            public const string NOT_PERMITTED = "Only the Lead Estimator or Backup Estimator is permitted to create a new Revision of a Proposal.";
         }
     }
 }
