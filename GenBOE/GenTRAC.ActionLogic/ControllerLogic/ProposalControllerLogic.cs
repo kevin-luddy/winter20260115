@@ -866,8 +866,7 @@ namespace GenTRAC.ActionLogic
                 }
 
                 // Display + New Revision button only if the user if the lead or backup estimator and approval workflow is completed
-                UserDTO activeUser = this.GetActiveUser();
-                bool userIsLeadOrBackupPricer = fullProposalDto.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer));
+                bool userIsLeadOrBackupPricer = this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
 
                 if (fullProposalDto.WorkflowStatus == WorkflowStatus.ProposalLocked && userIsLeadOrBackupPricer)
                 {
