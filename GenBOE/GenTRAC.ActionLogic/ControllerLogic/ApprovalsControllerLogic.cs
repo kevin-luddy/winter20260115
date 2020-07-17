@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -49,7 +49,7 @@ namespace GenTRAC.ActionLogic
         /// <summary>
         /// The approval emailer.
         /// </summary>
-        private readonly ApprovalEmailer approvalEmailer;
+        public ApprovalEmailer ApprovalEmailer { get; set; }
 
         /// <summary>
         /// User Loader
@@ -95,7 +95,7 @@ namespace GenTRAC.ActionLogic
         {
             this.userLoader = inUserLoader;
             this.emailer = inEmailer;
-            this.approvalEmailer = inApprovalEmailer;
+            this.ApprovalEmailer = inApprovalEmailer;
             this.attachmentLoader = attachmentLoader;
             this.adUtils = adUtils;
         }
@@ -326,8 +326,6 @@ namespace GenTRAC.ActionLogic
                 {
                     this.SubmitChecklist(proposalId, baseUrlForInstructionLocation, out pricerSavedWhilePeerEditing);
                 }
-
-                this.approvalEmailer.SendEmails(proposal.Id);
             }
         }
 

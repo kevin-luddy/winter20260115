@@ -1,4 +1,5 @@
-﻿DROP VIEW [genBOE].[genTracData];
+﻿IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[genBOE].[genTracData]') AND type in (N'V'))
+	DROP VIEW [genBOE].[genTracData]
 GO
 
 CREATE VIEW [genBOE].[genTracData] AS 

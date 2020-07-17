@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -257,20 +257,25 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string Table_GfyCostSpreadRollup = "GfyCostSpreadRollupTable";
         internal const string Table_CostSpreadRollupByYear = "CostSpreadRollupByYearTable";
         internal const string Table_CostSpreadRollupByQuarter = "CostSpreadRollupByQuarterTable";
+        internal const string Table_GfyCostSpreadRollupByQuarter = "GfyCostSpreadRollupByQuarterTable";
         internal const string Table_DirectCostRollup = "DirectCostRollupTable";
         internal const string Table_GfyDirectCostRollup = "GfyDirectCostRollupTable";
         internal const string Table_DirectCostRollupByYear = "DirectCostRollupByYearTable";
         internal const string Table_DirectCostRollupByQuarter = "DirectCostRollupByQuarterTable";
+        internal const string Table_GfyDirectCostRollupByQuarter = "GfyDirectCostRollupByQuarterTable";
         internal const string Table_LaborAndNonLaborCostSummaryByDate = "LaborAndNonLaborCostSummaryByDateTable";
         internal const string Table_LaborCostSummaryByDate = "LaborCostSummaryByDateTable";
         internal const string Table_GfyLaborCostSummaryByDate = "GfyLaborCostSummaryByDateTable";
         internal const string Table_LaborCostSummaryByQuarter = "LaborCostSummaryByQuarterTable";
+        internal const string Table_GfyLaborCostSummaryByQuarter = "GfyLaborCostSummaryByQuarterTable";
         internal const string Table_LaborHoursRollup = "LaborHoursRollupTable";
         internal const string Table_GfyLaborHoursRollup = "GfyLaborHoursRollupTable";
         internal const string Table_LaborHoursRollupByYear = "LaborHoursRollupByYearTable";
         internal const string Table_LaborHoursRollupByQuarter = "LaborHoursRollupByQuarterTable";
+        internal const string Table_GfyLaborHoursRollupByQuarter = "GfyLaborHoursRollupByQuarterTable";
         internal const string Table_LaborHoursSummaryByDate = "LaborHoursSummaryByDateTable";
         internal const string Table_GfyLaborHoursSummaryByDate = "GfyLaborHoursSummaryByDateTable";
+        internal const string Table_GfyLaborHoursSummaryByQuarter = "GfyLaborHoursSummaryByQuarterTable";
         internal const string Table_LaborHoursSummaryByQuarter = "LaborHoursSummaryByQuarterTable";
         internal const string Table_NonLaborCostSummaryByDate = "NonLaborCostSummaryByDateTable";
         internal const string Table_NonLaborHoursSummaryByDate = "NonLaborHoursSummaryByDateTable";
@@ -361,6 +366,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
         internal const string LMPI_OCI_LABEL_TEXT = "Organizational Conflict of Interest - Lockheed Martin Proprietary Information";
         internal const string LMPI_LABEL_TEXT = "Lockheed Martin Proprietary Information";
+
+        internal const string GFY_QUARTERLY_TABLE_SUFFIX = " - GFY Quarter";
 
         /// <summary>
         /// BOEJ-2791 - Name of special template used on the "High Side" to summarize labor hours by custom field.

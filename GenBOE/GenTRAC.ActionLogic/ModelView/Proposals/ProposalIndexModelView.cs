@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -101,6 +101,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Determines whether to hide/show CertificationTimeline tab
         /// </summary>
         public SecurityAuthorization CertificationTimelineVisibility { get; set; }
+
+        /// <summary>
+        /// Determines whether to hide/show Revision History tab
+        /// </summary>
+        public SecurityAuthorization RevisionHistoryVisibility { get; set; }        
 
         /// <summary>
         /// Determines whether to show or hide the + New Revision button

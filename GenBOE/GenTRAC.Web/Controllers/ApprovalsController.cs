@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -14,7 +14,6 @@ namespace GenTRAC.Web.Controllers
     using System.Web.Mvc;
     using GenTRAC.ActionLogic;
     using GenTRAC.ActionLogic.ModelView;
-    using GenTRAC.ActionLogic.ModelView.Checklist;
     using GenTRAC.Web.Common;
     using IES.Common;
     using IES.Common.Exceptions;
@@ -126,7 +125,9 @@ namespace GenTRAC.Web.Controllers
                 scope.Complete();
             }
 
-            this.approvalsLogic.SendApprovalEMail(proposalId, role);
+            this.approvalsLogic.ApprovalEmailer.SendEmails(proposalId); // this sends emails to the next person up
+            this.approvalsLogic.SendApprovalEMail(proposalId, role); // this send emails to the lead estimator about the approval
+
             return this.Json(new { Success = true, message = pricerSavedWhilePeerEditing ? "PricerSaved" : string.Empty });
         }
 

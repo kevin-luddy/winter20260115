@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -80,6 +80,8 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
 
         /// <summary>
         /// Summary Revised Submittal Date of the Proposal
+        /// 
+        /// Now labeled as Revised Anticipated Delivery Date
         /// </summary>
         public string RevisedSubmittalDate { get; set; }
     }

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -361,6 +361,11 @@ namespace GenTRAC.DataBridge.DTO
         /// Determined by RevisionOfId being set
         /// </summary>
         public bool IsRevision { get { return RevisionOfId.HasValue; } }
+
+        /// <summary>
+        /// Indicates if the proposal has a revision
+        /// </summary>
+        public bool HasRevision { get; set; } = false;
 
         /// <summary>
         /// ID of the Proposal that this Proposal is a revision of

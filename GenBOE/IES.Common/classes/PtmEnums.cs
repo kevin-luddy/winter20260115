@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -62,7 +62,12 @@ namespace IES.Common
         /// <summary>
         /// Proposal Certification Timeline
         /// </summary>
-        CertificationTimeline = 11
+        CertificationTimeline = 11,
+
+        /// <summary>
+        /// Revision History Tab
+        /// </summary>
+        RevisionHistory = 12
     }
 
     /// <summary>

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -72,20 +72,29 @@ namespace GenTRAC.DataBridge.DTO
                 // Get the cutoff Date
                 DateTime cutoffDate = IES.Common.Utilities.GetWorkflowCutoffDate();
                 
-                // Process the workflow emails
-                this.ProcessApprovers(emailList, this.ProposalLoader.GetProposalsByWorkflowStatus(WorkflowStatus.Started), EmailType.InitialApprovalEmail);
-                this.ProcessLOBApprover(emailList, this.ProposalLoader.GetProposalsByWorkflowStatus(WorkflowStatus.AllApproved), EmailType.InitialLOBApprovalEmail);
-                
                 if (proposalId.HasValue)
                 {
-                    // only retrieve locked proposals when sending emails for "THIS" proposal 
-                    this.ProcessLOBApproved(emailList, this.ProposalLoader.GetProposalsByWorkflowStatus(WorkflowStatus.ProposalLocked));
+                    // only retrieve locked proposals for THIS proposal
+                    ProposalDto proposal = this.ProposalLoader.GetById(proposalId.Value);
 
-                    // return only emails for the selected proposal
-                    emailList = emailList.Where(e => e.ProposalId == proposalId.Value).ToList();
+                    switch(proposal.WorkflowStatus)
+                    {
+                        case (WorkflowStatus.Started):
+                            this.ProcessApprovers(emailList, new List<ProposalDto>() { proposal }, EmailType.InitialApprovalEmail);
+                            break;
+                        case (WorkflowStatus.AllApproved):
+                            this.ProcessLOBApprover(emailList, new List<ProposalDto>() { proposal }, EmailType.InitialLOBApprovalEmail);
+                            break;
+                        case (WorkflowStatus.ProposalLocked):
+                            this.ProcessLOBApproved(emailList, proposal);
+                            break;
+                    }
                 }
                 else
                 {
+                    this.ProcessApprovers(emailList, this.ProposalLoader.GetProposalsByWorkflowStatus(WorkflowStatus.Started), EmailType.InitialApprovalEmail);
+                    this.ProcessLOBApprover(emailList, this.ProposalLoader.GetProposalsByWorkflowStatus(WorkflowStatus.AllApproved), EmailType.InitialLOBApprovalEmail);
+                    
                     // only get cutoff emails if this is not for a specific approval
                     this.ProcessApprovers(emailList, this.ProposalLoader.GetProposalsByWorkflowStatusAndCutoffDate(WorkflowStatus.InitialApproverEmail, cutoffDate), EmailType.SecondApprovalEmail);
                     this.ProcessApprovers(emailList, this.ProposalLoader.GetProposalsByWorkflowStatusAndCutoffDate(WorkflowStatus.SecondApproverEmail, cutoffDate), EmailType.FinalApprovalEmail);
@@ -232,25 +241,24 @@ namespace GenTRAC.DataBridge.DTO
         /// Processes emails after the LOB approved.
         /// </summary>
         /// <param name="emailList">A list of emails needed sending.</param>
-        /// <param name="collection">The collection of proposals to process.</param>
-        private void ProcessLOBApproved(ICollection<EmailInformationDto> emailList, ICollection<ProposalDto> collection)
+        /// <param name="proposal">The proposal to process.</param>
+        private void ProcessLOBApproved(ICollection<EmailInformationDto> emailList, ProposalDto proposal)
         {
-            foreach (ProposalDto proposal in collection)
+            string email = this.RetrieveEmailForRole(proposal, PtmRole.Pricer);
+
+            if (!string.IsNullOrEmpty(email))
             {
-                string email = this.RetrieveEmailForRole(proposal, PtmRole.Pricer);
-                if (!string.IsNullOrEmpty(email))
+                EmailInformationDto emailInfo = new EmailInformationDto()
                 {
-                    EmailInformationDto emailInfo = new EmailInformationDto()
-                    {
-                        EmailAddress = email,
-                        ProposalEmailType = EmailType.LOBApprovedEmail,
-                        ProposalId = proposal.Id,
-                        ProposalTitle = proposal.ProposalTitle,
-                        TrackingNumber = proposal.TrackingNumber,
-                        AdditionalText = proposal.ApprovalEmailText
-                    };
-                    emailList.Add(emailInfo);
-                }
+                    EmailAddress = email,
+                    ProposalEmailType = EmailType.LOBApprovedEmail,
+                    ProposalId = proposal.Id,
+                    ProposalTitle = proposal.ProposalTitle,
+                    TrackingNumber = proposal.TrackingNumber,
+                    AdditionalText = proposal.ApprovalEmailText
+                };
+
+                emailList.Add(emailInfo);
             }
         }
 

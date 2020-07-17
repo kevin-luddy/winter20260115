@@ -1,4 +1,5 @@
-﻿DROP VIEW [dbo].[vwProposalActivityReport];
+﻿IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[dbo].[vwProposalActivityReport]') AND type in (N'V'))
+	DROP VIEW [dbo].[vwProposalActivityReport]
 GO
 
 /****** Object:  View [dbo].[vwProposalActivityReport]    Script Date: 09/25/2013 07:38:34 ******/

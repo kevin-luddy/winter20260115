@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -20,8 +20,10 @@ namespace GenTRAC.ActionLogic
     using GenBOE.DataBridge.DTO;
     using GenTRAC.ActionLogic.Email;
     using GenTRAC.ActionLogic.Mediator;
+    using GenTRAC.ActionLogic.ModelView;
     using GenTRAC.ActionLogic.ModelView.Proposals;
     using GenTRAC.ActionLogic.Validation;
+    using GenTRAC.DataBridge;
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
     using GenTRAC.Objects;
@@ -832,6 +834,12 @@ namespace GenTRAC.ActionLogic
                 model.CertificationTimelineVisibility = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId).Authorization;
             }
 
+            model.RevisionHistoryVisibility = SecurityAuthorization.None;
+            if (fullProposalDto != null && (fullProposalDto.IsRevision || fullProposalDto.HasRevision))
+            {
+                model.RevisionHistoryVisibility = this.CheckPermissions(PtmSecurityPage.RevisionHistory, proposalId).Authorization;
+            }
+
             if (fullProposalDto != null)
             {
                 model.ProposalID = fullProposalDto.Id;
@@ -867,8 +875,7 @@ namespace GenTRAC.ActionLogic
                 }
 
                 // Display Revert to Prior Version button only if user is lead or backup estimator and in latest revision
-                if ((fullProposalDto.ProposalStatus == ProposalStatus.InProgress || fullProposalDto.ProposalStatus == ProposalStatus.Completed || 
-                    fullProposalDto.ProposalStatus == ProposalStatus.Submitted) && fullProposalDto.IsRevision && userIsLeadOrBackupPricer)
+                if (fullProposalDto.ProposalStatus == ProposalStatus.InProgress && fullProposalDto.IsRevision && userIsLeadOrBackupPricer)
                 {
                     model.DisplayRevertRevisionButton = true;
                 }
@@ -908,7 +915,8 @@ namespace GenTRAC.ActionLogic
 
             model.PsaVisibility = SecurityAuthorization.None;
             model.CertificationTimelineVisibility = SecurityAuthorization.None;
-            
+            model.RevisionHistoryVisibility = SecurityAuthorization.None;
+
             if (fullProposalDto != null)
             {
                 string newRevisionSuffix;
@@ -1213,7 +1221,7 @@ namespace GenTRAC.ActionLogic
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView();
 
             FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
-            model.IsReadOnly = this.IsCertificationReadOnly(fullProposalDto);
+            model.IsReadOnly = this.IsCertificationReadOnly(proposalId ?? -1);
 
             if (fullProposalDto != null)
             {
@@ -1250,7 +1258,7 @@ namespace GenTRAC.ActionLogic
                 model.Comments = fullProposalDto.Comments;
                 
                 // Read Only && certification not required reason set && has permissions to update it
-                model.DisplayCertificationReset = string.Equals(this.IsCertificationReadOnly(fullProposalDto).ToLower(), "true") 
+                model.DisplayCertificationReset = string.Equals(this.IsCertificationReadOnly(fullProposalDto.Id).ToLower(), "true") 
                                                                                     && model.ReasonCertificationNotRequired.HasValue
                                                                                     && this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
             }
@@ -2045,24 +2053,17 @@ namespace GenTRAC.ActionLogic
         /// <summary>
         /// Determines whether certification of proposal is read only based on proposal state and current user
         /// </summary>
-        /// <param name="proposal">The proposal.</param>
+        /// <param name="proposalId">The proposal Id.</param>
         /// <returns>"true" if readonly, "false" if editable</returns>
-        public string IsCertificationReadOnly(ProposalDto proposal)
+        public string IsCertificationReadOnly(int proposalId)
         {
             bool readOnly = false;
 
-            if (proposal == null || proposal.ProposalStatus != ProposalStatus.Submitted)
+            // check permission of current user
+            SecurityAuthorizationAndRole authorization = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId);
+            if (authorization.Authorization == SecurityAuthorization.Read)
             {
                 readOnly = true;
-            }
-            else
-            {
-                // check permission of current user
-                SecurityAuthorizationAndRole authorization = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposal.Id);
-                if (authorization.Authorization == SecurityAuthorization.Read)
-                {
-                    readOnly = true;
-                }
             }
 
             return readOnly.ToString().ToLower();
@@ -2325,6 +2326,28 @@ namespace GenTRAC.ActionLogic
             while (!titleUnique);
 
             return newTitle;
+        }
+
+        /// <summary>
+        /// Gets Revision History for the specific proposal
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Revision History</returns>
+        public ICollection<RevisionHistoryModelView> GetRevisionHistory(int proposalId)
+        {
+            ICollection<RevisionHistoryModelView> result = this.ProposalLoader.GetRevisionHistory(proposalId);
+
+            foreach (RevisionHistoryModelView prop in result)
+            {
+                prop.DisplayProposalSetupTab &= this.CheckPermissions(PtmSecurityPage.Proposal, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                prop.DisplayChecklistTab &= this.CheckPermissions(PtmSecurityPage.Checklist, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                prop.DisplayPSATab &= this.CheckPermissions(PtmSecurityPage.PostSubmittalAttachments, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                prop.DisplayApprovalsTab &= this.CheckPermissions(PtmSecurityPage.Approvals, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                prop.DisplayCertificationTab &= this.CheckPermissions(PtmSecurityPage.CertificationTimeline, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                prop.DisplayRevisionTab &= this.CheckPermissions(PtmSecurityPage.RevisionHistory, prop.ProposalId).Authorization != SecurityAuthorization.None;
+            }
+
+            return result;
         }
 
         #endregion

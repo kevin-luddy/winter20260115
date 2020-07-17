@@ -1783,9 +1783,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
         public void CreateSikorskyCustomFields(int wsId)
         {
             // Custom fields(all regular custom fields, none are open ended):
-            // SOW
-            // Category
-            // Cam Name
+            // SOW-> default option SOW1
+            // Category-> default option Category1
+            // Cam Name-> default option CAM1
             // Class Of Cost->also put in options(text): REC, NRE, DNR
             // Add / Delete->also put in options(text): A, D
 
@@ -1799,7 +1799,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 IsOpenEnded = false,
                 Updateable = UpdateType.Upsert
             };
-
             CustomFieldDTO category = new CustomFieldDTO
             {
                 Id = -2,
@@ -1810,7 +1809,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 IsOpenEnded = false,
                 Updateable = UpdateType.Upsert
             };
-
             CustomFieldDTO camName = new CustomFieldDTO
             {
                 Id = -3,
@@ -1821,7 +1819,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 IsOpenEnded = false,
                 Updateable = UpdateType.Upsert
             };
-
             CustomFieldDTO classOfCost = new CustomFieldDTO
             {
                 Id = -4,
@@ -1832,7 +1829,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 IsOpenEnded = false,
                 Updateable = UpdateType.Upsert
             };
-
             CustomFieldDTO addDelete = new CustomFieldDTO
             {
                 Id = -5,
@@ -1844,9 +1840,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 Updateable = UpdateType.Upsert
             };
 
-            this.customFieldLoader.Save(sow);
-            this.customFieldLoader.Save(category);
-            this.customFieldLoader.Save(camName);
+            int? sowId = this.customFieldLoader.Save(sow);
+            int? categoryId = this.customFieldLoader.Save(category);
+            int? camNameId = this.customFieldLoader.Save(camName);
             int? classOfCostId = this.customFieldLoader.Save(classOfCost);
             int? addDeleteId = this.customFieldLoader.Save(addDelete);
 
@@ -1854,49 +1850,76 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 new CustomFieldValueDTO
                 {
-                    Id = -1,
                     Updateable = UpdateType.Upsert,
                     CustomFieldID = classOfCostId.Value,
                     CustomFieldValueName = "REC",
                     CustomFieldValueDescription = "REC",
+                    Id = -1,
                     CustomFieldValueID = -1
                 },
                 new CustomFieldValueDTO
                 {
-                    Id = -2,
                     Updateable = UpdateType.Upsert,
                     CustomFieldID = classOfCostId.Value,
                     CustomFieldValueName = "NRE",
                     CustomFieldValueDescription = "NRE",
+                    Id = -2,
                     CustomFieldValueID = -2
                 },
                 new CustomFieldValueDTO
                 {
-                    Id = -3,
                     Updateable = UpdateType.Upsert,
                     CustomFieldID = classOfCostId.Value,
                     CustomFieldValueName = "DNR",
                     CustomFieldValueDescription = "DNR",
+                    Id = -3,
                     CustomFieldValueID = -3
                 },
                 new CustomFieldValueDTO
                 {
-                    Id = -4,
                     Updateable = UpdateType.Upsert,
                     CustomFieldID = addDeleteId.Value,
                     CustomFieldValueName = "A",
                     CustomFieldValueDescription = "A",
+                    Id = -4,
                     CustomFieldValueID = -4
                 },
                 new CustomFieldValueDTO
                 {
-                    Id = -5,
                     Updateable = UpdateType.Upsert,
                     CustomFieldID = addDeleteId.Value,
                     CustomFieldValueName = "D",
                     CustomFieldValueDescription = "D",
+                    Id = -5,
                     CustomFieldValueID = -5
                 },
+                new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = sowId.Value,
+                    CustomFieldValueName = "SOW1",
+                    CustomFieldValueDescription = "SOW1",
+                    Id = -6,
+                    CustomFieldValueID = -6
+                },
+                new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = categoryId.Value,
+                    CustomFieldValueName = "Category1",
+                    CustomFieldValueDescription = "Category1",
+                    Id = -7,
+                    CustomFieldValueID = -7
+                },
+                new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = camNameId.Value,
+                    CustomFieldValueName = "CAM1",
+                    CustomFieldValueDescription = "CAM1",
+                    Id = -8,
+                    CustomFieldValueID = -8
+                }
             };
 
             this.customFieldValueLoader.Save(customFieldValues);

@@ -26,11 +26,12 @@ AS
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
 **		5/28/2020	Dusan				BOEJ-4588 - Report identifying users who are assigned a Role within a Workspace
+**		7/ 7/2020	Dusan				BOEJ-4688 - Add indicator if the WS is deleted
 *******************************************************************************/
 
 	SET NOCOUNT ON
 	SELECT x.DisplayName, x.NTID, x.RoleName, x.WorkspaceName, 
-			x.WorkspaceState, x.WorkspaceLastModifiedDate, x.WorkspaceCreationDate 
+			x.WorkspaceState, x.WorkspaceLastModifiedDate, x.WorkspaceCreationDate, CASE WHEN x.IsDeleted = 1 THEN 'Deleted' ELSE NULL END AS IsWsDeleted
 		FROM UsersWithRolesReport x
 		WHERE 
 			(@cutoffCreationDate IS NULL OR x.WorkspaceCreationDate >= @cutoffCreationDate)

@@ -7,7 +7,7 @@
     string naHelpText = "Proposal was submitted before Certification Functionality<br/> was introduced into PTM.";
 }
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
     // tabs class will stop float after breadcrumb
     $('div[name=stop_float]').css('clear', 'none');
@@ -41,7 +41,6 @@
     });
 
     $(function () {
-
         var DetailWidget = {};
         DetailWidget.ContextID = "proposalsetup-details";
         DetailWidget.IsModule = true;
@@ -66,7 +65,6 @@
         });
 
         ProposalDetailsWidget.FinishTabClicked = function () {
-
             // change tabs
             window.location = window.location.protocol + "//" + window.location.host + window.location.pathname + ProposalDetailsWidget.href;
             ProposalDetailsWidget.cleanDirty("proposalInfoForm");
@@ -85,13 +83,13 @@
         };
 
         ProposalDetailsWidget.LoadTab = function () {
-
             if (window.location.hash != ProposalDetailsWidget.currentHash && window.location.hash != '#users') {
                 $('div[tab*=Proposal]').hide();
                 $('div[tab*=Checklist]').hide();
                 $('div[tab*=Approvals]').hide();
                 $('div[tab*=PSA]').hide();
                 $('div[tab*=CertificationTimeline]').hide();
+                $('div[tab*=RevisionHistory]').hide();
 
                 var urlHash = window.location.hash.substring(1).split('/');
                 var currentTab = urlHash[0];
@@ -101,9 +99,8 @@
 
                 // Load the detail pages if needed.
                 if (currentTab == 'Proposal') {
-
                     var data = {};
-                    data.proposalid = @Model.ProposalID; 
+                    data.proposalid = @Model.ProposalID;
                     $(document).trigger('LOAD_PROPOSAL_TAB', data);
 
                 }
@@ -123,6 +120,10 @@
                     var data = {};
                     $(document).trigger('LOAD_CERTIFICATION_TIMELINE_TAB', data);
                 }
+                else if (currentTab == 'RevisionHistory') {
+                    var data = {};
+                    $(document).trigger('LOAD_REVISION_HISTORY_TAB', data);
+                }
 
                 var currentTabDiv = $('div[tab*=' + currentTab + ']');
                 $(currentTabDiv).parent().find('li.active').removeClass('active');
@@ -139,7 +140,7 @@
                 });
 
                 // if this is a new proposal, do not show the checklist or approvals tabs
-                var proposalID =  @Model.ProposalID; 
+                var proposalID =  @Model.ProposalID;
                 if (proposalID < 0)
                 {
                     $('[tab*=Checklist]').parents("li").addClass('display-none');
@@ -153,6 +154,10 @@
                 if (proposalID < 0 || @Json.Encode(Model.CertificationTimelineVisibility == SecurityAuthorization.None)) {
                     $('[tab*=CertificationTimeline]').parents("li").addClass('display-none');
                 }
+
+                if (proposalID < 0 || @Json.Encode(Model.RevisionHistoryVisibility == SecurityAuthorization.None)) {
+                    $('[tab*=RevisionHistory]').parents("li").addClass('display-none');
+                }
             }
         };
 
@@ -160,7 +165,7 @@
             var url = GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.PROPOSAL',
                 action: '@WebConstants.Action.DISPLAY_PROPOSAL_REVISION_DETAILS',
-                id:  '@Model.ProposalID' 
+                id:  '@Model.ProposalID'
             });
             window.location = url;
         };
@@ -249,7 +254,7 @@
             var checklistURL =  GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.CHECKLIST',
                 action: '@WebConstants.Action.DISPLAY_CHECKLIST_INDEX',
-                id: '@Model.ProposalID' 
+                id: '@Model.ProposalID'
             });
 
             var data = {};
@@ -275,7 +280,7 @@
             var approvalsURL =  GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.APPROVALS',
                 action: '@WebConstants.Action.DISPLAY_APPROVALS_INDEX',
-                id:  '@Model.ProposalID' 
+                id:  '@Model.ProposalID'
             });
 
             var data = {};
@@ -300,7 +305,7 @@
             var psaUrl =  GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.PSA',
                 action: '@WebConstants.Action.DISPLAY_POST_SUBMITTAL_ATTACHMENTS',
-                id: '@Model.ProposalID' 
+                id: '@Model.ProposalID'
             });
 
             var data = {psaVisibility: '@Model.PsaVisibility'};
@@ -340,24 +345,33 @@
 
         });
 
+        ProposalDetailsWidget.on('LOAD_REVISION_HISTORY_TAB', function (e, params) {
+            $("div[tab*=RevisionHistory] .revision-history").children().remove();
+            $("div[tab*=RevisionHistory] .revision-history").html(ProposalDetailsWidget.LoadingHtml);
+            $("div[tab*=RevisionHistory] .revision-history").removeClass("display-none");
+            var psaUrl =  GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PROPOSAL',
+                action: '@WebConstants.Action.DISPLAY_REVISION_HISTORY',
+                id: '@Model.ProposalID'
+            });
+
+            $.ajax({
+                type: "POST",
+                url: psaUrl,
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+                    $('div[tab*=RevisionHistory] .revision-history').html(response);
+
+                }
+            });
+        });
+
         if ('@(Model.ProposalStatus == ProposalStatus.Revised || Model.ReasonCertificationNotRequired.HasValue || (Model.ProposalStatus == ProposalStatus.Completed && Model.CertificationCompletedDate != null))' == 'True') {
             $('button[name="new-revision-button"]').addClass('disabled');
         }
 
-        if ('@(Model.ProposalStatus == ProposalStatus.Completed || Model.ProposalStatus == ProposalStatus.Submitted)' == 'True') {
-            $('button[name="revert-revision-button"]').addClass('disabled');
-        }
-
         if ('@(Model.HasRdsbDocument || Model.GenBoeWorkspaces.Any())' == 'True') {
             $('button[name="revert-revision-button"]').addClass('hasDocumentOrWorkspace');
-        }
-
-        // Adjust margins for revision buttons
-        if ('@(Model.DisplayRevertRevisionButton)' == 'True') {
-            $('#revisionButtons').removeClass('newRevisionButtonMargin');
-            if ('@(!Model.DisplayNewRevisionButton)' == 'True') {
-                $('#revisionButtons').addClass('revertRevisionMargin');
-            }
         }
 
         $('button[name="new-revision-button"]:not(.disabled)').click(function () {
@@ -398,7 +412,7 @@
 
         ProposalDetailsWidget.LoadTab();
     });
-</script>
+    </script>
 
 <div class="proposalsetup-details module full">
     <div id="ProposalTabs">
@@ -410,7 +424,7 @@
                     > New Proposal
                 </text>
             }
-            else if (Model.IsNewRevision) 
+            else if (Model.IsNewRevision)
             {
                 <text>
                     > New Revision
@@ -502,7 +516,7 @@
                         </text>
                     }
                 </div>
-                <div id="revisionButtons" class="newRevisionButtonMargin">
+                <div id="revisionButtons">
                     @if (Model.DisplayNewRevisionButton)
                     {
                         <button name="new-revision-button" type="button" class="ies stateful_button">+ New Revision</button>
@@ -518,6 +532,7 @@
                         <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#PSA" tab="PSA">Post Submittal Attachments</a><div class="tab-right"></div></li>
                         <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Approvals" tab="Approvals">Approvals</a><div class="tab-right"></div></li>
                         <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#CertificationTimeline" tab="CertificationTimeline">Certification Timeline</a><div class="tab-right"></div></li>
+                        <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#RevisionHistory" tab="RevisionHistory">Revision History</a><div class="tab-right"></div></li>
                     </ul>
                 </div>
             <div class="tabs-right"></div>
@@ -537,5 +552,8 @@
     </div>
     <div tab="CertificationTimeline">
         <div class="ct-details"></div>
+    </div>
+    <div tab="RevisionHistory">
+        <div class="revision-history"></div>
     </div>
 </div>

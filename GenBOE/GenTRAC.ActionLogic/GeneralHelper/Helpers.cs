@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -21,7 +21,7 @@ namespace GenTRAC.ActionLogic.GeneralHelper
         /// <param name="actualSubmittalDate">Actual Submittal Date is in the Checklist tab / table. 
         ///     NOT to be confused with:
         ///         - Workflow / Proposal Submitted Date (when the workflow is completed), 
-        ///         - "Revised Submittal Date" in the proposal general info tab / table</param>
+        ///         - "Revised Anticipated Delivery Date" in the proposal general info tab / table</param>
         /// <returns>True if the certification is considered missing and late</returns>
         public static bool IsProposalCertificationLate(ProposalStatus status, DateTime? actualSubmittalDate)
         {

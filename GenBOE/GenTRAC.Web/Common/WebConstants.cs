@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -342,6 +342,11 @@ namespace GenTRAC.Web.Common
             /// Marks the proposal for deletion
             /// </summary>
             public const string DELETE_PROPOSAL = "DeleteProposal";
+
+            /// <summary>
+            /// Displays Revision History Tab
+            /// </summary>
+            public const string DISPLAY_REVISION_HISTORY = "DisplayRevisionHistory";
 
             /// <summary>
             /// Reverts the Proposal to the prior version
@@ -867,6 +872,11 @@ namespace GenTRAC.Web.Common
             /// Proposal post information
             /// </summary>
             public const string PROPOSAL_CERTIFICATION_TIMELINE = "CertificationTimeline";
+
+            /// <summary>
+            /// Proposal Revision History
+            /// </summary>
+            public const string PROPOSAL_RevisionHistory = "RevisionHistory";
 
             #endregion Proposal
 

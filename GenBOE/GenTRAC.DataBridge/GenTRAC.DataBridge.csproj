@@ -40,6 +40,9 @@
     <DebugSymbols>true</DebugSymbols>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ConsoleRelease|AnyCPU'">
+    <OutputPath>bin\ConsoleRelease\</OutputPath>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
@@ -156,6 +159,7 @@
     <Compile Include="DTO\Proposal\IProposalLoader.cs" />
     <Compile Include="DTO\Proposal\ProposalDto.cs" />
     <Compile Include="DTO\Proposal\ProposalLoader.cs" />
+    <Compile Include="DTO\Proposal\RevisionHistoryModelView.cs" />
     <Compile Include="DTO\Reports\IReportsLoader.cs" />
     <Compile Include="DTO\Reports\ReportsLoader.cs" />
     <Compile Include="DTO\User\CacheWarmingUserMapper.cs" />
