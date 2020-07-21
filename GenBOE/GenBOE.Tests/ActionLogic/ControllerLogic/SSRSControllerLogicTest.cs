@@ -1182,10 +1182,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         {
             FullWorkspace workspace = new FullWorkspace() { Id = 1, WorkspaceName = "Workspace1", ProjectMapType = ProjectMapType.StandardWithOffload };
             factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(workspace);
+            retriever.Setup(x => x.GetQuestionsAndAnswersByWorkspaceId(workspace.Id)).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
 
             ICollection<FullBoe> boes = sut.GetOffloadBOEsFromFullWorkspace(workspace);
 
             ICollection<RAMReportModelView> expected = new Collection<RAMReportModelView>();
+
 
             resource2.ResourceName = resource1.ResourceName;
             retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>()))

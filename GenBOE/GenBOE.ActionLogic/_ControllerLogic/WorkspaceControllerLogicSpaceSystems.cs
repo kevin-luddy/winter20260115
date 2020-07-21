@@ -70,8 +70,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IPickListMapper boePickListMapper,
             IPickListMapper ptmPickListMapper,
             ContractTypeLoader contractTypeLoader,
-            WorkspaceExporter workspaceExporter,
-            IRteTemplateDataLoader rteTemplateDataLoader)
+            WorkspaceExporter workspaceExporter)
             : base(
                 workspaceLoader,
                 inuserLoader,
@@ -92,8 +91,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 boePickListMapper,
                 ptmPickListMapper,
                 contractTypeLoader,
-                workspaceExporter,
-                rteTemplateDataLoader
+                workspaceExporter
         )
         {
             // nothing to do here

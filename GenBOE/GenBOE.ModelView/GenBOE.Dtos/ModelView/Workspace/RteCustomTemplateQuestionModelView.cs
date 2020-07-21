@@ -6,6 +6,7 @@
 
 namespace GenBOE.Dtos
 {
+    using System.Collections.Generic;
     using IES.Common;
 
     /// <summary>
@@ -37,5 +38,10 @@ namespace GenBOE.Dtos
         /// Gets or sets the Template Id.
         /// </summary>
         public int TemplateId { get; set; }
+
+        /// <summary>
+        /// Source IDs that the template is used by
+        /// </summary>
+        public ICollection<RteTemplateSource> SourceIds { get; set; }
     }
 }

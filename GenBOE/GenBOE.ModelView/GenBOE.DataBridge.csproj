@@ -93,6 +93,9 @@
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
@@ -199,6 +202,7 @@
     <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\ValidationBOETaskElementDetails.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\WBS\BOE\ValidationBOETasks.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Workspace\ProjectMapPageModelView.cs" />
+    <Compile Include="GenBOE.Dtos\ModelView\Workspace\RTECustomTemplateAnswerModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Workspace\RteCustomTemplateModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Workspace\RTECustomTemplateQuestionAnswerModelView.cs" />
     <Compile Include="GenBOE.Dtos\ModelView\Workspace\RteCustomTemplateQuestionModelView.cs" />

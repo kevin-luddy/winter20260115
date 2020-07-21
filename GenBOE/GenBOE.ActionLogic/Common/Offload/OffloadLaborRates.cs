@@ -553,6 +553,8 @@ namespace GenBOE.ActionLogic.Common
                 decimal offloadedTaskHours = 0;
                 decimal percentOffload = 0;
 
+                boe.TemplateQuestionsAndAnswers = workspace.TemplateQuestionsAndAnswers.Where(x => x.BoeId == boe.Id).ToList();
+
                 foreach (BoeTaskElementDTO taskElement in boe.TaskElements)
                 {
                     originalTaskHours = 0;
@@ -581,7 +583,6 @@ namespace GenBOE.ActionLogic.Common
 
                         offloadedTaskHours += offloadedHours;
                         percentOffload = percent ?? 0;
-
                     }
 
                     if (taskElementTotalHoursOffloaded > 0m)
@@ -597,8 +598,25 @@ namespace GenBOE.ActionLogic.Common
 
                     if (offloadedTaskHours != 0)
                     {
-                        taskElement.MOQText += string.Format(this.EXISTING_TASK_RATIONALE, justifyingPublication, projectMapOffloadText, originalTaskHours.ToString("F"),
-                                    offloadedTaskHours.ToString("F"), (originalTaskHours - offloadedTaskHours).ToString("F"));
+                        string moqText = string.Format(this.EXISTING_TASK_RATIONALE, justifyingPublication, projectMapOffloadText, originalTaskHours.ToString("F"),
+                                        offloadedTaskHours.ToString("F"), (originalTaskHours - offloadedTaskHours).ToString("F"));
+
+                        if (workspace.RteOverrides.Contains(RteTemplateSource.TaskMOQ))
+                        {
+                            boe.TemplateQuestionsAndAnswers.Add(new RTECustomTemplateQuestionAnswerModelView() 
+                            { 
+                                QuestionText = "Offload Statement",
+                                AnswerText = moqText,
+                                BoeId = boe.Id,
+                                TaskId = taskElement.Id,
+                                SortOrder = 10000,
+                                SourceId = (int)RteTemplateSource.TaskMOQ
+                            });
+                        } 
+                        else 
+                        { 
+                            taskElement.MOQText += moqText;
+                        }
                     }
                 }
             }

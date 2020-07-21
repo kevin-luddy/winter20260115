@@ -973,5 +973,26 @@ namespace GenBOE.Objects
         {
             return this.rteTemplateDataLoader.GetTemplates(workspaceId).SelectMany(x => x.Assigned).Distinct().Select(x => (RteTemplateSource)x).ToList();
         }
+
+        /// <summary>
+        /// Gets the Questions and Answers by Boe Id.
+        /// </summary>
+        /// <param name="workspaceId">The Id of a workspace.</param>
+        /// <param name="boeId">The Boe Id.</param>
+        /// <returns>Combo of questions and answers for the BOE.</returns>
+        public ICollection<RTECustomTemplateQuestionAnswerModelView> GetRTETemplatesAndAnswersByBoeId(int workspaceId, int boeId)
+        {
+            return this.rteTemplateDataLoader.GetByBoeId(workspaceId, boeId);
+        }
+
+        /// <summary>
+        /// Gets Questions and Answers By Workspace Id
+        /// </summary>
+        /// <param name="workspaceId">Workspace Id</param>
+        /// <returns>Questions and Answers</returns>
+        public ICollection<RTECustomTemplateQuestionAnswerModelView> GetQuestionsAndAnswersByWorkspaceId(int workspaceId)
+        {
+            return this.rteTemplateDataLoader.GetQuestionsAndAnswersByWorkspaceId(workspaceId);
+        }
     }
 }

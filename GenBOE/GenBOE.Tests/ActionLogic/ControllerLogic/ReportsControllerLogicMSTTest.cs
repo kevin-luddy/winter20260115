@@ -69,7 +69,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         {
             return new ReportsControllerLogicMST(boeExporter.Object, boeSummary.Object, boeCustomeExporter.Object,
                 workspaceExportFormatDTOLoader.Object, metricLoader.Object, boeDiscrepancyReport.Object,
-                _commonDataMapper.Object, this.proposalLoader.Object, this.workspaceControllerLogic.Object, null, null);
+                _commonDataMapper.Object, this.proposalLoader.Object, this.workspaceControllerLogic.Object, null);
         }
 
         /// <summary>
