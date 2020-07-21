@@ -8,6 +8,7 @@ namespace GenTRAC.Web.Controllers
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Transactions;
     using System.Web.Configuration;
@@ -407,6 +408,42 @@ namespace GenTRAC.Web.Controllers
             }
 
             return this.Json(new { Status = false });
+        }
+
+        /// <summary>
+        /// Revert a Proposal Revision to the prior version, deleting this version
+        /// </summary>
+        /// <param name="proposalId">ID of Proposal to be reverted</param>
+        /// <returns>JSON result with ID of prior version</returns>
+        public JsonResult RevertProposalToPriorVersion(int proposalId)
+        {
+            ProposalDto proposal = this.proposalLogic.GetByProposalId(proposalId);
+
+            // validate reverting to prior version
+            this.proposalLogic.ValidateRevertRevisionToPriorVersion(proposal);
+
+            // validate deleting proposal 
+            ManageProposalInfoDetailsView manageProposalInfo = this.adminLogic.GetManageProposalInfoDetailsView(proposalId);
+            ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+            this.adminLogic.ValidateDeleteProposal(manageProposalInfo.ProposalID, validationErrors);
+            
+            if (validationErrors.Any())
+            {
+                throw new ValidationException(validationErrors);
+            }
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+            {
+                // delete proposal
+                this.proposalLogic.DeleteProposal(proposal);
+
+                // set status of prior version
+                this.proposalLogic.RevertRevisedProposal(proposal.RevisionOfId.Value);
+
+                scope.Complete();
+            }
+
+            return this.Json(new { proposalId = proposal.RevisionOfId });
         }
 
         /// <summary>

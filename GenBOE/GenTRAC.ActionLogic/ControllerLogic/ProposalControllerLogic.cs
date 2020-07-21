@@ -91,7 +91,7 @@ namespace GenTRAC.ActionLogic
         /// The emailer
         /// </summary>
         private IPtmEmailer emailer;
-
+        
         /// <summary>
         /// Create static Regex object for FreeText.
         /// </summary>
@@ -299,6 +299,25 @@ namespace GenTRAC.ActionLogic
                 }
 
                 return proposalId;
+            }
+        }
+
+        /// <summary>
+        /// Hard deletes a Proposal
+        /// Currently should only be used when revering a revision to a prior version
+        /// </summary>
+        /// <param name="proposal">Proposal to delete</param>
+        public void DeleteProposal(ProposalDto proposal)
+        {
+            if (proposal == null)
+            {
+                throw new ArgumentNullException(nameof(proposal));
+            }
+
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.DeleteProposal", this.log))
+            {
+                proposal.Updateable = UpdateType.Deleted;
+                this.ProposalLoader.Save(proposal);
             }
         }
 
@@ -847,8 +866,7 @@ namespace GenTRAC.ActionLogic
                 }
 
                 // Display + New Revision button only if the user if the lead or backup estimator and approval workflow is completed
-                UserDTO activeUser = this.GetActiveUser();
-                bool userIsLeadOrBackupPricer = fullProposalDto.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer));
+                bool userIsLeadOrBackupPricer = this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
 
                 if (fullProposalDto.WorkflowStatus == WorkflowStatus.ProposalLocked && userIsLeadOrBackupPricer)
                 {
@@ -856,8 +874,7 @@ namespace GenTRAC.ActionLogic
                 }
 
                 // Display Revert to Prior Version button only if user is lead or backup estimator and in latest revision
-                if ((fullProposalDto.ProposalStatus == ProposalStatus.InProgress || fullProposalDto.ProposalStatus == ProposalStatus.Completed || 
-                    fullProposalDto.ProposalStatus == ProposalStatus.Submitted) && fullProposalDto.IsRevision && userIsLeadOrBackupPricer)
+                if (fullProposalDto.ProposalStatus == ProposalStatus.InProgress && fullProposalDto.IsRevision && userIsLeadOrBackupPricer)
                 {
                     model.DisplayRevertRevisionButton = true;
                 }
@@ -866,6 +883,15 @@ namespace GenTRAC.ActionLogic
                 
                 model.RevisedProposalId = fullProposalDto.RevisionOfId;
                 model.IsNewRevision = false;
+
+                model.HasRdsbDocument = fullProposalDto.DocumentId.HasValue;
+
+                // Only get this if revert button is available, since it won't be needed otherwise and we can save a db call
+                if (model.DisplayRevertRevisionButton)
+                {
+                    ICollection<GenBOE.Dtos.WorkspaceDTO> workspaces = this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo();
+                    model.GenBoeWorkspaces = workspaces.Where(x => x.TrackingNumber == fullProposalDto.TrackingNumber).Select(x => x.Shortname).OrderBy(x => x).ToCollection();
+                }
             }
 
             return model;
@@ -2114,15 +2140,12 @@ namespace GenTRAC.ActionLogic
 
             if (proposal.ProposalStatus == ProposalStatus.Revised)
             {
-                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_LATEST_VERSION));
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_LATEST_VERSION_NEW_REVISION));
             }
-
-            UserDTO activeUser = this.GetActiveUser();
-            FullProposal fullProposal = new FullProposal(proposal);
-
-            if (!fullProposal.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer)))
+                        
+            if (!this.IsCurrentUserPricerOrBackupOrSysAdmin(proposal.Id))
             {
-                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED));
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED_NEW_REVISION));
             }
 
             if (validationErrors.Any())
@@ -2141,6 +2164,71 @@ namespace GenTRAC.ActionLogic
             using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SetProposalRevised", this.log))
             {
                 this.ProposalLoader.UpdateProposalStatus(proposalId, proposalUpdateDate, ProposalStatus.Revised);
+            }
+        }
+
+        /// <summary>
+        /// Revert a Revised Proposal to its previous state - Submitted for CCoPD "Yes", Completed for CCoPD "No"
+        /// </summary>
+        /// <param name="proposalId">ID of Revised Proposal</param>
+        public void RevertRevisedProposal(int proposalId)
+        {
+            ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
+
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.RevertRevisedProposal", this.log))
+            {
+                if(proposal.IsCCPDRequired.HasValue && proposal.IsCCPDRequired.Value)
+                {
+                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Submitted);
+                } 
+                else
+                {
+                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Completed);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Validate that a Proposal is able to be reverted to the prior version
+        /// </summary>
+        /// <param name="proposal">Proposal being reverted</param>
+        public void ValidateRevertRevisionToPriorVersion(ProposalDto proposal)
+        {
+            ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+
+            if (proposal.RevisionOfId == null)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NO_PRIOR_VERSION));
+            }
+
+            if (this.ProposalLoader.GetAllSlim().Any(x => x.RevisionOfId == proposal.Id))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_LATEST_VERSION_PRIOR_VERSION));
+            }
+
+            if (proposal.ProposalStatus != ProposalStatus.InProgress)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_IN_PROGRESS));
+            }
+
+            if (!this.IsCurrentUserPricerOrBackupOrSysAdmin(proposal.Id))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED_PRIOR_VERSION));
+            }
+
+            if (proposal.DocumentId.HasValue)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.CANNOT_HAVE_DOCUMENT));
+            }
+
+            if (this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo().Any(x => x.TrackingNumber == proposal.TrackingNumber))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.CANNOT_HAVE_WORKSPACE));
+            }
+
+            if (validationErrors.Any())
+            {
+                throw new ValidationException(validationErrors);
             }
         }
 
