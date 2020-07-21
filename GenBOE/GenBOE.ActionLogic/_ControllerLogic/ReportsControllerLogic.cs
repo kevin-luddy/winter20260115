@@ -44,7 +44,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly BOEDiscrepancyReport boeDiscrepancyReport;
         private readonly IProposalLoader proposalLoader;
         private readonly IWorkspaceControllerLogic workspaceControllerLogic;
-        private readonly IRteTemplateDataLoader rteTemplateDataLoader;
         private readonly TravelTripCostCalculation travelTripCostCalculator;
 
         #region Cache Setup
@@ -79,7 +78,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="boeDiscrepancyReport">The boe discrepancy report.</param>
         /// <param name="proposalLoader">Proposal Loader</param>
         /// <param name="workspaceControllerLogic">Workspace Controller Logic</param>
-        /// <param name="rteTemplateDataLoader">The RTE Template dto loader.</param>
         /// <param name="travelTripCostCalculator">Travel Trip Cost Calculator</param>
         public ReportsControllerLogic(
             IBOEExporter boeExporter,
@@ -89,7 +87,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             BOEDiscrepancyReport boeDiscrepancyReport,
             IProposalLoader proposalLoader,
             IWorkspaceControllerLogic workspaceControllerLogic,
-            IRteTemplateDataLoader rteTemplateDataLoader,
             TravelTripCostCalculation travelTripCostCalculator)
         {
             this.boeExporter = boeExporter;
@@ -99,7 +96,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.boeDiscrepancyReport = boeDiscrepancyReport;
             this.proposalLoader = proposalLoader;
             this.workspaceControllerLogic = workspaceControllerLogic;
-            this.rteTemplateDataLoader = rteTemplateDataLoader;
             this.travelTripCostCalculator = travelTripCostCalculator;
 
             this.cache = new MemoryCache();
@@ -168,6 +164,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 boes = selectedAndOrderedBoes;
             }
 
+            // Get RTE overrides
+            ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = workspace.TemplateQuestionsAndAnswers.ToList();
+
             if (isOffloading)
             {
                 OffloadLaborRates offloader = new OffloadLaborRates();
@@ -176,15 +175,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
                 boes = results.Boes.ToList();
                 tasks = boes.SelectMany(b => b.TaskElements).ToList();
+                rteTemplateOverrides = boes.SelectMany(x => x.TemplateQuestionsAndAnswers).ToList();
             }
 
             if (workspace.IsProjectMapWorkspace)
             {
                 boes = ProjectMapSorter.OrderBoes(boes, workspace).ToList();
             }
-
-            // Get RTE overrides
-            ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = this.rteTemplateDataLoader.GetByWorkspaceId(workspace.Id, boes);
 
             exportInputs = new BOEExportInputs(boes, workspace.Boes.ToList(), tasks, workspace, rteTemplateOverrides);
             exportInputs.SummarizeByCustomField = summarizeByCustomField;

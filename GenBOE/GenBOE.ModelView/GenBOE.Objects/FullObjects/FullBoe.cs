@@ -39,7 +39,7 @@ namespace GenBOE.Objects
         private ReadOnlyCollection<TravelDTO> travels;
         private ReadOnlyCollection<BoeApproverResponseDTO> approverResponses;
         private ReadOnlyCollection<BOECommentDTO> comments;
-        
+
         /// <summary>
         /// Default Constructor
         /// </summary>
@@ -525,5 +525,10 @@ namespace GenBOE.Objects
         {
             this.workspaceVariables = variables.ToList().AsReadOnly();
         }
+
+        /// <summary>
+        /// Template Questions & Answers
+        /// </summary>
+        public ICollection<RTECustomTemplateQuestionAnswerModelView> TemplateQuestionsAndAnswers { get; set; }
     }
 }

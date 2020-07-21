@@ -29,6 +29,7 @@ namespace GenBOE.Web.Controllers
     using GenBOE.DataBridge.Common.Interfaces;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
+    using GenBOE.Models;
     using GenBOE.Objects;
     using GenBOE.Web.Common;
     using GenBOE.Web.ModelView;
@@ -64,11 +65,6 @@ namespace GenBOE.Web.Controllers
         private IReportsControllerLogic reportsControllerLogic;
 
         /// <summary>
-        /// RTE Template loader
-        /// </summary>
-        private readonly IRteTemplateDataLoader rteTemplateDataLoader;
-
-        /// <summary>
         /// Constructor
         /// </summary>
         public ReportsController(ISecurityAccess inSecurityAccess,
@@ -94,8 +90,7 @@ namespace GenBOE.Web.Controllers
             IBOEFormControllerLogic inBOEFormControllerLogic,
             ISSRSControllerLogic ssrsControllerLogic,
             IUserDTODataLoader userLoader,
-            ContractTypeLoader contractTypeLoader,
-            IRteTemplateDataLoader rteTemplateDataLoader)
+            ContractTypeLoader contractTypeLoader)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserDTODataLoader, inPermissionsLoader, inControllerLogic)
         {
             this._WorkspaceActivityReport = inWorkspaceActivityReport;
@@ -114,7 +109,6 @@ namespace GenBOE.Web.Controllers
             this.ssrsControllerLogic = ssrsControllerLogic;
             this.userLoader = userLoader;
             this.contractTypeLoader = contractTypeLoader;
-            this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
         /// <summary>
@@ -1615,6 +1609,9 @@ namespace GenBOE.Web.Controllers
                     List<FullBoe> boes = ws.Boes.ToList();
                     List<BoeTaskElementDTO> tasks = ws.TaskElements.OrderBy(t=> t.BOETaskElementOrder).ToList();
 
+                    // Get RTE overrides
+                    ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = ws.TemplateQuestionsAndAnswers.ToList();
+                    
                     bool isOffloading = ws.ProjectMapType != ProjectMapType.StandardWithoutOffload;
                     if (isOffloading)
                     {
@@ -1624,10 +1621,8 @@ namespace GenBOE.Web.Controllers
 
                         boes = results.Boes.ToList();
                         tasks = boes.SelectMany(b => b.TaskElements).OrderBy(t => t.BOETaskElementOrder).ToList();
+                        rteTemplateOverrides = boes.SelectMany(x => x.TemplateQuestionsAndAnswers).ToList();
                     }
-
-                    // Get RTE overrides
-                    ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = this.rteTemplateDataLoader.GetByWorkspaceId(ws.Id, boes);
 
                     BOEExportInputs exportInputs = new BOEExportInputs(boes, ws.Boes.ToList(), tasks, ws, rteTemplateOverrides);
                     // Need picklist values for contract type for Workspace Identification sheet

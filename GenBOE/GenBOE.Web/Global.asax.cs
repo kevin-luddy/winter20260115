@@ -634,9 +634,7 @@ namespace GenBOE
                                                                                                                               new ResolvedParameter(typeof(BoePickListMapper)),
                                                                                                                               new ResolvedParameter(typeof(GenTRAC.DataBridge.DTO.PtmPickListMapper)),
                                                                                                                               new ResolvedParameter(typeof(ContractTypeLoader)),
-                                                                                                                              new ResolvedParameter(typeof(WorkspaceExporter)),
-                                                                                                                              new ResolvedParameter(typeof(IRteTemplateDataLoader))
-                                                                                                                              ));
+                                                                                                                              new ResolvedParameter(typeof(WorkspaceExporter))));
 
                     GenBOEUnityContainer.Container.RegisterType(typeof(IAdminControllerLogic), typeof(AdminControllerLogicMST), GetLifetimeManager(), new InjectionConstructor(
                                                                                                                               new ResolvedParameter(typeof(ICommonDataMapper)),
@@ -673,8 +671,7 @@ namespace GenBOE
                                                                                                                               new ResolvedParameter(typeof(BoePickListMapper)),
                                                                                                                               new ResolvedParameter(typeof(GenTRAC.DataBridge.DTO.PtmPickListMapper)),
                                                                                                                               new ResolvedParameter(typeof(ContractTypeLoader)),
-                                                                                                                              new ResolvedParameter(typeof(WorkspaceExporter)),
-                                                                                                                              new ResolvedParameter(typeof(IRteTemplateDataLoader))));
+                                                                                                                              new ResolvedParameter(typeof(WorkspaceExporter))));
 
                     GenBOEUnityContainer.Container.RegisterType(typeof(IHomeControllerLogic), typeof(HomeControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor(
                                                                                                                               new ResolvedParameter(typeof(IActiveDirectoryUtilities))
@@ -764,7 +761,6 @@ namespace GenBOE
                         new ResolvedParameter(typeof(ICommonDataMapper)),
                         new ResolvedParameter(typeof(IProposalLoader)),
                         new ResolvedParameter(typeof(IWorkspaceControllerLogic)),
-                        new ResolvedParameter(typeof(IRteTemplateDataLoader)),
                         new ResolvedParameter(typeof(TravelTripCostCalculation))
                         ));
                     break;
@@ -781,7 +777,6 @@ namespace GenBOE
                         new ResolvedParameter(typeof(IInUseDataLoader)),
                         new ResolvedParameter(typeof(IProposalLoader)),
                         new ResolvedParameter(typeof(IWorkspaceControllerLogic)),
-                        new ResolvedParameter(typeof(IRteTemplateDataLoader)),
                         new ResolvedParameter(typeof(TravelTripCostCalculation))
                         ));
                     break;
@@ -796,7 +791,6 @@ namespace GenBOE
                         new ResolvedParameter(typeof(BOEDiscrepancyReport)),
                         new ResolvedParameter(typeof(IProposalLoader)),
                         new ResolvedParameter(typeof(IWorkspaceControllerLogic)),
-                        new ResolvedParameter(typeof(IRteTemplateDataLoader)),
                         new ResolvedParameter(typeof(TravelTripCostCalculation))
                         ));
                     break;

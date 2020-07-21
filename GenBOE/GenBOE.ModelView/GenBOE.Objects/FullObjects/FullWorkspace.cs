@@ -82,7 +82,8 @@ namespace GenBOE.Objects
         private IDictionary<int, IDictionary<CustomFieldValueDTO, CustomFieldDTO>> assignedBoeIdsAndCustomFieldValuesMapping;
         private ILookup<ElementOfCostType, ResourceDTO> workspaceResourcesLookup = null;
         private IDictionary<int, ICollection<BoeApproverResponseDTO>> boeMappingWithApproverResponses;
-        private ICollection<RteTemplateSource> rteOverrides;
+        private ReadOnlyCollection<RteTemplateSource> rteOverrides;
+        private ReadOnlyCollection<RTECustomTemplateQuestionAnswerModelView> templateQuestionsAndAnswers;
 
         #endregion
 
@@ -1182,16 +1183,32 @@ namespace GenBOE.Objects
         /// <summary>
         /// Returns list of RTE fields which are being over-written w/ RTE templates 
         /// </summary>
-        public ICollection<RteTemplateSource> RteOverrides
+        public IReadOnlyCollection<RteTemplateSource> RteOverrides
         {
             get
             {
                 if(this.rteOverrides == null)
                 {
-                    this.rteOverrides = this.retriever.GetWsRteOverrides(this.Id);
+                    this.rteOverrides = this.retriever.GetWsRteOverrides(this.Id).ToList().AsReadOnly();
                 }
 
                 return this.rteOverrides;
+            }
+        }
+
+        /// <summary>
+        /// Template Questions & Answers
+        /// </summary>
+        public IReadOnlyCollection<RTECustomTemplateQuestionAnswerModelView> TemplateQuestionsAndAnswers
+        {
+            get
+            {
+                if(this.templateQuestionsAndAnswers == null)
+                {
+                    this.templateQuestionsAndAnswers = this.retriever.GetQuestionsAndAnswersByWorkspaceId(this.Id).ToList().AsReadOnly();
+                }
+
+                return this.templateQuestionsAndAnswers;
             }
         }
     }
