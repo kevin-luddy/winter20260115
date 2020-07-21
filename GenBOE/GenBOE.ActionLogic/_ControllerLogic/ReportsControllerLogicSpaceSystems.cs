@@ -57,9 +57,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IInUseDataLoader iInUseDataLoader,
             IProposalLoader proposalLoader,
             IWorkspaceControllerLogic workspaceControllerLogic,
-            IRteTemplateDataLoader rteTemplateDataLoader,
             TravelTripCostCalculation travelTripCostCalculator)
-            : base(boeExporter, boeSummary, boeCustomExporter, workspaceExportFormatDTOLoader, boeDiscrepancyReport, proposalLoader, workspaceControllerLogic, rteTemplateDataLoader, travelTripCostCalculator)
+            : base(boeExporter, boeSummary, boeCustomExporter, workspaceExportFormatDTOLoader, boeDiscrepancyReport, proposalLoader, workspaceControllerLogic, travelTripCostCalculator)
         {
             this.iboeFormDataLoader = iboeFormDataLoader;
             this.pboeFormDataLoader = pboeFormDataLoader;

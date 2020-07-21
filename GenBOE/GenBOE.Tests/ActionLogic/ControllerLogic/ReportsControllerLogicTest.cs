@@ -79,7 +79,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 this.boeCustomExporter.Object,
                 this.workspaceExportFormatDTOLoader.Object, this.boeDiscrepancyReport.Object,
                 this.proposalLoader.Object,
-                this.workspaceControllerLogic.Object, this.rteTemplateLoader.Object, this.travelTripCostCalculation.Object);
+                this.workspaceControllerLogic.Object, this.travelTripCostCalculation.Object);
         }
 
         #region ExportAllBOEsReport
@@ -164,7 +164,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<WorkspaceVariableDTO>());
             _retriever.Setup(x => x.GetResourcesByResourceListId(It.IsAny<int>())).Returns(new Collection<ResourceDTO>());
             _retriever.Setup(x => x.GetSystemLmLaborResources()).Returns(new Collection<ResourceDTO>());
-            
+            _retriever.Setup(x => x.GetQuestionsAndAnswersByWorkspaceId(workspace.Id)).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
             _retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>());
 
             this._retriever.Setup(x => x.GetMaterialsByBoeIds(It.IsAny<Collection<int>>(), It.IsAny<bool>())).Returns(MaterialID.ToList());
@@ -214,7 +214,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeExportModelViews, boeSummaryGridModelViews);
 
             //Assert
-            rteTemplateLoader.Verify(x => x.GetByWorkspaceId(It.IsAny<int>(), It.IsAny<ICollection<FullBoe>>()), Times.Exactly(3));
             boeSummary.Verify(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[0], It.IsAny<BOEExportInputs>(), isSubContractorUser), Times.Exactly(3));
             boeSummary.Verify(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[1], It.IsAny<BOEExportInputs>(), isSubContractorUser), Times.Never());
             boeSummary.Verify(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[2], It.IsAny<BOEExportInputs>(), isSubContractorUser), Times.Exactly(3));
@@ -281,6 +280,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _retriever.Setup(x => x.GetWorkspaceExportFormatsByWorkspaceId(1)).Returns(wsExportFormatDTOCollection);
             _retriever.Setup(x => x.GetFullBoesByWorkspaceId(1)).Returns(boes);
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(1, false, It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
+            _retriever.Setup(x => x.GetQuestionsAndAnswersByWorkspaceId(workspace.Id)).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
 
             Collection<int> BoeIds = boes.Select(x => x.Id).ToCollection();
             _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);

@@ -566,5 +566,12 @@ namespace GenBOE.Objects
         /// Gets RTE Template Overrides for the specific workspace
         /// </summary>
         ICollection<RteTemplateSource> GetWsRteOverrides(int workspaceId);
+
+        /// <summary>
+        /// Gets Questions and Answers By Workspace Id
+        /// </summary>
+        /// <param name="workspaceId">Workspace Id</param>
+        /// <returns>Questions and Answers</returns>
+        ICollection<RTECustomTemplateQuestionAnswerModelView> GetQuestionsAndAnswersByWorkspaceId(int workspaceId);
     }
 }

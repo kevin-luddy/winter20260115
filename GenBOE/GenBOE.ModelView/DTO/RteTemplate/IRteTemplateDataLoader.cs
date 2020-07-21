@@ -74,5 +74,26 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="templateId">The template ID for the questions.</param>
         /// <returns>Mapping of old and new IDs for the questions</returns>
         Dictionary<int, int> SaveQuestions(ICollection<RteCustomTemplateQuestionModelView> questions, int templateId);
+
+        /// <summary>
+        /// Gets Questions and Answers By Workspace Id
+        /// </summary>
+        /// <param name="workspaceId">Workspace Id</param>
+        /// <returns>Questions and Answers</returns>
+        ICollection<RTECustomTemplateQuestionAnswerModelView> GetQuestionsAndAnswersByWorkspaceId(int workspaceId);
+
+        /// <summary>
+        /// Get the Answers ONLY for the workspace
+        /// </summary>
+        /// <param name="workspaceId">The id of the workspace to retrieve information for.</param>
+        /// <returns>Answers for the workspace.</returns>
+        ICollection<RTECustomTemplateAnswerModelView> GetAnswersByWorkspaceId(int workspaceId);
+
+        /// <summary>
+        /// Get the Questions ONLY for the workspace
+        /// </summary>
+        /// <param name="workspaceId">The id of the workspace to retrieve information for.</param>
+        /// <returns>Questions for the workspace.</returns>
+        ICollection<RteCustomTemplateQuestionModelView> GetQuestionsByWorkspaceId(int workspaceId);
     }
 }
