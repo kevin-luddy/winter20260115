@@ -5708,20 +5708,20 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 try
                 {
-                    toReturn = new DateRange(useGfy ? this.AdjustDateForGovtFiscalYear(Earliest.StartDate.Value) : Earliest.StartDate,
-                        useGfy ? this.AdjustDateForGovtFiscalYear(Latest.EndDate.Value) : Latest.EndDate);
+                    toReturn = new DateRange(useGfy ? new DateTime(this.AdjustDateForGovtFiscalYear(Earliest.StartDate.Value).Year, 1, 15) : Earliest.StartDate,
+                        useGfy ? new DateTime(this.AdjustDateForGovtFiscalYear(Latest.EndDate.Value).Year, 12, 15) : Latest.EndDate);
                 }
                 catch (InvalidOperationException)
                 {
                     // get the date from the boe
-                    toReturn = new DateRange(useGfy ? this.AdjustDateForGovtFiscalYear(boeExportModelView.StartDate) : boeExportModelView.StartDate,
-                        useGfy ? this.AdjustDateForGovtFiscalYear(Latest.EndDate.Value) : boeExportModelView.EndDate);
+                    toReturn = new DateRange(useGfy ? new DateTime(this.AdjustDateForGovtFiscalYear(boeExportModelView.StartDate).Year, 1, 15) : boeExportModelView.StartDate,
+                        useGfy ? new DateTime(this.AdjustDateForGovtFiscalYear(Latest.EndDate.Value).Year, 12, 15) : boeExportModelView.EndDate);
                 }
             }
             else
             {
-                toReturn = new DateRange(useGfy ? this.AdjustDateForGovtFiscalYear(boeExportModelView.StartDate) : boeExportModelView.StartDate,
-                        useGfy ? this.AdjustDateForGovtFiscalYear(boeExportModelView.EndDate) : boeExportModelView.EndDate);
+                toReturn = new DateRange(useGfy ? new DateTime(this.AdjustDateForGovtFiscalYear(boeExportModelView.StartDate).Year, 1, 15) : boeExportModelView.StartDate,
+                        useGfy ? new DateTime(this.AdjustDateForGovtFiscalYear(boeExportModelView.EndDate).Year, 12, 15) : boeExportModelView.EndDate);
             }
 
             return toReturn;
