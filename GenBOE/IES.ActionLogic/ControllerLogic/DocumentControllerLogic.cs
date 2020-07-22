@@ -119,8 +119,6 @@ namespace IES.ActionLogic.ControllerLogic
         public ICollection<DocumentGridModelView> RetrieveAllLinkedDocuments(IReadOnlyCollection<SecurityPermissionsResponse> roles, string activeUserNtid)
         {
             bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
-            // TESTING ONLY -- Set isAdmin to false to test locally in DEV
-            ////isAdmin = false;
 
             ICollection<ProposalDto> proposals = isAdmin ? this.proposalLoader.GetAllSlim() : this.proposalLoader.GetProposalsByUser(activeUserNtid);
 
@@ -146,11 +144,14 @@ namespace IES.ActionLogic.ControllerLogic
         public ICollection<ProposalDto> RetrieveUnlinkedProposals(IReadOnlyCollection<SecurityPermissionsResponse> roles, string activeUserNtid)
         {
             bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
-            // TESTING ONLY -- Set isAdmin to false to test locally in DEV
-            ////isAdmin = false;
 
             ICollection<ProposalDto> proposals = isAdmin ? this.proposalLoader.GetAllSlim() : this.proposalLoader.GetProposalsByUser(activeUserNtid);
-            proposals = proposals.Where(p => (p.ProposalStatus == ProposalStatus.InProgress || p.ProposalStatus == ProposalStatus.Submitted) && !p.IsForecastProposal && !p.DocumentId.HasValue && p.CustomerType != CustomerType.Commercial && p.CustomerType != CustomerType.InternationalCommercial && (isAdmin || roles.Any(r => r.ProposalID == p.Id && Constants.EDIT_ROLES.Contains(r.AuthorizedRole)))).ToList();
+            proposals = proposals.Where(p => 
+                    (p.ProposalStatus == ProposalStatus.InProgress || p.ProposalStatus == ProposalStatus.Submitted) 
+                    && !p.DocumentId.HasValue
+                    && !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.Revised
+                    && p.CustomerType != CustomerType.Commercial && p.CustomerType != CustomerType.InternationalCommercial 
+                    && (isAdmin || roles.Any(r => r.ProposalID == p.Id && Constants.EDIT_ROLES.Contains(r.AuthorizedRole)))).ToList();
 
             // do a sanity check to make sure there are no documents that think they are linked to proposals
             if (proposals.Any())

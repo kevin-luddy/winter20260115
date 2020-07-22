@@ -422,6 +422,7 @@ namespace IES.Tests
             Assert.IsFalse(nonAdminProposals.Any(p => p.DocumentId.HasValue));
 
             Assert.IsFalse(proposals.Any(p => p.CustomerType == CustomerType.Commercial || p.CustomerType == CustomerType.InternationalCommercial));
+            Assert.IsFalse(proposals.Any(p => p.ProposalStatus != ProposalStatus.Revised));
             Assert.IsFalse(nonAdminProposals.Any(p => p.CustomerType == CustomerType.Commercial || p.CustomerType == CustomerType.InternationalCommercial));
 
             Assert.IsTrue(nonAdminProposals.All(p => editRoles.Any(e => e.ProposalID == p.Id && Constants.EDIT_ROLES.Contains(e.AuthorizedRole))));
