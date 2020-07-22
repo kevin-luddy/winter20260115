@@ -1686,7 +1686,7 @@ namespace GenTRAC.DataBridge.DTO
                             x.CertificationTimelineCompleted,
                             IsRevision = x.RevisionOfId != null,
                             HasRevision = dbModel.Proposals.Any(z => z.RevisionOfId == x.ProposalID)
-                        }).ToList()
+                        }).OrderByDescending(x => x.ProposalID).ToList()
                         // some of the more complicating operations (below) need to be done in C#, not in SQL, hence the approach
                         .Select(x => new RevisionHistoryModelView() 
                         { 
