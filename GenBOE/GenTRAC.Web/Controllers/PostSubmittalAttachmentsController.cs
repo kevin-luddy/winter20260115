@@ -14,6 +14,7 @@ namespace GenTRAC.Web.Controllers
     using GenTRAC.ActionLogic;
     using GenTRAC.ActionLogic.ModelView.PostSubmittalAttachments;
     using GenTRAC.DataBridge.DTO;
+    using GenTRAC.Objects.FullObject;
     using GenTRAC.Web.Common;
     using IES.Common;
     using IES.Common.Exceptions;
@@ -69,7 +70,10 @@ namespace GenTRAC.Web.Controllers
                 MaxOtherFileCount = SiteMasterUtilities.MaxOtherFileCount
             };
 
-            this.ViewBag.IsRevision = this.psaLogic.GetFullProposalDto(proposalId).IsRevision;
+            FullProposal prop = this.psaLogic.GetFullProposalDto(proposalId);
+
+            this.ViewBag.IsRevision = prop.IsRevision;
+            this.ViewBag.ReadOnly = prop.ProposalStatus == ProposalStatus.Revised;
 
             return this.View(WebConstants.View.POST_SUBMITTAL_ATTACHMENTS, model);
         }

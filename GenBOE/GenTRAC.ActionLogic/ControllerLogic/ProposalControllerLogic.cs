@@ -1221,7 +1221,7 @@ namespace GenTRAC.ActionLogic
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView();
 
             FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
-            model.IsReadOnly = this.IsCertificationReadOnly(proposalId ?? -1);
+            model.IsReadOnly = this.IsCertificationReadOnly(proposalId ?? -1, fullProposalDto.ProposalStatus);
 
             if (fullProposalDto != null)
             {
@@ -1258,7 +1258,7 @@ namespace GenTRAC.ActionLogic
                 model.Comments = fullProposalDto.Comments;
                 
                 // Read Only && certification not required reason set && has permissions to update it
-                model.DisplayCertificationReset = string.Equals(this.IsCertificationReadOnly(fullProposalDto.Id).ToLower(), "true") 
+                model.DisplayCertificationReset = string.Equals(this.IsCertificationReadOnly(fullProposalDto.Id, fullProposalDto.ProposalStatus).ToLower(), "true") 
                                                                                     && model.ReasonCertificationNotRequired.HasValue
                                                                                     && this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
             }
@@ -2054,10 +2054,11 @@ namespace GenTRAC.ActionLogic
         /// Determines whether certification of proposal is read only based on proposal state and current user
         /// </summary>
         /// <param name="proposalId">The proposal Id.</param>
+        /// <param name="proposalStatus">Proposal Status</param>
         /// <returns>"true" if readonly, "false" if editable</returns>
-        public string IsCertificationReadOnly(int proposalId)
+        public string IsCertificationReadOnly(int proposalId, ProposalStatus proposalStatus)
         {
-            bool readOnly = false;
+            bool readOnly = proposalStatus == ProposalStatus.Revised;
 
             // check permission of current user
             SecurityAuthorizationAndRole authorization = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId);

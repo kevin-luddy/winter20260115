@@ -471,58 +471,9 @@
                             <div class="proposalTitle">@proposalLinkText - @Model.ProposalTitle</div>
                             <div class="proposalStatusDates">
                                 <p style="padding-bottom: 2px;">
-                                    @if (Model.ProposalStatus == ProposalStatus.InProgress)
-                                    {
-                                        <text>
-                                            Due: @Model.AnticipatedDeliveryDate
-                                        </text>
-                                    }
-                                    else if (Model.ProposalStatus == ProposalStatus.Completed || Model.ProposalStatus == ProposalStatus.Submitted || Model.ProposalStatus == ProposalStatus.Revised)
-                                    {
-                                        <text>
-                                            Approval Workflow Completed: @Model.CompletedDate
-                                        </text>
-                                    }
-                                    else if (Model.ProposalStatus == ProposalStatus.Revision || Model.ProposalStatus == ProposalStatus.Archived || Model.ProposalStatus == ProposalStatus.Deleted || Model.ProposalStatus == ProposalStatus.NoBid)
-                                    {
-                                        @Model.ProposalStatus.GetDescription();
-                                    }
-                                </p>
+                                    @Model.WorkflowStatusLineText
                                 <p>
-                                    @if (Model.ProposalStatus == ProposalStatus.Revised)
-                                    {
-                                        <text>
-                                            Proposal Revised
-                                        </text>
-                                    }
-                                    @if (Model.IsCCoPD)
-                                    {
-                                        if (Model.ProposalStatus == ProposalStatus.Submitted)
-                                        {
-                                            <text>
-                                                Certification In Progress
-                                            </text>
-                                        }
-                                        else if (Model.ProposalStatus == ProposalStatus.Completed)
-                                        {
-                                            if (Model.CompletedBeforeCertification)
-                                            {
-                                                <span>
-                                                    Certification Completed: <span helptext="@naHelpText">N/A </span>
-                                                </span>
-                                            }
-                                            else
-                                            {
-                                                <text>
-                                                    Certification Completed: @Model.CertificationCompletedDate
-                                                </text>
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <text>&nbsp;</text>
-                                    }
+                                    @Model.CertificationCompletedLineText
                                 </p>
                             </div>
                         </text>

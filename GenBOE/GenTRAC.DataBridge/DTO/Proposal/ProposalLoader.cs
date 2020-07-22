@@ -1681,8 +1681,8 @@ namespace GenTRAC.DataBridge.DTO
                             IsCurrentlySelected = x.ProposalID == proposalId,
                             TrackingNumber = x.ProposalTrackingID,
                             ProposalTitle = x.ProposalTitle,
-                            WorkflowCompletedLine = this.SetWorkflowCompletedLine(x.ProposalStatus, x.AnticipatedDeliveryDate, x.MaxCompleteDate),
-                            CertificationCompletedLine = this.SetCertificationCompletedLine(x.ProposalStatus, x.CCPDRequired, x.CertificationTimelineCompleted),
+                            WorkflowCompletedLine = GetWorkflowCompletedLineText(x.ProposalStatus, x.AnticipatedDeliveryDate, x.MaxCompleteDate),
+                            CertificationCompletedLine = GetCertificationCompletedLineText(x.ProposalStatus, x.CCPDRequired, x.CertificationTimelineCompleted),
 
                             DisplayProposalSetupTab = true,
                             DisplayChecklistTab = true,
@@ -1698,13 +1698,13 @@ namespace GenTRAC.DataBridge.DTO
         }
 
         /// <summary>
-        /// Sets Workspace Completed Line for the Revision History
+        /// Gets Workspace Completed Line for the Revision History
         /// </summary>
         /// <param name="proposalStatus">Proposal Status</param>
         /// <param name="anticipatedDeliveryDate">Anticipated Delivery Date</param>
         /// <param name="maxCompleteDate">Max Completed Date</param>
         /// <returns>Text for the WS completed line</returns>
-        private string SetWorkflowCompletedLine(ProposalStatus proposalStatus, DateTime anticipatedDeliveryDate, DateTime? maxCompleteDate)
+        public static string GetWorkflowCompletedLineText(ProposalStatus proposalStatus, DateTime anticipatedDeliveryDate, DateTime? maxCompleteDate)
         {
             string result = string.Empty;
 
@@ -1716,7 +1716,7 @@ namespace GenTRAC.DataBridge.DTO
                 case ProposalStatus.Completed:
                 case ProposalStatus.Submitted:
                 case ProposalStatus.Revised:
-                    result = "Approval Workflow Completed: " + maxCompleteDate?.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? string.Empty;
+                    result = "Approval Workflow Completed: " + maxCompleteDate?.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? "N/A";
                     break;
                 case ProposalStatus.Revision:
                 case ProposalStatus.Archived:
@@ -1730,19 +1730,19 @@ namespace GenTRAC.DataBridge.DTO
         }
 
         /// <summary>
-        /// Sets Certification Completed Line for the Revision History
+        /// Gets Certification Completed Line for the Revision History
         /// </summary>
         /// <param name="proposalStatus">Proposal Status</param>
         /// <param name="cCoPDRequired">CCOPD Requirewd</param>
         /// <param name="certificationTimelineCompleted">Certification Timeline Completed Date</param>
         /// <returns>Text for the Cert completed line</returns>
-        private string SetCertificationCompletedLine(ProposalStatus proposalStatus, bool? cCoPDRequired, DateTime? certificationTimelineCompleted)
+        public static string GetCertificationCompletedLineText(ProposalStatus proposalStatus, bool? cCoPDRequired, DateTime? certificationTimelineCompleted)
         {
             string result = string.Empty;
 
             if (proposalStatus == ProposalStatus.Revised)
             {
-                result = "Proposal Revised";
+                result = "Certification: N/A, Proposal Revised";
             }
             else if (cCoPDRequired == true)
             {
@@ -1752,7 +1752,7 @@ namespace GenTRAC.DataBridge.DTO
                 }
                 else if (proposalStatus == ProposalStatus.Completed)
                 {
-                    result = "Certification Completed: " + (certificationTimelineCompleted.HasValue ? certificationTimelineCompleted.Value.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) : "N/A");
+                    result = "Certification Completed: " + certificationTimelineCompleted?.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? "N/A";
                 }
             }
 
