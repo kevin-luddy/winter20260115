@@ -6,8 +6,10 @@
 
 namespace GenTRAC.ActionLogic.ModelView.Proposals
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using GenTRAC.DataBridge.DTO;
     using IES.Common;
 
     /// <summary>
@@ -141,5 +143,29 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// ID of the revised proposal if this proposal is a revision
         /// </summary>
         public int? RevisedProposalId { get; set; }
+
+        /// <summary>
+        /// Text for certification completed line
+        /// </summary>
+        public string CertificationCompletedLineText
+        {
+            get
+            {
+                DateTime? certificationCompleted = DateTime.TryParse(this.CertificationCompletedDate, out DateTime temp) ? (DateTime?)temp : null;
+                return ProposalLoader.GetCertificationCompletedLineText(this.ProposalStatus, this.IsCCoPD, certificationCompleted);
+            }
+        }
+
+        /// <summary>
+        /// Text for workflow status line
+        /// </summary>
+        public string WorkflowStatusLineText
+        {
+            get
+            {
+                DateTime? completedDate = DateTime.TryParse(this.CompletedDate, out DateTime temp) ? (DateTime?)temp : null;
+                return ProposalLoader.GetWorkflowCompletedLineText(this.ProposalStatus, DateTime.Parse(this.AnticipatedDeliveryDate), completedDate);
+            }
+        }
     }
 }

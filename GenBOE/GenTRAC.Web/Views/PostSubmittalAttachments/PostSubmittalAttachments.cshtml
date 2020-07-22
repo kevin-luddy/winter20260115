@@ -303,7 +303,7 @@
         <br />
         <h3>Attachments</h3>
         <br />
-        @if (Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete && Model.PostSubmittalAttachments.Count(file => file.AttachmentType == AttachmentType.Other) < Model.MaxOtherFileCount) // Only show the button if the max number of files has not been uploaded.
+        @if (Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete && !this.ViewBag.ReadOnly && Model.PostSubmittalAttachments.Count(file => file.AttachmentType == AttachmentType.Other) < Model.MaxOtherFileCount) // Only show the button if the max number of files has not been uploaded.
         {
             <button id="add-attachment" class="ies-action" type="button" onclick="psaWidget.AddAttachment('add-attachment-file', '@((int) AttachmentType.Other)')">+ Add Other Attachment</button>
             <div id="add-attachment-loader" class="loader display-none"></div>
@@ -336,10 +336,10 @@
                     @if (Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete)
                     {
                         <td style="text-align: center;">
-                            <a id="deleteEnabled-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "" : "display:none")" onclick="psaWidget.DeleteAttachment('@((int)attachment.AttachmentType)', '@((int)attachment.Id)')">
+                            <a id="deleteEnabled-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded && !this.ViewBag.ReadOnly ? "" : "display:none")" onclick="psaWidget.DeleteAttachment('@((int)attachment.AttachmentType)', '@((int)attachment.Id)')">
                                 <img id="deleteButton-@attachmentIdentifier" class="enabled" src="~/Content/images/Cancel_16x.png" />
                             </a>
-                            <img id="deleteDisabled-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "display:none" : "")" class="disabled" src="~/Content/images/Cancel_16x.png" />
+                            <img id="deleteDisabled-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded || this.ViewBag.ReadOnly ? "display:none" : "")" class="disabled" src="~/Content/images/Cancel_16x.png" />
                         </td>
                     }
                     <td>@Html.Raw(attachment.AttachmentTypeDisplayString)</td>
@@ -350,7 +350,7 @@
                         </a>
                         <span id="filenameLabel-@attachmentIdentifier" style="@(attachment.FileHasBeenUploaded ? "display:none" : "")">Select File</span>
                     </td>
-                    @if (Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete)
+                    @if (!this.ViewBag.ReadOnly && Model.PsaVisibility == SecurityAuthorization.CreateReadUpdateDelete)
                     {
                         <td style="text-align: center;">
                             @if (attachment.AttachmentType != AttachmentType.Other) // The upload button should not be visible for 'Other' attachments.  These should be added via the Add Attachment button.
