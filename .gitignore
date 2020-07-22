@@ -52,7 +52,7 @@ x64/
 *.jfm
 
 # Application Logs
-[Ll]ogs/*.csv
+**/[Ll]ogs/*.csv
 
 # OS generated files #
 .DS_Store*
