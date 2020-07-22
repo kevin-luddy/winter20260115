@@ -363,11 +363,6 @@ namespace GenTRAC.DataBridge.DTO
         public bool IsRevision { get { return RevisionOfId.HasValue; } }
 
         /// <summary>
-        /// Indicates if the proposal has a revision
-        /// </summary>
-        public bool HasRevision { get; set; } = false;
-
-        /// <summary>
         /// ID of the Proposal that this Proposal is a revision of
         /// (null if not a revision)
         /// </summary>
