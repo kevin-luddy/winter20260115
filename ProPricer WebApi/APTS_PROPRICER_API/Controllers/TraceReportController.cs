@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016-2018 Lockheed Martin Corporation.
+    Copyright 2016-2020 Lockheed Martin Corporation.
 
     This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
     commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using APTSPropricerApi.Connection;
 using APTSPropricerApi.DTOs;
+using EBS.Core;
 using EBS.ProPricer.Model;
 using EBS.ProPricer.Model.General;
 using EBS.ProPricer.Model.Pricing;
@@ -59,18 +60,18 @@ namespace APTSPropricerApi.Controllers
                     {
                         // Name
                         string[] parts = id.Split('|');
-                        pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value;
+                        pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value();
                     }
                     else
                     {
                         // GUID
                         EBS.ProPricer.Data.EntityId pEntityId = new EBS.ProPricer.Data.EntityId(new Guid(id));
-                        pr = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                        pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                     }
 
                     pr.Open();
                     ///////////////////////////////////
-                    foreach (Task t in pr.Tasks)
+                    foreach (Task t in pr.Tasks.Items())
                     {
                         whichvar = "tasks";
                         t.Open();
@@ -82,7 +83,7 @@ namespace APTSPropricerApi.Controllers
 
                         if (t.ResourceAssignments != null && t.ResourceAssignments.Count > 0)
                         {
-                            foreach (IResourceAssignment r in t.ResourceAssignments)
+                            foreach (IResourceAssignment r in t.ResourceAssignments.Items())
                             {
                                 r.Open();
                                 if (r.Source.Type.ToString() == "Direct" || r.Source.Type.ToString() == "Travel" || getall)

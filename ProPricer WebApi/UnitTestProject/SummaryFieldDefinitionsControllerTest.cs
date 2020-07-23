@@ -2,6 +2,7 @@
 using APTSPropricerApi.Connection;
 using APTSPropricerApi.Controllers;
 using APTSPropricerApi.DTOs;
+using EBS.Core;
 using EBS.ProPricer.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -71,9 +72,9 @@ namespace UnitTestProject
             string version = "0";
             using (IProPricerConnection _ppc = (IProPricerConnection)PoolManager.GetInstance(TestConstants.InstanceId).GetObjectsFromPool())
             {
-                if (_ppc.Workspace.Proposals.Find(template, version).HasValue)
+                if (_ppc.Workspace.Proposals.Find(template, version).HasValue())
                 {
-                    pr = _ppc.Workspace.Proposals.Find(template, version).Value;
+                    pr = _ppc.Workspace.Proposals.Find(template, version).Value();
                 }
             }
 
@@ -153,9 +154,9 @@ namespace UnitTestProject
             string version = "0";
             using (IProPricerConnection _ppc = (IProPricerConnection)PoolManager.GetInstance(TestConstants.InstanceId).GetObjectsFromPool())
             {
-                if (_ppc.Workspace.Proposals.Find(template, version).HasValue)
+                if (_ppc.Workspace.Proposals.Find(template, version).HasValue())
                 {
-                    pr = _ppc.Workspace.Proposals.Find(template, version).Value;
+                    pr = _ppc.Workspace.Proposals.Find(template, version).Value();
                 }
             }
 
@@ -239,9 +240,9 @@ namespace UnitTestProject
             string version = "0";
             using (IProPricerConnection _ppc = (IProPricerConnection)PoolManager.GetInstance(TestConstants.InstanceId).GetObjectsFromPool())
             {
-                if (_ppc.Workspace.Proposals.Find(template, version).HasValue)
+                if (_ppc.Workspace.Proposals.Find(template, version).HasValue())
                 {
-                    pr = _ppc.Workspace.Proposals.Find(template, version).Value;
+                    pr = _ppc.Workspace.Proposals.Find(template, version).Value();
                 }
             }
 

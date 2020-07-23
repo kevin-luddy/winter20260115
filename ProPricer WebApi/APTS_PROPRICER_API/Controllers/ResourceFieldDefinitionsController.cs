@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016-2018 Lockheed Martin Corporation.
+    Copyright 2016-2020 Lockheed Martin Corporation.
 
     This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
     commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using APTSPropricerApi.Connection;
 using APTSPropricerApi.DTOs;
+using EBS.Core;
 using EBS.ProPricer.Model;
 using EBS.ProPricer.Model.General;
 
@@ -36,7 +37,7 @@ namespace APTSPropricerApi.Controllers
                     ppc.Workspace.Open();
                     ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Open();
 
-                    foreach (ResourceFieldDefinition rsd in ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions)
+                    foreach (ResourceFieldDefinition rsd in ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Items())
                     {
                         ResourceFieldDefinitionsDto rsddto = new ResourceFieldDefinitionsDto
                         {
@@ -72,13 +73,13 @@ namespace APTSPropricerApi.Controllers
                 {
                     // Name
                     string[] parts = id.Split('|');
-                    pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value;
+                    pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value();
                 }
                 else
                 {
                     // GUID
                     EBS.ProPricer.Data.EntityId pEntityId = new EBS.ProPricer.Data.EntityId(new Guid(id));
-                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                 }
 
                 List<ResourceFieldDefinitionsDto> resdfl = new List<ResourceFieldDefinitionsDto>();
@@ -119,14 +120,14 @@ namespace APTSPropricerApi.Controllers
                     //  ppc.workspace.Open();
                     //  ppc.workspace.GlobalLibrary.ResourceFieldDefinitions.Open();
 
-                    ResourceFieldDefinition rfd = ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Find(rfddto.Key).Value;
+                    ResourceFieldDefinition rfd = ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Find(rfddto.Key).Value();
                     if (rfd != null)
                     {
                         try
                         {
-                            if (rfd.ValueList.Find(rfddto.Value))
+                            if (rfd.ValueList.Find(rfddto).HasValue())
                             {
-                                ResourceFieldStandardValue rfdval = rfd.ValueList.Find(rfddto.Value).Value;
+                                ResourceFieldStandardValue rfdval = rfd.ValueList.Find(rfddto.Value).Value();
                             }
                             else
                             {

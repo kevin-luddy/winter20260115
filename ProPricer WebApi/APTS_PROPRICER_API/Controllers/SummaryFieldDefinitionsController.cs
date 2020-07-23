@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016-2018 Lockheed Martin Corporation.
+    Copyright 2016-2020 Lockheed Martin Corporation.
 
     This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
     commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
@@ -37,7 +37,7 @@ namespace APTSPropricerApi.Controllers
                 if (ppc.Workspace != null)
                 {
                     ppc.Workspace.ProposalDefaults.SummaryFieldDefinitions.Open();
-                    foreach (DefaultSummaryFieldDefinition sfd in ppc.Workspace.ProposalDefaults.SummaryFieldDefinitions)
+                    foreach (DefaultSummaryFieldDefinition sfd in ppc.Workspace.ProposalDefaults.SummaryFieldDefinitions.Items())
                     {
                         SummaryFieldDefinitionsDto sfddto = new SummaryFieldDefinitionsDto
                         {
@@ -51,7 +51,7 @@ namespace APTSPropricerApi.Controllers
                         if (sfddto.DataType == "List")
                         {
                             List<SummaryFieldListDto> sflist = new List<SummaryFieldListDto>();
-                            foreach (DefaultSummaryFieldStandardValue sf in sfd.ValueList)
+                            foreach (DefaultSummaryFieldStandardValue sf in sfd.ValueList.Items())
                             {
                                 SummaryFieldListDto sfdto = new SummaryFieldListDto
                                 {
@@ -93,13 +93,13 @@ namespace APTSPropricerApi.Controllers
                 {
                     // Name
                     string[] parts = id.Split('|');
-                    pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value;
+                    pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value();
                 }
                 else
                 {
                     // GUID
                     EntityId pEntityId = new EntityId(new Guid(id));
-                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                 }
 
                 List<SummaryFieldDefinitionsDto> sfdl = new List<SummaryFieldDefinitionsDto>();
@@ -107,7 +107,7 @@ namespace APTSPropricerApi.Controllers
                 {
                     pr.Open();
                     pr.SummaryFieldDefinitions.Open();
-                    foreach (SummaryFieldDefinition sfd in pr.SummaryFieldDefinitions)
+                    foreach (SummaryFieldDefinition sfd in pr.SummaryFieldDefinitions.Items())
                     {
                         SummaryFieldDefinitionsDto sfddto = new SummaryFieldDefinitionsDto
                         {
@@ -132,7 +132,7 @@ namespace APTSPropricerApi.Controllers
                         if (sfddto.DataType == "List")
                         {
                             List<SummaryFieldListDto> sflist = new List<SummaryFieldListDto>();
-                            foreach (SummaryFieldStandardValue sf in sfd.ValueList)
+                            foreach (SummaryFieldStandardValue sf in sfd.ValueList.Items())
                             {
                                 SummaryFieldListDto sfdto = new SummaryFieldListDto
                                 {
@@ -175,7 +175,7 @@ namespace APTSPropricerApi.Controllers
                 try
                 {
                     EntityId pEntityId = new EntityId(new Guid(proposalAndSummaryFields.Id));
-                    ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                    ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
 
                     //lock the proposal for modification.
                     ppProposal.Open();
@@ -241,7 +241,7 @@ namespace APTSPropricerApi.Controllers
                 try
                 {
                     EntityId pEntityId = new EntityId(new Guid(proposalAndSummaryFields.Id));
-                    ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                    ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
 
                     //lock the proposal for modification.
                     ppProposal.Open();
@@ -306,7 +306,7 @@ namespace APTSPropricerApi.Controllers
                 try
                 {
                     EntityId pEntityId = new EntityId(new Guid(proposalAndSummaryFields.Id));
-                    ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                    ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
 
                     //lock the proposal for modification.
                     ppProposal.Open();
@@ -314,7 +314,7 @@ namespace APTSPropricerApi.Controllers
 
                     foreach (SummaryFieldDefinitionsDto sfddto in proposalAndSummaryFields.SumFieldDefs)
                     {
-                        foreach (SummaryFieldDefinition sfd in ppProposal.SummaryFieldDefinitions)
+                        foreach (SummaryFieldDefinition sfd in ppProposal.SummaryFieldDefinitions.Items())
                         {
                             if (sfd.Id.ToString() == sfddto.Id)
                             {
@@ -370,13 +370,13 @@ namespace APTSPropricerApi.Controllers
                 {
                     // Name
                     string[] parts = id.Split('|');
-                    pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value;
+                    pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value();
                 }
                 else
                 {
                     // GUID
                     EntityId pEntityId = new EntityId(new Guid(id));
-                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                 }
 
                 if (pr != null)
@@ -466,7 +466,7 @@ namespace APTSPropricerApi.Controllers
         {
             try
             {
-                foreach (SummaryFieldDefinition sfd in proposal.SummaryFieldDefinitions)
+                foreach (SummaryFieldDefinition sfd in proposal.SummaryFieldDefinitions.Items())
                 {
                     if (sfd.Id.ToString() == sfddto.Id)
                     {

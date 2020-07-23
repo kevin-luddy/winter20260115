@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016-2018 Lockheed Martin Corporation.
+    Copyright 2016-2020 Lockheed Martin Corporation.
 
     This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
     commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
@@ -11,6 +11,7 @@ using System;
 using System.Web.Http;
 using APTSPropricerApi.Connection;
 using APTSPropricerApi.DTOs;
+using EBS.Core;
 using EBS.ProPricer.Data;
 using EBS.ProPricer.Model;
 
@@ -65,20 +66,20 @@ namespace APTSPropricerApi.Controllers
                     {
                         // Name
                         string[] parts = newProp.Id.Split('|');
-                        pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value;
+                        pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value();
                     }
                     else
                     {
                         // GUID
                         EntityId pEntityId = new EntityId(new Guid(newProp.Id));
-                        pr = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                        pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                     }
 
                     pr.Open();
 
                     whichvar = "to folder";
 
-                    Folder tofolder = ppc.Workspace.GlobalLibrary.Folders.Find(newProp.ParentFolderName, FolderCategory.Proposal, null).Value;
+                    Folder tofolder = ppc.Workspace.GlobalLibrary.Folders.Find(newProp.ParentFolderName, FolderCategory.Proposal, null).Value();
 
                     whichvar = "Copy command";
                     pr.Copy(newProp.Name, newProp.Version, newProp.Description, tofolder, false);
@@ -86,7 +87,7 @@ namespace APTSPropricerApi.Controllers
                     pr.Close();
 
                     whichvar = "new proposal id";
-                    Proposal newpr = ppc.Workspace.Proposals.Find(newProp.Name, newProp.Version).Value;
+                    Proposal newpr = ppc.Workspace.Proposals.Find(newProp.Name, newProp.Version).Value();
 
                     ReturnDto retdto = new ReturnDto
                     {

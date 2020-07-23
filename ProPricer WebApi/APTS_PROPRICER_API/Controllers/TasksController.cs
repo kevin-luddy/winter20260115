@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016-2018 Lockheed Martin Corporation.
+    Copyright 2016-2020 Lockheed Martin Corporation.
 
     This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
     commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
@@ -59,18 +59,18 @@ namespace APTSPropricerApi.Controllers
                     {
                         // Name
                         string[] parts = id.Split('|');
-                        pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value;
+                        pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value();
                     }
                     else
                     {
                         // GUID
                         EntityId pEntityId = new EntityId(new Guid(id));
-                        pr = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                        pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                     }
 
                     pr.Open();
                     ///////////////////////////////////
-                    foreach (Task t in pr.Tasks)
+                    foreach (Task t in pr.Tasks.Items())
                     {
                         whichvar = "tasks";
                         t.Open();
@@ -94,7 +94,7 @@ namespace APTSPropricerApi.Controllers
 
                         if (t.ResourceAssignments != null && t.ResourceAssignments.Count > 0)
                         {
-                            foreach (IResourceAssignment r in t.ResourceAssignments)
+                            foreach (IResourceAssignment r in t.ResourceAssignments.Items())
                             {
                                 r.Open();
                                 if (r.Source.Type.ToString() == "Direct" || getall)
@@ -200,7 +200,7 @@ namespace APTSPropricerApi.Controllers
                         whichvar = "material assignment";
                         // material assignment
                         List<MaterialAssignmentDto> materialAssignments = new List<MaterialAssignmentDto>();
-                        foreach (MaterialAssignment ma in t.MaterialAssignments)
+                        foreach (MaterialAssignment ma in t.MaterialAssignments.Items())
                         {
                             ma.Open();
 
@@ -282,7 +282,7 @@ namespace APTSPropricerApi.Controllers
                             if (ma.AssociatedCosts != null && ma.AssociatedCosts.Count > 0)
                             {
                                 List<SpreadDto> ascspread = new List<SpreadDto>();
-                                foreach (MaterialAssignmentAssociatedCost asc in ma.AssociatedCosts)
+                                foreach (MaterialAssignmentAssociatedCost asc in ma.AssociatedCosts.Items())
                                 {
                                     AssociatedCostsDto ascdto = new AssociatedCostsDto
                                     {
@@ -366,7 +366,7 @@ namespace APTSPropricerApi.Controllers
                         whichvar = "travel";
                         // travel
                         List<TravelsDto> trvlDto = new List<TravelsDto>();
-                        foreach (TravelAssignment trv in t.Travels)
+                        foreach (TravelAssignment trv in t.Travels.Items())
                         {
                             TravelsDto trvl = new TravelsDto
                             {
@@ -433,7 +433,7 @@ namespace APTSPropricerApi.Controllers
                             List<TravelExpenseDto> trexdto = new List<TravelExpenseDto>();
                             if (trv.Expenses != null)
                             {
-                                foreach (TravelAssignment.Expense item in trv.Expenses)
+                                foreach (TravelAssignment.Expense item in trv.Expenses.Items())
                                 {
                                     TravelExpenseDto trdto = new TravelExpenseDto
                                     {
@@ -500,7 +500,7 @@ namespace APTSPropricerApi.Controllers
                 try
                 {
                     EntityId pEntityId = new EntityId(new Guid(proposalAndTasks.Id));
-                    ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                    ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
 
                     //  Proposal ppProposal = ppc.workspace.Proposals.Find(proposalAndTasks.Name, proposalAndTasks.Version).Value;
 
@@ -568,7 +568,7 @@ namespace APTSPropricerApi.Controllers
                 try
                 {
                     EntityId pEntityId = new EntityId(new Guid(id));
-                    Proposal pr = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                    Proposal pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
 
                     //lock the proposal for modification.
                     pr.Open();
@@ -893,7 +893,7 @@ namespace APTSPropricerApi.Controllers
                     Resource res = null;
                     try
                     {
-                        res = ppc.Workspace.GlobalLibrary.Resources.Find(newma.ResourceAssignment.Name).Value;
+                        res = ppc.Workspace.GlobalLibrary.Resources.Find(newma.ResourceAssignment.Name).Value();
                     }
                     catch (Exception ex)
                     {
@@ -905,7 +905,7 @@ namespace APTSPropricerApi.Controllers
                     if (res != null)
                     {
                         //Check to see if resource exists in the direct rate table
-                        if (prop.DirectRateTable.Elements.Find(res))
+                        if (prop.DirectRateTable.Elements.Find(res).HasValue())
                         {
                             MaterialAssignment ma = myTask.MaterialAssignments.AddNew();
                             string whichvar = "material assignment";
@@ -944,7 +944,7 @@ namespace APTSPropricerApi.Controllers
                                 whichvar = "material assignment curve";
                                 if (newma.ResourceAssignment.SpreadCurve != null && newma.ResourceAssignment.SpreadCurve != string.Empty)
                                 {
-                                    Curve c = ppc.Workspace.GlobalLibrary.Curves.Find(newma.ResourceAssignment.SpreadCurve, CurveType.System).Value;
+                                    Curve c = ppc.Workspace.GlobalLibrary.Curves.Find(newma.ResourceAssignment.SpreadCurve, CurveType.System).Value();
                                     ma.Spread.Curve = c;
                                 }
 
@@ -969,13 +969,13 @@ namespace APTSPropricerApi.Controllers
                                         if (ritem.Value != string.Empty)
                                         {
                                             whichvar = "material assignment resource fields";
-                                            ResourceFieldDefinition rfd = ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Find(ritem.Key).Value;
+                                            ResourceFieldDefinition rfd = ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Find(ritem.Key).Value();
                                             try
                                             {
-                                                ResourceFieldStandardValue newval = rfd.ValueList.Find(ritem.Value).Value;
+                                                ResourceFieldStandardValue newval = rfd.ValueList.Find(ritem.Value).Value();
                                                 //  item.Value.Open();
                                                 //  item.Value.BeginEdit();
-                                                ResourceAssignmentInfo.ResourceFieldProperty.GetDescriptor(ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.IndexOf(rfd)).SetValue(ma.ResourceAssignmentInfo, newval);
+                                                ResourceAssignmentInfo.ResourceFieldProperty.GetDescriptor(ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Items().ToList().IndexOf(rfd)).SetValue(ma.ResourceAssignmentInfo, newval);
                                                 // item.Value.EndEdit();
                                                 //  item.Value.Close();
                                             }
@@ -1011,10 +1011,10 @@ namespace APTSPropricerApi.Controllers
                                         //  maasc.ResourceAssignmentInfo.Resource.Type = rst;
 
                                         whichvar = "material associated costs resource";
-                                        Resource ascres = ppc.Workspace.GlobalLibrary.Resources.Find(ascitem.Resource.Name).Value;
+                                        Resource ascres = ppc.Workspace.GlobalLibrary.Resources.Find(ascitem.Resource.Name).Value();
                                         if (ascres != null)
                                         {
-                                            if (prop.DirectRateTable.Elements.Find(ascres))
+                                            if (prop.DirectRateTable.Elements.Find(ascres).HasValue())
                                             {
                                                 maasc.ResourceAssignmentInfo.Resource = ascres;
                                             }
@@ -1028,13 +1028,13 @@ namespace APTSPropricerApi.Controllers
                                             {
                                                 if (ritem.Value != string.Empty)
                                                 {
-                                                    ResourceFieldDefinition rfd = ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Find(ritem.Key).Value;
+                                                    ResourceFieldDefinition rfd = ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Find(ritem.Key).Value();
                                                     try
                                                     {
-                                                        ResourceFieldStandardValue newval = rfd.ValueList.Find(ritem.Value).Value;
+                                                        ResourceFieldStandardValue newval = rfd.ValueList.Find(ritem.Value).Value();
                                                         //  item.Value.Open();
                                                         //  item.Value.BeginEdit();
-                                                        ResourceAssignmentInfo.ResourceFieldProperty.GetDescriptor(ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.IndexOf(rfd)).SetValue(maasc.ResourceAssignmentInfo, newval);
+                                                        ResourceAssignmentInfo.ResourceFieldProperty.GetDescriptor(ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Items().ToList().IndexOf(rfd)).SetValue(maasc.ResourceAssignmentInfo, newval);
                                                         // item.Value.EndEdit();
                                                         //  item.Value.Close();
                                                     }
@@ -1066,7 +1066,7 @@ namespace APTSPropricerApi.Controllers
                                         whichvar = "material associated costs curve";
                                         if (ascitem.SpreadCurve != null && ascitem.SpreadCurve != string.Empty)
                                         {
-                                            Curve c = ppc.Workspace.GlobalLibrary.Curves.Find(ascitem.SpreadCurve, CurveType.System).Value;
+                                            Curve c = ppc.Workspace.GlobalLibrary.Curves.Find(ascitem.SpreadCurve, CurveType.System).Value();
                                             maasc.Spread.Curve = c;
                                         }
 
@@ -1150,10 +1150,10 @@ namespace APTSPropricerApi.Controllers
                         // check for a resource
                         if (newtr.ResourceAssignment.Name != null)
                         {
-                            Resource res = ppc.Workspace.GlobalLibrary.Resources.Find(newtr.ResourceAssignment.Name).Value;
+                            Resource res = ppc.Workspace.GlobalLibrary.Resources.Find(newtr.ResourceAssignment.Name).Value();
                             if (res != null)
                             {
-                                if (prop.DirectRateTable.Elements.Find(res))
+                                if (prop.DirectRateTable.Elements.Find(res).HasValue())
                                 {
                                     tra.ResourceAssignmentInfo.Resource = res;
                                 }
@@ -1179,13 +1179,13 @@ namespace APTSPropricerApi.Controllers
                             IEnumerable<ResourceFieldsDto> resourceFields = newtr.ResourceAssignment.ResourceFields;
                             foreach (ResourceFieldsDto ritem in resourceFields)
                             {
-                                ResourceFieldDefinition rfd = ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Find(ritem.Key).Value;
+                                ResourceFieldDefinition rfd = ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Find(ritem.Key).Value();
                                 if (ritem.Value == string.Empty)
                                 {
                                     try
                                     {
                                         ResourceFieldStandardValue nullval = null;
-                                        ResourceAssignmentInfo.ResourceFieldProperty.GetDescriptor(ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.IndexOf(rfd)).SetValue(tra.ResourceAssignmentInfo, nullval);
+                                        ResourceAssignmentInfo.ResourceFieldProperty.GetDescriptor(ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Items().ToList().IndexOf(rfd)).SetValue(tra.ResourceAssignmentInfo, nullval);
                                     }
                                     catch (Exception mx)
                                     {
@@ -1199,8 +1199,8 @@ namespace APTSPropricerApi.Controllers
                                 {
                                     try
                                     {
-                                        ResourceFieldStandardValue newval = rfd.ValueList.Find(ritem.Value).Value;
-                                        ResourceAssignmentInfo.ResourceFieldProperty.GetDescriptor(ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.IndexOf(rfd)).SetValue(tra.ResourceAssignmentInfo, newval);
+                                        ResourceFieldStandardValue newval = rfd.ValueList.Find(ritem.Value).Value();
+                                        ResourceAssignmentInfo.ResourceFieldProperty.GetDescriptor(ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Items().ToList().IndexOf(rfd)).SetValue(tra.ResourceAssignmentInfo, newval);
                                     }
                                     catch (Exception mx)
                                     {
@@ -1219,7 +1219,7 @@ namespace APTSPropricerApi.Controllers
                         {
                             try
                             {
-                                foreach (TravelAssignment.Expense oldtf in tra.Expenses)
+                                foreach (TravelAssignment.Expense oldtf in tra.Expenses.Items())
                                 {
                                     foreach (TravelExpenseDto newtf in newtr.Expenses)
                                     {
@@ -1257,7 +1257,7 @@ namespace APTSPropricerApi.Controllers
                         whichvar = "travel assignment curve";
                         if (newtr.ResourceAssignment.SpreadCurve != null && newtr.ResourceAssignment.SpreadCurve != string.Empty)
                         {
-                            Curve c = ppc.Workspace.GlobalLibrary.Curves.Find(newtr.ResourceAssignment.SpreadCurve, CurveType.System).Value;
+                            Curve c = ppc.Workspace.GlobalLibrary.Curves.Find(newtr.ResourceAssignment.SpreadCurve, CurveType.System).Value();
                             tra.Spread.Curve = c;
                         }
 
@@ -1303,11 +1303,11 @@ namespace APTSPropricerApi.Controllers
             {
                 foreach (ResourceAssignmentDto item in task.ResourceAssignments)
                 {
-                    Resource res = ppc.Workspace.GlobalLibrary.Resources.Find(item.Name).Value;
+                    Resource res = ppc.Workspace.GlobalLibrary.Resources.Find(item.Name).Value();
                     if (res != null)
                     {
                         //Check to see if resource exists in the direct rate table
-                        if (prop.DirectRateTable.Elements.Find(res))
+                        if (prop.DirectRateTable.Elements.Find(res).HasValue())
                         {
                             //invoke the add new
 
@@ -1328,7 +1328,7 @@ namespace APTSPropricerApi.Controllers
                                 whichvar = "resource spread curve";
                                 if (item.SpreadCurve != null && item.SpreadCurve != string.Empty)
                                 {
-                                    Curve c = ppc.Workspace.GlobalLibrary.Curves.Find(item.SpreadCurve, CurveType.System).Value;
+                                    Curve c = ppc.Workspace.GlobalLibrary.Curves.Find(item.SpreadCurve, CurveType.System).Value();
                                     resource.Spread.Curve = c;
                                 }
 
@@ -1355,10 +1355,10 @@ namespace APTSPropricerApi.Controllers
                                                 //   ritem.value = "mike";
                                                 ResourceFieldDefinition rfd;
 
-                                                rfd = prop.Locked ? prop.Library.ResourceFieldDefinitions.Find(ritem.Key).Value 
-                                                    : ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Find(ritem.Key).Value;
-
-                                                if (!rfd.ValueList.Find(ritem.Value))
+                                                rfd = prop.Locked ? prop.Library.ResourceFieldDefinitions.Find(ritem.Key).Value()
+                                                    : ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Find(ritem.Key).Value();
+                                                
+                                                if (!rfd.ValueList.Find(ritem.Value()).HasValue())
                                                 {
                                                     if (rfd.AddToList && ritem.Key == "WBS1")
                                                     {
@@ -1368,8 +1368,8 @@ namespace APTSPropricerApi.Controllers
                                                     }
                                                 }
 
-                                                ResourceFieldStandardValue newval = rfd.ValueList.Find(ritem.Value).Value;
-                                                ResourceAssignmentInfo.ResourceFieldProperty.GetDescriptor(ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.IndexOf(rfd)).SetValue(resource.Info, newval);
+                                                ResourceFieldStandardValue newval = rfd.ValueList.Find(ritem.Value).Value();
+                                                ResourceAssignmentInfo.ResourceFieldProperty.GetDescriptor(ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Items().ToList().IndexOf(rfd)).SetValue(resource.Info, newval);
                                             }
                                             catch (Exception mx)
                                             {
@@ -1444,7 +1444,7 @@ namespace APTSPropricerApi.Controllers
                 try
                 {
                     EntityId pEntityId = new EntityId(new Guid(proposalAndTasks.Id));
-                    Proposal ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                    Proposal ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
 
                     //  Proposal ppProposal = ppc.workspace.Proposals.Find(proposalAndTasks.Name, proposalAndTasks.Version).Value;
 
@@ -1466,7 +1466,7 @@ namespace APTSPropricerApi.Controllers
                             t.BeginEdit();
                             if (t.Resources != null)
                             {
-                                foreach (ResourceAssignment resource in t.Resources)
+                                foreach (ResourceAssignment resource in t.Resources.Items())
                                 {
                                     resource.Open();
                                     resource.BeginEdit();
@@ -1478,13 +1478,13 @@ namespace APTSPropricerApi.Controllers
                                         IEnumerable<ResourceFieldsDto> resourceFields = ra.ResourceFields;
                                         foreach (ResourceFieldsDto item in resourceFields)
                                         {
-                                            ResourceFieldDefinition rfd = ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Find(item.Key).Value;
+                                            ResourceFieldDefinition rfd = ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Find(item.Key).Value();
                                             try
                                             {
-                                                ResourceFieldStandardValue newval = rfd.ValueList.Find(item.Value).Value;
+                                                ResourceFieldStandardValue newval = rfd.ValueList.Find(item.Value).Value();
                                                 //  item.Value.Open();
                                                 //  item.Value.BeginEdit();
-                                                ResourceAssignmentInfo.ResourceFieldProperty.GetDescriptor(ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.IndexOf(rfd)).SetValue(resource.Info, newval);
+                                                ResourceAssignmentInfo.ResourceFieldProperty.GetDescriptor(ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Items().ToList().IndexOf(rfd)).SetValue(resource.Info, newval);
                                                 // item.Value.EndEdit();
                                                 //  item.Value.Close();
                                             }
