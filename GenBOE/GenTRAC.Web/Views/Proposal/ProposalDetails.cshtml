@@ -164,17 +164,40 @@
         ProposalDetailsWidget.AddNewRevision = function () {
             var url = GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.PROPOSAL',
-                action: '@WebConstants.Action.DISPLAY_PROPOSAL_REVISION_DETAILS',
+                action: '@WebConstants.Action.VALIDATE_PROPOSAL_REVISION_DETAILS',
                 id:  '@Model.ProposalID'
             });
-            window.location = url;
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                contentType: 'application/json; charset=utf-8',
+                success: function () {
+                    var newRevisionUrl = GenSession.CreateUrl({
+                        controller: '@WebConstants.Controller.PROPOSAL',
+                        action: '@WebConstants.Action.DISPLAY_PROPOSAL_REVISION_DETAILS',
+                        id:  '@Model.ProposalID'
+                    });
+                    window.location = newRevisionUrl;
+                },
+                error: function (response) {
+                    var errorMessages = JSON.parse(response.responseText).MessageList
+                    var errorList = [];
+                    if (errorMessages.length != 0) {
+                        errorMessages.forEach(function (message) {
+                            errorList.push(message.ValidationIssue);
+                        });
+                    }
+                    GenSession.alertDialog('New Revision Creation Failed', errorList.join('<br/>'));
+                }
+            });
         };
 
         ProposalDetailsWidget.RevertRevision = function () {
             var url = GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.PROPOSAL',
                 action: '@WebConstants.Action.REVERT_PROPOSAL_TO_PRIOR_VERSION',
-                id:  '@Model.ProposalID' 
+                id:  '@Model.ProposalID'
             });
 
             $.ajax({
@@ -182,12 +205,21 @@
                 url: url,
                 contentType: 'application/json; charset=utf-8',
                 success: function (response) {
-                    console.log(response);
                     window.location = GenSession.CreateUrl({
                         controller: '@WebConstants.Controller.PROPOSAL',
                         action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
                         id: response.proposalId
                     });
+                },
+                error: function (response) {
+                    var errorMessages = JSON.parse(response.responseText).MessageList
+                    var errorList = [];
+                    if (errorMessages.length != 0) {
+                        errorMessages.forEach(function (message) {
+                            errorList.push(message.ValidationIssue);
+                        });
+                    }
+                    GenSession.alertDialog('Reverting Revision Failed', errorList.join('<br/>'));
                 }
             });
         };

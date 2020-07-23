@@ -329,6 +329,11 @@ namespace GenTRAC.Web.Common
             public const string DISPLAY_PROPOSAL_REVISION_DETAILS = "DisplayProposalRevisionDetails";
 
             /// <summary>
+            /// Validate the proposal details for creating a Revision
+            /// </summary>
+            public const string VALIDATE_PROPOSAL_REVISION_DETAILS = "ValidateNewProposalRevision";             
+
+            /// <summary>
             /// Filter Program Areas based on selected Line of Business
             /// </summary>
             public const string PROPOSAL_FILTER_PROGRAM_AREA = "LoadFilteredProgramAreas";
