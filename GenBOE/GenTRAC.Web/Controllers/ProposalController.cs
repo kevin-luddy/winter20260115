@@ -117,6 +117,17 @@ namespace GenTRAC.Web.Controllers
         }
 
         /// <summary>
+        /// Validate proposal for creating a new Revision
+        /// </summary>
+        /// <param name="proposalId">ID of the proposal being revised</param>
+        /// <returns>True if valid, validation errors if invalid</returns>
+        public JsonResult ValidateNewProposalRevision(int proposalId)
+        {
+            this.proposalLogic.ValidateSaveNewRevision(proposalId);
+            return this.Json(true);
+        }
+
+        /// <summary>
         /// Display proposal info for creating a new Revision
         /// </summary>
         /// <param name="proposalId">ID of the proposal being revised</param>
