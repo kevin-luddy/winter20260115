@@ -8,6 +8,7 @@
     using APTSPropricerApi.Connection;
     using APTSPropricerApi.Controllers;
     using APTSPropricerApi.DTOs;
+    using EBS.Core;
     using EBS.ProPricer.Data;
     using EBS.ProPricer.Model;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -56,9 +57,9 @@
                     /// Assert
                     Proposal pr = null;
                     EBS.ProPricer.Data.EntityId pEntityId = new EBS.ProPricer.Data.EntityId(new Guid(newid.Retmsg));
-                    if (_ppc.Workspace.Proposals.Find(pEntityId).HasValue)
+                    if (_ppc.Workspace.Proposals.Find(pEntityId).HasValue())
                     {
-                        pr = _ppc.Workspace.Proposals.Find(pEntityId).Value;
+                        pr = _ppc.Workspace.Proposals.Find(pEntityId).Value();
                     }
 
                     Assert.IsFalse(pr == null);
@@ -75,7 +76,7 @@
 
                     // delete our test proposal
                     pr.Delete();
-                    Assert.IsFalse(_ppc.Workspace.Proposals.Find(pEntityId).HasValue);
+                    Assert.IsFalse(_ppc.Workspace.Proposals.Find(pEntityId).HasValue());
                 }
             }
         }
@@ -126,9 +127,9 @@
                     Assert.IsTrue(newid.Retcode == "200");
 
                     Proposal pr = null;
-                    if (_ppc.Workspace.Proposals.Find(pEntityId).HasValue)
+                    if (_ppc.Workspace.Proposals.Find(pEntityId).HasValue())
                     {
-                        pr = _ppc.Workspace.Proposals.Find(pEntityId).Value;
+                        pr = _ppc.Workspace.Proposals.Find(pEntityId).Value();
                     }
 
                     // delete our test proposal
@@ -176,16 +177,16 @@
                     // Assert
                     Proposal pr = null;
                     EBS.ProPricer.Data.EntityId pEntityId = new EBS.ProPricer.Data.EntityId(new Guid(newid.Retmsg));
-                    if (_ppc.Workspace.Proposals.Find(pEntityId).HasValue)
+                    if (_ppc.Workspace.Proposals.Find(pEntityId).HasValue())
                     {
-                        pr = _ppc.Workspace.Proposals.Find(pEntityId).Value;
+                        pr = _ppc.Workspace.Proposals.Find(pEntityId).Value();
                     }
 
                     Assert.IsFalse(pr == null);
 
                     // delete our test proposal
                     pr.Delete();
-                    Assert.IsFalse(_ppc.Workspace.Proposals.Find(pEntityId).HasValue);
+                    Assert.IsFalse(_ppc.Workspace.Proposals.Find(pEntityId).HasValue());
                 }
             }
         }
@@ -218,13 +219,13 @@
                 FolderCollection topLevelFolders = _ppc.Workspace.GlobalLibrary.Folders;
                 List<string> names = new List<string>();
                 // only search the first 2 folders (so the test runs faster)
-                Collection<Folder> folders = new Collection<Folder> {_ppc.Workspace.GlobalLibrary.Folders[0], _ppc.Workspace.GlobalLibrary.Folders[1] };
+                Collection<Folder> folders = new Collection<Folder> {_ppc.Workspace.GlobalLibrary.Folders.Items().ToList()[0], _ppc.Workspace.GlobalLibrary.Folders.Items().ToList()[1] };
                 getFolders(folders, string.Empty, names);
                 Assert.IsTrue(names.Count > 0);
 
                 // demonstrate Find method
                 string ParentFolderName = "Test-Dusan";
-                Folder tofolder = _ppc.Workspace.GlobalLibrary.Folders.Find(ParentFolderName, FolderCategory.Proposal, null).Value;
+                Folder tofolder = _ppc.Workspace.GlobalLibrary.Folders.Find(ParentFolderName, FolderCategory.Proposal, null).Value();
                 Assert.IsNotNull(tofolder);
             }
         }

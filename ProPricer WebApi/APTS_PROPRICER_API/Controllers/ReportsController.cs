@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016-2018 Lockheed Martin Corporation.
+    Copyright 2016-2020 Lockheed Martin Corporation.
 
     This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
     commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
@@ -27,7 +27,7 @@ namespace APTSPropricerApi.Controllers
             using (IProPricerConnection ppc = (IProPricerConnection)PoolManager.GetInstance(instanceId).GetObjectsFromPool())
             {
                 ppc.Workspace.Reports.Open();
-                foreach (IReport rep in ppc.Workspace.Reports)
+                foreach (IReport rep in ppc.Workspace.Reports.Items())
                 {
                     System.Diagnostics.Debug.WriteLine("rep.Id");
                     System.Diagnostics.Debug.WriteLine(rep.Id);

@@ -2,6 +2,7 @@
 using APTSPropricerApi.Connection;
 using APTSPropricerApi.Controllers;
 using APTSPropricerApi.DTOs;
+using EBS.Core;
 using EBS.ProPricer.Model;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -21,9 +22,9 @@ namespace UnitTestProject
                 //by id 
                 string template = "F16 TEMPLATE";
                 string version = "0";
-                if (ppc.Workspace.Proposals.Find(template, version).HasValue)
+                if (ppc.Workspace.Proposals.Find(template, version).HasValue())
                 {
-                    pr = ppc.Workspace.Proposals.Find(template, version).Value;
+                    pr = ppc.Workspace.Proposals.Find(template, version).Value();
                 }
 
                 /// Act
@@ -45,16 +46,16 @@ namespace UnitTestProject
                 /// Assert
                 pr = null;
                 EBS.ProPricer.Data.EntityId pEntityId = new EBS.ProPricer.Data.EntityId(new Guid(newid.Retmsg));
-                if (ppc.Workspace.Proposals.Find(pEntityId).HasValue)
+                if (ppc.Workspace.Proposals.Find(pEntityId).HasValue())
                 {
-                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                 }
 
                 Assert.IsFalse(pr == null);
 
                 // delete our test proposal
                 pr.Delete();
-                Assert.IsFalse(ppc.Workspace.Proposals.Find(pEntityId).HasValue);
+                Assert.IsFalse(ppc.Workspace.Proposals.Find(pEntityId).HasValue());
 
                 //by name
                 template = "F16 TEMPLATE|0";
@@ -78,16 +79,16 @@ namespace UnitTestProject
                 /// Assert
                 pr = null;
                 pEntityId = new EBS.ProPricer.Data.EntityId(new Guid(newid.Retmsg));
-                if (ppc.Workspace.Proposals.Find(pEntityId).HasValue)
+                if (ppc.Workspace.Proposals.Find(pEntityId).HasValue())
                 {
-                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                 }
 
                 Assert.IsFalse(pr == null);
 
                 // delete our test proposal
                 pr.Delete();
-                Assert.IsFalse(ppc.Workspace.Proposals.Find(pEntityId).HasValue);
+                Assert.IsFalse(ppc.Workspace.Proposals.Find(pEntityId).HasValue());
             }
         }
     }

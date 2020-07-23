@@ -1,5 +1,5 @@
 /*
-	Copyright 2016-2018 Lockheed Martin Corporation.
+	Copyright 2016-2020 Lockheed Martin Corporation.
 
 	This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
 	commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
@@ -16,7 +16,7 @@ using Unity.WebApi;
 namespace APTSPropricerApi
 {
     public static class UnityConfig
-	{
+    {
 		////
 		/// Using dependency injection to inject the PROPRICER connection into the controllers.
 		/// 
@@ -32,18 +32,18 @@ namespace APTSPropricerApi
 		// - If more than two pooled connections remain in pool then start async process to close connections that haven't been used in last 10 min (leaving at least one in pool)
 		//
 		public static void RegisterComponents()
-		{
+        {
 			UnityContainer container = new UnityContainer();
-			
-			// register all your components with the container here
-			// it is NOT necessary to register your controllers
-			
-			container.RegisterType<IProPricerConnection, ProPricerConnection>(
-				new ContainerControlledLifetimeManager());
-			
-			GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
 
-			PoolManager.ResetPoolManagers();		
+            // register all your components with the container here
+            // it is NOT necessary to register your controllers
+
+            container.RegisterType<IProPricerConnection, ProPricerConnection>(
+                new ContainerControlledLifetimeManager());
+
+            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
+
+			PoolManager.ResetPoolManagers();
 		}
-	}
+    }
 }

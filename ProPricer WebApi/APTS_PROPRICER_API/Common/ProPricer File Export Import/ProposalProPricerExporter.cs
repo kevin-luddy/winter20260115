@@ -13,6 +13,7 @@ namespace APTSPropricerApi
     using EBS.ProPricer.ImportExport;
     using EBS.ProPricer.ImportExport.Ascii;
     using APTSPropricerApi.Connection;
+    using EBS.Core;
 
     /// <summary>
     /// ProPricerProposalExporter handles exporting task and resource data directly to a ProPricer proposal.
@@ -57,8 +58,8 @@ namespace APTSPropricerApi
         /// <param name="inTempPathFile">Temporary file path to store task and resoure export files.</param>
         /// <param name="proposalId">Id of the Proposal to export to.</param>
         /// <param name="instanceId">PP Instance Id</param>
-        /// <param name="taskMemoryStream">Memory stream of task data to export.</param>
-        /// <param name="resourceMemoryStream">Memory stream of resource data to export.</param>
+        /// <param name="taskData">task data to export.</param>
+        /// <param name="resourceData">resource data to export.</param>
         /// <param name="taskExportOption">Task data export option.</param>
         /// <param name="resourceExportOption">Resource Hours/Cost export option.</param>
         /// <returns>The results of the Task and resource export.</returns>
@@ -71,7 +72,7 @@ namespace APTSPropricerApi
             using (IProPricerConnection ppc = (IProPricerConnection)PoolManager.GetInstance(instanceId).GetObjectsFromPool())
             {
                 Guid id = new Guid(proposalId);
-                Proposal proposal = ppc.Workspace.Proposals.Find(id).Value;
+                Proposal proposal = ppc.Workspace.Proposals.Find(id).Value();
                 if (proposal != null)
                 {
                     proposal.Open();

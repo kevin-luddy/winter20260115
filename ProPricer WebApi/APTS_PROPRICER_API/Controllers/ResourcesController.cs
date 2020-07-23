@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016-2018 Lockheed Martin Corporation.
+    Copyright 2016-2020 Lockheed Martin Corporation.
 
     This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
     commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
@@ -32,7 +32,7 @@ namespace APTSPropricerApi.Controllers
                 if (ppc.Workspace != null)
                 {
                     ppc.Workspace.GlobalLibrary.Resources.Open();
-                    foreach (Resource resrc in ppc.Workspace.GlobalLibrary.Resources)
+                    foreach (Resource resrc in ppc.Workspace.GlobalLibrary.Resources.Items())
                     {
                         ResourcesDto resdto = new ResourcesDto
                         {
