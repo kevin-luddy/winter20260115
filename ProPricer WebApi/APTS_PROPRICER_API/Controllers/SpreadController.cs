@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016-2018 Lockheed Martin Corporation.
+    Copyright 2016-2020 Lockheed Martin Corporation.
 
     This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
     commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using APTSPropricerApi.Connection;
 using APTSPropricerApi.DTOs;
+using EBS.Core;
 using EBS.ProPricer.Data;
 using EBS.ProPricer.Model;
 using EBS.ProPricer.Model.General;
@@ -43,7 +44,7 @@ namespace APTSPropricerApi.Controllers
                 try
                 {
                     EntityId pEntityId = new EntityId(new Guid(curve));
-                    Curve c = ppc.Workspace.GlobalLibrary.Curves.Find(pEntityId).Value;
+                    Curve c = ppc.Workspace.GlobalLibrary.Curves.Find(pEntityId).Value();
 
                     TimeFrame start = new TimeFrame(DateTime.Parse(startDate + "-01"));
                     TimeFrame end = new TimeFrame(DateTime.Parse(endDate + "-01"));

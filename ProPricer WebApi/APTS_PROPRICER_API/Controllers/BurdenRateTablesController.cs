@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016-2018 Lockheed Martin Corporation.
+    Copyright 2016-2020 Lockheed Martin Corporation.
 
     This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
     commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
@@ -31,7 +31,7 @@ namespace APTSPropricerApi.Controllers
             {
                 ppc.Workspace.GlobalLibrary.BurdenRateTables.Open();
                 IEnumerable<BurdenRateTableDto> burdenRateTablesResult =
-                    from prop in ppc.Workspace.GlobalLibrary.BurdenRateTables.Cast<BurdenRateTable>()
+                    from prop in ppc.Workspace.GlobalLibrary.BurdenRateTables.Items().Cast<BurdenRateTable>()
                     select new BurdenRateTableDto
                     {
                         Id = prop.Id.ToString(),

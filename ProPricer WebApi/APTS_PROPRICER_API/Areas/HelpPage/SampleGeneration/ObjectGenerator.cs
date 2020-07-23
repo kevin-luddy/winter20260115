@@ -13,13 +13,8 @@ namespace APTSPropricerApi.Areas.HelpPage
     /// </summary>
     public class ObjectGenerator
     {
-        private const int DefaultCollectionSize = 3;
+        internal const int DefaultCollectionSize = 2;
         private readonly SimpleTypeObjectGenerator SimpleObjectGenerator = new SimpleTypeObjectGenerator();
-
-        /// <summary>
-        /// The logger
-        /// </summary>
-        private readonly Logger logger = new Logger(typeof(ObjectGenerator));
 
         /// <summary>
         /// Generates an object for a given type. The type needs to be public, have a public default constructor and settable public properties/fields. Currently it supports the following types:
@@ -97,10 +92,8 @@ namespace APTSPropricerApi.Areas.HelpPage
                     return GenerateComplexObject(type, createdObjectReferences);
                 }
             }
-            catch (Exception ex)
+            catch
             {
-                this.logger.Error(ex);
-
                 // Returns null if anything fails
                 return null;
             }
