@@ -443,7 +443,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     }
 
                     // Task Description and Task MOQ Text are now HTML formatted rich text. We need to get plain text out of them
-                    string descriptionRteOverride = BOEExportConverter.GetRteOverride(boe.Id, task.Id, task.Description, RteTemplateSource.BoeDescription, exportInputs.RTETemplatesOverrides);
+                    string descriptionRteOverride = BOEExportConverter.GetRteOverride(boe.Id, task.Id, task.Description, RteTemplateSource.TaskDescription, exportInputs.RTETemplatesOverrides);
                     string moqRteOverride = BOEExportConverter.GetRteOverride(task.BoeID, task.Id, task.MOQText, RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides);
 
                     ICollection<string> plainText = RTEUtilities.TurnHTMLIntoPlainText(new List<string>() { descriptionRteOverride, moqRteOverride });
@@ -1834,7 +1834,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <returns>strings for the Task description, metrics, and date fields</returns>
         private string[] GetTaskDescriptionMetricsAndDateFields(BoeDTO boe, BoeTaskElementDTO task, MetricNameTaskElementMappingDTO metricNameTaskElementMappingDTO, BOEExportInputs exportInputs)
         {
-            string taskDescription = RTEUtilities.TurnHTMLIntoPlainText(BOEExportConverter.GetRteOverride(boe.Id, task.Id, task.Description, RteTemplateSource.BoeDescription, exportInputs.RTETemplatesOverrides));
+            string taskDescription = RTEUtilities.TurnHTMLIntoPlainText(BOEExportConverter.GetRteOverride(boe.Id, task.Id, task.Description, RteTemplateSource.TaskDescription, exportInputs.RTETemplatesOverrides));
 
             string historicalMetricString = metricNameTaskElementMappingDTO.GetMetricNamesByTaskElementId(task.Id);
 
