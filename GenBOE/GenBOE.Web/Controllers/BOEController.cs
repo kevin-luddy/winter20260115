@@ -3243,7 +3243,7 @@ namespace GenBOE.Web.Controllers
 
                             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
                             {
-                                _BOECopier.DuplicateLaborTaskElements(duplicateRequest, boeObject, ws);
+                                _BOECopier.DuplicateTasksInABoe(duplicateRequest, boeObject, ws);
                                 scope.Complete();
                             }
                             
