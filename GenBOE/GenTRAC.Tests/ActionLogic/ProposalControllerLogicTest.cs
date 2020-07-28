@@ -2162,8 +2162,8 @@ namespace GenTRAC.Tests.ActionLogic
             readOnly = sut.IsProposalReadOnly(proposalId, fullProposal);
             Assert.AreEqual("true", readOnly);
 
-            // Revision always read only
-            fullProposal.ProposalStatus = ProposalStatus.Revision;
+            // Revised always read only
+            fullProposal.ProposalStatus = ProposalStatus.Revised;
             readOnly = sut.IsProposalReadOnly(proposalId, fullProposal);
             Assert.AreEqual("true", readOnly);
 

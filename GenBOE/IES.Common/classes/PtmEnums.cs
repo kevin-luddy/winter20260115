@@ -391,12 +391,6 @@ namespace IES.Common
         Deleted = 4,
 
         /// <summary>
-        /// Revision
-        /// </summary>
-        [Description("Revision")]
-        Revision = 5,
-
-        /// <summary>
         /// Submitted
         /// </summary>
         [Description("Submitted")]
@@ -1071,22 +1065,22 @@ namespace IES.Common
         Deleted = 4,
 
         /// <summary>
-        /// Revision
-        /// </summary>
-        [Description("Revision")]
-        Revision = 5,
-
-        /// <summary>
         /// No Bid
         /// </summary>
         [Description("No Bid")]
         NoBid = 7,
 
         /// <summary>
+        /// Revised
+        /// </summary>
+        [Description("Revised")]
+        Revised = 8,
+
+        /// <summary>
         /// All
         /// </summary>
         [Description("All")]
-        All = 8
+        All = 100
     }
 
     /// <summary>

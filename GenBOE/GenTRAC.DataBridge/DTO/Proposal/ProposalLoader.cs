@@ -1718,7 +1718,6 @@ namespace GenTRAC.DataBridge.DTO
                 case ProposalStatus.Revised:
                     result = "Approval Workflow Completed: " + maxCompleteDate?.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? "N/A";
                     break;
-                case ProposalStatus.Revision:
                 case ProposalStatus.Archived:
                 case ProposalStatus.Deleted:
                 case ProposalStatus.NoBid:
