@@ -969,7 +969,7 @@ namespace GenTRAC.Tests
             Assert.IsTrue(validStates.Contains(ProposalStatus.Archived));
             Assert.IsTrue(validStates.Contains(ProposalStatus.Deleted));
             Assert.IsFalse(validStates.Contains(ProposalStatus.Completed));
-            Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Revised));
 
             // Completed
             fullProposal.ProposalStatus = ProposalStatus.Completed;
@@ -977,8 +977,8 @@ namespace GenTRAC.Tests
             Assert.IsTrue(validStates.Contains(ProposalStatus.Completed));
             Assert.IsTrue(validStates.Contains(ProposalStatus.Archived));
             Assert.IsTrue(validStates.Contains(ProposalStatus.Deleted));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Revised));
             Assert.IsFalse(validStates.Contains(ProposalStatus.InProgress));
-            Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
 
             // No Bid
             fullProposal.ProposalStatus = ProposalStatus.NoBid;
@@ -987,7 +987,7 @@ namespace GenTRAC.Tests
             Assert.IsTrue(validStates.Contains(ProposalStatus.Archived));
             Assert.IsTrue(validStates.Contains(ProposalStatus.Deleted));
             Assert.IsTrue(validStates.Contains(ProposalStatus.InProgress));
-            Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Revised));
             Assert.IsFalse(validStates.Contains(ProposalStatus.Completed));
 
             int contentId = 1;
@@ -1015,7 +1015,7 @@ namespace GenTRAC.Tests
             Assert.IsTrue(validStates.Contains(ProposalStatus.Deleted));
             Assert.IsTrue(validStates.Contains(ProposalStatus.InProgress));
             Assert.IsFalse(validStates.Contains(ProposalStatus.Completed));
-            Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Revised));
 
             // Deleted with no checklist responses
             fullProposal.ProposalStatus = ProposalStatus.Deleted;
@@ -1024,7 +1024,7 @@ namespace GenTRAC.Tests
             Assert.IsTrue(validStates.Contains(ProposalStatus.Archived));
             Assert.IsTrue(validStates.Contains(ProposalStatus.InProgress));
             Assert.IsFalse(validStates.Contains(ProposalStatus.Completed));
-            Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Revised));
 
             ChecklistResponseItem checklistResponse = new ChecklistResponseItem()
             {
@@ -1056,7 +1056,7 @@ namespace GenTRAC.Tests
             Assert.IsTrue(validStates.Contains(ProposalStatus.Deleted));
             Assert.IsTrue(validStates.Contains(ProposalStatus.InProgress));
             Assert.IsFalse(validStates.Contains(ProposalStatus.Completed));
-            Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Revised));
 
             // Deleted with no PAR and no pricer submit (InProgress)
             fullProposal.ProposalStatus = ProposalStatus.Deleted;
@@ -1065,7 +1065,7 @@ namespace GenTRAC.Tests
             Assert.IsTrue(validStates.Contains(ProposalStatus.Archived));
             Assert.IsTrue(validStates.Contains(ProposalStatus.InProgress));
             Assert.IsFalse(validStates.Contains(ProposalStatus.Completed));
-            Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Revised));
 
             pricerSaveInfo.SubmitDate = new DateTime(2014, 1, 1);
 
@@ -1076,7 +1076,7 @@ namespace GenTRAC.Tests
             Assert.IsTrue(validStates.Contains(ProposalStatus.Deleted));
             Assert.IsTrue(validStates.Contains(ProposalStatus.Completed));
             Assert.IsFalse(validStates.Contains(ProposalStatus.InProgress));
-            Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Revised));
 
             // Deleted with no PAR and pricer submit (Completed)
             fullProposal.ProposalStatus = ProposalStatus.Deleted;
@@ -1085,7 +1085,7 @@ namespace GenTRAC.Tests
             Assert.IsTrue(validStates.Contains(ProposalStatus.Archived));
             Assert.IsTrue(validStates.Contains(ProposalStatus.Completed));
             Assert.IsFalse(validStates.Contains(ProposalStatus.InProgress));
-            Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Revised));
 
             ProposalChecklistSaveInfo peerSaveInfo = new ProposalChecklistSaveInfo()
             {
@@ -1103,7 +1103,7 @@ namespace GenTRAC.Tests
             Assert.IsTrue(validStates.Contains(ProposalStatus.Deleted));
             Assert.IsTrue(validStates.Contains(ProposalStatus.InProgress));
             Assert.IsFalse(validStates.Contains(ProposalStatus.Completed));
-            Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Revised));
 
             // Deleted with PAR, pricer submit and no peer submit (InProgress)
             fullProposal.ProposalStatus = ProposalStatus.Deleted;
@@ -1112,7 +1112,7 @@ namespace GenTRAC.Tests
             Assert.IsTrue(validStates.Contains(ProposalStatus.Archived));
             Assert.IsTrue(validStates.Contains(ProposalStatus.InProgress));
             Assert.IsFalse(validStates.Contains(ProposalStatus.Completed));
-            Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Revised));
 
             peerSaveInfo.SubmitDate = new DateTime(2014, 1, 1);
 
@@ -1123,7 +1123,7 @@ namespace GenTRAC.Tests
             Assert.IsTrue(validStates.Contains(ProposalStatus.Deleted));
             Assert.IsTrue(validStates.Contains(ProposalStatus.Completed));
             Assert.IsFalse(validStates.Contains(ProposalStatus.InProgress));
-            Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Revised));
 
             // Deleted with PAR, pricer submit and peer submit (Completed)
             fullProposal.ProposalStatus = ProposalStatus.Deleted;
@@ -1132,7 +1132,7 @@ namespace GenTRAC.Tests
             Assert.IsTrue(validStates.Contains(ProposalStatus.Archived));
             Assert.IsTrue(validStates.Contains(ProposalStatus.Completed));
             Assert.IsFalse(validStates.Contains(ProposalStatus.InProgress));
-            Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Revised));
 
             // Archived for migrated data, can return to Completed
             checklistContent.Version = 0;
@@ -1142,7 +1142,7 @@ namespace GenTRAC.Tests
             Assert.IsTrue(validStates.Contains(ProposalStatus.Deleted));
             Assert.IsTrue(validStates.Contains(ProposalStatus.Completed));
             Assert.IsFalse(validStates.Contains(ProposalStatus.InProgress));
-            Assert.IsFalse(validStates.Contains(ProposalStatus.Revision));
+            Assert.IsFalse(validStates.Contains(ProposalStatus.Revised));
         }
 
         /// <summary>

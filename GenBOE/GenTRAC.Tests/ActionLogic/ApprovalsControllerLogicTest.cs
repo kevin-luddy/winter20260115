@@ -789,11 +789,11 @@ namespace GenTRAC.Tests.ActionLogic
         /// Tests for proper method return for a Revision proposal.
         /// </summary>
         [TestMethod]
-        public void IsProposalDeletedOrArchived_RevisionTest()
+        public void IsProposalDeletedOrArchived_RevisedTest()
         {
             ApprovalsControllerLogic sut = this.CreateSystem();
             ProposalDto proposal = this.SetupProposalForGetApprovalModelTest();
-            proposal.ProposalStatus = ProposalStatus.Revision;
+            proposal.ProposalStatus = ProposalStatus.Revised;
 
             FullProposal fullProposal = new FullProposal(proposal);
             this.proposalLoader.Setup(x => x.GetById(proposal.Id)).Returns(proposal);
