@@ -86,12 +86,7 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// <param name="destinationBOEID">The ID of the BOE to copy the BOE to</param>
         /// <param name="taskElementsToCopy">List of task element Ids to copy from the source boe.</param>
         /// <param name="travelElementsToCopy">List of travel element Ids to copy from the source boe.</param>
-        public void CopyBOE(
-            FullWorkspace workspace,
-            int inSourceBOEID,
-            int? destinationBOEID,
-            ICollection<int> taskElementsToCopy,
-            ICollection<int> travelElementsToCopy)
+        public void CopyBOE(FullWorkspace workspace, int inSourceBOEID, int? destinationBOEID, ICollection<int> taskElementsToCopy, ICollection<int> travelElementsToCopy)
         {
             if (workspace == null)
             {
@@ -141,11 +136,7 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// <param name="inSourceBOE">The BOE to copy</param>
         /// <param name="inDestinationBOE">The BOE to copy the BOE to</param>
         /// <param name="taskElementsToCopy">Task element ids to copy from the source BOE.</param>
-        private void CopyBOE(
-            FullBoe inSourceBOE,
-            FullBoe inDestinationBOE,
-            ICollection<int> taskElementsToCopy,
-            ICollection<int> travelElementsToCopy)
+        private void CopyBOE(FullBoe inSourceBOE, FullBoe inDestinationBOE, ICollection<int> taskElementsToCopy, ICollection<int> travelElementsToCopy)
         {
             if (inSourceBOE == null)
             {
@@ -159,43 +150,23 @@ namespace GenBOE.ActionLogic.CopyBOE
             FullWorkspace SourceWorkspace = inSourceBOE.Workspace;
             FullWorkspace DestinationWorkspace = inDestinationBOE.Workspace;
 
-            //Only copy custom fields when copying within the same workspace
-            bool copyCustomFields = SourceWorkspace.Id == DestinationWorkspace.Id;
+            bool copyWithinSameWorkspace = SourceWorkspace.Id == DestinationWorkspace.Id;
 
-            this.CopyBOEHeader(
-                inSourceBOE,
-                inDestinationBOE);
+            this.CopyBOEHeader(inSourceBOE, inDestinationBOE, copyWithinSameWorkspace);
 
-            if (copyCustomFields)
+            if (copyWithinSameWorkspace)
             { 
-                this.CopyBOECustomFieldCrossRefs(
-                    inSourceBOE,
-                    inDestinationBOE);
+                this.CopyBOECustomFieldCrossRefs(inSourceBOE, inDestinationBOE);
             }
-            Dictionary<int, Tuple<int, decimal?>> VariableIDMapping = this.MapWorkspaceVariables(
-                inSourceBOE,
-                inDestinationBOE);
 
-            var ResourceIDMapping = this.MapResources(
-                inSourceBOE,
-                DestinationWorkspace.ResourceListID);
+            Dictionary<int, Tuple<int, decimal?>> VariableIDMapping = this.MapWorkspaceVariables(inSourceBOE, inDestinationBOE);
 
-            var PerformingOrgIDMapping = this.MapPerformingOrganizations(
-                inSourceBOE,
-                DestinationWorkspace);
+            var ResourceIDMapping = this.MapResources(inSourceBOE, DestinationWorkspace.ResourceListID);
 
-            this.CopyTasks(
-                inSourceBOE,
-                inDestinationBOE,
-                DestinationWorkspace,
-                SourceWorkspace,
-                VariableIDMapping,
-                ResourceIDMapping,
-                PerformingOrgIDMapping,
-                taskElementsToCopy,
-                copyCustomFields);
+            var PerformingOrgIDMapping = this.MapPerformingOrganizations(inSourceBOE, DestinationWorkspace);
 
-            // Travel is shown for MultiCLIN in RMS
+            this.CopyTasks(inSourceBOE, inDestinationBOE, DestinationWorkspace, VariableIDMapping, ResourceIDMapping, PerformingOrgIDMapping, taskElementsToCopy, copyWithinSameWorkspace);
+
             if (!inDestinationBOE.IsMultiClinWbs || SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
             {
                 this.CopyTravelTasks(
@@ -203,21 +174,19 @@ namespace GenBOE.ActionLogic.CopyBOE
                     inDestinationBOE,
                     PerformingOrgIDMapping,
                     travelElementsToCopy,
-                    copyCustomFields);
+                    copyWithinSameWorkspace);
             }
         }
 
-
-
         /// <summary>
-        /// Duplicates labor tasks within a BOE.
+        /// Duplicates labor tasks within a BOE. This is used for task duplication, not during the BOE copy process.
         /// </summary>
         /// <param name="duplicateRequest">Dictionary of labor task IDs and the number of duplicates requested for the task.</param>
-        /// <param name="inSourceBOE">BOE that contains the task to be duplicated</param>
+        /// <param name="boe">BOE that contains the task to be duplicated</param>
         /// <param name="ws">Workspace of the BOE</param>
-        public void DuplicateLaborTaskElements(Dictionary<int, int> duplicateRequest, FullBoe inSourceBOE, FullWorkspace ws)
+        public void DuplicateTasksInABoe(Dictionary<int, int> duplicateRequest, FullBoe boe, FullWorkspace ws)
         {
-            if (inSourceBOE == null) { throw new ArgumentNullException(nameof(inSourceBOE)); }
+            if (boe == null) { throw new ArgumentNullException(nameof(boe)); }
             if (ws == null) { throw new ArgumentNullException(nameof(ws)); }
             if (duplicateRequest == null) { throw new ArgumentNullException(nameof(duplicateRequest)); }
 
@@ -225,12 +194,12 @@ namespace GenBOE.ActionLogic.CopyBOE
             {
                 ICollection<int> inUseMetricIDs = this._boeCopierCompany.GetMetricsUsedByTaskElement(task.Key); //dictionary key is the task id
 
-                ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(inSourceBOE.WorkspaceID, inSourceBOE.Id, task.Key);
+                ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(boe.WorkspaceID, boe.Id, task.Key);
 
                 for (int i = 1; i <= task.Value; i++)//dictionary value is number of times to duplicate task
                 {
                     // Create a new duplicate for each iteration so things like Open Ended Custom Field Values are unique
-                    BoeTaskElementDTO taskDuplicate = this.GetDuplicateTask(inSourceBOE, task.Key);
+                    BoeTaskElementDTO taskDuplicate = this.GetDuplicateTask(boe, task.Key);
                     int taskDuplicateId = -1;
 
                     //Save the specified number of duplicates for the task
@@ -241,7 +210,7 @@ namespace GenBOE.ActionLogic.CopyBOE
 
                     if (rteTemplateAnswers.Any() && taskDuplicateId > 0)
                     {
-                        ICollection<RTECustomTemplateQuestionAnswerModelView> answerDuplicates = this.GetDuplicateRteTemplateAnswers(rteTemplateAnswers, taskDuplicateId); ;
+                        ICollection<RTECustomTemplateQuestionAnswerModelView> answerDuplicates = this.GetDuplicateRteTemplateAnswers(rteTemplateAnswers, boe.Id, taskDuplicateId); ;
 
                         if (answerDuplicates.Any())
                         {
@@ -252,13 +221,10 @@ namespace GenBOE.ActionLogic.CopyBOE
             }
         }
        
-
         /// <summary>
         /// Copies performing organizations from one workspace to another
         /// </summary>
-        private Dictionary<int, int> MapPerformingOrganizations(
-            FullBoe inSourceBOE,
-            FullWorkspace inDestinationWorkspace)
+        private Dictionary<int, int> MapPerformingOrganizations(FullBoe inSourceBOE, FullWorkspace inDestinationWorkspace)
         {
             // Create a collection to map old perf org IDs to new copied ones
             var toReturn = new Dictionary<int, int>();
@@ -316,9 +282,7 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// </summary>
         /// <param name="workspaceToCopy"></param>
         /// <param name="inDestinationWorkspaceResourceListID"> destination workspace's resource list ID</param>
-        private Dictionary<int, int> MapResources(
-            FullBoe inSourceBOE,
-            int inDestinationWorkspaceResourceListID)
+        private Dictionary<int, int> MapResources(FullBoe inSourceBOE, int inDestinationWorkspaceResourceListID)
         {
             // Create a collection to map old resource IDs to new copied ones
             var toReturn = new Dictionary<int, int>();
@@ -363,9 +327,7 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// <summary>
         /// Copy workspace variables from one workspace to another
         /// </summary>
-        private Dictionary<int, Tuple<int, decimal?>> MapWorkspaceVariables(
-            FullBoe inSourceBOE,
-            FullBoe inDestinationBOE)
+        private Dictionary<int, Tuple<int, decimal?>> MapWorkspaceVariables(FullBoe inSourceBOE, FullBoe inDestinationBOE)
         {
             // Create a collection to map old variable IDs to new copied ones
             var toReturn = new Dictionary<int, Tuple<int, decimal?>>();
@@ -426,9 +388,7 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// <summary>
         /// Copies BOE custom field selections from one BOE to another
         /// </summary>
-        private void CopyBOECustomFieldCrossRefs(
-            BoeDTO inSourceBOE,
-            FullBoe inDestinationBOE)
+        private void CopyBOECustomFieldCrossRefs(BoeDTO inSourceBOE, FullBoe inDestinationBOE)
         {
             if (inSourceBOE == null)
             {
@@ -492,9 +452,8 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// </summary>
         /// <param name="inSourceBOE">Source copy BOE.</param>
         /// <param name="inDestinationBOE">Destination copy BOE.</param>
-        private void CopyBOEHeader(
-            FullBoe inSourceBOE,
-            FullBoe inDestinationBOE)
+        /// <param name="copyWithinSameWorkspace">Is the BOE being copied within the same workspace</param>
+        private void CopyBOEHeader(FullBoe inSourceBOE, FullBoe inDestinationBOE, bool copyWithinSameWorkspace)
         {
             if (inSourceBOE == null)
             {
@@ -541,6 +500,18 @@ namespace GenBOE.ActionLogic.CopyBOE
             // Save the updated BOE
             IDictionary<int, int> newIds = this._IBoeMediator.MediatedSave(this.factory.CreateFullWorkspace(inDestinationBOE.WorkspaceID), inDestinationBOE);
             inDestinationBOE.Id = newIds[inDestinationBOE.Id];
+
+            if (copyWithinSameWorkspace)
+            {
+                ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers = this.rteTemplateDataLoader.GetByBoeId(inSourceBOE.WorkspaceID, inSourceBOE.Id);
+
+                if (rteTemplateAnswers.Any())
+                {
+                    ICollection<RTECustomTemplateQuestionAnswerModelView> answerDuplicates = this.GetDuplicateRteTemplateAnswers(rteTemplateAnswers, inDestinationBOE.Id, null);
+
+                    this.rteTemplateDataLoader.SaveAnswers(answerDuplicates);
+                }
+            }
         }
 
         /// <summary>
@@ -618,8 +589,6 @@ namespace GenBOE.ActionLogic.CopyBOE
             return clinId;
         }
 
-
-
         /// <summary>
         /// Copies task elements from one BOE to another.
         /// </summary>
@@ -630,46 +599,35 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// <param name="inResourceIDMapping">Mapping of resource Ids.</param>
         /// <param name="inPerformingOrgIDMapping">Mapping of performing Org Ids.</param>
         /// <param name="taskElementsToCopy">Task element Ids to be copied.</param>
+        /// <param name="copyWithinSameWorkspace">Are we copying within the same workspace</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        private void CopyTasks(
-            FullBoe inSourceBOE,
-            FullBoe inDestinationBOE,
-            FullWorkspace inDestinationWorkspace,
-            FullWorkspace inSourceWorkspace,
-            Dictionary<int, Tuple<int, decimal?>> inVariableIDMapping,
-            Dictionary<int, int> inResourceIDMapping,
-            Dictionary<int, int> inPerformingOrgIDMapping,
-            ICollection<int> taskElementsToCopy,
-            bool copyCustomFields)
+        private void CopyTasks(FullBoe inSourceBOE, FullBoe inDestinationBOE, FullWorkspace inDestinationWorkspace, Dictionary<int, Tuple<int, decimal?>> inVariableIDMapping,
+            Dictionary<int, int> inResourceIDMapping, Dictionary<int, int> inPerformingOrgIDMapping, ICollection<int> taskElementsToCopy, bool copyWithinSameWorkspace)
         {
             // Only consider individual task elements to be copied.
             Collection<BoeTaskElementDTO> tasksToCopy = inSourceBOE.TaskElements.Where(id => taskElementsToCopy.Contains(id.Id)).ToCollection<BoeTaskElementDTO>();
 
             if (tasksToCopy.Any())
             {
-                #region Determine if a recalculation is needed due to workspace variable value changes (between the source and destination BOEs)
-
                 bool workspaceVariableValuesChanged = inVariableIDMapping.Where(v => v.Value.Item2.HasValue).Select(v => v.Value.Item1).Any();
-
-                #endregion
                 bool costPrecisionChanged = (inDestinationBOE.WorkspaceID != inSourceBOE.WorkspaceID) && (inDestinationWorkspace.CostDecimalPrecision != inSourceBOE.Workspace.CostDecimalPrecision);
                 bool hoursPrecisionChanged = (inDestinationBOE.WorkspaceID != inSourceBOE.WorkspaceID) && (inDestinationWorkspace.ResourceDecimalPrecision != inSourceBOE.Workspace.ResourceDecimalPrecision);
                 int NewTaskElementID = -1;
+
                 foreach (BoeTaskElementDTO taskElementOrig in tasksToCopy)
                 {
                     BoeTaskElementDTO taskElementCopy = taskElementOrig.DeepClone();
+                    taskElementCopy.BoeID = inDestinationBOE.Id;
+                    taskElementCopy.Updateable = UpdateType.Upsert;
                     ICollection<int> inUseMetricIDs = this._boeCopierCompany.GetMetricsUsedByTaskElement(taskElementCopy.Id);
 
                     // Create new Task Element for Project Map if copying from another workspace
-                    if (!inDestinationWorkspace.IsProjectMapWorkspace || inDestinationWorkspace.Id != inSourceWorkspace.Id)
+                    if (!inDestinationWorkspace.IsProjectMapWorkspace || !copyWithinSameWorkspace)
                     {
-                        taskElementCopy.Id = NewTaskElementID;
+                        taskElementCopy.Id = NewTaskElementID--;
                     }
 
-                    taskElementCopy.BoeID = inDestinationBOE.Id;
-                    taskElementCopy.Updateable = UpdateType.Upsert;
-
-                    //Do not copy the task ID if the ID is already used by any task in the BOE
+                    // Do not copy the task ID if the ID is already used by any task in the BOE
                     if (taskElementCopy.BOETaskID != null && this.isTaskIdUsedInBoe(inDestinationBOE, taskElementCopy.BOETaskID))
                     {
                         taskElementCopy.BOETaskID = String.Empty;
@@ -691,7 +649,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                         }
 
                         // if there are custom cross refs, let's copy them
-                        if (copyCustomFields && taskElementCopy.CustomFieldValueContainers.Any())
+                        if (copyWithinSameWorkspace && taskElementCopy.CustomFieldValueContainers.Any())
                         {
                             taskElementCopy.CustomFieldValueContainers = this.GetCustomFieldValueContainersCopy(taskElementCopy.CustomFieldValueContainers);
                         }
@@ -700,7 +658,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                     int NewLaborTypeID = -1;
                     foreach (var laborType in taskElementCopy.taskElementLabors)
                     {
-                        laborType.Id = NewLaborTypeID;
+                        laborType.Id = NewLaborTypeID--;
                         laborType.Updateable = UpdateType.Upsert;
                         laborType.BoeID = inDestinationBOE.Id;
 
@@ -714,17 +672,15 @@ namespace GenBOE.ActionLogic.CopyBOE
                             laborType.PerformingOrgID = (laborType.PerformingOrgID.HasValue && inPerformingOrgIDMapping[laborType.PerformingOrgID.Value] != -1) ? inPerformingOrgIDMapping[laborType.PerformingOrgID.Value] : (int?)null;
                         }
 
-                        if ((inSourceWorkspace.Id != inDestinationWorkspace.Id) || (inSourceBOE.IsMultiClinWbs != inDestinationBOE.IsMultiClinWbs))
+                        if (!copyWithinSameWorkspace || (inSourceBOE.IsMultiClinWbs != inDestinationBOE.IsMultiClinWbs))
                         {
                             laborType.WBSID = null;
                             laborType.CLINID = null;
                         }
 
-                        // PercentSpreadLocked and HourSpreadLocked remain as-is
-
                         if (!inDestinationWorkspace.IsProjectMapWorkspace)
                         {
-                            if (copyCustomFields && laborType.CustomFieldValueContainers.Any())
+                            if (copyWithinSameWorkspace && laborType.CustomFieldValueContainers.Any())
                             {
                                 laborType.CustomFieldValueContainers = this.GetCustomFieldValueContainersCopy(laborType.CustomFieldValueContainers);
                             }
@@ -748,10 +704,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                             laborSpread.Id = NewLaborSpreadID--;
                             laborSpread.Updateable = UpdateType.Upsert;
                         }
-
-                        NewLaborTypeID--;
-
-                    }  // end foreach laborType
+                    }
 
                     this._IBoeTaskElementMediator.MediatedSaveTaskElements(new Collection<BoeTaskElementDTO> { taskElementCopy }, inDestinationWorkspace);
 
@@ -760,9 +713,21 @@ namespace GenBOE.ActionLogic.CopyBOE
                         this._boeCopierCompany.SaveMetricsToTaskElement(taskElementCopy.Id, inUseMetricIDs);
                     }
 
-                    NewTaskElementID--;
+                    if( taskElementCopy.Id > 0 && copyWithinSameWorkspace)
+                    {
+                        ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(inSourceBOE.WorkspaceID, inSourceBOE.Id, taskElementOrig.Id);
 
-                }  // end foreach taskElement
+                        if (rteTemplateAnswers.Any())
+                        {
+                            ICollection<RTECustomTemplateQuestionAnswerModelView> answerDuplicates = this.GetDuplicateRteTemplateAnswers(rteTemplateAnswers, inDestinationBOE.Id, taskElementCopy.Id); ;
+
+                            if (answerDuplicates.Any())
+                            {
+                                this.rteTemplateDataLoader.SaveAnswers(answerDuplicates);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -772,9 +737,7 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// <param name="inSourceBOE">Full BOE</param>
         /// <param name="taskElementToCopy">ID of task to be copied</param>
         /// <returns>Copy of labor task DTO that can be saved</returns>
-        private BoeTaskElementDTO GetDuplicateTask(
-            FullBoe inSourceBOE,
-            int taskElementToCopy)
+        private BoeTaskElementDTO GetDuplicateTask(FullBoe inSourceBOE, int taskElementToCopy)
         {
             BoeTaskElementDTO taskToCopy = inSourceBOE.TaskElements.FirstOrDefault(x => x.Id == taskElementToCopy);
             BoeTaskElementDTO duplicateTaskElement = null;
@@ -816,7 +779,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                 int NewLaborTypeID = -1;
                 foreach (ResourceTypeDto laborType in duplicateTaskElement.taskElementLabors)
                 {
-                    laborType.Id = NewLaborTypeID;
+                    laborType.Id = NewLaborTypeID--;
                     laborType.Updateable = UpdateType.Upsert;
 
 
@@ -835,9 +798,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                         laborSpread.Updateable = UpdateType.Upsert;
                     }
 
-                    NewLaborTypeID--;
-
-                }  // end foreach laborType       
+                }    
             }
             return duplicateTaskElement;
         }
@@ -1264,9 +1225,9 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// Get duplicates of the RTE Template Answers for the given task
         /// </summary>
         /// <param name="templateAnswers">Answers to duplicate</param>
-        /// <param name="duplicateTaskId">ID of the duplicate task</param>
+        /// <param name="duplicateTaskId">Optional ID of the duplicate task</param>
         /// <returns>Duplicate RTE Answers</returns>
-        private ICollection<RTECustomTemplateQuestionAnswerModelView> GetDuplicateRteTemplateAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> templateAnswers, int duplicateTaskId)
+        private ICollection<RTECustomTemplateQuestionAnswerModelView> GetDuplicateRteTemplateAnswers(ICollection<RTECustomTemplateQuestionAnswerModelView> templateAnswers, int duplicateBoeId, int? duplicateTaskId)
         {
             ICollection<RTECustomTemplateQuestionAnswerModelView> toReturn = new Collection<RTECustomTemplateQuestionAnswerModelView>();
 
@@ -1274,6 +1235,7 @@ namespace GenBOE.ActionLogic.CopyBOE
             {
                 RTECustomTemplateQuestionAnswerModelView duplicateAnswer = answer.DeepClone();
                 duplicateAnswer.Id = -1;
+                duplicateAnswer.BoeId = duplicateBoeId;
                 duplicateAnswer.TaskId = duplicateTaskId;
                 duplicateAnswer.Updateable = UpdateType.Upsert;
 
