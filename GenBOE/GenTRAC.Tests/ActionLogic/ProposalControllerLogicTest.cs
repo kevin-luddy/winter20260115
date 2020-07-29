@@ -3824,6 +3824,48 @@ namespace GenTRAC.Tests.ActionLogic
 
             sut.ValidateRevertRevisionToPriorVersion(proposal);
         }
+
+        /// <summary>
+        /// Validate ValidateNewRevisionDoesNotExist for valid proposal
+        /// </summary>
+        [TestMethod]
+        public void TestValidateNewRevisionDoesNotExist()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+            ProposalInformationModelView proposalInfo = new ProposalInformationModelView() { ProposalTrackingNumber = "20-00001-PR1" };
+
+            this.proposalLoader.Setup(x => x.GetIdByTrackingNumber(proposalInfo.ProposalTrackingNumber)).Returns(-1);
+
+            sut.ValidateNewRevisionDoesNotExist(proposalInfo);
+            // Nothing to assert, just no exception
+        }
+
+        /// <summary>
+        /// Validate ValidateNewRevisionDoesNotExist throws exception when proposal exists
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
+        public void TestValidateNewRevisionDoesNotExist_Exception()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+            ProposalInformationModelView proposalInfo = new ProposalInformationModelView() { ProposalTrackingNumber = "20-00001-PR1" };
+
+            this.proposalLoader.Setup(x => x.GetIdByTrackingNumber(proposalInfo.ProposalTrackingNumber)).Returns(1);
+
+            sut.ValidateNewRevisionDoesNotExist(proposalInfo);
+        }
+
+        /// <summary>
+        /// Validate ValidateNewRevisionDoesNotExist throws proper null exception
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void TestValidateNewRevisionDoesNotExist_NullException()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            sut.ValidateNewRevisionDoesNotExist(null);
+        }
         #endregion
     }
 }

@@ -1016,6 +1016,11 @@ namespace GenTRAC.ActionLogic.Validation
             /// Proposal can't be reverted while genBOE Workspace for it exists
             /// </summary>
             public const string CANNOT_HAVE_WORKSPACE = "A Proposal cannot be reverted to the prior version if there is a genBOE Workspace associated with it.";
+
+            /// <summary>
+            /// Only one Revision can be made from a Proposal
+            /// </summary>
+            public const string REVISION_ALREADY_EXISTS = "A Revision has already been created for this proposal. Access the new Revision from the PTM home page.";
         }
     }
 }

@@ -328,6 +328,7 @@ namespace GenTRAC.Web.Controllers
             if (isNewRevision)
             {
                 proposalId = null;
+                this.proposalLogic.ValidateNewRevisionDoesNotExist(proposalInfo);
             }
 
             List<ValidationMessage> validationErrors = HttpContext.Items["ValidationErrors"] as List<ValidationMessage>;
