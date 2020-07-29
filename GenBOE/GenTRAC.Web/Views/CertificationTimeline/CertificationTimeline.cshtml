@@ -3,7 +3,7 @@
     ViewBag.Title = "Proposal Certification Timeline";
  }
 
-    <script type="text/javascript">
+<script type="text/javascript">
     // toggles element visibility based on Certification Being / Not Being Required
     function toggleCertification() {
         if ('@Model.DisplayCertificationReset' == 'True') {
@@ -20,6 +20,7 @@
             showCertRequired();
         }
 
+        ProposalCertificationTimelineWidget.clearValidationBox();
         ProposalCertificationTimelineWidget.refreshModule();
     };
 
@@ -48,6 +49,7 @@
 
     // Shows / hides comments when Other is selected for Certification Not Required Reason
     function toggleCertificationOtherComments() {
+        ProposalCertificationTimelineWidget.clearValidationBox();
         if ($('#ReasonCertificationNotRequired').val() == @((int)ReasonCertificationNotRequired.Other)) {
             $('#certificationOtherCommentParent').show();
         }
@@ -159,13 +161,20 @@
 
         // Save the page
         ProposalCertificationTimelineWidget.SavePage = function (buttonPressed) {
-            var url = GenSession.CreateUrl({
-                controller: '@WebConstants.Controller.CERTIFICATION_TIMELINE',
-                action: '@WebConstants.Action.SAVE_CERTIFICATION_TIMELINE',
-                id: ProposalIdWhenPageRendered
-            });
+            ProposalCertificationTimelineWidget.clearValidationBox();
 
-            ProposalCertificationTimelineWidget.Save(buttonPressed, url, false);
+            if ($('#isCertNotRequired')[0].checked && $('#ReasonCertificationNotRequired').val() == '') {
+                $($('ul.validation-box')[1]).append('<li>"Reason Certification is Not Required" is a required field.</li>').show();
+                ProposalCertificationTimelineWidget.refreshModule();
+            } else {
+                var url = GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.CERTIFICATION_TIMELINE',
+                    action: '@WebConstants.Action.SAVE_CERTIFICATION_TIMELINE',
+                    id: ProposalIdWhenPageRendered
+                });
+
+                ProposalCertificationTimelineWidget.Save(buttonPressed, url, false);
+            }
         };
 
         // Save the page
@@ -299,7 +308,7 @@
 
         toggleCertification();
     });
-    </script>
+</script>
 
 <div id="certificationTimelineWidget" class="module full composite cert-content">
     <div class="module-header-data">
@@ -374,4 +383,4 @@
             </div>
         }
     </div>
-    </div>
+</div>
