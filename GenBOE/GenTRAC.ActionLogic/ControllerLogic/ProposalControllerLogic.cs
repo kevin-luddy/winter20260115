@@ -1221,15 +1221,12 @@ namespace GenTRAC.ActionLogic
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView();
 
             FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
-            model.IsReadOnly = this.IsCertificationReadOnly(proposalId ?? -1, fullProposalDto.ProposalStatus);
 
             if (fullProposalDto != null)
             {
                 model.ProposalID = fullProposalDto.Id;
-                model.AgreementDate = fullProposalDto.AgreementDate.HasValue ?
-                    fullProposalDto.AgreementDate.Value.ToString("MM/dd/yyyy") : string.Empty;
-                model.CertificationDate = fullProposalDto.CertificationDate.HasValue ?
-                    fullProposalDto.CertificationDate.Value.ToString("MM/dd/yyyy") : string.Empty;
+                model.AgreementDate = fullProposalDto.AgreementDate.HasValue ? fullProposalDto.AgreementDate.Value.ToString("MM/dd/yyyy") : string.Empty;
+                model.CertificationDate = fullProposalDto.CertificationDate.HasValue ? fullProposalDto.CertificationDate.Value.ToString("MM/dd/yyyy") : string.Empty;
 
                 if (fullProposalDto.CertificationDate.HasValue && fullProposalDto.AgreementDate.HasValue)
                 {
@@ -1243,6 +1240,7 @@ namespace GenTRAC.ActionLogic
 
                 model.ReasonCertificationNotRequired = fullProposalDto.ReasonCertificationNotRequired;
                 model.OtherReasonCommentCertification = fullProposalDto.OtherReasonComment;
+                model.IsReadOnly = this.IsCertificationReadOnly(proposalId ?? -1, fullProposalDto.ProposalStatus, model.ReasonCertificationNotRequired.HasValue);
 
                 model.CutOffDateUtilization = fullProposalDto.CutOffDateUtilization;
                 List<SelectListItem> cutoffList = EnumUtilities.GetListItemsForEnumSorted(typeof(CutOffDateUtilization), false, model.CutOffDateUtilization.ToString()).ToList();
@@ -1254,13 +1252,8 @@ namespace GenTRAC.ActionLogic
 
                 reasonCertificationNotRequiredList.Insert(0, new SelectListItem { Text = string.Empty });
                 model.ReasonCertificationNotRequiredList = reasonCertificationNotRequiredList;
-
                 model.Comments = fullProposalDto.Comments;
-                
-                // Read Only && certification not required reason set && has permissions to update it
-                model.DisplayCertificationReset = string.Equals(this.IsCertificationReadOnly(fullProposalDto.Id, fullProposalDto.ProposalStatus).ToLower(), "true") 
-                                                                                    && model.ReasonCertificationNotRequired.HasValue
-                                                                                    && this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
+                model.DisplayCertificationReset = string.Equals(model.IsReadOnly.ToLower(), "true") && model.ReasonCertificationNotRequired.HasValue && this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
             }
 
             return model;
@@ -2055,16 +2048,20 @@ namespace GenTRAC.ActionLogic
         /// </summary>
         /// <param name="proposalId">The proposal Id.</param>
         /// <param name="proposalStatus">Proposal Status</param>
+        /// <param name="markedAsCertificationNotRequired">Certification is marked as not-required</param>
         /// <returns>"true" if readonly, "false" if editable</returns>
-        public string IsCertificationReadOnly(int proposalId, ProposalStatus proposalStatus)
+        public string IsCertificationReadOnly(int proposalId, ProposalStatus proposalStatus, bool markedAsCertificationNotRequired)
         {
-            bool readOnly = proposalStatus == ProposalStatus.Revised;
+            bool readOnly = proposalStatus == ProposalStatus.Revised || markedAsCertificationNotRequired;
 
-            // check permission of current user
-            SecurityAuthorizationAndRole authorization = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId);
-            if (authorization.Authorization == SecurityAuthorization.Read)
+            if (!readOnly)
             {
-                readOnly = true;
+                // check permission of current user
+                SecurityAuthorizationAndRole authorization = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId);
+                if (authorization.Authorization == SecurityAuthorization.Read)
+                {
+                    readOnly = true;
+                }
             }
 
             return readOnly.ToString().ToLower();

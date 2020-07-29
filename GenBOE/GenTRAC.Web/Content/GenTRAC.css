@@ -1203,3 +1203,7 @@ p.revision {
     float: left;
 }
 /* End of Revision Tab*/
+
+.selection-width-certification-not-required {
+    width: 180px;
+}

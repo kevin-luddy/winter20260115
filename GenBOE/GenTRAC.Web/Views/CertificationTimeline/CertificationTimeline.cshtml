@@ -305,18 +305,14 @@
     <div class="module-header-data">
         Certification Timeline
         <span class="form-row" style="font-weight:bold; font-size: 85%; float: right;">
-            <input class="certificationRequiredCheckbox" type="checkbox" style="margin: 11px 3px 0 0" id="isCertNotRequired" onchange="toggleCertification()" value="@Model.ReasonCertificationNotRequired.HasValue" />
+            <input class="certificationRequiredCheckbox" type="checkbox" style="margin: 11px 3px 0 0" id="isCertNotRequired" onchange="toggleCertification()" @(Model.ReasonCertificationNotRequired.HasValue ? "checked=\"checked\"" : string.Empty) />
             <label class="certificationRequiredCheckbox" for="isCertNeeded">Certification is <i>Not</i> Required</label>
             <button class="ies certificationNotRequiredResetButton" type="button" onclick="ProposalCertificationTimelineWidget.ResetCertificationNeeded(this)">Reset Certification Not Required</button>
         </span>
 
     </div>
     <div class="module-content-data expanded-content">
-        @using (Html.BeginForm("", "", FormMethod.Post, new
-        {
-            id = "certificationTimelineForm",
-            name = "certificationTimelineForm"
-        }))
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = "certificationTimelineForm", name = "certificationTimelineForm" }))
         {
             <div class="form-row certificationRequired">
                 <div class="form-label">
@@ -369,7 +365,7 @@
                 </div>
                 <div class="form-element">
                     @Html.DropDownListFor(model => model.ReasonCertificationNotRequired, Model.ReasonCertificationNotRequiredList,
-                                                    new { maxlength = 50, @class = "selection-width", @name = "ReasonCertificationNotRequired", @onChange = "toggleCertificationOtherComments()" })
+                                                    new { maxlength = 50, @class = "selection-width-certification-not-required", @name = "ReasonCertificationNotRequired", @onChange = "toggleCertificationOtherComments()" })
                 </div>
             </div>
             <div class="form-row  certificationNotRequired" id="certificationOtherCommentParent">
