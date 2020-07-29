@@ -1969,6 +1969,27 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
+        /// Validate that new revision doesn't already exist
+        /// </summary>
+        /// <param name="proposalInfo">Proposal Info</param>
+        public void ValidateNewRevisionDoesNotExist(ProposalInformationModelView proposalInfo)
+        {
+            if (proposalInfo == null)
+            {
+                throw new ArgumentNullException(nameof(proposalInfo));
+            }
+
+            if (this.ProposalLoader.GetIdByTrackingNumber(proposalInfo.ProposalTrackingNumber) > 0)
+            {
+                ValidationMessage validationError = new ValidationMessage(ValidationConstants.ProposalRevisionConstants.REVISION_ALREADY_EXISTS);
+                validationError.FormIDToTarget = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_INFO_FORM;
+
+                // Throw error now - won't ever be able to save this revision, so no need to validate anything else
+                throw new ValidationException(new Collection<ValidationMessage>() { validationError } );
+            }
+        }
+
+        /// <summary>
         /// Get the active user.
         /// </summary>
         /// <returns>Current active user</returns>
