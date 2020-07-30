@@ -18,3 +18,20 @@ GO
 
 	## END ##
 */
+
+EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2020.5';
+GO
+
+/*
+	## START ##
+
+	7/30/2020	Dusan	BOEJ-4709: Rename BOE Forms Report
+*/
+
+UPDATE ReportLU SET ReportName = 'PBOE / IBOE Forms' WHERE ReportName = 'BOE Forms';
+
+/*
+	7/30/2020	Dusan	BOEJ-4709: Rename BOE Forms Report
+
+	## END ##
+*/
