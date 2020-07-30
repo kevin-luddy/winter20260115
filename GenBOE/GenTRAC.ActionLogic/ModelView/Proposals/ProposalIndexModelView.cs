@@ -125,8 +125,7 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
                 //      Proposal is Revised
                 //   OR Proposal is Completed AND is CCOPD AND certification completed OR certification marked as not required
                 // In other words, we are allowed to add a new revision when
-                //      proposal is In Progress (workflow incompleted)
-                //   OR proposal is Submitted (worflow completed, is CCOPD, and waiting for certification)
+                //      proposal is Submitted (worflow completed, is CCOPD, and waiting for certification)
                 //   OR proposal is Completed and is not CCOPD
                 return this.ProposalStatus == ProposalStatus.Revised 
                         || (this.ProposalStatus == ProposalStatus.Completed && this.IsCCoPD && (this.CertificationCompletedDate != null || this.ReasonCertificationNotRequired.HasValue));
