@@ -162,6 +162,8 @@
         };
 
         ProposalDetailsWidget.AddNewRevision = function () {
+            GenSession.ShowLoadingBox();
+
             var url = GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.PROPOSAL',
                 action: '@WebConstants.Action.VALIDATE_PROPOSAL_REVISION_DETAILS',
@@ -188,12 +190,15 @@
                             errorList.push(message.ValidationIssue);
                         });
                     }
+                    GenSession.HideLoadingBox();
                     GenSession.alertDialog('New Revision Creation Failed', errorList.join('<br/>'));
                 }
             });
         };
 
         ProposalDetailsWidget.RevertRevision = function () {
+            GenSession.ShowLoadingBox();
+
             var url = GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.PROPOSAL',
                 action: '@WebConstants.Action.REVERT_PROPOSAL_TO_PRIOR_VERSION',
@@ -219,6 +224,7 @@
                             errorList.push(message.ValidationIssue);
                         });
                     }
+                    GenSession.HideLoadingBox();
                     GenSession.alertDialog('Reverting Revision Failed', errorList.join('<br/>'));
                 }
             });
