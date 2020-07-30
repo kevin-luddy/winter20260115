@@ -77,5 +77,10 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Should we display the "Reset" button
         /// </summary>
         public bool DisplayCertificationReset { get; set; }
+
+        /// <summary>
+        /// Should we disable the Certification Required checkbox
+        /// </summary>
+        public bool DisableCertificationRequiredChange { get; set; }
     }
 }

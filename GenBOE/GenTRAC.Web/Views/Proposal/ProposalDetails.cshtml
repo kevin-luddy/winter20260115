@@ -398,7 +398,7 @@
             });
         });
 
-        if ('@(Model.ProposalStatus == ProposalStatus.Revised || Model.ReasonCertificationNotRequired.HasValue || (Model.ProposalStatus == ProposalStatus.Completed && Model.CertificationCompletedDate != null))' == 'True') {
+        if ('@(Model.NewRevisionButtonDisabled)' == 'True') {
             $('button[name="new-revision-button"]').addClass('disabled');
         }
 

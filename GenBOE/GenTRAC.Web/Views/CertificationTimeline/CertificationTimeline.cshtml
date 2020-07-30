@@ -3,7 +3,7 @@
     ViewBag.Title = "Proposal Certification Timeline";
  }
 
-<script type="text/javascript">
+    <script type="text/javascript">
     // toggles element visibility based on Certification Being / Not Being Required
     function toggleCertification() {
         if ('@Model.DisplayCertificationReset' == 'True') {
@@ -15,7 +15,6 @@
         var isCertificationNotRequired = $('#isCertNotRequired')[0].checked || (ProposalCertificationTimelineWidget.isReadOnly() && '@Model.ReasonCertificationNotRequired.HasValue' == 'True');
         if (isCertificationNotRequired) {
             showCertNotRequired();
-
         } else {
             showCertRequired();
         }
@@ -307,8 +306,13 @@
         };
 
         toggleCertification();
+
+        if ('@Model.DisableCertificationRequiredChange' == 'True') {
+            $('.certificationRequiredCheckbox').addClass('disabled').attr("disabled", true);
+            $('button[name="complete-button"]').addClass('disabled');
+        }
     });
-</script>
+    </script>
 
 <div id="certificationTimelineWidget" class="module full composite cert-content">
     <div class="module-header-data">

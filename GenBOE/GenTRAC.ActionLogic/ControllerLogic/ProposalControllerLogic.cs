@@ -868,10 +868,7 @@ namespace GenTRAC.ActionLogic
                 // Display + New Revision button only if the user if the lead or backup estimator and approval workflow is completed
                 bool userIsLeadOrBackupPricer = this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
 
-                if (fullProposalDto.WorkflowStatus == WorkflowStatus.ProposalLocked && userIsLeadOrBackupPricer)
-                {
-                    model.DisplayNewRevisionButton = true;
-                }
+                model.DisplayNewRevisionButton = fullProposalDto.WorkflowStatus == WorkflowStatus.ProposalLocked && userIsLeadOrBackupPricer;
 
                 // Display Revert to Prior Version button only if user is lead or backup estimator and in latest revision
                 if (fullProposalDto.ProposalStatus == ProposalStatus.InProgress && fullProposalDto.IsRevision && userIsLeadOrBackupPricer)
@@ -1253,6 +1250,7 @@ namespace GenTRAC.ActionLogic
                 model.ReasonCertificationNotRequiredList = reasonCertificationNotRequiredList;
                 model.Comments = fullProposalDto.Comments;
                 model.DisplayCertificationReset = string.Equals(model.IsReadOnly.ToLower(), "true") && model.ReasonCertificationNotRequired.HasValue && this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
+                model.DisableCertificationRequiredChange = fullProposalDto.ProposalStatus == ProposalStatus.Completed && !model.ReasonCertificationNotRequired.HasValue;
             }
 
             return model;
