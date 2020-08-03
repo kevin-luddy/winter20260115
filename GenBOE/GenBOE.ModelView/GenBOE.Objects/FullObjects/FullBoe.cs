@@ -48,6 +48,7 @@ namespace GenBOE.Objects
         {
             this.retriever = GenBOEUnityContainer.Resolve<IRetriever>();
             this.factory = GenBOEUnityContainer.Resolve<IFullObjectFactory>();
+            this.TemplateQuestionsAndAnswers = new Collection<RTECustomTemplateQuestionAnswerModelView>();
         }
 
         /// <summary>
