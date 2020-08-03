@@ -76,7 +76,8 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @IsRevision bit,
 	  @RevisionOfId int,
 	  @ReasonCertificationNotRequired INT = 1,
-	  @OtherReasonComment VARCHAR(1000) = NULL
+	  @OtherReasonComment VARCHAR(1000) = NULL,
+	  @SetupComments VARCHAR(MAX) = NULL
 )
 AS
 /******************************************************************************
@@ -110,6 +111,7 @@ AS
 **			6/23/2020	Dusan					BOEJ-4626 Add Certification Not Required
 **			6/23/2020	ranzalon				BOEJ-4669 No new tracking number when IsRevision 
 **			7/2/2020	ranzalon				BOEJ-4687 Link Revisions to Revised Proposal
+**			7/31/2020	ranzalon				BOEJ-4648 Proposal Setup Comments
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -251,6 +253,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,[RevisionOfId]
 		,[ReasonCertificationNotRequired]
 		,[OtherReasonComment]
+		,[SetupComments]
 		)
 	OUTPUT inserted.ProposalID INTO @Inserted
 	VALUES
@@ -315,6 +318,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@RevisionOfId
 		,@ReasonCertificationNotRequired
 		,@OtherReasonComment
+		,@SetupComments
 		)
 
 		SELECT @ProposalID = ID FROM @Inserted
@@ -413,6 +417,7 @@ ELSE
 						,[RevisionOfId] = @RevisionOfId
 						,[ReasonCertificationNotRequired] = @ReasonCertificationNotRequired
 						,[OtherReasonComment] = @OtherReasonComment
+						,[SetupComments] = @SetupComments
 
 						WHERE 
 							ProposalID = @ProposalID;
