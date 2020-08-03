@@ -117,6 +117,7 @@
     <Compile Include="Mediator\UserMediator.cs" />
     <Compile Include="ModelView\PostSubmittalAttachments\PostSubmittalAttachmentModelView.cs" />
     <Compile Include="ModelView\Proposals\ProposalCertificationTimelineModelView.cs" />
+    <Compile Include="ModelView\Proposals\ProposalCommentsModelView.cs" />
     <Compile Include="ModelView\Reports\DfarsReportModelView.cs" />
     <Compile Include="Synchronization\ActiveDirectorySynchronization.cs" />
     <Compile Include="UrlValidator.cs" />

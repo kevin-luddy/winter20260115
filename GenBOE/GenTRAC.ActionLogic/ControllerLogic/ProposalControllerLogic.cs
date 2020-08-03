@@ -108,7 +108,7 @@ namespace GenTRAC.ActionLogic
         public const string PROPOSAL_GENERAL_INFO_FORM = "proposalGeneralInfoForm";
 
         /// <summary>
-        /// The name of the proposal user info form, needed for validation
+        /// The name of the proposal approvals form, needed for validation
         /// </summary>
         public const string PROPOSAL_APPROVALS_FORM = "proposalApprovalsForm";
 
@@ -116,6 +116,11 @@ namespace GenTRAC.ActionLogic
         /// The name of the proposal user info form, needed for validation
         /// </summary>
         public const string PROPOSAL_USER_INFO_FORM = "proposalUserInfoForm";
+
+        /// <summary>
+        /// The name of the proposal comments form, needed for validation
+        /// </summary>
+        public const string PROPOSAL_COMMENTS_FORM = "proposalCommentsForm";
 
         /// <summary>
         /// Suffix for Proposal Revision Tracking Numbers
