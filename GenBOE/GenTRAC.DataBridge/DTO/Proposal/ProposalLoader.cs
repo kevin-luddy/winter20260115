@@ -1769,7 +1769,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <returns>Should Certification Tab be displayed</returns>
         private bool DisplayCertificationTab(ProposalStatus proposalStatus, bool? cCoPDRequired)
         {
-            return proposalStatus == ProposalStatus.Submitted || proposalStatus == ProposalStatus.Revised || (proposalStatus == ProposalStatus.Completed && cCoPDRequired == true);
+            return (proposalStatus == ProposalStatus.Submitted || proposalStatus == ProposalStatus.Revised || proposalStatus == ProposalStatus.Completed) && cCoPDRequired == true;
         }
 
         /// <summary>
