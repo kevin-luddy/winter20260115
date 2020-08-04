@@ -493,21 +493,17 @@
 
         ProposalIndexWidget.RedirectHome = function (isCancel) {
             if (isCancel && '@(Model.IsNewRevision && Model.RevisedProposalId.HasValue)' == 'True') {
-                <text>
                 // Redirect Revisions back to original proposal
                 window.location = GenSession.CreateUrl({
                     controller: '@WebConstants.Controller.PROPOSAL',
                     action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
                     id: '@Model.RevisedProposalId'
                 });
-                </text>
             } else {
-                <text>
                 window.location = GenSession.CreateUrl({
                     controller: '@WebConstants.Controller.HOME',
                     action: '@WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME'
                 });
-                </text>
             }
         };
     });
