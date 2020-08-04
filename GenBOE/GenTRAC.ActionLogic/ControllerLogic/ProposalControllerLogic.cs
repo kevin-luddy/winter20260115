@@ -829,7 +829,9 @@ namespace GenTRAC.ActionLogic
 
             // Determine visibility status of CertificationTimeline tab
             model.CertificationTimelineVisibility = SecurityAuthorization.None;
-            if (fullProposalDto != null && (fullProposalDto.ProposalStatus == ProposalStatus.Submitted || fullProposalDto.ProposalStatus == ProposalStatus.Revised || (fullProposalDto.IsCCPDRequired.HasValue && fullProposalDto.IsCCPDRequired.Value && fullProposalDto.ProposalStatus == ProposalStatus.Completed)))
+            if (fullProposalDto != null && fullProposalDto.IsCCPDRequired.HasValue && fullProposalDto.IsCCPDRequired.Value && 
+                (fullProposalDto.ProposalStatus == ProposalStatus.Submitted || fullProposalDto.ProposalStatus == ProposalStatus.Revised 
+                || fullProposalDto.ProposalStatus == ProposalStatus.Completed))
             {
                 model.CertificationTimelineVisibility = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId).Authorization;
             }
