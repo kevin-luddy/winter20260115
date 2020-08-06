@@ -2812,6 +2812,51 @@ namespace GenTRAC.Tests.ActionLogic
             return userInfo;
         }
 
+        /// <summary>
+        /// Test SaveProposalComments
+        /// </summary>
+        [TestMethod]
+        public void TestSaveProposalComments()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            int proposalId = 1;
+            ProposalCommentsModelView proposalComments = new ProposalCommentsModelView()
+            {
+                Comments = "new comments"
+            };
+
+            ProposalDto dto = new ProposalDto()
+            {
+                Id = 1,
+                ProposalSetupComments = "old comments"
+            };
+
+            this.proposalLoader.Setup(x => x.GetById(proposalId)).Returns(dto);
+
+            // Setup with call back so we can test that old comment was replaced with the new one
+            string savedComment = string.Empty;
+            this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<ProposalDto>()))
+                .Callback<ProposalDto>((proposal) => savedComment = proposal.ProposalSetupComments)
+                .Returns(proposalId);
+
+            ProposalDto expectedSaveDto = new ProposalDto()
+            {
+                Id = proposalId,
+                ProposalSetupComments = proposalComments.Comments,
+                Updateable = UpdateType.Upsert
+            };
+
+            int? result = sut.SaveProposalComments(proposalId, proposalComments);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(proposalId, result.Value);
+            this.proposalMediator.Verify(x => x.SaveProposal(It.IsAny<ProposalDto>()), Times.Once());
+
+            // Assert comment was updated to the new value
+            Assert.AreEqual(proposalComments.Comments, savedComment);
+        }
+
         #region Exception Tests
 
         /// <summary>

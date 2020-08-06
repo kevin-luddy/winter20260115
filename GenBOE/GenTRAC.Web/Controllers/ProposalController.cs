@@ -396,6 +396,28 @@ namespace GenTRAC.Web.Controllers
         }
 
         /// <summary>
+        /// Save only the comments of a read-only proposal
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <param name="proposalComments">Proposal Comments</param>
+        /// <returns>json result with proposal id</returns>
+        public JsonResult SaveProposalComments(int proposalId, ProposalCommentsModelView proposalComments)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+            {
+                ////var info = this.proposalLogic.GetDataForProposalInformation(proposalId);
+                ////var generalInfo = this.proposalLogic.GetDataForProposalGeneralInformation(proposalId, false);
+                ////var approvals = this.proposalLogic.GetDataForProposalApprovals(proposalId, false);
+                ////var userInfo = this.proposalLogic.GetDataForProposalUserInformation(proposalId);
+                ////this.proposalLogic.SaveProposal(info, generalInfo, approvals, userInfo, proposalComments, null);
+                int? returnedProposalId = this.proposalLogic.SaveProposalComments(proposalId, proposalComments);
+
+                scope.Complete();
+                return this.Json(new { proposalId = returnedProposalId.Value.ToString() });
+            }
+        }
+
+        /// <summary>
         /// Delete a Proposal.
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>

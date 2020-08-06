@@ -315,6 +315,33 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
+        /// Save only the comments for the proposal
+        /// </summary>
+        /// <param name="proposalId">ID of Proposal</param>
+        /// <param name="proposalComments">Comments</param>
+        /// <returns>ID of saved proposal</returns>
+        public int? SaveProposalComments(int proposalId, ProposalCommentsModelView proposalComments)
+        {
+            if (proposalComments == null)
+            {
+                throw new ArgumentNullException(nameof(proposalComments));
+            }
+
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SaveProposalComments", this.log))
+            {
+                // Get original proposal data
+                ProposalDto proposal = this.GetByProposalId(proposalId);
+
+                // update comments
+                proposal.ProposalSetupComments = proposalComments.Comments;
+                proposal.Updateable = UpdateType.Upsert;
+
+                // save
+                return this.ProposalMediator.SaveProposal(proposal);
+            }
+        }
+
+        /// <summary>
         /// Updates the forecast proposal information before a save.
         /// </summary>
         /// <param name="proposalInfo">The proposal information.</param>
