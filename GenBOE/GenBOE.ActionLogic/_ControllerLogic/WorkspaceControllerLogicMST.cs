@@ -83,8 +83,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IPickListMapper boePickListMapper,
             IPickListMapper ptmPickListMapper,
             ContractTypeLoader contractTypeLoader,
-            WorkspaceExporter workspaceExporter,
-            IRteTemplateDataLoader rteTemplateDataLoader)
+            WorkspaceExporter workspaceExporter)
             : base(
                 workspaceLoader,
                 userLoader,
@@ -105,8 +104,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 boePickListMapper,
                 ptmPickListMapper,
                 contractTypeLoader,
-                workspaceExporter,
-                rteTemplateDataLoader
+                workspaceExporter
         )
         {
             this.zoneTravelRatesFeesLoader = zoneTravelRatesFeesLoader;

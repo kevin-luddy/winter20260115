@@ -9,34 +9,30 @@
     ViewBag.Title = "ASP.NET Web API Help Page";
 
     // Group APIs by controller
-    ILookup<HttpControllerDescriptor, ApiDescription> apiGroups = Model.OrderBy(d => d.ActionDescriptor.ControllerDescriptor.ControllerName).ToLookup(api => api.ActionDescriptor.ControllerDescriptor);
+    ILookup<HttpControllerDescriptor, ApiDescription> apiGroups = Model.ToLookup(api => api.ActionDescriptor.ControllerDescriptor);
 }
 
-<header>
+<link type="text/css" href="~/Areas/HelpPage/HelpPage.css" rel="stylesheet" />
+<header class="help-page">
     <div class="content-wrapper">
         <div class="float-left">
             <h1>@ViewBag.Title</h1>
         </div>
     </div>
 </header>
-<div id="body">
+<div id="body" class="help-page">
     <section class="featured">
         <div class="content-wrapper">
             <h2>Introduction</h2>
             <p>
-                REST-based API to ProPricer.
+                Provide a general description of your APIs here.
             </p>
         </div>
     </section>
     <section class="content-wrapper main-content clear-fix">
-        @{var orderedGroups = (from g in apiGroups orderby g.Key.ControllerName select g).ToArray();}
-        @foreach (var group in orderedGroups)
+        @foreach (var group in apiGroups)
         {
             @Html.DisplayFor(m => group, "ApiGroup")
         }
     </section>
 </div>
-
-@section Scripts {
-    <link type="text/css" href="~/Areas/HelpPage/HelpPage.css" rel="stylesheet" />
-}

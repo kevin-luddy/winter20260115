@@ -39,7 +39,7 @@ namespace GenBOE.Objects
         private ReadOnlyCollection<TravelDTO> travels;
         private ReadOnlyCollection<BoeApproverResponseDTO> approverResponses;
         private ReadOnlyCollection<BOECommentDTO> comments;
-        
+
         /// <summary>
         /// Default Constructor
         /// </summary>
@@ -48,6 +48,7 @@ namespace GenBOE.Objects
         {
             this.retriever = GenBOEUnityContainer.Resolve<IRetriever>();
             this.factory = GenBOEUnityContainer.Resolve<IFullObjectFactory>();
+            this.TemplateQuestionsAndAnswers = new Collection<RTECustomTemplateQuestionAnswerModelView>();
         }
 
         /// <summary>
@@ -525,5 +526,10 @@ namespace GenBOE.Objects
         {
             this.workspaceVariables = variables.ToList().AsReadOnly();
         }
+
+        /// <summary>
+        /// Template Questions & Answers
+        /// </summary>
+        public ICollection<RTECustomTemplateQuestionAnswerModelView> TemplateQuestionsAndAnswers { get; set; }
     }
 }

@@ -33,6 +33,7 @@ AS
 **		1/22/20		ranzalon			Fixed bug with missing RteTemplateSourceId
 **		5/15/20		Dusan				Changed Split_String function call to call our SplitString function
 **		6/11/20		Dusan				BOEJ-4655 Exact copy should copy WS email settings
+**		7/28/20		RJ					BOEJ-4713 Remove email settings
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -342,11 +343,6 @@ BEGIN TRY
 		  ,[ResourceListID]
 		  ,[WorkspaceID]
 	FROM @WorkspaceResource WHERE NewSystemResourceID IS NULL
-
-	INSERT INTO dbo.WorkspaceEmailXREF
-		SELECT EmailId, @NewWorkspaceID, TurnOn, UpdateDT
-				FROM version.WorkspaceEmailXREF
-				WHERE WorkspaceId = @WorkspaceID AND VersionID = @VersionID
 
 	DECLARE @PerformingOrganization TABLE
 	(

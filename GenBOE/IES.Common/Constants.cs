@@ -175,6 +175,11 @@ namespace IES.Common
         public const string FORECASTED_FAR_DATE_CSS_CLASS_STRING = "background: linear-gradient(to right, rgba(248,252,78,1) 20%, rgba(248,252,78,0));";
 
         /// <summary>
+        /// CSS to set the background color for revised proposal's Est. Ship Date.
+        /// </summary>
+        public const string REVISED_DATE_CSS_STYLE_STRING = "background: linear-gradient(to right, rgb(210,180,140) 10%, rgb(255,228,196));";
+
+        /// <summary>
         /// Class used to make the text white color
         /// </summary>
         public const string WHITE_TEXT_CSS_CLASS_STRING = "whitetext";

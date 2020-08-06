@@ -6,6 +6,10 @@
 
 namespace GenTRAC.ActionLogic.ModelView.Proposals
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using GenTRAC.DataBridge.DTO;
     using IES.Common;
 
     /// <summary>
@@ -81,6 +85,8 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
             this.ProposalID = -1;
             this.DisplayNewRevisionButton = false;
             this.DisplayRevertRevisionButton = false;
+            this.HasRdsbDocument = false;
+            this.GenBoeWorkspaces = new Collection<string>();
         }
 
         /// <summary>
@@ -109,9 +115,37 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public bool DisplayNewRevisionButton { get; set; }
 
         /// <summary>
+        /// Should a New Revision button be disabled
+        /// </summary>
+        public bool NewRevisionButtonDisabled
+        {
+            get
+            {
+                // We disable the "Add New Revision" button if:
+                //      Proposal is Revised
+                //   OR Proposal is Completed AND is CCOPD AND certification completed OR certification marked as not required
+                // In other words, we are allowed to add a new revision when
+                //      proposal is Submitted (worflow completed, is CCOPD, and waiting for certification)
+                //   OR proposal is Completed and is not CCOPD
+                return this.ProposalStatus == ProposalStatus.Revised 
+                        || (this.ProposalStatus == ProposalStatus.Completed && this.IsCCoPD && (this.CertificationCompletedDate != null || this.ReasonCertificationNotRequired.HasValue));
+            }
+        }
+
+        /// <summary>
         /// Determines whether to show or hide the "Revert to Prior Version" button
         /// </summary>
         public bool DisplayRevertRevisionButton { get; set; }
+
+        /// <summary>
+        /// Determines if there is an RDSB Document for this Proposal
+        /// </summary>
+        public bool HasRdsbDocument { get; set; }
+
+        /// <summary>
+        /// Gets/Sets list of any Workspaces using this Proposal
+        /// </summary>
+        public ICollection<string> GenBoeWorkspaces { get; set; }
 
         /// <summary>
         /// Reason Certification is Not Required
@@ -127,5 +161,29 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// ID of the revised proposal if this proposal is a revision
         /// </summary>
         public int? RevisedProposalId { get; set; }
+
+        /// <summary>
+        /// Text for certification completed line
+        /// </summary>
+        public string CertificationCompletedLineText
+        {
+            get
+            {
+                DateTime? certificationCompleted = DateTime.TryParse(this.CertificationCompletedDate, out DateTime temp) ? (DateTime?)temp : null;
+                return ProposalLoader.GetCertificationCompletedLineText(this.ProposalStatus, this.IsCCoPD, certificationCompleted);
+            }
+        }
+
+        /// <summary>
+        /// Text for workflow status line
+        /// </summary>
+        public string WorkflowStatusLineText
+        {
+            get
+            {
+                DateTime? completedDate = DateTime.TryParse(this.CompletedDate, out DateTime temp) ? (DateTime?)temp : null;
+                return ProposalLoader.GetWorkflowCompletedLineText(this.ProposalStatus, DateTime.Parse(this.AnticipatedDeliveryDate), completedDate);
+            }
+        }
     }
 }

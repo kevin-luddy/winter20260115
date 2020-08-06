@@ -980,12 +980,47 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// Proposal can't have "Revised" status/must be most recent revision, or original if not revised
             /// </summary>
-            public const string NOT_LATEST_VERSION = "A new Revision cannot be added from a Proposal that is alread Revised. It can only be added from the latest version of the Proposal.";
+            public const string NOT_LATEST_VERSION_NEW_REVISION = "A new Revision cannot be added from a Proposal that is alread Revised. It can only be added from the latest version of the Proposal.";
 
             /// <summary>
             /// A Revision can only be created by the Lead Estimator or Backup Estimator
             /// </summary>
-            public const string NOT_PERMITTED = "Only the Lead Estimator or Backup Estimator is permitted to create a new Revision of a Proposal.";
+            public const string NOT_PERMITTED_NEW_REVISION = "Only the Lead Estimator or Backup Estimator is permitted to create a new Revision of a Proposal.";
+
+            /// <summary>
+            /// Proposal must have a prior version in order to revert to it
+            /// </summary>
+            public const string NO_PRIOR_VERSION = "This Proposal does not have a prior version to be reverted to.";
+
+            /// <summary>
+            /// Proposal must have a status of In Progress in order to be reverted to the prior version
+            /// </summary>
+            public const string NOT_IN_PROGRESS = "A Proposal must be In Progress in order to be reverted to the prior version.";
+
+            /// <summary>
+            /// Proposal must be most recent revision to be reverted
+            /// </summary>
+            public const string NOT_LATEST_VERSION_PRIOR_VERSION = "A Proposal cannot be reverted to the prior version if it is not the latest Revision of the Proposal.";
+
+            /// <summary>
+            /// A Revision can only be reverted by the Lead Estimator or Backup Estimator
+            /// </summary>
+            public const string NOT_PERMITTED_PRIOR_VERSION = "Only the Lead Estimator or Backup Estimator is permitted to revert a Revision of a Proposal to the prior version.";
+
+            /// <summary>
+            /// Proposal can't be reverted while RDSB Document for it exists
+            /// </summary>
+            public const string CANNOT_HAVE_DOCUMENT = "A Proposal cannot be reverted to the prior version if there is an RDSB Document associated with it.";
+
+            /// <summary>
+            /// Proposal can't be reverted while genBOE Workspace for it exists
+            /// </summary>
+            public const string CANNOT_HAVE_WORKSPACE = "A Proposal cannot be reverted to the prior version if there is a genBOE Workspace associated with it.";
+
+            /// <summary>
+            /// Only one Revision can be made from a Proposal
+            /// </summary>
+            public const string REVISION_ALREADY_EXISTS = "A Revision has already been created for this proposal. Access the new Revision from the PTM home page.";
         }
     }
 }

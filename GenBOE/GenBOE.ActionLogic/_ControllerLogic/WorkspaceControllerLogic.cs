@@ -85,11 +85,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private WorkspaceExporter workspaceExporter;
 
         /// <summary>
-        /// RTE Template loader
-        /// </summary>
-        private readonly IRteTemplateDataLoader rteTemplateDataLoader;
-
-        /// <summary>
         /// The PTM LOB conversion error.
         /// </summary>
         private const string PTM_LOB_CONVERSION_ERROR = "The LOB in PTM is invalid, update the Proposal in PTM to use a valid LOB.";
@@ -143,8 +138,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IPickListMapper boePickListMapper,
             IPickListMapper ptmPickListMapper,
             ContractTypeLoader contractTypeLoader,
-            WorkspaceExporter workspaceExporter,
-            IRteTemplateDataLoader rteTemplateDataLoader)
+            WorkspaceExporter workspaceExporter)
         {
             this.WorkspaceLoader = workspaceLoader;
             this.UserLoader = inuserLoader;
@@ -166,7 +160,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.ptmPickListMapper = ptmPickListMapper;
             this.contractTypeLoader = contractTypeLoader;
             this.workspaceExporter = workspaceExporter;
-            this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
         #endregion
@@ -1147,6 +1140,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
             List<FullBoe> boes = ws.Boes.ToList();
             List<BoeTaskElementDTO> tasks = ws.TaskElements.OrderBy(t => t.BOETaskElementOrder).ToList();
 
+            // Get RTE overrides
+            ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = ws.TemplateQuestionsAndAnswers.ToList();
+
             bool isOffloading = ws.ProjectMapType != ProjectMapType.StandardWithoutOffload;
             if (isOffloading)
             {
@@ -1156,11 +1152,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
                 boes = results.Boes.ToList();
                 tasks = boes.SelectMany(b => b.TaskElements).OrderBy(t => t.BOETaskElementOrder).ToList();
+                rteTemplateOverrides = boes.SelectMany(x => x.TemplateQuestionsAndAnswers).ToList();
             }
             
-            // Get RTE overrides
-            ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateOverrides = this.rteTemplateDataLoader.GetByWorkspaceId(ws.Id, boes);
-
             BOEExportInputs exportInputs = new BOEExportInputs(boes, ws.Boes.ToList(), tasks, ws, rteTemplateOverrides);
             // Need picklist values for contract type for Workspace Identification sheet
             exportInputs.ContractTypes = this.contractTypeLoader.GetPickListValues();

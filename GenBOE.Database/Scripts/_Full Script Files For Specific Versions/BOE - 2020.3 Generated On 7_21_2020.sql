@@ -1,6 +1,6 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2020.3, on 7/8/2020.
+    This file was auto-generated for Release: 2020.3, on 7/21/2020.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
@@ -6166,11 +6166,12 @@ AS
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
 **		5/28/2020	Dusan				BOEJ-4588 - Report identifying users who are assigned a Role within a Workspace
+**		7/ 7/2020	Dusan				BOEJ-4688 - Add indicator if the WS is deleted
 *******************************************************************************/
 
 	SET NOCOUNT ON
 	SELECT x.DisplayName, x.NTID, x.RoleName, x.WorkspaceName, 
-			x.WorkspaceState, x.WorkspaceLastModifiedDate, x.WorkspaceCreationDate 
+			x.WorkspaceState, x.WorkspaceLastModifiedDate, x.WorkspaceCreationDate, CASE WHEN x.IsDeleted = 1 THEN 'Deleted' ELSE NULL END AS IsWsDeleted
 		FROM UsersWithRolesReport x
 		WHERE 
 			(@cutoffCreationDate IS NULL OR x.WorkspaceCreationDate >= @cutoffCreationDate)
@@ -38049,7 +38050,7 @@ CREATE VIEW dbo.UsersWithRolesReport AS
 		SELECT
 			DISTINCT 
 				u.DisplayName, u.NTID, r.RoleName, w.WorkspaceName, wS.WorkspaceState,
-				w.UpdateDT AS WorkspaceLastModifiedDate, w.WorkspaceCreationDate
+				w.UpdateDT AS WorkspaceLastModifiedDate, w.WorkspaceCreationDate, w.IsDeleted
 				FROM BOEPotentialRole br
 						INNER JOIN RoleLU r ON bR.RoleId = r.RoleID
 						INNER JOIN ETIuser u ON u.ETIUserID = bR.ETIUserID
@@ -38060,7 +38061,7 @@ CREATE VIEW dbo.UsersWithRolesReport AS
 		SELECT
 			DISTINCT 
 				u.DisplayName, u.NTID, r.RoleName, w.WorkspaceName, wS.WorkspaceState,
-				w.UpdateDT AS WorkspaceLastModifiedDate, w.WorkspaceCreationDate
+				w.UpdateDT AS WorkspaceLastModifiedDate, w.WorkspaceCreationDate, w.IsDeleted
 				FROM WorkspaceUserRole bR 
 						INNER JOIN RoleLU r ON bR.RoleId = r.RoleID
 						INNER JOIN ETIuser u ON u.ETIUserID = bR.ETIUserID

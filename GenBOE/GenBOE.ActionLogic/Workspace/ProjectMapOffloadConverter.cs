@@ -12,10 +12,12 @@ namespace GenBOE.ActionLogic.Workspace
     using System.Linq;
     using DataBridge.DTO;
     using GenBOE.ActionLogic.Common;
+    using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
+    using IES.Common.OfficeUtilities;
     using Microsoft.Practices.Unity;
 
     /// <summary>
@@ -48,10 +50,11 @@ namespace GenBOE.ActionLogic.Workspace
 
             Collection<ProjectMapModelView> projectMapData = new Collection<ProjectMapModelView>();
 
-            ICollection<FullBoe> boesToConvert = doOffload ? offloadClass.OffloadWorkspace(workspace.Boes.ToList(), workspace).Boes.ToList() : workspace.Boes.ToList();
             ICollection<OffloadRatesDTO> offloadRates = offloadRatesLoader.GetByWorkspaceId(workspace.Id);
-
             DateTime discreteStartMonth = new DateTime(workspace.ContractStartDate.Year, 1, 15).Normalize();
+
+            ICollection<FullBoe> boesToConvert = doOffload ? offloadClass.OffloadWorkspace(workspace.Boes.ToList(), workspace).Boes.ToList() : workspace.Boes.ToList();
+            List<RTECustomTemplateQuestionAnswerModelView> rteOverrides = doOffload ? boesToConvert.SelectMany(x => x.TemplateQuestionsAndAnswers).ToList() : workspace.TemplateQuestionsAndAnswers.ToList();
 
             foreach (FullBoe boe in boesToConvert)
             {
@@ -76,20 +79,20 @@ namespace GenBOE.ActionLogic.Workspace
                             CamName = boe.CamName ?? task.CamName,
                             Category = boe.Category ?? task.Category,
                             ClassOfCost = (boe.ClassOfCost == ClassOfCost.None ? task.ClassOfCost : boe.ClassOfCost).GetDescription(),
-                            Clin = (clin == null) ? string.Empty : clin.ClinNumber,
-                            CostCenter = (perfOrg == null) ? string.Empty : perfOrg.PerformingOrgName,
+                            Clin = clin?.ClinNumber ?? string.Empty,
+                            CostCenter = perfOrg?.PerformingOrgName ?? string.Empty,
                             Dollars = laborResource.SpreadType == SpreadType.Cost ? laborResource.ValueSpread : null,
                             EndDate = laborResource.EndDate,
                             Hours = laborResource.SpreadType == SpreadType.Hours ? laborResource.ValueSpread : null,
-                            InitialResource = (resource == null) ? string.Empty : resource.ResourceName,
+                            InitialResource = resource?.ResourceName ?? string.Empty,
                             LegacyID = laborResource.LegacyID,
-                            Rationale = task.MOQText,
+                            Rationale = RTEUtilities.TurnHTMLIntoPlainText(BOEExportConverter.GetRteOverride(task.BoeID, task.Id, task.MOQText, RteTemplateSource.TaskMOQ, rteOverrides)),
                             SowNumber = boe.SOW ?? task.SOW,
                             SowTitle = boe.SOWTitle ?? task.SOWTitle,
                             StartDate = laborResource.StartDate,
-                            Task = task.Description,
-                            WbsElementTitle = (wbs == null) ? string.Empty : wbs.WbsTitle,
-                            WbsNumber = (wbs == null) ? string.Empty : wbs.WbsNumber,
+                            Task = RTEUtilities.TurnHTMLIntoPlainText(BOEExportConverter.GetRteOverride(task.BoeID, task.Id, task.Description, RteTemplateSource.TaskDescription, rteOverrides)),
+                            WbsElementTitle = wbs?.WbsTitle ?? string.Empty,
+                            WbsNumber = wbs?.WbsNumber ?? string.Empty,
                             Offload = laborResource.CanOffload,
                             TieredPercentage = laborResource.TieredPercentage
                         };

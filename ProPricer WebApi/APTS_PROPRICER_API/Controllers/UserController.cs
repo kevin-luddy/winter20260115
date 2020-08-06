@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016-2018 Lockheed Martin Corporation.
+    Copyright 2016-2020 Lockheed Martin Corporation.
 
     This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
     commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using APTSPropricerApi.Connection;
 using APTSPropricerApi.DTOs;
+using EBS.Core;
 using EBS.ProPricer.Model;
 
 namespace APTSPropricerApi.Controllers
@@ -30,7 +31,7 @@ namespace APTSPropricerApi.Controllers
                 if (ppc.Workspace != null)
                 {
                     ppc.Workspace.Users.Open();
-                    foreach (User user in ppc.Workspace.Users)
+                    foreach (User user in ppc.Workspace.Users.Items())
                     {
                         UserDto uldto = new UserDto
                         {
@@ -71,10 +72,10 @@ namespace APTSPropricerApi.Controllers
                 if (ppc.Workspace != null)
                 {
                     EBS.ProPricer.Data.EntityId pEntityId = new EBS.ProPricer.Data.EntityId(new Guid(id));
-                    User user = ppc.Workspace.Users.Find(pEntityId).Value;
+                    User user = ppc.Workspace.Users.Find(pEntityId).Value();
                     //  var u2 = ppc.workspace.Users.FindName("Mcbride, Mike");
                     ppc.Workspace.Roles.Open();
-                    foreach (Role role in ppc.Workspace.Roles)
+                    foreach (Role role in ppc.Workspace.Roles.Items())
                     {
                         if (user.Role.Id == role.Id) // should only be one but I will just let it loop 
                         {

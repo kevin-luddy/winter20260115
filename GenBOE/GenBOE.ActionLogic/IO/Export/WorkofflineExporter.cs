@@ -245,7 +245,7 @@ namespace GenBOE.ActionLogic.IO.Export
                      worksheetName.Replace(" ", "") + ImportExportConstants.BOE_TABLE_SUFFIX;   // Adding BOE table to BOE worksheet
                 TableDefinitionPart boeTableDefinitionPart = this.GenerateBoeWorksheetData(spreadsheet,
                     workofflineTemplate, worksheetPart, ++tableDefPartId, boeTableName, rowIndex, boe, wbs, clin,
-                    allWorkspaceCustomFields, dataValidationReferences, workspace?.RteOverrides);
+                    allWorkspaceCustomFields, dataValidationReferences, workspace?.RteOverrides.ToList());
                 tablePartDefinitionIds.Add(worksheetPart.GetIdOfPart(boeTableDefinitionPart));
                 TableRange tableRange = new TableRange(worksheetName, boeTableDefinitionPart.Table);
                 rowIndex = tableRange.RowEnd + 3;

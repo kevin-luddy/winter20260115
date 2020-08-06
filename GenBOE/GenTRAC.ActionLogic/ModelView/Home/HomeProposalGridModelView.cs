@@ -250,9 +250,13 @@ namespace GenTRAC.ActionLogic.ModelView.Home
                 }
                 else
                 {
-                    if (this.Status.Equals(ProposalStatus.Completed) || this.Status.Equals(ProposalStatus.Revised))
+                    if (this.Status.Equals(ProposalStatus.Completed))
                     {
                         return Constants.GREY_BACKGROUND_CSS_CLASS_STRING;
+                    }
+                    else if (this.Status.Equals(ProposalStatus.Revised))
+                    {
+                        return Constants.REVISED_DATE_CSS_STYLE_STRING;
                     }
                     else if (Helpers.IsProposalCertificationLate(this.Status, this.ProposalCompletedDate))
                     {

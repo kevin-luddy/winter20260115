@@ -1151,14 +1151,6 @@ button.ies-danger.disabled {
     float: right;
 }
 
-.newRevisionButtonMargin {
-    margin-right: 135px;
-}
-
-.revertRevisionMargin {
-    margin-right: 88px;
-}
-
 /* Revision Tab */
 .module-content-data.revision {
     font-size: 14px;
@@ -1203,3 +1195,7 @@ p.revision {
     float: left;
 }
 /* End of Revision Tab*/
+
+.selection-width-certification-not-required {
+    width: 180px;
+}

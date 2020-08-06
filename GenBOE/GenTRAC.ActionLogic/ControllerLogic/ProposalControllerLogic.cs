@@ -91,7 +91,7 @@ namespace GenTRAC.ActionLogic
         /// The emailer
         /// </summary>
         private IPtmEmailer emailer;
-
+        
         /// <summary>
         /// Create static Regex object for FreeText.
         /// </summary>
@@ -338,6 +338,25 @@ namespace GenTRAC.ActionLogic
 
                 // save
                 return this.ProposalMediator.SaveProposal(proposal);
+            }
+        }
+
+        /// <summary>
+        /// Hard deletes a Proposal
+        /// Currently should only be used when revering a revision to a prior version
+        /// </summary>
+        /// <param name="proposal">Proposal to delete</param>
+        public void DeleteProposal(ProposalDto proposal)
+        {
+            if (proposal == null)
+            {
+                throw new ArgumentNullException(nameof(proposal));
+            }
+
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.DeleteProposal", this.log))
+            {
+                proposal.Updateable = UpdateType.Deleted;
+                this.ProposalLoader.Save(proposal);
             }
         }
 
@@ -849,13 +868,15 @@ namespace GenTRAC.ActionLogic
 
             // Determine visibility status of CertificationTimeline tab
             model.CertificationTimelineVisibility = SecurityAuthorization.None;
-            if (fullProposalDto != null && (fullProposalDto.ProposalStatus == ProposalStatus.Submitted || fullProposalDto.ProposalStatus == ProposalStatus.Revised || (fullProposalDto.IsCCPDRequired.HasValue && fullProposalDto.IsCCPDRequired.Value && fullProposalDto.ProposalStatus == ProposalStatus.Completed)))
+            if (fullProposalDto != null && fullProposalDto.IsCCPDRequired.HasValue && fullProposalDto.IsCCPDRequired.Value && 
+                (fullProposalDto.ProposalStatus == ProposalStatus.Submitted || fullProposalDto.ProposalStatus == ProposalStatus.Revised 
+                || fullProposalDto.ProposalStatus == ProposalStatus.Completed))
             {
                 model.CertificationTimelineVisibility = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId).Authorization;
             }
 
             model.RevisionHistoryVisibility = SecurityAuthorization.None;
-            if (fullProposalDto != null && (fullProposalDto.IsRevision || fullProposalDto.HasRevision))
+            if (fullProposalDto != null && (fullProposalDto.IsRevision || fullProposalDto.ProposalStatus == ProposalStatus.Revised))
             {
                 model.RevisionHistoryVisibility = this.CheckPermissions(PtmSecurityPage.RevisionHistory, proposalId).Authorization;
             }
@@ -886,17 +907,12 @@ namespace GenTRAC.ActionLogic
                 }
 
                 // Display + New Revision button only if the user if the lead or backup estimator and approval workflow is completed
-                UserDTO activeUser = this.GetActiveUser();
-                bool userIsLeadOrBackupPricer = fullProposalDto.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer));
+                bool userIsLeadOrBackupPricer = this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
 
-                if (fullProposalDto.WorkflowStatus == WorkflowStatus.ProposalLocked && userIsLeadOrBackupPricer)
-                {
-                    model.DisplayNewRevisionButton = true;
-                }
+                model.DisplayNewRevisionButton = fullProposalDto.WorkflowStatus == WorkflowStatus.ProposalLocked && userIsLeadOrBackupPricer;
 
                 // Display Revert to Prior Version button only if user is lead or backup estimator and in latest revision
-                if ((fullProposalDto.ProposalStatus == ProposalStatus.InProgress || fullProposalDto.ProposalStatus == ProposalStatus.Completed || 
-                    fullProposalDto.ProposalStatus == ProposalStatus.Submitted) && fullProposalDto.IsRevision && userIsLeadOrBackupPricer)
+                if (fullProposalDto.ProposalStatus == ProposalStatus.InProgress && fullProposalDto.IsRevision && userIsLeadOrBackupPricer)
                 {
                     model.DisplayRevertRevisionButton = true;
                 }
@@ -905,6 +921,15 @@ namespace GenTRAC.ActionLogic
                 
                 model.RevisedProposalId = fullProposalDto.RevisionOfId;
                 model.IsNewRevision = false;
+
+                model.HasRdsbDocument = fullProposalDto.DocumentId.HasValue;
+
+                // Only get this if revert button is available, since it won't be needed otherwise and we can save a db call
+                if (model.DisplayRevertRevisionButton)
+                {
+                    ICollection<GenBOE.Dtos.WorkspaceDTO> workspaces = this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo();
+                    model.GenBoeWorkspaces = workspaces.Where(x => x.TrackingNumber == fullProposalDto.TrackingNumber).Select(x => x.Shortname).OrderBy(x => x).ToCollection();
+                }
             }
 
             return model;
@@ -1233,15 +1258,12 @@ namespace GenTRAC.ActionLogic
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView();
 
             FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
-            model.IsReadOnly = this.IsCertificationReadOnly(proposalId ?? -1);
 
             if (fullProposalDto != null)
             {
                 model.ProposalID = fullProposalDto.Id;
-                model.AgreementDate = fullProposalDto.AgreementDate.HasValue ?
-                    fullProposalDto.AgreementDate.Value.ToString("MM/dd/yyyy") : string.Empty;
-                model.CertificationDate = fullProposalDto.CertificationDate.HasValue ?
-                    fullProposalDto.CertificationDate.Value.ToString("MM/dd/yyyy") : string.Empty;
+                model.AgreementDate = fullProposalDto.AgreementDate.HasValue ? fullProposalDto.AgreementDate.Value.ToString("MM/dd/yyyy") : string.Empty;
+                model.CertificationDate = fullProposalDto.CertificationDate.HasValue ? fullProposalDto.CertificationDate.Value.ToString("MM/dd/yyyy") : string.Empty;
 
                 if (fullProposalDto.CertificationDate.HasValue && fullProposalDto.AgreementDate.HasValue)
                 {
@@ -1255,6 +1277,7 @@ namespace GenTRAC.ActionLogic
 
                 model.ReasonCertificationNotRequired = fullProposalDto.ReasonCertificationNotRequired;
                 model.OtherReasonCommentCertification = fullProposalDto.OtherReasonComment;
+                model.IsReadOnly = this.IsCertificationReadOnly(proposalId ?? -1, fullProposalDto.ProposalStatus, model.ReasonCertificationNotRequired.HasValue);
 
                 model.CutOffDateUtilization = fullProposalDto.CutOffDateUtilization;
                 List<SelectListItem> cutoffList = EnumUtilities.GetListItemsForEnumSorted(typeof(CutOffDateUtilization), false, model.CutOffDateUtilization.ToString()).ToList();
@@ -1266,13 +1289,9 @@ namespace GenTRAC.ActionLogic
 
                 reasonCertificationNotRequiredList.Insert(0, new SelectListItem { Text = string.Empty });
                 model.ReasonCertificationNotRequiredList = reasonCertificationNotRequiredList;
-
                 model.Comments = fullProposalDto.Comments;
-                
-                // Read Only && certification not required reason set && has permissions to update it
-                model.DisplayCertificationReset = string.Equals(this.IsCertificationReadOnly(fullProposalDto.Id).ToLower(), "true") 
-                                                                                    && model.ReasonCertificationNotRequired.HasValue
-                                                                                    && this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
+                model.DisplayCertificationReset = string.Equals(model.IsReadOnly.ToLower(), "true") && model.ReasonCertificationNotRequired.HasValue && this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
+                model.DisableCertificationRequiredChange = fullProposalDto.ProposalStatus == ProposalStatus.Completed && !model.ReasonCertificationNotRequired.HasValue;
             }
 
             return model;
@@ -2007,6 +2026,27 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
+        /// Validate that new revision doesn't already exist
+        /// </summary>
+        /// <param name="proposalInfo">Proposal Info</param>
+        public void ValidateNewRevisionDoesNotExist(ProposalInformationModelView proposalInfo)
+        {
+            if (proposalInfo == null)
+            {
+                throw new ArgumentNullException(nameof(proposalInfo));
+            }
+
+            if (this.ProposalLoader.GetIdByTrackingNumber(proposalInfo.ProposalTrackingNumber) > 0)
+            {
+                ValidationMessage validationError = new ValidationMessage(ValidationConstants.ProposalRevisionConstants.REVISION_ALREADY_EXISTS);
+                validationError.FormIDToTarget = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_INFO_FORM;
+
+                // Throw error now - won't ever be able to save this revision, so no need to validate anything else
+                throw new ValidationException(new Collection<ValidationMessage>() { validationError } );
+            }
+        }
+
+        /// <summary>
         /// Get the active user.
         /// </summary>
         /// <returns>Current active user</returns>
@@ -2085,16 +2125,21 @@ namespace GenTRAC.ActionLogic
         /// Determines whether certification of proposal is read only based on proposal state and current user
         /// </summary>
         /// <param name="proposalId">The proposal Id.</param>
+        /// <param name="proposalStatus">Proposal Status</param>
+        /// <param name="markedAsCertificationNotRequired">Certification is marked as not-required</param>
         /// <returns>"true" if readonly, "false" if editable</returns>
-        public string IsCertificationReadOnly(int proposalId)
+        public string IsCertificationReadOnly(int proposalId, ProposalStatus proposalStatus, bool markedAsCertificationNotRequired)
         {
-            bool readOnly = false;
+            bool readOnly = proposalStatus == ProposalStatus.Revised || markedAsCertificationNotRequired;
 
-            // check permission of current user
-            SecurityAuthorizationAndRole authorization = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId);
-            if (authorization.Authorization == SecurityAuthorization.Read)
+            if (!readOnly)
             {
-                readOnly = true;
+                // check permission of current user
+                SecurityAuthorizationAndRole authorization = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId);
+                if (authorization.Authorization == SecurityAuthorization.Read)
+                {
+                    readOnly = true;
+                }
             }
 
             return readOnly.ToString().ToLower();
@@ -2172,15 +2217,12 @@ namespace GenTRAC.ActionLogic
 
             if (proposal.ProposalStatus == ProposalStatus.Revised)
             {
-                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_LATEST_VERSION));
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_LATEST_VERSION_NEW_REVISION));
             }
-
-            UserDTO activeUser = this.GetActiveUser();
-            FullProposal fullProposal = new FullProposal(proposal);
-
-            if (!fullProposal.Permissions.Any(x => x.UserId == activeUser.Id && (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer)))
+                        
+            if (!this.IsCurrentUserPricerOrBackupOrSysAdmin(proposal.Id))
             {
-                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED));
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED_NEW_REVISION));
             }
 
             if (validationErrors.Any())
@@ -2199,6 +2241,71 @@ namespace GenTRAC.ActionLogic
             using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SetProposalRevised", this.log))
             {
                 this.ProposalLoader.UpdateProposalStatus(proposalId, proposalUpdateDate, ProposalStatus.Revised);
+            }
+        }
+
+        /// <summary>
+        /// Revert a Revised Proposal to its previous state - Submitted for CCoPD "Yes", Completed for CCoPD "No"
+        /// </summary>
+        /// <param name="proposalId">ID of Revised Proposal</param>
+        public void RevertRevisedProposal(int proposalId)
+        {
+            ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
+
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.RevertRevisedProposal", this.log))
+            {
+                if(proposal.IsCCPDRequired.HasValue && proposal.IsCCPDRequired.Value)
+                {
+                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Submitted);
+                } 
+                else
+                {
+                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Completed);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Validate that a Proposal is able to be reverted to the prior version
+        /// </summary>
+        /// <param name="proposal">Proposal being reverted</param>
+        public void ValidateRevertRevisionToPriorVersion(ProposalDto proposal)
+        {
+            ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+
+            if (proposal.RevisionOfId == null)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NO_PRIOR_VERSION));
+            }
+
+            if (this.ProposalLoader.GetAllSlim().Any(x => x.RevisionOfId == proposal.Id))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_LATEST_VERSION_PRIOR_VERSION));
+            }
+
+            if (proposal.ProposalStatus != ProposalStatus.InProgress)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_IN_PROGRESS));
+            }
+
+            if (!this.IsCurrentUserPricerOrBackupOrSysAdmin(proposal.Id))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED_PRIOR_VERSION));
+            }
+
+            if (proposal.DocumentId.HasValue)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.CANNOT_HAVE_DOCUMENT));
+            }
+
+            if (this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo().Any(x => x.TrackingNumber == proposal.TrackingNumber))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.CANNOT_HAVE_WORKSPACE));
+            }
+
+            if (validationErrors.Any())
+            {
+                throw new ValidationException(validationErrors);
             }
         }
 

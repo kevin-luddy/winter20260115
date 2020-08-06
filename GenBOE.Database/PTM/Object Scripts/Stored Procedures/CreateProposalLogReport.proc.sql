@@ -40,6 +40,7 @@ AS
 **		6/30/2020	Dusan				BOEJ-4639 Add Revision Type
 **										BOEJ-4590 Add Material POC and Subcontracts POC
 **										BOEJ-4631 Add Reason Cert Not Required
+**		7/30/2020	Dusan				BOEJ-4639 Add Latest Revision
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -304,6 +305,7 @@ SELECT V.[ProposalID]
 	 ,V.RevisionType
 	 ,V.MaterialPOC
 	 ,V.SubcontractsPOC
+	 ,V.IsLatestVersion
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(

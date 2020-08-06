@@ -15,11 +15,11 @@
         var isCertificationNotRequired = $('#isCertNotRequired')[0].checked || (ProposalCertificationTimelineWidget.isReadOnly() && '@Model.ReasonCertificationNotRequired.HasValue' == 'True');
         if (isCertificationNotRequired) {
             showCertNotRequired();
-
         } else {
             showCertRequired();
         }
 
+        ProposalCertificationTimelineWidget.clearValidationBox();
         ProposalCertificationTimelineWidget.refreshModule();
     };
 
@@ -48,6 +48,7 @@
 
     // Shows / hides comments when Other is selected for Certification Not Required Reason
     function toggleCertificationOtherComments() {
+        ProposalCertificationTimelineWidget.clearValidationBox();
         if ($('#ReasonCertificationNotRequired').val() == @((int)ReasonCertificationNotRequired.Other)) {
             $('#certificationOtherCommentParent').show();
         }
@@ -159,13 +160,20 @@
 
         // Save the page
         ProposalCertificationTimelineWidget.SavePage = function (buttonPressed) {
-            var url = GenSession.CreateUrl({
-                controller: '@WebConstants.Controller.CERTIFICATION_TIMELINE',
-                action: '@WebConstants.Action.SAVE_CERTIFICATION_TIMELINE',
-                id: ProposalIdWhenPageRendered
-            });
+            ProposalCertificationTimelineWidget.clearValidationBox();
 
-            ProposalCertificationTimelineWidget.Save(buttonPressed, url, false);
+            if ($('#isCertNotRequired')[0].checked && $('#ReasonCertificationNotRequired').val() == '') {
+                $($('ul.validation-box')[1]).append('<li>"Reason Certification is Not Required" is a required field.</li>').show();
+                ProposalCertificationTimelineWidget.refreshModule();
+            } else {
+                var url = GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.CERTIFICATION_TIMELINE',
+                    action: '@WebConstants.Action.SAVE_CERTIFICATION_TIMELINE',
+                    id: ProposalIdWhenPageRendered
+                });
+
+                ProposalCertificationTimelineWidget.Save(buttonPressed, url, false);
+            }
         };
 
         // Save the page
@@ -298,6 +306,11 @@
         };
 
         toggleCertification();
+
+        if ('@Model.DisableCertificationRequiredChange' == 'True') {
+            $('.certificationRequiredCheckbox').addClass('disabled').attr("disabled", true);
+            $('button[name="complete-button"]').addClass('disabled');
+        }
     });
     </script>
 
@@ -305,18 +318,14 @@
     <div class="module-header-data">
         Certification Timeline
         <span class="form-row" style="font-weight:bold; font-size: 85%; float: right;">
-            <input class="certificationRequiredCheckbox" type="checkbox" style="margin: 11px 3px 0 0" id="isCertNotRequired" onchange="toggleCertification()" value="@Model.ReasonCertificationNotRequired.HasValue" />
+            <input class="certificationRequiredCheckbox" type="checkbox" style="margin: 11px 3px 0 0" id="isCertNotRequired" onchange="toggleCertification()" @(Model.ReasonCertificationNotRequired.HasValue ? "checked=\"checked\"" : string.Empty) />
             <label class="certificationRequiredCheckbox" for="isCertNeeded">Certification is <i>Not</i> Required</label>
             <button class="ies certificationNotRequiredResetButton" type="button" onclick="ProposalCertificationTimelineWidget.ResetCertificationNeeded(this)">Reset Certification Not Required</button>
         </span>
 
     </div>
     <div class="module-content-data expanded-content">
-        @using (Html.BeginForm("", "", FormMethod.Post, new
-        {
-            id = "certificationTimelineForm",
-            name = "certificationTimelineForm"
-        }))
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = "certificationTimelineForm", name = "certificationTimelineForm" }))
         {
             <div class="form-row certificationRequired">
                 <div class="form-label">
@@ -369,7 +378,7 @@
                 </div>
                 <div class="form-element">
                     @Html.DropDownListFor(model => model.ReasonCertificationNotRequired, Model.ReasonCertificationNotRequiredList,
-                                                    new { maxlength = 50, @class = "selection-width", @name = "ReasonCertificationNotRequired", @onChange = "toggleCertificationOtherComments()" })
+                                                    new { maxlength = 50, @class = "selection-width-certification-not-required", @name = "ReasonCertificationNotRequired", @onChange = "toggleCertificationOtherComments()" })
                 </div>
             </div>
             <div class="form-row  certificationNotRequired" id="certificationOtherCommentParent">
@@ -378,4 +387,4 @@
             </div>
         }
     </div>
-    </div>
+</div>

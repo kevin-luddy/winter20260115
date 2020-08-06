@@ -22,6 +22,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		6/30/2020	Dusan				BOEJ-4639 Add Revision Type
 **										BOEJ-4590 Add Material POC and Subcontracts POC
 **										BOEJ-4631 Add Reason Cert Not Required
+**		7/30/2020	Dusan				BOEJ-4639 Add Latest Revision
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -137,12 +138,16 @@ SELECT
 		WHEN 3 THEN p.OtherReasonComment -- Other
 		ELSE rCNR.Text
 	END AS ReasonCertificationNotRequired,
-	CASE p.RevisionOfId
-		WHEN NULL THEN 'Original'
+	CASE 
+		WHEN p.RevisionOfId IS NULL THEN 'Original'
 		ELSE 'Proposal Revision'
 	END AS RevisionType,
 	MaterialPOC.DisplayName AS MaterialPOC,
-	SubcontractsPOC.DisplayName AS SubcontractsPOC
+	SubcontractsPOC.DisplayName AS SubcontractsPOC,
+	CASE
+		WHEN p.ProposalStatusID = 8 THEN 'No'
+		ELSE 'Yes'
+	END AS IsLatestVersion
   FROM [dbo].[Proposal] P
 	INNER JOIN [dbo].[ProgramAreaLU] PA ON P.ProgramAreaID = PA.ProgramAreaID
 	INNER JOIN [dbo].[LineOfBusinessLU] LOB ON P.LineOfBusinessID = LOB.LineOfBusinessID

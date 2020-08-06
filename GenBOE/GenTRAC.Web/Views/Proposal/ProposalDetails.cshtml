@@ -162,16 +162,72 @@
         };
 
         ProposalDetailsWidget.AddNewRevision = function () {
+            GenSession.ShowLoadingBox();
+
             var url = GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.PROPOSAL',
-                action: '@WebConstants.Action.DISPLAY_PROPOSAL_REVISION_DETAILS',
+                action: '@WebConstants.Action.VALIDATE_PROPOSAL_REVISION_DETAILS',
                 id:  '@Model.ProposalID'
             });
-            window.location = url;
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                contentType: 'application/json; charset=utf-8',
+                success: function () {
+                    var newRevisionUrl = GenSession.CreateUrl({
+                        controller: '@WebConstants.Controller.PROPOSAL',
+                        action: '@WebConstants.Action.DISPLAY_PROPOSAL_REVISION_DETAILS',
+                        id:  '@Model.ProposalID'
+                    });
+                    window.location = newRevisionUrl;
+                },
+                error: function (response) {
+                    var errorMessages = JSON.parse(response.responseText).MessageList
+                    var errorList = [];
+                    if (errorMessages.length != 0) {
+                        errorMessages.forEach(function (message) {
+                            errorList.push(message.ValidationIssue);
+                        });
+                    }
+                    GenSession.HideLoadingBox();
+                    GenSession.alertDialog('New Revision Creation Failed', errorList.join('<br/>'));
+                }
+            });
         };
 
         ProposalDetailsWidget.RevertRevision = function () {
-            // TODO - RJ - update to call backend in BOEJ-4642
+            GenSession.ShowLoadingBox();
+
+            var url = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PROPOSAL',
+                action: '@WebConstants.Action.REVERT_PROPOSAL_TO_PRIOR_VERSION',
+                id:  '@Model.ProposalID'
+            });
+
+            $.ajax({
+                type: "POST",
+                url: url,
+                contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+                    window.location = GenSession.CreateUrl({
+                        controller: '@WebConstants.Controller.PROPOSAL',
+                        action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
+                        id: response.proposalId
+                    });
+                },
+                error: function (response) {
+                    var errorMessages = JSON.parse(response.responseText).MessageList
+                    var errorList = [];
+                    if (errorMessages.length != 0) {
+                        errorMessages.forEach(function (message) {
+                            errorList.push(message.ValidationIssue);
+                        });
+                    }
+                    GenSession.HideLoadingBox();
+                    GenSession.alertDialog('Reverting Revision Failed', errorList.join('<br/>'));
+                }
+            });
         };
 
         window.onhashchange = ProposalDetailsWidget.LoadTab;
@@ -348,20 +404,12 @@
             });
         });
 
-        if ('@(Model.ProposalStatus == ProposalStatus.Revised || Model.ReasonCertificationNotRequired.HasValue || (Model.ProposalStatus == ProposalStatus.Completed && Model.CertificationCompletedDate != null))' == 'True') {
+        if ('@(Model.NewRevisionButtonDisabled)' == 'True') {
             $('button[name="new-revision-button"]').addClass('disabled');
         }
 
-        if ('@(Model.ProposalStatus == ProposalStatus.Completed || Model.ProposalStatus == ProposalStatus.Submitted)' == 'True') {
-            $('button[name="revert-revision-button"]').addClass('disabled');
-        }
-
-        // Adjust margins for revision buttons
-        if ('@(Model.DisplayRevertRevisionButton)' == 'True') {
-            $('#revisionButtons').removeClass('newRevisionButtonMargin');
-            if ('@(!Model.DisplayNewRevisionButton)' == 'True') {
-                $('#revisionButtons').addClass('revertRevisionMargin');
-            }
+        if ('@(Model.HasRdsbDocument || Model.GenBoeWorkspaces.Any())' == 'True') {
+            $('button[name="revert-revision-button"]').addClass('hasDocumentOrWorkspace');
         }
 
         $('button[name="new-revision-button"]:not(.disabled)').click(function () {
@@ -372,12 +420,32 @@
                  null);
         });
 
-        $('button[name="revert-revision-button"]:not(.disabled)').click(function () {
+        $('button[name="revert-revision-button"]:not(.disabled,.hasDocumentOrWorkspace)').click(function () {
             GenSession.confirmDialog(
                  "Confirm revert to prior version",
-                 "Reverting to the prior version of this Proposal will delete this Proposal and all of its contents. Are you sure you would like to continue?",
+                 "Reverting to the prior version of this Proposal will delete this Proposal and all of its contents. <strong>This cannot be undone.</strong> Are you sure you would like to continue?",
                  ProposalDetailsWidget.RevertRevision,
                  null);
+        });
+
+        $('button[name="revert-revision-button"].hasDocumentOrWorkspace:not(.disabled)').click(function () {
+            var alertText = "<div style='text-align: left'><p>You may not revert this PTM Record to the previous version until the following genBOE Workspace(s) and/or RDSB Document associated with this PTM Record have been deleted. Please contact the System Administrator for assistance if you would like to retain the genBOE Workspace(s).</p><br><p><ul>";
+
+            if ('@Model.HasRdsbDocument' == 'True') {
+                var rdsbUrl = "@IES.Common.ConfigurationUtilities.GetAppSetting("RDSBUrl")" + "Document/Edit/" + @Model.ProposalID;
+                alertText += "<li><a href='" + rdsbUrl + "' target='_blank'>RDSB Document</a></li>";
+            }
+
+            @foreach(string workspace in Model.GenBoeWorkspaces)
+            {
+                <text>
+                    var boeUrl = "@IES.Common.ConfigurationUtilities.GetAppSetting("BOEUrl")" + "@workspace";
+                    alertText += "<li><a href='" + boeUrl + "' target='_blank'>" + "@workspace" + "</a></li>";
+                </text>
+            }
+
+            alertText += "</ul></p></div>"
+            GenSession.alertDialog("Proposal cannot be reverted", alertText);
         });
 
         ProposalDetailsWidget.LoadTab();
@@ -429,64 +497,15 @@
                             <div class="proposalTitle">@proposalLinkText - @Model.ProposalTitle</div>
                             <div class="proposalStatusDates">
                                 <p style="padding-bottom: 2px;">
-                                    @if (Model.ProposalStatus == ProposalStatus.InProgress)
-                                    {
-                                        <text>
-                                            Due: @Model.AnticipatedDeliveryDate
-                                        </text>
-                                    }
-                                    else if (Model.ProposalStatus == ProposalStatus.Completed || Model.ProposalStatus == ProposalStatus.Submitted || Model.ProposalStatus == ProposalStatus.Revised)
-                                    {
-                                        <text>
-                                            Approval Workflow Completed: @Model.CompletedDate
-                                        </text>
-                                    }
-                                    else if (Model.ProposalStatus == ProposalStatus.Revision || Model.ProposalStatus == ProposalStatus.Archived || Model.ProposalStatus == ProposalStatus.Deleted || Model.ProposalStatus == ProposalStatus.NoBid)
-                                    {
-                                        @Model.ProposalStatus.GetDescription();
-                                    }
-                                </p>
+                                    @Model.WorkflowStatusLineText
                                 <p>
-                                    @if (Model.ProposalStatus == ProposalStatus.Revised)
-                                    {
-                                        <text>
-                                            Proposal Revised
-                                        </text>
-                                    }
-                                    @if (Model.IsCCoPD)
-                                    {
-                                        if (Model.ProposalStatus == ProposalStatus.Submitted)
-                                        {
-                                            <text>
-                                                Certification In Progress
-                                            </text>
-                                        }
-                                        else if (Model.ProposalStatus == ProposalStatus.Completed)
-                                        {
-                                            if (Model.CompletedBeforeCertification)
-                                            {
-                                                <span>
-                                                    Certification Completed: <span helptext="@naHelpText">N/A </span>
-                                                </span>
-                                            }
-                                            else
-                                            {
-                                                <text>
-                                                    Certification Completed: @Model.CertificationCompletedDate
-                                                </text>
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        <text>&nbsp;</text>
-                                    }
+                                    @Model.CertificationCompletedLineText
                                 </p>
                             </div>
                         </text>
                     }
                 </div>
-                <div id="revisionButtons" class="newRevisionButtonMargin">
+                <div id="revisionButtons">
                     @if (Model.DisplayNewRevisionButton)
                     {
                         <button name="new-revision-button" type="button" class="ies stateful_button">+ New Revision</button>
