@@ -189,7 +189,8 @@ namespace GenTRAC.DataBridge.DTO
                             RevisionOfId = entity.RevisionOfId,
                             entity.ReasonCertificationNotRequired,
                             entity.OtherReasonComment,
-                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
+                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID),
+                            ProposalSetupComments = entity.SetupComments
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -257,7 +258,8 @@ namespace GenTRAC.DataBridge.DTO
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment,
-                            HasRevision = entity.HasRevision
+                            HasRevision = entity.HasRevision,
+                            ProposalSetupComments = entity.ProposalSetupComments
                         }).ToList();
                 }
             }
@@ -559,7 +561,8 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.IsRevision,
                             dtoToUpsert.RevisionOfId,
                             (int?)dtoToUpsert.ReasonCertificationNotRequired,
-                            dtoToUpsert.OtherReasonComment).FirstOrDefault();
+                            dtoToUpsert.OtherReasonComment,
+                            dtoToUpsert.ProposalSetupComments).FirstOrDefault();
                     }
                 }
             }
@@ -888,7 +891,8 @@ namespace GenTRAC.DataBridge.DTO
                         RevisionOfId = entity.RevisionOfId,
                         entity.ReasonCertificationNotRequired,
                         entity.OtherReasonComment,
-                        HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
+                        HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID),
+                        ProposalSetupComments = entity.SetupComments
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -956,7 +960,8 @@ namespace GenTRAC.DataBridge.DTO
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment,
-                            HasRevision = entity.HasRevision
+                            HasRevision = entity.HasRevision,
+                            ProposalSetupComments = entity.ProposalSetupComments
                         }).ToList();
                 }
             }
@@ -1045,7 +1050,8 @@ namespace GenTRAC.DataBridge.DTO
                         RevisionOfId = entity.RevisionOfId,
                         entity.ReasonCertificationNotRequired,
                         entity.OtherReasonComment,
-                        HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
+                        HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID),
+                        ProposalSetupComments = entity.SetupComments
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1113,7 +1119,8 @@ namespace GenTRAC.DataBridge.DTO
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment,
-                            HasRevision = entity.HasRevision
+                            HasRevision = entity.HasRevision,
+                            ProposalSetupComments = entity.ProposalSetupComments
                         }).ToList();
                 }
             }
@@ -1204,7 +1211,8 @@ namespace GenTRAC.DataBridge.DTO
                             RevisionOfId = entity.RevisionOfId,
                             entity.ReasonCertificationNotRequired,
                             entity.OtherReasonComment,
-                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
+                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID),
+                            ProposalSetupComments = entity.SetupComments
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1272,7 +1280,8 @@ namespace GenTRAC.DataBridge.DTO
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment,
-                            HasRevision = entity.HasRevision
+                            HasRevision = entity.HasRevision,
+                            ProposalSetupComments = entity.ProposalSetupComments
                         }).ToList();
                 }
             }
@@ -1380,7 +1389,8 @@ namespace GenTRAC.DataBridge.DTO
                             RevisionOfId = entity.RevisionOfId,
                             entity.ReasonCertificationNotRequired,
                             entity.OtherReasonComment,
-                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
+                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID),
+                            ProposalSetupComments = entity.SetupComments
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1448,7 +1458,8 @@ namespace GenTRAC.DataBridge.DTO
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment,
-                            HasRevision = entity.HasRevision
+                            HasRevision = entity.HasRevision,
+                            ProposalSetupComments = entity.ProposalSetupComments
                         }).ToList();
                 }
             }
@@ -1541,7 +1552,8 @@ namespace GenTRAC.DataBridge.DTO
                             RevisionOfId = entity.RevisionOfId,
                             entity.ReasonCertificationNotRequired,
                             entity.OtherReasonComment,
-                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID)
+                            HasRevision = dbModel.Proposals.Any(x => x.RevisionOfId == entity.ProposalID),
+                            ProposalSetupComments = entity.SetupComments
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1609,7 +1621,8 @@ namespace GenTRAC.DataBridge.DTO
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment,
-                            HasRevision = entity.HasRevision
+                            HasRevision = entity.HasRevision,
+                            ProposalSetupComments = entity.ProposalSetupComments
                         }).ToList();
                 }
             }

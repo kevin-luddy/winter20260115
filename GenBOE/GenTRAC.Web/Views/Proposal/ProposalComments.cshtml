@@ -6,7 +6,12 @@
 <script>
     var ProposalCommentsWidget;
     $(function () {
-    }
+        var CommentsWidgetConfig = {};
+        CommentsWidgetConfig.ContextID = "commentsSection";
+        CommentsWidgetConfig.IsModule = true;
+        CommentsWidgetConfig.isReadOnly = false;
+        ProposalCommentsWidget = new GenWidget(CommentsWidgetConfig);
+    });
 </script>
 
 <div id="commentsSection" class="composite module expanded full">
@@ -16,7 +21,7 @@
         {
             <div class="form-row" data-proposal-type="standard">
                 <div class="form-element">
-                    <textarea id="ProposalComments" rows="3"></textarea>
+                    <textarea id="Comments" name="Comments" rows="3">@Model.Comments</textarea>
                 </div>
             </div>
         }
