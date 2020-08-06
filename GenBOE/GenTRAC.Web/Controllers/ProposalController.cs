@@ -233,6 +233,26 @@ namespace GenTRAC.Web.Controllers
         }
 
         /// <summary>
+        /// Display Proposal Comments
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <returns>Proposal Comments view</returns>
+        public PartialViewResult DisplayProposalComments(int? proposalId)
+        {
+            if (proposalId.HasValue)
+            {
+                this.ViewBag.proposalid = proposalId.Value.ToString();
+            }
+            else
+            {
+                this.ViewBag.proposalid = "null";
+            }
+
+            ProposalCommentsModelView model = this.proposalLogic.GetDataForProposalComments(proposalId);
+            return this.PartialView(WebConstants.View.PROPOSAL_COMMENTS, model);
+        }
+
+        /// <summary>
         /// Validates a proposal.  Throws an exception if any errors are detected.
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
@@ -309,11 +329,12 @@ namespace GenTRAC.Web.Controllers
         /// <param name="proposalGeneralInfo">Proposal general information model view</param>
         /// <param name="proposalApprovalsInfo">Proposal approvals model view</param>
         /// <param name="proposalUserInfo">Proposal user information model view</param>
+        /// <param name="proposalComments">Proposal Comments model view</param>
         /// <param name="revisionOfId">RevisionOfId for the Proposal</param>
         /// <param name="isNewRevision">Whether creating a new revision</param>
         /// <returns>true if success else false</returns>
         public JsonResult SaveProposal(int? proposalId, ProposalInformationModelView proposalInfo, ProposalGeneralInformationModelView proposalGeneralInfo,
-            ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, int? revisionOfId, bool isNewRevision = false)
+            ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ProposalCommentsModelView proposalComments, int? revisionOfId, bool isNewRevision = false)
         {
             if (proposalGeneralInfo == null)
             {
@@ -344,7 +365,7 @@ namespace GenTRAC.Web.Controllers
                     this.proposalLogic.SetProposalRevised(proposal.Id, proposal.UpdateDate);
                 }
 
-                proposalId = this.proposalLogic.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, revisionOfId);
+                proposalId = this.proposalLogic.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, proposalComments, revisionOfId);
 
                 if (proposalId.HasValue)
                 {

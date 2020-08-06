@@ -188,10 +188,11 @@ namespace GenTRAC.ActionLogic
         /// <param name="proposalGeneralInfo">Proposal general information model view</param>
         /// <param name="proposalApprovalsInfo">Proposal approvals model view</param>
         /// <param name="proposalUserInfo">Proposal user information model view</param>
+        /// <param name="proposalComments">Proposal comments model view</param>
         /// <param name="revisionOfId">ID of the revised Proposal if this is a Revision</param>
         /// <returns>true if success else false</returns>
         public int? SaveProposal(ProposalInformationModelView proposalInfo, ProposalGeneralInformationModelView proposalGeneralInfo,
-            ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, int? revisionOfId)
+            ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ProposalCommentsModelView proposalComments, int? revisionOfId)
         {
             if (proposalInfo == null)
             {
@@ -206,6 +207,11 @@ namespace GenTRAC.ActionLogic
             if (proposalUserInfo == null)
             {
                 throw new ArgumentNullException(nameof(proposalUserInfo));
+            }
+
+            if (proposalComments == null)
+            {
+                throw new ArgumentNullException(nameof(proposalComments));
             }
 
             using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SaveNewProposal", this.log))
@@ -274,7 +280,8 @@ namespace GenTRAC.ActionLogic
                     IsCostVolumeClassified = proposalGeneralInfo.IsCostVolumeClassified,
                     IsForecastProposal = isForecasted,
                     DocumentId = proposalInfo.DocumentId,
-                    RevisionOfId = revisionOfId
+                    RevisionOfId = revisionOfId,
+                    ProposalSetupComments = proposalComments.Comments
                 };
 
                 // copy the old values for approvals/certification (comments, workflow status, signatures, additionalapprovalemailtext)
@@ -1567,6 +1574,25 @@ namespace GenTRAC.ActionLogic
                     Text = x.Value, // Display Name
                     Value = x.Key // NTID
                 }).ToCollection());
+            }
+
+            return model;
+        }
+
+        /// <summary>
+        /// Get the data for the Proposal Comments partial view
+        /// </summary>
+        /// <param name="proposalId">proposal id</param>
+        /// <returns>Modelview for Proposal Comments</returns>
+        public ProposalCommentsModelView GetDataForProposalComments(int? proposalId)
+        {
+            ProposalCommentsModelView model = new ProposalCommentsModelView();
+
+            if (proposalId.HasValue)
+            {
+                ProposalDto fullProposalDto = this.GetByProposalId(proposalId.Value);
+
+                model.Comments = fullProposalDto?.ProposalSetupComments;
             }
 
             return model;

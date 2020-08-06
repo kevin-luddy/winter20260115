@@ -300,6 +300,11 @@ namespace GenTRAC.Tests.ActionLogic
                 SupplyChainPOCSubsNtId = ntid
             };
 
+            ProposalCommentsModelView proposalComments = new ProposalCommentsModelView()
+            {
+                Comments = "test"
+            };
+
             UserDTO user = new UserDTO()
             {
                 Id = 1
@@ -309,7 +314,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(user);
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(user);
 
-            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, null);
+            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, proposalComments, null);
             Assert.IsNotNull(savedProposalId);
             Assert.AreEqual(proposalId, savedProposalId.Value);
             this.proposalPermissionMediator.Verify(x => x.SaveProposalPermissionDtos(It.IsAny<ICollection<ProposalPermissionDto>>()), Times.Once());
@@ -365,6 +370,11 @@ namespace GenTRAC.Tests.ActionLogic
                 SupplyChainPOCSubsNtId = ntid
             };
 
+            ProposalCommentsModelView proposalComments = new ProposalCommentsModelView()
+            {
+                Comments = "test"
+            };
+
             UserDTO user = new UserDTO()
             {
                 Id = 1
@@ -374,7 +384,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(user);
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(user);
 
-            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, proposalId.Value);
+            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, proposalComments, proposalId.Value);
             Assert.IsNotNull(savedProposalId);
             Assert.AreEqual(proposalId, savedProposalId.Value);
             this.proposalPermissionMediator.Verify(x => x.SaveProposalPermissionDtos(It.IsAny<ICollection<ProposalPermissionDto>>()), Times.Once());
@@ -497,6 +507,11 @@ namespace GenTRAC.Tests.ActionLogic
                 SupplyChainPOCSubsNtId = ntid
             };
 
+            ProposalCommentsModelView proposalComments = new ProposalCommentsModelView()
+            {
+                Comments = "test"
+            };
+
             UserDTO user = new UserDTO()
             {
                 Id = 1,
@@ -507,7 +522,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(user);
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(user);
 
-            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, null);
+            int? savedProposalId = sut.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, proposalComments, null);
             Assert.IsNotNull(savedProposalId);
             Assert.AreEqual(proposalId, savedProposalId.Value);
             this.proposalPermissionMediator.Verify(x => x.SaveProposalPermissionDtos(It.IsAny<ICollection<ProposalPermissionDto>>()), Times.Once());
@@ -1811,7 +1826,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(proposalApprovalsInfo.CoverSheetApproverList.Any(x => x.Ntid == user.Ntid));
             Assert.IsTrue(proposalApprovalsInfo.IndependentReviewerList.Any(x => x.Ntid == user.Ntid));
         }
-
+        
         /// <summary>
         /// Test GetDataForProposalApprovals for a new revision
         /// </summary>
@@ -1862,6 +1877,44 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsFalse(proposalApprovalsInfo.IsLOBEstimatingLeadMgrReadOnly);
             Assert.IsFalse(proposalApprovalsInfo.IsCoverSheetApproverReadOnly);
             Assert.IsFalse(proposalApprovalsInfo.IsIndependentReviewerReadOnly);
+        }
+
+        /// <summary>
+        /// Test GetDataForProposalComments
+        /// </summary>
+        [TestMethod]
+        public void TestGetDataForProposalComments()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            int? proposalId = 1;
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = proposalId.Value,
+                ProposalSetupComments = "Test"
+            };
+
+            this.proposalLoader.Setup(x => x.GetById(proposalId.Value)).Returns(proposal);
+
+            ProposalCommentsModelView result = sut.GetDataForProposalComments(proposalId);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(proposal.ProposalSetupComments, result.Comments);
+        }
+
+        /// <summary>
+        /// Test GetDataForProposalComments when Proposal Id is null
+        /// </summary>
+        [TestMethod]
+        public void TestGetDataForProposalComments_NullId()
+        {
+            ProposalControllerLogic sut = this.CreateSystem();
+
+            ProposalCommentsModelView result = sut.GetDataForProposalComments(null);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(string.Empty, result.Comments);
         }
 
         /// <summary>
@@ -2801,7 +2854,7 @@ namespace GenTRAC.Tests.ActionLogic
         public void C_SaveNewProposal_ExceptionTest1()
         {
             var sut = this.CreateSystem();
-            sut.SaveProposal(null, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), null);
+            sut.SaveProposal(null, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), new ProposalCommentsModelView(), null);
         }
 
         /// <summary>
@@ -2812,7 +2865,7 @@ namespace GenTRAC.Tests.ActionLogic
         public void C_SaveNewProposal_ExceptionTest2()
         {
             var sut = this.CreateSystem();
-            sut.SaveProposal(new ProposalInformationModelView(), null, new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), null);
+            sut.SaveProposal(new ProposalInformationModelView(), null, new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), new ProposalCommentsModelView(), null);
         }
 
         /// <summary>
@@ -2823,7 +2876,7 @@ namespace GenTRAC.Tests.ActionLogic
         public void C_SaveNewProposal_ExceptionTest3()
         {
             var sut = this.CreateSystem();
-            sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), null);
+            sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), new ProposalCommentsModelView(), null);
         }
 
         /// <summary>
@@ -2834,7 +2887,18 @@ namespace GenTRAC.Tests.ActionLogic
         public void C_SaveNewProposal_ExceptionTest4()
         {
             var sut = this.CreateSystem();
-            sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), null, null, null);
+            sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), null, null, new ProposalCommentsModelView(), null);
+        }
+        
+        /// <summary>
+        /// Exception Test
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void C_SaveNewProposal_ExceptionTest5()
+        {
+            var sut = this.CreateSystem();
+            sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView(), new ProposalUserInformationModelView(), null, null);
         }
 
         /// <summary>

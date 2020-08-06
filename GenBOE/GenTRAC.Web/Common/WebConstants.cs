@@ -309,6 +309,11 @@ namespace GenTRAC.Web.Common
             public const string DISPLAY_PROPOSAL_USER_INFORMATION = "DisplayProposalUserInformation";
 
             /// <summary>
+            /// Display proposal comments
+            /// </summary>
+            public const string DISPLAY_PROPOSAL_COMMENTS = "DisplayProposalComments";
+
+            /// <summary>
             /// Validates the proposal
             /// </summary>
             public const string VALIDATE_PROPOSAL_INFORMATION = "ValidateProposal";
@@ -876,6 +881,11 @@ namespace GenTRAC.Web.Common
             /// Proposal Revision History
             /// </summary>
             public const string PROPOSAL_RevisionHistory = "RevisionHistory";
+
+            /// <summary>
+            /// Proposal Comments
+            /// </summary>
+            public const string PROPOSAL_COMMENTS = "ProposalComments";
 
             #endregion Proposal
 

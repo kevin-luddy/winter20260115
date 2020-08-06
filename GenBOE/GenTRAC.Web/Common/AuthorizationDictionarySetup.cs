@@ -157,6 +157,7 @@ namespace GenTRAC.Web.Common
             AddActionToController(WebConstants.Action.DISPLAY_PROPOSAL_GENERAL_INFORMATION, PtmSecurityPage.Proposal, SecurityAuthorization.Read, proposalControllerActions);
             AddActionToController(WebConstants.Action.DISPLAY_PROPOSAL_APPROVALS, PtmSecurityPage.Proposal, SecurityAuthorization.Read, proposalControllerActions);
             AddActionToController(WebConstants.Action.DISPLAY_PROPOSAL_USER_INFORMATION, PtmSecurityPage.Proposal, SecurityAuthorization.Read, proposalControllerActions);
+            AddActionToController(WebConstants.Action.DISPLAY_PROPOSAL_COMMENTS, PtmSecurityPage.Proposal, SecurityAuthorization.Read, proposalControllerActions);
             AddActionToController(WebConstants.Action.VALIDATE_PROPOSAL_INFORMATION, PtmSecurityPage.Proposal, SecurityAuthorization.ReadUpdate, proposalControllerActions);
             AddActionToController(WebConstants.Action.SAVE_PROPOSAL_INFORMATION, PtmSecurityPage.Proposal, SecurityAuthorization.ReadUpdate, proposalControllerActions);
             AddActionToController(WebConstants.Action.DELETE_PROPOSAL, PtmSecurityPage.Proposal, SecurityAuthorization.CreateReadUpdateDelete, proposalControllerActions);

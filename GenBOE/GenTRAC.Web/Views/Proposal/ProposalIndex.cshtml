@@ -207,7 +207,26 @@
 				error: function () {
 					ProposalIndexWidget.ShouldHideLoadingBox();
 				}
-			});
+			});            
+
+			$.ajax({
+				type: 'POST',
+				url: GenSession.CreateUrl({
+					controller: '@WebConstants.Controller.PROPOSAL',
+					action: '@WebConstants.Action.DISPLAY_PROPOSAL_COMMENTS',
+					id: proposalId
+				}),
+				contentType: 'application/json; charset=utf-8',
+				dataType: 'html',
+				success: function (response) {
+					$('#proposalCommentsPlaceholder').html(response);
+					ProposalIndexWidget.ShouldHideLoadingBox();
+					ProposalIndexWidget.refreshModule();
+				},
+				error: function () {
+					ProposalIndexWidget.ShouldHideLoadingBox();
+				}
+            });
 
 			// override refreshModule
 			ProposalIndexWidget.originalRefreshModule = ProposalIndexWidget.refreshModule;
@@ -239,7 +258,8 @@
 				ProposalInfoWidget.cleanDirty();
 				ProposalGeneralInformationWidget.cleanDirty();
 				ProposalApprovalsWidget.cleanDirty();
-				ProposalUserInfoWidget.cleanDirty();
+                ProposalUserInfoWidget.cleanDirty();
+                ProposalCommentsWidget.cleanDirty();
 			}
 
 			// Cleans all the dirty forms then redirects home
@@ -263,7 +283,10 @@
 				}
 				if (typeof (GoToProposalWidget) != 'undefined') {
 					GoToProposalWidget.refreshModule();
-				}
+                }
+                if (typeof (ProposalCommentsWidget) != 'undefined') {
+                    ProposalCommentsWidget.refreshModule();
+                }
 
 				ProposalIndexWidget.originalRefreshModule();
 			};
@@ -279,6 +302,7 @@
                 dataToSave.ProposalUserInfo = ProposalUserInfoWidget.getForm("proposalUserInfoForm").getData();
                 dataToSave.RevisionOfId = '@Model.RevisedProposalId';
                 dataToSave.IsNewRevision = '@Model.IsNewRevision';
+                dataToSave.ProposalComments = ProposalCommentsWidget.getForm("proposalCommentsForm").getData();
 				return dataToSave;
 			};
 
