@@ -234,7 +234,7 @@
 			// Hide the Loading Box after all 4 composite widgets have loaded (on success or error)
 			ProposalIndexWidget.ShouldHideLoadingBox = function () {
 				widgetCounter++;
-				if (widgetCounter == 4) {
+				if (widgetCounter == 5) {
                 @if (!((bool)Model.IsUsUser) && (Model.ProposalID == -1))
                 {
                     <text>
@@ -257,7 +257,7 @@
 				ProposalIndexWidget.cleanDirty();
 				ProposalInfoWidget.cleanDirty();
 				ProposalGeneralInformationWidget.cleanDirty();
-				ProposalApprovalsWidget.cleanDirty();
+                ProposalApprovalsWidget.cleanDirty();
                 ProposalUserInfoWidget.cleanDirty();
                 ProposalCommentsWidget.cleanDirty();
 			}
@@ -306,27 +306,32 @@
 				return dataToSave;
 			};
 
-			ProposalIndexWidget.ValidateAndSaveFullPage = function (buttonPressed) {
-				var dataToSend = ProposalIndexWidget.GetData();
+            ProposalIndexWidget.ValidateAndSaveFullPage = function (buttonPressed) {
+                if (readOnly) {
+                    // only save comments when readonly
+                    ProposalIndexWidget.SaveComments(buttonPressed);
+                } else {
+                    var dataToSend = ProposalIndexWidget.GetData();
 
-				var boeToolToSave = dataToSend.ProposalGeneralInfo.BOETool;
-				var pricingToolToSave = dataToSend.ProposalGeneralInfo.PricingTool;
-				var preferredBoeTool = '@((int)BOETool.genBOE)';
-				var preferredPricingTool = '@((int)PricingTool.ProPricer)';
-				var isForecasted = $('select[name="ProposalClass"] option:selected').text() === '@Constants.PROPOSAL_CLASS_FORECASTED';
+                    var boeToolToSave = dataToSend.ProposalGeneralInfo.BOETool;
+                    var pricingToolToSave = dataToSend.ProposalGeneralInfo.PricingTool;
+                    var preferredBoeTool = '@((int)BOETool.genBOE)';
+                    var preferredPricingTool = '@((int)PricingTool.ProPricer)';
+                    var isForecasted = $('select[name="ProposalClass"] option:selected').text() === '@Constants.PROPOSAL_CLASS_FORECASTED';
 
-            // Popup should show if they select a non-preferred tool (non-forecasted proposals only), but not if they've already been shown it for that selection
-            // Also shouldn't show if they select no tool so that validation still happens
-            if (!isForecasted && ((boeToolToSave != preferredBoeTool && boeToolToSave != originalBoeTool && boeToolToSave != 0) || (pricingToolToSave != preferredPricingTool && pricingToolToSave != originalPricingTool && pricingToolToSave != 0))) {
-                GenSession.confirmDialog(
-                    "Non-Preferred BOE/Pricing Tool",
-                    "You've selected a BOE and/or Pricing Tool other than the Space preferred tool. Please ensure that you have received advance approval from your LOB Estimating Manager/Delegate. Would you like to continue?",
-                    function () { ProposalIndexWidget.ContinueValidateAndSaveFullPage(buttonPressed, dataToSend); },
-                    null
-                );
-            } else {
-                ProposalIndexWidget.ContinueValidateAndSaveFullPage(buttonPressed, dataToSend);
-            }      
+                    // Popup should show if they select a non-preferred tool (non-forecasted proposals only), but not if they've already been shown it for that selection
+                    // Also shouldn't show if they select no tool so that validation still happens
+                    if (!isForecasted && ((boeToolToSave != preferredBoeTool && boeToolToSave != originalBoeTool && boeToolToSave != 0) || (pricingToolToSave != preferredPricingTool && pricingToolToSave != originalPricingTool && pricingToolToSave != 0))) {
+                        GenSession.confirmDialog(
+                            "Non-Preferred BOE/Pricing Tool",
+                            "You've selected a BOE and/or Pricing Tool other than the Space preferred tool. Please ensure that you have received advance approval from your LOB Estimating Manager/Delegate. Would you like to continue?",
+                            function () { ProposalIndexWidget.ContinueValidateAndSaveFullPage(buttonPressed, dataToSend); },
+                            null
+                        );
+                    } else {
+                        ProposalIndexWidget.ContinueValidateAndSaveFullPage(buttonPressed, dataToSend);
+                    }
+                }
         };
 
         ProposalIndexWidget.ContinueValidateAndSaveFullPage = function (buttonPressed, dataToSend) {
@@ -366,7 +371,7 @@
                     ProposalIndexWidget.refreshModule();
                 }
             }, buttonPressed);
-        };
+            };
 
         /*
          * Display a warning for the user letting them know they won't have access to the proposal after it is saved.
@@ -529,7 +534,35 @@
                     action: '@WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME'
                 });
             }
-        };
+            };
+
+            ProposalIndexWidget.SaveComments = function (buttonPressed) {
+                // Save only the comments - used when page is read-only and only comments are editable
+                var dataToSend = {};
+                dataToSend.proposalId = @Model.ProposalID;
+                dataToSend.ProposalComments = ProposalCommentsWidget.getForm("proposalCommentsForm").getData();
+                dataToSend = JSON.stringify(dataToSend);
+
+                // Make the call
+                ProposalIndexWidget.saveRequest({
+                    type: 'POST',
+                    url: GenSession.CreateUrl({
+                        controller: '@WebConstants.Controller.PROPOSAL',
+                        action: '@WebConstants.Action.SAVE_PROPOSAL_COMMENTS'
+                    }),
+                    contentType: 'application/json; charset=utf-8',
+                    data: dataToSend,
+                    success: function (response) {
+                        ProposalIndexWidget.SaveSuccess(response.proposalId, false, false);
+                    },
+                    error: function () {
+                        ProposalIndexWidget.refreshModule();
+                    }
+                }, buttonPressed);
+            }
+
+            // Always show buttons on this page so comments can be saved
+            ProposalIndexWidget.showButtons();
     });
     </script>
 

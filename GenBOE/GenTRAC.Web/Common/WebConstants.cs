@@ -324,6 +324,11 @@ namespace GenTRAC.Web.Common
             public const string SAVE_PROPOSAL_INFORMATION = "SaveProposal";
 
             /// <summary>
+            /// Saves only the comments for a read-only proposal
+            /// </summary>
+            public const string SAVE_PROPOSAL_COMMENTS = "SaveProposalComments";
+
+            /// <summary>
             /// Displays the proposal details, the tab form that shows the proposal, checklist, and revisions
             /// </summary>
             public const string DISPLAY_PROPOSAL_DETAILS = "DisplayProposalDetails"; 

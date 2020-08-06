@@ -315,21 +315,29 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
-        /// Hard deletes a Proposal
-        /// Currently should only be used when revering a revision to a prior version
+        /// Save only the comments for the proposal
         /// </summary>
-        /// <param name="proposal">Proposal to delete</param>
-        public void DeleteProposal(ProposalDto proposal)
+        /// <param name="proposalId">ID of Proposal</param>
+        /// <param name="proposalComments">Comments</param>
+        /// <returns>ID of saved proposal</returns>
+        public int? SaveProposalComments(int proposalId, ProposalCommentsModelView proposalComments)
         {
-            if (proposal == null)
+            if (proposalComments == null)
             {
-                throw new ArgumentNullException(nameof(proposal));
+                throw new ArgumentNullException(nameof(proposalComments));
             }
 
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.DeleteProposal", this.log))
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SaveProposalComments", this.log))
             {
-                proposal.Updateable = UpdateType.Deleted;
-                this.ProposalLoader.Save(proposal);
+                // Get original proposal data
+                ProposalDto proposal = this.GetByProposalId(proposalId);
+
+                // update comments
+                proposal.ProposalSetupComments = proposalComments.Comments;
+                proposal.Updateable = UpdateType.Upsert;
+
+                // save
+                return this.ProposalMediator.SaveProposal(proposal);
             }
         }
 
