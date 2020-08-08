@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016-2018 Lockheed Martin Corporation.
+    Copyright 2016-2020 Lockheed Martin Corporation.
 
     This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
     commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
@@ -86,13 +86,13 @@ namespace APTSPropricerApi.Controllers
                 {
                     // Name
                     string[] parts = id.Split('|');
-                    pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value;
+                    pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value();
                 }
                 else
                 {
                     // GUID
                     EntityId pEntityId = new EntityId(new Guid(id));
-                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                 }
 
                 try
@@ -128,7 +128,7 @@ namespace APTSPropricerApi.Controllers
                     pDto.Notes = pr.Notes.Text;
                     pr.Notes.Close();
 
-                    foreach (SummaryFieldDefinition sfd in pr.SummaryFieldDefinitions)
+                    foreach (SummaryFieldDefinition sfd in pr.SummaryFieldDefinitions.Items())
                     {
                         SummaryFieldDefinitionsDto sfdDto = new SummaryFieldDefinitionsDto
                         {
@@ -260,7 +260,7 @@ namespace APTSPropricerApi.Controllers
                     proposal.Notes.Close();
 
                     whichvar = "new folder";
-                    Folder folder = ppc.Workspace.GlobalLibrary.Folders.Find(newProp.ParentFolderName, FolderCategory.Proposal, null).Value;
+                    Folder folder = ppc.Workspace.GlobalLibrary.Folders.Find(newProp.ParentFolderName, FolderCategory.Proposal, null).Value();
                     proposal.ParentFolder = folder;
 
                     whichvar = "new start date";
@@ -282,13 +282,13 @@ namespace APTSPropricerApi.Controllers
                     string travelRate = newProp.TravelRateTable; //  "140818_Travel";
 
                     whichvar = "new direct rate table";
-                    proposal.DirectRateTable = ppc.Workspace.GlobalLibrary.ResourceRateTables.Find(directRate).Value;
+                    proposal.DirectRateTable = ppc.Workspace.GlobalLibrary.ResourceRateTables.Find(directRate).Value();
                     whichvar = "new burden rate table";
-                    proposal.BurdenRateTable = ppc.Workspace.GlobalLibrary.BurdenRateTables.Find(burdenRate).Value;
+                    proposal.BurdenRateTable = ppc.Workspace.GlobalLibrary.BurdenRateTables.Find(burdenRate).Value();
                     whichvar = "new factor rate table";
-                    proposal.FactorRateTable = ppc.Workspace.GlobalLibrary.FactorRateTables.Find(factorRate).Value;
+                    proposal.FactorRateTable = ppc.Workspace.GlobalLibrary.FactorRateTables.Find(factorRate).Value();
                     whichvar = "new travel rate table";
-                    proposal.TravelRateTable = ppc.Workspace.GlobalLibrary.TravelRateTables.Find(travelRate).Value;
+                    proposal.TravelRateTable = ppc.Workspace.GlobalLibrary.TravelRateTables.Find(travelRate).Value();
 
                     whichvar = "end edit and close";
                     //End edits and release the record
@@ -392,7 +392,7 @@ namespace APTSPropricerApi.Controllers
                 try
                 {
                     EntityId pEntityId = new EntityId(new Guid(changeProp.Id));
-                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                     if (pr.Locked)
                     {
                         ReturnDto ret = new ReturnDto
@@ -508,25 +508,25 @@ namespace APTSPropricerApi.Controllers
                     whichvar = "new direct rate table";
                     if (changeProp.DirectRateTable != null)
                     {
-                        pr.DirectRateTable = ppc.Workspace.GlobalLibrary.ResourceRateTables.Find(directRate).Value;
+                        pr.DirectRateTable = ppc.Workspace.GlobalLibrary.ResourceRateTables.Find(directRate).Value();
                     }
 
                     whichvar = "new burden rate table";
                     if (changeProp.BurdenRateTable != null)
                     {
-                        pr.BurdenRateTable = ppc.Workspace.GlobalLibrary.BurdenRateTables.Find(burdenRate).Value;
+                        pr.BurdenRateTable = ppc.Workspace.GlobalLibrary.BurdenRateTables.Find(burdenRate).Value();
                     }
 
                     whichvar = "new factor rate table";
                     if (changeProp.FactorRateTable != null)
                     {
-                        pr.FactorRateTable = ppc.Workspace.GlobalLibrary.FactorRateTables.Find(factorRate).Value;
+                        pr.FactorRateTable = ppc.Workspace.GlobalLibrary.FactorRateTables.Find(factorRate).Value();
                     }
 
                     whichvar = "new travel rate table";
                     if (changeProp.TravelRateTable != null)
                     {
-                        pr.TravelRateTable = ppc.Workspace.GlobalLibrary.TravelRateTables.Find(travelRate).Value;
+                        pr.TravelRateTable = ppc.Workspace.GlobalLibrary.TravelRateTables.Find(travelRate).Value();
                     }
 
                     whichvar = "new notes";
@@ -617,7 +617,7 @@ namespace APTSPropricerApi.Controllers
                 Optional<Proposal> res = ppc.Workspace.Proposals.Find(pEntityId);
                 if (res.HasValue)
                 {
-                    Proposal pr = ppc.Workspace.Proposals.Find(pEntityId).Value;
+                    Proposal pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                     if (pr.Locked)
                     {
                         string message = "This proposal is locked in PROPRICER. It must be unlocked or renamed before send-to-pricing can be done in APTS";
@@ -682,7 +682,7 @@ namespace APTSPropricerApi.Controllers
                 {
                     List<ProposalFolderInfo> allFolders = ppc.Workspace.GlobalLibrary.Folders.GetItems(FolderCategory.Proposal).Select(x => new ProposalFolderInfo(x)).OrderBy(f => f.Name).ToList();
 
-                    List<ProposalFolderInfo> allProposals = ppc.Workspace.Proposals.Cast<Proposal>().Select(x => new ProposalFolderInfo(x)).OrderBy(f => f.Name).ToList();
+                    List<ProposalFolderInfo> allProposals = ppc.Workspace.Proposals.Items().Cast<Proposal>().Select(x => new ProposalFolderInfo(x)).OrderBy(f => f.Name).ToList();
 
                     allFolders.AddRange(allProposals);
 
@@ -752,7 +752,7 @@ namespace APTSPropricerApi.Controllers
                         user.ProposalPermissionInfo.Close();
 
                         // This piece is necessary because the above misses a small subset of proposals that are owned by the user... (facepalm)
-                        foreach (Proposal proposal in ppc.Workspace.Proposals.Cast<Proposal>().Where(x => x.ActualOwner?.LoginName.ToLower() == ntid.ToLower()))
+                        foreach (Proposal proposal in ppc.Workspace.Proposals.Items().Cast<Proposal>().Where(x => x.ActualOwner?.LoginName.ToLower() == ntid.ToLower()))
                         {
                             this.BuildTreeBottomUp(tree, allItemsFlat, new ProposalFolderInfo(proposal), proposal.ParentFolder);
                         }

@@ -1,5 +1,5 @@
 ﻿/*
-    Copyright 2016-2018 Lockheed Martin Corporation.
+    Copyright 2016-2020 Lockheed Martin Corporation.
 
     This computer software has been provided in confidence, and contains trade secret and/or privileged or confidential 
     commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using APTSPropricerApi.Connection;
 using APTSPropricerApi.DTOs;
+using EBS.Core;
 using EBS.ProPricer.Model;
 
 namespace APTSPropricerApi.Controllers
@@ -33,7 +34,7 @@ namespace APTSPropricerApi.Controllers
                 if (ppc.Workspace != null)
                 {
                     ppc.Workspace.GlobalLibrary.TitleTables.Open();
-                    foreach (TitleTable tbl in ppc.Workspace.GlobalLibrary.TitleTables)
+                    foreach (TitleTable tbl in ppc.Workspace.GlobalLibrary.TitleTables.Items())
                     {
                         string title = tbl.Name;
                         titles.Add(title);
@@ -62,11 +63,11 @@ namespace APTSPropricerApi.Controllers
             using (IProPricerConnection ppc = (IProPricerConnection)PoolManager.GetInstance(instanceId).GetObjectsFromPool())
             {
                 // example id - F35 System Code
-                tt = ppc.Workspace.GlobalLibrary.TitleTables.Find(id).Value;
+                tt = ppc.Workspace.GlobalLibrary.TitleTables.Find(id).Value();
                 try
                 {
                     tt.Open();
-                    foreach (Title t in tt.Elements)
+                    foreach (Title t in tt.Elements.Items())
                     {
                         TitleTablesDto ttd = new TitleTablesDto
                         {
