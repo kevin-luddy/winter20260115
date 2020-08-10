@@ -2872,13 +2872,6 @@ namespace GenTRAC.Tests.ActionLogic
                 .Callback<ProposalDto>((proposal) => savedComment = proposal.ProposalSetupComments)
                 .Returns(proposalId);
 
-            ProposalDto expectedSaveDto = new ProposalDto()
-            {
-                Id = proposalId,
-                ProposalSetupComments = proposalComments.Comments,
-                Updateable = UpdateType.Upsert
-            };
-
             int? result = sut.SaveProposalComments(proposalId, proposalComments);
 
             Assert.IsNotNull(result);
