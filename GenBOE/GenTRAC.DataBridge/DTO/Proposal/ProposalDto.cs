@@ -377,5 +377,10 @@ namespace GenTRAC.DataBridge.DTO
         /// Comment when "Other" was selected for Certification Not Required Reason
         /// </summary>
         public string OtherReasonComment { get; set; }
+
+        /// <summary>
+        /// Comments from the Proposal Setup page
+        /// </summary>
+        public string ProposalSetupComments { get; set; }
     }
 }

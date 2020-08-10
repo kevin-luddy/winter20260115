@@ -188,7 +188,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             entity.ReasonCertificationNotRequired,
-                            entity.OtherReasonComment
+                            entity.OtherReasonComment,
+                            ProposalSetupComments = entity.SetupComments
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -255,7 +256,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
-                            OtherReasonComment = entity.OtherReasonComment
+                            OtherReasonComment = entity.OtherReasonComment,
+                            ProposalSetupComments = entity.ProposalSetupComments
                         }).ToList();
                 }
             }
@@ -557,7 +559,8 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.IsRevision,
                             dtoToUpsert.RevisionOfId,
                             (int?)dtoToUpsert.ReasonCertificationNotRequired,
-                            dtoToUpsert.OtherReasonComment).FirstOrDefault();
+                            dtoToUpsert.OtherReasonComment,
+                            dtoToUpsert.ProposalSetupComments).FirstOrDefault();
                     }
                 }
             }
@@ -886,7 +889,8 @@ namespace GenTRAC.DataBridge.DTO
                         NoBidDate = entity.NoBidDate,
                         RevisionOfId = entity.RevisionOfId,
                         entity.ReasonCertificationNotRequired,
-                        entity.OtherReasonComment
+                        entity.OtherReasonComment,
+                        ProposalSetupComments = entity.SetupComments
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -953,7 +957,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
-                            OtherReasonComment = entity.OtherReasonComment
+                            OtherReasonComment = entity.OtherReasonComment,
+                            ProposalSetupComments = entity.ProposalSetupComments
                         }).ToList();
                 }
             }
@@ -1041,7 +1046,8 @@ namespace GenTRAC.DataBridge.DTO
                         NoBidDate = entity.NoBidDate,
                         RevisionOfId = entity.RevisionOfId,
                         entity.ReasonCertificationNotRequired,
-                        entity.OtherReasonComment
+                        entity.OtherReasonComment,
+                        ProposalSetupComments = entity.SetupComments
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1108,7 +1114,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
-                            OtherReasonComment = entity.OtherReasonComment
+                            OtherReasonComment = entity.OtherReasonComment,
+                            ProposalSetupComments = entity.ProposalSetupComments
                         }).ToList();
                 }
             }
@@ -1198,7 +1205,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             entity.ReasonCertificationNotRequired,
-                            entity.OtherReasonComment
+                            entity.OtherReasonComment,
+                            ProposalSetupComments = entity.SetupComments
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1265,7 +1273,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
-                            OtherReasonComment = entity.OtherReasonComment
+                            OtherReasonComment = entity.OtherReasonComment,
+                            ProposalSetupComments = entity.ProposalSetupComments
                         }).ToList();
                 }
             }
@@ -1372,7 +1381,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             entity.ReasonCertificationNotRequired,
-                            entity.OtherReasonComment
+                            entity.OtherReasonComment,
+                            ProposalSetupComments = entity.SetupComments
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1439,7 +1449,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
-                            OtherReasonComment = entity.OtherReasonComment
+                            OtherReasonComment = entity.OtherReasonComment,
+                            ProposalSetupComments = entity.ProposalSetupComments
                         }).ToList();
                 }
             }
@@ -1531,7 +1542,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             entity.ReasonCertificationNotRequired,
-                            entity.OtherReasonComment
+                            entity.OtherReasonComment,
+                            ProposalSetupComments = entity.SetupComments
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1598,7 +1610,8 @@ namespace GenTRAC.DataBridge.DTO
                             NoBidDate = entity.NoBidDate,
                             RevisionOfId = entity.RevisionOfId,
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
-                            OtherReasonComment = entity.OtherReasonComment
+                            OtherReasonComment = entity.OtherReasonComment,
+                            ProposalSetupComments = entity.ProposalSetupComments
                         }).ToList();
                 }
             }

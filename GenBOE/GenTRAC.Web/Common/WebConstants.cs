@@ -309,6 +309,11 @@ namespace GenTRAC.Web.Common
             public const string DISPLAY_PROPOSAL_USER_INFORMATION = "DisplayProposalUserInformation";
 
             /// <summary>
+            /// Display proposal comments
+            /// </summary>
+            public const string DISPLAY_PROPOSAL_COMMENTS = "DisplayProposalComments";
+
+            /// <summary>
             /// Validates the proposal
             /// </summary>
             public const string VALIDATE_PROPOSAL_INFORMATION = "ValidateProposal";
@@ -317,6 +322,11 @@ namespace GenTRAC.Web.Common
             /// Saves the proposal
             /// </summary>
             public const string SAVE_PROPOSAL_INFORMATION = "SaveProposal";
+
+            /// <summary>
+            /// Saves only the comments for a read-only proposal
+            /// </summary>
+            public const string SAVE_PROPOSAL_COMMENTS = "SaveProposalComments";
 
             /// <summary>
             /// Displays the proposal details, the tab form that shows the proposal, checklist, and revisions
@@ -882,6 +892,11 @@ namespace GenTRAC.Web.Common
             /// Proposal Revision History
             /// </summary>
             public const string PROPOSAL_RevisionHistory = "RevisionHistory";
+
+            /// <summary>
+            /// Proposal Comments
+            /// </summary>
+            public const string PROPOSAL_COMMENTS = "ProposalComments";
 
             #endregion Proposal
 

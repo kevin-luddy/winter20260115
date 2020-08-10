@@ -132,7 +132,8 @@ namespace GenTRAC.Tests.DAL.Loader
                 CertificationTimelineCompleted = new DateTime(2013, 6, 9),
                 RevisionOfId = null,
                 ReasonCertificationNotRequired = ReasonCertificationNotRequired.Other,
-                OtherReasonComment = "Other comment"
+                OtherReasonComment = "Other comment",
+                ProposalSetupComments = "Setup comment"
             };
 
             int? newProposalID;

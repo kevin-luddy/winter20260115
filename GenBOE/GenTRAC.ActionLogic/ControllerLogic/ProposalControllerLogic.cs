@@ -108,7 +108,7 @@ namespace GenTRAC.ActionLogic
         public const string PROPOSAL_GENERAL_INFO_FORM = "proposalGeneralInfoForm";
 
         /// <summary>
-        /// The name of the proposal user info form, needed for validation
+        /// The name of the proposal approvals form, needed for validation
         /// </summary>
         public const string PROPOSAL_APPROVALS_FORM = "proposalApprovalsForm";
 
@@ -116,6 +116,11 @@ namespace GenTRAC.ActionLogic
         /// The name of the proposal user info form, needed for validation
         /// </summary>
         public const string PROPOSAL_USER_INFO_FORM = "proposalUserInfoForm";
+
+        /// <summary>
+        /// The name of the proposal comments form, needed for validation
+        /// </summary>
+        public const string PROPOSAL_COMMENTS_FORM = "proposalCommentsForm";
 
         /// <summary>
         /// Suffix for Proposal Revision Tracking Numbers
@@ -183,10 +188,11 @@ namespace GenTRAC.ActionLogic
         /// <param name="proposalGeneralInfo">Proposal general information model view</param>
         /// <param name="proposalApprovalsInfo">Proposal approvals model view</param>
         /// <param name="proposalUserInfo">Proposal user information model view</param>
+        /// <param name="proposalComments">Proposal comments model view</param>
         /// <param name="revisionOfId">ID of the revised Proposal if this is a Revision</param>
         /// <returns>true if success else false</returns>
         public int? SaveProposal(ProposalInformationModelView proposalInfo, ProposalGeneralInformationModelView proposalGeneralInfo,
-            ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, int? revisionOfId)
+            ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ProposalCommentsModelView proposalComments, int? revisionOfId)
         {
             if (proposalInfo == null)
             {
@@ -201,6 +207,11 @@ namespace GenTRAC.ActionLogic
             if (proposalUserInfo == null)
             {
                 throw new ArgumentNullException(nameof(proposalUserInfo));
+            }
+
+            if (proposalComments == null)
+            {
+                throw new ArgumentNullException(nameof(proposalComments));
             }
 
             using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SaveNewProposal", this.log))
@@ -269,7 +280,8 @@ namespace GenTRAC.ActionLogic
                     IsCostVolumeClassified = proposalGeneralInfo.IsCostVolumeClassified,
                     IsForecastProposal = isForecasted,
                     DocumentId = proposalInfo.DocumentId,
-                    RevisionOfId = revisionOfId
+                    RevisionOfId = revisionOfId,
+                    ProposalSetupComments = proposalComments.Comments
                 };
 
                 // copy the old values for approvals/certification (comments, workflow status, signatures, additionalapprovalemailtext)
@@ -299,6 +311,33 @@ namespace GenTRAC.ActionLogic
                 }
 
                 return proposalId;
+            }
+        }
+
+        /// <summary>
+        /// Save only the comments for the proposal
+        /// </summary>
+        /// <param name="proposalId">ID of Proposal</param>
+        /// <param name="proposalComments">Comments</param>
+        /// <returns>ID of saved proposal</returns>
+        public int? SaveProposalComments(int proposalId, ProposalCommentsModelView proposalComments)
+        {
+            if (proposalComments == null)
+            {
+                throw new ArgumentNullException(nameof(proposalComments));
+            }
+
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SaveProposalComments", this.log))
+            {
+                // Get original proposal data
+                ProposalDto proposal = this.GetByProposalId(proposalId);
+
+                // update comments
+                proposal.ProposalSetupComments = proposalComments.Comments;
+                proposal.Updateable = UpdateType.Upsert;
+
+                // save
+                return this.ProposalMediator.SaveProposal(proposal);
             }
         }
 
@@ -1561,6 +1600,25 @@ namespace GenTRAC.ActionLogic
                     Text = x.Value, // Display Name
                     Value = x.Key // NTID
                 }).ToCollection());
+            }
+
+            return model;
+        }
+
+        /// <summary>
+        /// Get the data for the Proposal Comments partial view
+        /// </summary>
+        /// <param name="proposalId">proposal id</param>
+        /// <returns>Modelview for Proposal Comments</returns>
+        public ProposalCommentsModelView GetDataForProposalComments(int? proposalId)
+        {
+            ProposalCommentsModelView model = new ProposalCommentsModelView();
+
+            if (proposalId.HasValue)
+            {
+                ProposalDto fullProposalDto = this.GetByProposalId(proposalId.Value);
+
+                model.Comments = fullProposalDto?.ProposalSetupComments;
             }
 
             return model;

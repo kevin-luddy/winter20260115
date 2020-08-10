@@ -1,0 +1,29 @@
+﻿@model GenTRAC.ActionLogic.ModelView.Proposals.ProposalCommentsModelView
+@{
+    ViewBag.Title = "Proposal Comments";
+}
+
+<script>
+    var ProposalCommentsWidget;
+    $(function () {
+        var CommentsWidgetConfig = {};
+        CommentsWidgetConfig.ContextID = "commentsSection";
+        CommentsWidgetConfig.IsModule = true;
+        CommentsWidgetConfig.isReadOnly = false;
+        ProposalCommentsWidget = new GenWidget(CommentsWidgetConfig);
+    });
+</script>
+
+<div id="commentsSection" class="composite module expanded full">
+    <div class="module-header-data">Comments</div>
+    <div class="module-content-data expanded-content">
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_COMMENTS_FORM, name = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_COMMENTS_FORM }))
+        {
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-element">
+                    <textarea id="Comments" name="Comments" rows="3">@Model.Comments</textarea>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -293,6 +293,7 @@
           <Property Name="OtherReasonComment" Type="varchar" MaxLength="1000" />
           <Property Name="ReasonCertificationNotRequired" Type="int" />
           <Property Name="RevisionOfId" Type="int" />
+          <Property Name="SetupComments" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -1517,6 +1518,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="RevisionOfId" Type="int" Mode="In" />
           <Parameter Name="ReasonCertificationNotRequired" Type="int" Mode="In" />
           <Parameter Name="OtherReasonComment" Type="varchar" Mode="In" />
+          <Parameter Name="SetupComments" Type="varchar(max)" Mode="In" />
         </Function>
         <Function Name="upsertProposalChecklist" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalChecklistID" Type="int" Mode="In" />
@@ -2104,6 +2106,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="RevisionOfId" Type="Int32" />
           <NavigationProperty Name="Proposal1" Relationship="genTRACModel.FK_Proposal_Proposal" FromRole="Proposal" ToRole="Proposal1" />
           <NavigationProperty Name="Proposal2" Relationship="genTRACModel.FK_Proposal_Proposal" FromRole="Proposal1" ToRole="Proposal" />
+          <Property Name="SetupComments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -3156,6 +3159,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="RevisionOfId" Mode="In" Type="Int32" />
             <Parameter Name="ReasonCertificationNotRequired" Mode="In" Type="Int32" />
             <Parameter Name="OtherReasonComment" Mode="In" Type="String" />
+            <Parameter Name="SetupComments" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalChecklist" ReturnType="Collection(Int32)">
             <Parameter Name="ProposalChecklistID" Mode="In" Type="Int32" />
@@ -3969,6 +3973,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="Proposals">
             <EntityTypeMapping TypeName="genTRACModel.Proposal">
               <MappingFragment StoreEntitySet="Proposal">
+                <ScalarProperty Name="SetupComments" ColumnName="SetupComments" />
                 <ScalarProperty Name="RevisionOfId" ColumnName="RevisionOfId" />
                 <ScalarProperty Name="ReasonCertificationNotRequired" ColumnName="ReasonCertificationNotRequired" />
                 <ScalarProperty Name="OtherReasonComment" ColumnName="OtherReasonComment" />
