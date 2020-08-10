@@ -418,11 +418,6 @@ namespace GenTRAC.Web.Controllers
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
             {
-                ////var info = this.proposalLogic.GetDataForProposalInformation(proposalId);
-                ////var generalInfo = this.proposalLogic.GetDataForProposalGeneralInformation(proposalId, false);
-                ////var approvals = this.proposalLogic.GetDataForProposalApprovals(proposalId, false);
-                ////var userInfo = this.proposalLogic.GetDataForProposalUserInformation(proposalId);
-                ////this.proposalLogic.SaveProposal(info, generalInfo, approvals, userInfo, proposalComments, null);
                 int? returnedProposalId = this.proposalLogic.SaveProposalComments(proposalId, proposalComments);
 
                 scope.Complete();
