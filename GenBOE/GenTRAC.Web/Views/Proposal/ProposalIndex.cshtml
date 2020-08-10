@@ -101,7 +101,7 @@
 									ProposalIndexWidget.RedirectHomeDirty,
 									null);
 							} else {
-								ProposalIndexWidget.RedirectHome();
+								ProposalIndexWidget.RedirectHome(true);
 							}
 						}
 					}],
@@ -222,7 +222,7 @@
 					ITCOConfirmationDialog(function (result) {
 						if (!result) {
 							// If 'Cancel' was selected return to home page.
-							ProposalIndexWidget.RedirectHome();
+							ProposalIndexWidget.RedirectHome(true);
 						}
 					});
                     </text>
@@ -245,7 +245,7 @@
 			// Cleans all the dirty forms then redirects home
 			ProposalIndexWidget.RedirectHomeDirty = function () {
 				ProposalIndexWidget.cleanAllDirtyForms();
-				ProposalIndexWidget.RedirectHome();
+				ProposalIndexWidget.RedirectHome(true);
 			};
 
 			ProposalIndexWidget.refreshModule = function () {
@@ -484,30 +484,26 @@
                 GenSession.alertDialog('Invalid users', 'There are invalid users that were not changed.', null, null, ProposalIndexWidget.ReloadPage);
             } else {
                 if (isRedirectHome) {
-                    ProposalIndexWidget.RedirectHome();
+                    ProposalIndexWidget.RedirectHome(false);
                 } else {
                     ProposalIndexWidget.ReloadPage(proposalId);
                 }
             }
         };
 
-        ProposalIndexWidget.RedirectHome = function () {
-            @if (Model.IsNewRevision && Model.RevisedProposalId.HasValue) {
-                <text>
+        ProposalIndexWidget.RedirectHome = function (isCancel) {
+            if (isCancel && '@(Model.IsNewRevision && Model.RevisedProposalId.HasValue)' == 'True') {
                 // Redirect Revisions back to original proposal
                 window.location = GenSession.CreateUrl({
                     controller: '@WebConstants.Controller.PROPOSAL',
                     action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
                     id: '@Model.RevisedProposalId'
                 });
-                </text>
             } else {
-                <text>
                 window.location = GenSession.CreateUrl({
                     controller: '@WebConstants.Controller.HOME',
                     action: '@WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME'
                 });
-                </text>
             }
         };
     });
