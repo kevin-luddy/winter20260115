@@ -93,6 +93,7 @@ namespace GenTRAC.Models
         public Nullable<int> ReasonCertificationNotRequired { get; set; }
         public Nullable<int> RevisionOfId { get; set; }
         public string SetupComments { get; set; }
+        public string InformationComments { get; set; }
     
         public virtual BOEToolLU BOEToolLU { get; set; }
         public virtual CustomerTypeLU CustomerTypeLU { get; set; }

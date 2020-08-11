@@ -51,7 +51,8 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToSave.ProposalSubmittalDate,
                             dtoToSave.TotalPrice,
                             dtoToSave.ChecklistSubmittedDatePricer,
-                            dtoToSave.ChecklistSubmittedDatePeer).FirstOrDefault();
+                            dtoToSave.ChecklistSubmittedDatePeer,
+                            dtoToSave.Comments).FirstOrDefault();
                     }
                 }
             }

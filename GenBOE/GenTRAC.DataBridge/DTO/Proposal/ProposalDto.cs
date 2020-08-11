@@ -382,5 +382,10 @@ namespace GenTRAC.DataBridge.DTO
         /// Comments from the Proposal Setup page
         /// </summary>
         public string ProposalSetupComments { get; set; }
+
+        /// <summary>
+        /// Comments from the Manage Proposal Info Page
+        /// </summary>
+        public string ManageProposalInfoComments { get; set; }
     }
 }

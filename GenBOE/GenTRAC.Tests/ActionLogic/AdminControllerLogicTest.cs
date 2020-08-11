@@ -811,7 +811,8 @@ namespace GenTRAC.Tests
                 OldChecklistSubmittedDatePricer = "01/01/2013",
                 NewChecklistSubmittedDatePricer = "01/01/2014",
                 OldChecklistSubmittedDatePeer = "01/01/2013",
-                NewChecklistSubmittedDatePeer = "01/01/2014"
+                NewChecklistSubmittedDatePeer = "01/01/2014",
+                Comments = "Test"
             };
 
             // changed save info, all values should not be null
@@ -820,7 +821,7 @@ namespace GenTRAC.Tests
             Assert.AreEqual(proposalId, savedProposalId.Value);
             this.manageProposalInfoLoader.Verify(x => x.SaveProposalInfo(
                 It.Is<ManageProposalInfoDto>(y => y.ProposalSubmittalDate != null && y.TotalPrice != null &&
-                y.ChecklistSubmittedDatePricer != null && y.ChecklistSubmittedDatePeer != null)), Times.Once());
+                y.ChecklistSubmittedDatePricer != null && y.ChecklistSubmittedDatePeer != null && y.Comments == "Test")), Times.Once());
 
             // equivalent values
             manageProposalInfo = new ManageProposalInfoDetailsView()

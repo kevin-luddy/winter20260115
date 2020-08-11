@@ -294,6 +294,7 @@
           <Property Name="ReasonCertificationNotRequired" Type="int" />
           <Property Name="RevisionOfId" Type="int" />
           <Property Name="SetupComments" Type="varchar(max)" />
+          <Property Name="InformationComments" Type="varchar(max)" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -1384,6 +1385,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="ISGSTotalPrice" Type="bigint" Mode="In" />
           <Parameter Name="PricerChecklistSubmittalDate" Type="date" Mode="In" />
           <Parameter Name="PeerChecklistSubmittalDate" Type="date" Mode="In" />
+          <Parameter Name="InformationComments" Type="varchar(max)" Mode="In" />
         </Function>
         <Function Name="updateProposalPARChecklist" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalID" Type="int" Mode="In" />
@@ -2107,6 +2109,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <NavigationProperty Name="Proposal1" Relationship="genTRACModel.FK_Proposal_Proposal" FromRole="Proposal" ToRole="Proposal1" />
           <NavigationProperty Name="Proposal2" Relationship="genTRACModel.FK_Proposal_Proposal" FromRole="Proposal1" ToRole="Proposal" />
           <Property Name="SetupComments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="InformationComments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -3057,6 +3060,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="ISGSTotalPrice" Mode="In" Type="Int64" />
             <Parameter Name="PricerChecklistSubmittalDate" Mode="In" Type="DateTime" />
             <Parameter Name="PeerChecklistSubmittalDate" Mode="In" Type="DateTime" />
+            <Parameter Name="InformationComments" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="updateProposalPARChecklist">
             <Parameter Name="ProposalID" Mode="In" Type="Int32" />
@@ -3973,6 +3977,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="Proposals">
             <EntityTypeMapping TypeName="genTRACModel.Proposal">
               <MappingFragment StoreEntitySet="Proposal">
+                <ScalarProperty Name="InformationComments" ColumnName="InformationComments" />
                 <ScalarProperty Name="SetupComments" ColumnName="SetupComments" />
                 <ScalarProperty Name="RevisionOfId" ColumnName="RevisionOfId" />
                 <ScalarProperty Name="ReasonCertificationNotRequired" ColumnName="ReasonCertificationNotRequired" />
