@@ -49,5 +49,10 @@ namespace GenTRAC.DataBridge.DTO
         /// Checklist submitted date (Peer)
         /// </summary>
         public DateTime? ChecklistSubmittedDatePeer { get; set; }
+
+        /// <summary>
+        /// Comments on the Manage Proposal Information page
+        /// </summary>
+        public string Comments { get; set; }
     }
 }

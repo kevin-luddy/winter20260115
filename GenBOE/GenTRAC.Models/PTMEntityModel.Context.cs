@@ -508,7 +508,7 @@ namespace GenTRAC.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("unlockProposal", proposalIDParameter, updateDateParameter, unlockOptionIDParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> updateProposalInformation(Nullable<int> proposalID, Nullable<System.DateTime> updateDate, Nullable<int> proposalStatusID, Nullable<System.DateTime> proposalSubmittalDate, Nullable<long> iSGSTotalPrice, Nullable<System.DateTime> pricerChecklistSubmittalDate, Nullable<System.DateTime> peerChecklistSubmittalDate)
+        public virtual ObjectResult<Nullable<int>> updateProposalInformation(Nullable<int> proposalID, Nullable<System.DateTime> updateDate, Nullable<int> proposalStatusID, Nullable<System.DateTime> proposalSubmittalDate, Nullable<long> iSGSTotalPrice, Nullable<System.DateTime> pricerChecklistSubmittalDate, Nullable<System.DateTime> peerChecklistSubmittalDate, string informationComments)
         {
             var proposalIDParameter = proposalID.HasValue ?
                 new ObjectParameter("ProposalID", proposalID) :
@@ -538,7 +538,11 @@ namespace GenTRAC.Models
                 new ObjectParameter("PeerChecklistSubmittalDate", peerChecklistSubmittalDate) :
                 new ObjectParameter("PeerChecklistSubmittalDate", typeof(System.DateTime));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("updateProposalInformation", proposalIDParameter, updateDateParameter, proposalStatusIDParameter, proposalSubmittalDateParameter, iSGSTotalPriceParameter, pricerChecklistSubmittalDateParameter, peerChecklistSubmittalDateParameter);
+            var informationCommentsParameter = informationComments != null ?
+                new ObjectParameter("InformationComments", informationComments) :
+                new ObjectParameter("InformationComments", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("updateProposalInformation", proposalIDParameter, updateDateParameter, proposalStatusIDParameter, proposalSubmittalDateParameter, iSGSTotalPriceParameter, pricerChecklistSubmittalDateParameter, peerChecklistSubmittalDateParameter, informationCommentsParameter);
         }
     
         public virtual int updateProposalPARChecklist(Nullable<int> proposalID, string pARChecklist_Response, Nullable<int> responseTypeID, string comment, Nullable<int> completedByUserID, Nullable<bool> isSubmittal)
