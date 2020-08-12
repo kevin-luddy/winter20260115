@@ -139,7 +139,7 @@ ADD [SetupComments] VARCHAR(max) NULL;
 END
 
 /*
-	8/12/2020 [ranzalon] - BOEJ-4649 - Comments for Proposal Setup
+	7/31/2020 [ranzalon] - BOEJ-4648 - Comments for Proposal Setup
 
 	## END ##
 */
@@ -160,7 +160,7 @@ ADD [InformationComments] VARCHAR(max) NULL;
 END
 
 /*
-	8/12/2020 [ranzalon] - BOEJ-4649 - Comments for Manage Proposal Info
+	8/10/2020 [ranzalon] - BOEJ-4649 - Comments for Manage Proposal Info
 
 	## END ##
 */
