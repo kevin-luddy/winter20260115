@@ -598,9 +598,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
                 // Set WBS Data
                 WbsDTO wbs = exportInputs.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID);
-
                 modelView.WBSNumber = (wbs == null ? string.Empty : wbs.WbsNumber);
-                modelView.WBSTitle = (wbs == null ? "No WBS" : wbs.WbsTitle);
 
                 // Set BOE Data
                 modelView.BOETitle = boe.Title ?? string.Empty;
@@ -699,14 +697,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
             string hoursLabel = "Total " + FullObjectHelper.HoursLabel(exportInputs.Workspace);
 
             // Add headers
-            toReturn.Add(ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.WBS_TITLE_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER,
+            toReturn.Add(ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER,
                 hoursLabel, ImportExportConstants.TOTAL_COST_COLUMN_HEADER);
 
             toReturn.AddRange(from mv in reportModelView
                               select new Collection<string>
                               {
                                   mv.WBSNumber,
-                                  mv.WBSTitle,
                                   mv.BOETitle,
                                   CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + mv.TotalHours.ToString(hoursFormatString),
                                   CommonConstants.FORCE_AS_NUMBER_FOR_EXCEL + string.Format(Constants.MONEY_FORMATTING, mv.TotalCost)

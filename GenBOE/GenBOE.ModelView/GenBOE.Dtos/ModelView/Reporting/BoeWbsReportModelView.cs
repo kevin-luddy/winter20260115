@@ -18,7 +18,6 @@ namespace GenBOE.Dtos
         {
             BOETitle = string.Empty;
             WBSNumber = string.Empty;
-            WBSTitle = string.Empty;
             TotalHours = 0;
             TotalCost = 0;
         }
@@ -32,11 +31,6 @@ namespace GenBOE.Dtos
         /// WBS Number for the BOE
         /// </summary>
         public string WBSNumber { get; set; }
-        
-        /// <summary>
-        /// Title of the WBS for the BOE
-        /// </summary>
-        public string WBSTitle { get; set; }
 
         /// <summary>
         /// Total hours for the BOE
