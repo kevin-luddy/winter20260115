@@ -105,5 +105,10 @@ namespace GenTRAC.ActionLogic.ModelView.Admin
         /// Flag for whether to display the Checklist submitted date (Peer)
         /// </summary>
         public bool ShowChecklistSubmittedDatePeer { get; set; }
+
+        /// <summary>
+        /// Manage Proposal Info Comments
+        /// </summary>
+        public string Comments { get; set; }
     }
 }

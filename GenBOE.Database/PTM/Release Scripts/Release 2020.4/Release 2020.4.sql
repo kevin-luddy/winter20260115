@@ -143,3 +143,24 @@ END
 
 	## END ##
 */
+
+/*
+	## START ##
+
+	8/10/2020 [ranzalon] - BOEJ-4649 - Comments for Manage Proposal Info
+*/
+
+IF NOT EXISTS (SELECT * FROM sys.all_columns C INNER JOIN sys.tables T on C.object_id = T.object_id INNER JOIN sys.schemas S ON T.schema_id = S.schema_id WHERE S.name = 'dbo' AND 
+	T.name = 'Proposal' AND C.name = 'InformationComments')
+BEGIN 
+
+ALTER TABLE dbo.[Proposal]
+ADD [InformationComments] VARCHAR(max) NULL;
+
+END
+
+/*
+	8/10/2020 [ranzalon] - BOEJ-4649 - Comments for Manage Proposal Info
+
+	## END ##
+*/
