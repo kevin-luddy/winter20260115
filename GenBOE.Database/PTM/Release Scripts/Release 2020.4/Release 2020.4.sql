@@ -139,7 +139,7 @@ ADD [SetupComments] VARCHAR(max) NULL;
 END
 
 /*
-	7/31/2020 [ranzalon] - BOEJ-4648 - Comments for Proposal Setup
+	8/12/2020 [ranzalon] - BOEJ-4649 - Comments for Proposal Setup
 
 	## END ##
 */
@@ -147,7 +147,7 @@ END
 /*
 	## START ##
 
-	8/10/2020 [ranzalon] - BOEJ-4649 - Comments for Proposal Setup
+	8/10/2020 [ranzalon] - BOEJ-4649 - Comments for Manage Proposal Info
 */
 
 IF NOT EXISTS (SELECT * FROM sys.all_columns C INNER JOIN sys.tables T on C.object_id = T.object_id INNER JOIN sys.schemas S ON T.schema_id = S.schema_id WHERE S.name = 'dbo' AND 
@@ -160,7 +160,7 @@ ADD [InformationComments] VARCHAR(max) NULL;
 END
 
 /*
-	7/31/2020 [ranzalon] - BOEJ-4648 - Comments for Proposal Setup
+	8/12/2020 [ranzalon] - BOEJ-4649 - Comments for Manage Proposal Info
 
 	## END ##
 */
