@@ -780,9 +780,9 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 new ResourceDTO(){ Id = 2 }};
             ICollection<FullWbs> wbs = new Collection<FullWbs>()
             {
-                new FullWbs() { Id = 1, WbsNumber = "1", WbsTitle = "WBS1" },
-                new FullWbs() { Id = 2, WbsNumber = "1.1", WbsTitle = "WBS11" },
-                new FullWbs() { Id = 3, WbsNumber = "2", WbsTitle = "WBS2" }
+                new FullWbs() { Id = 1, WbsNumber = "1" },
+                new FullWbs() { Id = 2, WbsNumber = "1.1" },
+                new FullWbs() { Id = 3, WbsNumber = "2" }
             };
 
             _retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(boes);
@@ -806,14 +806,12 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             {
                 BoeWbsReportModelView row = result.FirstOrDefault(x => x.BOETitle == boe.Title);
                 string expectedWbsNumber = boe.WBSID != null ? wbs.First(x => x.Id == boe.WBSID).WbsNumber : string.Empty;
-                string expectedWbsTitle = boe.WBSID != null ? wbs.First(x => x.Id == boe.WBSID).WbsTitle : "No WBS";
                 BoeTaskElementDTO task = TaskElementsID.FirstOrDefault(x => x.BoeID == boe.Id);
                 decimal? expectedTotalHours = task != null ? task.taskElementLabors.Where(x => x.SpreadType == SpreadType.Hours).Sum(x => x.ValueSpread) : 0;
                 decimal? expectedTotalCost = task != null ? task.taskElementLabors.Where(x => x.SpreadType == SpreadType.Cost).Sum(x => x.ValueSpread) : 0;
 
                 Assert.IsNotNull(row);
                 Assert.AreEqual(expectedWbsNumber, row.WBSNumber);
-                Assert.AreEqual(expectedWbsTitle, row.WBSTitle);
                 Assert.AreEqual(expectedTotalHours, row.TotalHours);
                 Assert.AreEqual(expectedTotalCost, row.TotalCost);
             }
@@ -821,7 +819,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             // Assert totals row
             Assert.AreEqual(CommonConstants.SET_AS_BOLD_FOR_EXCEL + "Totals", result.Last().BOETitle);
             Assert.AreEqual(string.Empty, result.Last().WBSNumber);
-            Assert.AreEqual(string.Empty, result.Last().WBSTitle);
             Assert.AreEqual(40, result.Last().TotalHours);
             Assert.AreEqual(40, result.Last().TotalCost);
         }
@@ -853,7 +850,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 {
                     BOETitle = "Test",
                     WBSNumber = "1",
-                    WBSTitle = "ONE",
                     TotalHours = 1000,
                     TotalCost = 2000
                 }
@@ -871,7 +867,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 Assert.IsFalse(string.IsNullOrEmpty(result));
                 Assert.IsTrue(File.Exists(result));
 
-                ICollection<string> columns = new Collection<string>() { ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.WBS_TITLE_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER,
+                ICollection<string> columns = new Collection<string>() { ImportExportConstants.WBS_NUMBER_COLUMN_HEADER, ImportExportConstants.BOE_TITLE_COLUMN_HEADER,
                 "Total Hours", ImportExportConstants.TOTAL_COST_COLUMN_HEADER };
                 string hoursFormatString = Utilities.PrecisionFormattingStringNoComma(workspace.DecimalPrecision);
                 string costFormatString = Utilities.CostPrecisionFormattingString(workspace.CostDecimalPrecision).Replace(",", "");
@@ -889,7 +885,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                     // Assert column values for the row
                     Assert.AreEqual(expected.BOETitle, actual[ImportExportConstants.BOE_TITLE_COLUMN_HEADER]);
                     Assert.AreEqual(expected.WBSNumber, actual[ImportExportConstants.WBS_NUMBER_COLUMN_HEADER]);
-                    Assert.AreEqual(expected.WBSTitle, actual[ImportExportConstants.WBS_TITLE_COLUMN_HEADER]);
                     Assert.AreEqual(expected.TotalHours.ToString(hoursFormatString), actual["Total Hours"]);
                     Assert.AreEqual(expected.TotalCost.ToString(costFormatString), actual[ImportExportConstants.TOTAL_COST_COLUMN_HEADER]);
                 }
