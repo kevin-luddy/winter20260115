@@ -927,9 +927,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     }
                 }
             }
-            
+
             // Process task variable dependencies
-            this.ProcessAllVariableDependencies(dtoToSave.BoeID, ws);
+            if (OtherBOERecalculationsNeeded)
+            {
+                this.ProcessAllVariableDependencies(dtoToSave.BoeID, ws);
+            }
         }
 
         /// <summary>
@@ -2427,7 +2430,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 foreach (LaborSpreadDataModelView spread in resourceEntry.Spreads)
                 {
                     spreadsOriginal[spread.LaborSpreadDate] = spread.LaborSpreadValue;  // save original value before zero-ing out
-
+                    
                     spread.LaborSpreadValue = 0m;
                 }
 
@@ -2565,6 +2568,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             return taskElement;
         }
+
         /// <summary>
         /// Apply the new spread distribution to the resource being edited.
         /// </summary>
