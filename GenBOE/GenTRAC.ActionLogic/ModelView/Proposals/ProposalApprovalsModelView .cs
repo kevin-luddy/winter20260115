@@ -85,11 +85,6 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public ICollection<UserDTO> PricingVerificationList { get; set; }
 
         /// <summary>
-        /// LOBEstimatingLeadList
-        /// </summary>
-        public ICollection<UserDTO> LOBEstimatingLeadList { get; set; }
-
-        /// <summary>
         /// LOBEstimatingMgrList
         /// </summary>
         public ICollection<UserDTO> LOBEstimatingMgrList { get; set; }

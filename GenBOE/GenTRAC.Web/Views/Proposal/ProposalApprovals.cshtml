@@ -16,13 +16,6 @@
 
         $(document).bind('CCOPD_SET_TO_YES', function () {
             $('#CoverSheetApproverRow').removeClass('display-none');
-
-            $('.LOBEstimatingMgr').removeClass('display-none')
-                .attr('id', 'LOBEstimatingLeadMgrNtid')
-                .attr('name', 'LOBEstimatingLeadMgrNtid');
-            $('.LOBEstimatingApprover').addClass('display-none')
-                .attr('id', 'IGNORE_LOBEstimatingLeadMgrNtid')
-                .attr('name', 'IGNORE_LOBEstimatingLeadMgrNtid').val('');
         });
 
         $(document).bind('CCOPD_SET_TO_NO', function () {
@@ -35,14 +28,6 @@
 
             $('#CoverSheetApproverNtid').val('');
             $('#CoverSheetApproverRow').addClass('display-none');
-
-            $('.LOBEstimatingMgr').addClass('display-none')
-                .attr('id', 'IGNORE_LOBEstimatingLeadMgrNtid')
-                .attr('name', 'IGNORE_LOBEstimatingLeadMgrNtid')
-                .val('');
-            $('.LOBEstimatingApprover').removeClass('display-none')
-                .attr('id', 'LOBEstimatingLeadMgrNtid')
-                .attr('name', 'LOBEstimatingLeadMgrNtid');
         });
 
          @if (Model.IsCCPDRequired.HasValue && !Model.IsCCPDRequired.Value)
@@ -161,7 +146,6 @@
                     }
                     else
                     {
-                        @Html.DropDownListFor(model => model.LOBEstimatingLeadMgrNtid, new SelectList(Model.LOBEstimatingLeadList, "Ntid", "DisplayName").OrderBy(u => u.Text), string.Empty, new { @class = "LOBEstimatingApprover" })
                         @Html.DropDownListFor(model => model.LOBEstimatingLeadMgrNtid, new SelectList(Model.LOBEstimatingMgrList, "Ntid", "DisplayName").OrderBy(u => u.Text), string.Empty, new { @class = "LOBEstimatingMgr" })
                     }
                 </div>
