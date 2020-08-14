@@ -1693,6 +1693,7 @@ namespace GenTRAC.DataBridge.DTO
                             x.ProposalTrackingID,
                             x.ProposalTitle,
                             x.AnticipatedDeliveryDate,
+                            x.RevisedSubmittalDate,
                             ProposalStatus = (ProposalStatus)x.ProposalStatusID,
                             MaxCompleteDate = x.ProposalChecklistCompletes.Max(z => z.SubmitDate),
                             x.CCPDRequired,
@@ -1706,7 +1707,7 @@ namespace GenTRAC.DataBridge.DTO
                             IsCurrentlySelected = x.ProposalID == proposalId,
                             TrackingNumber = x.ProposalTrackingID,
                             ProposalTitle = x.ProposalTitle,
-                            WorkflowCompletedLine = GetWorkflowCompletedLineText(x.ProposalStatus, x.AnticipatedDeliveryDate, x.MaxCompleteDate),
+                            WorkflowCompletedLine = GetWorkflowCompletedLineText(x.ProposalStatus, x.AnticipatedDeliveryDate, x.MaxCompleteDate, x.RevisedSubmittalDate),
                             CertificationCompletedLine = GetCertificationCompletedLineText(x.ProposalStatus, x.CCPDRequired, x.CertificationTimelineCompleted),
 
                             DisplayProposalSetupTab = true,
@@ -1729,14 +1730,15 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="anticipatedDeliveryDate">Anticipated Delivery Date</param>
         /// <param name="maxCompleteDate">Max Completed Date</param>
         /// <returns>Text for the WS completed line</returns>
-        public static string GetWorkflowCompletedLineText(ProposalStatus proposalStatus, DateTime anticipatedDeliveryDate, DateTime? maxCompleteDate)
+        public static string GetWorkflowCompletedLineText(ProposalStatus proposalStatus, DateTime anticipatedDeliveryDate, DateTime? maxCompleteDate, DateTime? revisedDeliveryDate)
         {
             string result = string.Empty;
 
             switch(proposalStatus)
             {
                 case ProposalStatus.InProgress:
-                    result = "Due: " + anticipatedDeliveryDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR); 
+                    result = "Due: " + (revisedDeliveryDate.HasValue ? revisedDeliveryDate.Value.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) 
+                        : anticipatedDeliveryDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR)); 
                     break;
                 case ProposalStatus.Completed:
                 case ProposalStatus.Submitted:
