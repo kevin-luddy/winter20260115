@@ -42,7 +42,7 @@ namespace IES.ActionLogic.IO.Export
                                    cobraExportRow.Code1,
                                    cobraExportRow.Description,
                                    cobraExportRow.Date.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR),
-                                   cobraExportRow.Value == null ? string.Empty : cobraExportRow.Value.GetValueOrDefault().ToString(Constants.FIXED_POINT_FORMATTING_FIVE_DECIMAL_PLACES)
+                                   cobraExportRow.Value == null ? string.Empty : cobraExportRow.Value.GetValueOrDefault().ToString(Constants.FIXED_POINT_FORMATTING_SIX_DECIMAL_PLACES)
                                });
 
             return ExcelExporter.ExportToExcelFile(templateFileLocation, worksheet);
