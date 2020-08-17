@@ -1822,7 +1822,6 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(ResourceType.Strategist, proposalUserInfo.AdditionalPricingResource2Type);
             Assert.IsTrue(proposalApprovalsInfo.LeadEstimatorList.Any(x => x.Ntid == user.Ntid));
             Assert.IsTrue(proposalApprovalsInfo.PricingVerificationList.Any(x => x.Ntid == user.Ntid));
-            Assert.IsTrue(proposalApprovalsInfo.LOBEstimatingLeadList.Any(x => x.Ntid == user.Ntid));
             Assert.IsTrue(proposalApprovalsInfo.CoverSheetApproverList.Any(x => x.Ntid == user.Ntid));
             Assert.IsTrue(proposalApprovalsInfo.IndependentReviewerList.Any(x => x.Ntid == user.Ntid));
         }
