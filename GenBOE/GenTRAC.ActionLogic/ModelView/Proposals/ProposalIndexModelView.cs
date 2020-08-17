@@ -183,7 +183,7 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
             {
                 DateTime? completedDate = DateTime.TryParse(this.CompletedDate, out DateTime temp) ? (DateTime?)temp : null;
                 return ProposalLoader.GetWorkflowCompletedLineText(this.ProposalStatus, DateTime.Parse(this.AnticipatedDeliveryDate), 
-                    completedDate, !string.IsNullOrEmpty(this.RevisedSubmittalDate) ? DateTime.Parse(this.RevisedSubmittalDate) : (DateTime?)null);
+                    completedDate, DateTime.TryParse(this.RevisedSubmittalDate, out DateTime rsDate) ? rsDate : (DateTime?)null);
             }
         }
     }
