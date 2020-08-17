@@ -36,6 +36,7 @@ AS
 **			6/5/2020	Dusan					BOEJ-4657: Adding Forecasted proposals into field for search; cleaned up some formatting on text
 **			6/18/2020	ranzalon				BOEJ-4636 - Revised Proposals in All
 **			7/15/2020	Dusan					BOEJ-4700: Pull Has / Is Revision Data
+**			8/14/2020	ranzalon				BOEJ-4676 - Use revised submittal date when available
 ******************************************************************************/
 	SET NOCOUNT ON 
 
@@ -93,7 +94,7 @@ AS
 		LeadEstimator.NTID  AS LeadEstimatorNtId,
 		LeadEstimator.DisplayName AS LeadEstimatorName,
 		P.DateAssigned AS [Date Assigned],
-		P.AnticipatedDeliveryDate AS [Estimated Ship Date (Due Date)],
+		CASE WHEN P.RevisedSubmittalDate IS NOT NULL THEN P.RevisedSubmittalDate ELSE P.AnticipatedDeliveryDate END AS [Estimated Ship Date (Due Date)],
 		CAST(CC.ChecklistCompleteDate AS DATE) AS [ChecklistCompleteDate],
 		CAST(PC.ProposalSubmittalDate AS DATE) AS [Proposal Submit Date],
 		S.ProposalStatus AS [Proposal Status],
