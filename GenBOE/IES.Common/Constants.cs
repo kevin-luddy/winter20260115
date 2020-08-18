@@ -115,9 +115,9 @@ namespace IES.Common
         public const string DECIMAL_FORMATTING = "G";
 
         /// <summary>
-        /// Fixed Point Formatting String (to 5 decimal places)
+        /// Fixed Point Formatting String (to 6 decimal places)
         /// </summary>
-        public const string FIXED_POINT_FORMATTING_FIVE_DECIMAL_PLACES = "F5";
+        public const string FIXED_POINT_FORMATTING_SIX_DECIMAL_PLACES = "F6";
 
         /// <summary>
         /// Date Formatting - MM/dd/yyyy.
