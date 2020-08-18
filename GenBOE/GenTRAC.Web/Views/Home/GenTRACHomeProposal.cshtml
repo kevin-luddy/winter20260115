@@ -79,7 +79,9 @@
                 action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
                 id: proposal
             });
-            window.location = url + '#Proposal';
+
+            // set href so that middle and right click will also work
+            event.srcElement.href = url + '#Proposal';
         }
 
         /*
@@ -91,7 +93,8 @@
                 action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
                 id: proposal
             });
-            window.location = url + '#Checklist';
+
+            event.srcElement.href = url + '#Checklist';
         }
 
         /*
@@ -103,7 +106,8 @@
                 action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
                 id: proposal
             });
-            window.location = url + '#Approvals';
+
+            event.srcElement.href = url + '#Approvals';
         }
 
         /*
@@ -150,7 +154,8 @@
                 action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
                 id: proposal
             });
-            window.location = url + '#PSA';
+
+            event.srcElement.href = url + '#PSA';
         }
 
         HomeProposalWidget.getElement('.search-magnify-glass-button').click(function () { HomeProposalWidget.ApplySearch(); });
