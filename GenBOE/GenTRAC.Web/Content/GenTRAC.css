@@ -663,6 +663,11 @@ td .document-button
     font-size:16px
 }
 
+.manage-buttons a 
+{
+    text-decoration: none !important;
+}
+
 div.document-button-div {
     width: 20px;
     height: 20px;

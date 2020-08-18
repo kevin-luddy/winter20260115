@@ -124,11 +124,11 @@
                         <span class="auto-tooltip">@item.Status.GetDescription()</span>
                     </td>
                     <td class="manage-buttons">
-                        <div title="View or Edit the proposal record" class="button proposal-button" onclick="HomeProposalWidget.ShowProposal(event, '@item.ProposalId');"></div>
+                        <a title="View or Edit the proposal record" class="button proposal-button" onmousedown="HomeProposalWidget.ShowProposal(event, '@item.ProposalId')"></a>
                         @if (!item.IsForecastProposal)
                         {
-                            <div title="View or Edit the checklists" class="button checklist-button" onclick="HomeProposalWidget.ShowChecklist(event, '@item.ProposalId');"></div>
-                            <div title="View or Edit the Approvals" class="button approval-button" onclick="HomeProposalWidget.ShowApprovals(event, '@item.ProposalId');"></div>
+                            <a title="View or Edit the checklists" class="button checklist-button" onmousedown="HomeProposalWidget.ShowChecklist(event, '@item.ProposalId');"></a>
+                            <a title="View or Edit the Approvals" class="button approval-button" onmousedown="HomeProposalWidget.ShowApprovals(event, '@item.ProposalId');"></a>
                         }
                         <div class="button delete-document-div" title="@item.DeleteButtonTitle">
                             <span class="fa fa-remove delete-document-icon @deleteDisabledClass" 
@@ -140,7 +140,7 @@
                         @if(!item.IsForecastProposal)
                         { 
                             <br />
-                            <div title="View or Edit Post Submittal Attachments" class="fa fa-paperclip button psa-button" onclick="HomeProposalWidget.ShowPostSubmittalAttachments(event, '@item.ProposalId');"></div>                        
+                            <a title="View or Edit Post Submittal Attachments" class="fa fa-paperclip button psa-button" onmousedown="HomeProposalWidget.ShowPostSubmittalAttachments(event, '@item.ProposalId');"></a>                        
                             if (item.Workspaces.Any() || (Model.CanCreateBOEWorkspace && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised))
                             {
                                 <div class="dropdown">
