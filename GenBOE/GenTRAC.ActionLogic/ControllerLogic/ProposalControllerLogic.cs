@@ -2011,6 +2011,12 @@ namespace GenTRAC.ActionLogic
                 }
             }
 
+            // This is to catch the error in new proposals where a selection isn't made
+            if (proposalInfo.ISGSRole == ISGSRole.NotSet && !inValidationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.SSC_ROLE_REQUIRED))
+            {
+                inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SSC_ROLE_REQUIRED));
+            }
+
             if (!proposalInfo.ContractType.Any())
             {
                 inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CONTRACT_TYPE_REQUIRED));
