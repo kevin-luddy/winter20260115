@@ -43,6 +43,10 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RDMViewerGroups']/@value">
     </parameterentry>
   </parameter>
+  <parameter name="RDMCobraAdminGroups" description="doesn't matter" defaultvalue="__RDMCobraAdminGroups__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='RDMCobraAdminGroups']/@value">
+    </parameterentry>
+  </parameter>
   <parameter name="LogType" description="doesn't matter" defaultvalue="__LogType__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='LogType']/@value">
     </parameterentry>
