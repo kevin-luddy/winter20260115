@@ -39,6 +39,11 @@ namespace GenBOE.ActionLogic.IO.Import
         // Array of the columns in the imported file that must contain unique values
         private static string[] uniqueValueColumns = new string[] { idColumn };
 
+        /// <summary>
+        /// An array of columns which should be treated as text only. In our case, it's both columns
+        /// </summary>
+        private static string[] textOnlyValueColumns = new string[] { idColumn, descriptionColumn };
+
         #endregion Constants
 
         #region Public Functions
@@ -60,7 +65,7 @@ namespace GenBOE.ActionLogic.IO.Import
                     // Get a collection of all rows in the file, filtering out rows that only have data in
                     // non import-related columns. Each row is represented as a Key/Value pair Dictionary object
                     // in an enumerable collection
-                    ICollection<Dictionary<string, string>> allRows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(document, string.Empty, requiredColumns, requiredColumns, requiredValueColumns, uniqueValueColumns);
+                    ICollection<Dictionary<string, string>> allRows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(document, string.Empty, requiredColumns, requiredColumns, requiredValueColumns, uniqueValueColumns, textOnlyValueColumns);
 
                     // Turn each row into a DTO object and return the collection
                     return this.CreateDTOsToReturn(allRows, listID);
