@@ -91,7 +91,7 @@
     </div>
     <div class="form-element static">{{data.CostVolumeLeadPricerDisplayName}}</div>
 </div>
-<div class="form-row" data-ng-show="model.showProjectMap && !model.isSSC">
+<div class="form-row" data-ng-show="!model.isSSC && (data.ProjectMapType == 3 || data.ProjectMapType == 4)">
     <div class="form-label">
         <b>Allow Grid Edit:</b>
     </div>
