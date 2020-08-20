@@ -11,43 +11,23 @@ CREATE  PROCEDURE [dbo].[copyWorkspace]
 (
 @WorkspaceID int ,
 @WorkspaceName varchar (115),
-@WorkspaceShortName varchar(21)
+@WorkspaceShortName varchar(21),
+@CostVolumeLeadPricerUserID int
 )
 AS
 /******************************************************************************
 **		 
-**		Name: [copyWorkspaceVersion]
+**		Name: [copyWorkspace]
 **		Desc:	Copy All Workspace Data into a new Workspace
-**			
-**		
 **
-**		Auth: Don Canuso
-**		Date: 5/17/12
 *******************************************************************************
 **		Change History
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
-**		1/16/18		twilson3			BOEJ-2887 Remove Historical Metrics
-**		4/04/2018	brunworg			BOEJ-3177 Added TieredPercentage column.
-**		4/13/18		pattoncr			BOEJ-3185 - DB Work (Sikorsky Legacy Resources)
-**		4/25/18		twilson3			BOEJ-3308 Remove ODC/Material/Space Travel
-**		6/6/2018	ranzalon			BOEJ-3475 Fix for copying Zone Travel Nonzone Resources
-**		7/8/18		Dusan				BOEJ-3670: Increased field size of CF Description to 250. This was missed before.
-**		6/18/18		ranzalon			BOEJ-3448 - ProPricer API updates
-**		10/2/18		ranzalon			BOEJ-3699 - RTE Size Limit
-**		7/12/19		twilson3			BOEJ-4037	System Pro Pricer Export 
-**		9/17/19		twilson3			BOEJ-4328	MSTTravelTrip Performing Org fix
-**		9/26/19		ranzalon			BOEJ-4349 - Revised Submittal Date
-**	    10/31/19	twilson3			BOEJ-4399	2 columns for WorkspaceRMSTravelEscalationRate
-**	    10/31/19	twilson3			BOEJ-4399	2 columns for WorkspaceRMSTravelEscalationRate
-**	    10/31/19	twilson3			BOEJ-4399	2 columns for WorkspaceRMSTravelEscalationRate
-**		12/2/19		ranzalon			BOEJ-4464 - Added LaborSortId
-**		12/5/19		twilson3			BOEJ-4429 - RTE Templates
-**		12/13/19	twilson3			BOEJ-4434 - RTE Template Answers
-**		12/17/19	twilson3			BOEJ-4434 Fix Assigned
 **		1/22/20		ranzalon			Fixed bug with missing RteTemplateSourceId
 **		6/11/20		Dusan				BOEJ-4655 Exact copy should copy WS email settings
+**		8/19/20		Dusan				BOEJ-4728 Add Lead Pricer / Estimator change to the copy
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -80,92 +60,6 @@ SELECT PL.[UpdateDT]
 WHERE W.WorkspaceID = @WorkspaceID
  
 SELECT  @PerformingOrganizationListID = SCOPE_IDENTITY() 
-
-/*WORKSPACE NAME/SHORT NAME DETERMINED IN CODE - REMOVING FROM SP
-
-REMOVING BUT WORKSPACE NAME SHOULD BE NOW 115 and CALCULATION SHOULD BE 104 RATHER THAN 89
-
-
-/*Determine the Workspace name*/
-DECLARE @WorkspaceName varchar(115), 
-		@WorkspaceShortName varchar(21),
-		@Dup int = 1
-
-SELECT	@WorkspaceName = WorkspaceName, 
-		@WorkspaceShortName = WorkspaceShortName 
-FROM dbo.Workspace
-WHERE WorkspaceID = @WorkspaceID
-
-/*CORRECT THE LENGTH*/
-IF @WorkspaceName IS NOT NULL AND LEN(@WorkspaceName) >= 104--89
-/*Length is Too Big - Max Length of column is 115 - 9 characters (Duplicate) - 2  (## up to 2 digits) = 104*/
-/*Another way to say this is:
-	IF LEN (@WorkspaceName) + 9 /*Duplicate*/ + 2 /*Assuming 1 - 99*/ > 100 
-*/
-BEGIN 
-	SET @WorkspaceName = 
-		/*Need to shorten the Short Name AND can not be more than 89 characters*/
-		LEFT (@WorkspaceName, 89)
-END					
-
-
-/*Determine the Duplicate Number*/
-IF @WorkspaceName IS NOT NULL
-	WHILE EXISTS	(
-						SELECT * FROM dbo.Workspace 
-						WHERE 
-						(WorkspaceName = @WorkspaceName + 'Duplicate'+'0'+CAST(@Dup AS varchar(4)) AND @Dup < 10) OR
-						(WorkspaceName = @WorkspaceName + 'Duplicate'+CAST(@Dup AS varchar(4)) AND @Dup >=10)
-					)
-	BEGIN
-		SET @Dup=@Dup+1
-	END	
-
-/*Set the Name*/
-IF @WorkspaceName IS NOT NULL AND @Dup >= 1
-BEGIN
-	IF @Dup < 10 
-		SET @WorkspaceName = @WorkspaceName + 'Duplicate' + '0' +  CAST(@Dup AS varchar(4))
-	ELSE
-		SET @WorkspaceName = @WorkspaceName + 'Duplicate' + CAST(@Dup AS varchar(4))
-END
-
-
-
-/*CORRECT THE LENGTH*/
-IF @WorkspaceShortName IS NOT NULL AND LEN(@WorkspaceShortName) >= 15
-/*Length is Too Big - Max Length of column is 21 - 4 characters (_dup) - 2  (## up to 2 digits) = 15*/
-/*Another way to say this is:
-	IF LEN (@WorkspaceShortName) + 4 /*_dup*/ + 2 /*Assuming 1 - 99*/ > 21 
-*/	
-BEGIN 
-	SET @WorkspaceShortName = 
-		/*Need to shorten the Short Name AND can not be more than 15 characters*/
-		LEFT (@WorkspaceShortName, 15)
-END					
-
-
-/*Determine the Duplicate Number*/
-IF @WorkspaceShortName IS NOT NULL
-	WHILE EXISTS	(
-						SELECT * FROM dbo.Workspace 
-						WHERE 
-						(WorkspaceShortName = @WorkspaceShortName + '_dup'+'0'+CAST(@Dup AS varchar(4)) AND @Dup < 10) OR
-						(WorkspaceShortName = @WorkspaceShortName + '_dup'+CAST(@Dup AS varchar(4)) AND @Dup >=10)
-					)
-	BEGIN
-		SET @Dup=@Dup+1
-	END	
-
-/*Set the Name*/
-IF @WorkspaceShortName IS NOT NULL AND @Dup >= 1
-BEGIN
-	IF @Dup < 10 
-		SET @WorkspaceShortName = @WorkspaceShortName + '_dup' + '0' +  CAST(@Dup AS varchar(4))
-	ELSE
-		SET @WorkspaceShortName = @WorkspaceShortName + '_dup' + CAST(@Dup AS varchar(4))
-END
-*/
 
 DECLARE @NewWorkspaceID int
 INSERT INTO [dbo].[Workspace]
@@ -214,22 +108,21 @@ INSERT INTO [dbo].[Workspace]
 		   ,[RevisedSubmittalDate]
            )
 SELECT [UpdateDT]
-      ,@WorkspaceName--[WorkspaceName]
-      ,@WorkspaceShortName--[WorkspaceShortName]
+      ,@WorkspaceName
+      ,@WorkspaceShortName
       ,[WorkspaceStateID]
       ,[ContractStartDate]
       ,[ContractEndDate]
       ,[ProposalSubmitDate]
       ,[WorkspaceDescription]
-      ,[CostVolumeLeadPricerUserID]
+      ,@CostVolumeLeadPricerUserID
       ,[RFPNumber]
       ,[TemplateID]
       ,[ContainsOCI]
       ,[CreatedByETIUserID]
       ,[AllowSearch]
-      ,@ResourceListID--[ResourceListID]
-      ,@PerformingOrganizationListID--[PerformingOrganizationListID]
-      --,[ResourceChangeFlag]
+      ,@ResourceListID
+      ,@PerformingOrganizationListID
       ,[PerformingOrganizationChangeFlag]
       ,[TrackingNumber]
       ,[ContainsTemplate]
@@ -313,7 +206,6 @@ SELECT @NewWorkspaceID--[WorkspaceID]
   FROM [dbo].[OutputFormatTemplateWorkspaceXREF]
 WHERE WorkspaceID = @WorkspaceID
 
-/*WI 8960*/
 DECLARE @Resource TABLE
 (
 	[ResourceID] [int] NOT NULL,
@@ -343,7 +235,6 @@ INSERT INTO @Resource
            ,[LaborType]
            ,[SegmentID]
            ,[ResourceListID]
-/*           ,[ResourceInUseFlag]*/
            ,[CostElementID]
            ,[DeletedFlag]
            ,[RateTypeID]
@@ -357,8 +248,7 @@ SELECT R.[ResourceID]
       ,R.[SegmentRegion]
       ,R.[LaborType]
       ,R.[SegmentID]
-      ,@ResourceListID--[ResourceListID]
-/*      ,R.[ResourceInUseFlag]*/
+      ,@ResourceListID
       ,R.[CostElementID]
       ,R.[DeletedFlag]
       ,R.[RateTypeID]
@@ -384,7 +274,6 @@ INSERT INTO [dbo].[Resource]
            ,[LaborType]
            ,[SegmentID]
            ,[ResourceListID]
-/*           ,[ResourceInUseFlag]*/
            ,[CostElementID]
            ,[DeletedFlag]
            ,[RateTypeID]
@@ -396,15 +285,13 @@ SELECT
       ,R.[SegmentRegion]
       ,R.[LaborType]
       ,R.[SegmentID]
-      ,@ResourceListID--[ResourceListID]
-/*      ,R.[ResourceInUseFlag]*/
+      ,@ResourceListID
       ,R.[CostElementID]
       ,R.[DeletedFlag]
       ,R.[RateTypeID]
 FROM @Resource R
 WHERE
 	ResourceID = @ResourceID
-
 
 UPDATE @Resource 
 SET	NewResourceID = SCOPE_IDENTITY(),
@@ -466,7 +353,6 @@ DECLARE @PerformingOrganization TABLE
 	[PerformingOrganizationName] [varchar](20) NOT NULL,
 	[PerformingOrganizationDescription] [varchar](50) NULL,
 	[PerformingOrganizationListID] [int] NOT NULL,
-/*	[PerformingOrganizationInUseFlag] [bit] NOT NULL,*/
 	[DeletedFlag] [bit] NULL,
 	Processed bit DEFAULT 0,
 	NewPerformingOrganizationListID int,
@@ -480,7 +366,6 @@ INSERT INTO @PerformingOrganization
            ,[PerformingOrganizationName]
            ,[PerformingOrganizationDescription]
            ,[PerformingOrganizationListID]
-/*           ,[PerformingOrganizationInUseFlag]*/
            ,[DeletedFlag]
            	,Processed
 			,NewWorkspaceID
@@ -489,8 +374,7 @@ SELECT R.[PerformingOrganizationID]
 	  ,R.[UpdateDT]
       ,R.[PerformingOrganizationName]
       ,R.[PerformingOrganizationDescription]
-      ,@PerformingOrganizationListID--[PerformingOrganizationListID]
-/*      ,R.[PerformingOrganizationInUseFlag]*/
+      ,@PerformingOrganizationListID
       ,R.[DeletedFlag]
       ,0 AS Processed
       ,@NewWorkspaceID AS NewWorkspaceID
@@ -511,19 +395,16 @@ INSERT INTO [dbo].[PerformingOrganization]
            ,[PerformingOrganizationName]
            ,[PerformingOrganizationDescription]
            ,[PerformingOrganizationListID]
-/*           ,[PerformingOrganizationInUseFlag]*/
            ,[DeletedFlag])
 SELECT 
 	  R.[UpdateDT]
       ,R.[PerformingOrganizationName]
       ,R.[PerformingOrganizationDescription]
-      ,@PerformingOrganizationListID--[PerformingOrganizationListID]
-/*      ,R.[PerformingOrganizationInUseFlag]*/
+      ,@PerformingOrganizationListID
       ,R.[DeletedFlag]
 FROM @PerformingOrganization R
 WHERE
 	PerformingOrganizationID = @PerformingOrganizationID
-
 
 UPDATE @PerformingOrganization 
 SET	NewPerformingOrganizationID = SCOPE_IDENTITY(),
@@ -559,27 +440,18 @@ INSERT INTO [dbo].[WorkspacePerformingOrganization]
            ([SystemPerformingOrganizationID]
            ,[PerformingOrganizationListID]
            ,[WorkspaceID])
-/*Workspace PerformingOrganizations*/
 SELECT 
       [NewSystemPerformingOrganizationID]
       ,[PerformingOrganizationListID]
       ,[WorkspaceID]
 FROM @WorkspacePerformingOrganization WHERE NewSystemPerformingOrganizationID IS NOT NULL
 UNION
-/*System PerformingOrganizations*/
 SELECT 
       [SystemPerformingOrganizationID]
       ,[PerformingOrganizationListID]
       ,[WorkspaceID]
 FROM @WorkspacePerformingOrganization WHERE NewSystemPerformingOrganizationID IS NULL
 
-/*
-TESTING
-SELECT * FROM WorkspacePerformingOrganization WHERE WorkspaceID=@WorkspaceID
-SELECT * FROM WorkspacePerformingOrganization WHERE WorkspaceID=@NewWorkspaceID
-*/
-
-/****** Object:  Table [dbo].[BOE]    Script Date: 05/15/2012 10:19:00 ******/
 DECLARE @BOE TABLE
 (
 	[BOEID] [int] NOT NULL,
@@ -661,10 +533,8 @@ BOEID = @BOEID
 
 END
 
--- These changes are to be executed in RMS only. The way we can tell the environments apart is that SSC has LOBs in the range of 1000's. RMS is 2000+ and ISGS is 0-999
 IF EXISTS (SELECT 1 FROM [dbo].[LineOfBusiness] WHERE LineOfBusinessID > 2000)
 BEGIN
-	/****** Object:  Table [dbo].[TravelTripTaskElement]    Script Date: 05/15/2012 10:31:19 ******/
 	DECLARE @TravelTripTaskElement TABLE
 	(
 		[TravelTripTaskElementID] [int] NOT NULL,
@@ -820,7 +690,6 @@ INNER JOIN ProjectMap P ON P.ID = S.ProjectMapId
 INNER JOIN ProjectMap NewP ON NewP.WorkspaceId = @NewWorkspaceID AND NewP.OrderID = P.OrderID
 
 /**** Custom Fields ****/
-
 INSERT INTO [dbo].[CustomField]
            ([UpdateDT]
            ,[CustomFieldName]
@@ -874,7 +743,6 @@ FROM
       Original.[CustomFieldDisplayID] = New.CustomFieldDisplayID AND
 	  Original.[IsOpenEnded] = New.IsOpenEnded
 
-/****** Object:  Table [dbo].[CustomFieldValue]    Script Date: 05/17/2012 11:42:52 ******/
 DECLARE @CustomFieldValue TABLE
 (
 	[CustomFieldValueID] [int] NOT NULL,
@@ -929,21 +797,18 @@ END
 INSERT INTO [dbo].[BOEPotentialRole]
            ([UpdateDT]
            ,[ETIUserID]
-           /*,[ETIGroupID]*/
            ,[WorkspaceID]
            ,[RoleID]
            ,[UserRemoved])
 SELECT 
       [UpdateDT]
       ,[ETIUserID]
-      /*,[ETIGroupID]*/
-      ,@NewWorkspaceID--[WorkspaceID]
+      ,@NewWorkspaceID
       ,[RoleID]
       ,[UserRemoved]
   FROM [dbo].[BOEPotentialRole]
 WHERE WorkspaceID = @WorkspaceID
           
-/****** Object:  Table [dbo].[WorkBreakdownStructure]    Script Date: 05/16/2012 07:51:33 ******/
 DECLARE @WorkBreakdownStructure TABLE
 (
 	[WBSID] [int]  NOT NULL,
@@ -984,7 +849,7 @@ SELECT [UpdateDT]
       ,[WBSNumber]
       ,[DisplayedWBSNumber]
       ,[WBSTitle]
-      ,@NewWorkspaceID--[WorkspaceID]
+      ,@NewWorkspaceID
   FROM @WorkBreakdownStructure
 WHERE WBSID = @WBSID
 
@@ -1003,7 +868,7 @@ INSERT INTO [dbo].[TMResourceRate]
            ,[TMResourceRateEndDate]
            ,[TMResourceRate])
 SELECT TMRR.[UpdateDT]
-      ,@NewWorkspaceID--[WorkspaceID]
+      ,@NewWorkspaceID
       ,CASE	
 		WHEN R.NewResourceID IS NOT NULL THEN R.NewResourceID
 		ELSE [TMResourceID]
@@ -1029,7 +894,6 @@ SELECT [UpdateDT]
   FROM [dbo].[WorkspaceStateHistory]
 WHERE WorkspaceID = @WorkspaceID
 
-/****** Object:  Table [dbo].[WorkspaceVariable]    Script Date: 05/16/2012 10:29:42 ******/
 DECLARE @WorkspaceVariable TABLE 
 (
 	[WorkspaceVariableID] [int] NOT NULL,
@@ -1090,20 +954,17 @@ END
 INSERT INTO [dbo].[WorkspaceUserRole]
            ([UpdateDT]
            ,[ETIUserID]
-           /*,[ETIGroupID]*/
            ,[RoleID]
            ,[WorkspaceID]
            ,[HideHelp])
 SELECT [UpdateDT]
       ,[ETIUserID]
-      /*,[ETIGroupID]*/
       ,[RoleID]
-      ,@NewWorkspaceID--[WorkspaceID]
+      ,@NewWorkspaceID
       ,[HideHelp]
   FROM [dbo].[WorkspaceUserRole]
 WHERE WorkspaceID = @WorkspaceID
 
-/****** Object:  Table [dbo].[ProPricerExport]    Script Date: 05/16/2012 10:55:47 ******/
 DECLARE @ProPricerExport TABLE
 (
 	[ProPricerExportID] [int] NOT NULL,
@@ -1136,7 +997,7 @@ INSERT INTO [dbo].[ProPricerExport]
            ,[WorkspaceID])
 SELECT [UpdateDT]
       ,[ProPricerExportName]
-      ,@NewWorkspaceID--[WorkspaceID]
+      ,@NewWorkspaceID
   FROM @ProPricerExport
 WHERE ProPricerExportID = @ProPricerExportID
 
@@ -1152,7 +1013,7 @@ INSERT INTO [dbo].[ProPricerFieldXREF]
            ,[ProPricerFieldID]
            ,[ProPricerTypeID]
            ,[ListOrder])
-SELECT P.NewProPricerExportID--[ProPricerExportID]
+SELECT P.NewProPricerExportID
       ,X.[ProPricerFieldID]
       ,X.[ProPricerTypeID]
       ,X.[ListOrder]
@@ -1166,8 +1027,8 @@ INSERT INTO [dbo].[ProPricerCustomFieldXREF]
            ,[ProPricerTypeID]
            ,[ProPricerCustomFieldSelectionID]
            ,[ListOrder])
-SELECT P.NewProPricerExportID--[ProPricerExportID]
-      ,CM.NewCustomFieldID--[CustomFieldID]
+SELECT P.NewProPricerExportID
+      ,CM.NewCustomFieldID
       ,[ProPricerTypeID]
       ,[ProPricerCustomFieldSelectionID]
       ,[ListOrder]
@@ -1175,7 +1036,6 @@ SELECT P.NewProPricerExportID--[ProPricerExportID]
 	INNER JOIN @ProPricerExport P ON CX.ProPricerExportID = P.ProPricerExportID
 	INNER JOIN @CustomFieldMapping CM ON CX.CustomFieldID = CM.OriginalCustomFieldID
 
-/****** Object:  Table [dbo].[CLIN]    Script Date: 05/16/2012 14:33:46 ******/
 DECLARE @CLIN TABLE 
 (
 	[CLINID] [int]  NOT NULL,
@@ -1394,7 +1254,6 @@ BEGIN
 END
 -- End of "RMS Zone Travel" - MstTravelTrip
 
-/****** Object:  Table [dbo].[WBS_CLIN_BOE_XREF]    Script Date: 05/16/2012 15:05:13 ******/
 DECLARE @WBS_CLIN_BOE_XREF TABLE
 (
 	[WBSID] [int] NULL,
@@ -1439,7 +1298,6 @@ INSERT INTO [dbo].[WBS_CLIN_BOE_XREF]
 SELECT DISTINCT NewWBSID, NewCLINID, NewBOEID
 FROM @WBS_CLIN_BOE_XREF
 
-/****** Object:  Table [dbo].[SumOfBOE_WorkspaceVariableXREF]    Script Date: 05/16/2012 15:22:52 ******/
 DECLARE @SumOfBOE_WorkspaceVariableXREF TABLE 
 (
 	[WVSumID] [bigint] NOT NULL,
@@ -1495,7 +1353,7 @@ FROM @SumOfBOE_WorkspaceVariableXREF
 INSERT INTO [dbo].[WorkspaceVariableSumVariableResourceTypeXREF]
            ([WorkspaceVariableID]
            ,[SumVariableResourceTypeID])
-SELECT WV.NewWorkspaceVariableID--[WorkspaceVariableID]
+SELECT WV.NewWorkspaceVariableID
       ,[SumVariableResourceTypeID]
   FROM [dbo].[WorkspaceVariableSumVariableResourceTypeXREF] X
   INNER JOIN @WorkspaceVariable WV ON X.WorkspaceVariableID = WV.WorkspaceVariableID
@@ -1508,7 +1366,7 @@ INSERT INTO [dbo].[BOEStateHistory]
            ,[UpdatedBOEStateID]
            ,[ChangedByETIUserID])
 SELECT BH.[UpdateDT]
-      ,B.NewBOEID--[BOEID]
+      ,B.NewBOEID
       ,BH.[FieldID]
       ,BH.[CurrentBOEStateID]
       ,BH.[UpdatedBOEStateID]
@@ -1528,7 +1386,7 @@ SELECT H.[UpdateDT]
       ,H.[CurrentETIUserID]
       ,H.[UpdatedETIUserID]
       ,H.[RoleID]
-      ,NewBOEID--[BOEID]
+      ,NewBOEID
       ,H.[FieldID]
       ,H.[ChangedByETIUserID]
   FROM [dbo].[BOEUserRoleHistory] H
@@ -1542,7 +1400,7 @@ INSERT INTO [dbo].[BOEUserRole]
 SELECT R.[UpdateDT]
       ,R.[ETIUserID]
       ,R.[RoleID]
-      ,NewBOEID--[BOEID]
+      ,NewBOEID
   FROM [dbo].[BOEUserRole] R
 INNER JOIN @BOE B ON R.BOEID = B.BOEID
 
@@ -1604,8 +1462,8 @@ SELECT BC.[UpdateDT]
       ,BC.[FieldID]
       ,BC.[BOEComments]
       ,BC.[BOECommentETIUserID]
-      ,tBC.NewBOECommentID--Need to get the updated Comment[BOEResponseToCommentID]
-      ,BC.NewBOEID--[BOEID]
+      ,tBC.NewBOECommentID
+      ,BC.NewBOEID
   FROM @BOEComment BC
 	LEFT OUTER JOIN @BOEComment tBC ON BC.BOEResponseToCommentID = tBC.BOECommentID
 WHERE BC.BOECommentID = @BOECommentID  
@@ -1626,8 +1484,8 @@ INSERT INTO [dbo].[BOECommentHistory]
            ,[UpdatedComment]
            ,[ChangedByETIUserID])
 SELECT BCH.[UpdateDT]
-      ,tBC.NewBOECommentID--[BOECommentID]
-      ,tBC.NewBOEID--[BOEID]
+      ,tBC.NewBOECommentID
+      ,tBC.NewBOEID
       ,BCH.[FieldID]
       ,BCH.[CurrentComment]
       ,BCH.[UpdatedComment]
@@ -1635,7 +1493,6 @@ SELECT BCH.[UpdateDT]
   FROM [dbo].[BOECommentHistory] BCH
 	INNER JOIN   @BOEComment tBC ON BCH.BOECommentID = tBC.BOECommentID
 
-/****** Object:  Table [dbo].[BOETaskElement]    Script Date: 05/17/2012 09:46:25 ******/
 DECLARE @BOETaskElement TABLE 
 (
 	[BOETaskElementID] [int] NOT NULL,
@@ -1708,8 +1565,6 @@ SUBSTRING
 		CHARINDEX ('<WSVAR:',MOQHoursEquation),
 		(CHARINDEX ('>',MOQHoursEquation) - CHARINDEX ('<WSVAR:',MOQHoursEquation) + 1)
 	)
-	
-
 
 UPDATE @WSVar
 SET OriginalID =
@@ -1717,17 +1572,14 @@ SET OriginalID =
 	(LEN (Original) - CHARINDEX (':',Original))),
 	'>', '')
 
-
 UPDATE @WSVar
 SET UpdatedID = WS.NewWorkspaceVariableID
 FROM @WSVar t
 	INNER JOIN @WorkspaceVariable WS ON t.OriginalID = WS.WorkspaceVariableID
 
-
 UPDATE @WSVar
 SET Updated = 
 REPLACE (Original, OriginalID, UpdatedID) 
-
 
 UPDATE @BOETaskElement
 SET MOQHoursEquation = 
@@ -1786,7 +1638,6 @@ WHERE BOETaskElementID = @BOETaskElementID
 
 END	
 
-/****** Object:  Table [dbo].[OrdinaryVariable]    Script Date: 05/17/2012 10:27:58 ******/
 DECLARE @OrdinaryVariable TABLE
 (
 	[OrdinaryVariableID] [int] NOT NULL,
@@ -1863,7 +1714,6 @@ SELECT H.[UpdateDT]
   FROM [dbo].[BOEApprovalHistory] H
 INNER JOIN @BOE B ON H.BOEID = B.BOEID
 
-/****** Object:  Table [dbo].[BOELaborType]    Script Date: 05/17/2012 10:50:02 ******/
 DECLARE @BOELaborType TABLE 
 (
 	[BOELaborTypeID] [int] NOT NULL,
@@ -1909,7 +1759,7 @@ SELECT LT.[BOELaborTypeID]
 	  ,LT.[CLINID]
       ,LT.[CanOffload]
 	  ,LT.[LaborSortId]
-	  ,0/*PROCESSED*/
+	  ,0 /*PROCESSED*/
       ,NULL
       ,CASE
 		WHEN R.NewResourceID IS NOT NULL THEN R.NewResourceID
@@ -1919,7 +1769,6 @@ SELECT LT.[BOELaborTypeID]
 		WHEN PO.NewPerformingOrganizationID IS NOT NULL THEN PO.NewPerformingOrganizationID
 		ELSE LT.[PerformingOrganizationID]
 		END AS PerformingOrganizationID
-/*      ,PO.NewPerformingOrganizationID*/
       ,TE.NewBOETaskElementID
 	  ,CASE
 		WHEN W.NewWBSID IS NOT NULL THEN W.NewWBSID
@@ -1931,8 +1780,6 @@ SELECT LT.[BOELaborTypeID]
 		END AS CLINID
   FROM [dbo].[BOELaborType] LT
 INNER JOIN @BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
---LEFT OUTER JOIN @ResourceMapping R ON LT.ResourceID = R.OriginalResourceID
---LEFT OUTER JOIN @POMapping P ON LT.PerformingOrganizationID = P.OriginalPOID
 LEFT OUTER JOIN @Resource R ON LT.ResourceID = R.ResourceID
 LEFT OUTER JOIN @PerformingOrganization PO ON LT.PerformingOrganizationID = PO.PerformingOrganizationID
 LEFT OUTER JOIN @WorkBreakdownStructure W on LT.WBSID = W.WBSID
@@ -1970,15 +1817,12 @@ SELECT [UpdateDT]
 		WHEN NewPerformingOrganizationID IS NOT NULL THEN NewPerformingOrganizationID
 		ELSE [PerformingOrganizationID]
 		END AS PerformingOrganizationID
-
-      
-/*      ,NewPerformingOrganizationID--[PerformingOrganizationID]*/
       ,[BOELaborTypeStartDate]
       ,[BOELaborTypeEndDate]
       ,[SpreadCurveID]
       ,[PercentSpread]
       ,[ValueSpread]
-      ,NewBOETaskElementID--[BOETaskElementID]
+      ,NewBOETaskElementID
       ,[SpreadTypeID]
       ,[PercentSpreadLocked]
       ,[HourSpreadLocked]
@@ -2006,8 +1850,8 @@ INSERT INTO [dbo].[BOETaskElementWorkspaceVariableXREF]
            ([BOETaskElementID]
            ,[WorkspaceVariableID])
 
-SELECT TE.NewBOETaskElementID--[BOETaskElementID]
-      ,WV.NewWorkspaceVariableID--[WorkspaceVariableID]
+SELECT TE.NewBOETaskElementID
+      ,WV.NewWorkspaceVariableID
   FROM [dbo].[BOETaskElementWorkspaceVariableXREF] X
 	INNER JOIN @BOETaskElement TE ON X.BOETaskElementID = TE.BOETaskElementID
 	INNER JOIN @WorkspaceVariable WV ON X.WorkspaceVariableID = WV.WorkspaceVariableID
@@ -2018,7 +1862,7 @@ INSERT INTO [dbo].[BOETaskElementMetricDetailXREF]
 ,[UpdateDT]
 )
 SELECT 
- TE.NewBOETaskElementID--[BOETaskElementID]
+ TE.NewBOETaskElementID
 ,X.[MetricDetailID]
 ,X.[UpdateDT]
 FROM [dbo].[BOETaskElementMetricDetailXREF] X
@@ -2028,8 +1872,8 @@ INSERT INTO [dbo].[BOETaskElementCustomFieldValueXREF]
            ,[BOETaskElementID]
            ,[CustomFieldValueID])
 SELECT X.[UpdateDT]
-      ,TE.NewBOETaskElementID--[BOETaskElementID]
-      ,CFV.NewCustomFieldValueID--[CustomFieldValueID]
+      ,TE.NewBOETaskElementID
+      ,CFV.NewCustomFieldValueID
   FROM [dbo].[BOETaskElementCustomFieldValueXREF] X
 	INNER JOIN @BOETaskElement TE ON X.BOETaskElementID = TE.BOETaskElementID
 	INNER JOIN @CustomFieldValue CFV ON X.CustomFieldValueID = CFV.CustomFieldValueID
@@ -2038,8 +1882,8 @@ INSERT INTO [dbo].[BOELaborTypeCustomFieldValueXREF]
            ,[BOELaborTypeID]
            ,[CustomFieldValueID])
 SELECT X.[UpdateDT]
-      ,TE.NewBOELaborTypeID--[BOELaborTypeID]
-      ,CFV.NewCustomFieldValueID--[CustomFieldValueID]
+      ,TE.NewBOELaborTypeID
+      ,CFV.NewCustomFieldValueID
   FROM [dbo].[BOELaborTypeCustomFieldValueXREF] X
 	INNER JOIN @BOELaborType TE ON X.BOELaborTypeID = TE.BOELaborTypeID
 	INNER JOIN @CustomFieldValue CFV ON X.CustomFieldValueID = CFV.CustomFieldValueID
@@ -2048,8 +1892,8 @@ INSERT INTO [dbo].[BOECustomFieldValueXREF]
            ,[BOEID]
            ,[CustomFieldValueID])
 SELECT X.[UpdateDT]
-      ,B.NewBOEID--[BOEID]
-      ,CFV.NewCustomFieldValueID--[CustomFieldValueID]
+      ,B.NewBOEID
+      ,CFV.NewCustomFieldValueID
   FROM [dbo].[BOECustomFieldValueXREF] X
 	INNER JOIN @BOE B ON X.BOEID = B.BOEID
 	INNER JOIN @CustomFieldValue CFV ON X.CustomFieldValueID = CFV.CustomFieldValueID
@@ -2072,8 +1916,8 @@ BEGIN
            ([TravelTripTaskElementID]
            ,[CustomFieldValueID]
            ,[UpdateDT])
-SELECT TE.NewTravelTripTaskElementID--[TravelTripTaskElementID]
-      ,CFV.NewCustomFieldValueID--[CustomFieldValueID]
+SELECT TE.NewTravelTripTaskElementID
+      ,CFV.NewCustomFieldValueID
       ,X.[UpdateDT]
   FROM [dbo].[TravelTripTaskElementCustomFieldValueXREF] X
 	INNER JOIN @TravelTripTaskElement TE ON X.TravelTripTaskElementID = TE.TravelTripTaskElementID
@@ -2081,7 +1925,6 @@ SELECT TE.NewTravelTripTaskElementID--[TravelTripTaskElementID]
 END
 
 /**** RTE Templates ****/
-
 INSERT INTO [dbo].[RteTemplate]
 			([UpdateDT],
 			[WorkspaceID],
@@ -2167,27 +2010,16 @@ INNER JOIN @RTETemplateMapping RTM ON RTM.OriginalTemplateID = RTQ.TemplateID
 DECLARE @QuestionID int
 WHILE EXISTS (SELECT 1 FROM @RTETemplateQuestion WHERE Processed = 0)
 BEGIN
-SELECT TOP 1 @QuestionID = [QuestionID] FROM @RTETemplateQuestion WHERE Processed = 0
+	SELECT TOP 1 @QuestionID = [QuestionID] FROM @RTETemplateQuestion WHERE Processed = 0
 
-INSERT INTO [dbo].[RteTemplateQuestion]
-           ([UpdateDT],
-			[TemplateID],
-			[Text],
-			[SortOrder],
-			[Required])
-SELECT RTQ.[UpdateDT]
-      ,RTQ.NewTemplateID
-      ,RTQ.[Text]
-      ,RTQ.[SortOrder]
-      ,RTQ.[Required]
-  FROM @RTETemplateQuestion RTQ
-WHERE RTQ.[QuestionID] = @QuestionID  
+	INSERT INTO [dbo].[RteTemplateQuestion] ([UpdateDT], [TemplateID], [Text], [SortOrder], [Required])
+	SELECT RTQ.[UpdateDT], RTQ.NewTemplateID, RTQ.[Text], RTQ.[SortOrder], RTQ.[Required]
+		FROM @RTETemplateQuestion RTQ
+		WHERE RTQ.[QuestionID] = @QuestionID  
 
-UPDATE @RTETemplateQuestion
-SET NewQuestionID = SCOPE_IDENTITY(),
-	Processed = 1
-WHERE [QuestionID] = @QuestionID  
-
+	UPDATE @RTETemplateQuestion
+		SET NewQuestionID = SCOPE_IDENTITY(), Processed = 1
+		WHERE [QuestionID] = @QuestionID  
 END
 
 INSERT INTO RTETemplateAnswer
@@ -2204,11 +2036,10 @@ SELECT RTA.[UpdateDT],
 		RTA.[Text],
 		RTA.[RteTemplateSourceId]
 	FROM RTETemplateAnswer RTA
-	INNER JOIN @RTETemplateQuestion RTQ ON RTA.QuestionID = RTQ.QuestionID
-	INNER JOIN @BOE B ON RTA.BOEID = B.BOEID
-	LEFT JOIN @BOETaskElement T on T.[BOETaskElementID] = RTA.[TaskID]
+		INNER JOIN @RTETemplateQuestion RTQ ON RTA.QuestionID = RTQ.QuestionID
+		INNER JOIN @BOE B ON RTA.BOEID = B.BOEID
+		LEFT JOIN @BOETaskElement T on T.[BOETaskElementID] = RTA.[TaskID]
 
-/****** Object:  Table [dbo].[SumOfBOE_OrdinaryVariableXREF]    Script Date: 05/17/2012 13:08:05 ******/
 DECLARE @SumOfBOE_OrdinaryVariableXREF TABLE 
 (
 	[OVSumID] [bigint] NOT NULL,
@@ -2232,56 +2063,36 @@ SELECT X.[OVSumID]
       ,NULL
       ,NULL
   FROM [dbo].[SumOfBOE_OrdinaryVariableXREF] X
-INNER JOIN @OrdinaryVariable V ON X.OrdinaryVariableID = V.OrdinaryVariableID
+	INNER JOIN @OrdinaryVariable V ON X.OrdinaryVariableID = V.OrdinaryVariableID
 
 UPDATE @SumOfBOE_OrdinaryVariableXREF
-SET NewWBSID = W.NewWBSID
-FROM  @SumOfBOE_OrdinaryVariableXREF X
-	INNER JOIN @WorkBreakdownStructure W ON X.WBSID = W.WBSID
+	SET NewWBSID = W.NewWBSID
+	FROM  @SumOfBOE_OrdinaryVariableXREF X
+		INNER JOIN @WorkBreakdownStructure W ON X.WBSID = W.WBSID
 UPDATE @SumOfBOE_OrdinaryVariableXREF
-SET NewCLINID = C.NewCLINID
-FROM  @SumOfBOE_OrdinaryVariableXREF X
-	INNER JOIN @CLIN C ON X.CLINID = C.CLINID
+	SET NewCLINID = C.NewCLINID
+	FROM  @SumOfBOE_OrdinaryVariableXREF X
+		INNER JOIN @CLIN C ON X.CLINID = C.CLINID
 UPDATE @SumOfBOE_OrdinaryVariableXREF
-SET NewBOEID = B.NewBOEID
-FROM  @SumOfBOE_OrdinaryVariableXREF X
-	INNER JOIN @BOE B ON X.BOEID = B.BOEID
+	SET NewBOEID = B.NewBOEID
+	FROM  @SumOfBOE_OrdinaryVariableXREF X
+		INNER JOIN @BOE B ON X.BOEID = B.BOEID
 
-INSERT INTO [dbo].[SumOfBOE_OrdinaryVariableXREF]
-           ([OrdinaryVariableID]
-           ,[CLINID]
-           ,[WBSID]
-           ,[BOEID])
-SELECT            
-	NewOrdinaryVariableID,
-	NewCLINID,
-	NewWBSID,
-	NewBOEID
-FROM  @SumOfBOE_OrdinaryVariableXREF 
-INSERT INTO [dbo].[OrdinaryVariableSumVariableResourceTypeXREF]
-           ([OrdinaryVariableID]
-           ,[SumVariableResourceTypeID])
-SELECT O.NewOrdinaryVariableID--[OrdinaryVariableID]
-      ,[SumVariableResourceTypeID]
-  FROM [dbo].[OrdinaryVariableSumVariableResourceTypeXREF] X
-	INNER JOIN @OrdinaryVariable O ON X.OrdinaryVariableID = O.OrdinaryVariableID
+INSERT INTO [dbo].[SumOfBOE_OrdinaryVariableXREF] ([OrdinaryVariableID], [CLINID], [WBSID], [BOEID])
+	SELECT NewOrdinaryVariableID, NewCLINID, NewWBSID, NewBOEID
+	FROM  @SumOfBOE_OrdinaryVariableXREF 
 
+INSERT INTO [dbo].[OrdinaryVariableSumVariableResourceTypeXREF] ([OrdinaryVariableID], [SumVariableResourceTypeID])
+	SELECT O.NewOrdinaryVariableID, [SumVariableResourceTypeID]
+	FROM [dbo].[OrdinaryVariableSumVariableResourceTypeXREF] X
+		INNER JOIN @OrdinaryVariable O ON X.OrdinaryVariableID = O.OrdinaryVariableID
 
-
-
-INSERT INTO [dbo].[BOELaborSpread]
-           ([BOELaborTypeID]
-           ,[LaborSpreadDate]
-           ,[LaborSpreadValue])
-SELECT LT.NewBOELaborTypeID--[BOELaborTypeID]
-      ,[LaborSpreadDate]
-      ,[LaborSpreadValue]
-  FROM [dbo].[BOELaborSpread] LS
-	INNER JOIN @BOELaborType LT ON LS.BOELaborTypeID = LT.BOELaborTypeID
-
+INSERT INTO [dbo].[BOELaborSpread] ([BOELaborTypeID], [LaborSpreadDate], [LaborSpreadValue])
+	SELECT LT.NewBOELaborTypeID, [LaborSpreadDate], [LaborSpreadValue]
+	FROM [dbo].[BOELaborSpread] LS
+		INNER JOIN @BOELaborType LT ON LS.BOELaborTypeID = LT.BOELaborTypeID
 
 /*Locked Tables*/
-
 INSERT INTO [dbo].[WorkspaceLockedPerDiem]
            ([PerDiemID]
            ,[UpdateDT]
@@ -2379,7 +2190,6 @@ SELECT [TripID]
 WHERE WorkspaceID = @WorkspaceID
 
 /* Copy new BOE/INL Forms */
-
 DECLARE @IBOE TABLE
 (
 	[IBOEFormID] [int] NOT NULL,
@@ -2389,38 +2199,32 @@ DECLARE @IBOE TABLE
 )
 
 INSERT INTO @IBOE 
-	SELECT 
-		IBOEFormID, 0, NULL, @NewWorkspaceID
+	SELECT IBOEFormID, 0, NULL, @NewWorkspaceID
 	FROM [dbo].[BOEFormIBOE]
-WHERE WorkspaceID = @WorkspaceID
+	WHERE WorkspaceID = @WorkspaceID
 
 DECLARE @IBOEID int
 WHILE EXISTS (SELECT 1 FROM @IBOE WHERE Processed = 0)
 BEGIN
-SELECT TOP 1 @IBOEID = [IBOEFormID] FROM @IBOE WHERE Processed = 0
+	SELECT TOP 1 @IBOEID = [IBOEFormID] FROM @IBOE WHERE Processed = 0
+	INSERT INTO [dbo].[BOEFormIBOE]
+		(UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion)
+		SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion
+		FROM [dbo].[BOEFormIBOE]
+		WHERE [IBOEFormID] = @IBOEID 
 
-INSERT INTO [dbo].[BOEFormIBOE]
-(UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion)
-SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion
-  FROM [dbo].[BOEFormIBOE]
-WHERE [IBOEFormID] = @IBOEID 
-
-UPDATE @IBOE 
-SET	[NEW_IBOEFormID] = SCOPE_IDENTITY(),
-	Processed = 1
-WHERE 
-[IBOEFormID] = @IBOEID	
-
+	UPDATE @IBOE 
+		SET [NEW_IBOEFormID] = SCOPE_IDENTITY(), Processed = 1
+		WHERE [IBOEFormID] = @IBOEID
 END
 
 --Insert the INL IBOE Resources
 INSERT INTO [dbo].[BOEFormIBOEResourcesXREF]
-SELECT B.[NEW_IBOEFormID]
-	  ,IsNull(R.NewSystemResourceID, x.ResourceID)
-FROM [dbo].[BOEFormIBOEResourcesXREF] x
-	INNER JOIN @IBOE B ON B.[IBOEFormID] = x.[IBOEFormID]
-	LEFT OUTER JOIN @WorkspaceResource R ON x.ResourceID = R.[SystemResourceID]
-WHERE x.[IBOEFormID] IN (SELECT [IBOEFormID] FROM @IBOE)
+	SELECT B.[NEW_IBOEFormID], IsNull(R.NewSystemResourceID, x.ResourceID)
+	FROM [dbo].[BOEFormIBOEResourcesXREF] x
+		INNER JOIN @IBOE B ON B.[IBOEFormID] = x.[IBOEFormID]
+		LEFT OUTER JOIN @WorkspaceResource R ON x.ResourceID = R.[SystemResourceID]
+	WHERE x.[IBOEFormID] IN (SELECT [IBOEFormID] FROM @IBOE)
 
 DECLARE @PBOE TABLE
 (
@@ -2431,172 +2235,161 @@ DECLARE @PBOE TABLE
 )
 
 INSERT INTO @PBOE 
-	SELECT 
-		PBOEFormID, 0, NULL, @NewWorkspaceID
+	SELECT PBOEFormID, 0, NULL, @NewWorkspaceID
 	FROM [dbo].[BOEFormPBOE]
-WHERE WorkspaceID = @WorkspaceID
+	WHERE WorkspaceID = @WorkspaceID
 
 DECLARE @PBOEID int
 WHILE EXISTS (SELECT 1 FROM @PBOE WHERE Processed = 0)
 BEGIN
-SELECT TOP 1 @PBOEID = [PBOEFormID] FROM @PBOE WHERE Processed = 0
-
-INSERT INTO [dbo].[BOEFormPBOE]
-	(UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion,  
-	[DegreeOfCompetition],
-	[CCoPD],
-	[CCoPDOtherText],
-	[RFP],
-	[ProposalNumber],
-	[SupplierName],
-	[ValidityDate],
-	[SupplierProposalSupportingDataIncluded],
-	[PriceAnalysisIncluded],
-	[CommercialItemDocIncluded],
-	[CostAnalysisIncluded],
-	[ShouldCostEstimate],
-	[ShouldCostEstimateDate],
-	[SowWritten],
-	[SowWrittenDate],
-	[RFPRelease],
-	[RFPReleaseDate],
-	[FirmSupplierReceipt],
-	[FirmSupplierReceiptDate],
-	[SourceSelection],
-	[SourceSelectionDate],
-	[CID],
-	[CIDDate],
-	[GovtReview],
-	[GovtReviewDate],
-	[PriceAnalysis],
-	[PriceAnalysisDate],
-	[TechnicalEvaluation],
-	[TechnicalEvaluationDate],
-	[FactFinding],
-	[FactFindingDate],
-	[CostAnalysis],
-	[CostAnalysisDate],
-	[GovtPricing],
-	[GovtPricingDate],
-	[SupplierNegotiations],
-	[SupplierNegotiationsDate],
-	[MOU],
-	[MOUDate],
-	[Procurement],
-	[ProcurementDate],
-	[PlannedDate_WrittenApproval],
-	[PlannedDate_ApprovedSubmission],
-	[CIDText],
-	[GovtReviewText],
-	[PriceAnalysisText],
-	[TechnicalEvaluationText],
-	[FactFindingText],
-	[CostAnalysisText],
-	[GovtPricingText],
-	[SupplierNegotiationsText],
-	[MOUText],
-	[ProcurementText],
-	ShouldCostEstimateText,
-	SowWrittenText,
-	RFPReleaseText,
-	FirmSupplierReceiptText,
-	SourceSelectionText)
-SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion, 
-	[DegreeOfCompetition],
-	[CCoPD],
-	[CCoPDOtherText],
-	[RFP],
-	[ProposalNumber],
-	[SupplierName],
-	[ValidityDate],
-	[SupplierProposalSupportingDataIncluded],
-	[PriceAnalysisIncluded],
-	[CommercialItemDocIncluded],
-	[CostAnalysisIncluded],
-	[ShouldCostEstimate],
-	[ShouldCostEstimateDate],
-	[SowWritten],
-	[SowWrittenDate],
-	[RFPRelease],
-	[RFPReleaseDate],
-	[FirmSupplierReceipt],
-	[FirmSupplierReceiptDate],
-	[SourceSelection],
-	[SourceSelectionDate],
-	[CID],
-	[CIDDate],
-	[GovtReview],
-	[GovtReviewDate],
-	[PriceAnalysis],
-	[PriceAnalysisDate],
-	[TechnicalEvaluation],
-	[TechnicalEvaluationDate],
-	[FactFinding],
-	[FactFindingDate],
-	[CostAnalysis],
-	[CostAnalysisDate],
-	[GovtPricing],
-	[GovtPricingDate],
-	[SupplierNegotiations],
-	[SupplierNegotiationsDate],
-	[MOU],
-	[MOUDate],
-	[Procurement],
-	[ProcurementDate],
-	[PlannedDate_WrittenApproval],
-	[PlannedDate_ApprovedSubmission],
-	[CIDText],
-	[GovtReviewText],
-	[PriceAnalysisText],
-	[TechnicalEvaluationText],
-	[FactFindingText],
-	[CostAnalysisText],
-	[GovtPricingText],
-	[SupplierNegotiationsText],
-	[MOUText],
-	[ProcurementText],
-	ShouldCostEstimateText,
-	SowWrittenText,
-	RFPReleaseText,
-	FirmSupplierReceiptText,
-	SourceSelectionText
-  FROM [dbo].[BOEFormPBOE]
-WHERE [PBOEFormID] = @PBOEID 
-
-UPDATE @PBOE 
-SET	[NEW_PBOEFormID] = SCOPE_IDENTITY(),
-	Processed = 1
-WHERE 
-[PBOEFormID] = @PBOEID	
-
+	SELECT TOP 1 @PBOEID = [PBOEFormID] FROM @PBOE WHERE Processed = 0
+	INSERT INTO [dbo].[BOEFormPBOE]
+		(UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion,  
+		[DegreeOfCompetition],
+		[CCoPD],
+		[CCoPDOtherText],
+		[RFP],
+		[ProposalNumber],
+		[SupplierName],
+		[ValidityDate],
+		[SupplierProposalSupportingDataIncluded],
+		[PriceAnalysisIncluded],
+		[CommercialItemDocIncluded],
+		[CostAnalysisIncluded],
+		[ShouldCostEstimate],
+		[ShouldCostEstimateDate],
+		[SowWritten],
+		[SowWrittenDate],
+		[RFPRelease],
+		[RFPReleaseDate],
+		[FirmSupplierReceipt],
+		[FirmSupplierReceiptDate],
+		[SourceSelection],
+		[SourceSelectionDate],
+		[CID],
+		[CIDDate],
+		[GovtReview],
+		[GovtReviewDate],
+		[PriceAnalysis],
+		[PriceAnalysisDate],
+		[TechnicalEvaluation],
+		[TechnicalEvaluationDate],
+		[FactFinding],
+		[FactFindingDate],
+		[CostAnalysis],
+		[CostAnalysisDate],
+		[GovtPricing],
+		[GovtPricingDate],
+		[SupplierNegotiations],
+		[SupplierNegotiationsDate],
+		[MOU],
+		[MOUDate],
+		[Procurement],
+		[ProcurementDate],
+		[PlannedDate_WrittenApproval],
+		[PlannedDate_ApprovedSubmission],
+		[CIDText],
+		[GovtReviewText],
+		[PriceAnalysisText],
+		[TechnicalEvaluationText],
+		[FactFindingText],
+		[CostAnalysisText],
+		[GovtPricingText],
+		[SupplierNegotiationsText],
+		[MOUText],
+		[ProcurementText],
+		ShouldCostEstimateText,
+		SowWrittenText,
+		RFPReleaseText,
+		FirmSupplierReceiptText,
+		SourceSelectionText)
+	SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion, 
+		[DegreeOfCompetition],
+		[CCoPD],
+		[CCoPDOtherText],
+		[RFP],
+		[ProposalNumber],
+		[SupplierName],
+		[ValidityDate],
+		[SupplierProposalSupportingDataIncluded],
+		[PriceAnalysisIncluded],
+		[CommercialItemDocIncluded],
+		[CostAnalysisIncluded],
+		[ShouldCostEstimate],
+		[ShouldCostEstimateDate],
+		[SowWritten],
+		[SowWrittenDate],
+		[RFPRelease],
+		[RFPReleaseDate],
+		[FirmSupplierReceipt],
+		[FirmSupplierReceiptDate],
+		[SourceSelection],
+		[SourceSelectionDate],
+		[CID],
+		[CIDDate],
+		[GovtReview],
+		[GovtReviewDate],
+		[PriceAnalysis],
+		[PriceAnalysisDate],
+		[TechnicalEvaluation],
+		[TechnicalEvaluationDate],
+		[FactFinding],
+		[FactFindingDate],
+		[CostAnalysis],
+		[CostAnalysisDate],
+		[GovtPricing],
+		[GovtPricingDate],
+		[SupplierNegotiations],
+		[SupplierNegotiationsDate],
+		[MOU],
+		[MOUDate],
+		[Procurement],
+		[ProcurementDate],
+		[PlannedDate_WrittenApproval],
+		[PlannedDate_ApprovedSubmission],
+		[CIDText],
+		[GovtReviewText],
+		[PriceAnalysisText],
+		[TechnicalEvaluationText],
+		[FactFindingText],
+		[CostAnalysisText],
+		[GovtPricingText],
+		[SupplierNegotiationsText],
+		[MOUText],
+		[ProcurementText],
+		ShouldCostEstimateText,
+		SowWrittenText,
+		RFPReleaseText,
+		FirmSupplierReceiptText,
+		SourceSelectionText
+	  FROM [dbo].[BOEFormPBOE]
+	WHERE [PBOEFormID] = @PBOEID 
+	UPDATE @PBOE 
+		SET	[NEW_PBOEFormID] = SCOPE_IDENTITY(), Processed = 1
+		WHERE [PBOEFormID] = @PBOEID
 END
 
 --Insert the INL PBOE Resources
 INSERT INTO [dbo].[BOEFormPBOEResourcesXREF]
-SELECT B.[NEW_PBOEFormID]
-	  ,IsNull(R.NewSystemResourceID, x.ResourceID)
-FROM [dbo].[BOEFormPBOEResourcesXREF] x
-	INNER JOIN @PBOE B ON B.[PBOEFormID] = x.[PBOEFormID]
-	LEFT OUTER JOIN @WorkspaceResource R ON x.ResourceID = R.[SystemResourceID]
-WHERE x.[PBOEFormID] IN (SELECT [PBOEFormID] FROM @PBOE)
+	SELECT B.[NEW_PBOEFormID], IsNull(R.NewSystemResourceID, x.ResourceID)
+	FROM [dbo].[BOEFormPBOEResourcesXREF] x
+		INNER JOIN @PBOE B ON B.[PBOEFormID] = x.[PBOEFormID]
+		LEFT OUTER JOIN @WorkspaceResource R ON x.ResourceID = R.[SystemResourceID]
+	WHERE x.[PBOEFormID] IN (SELECT [PBOEFormID] FROM @PBOE)
 
 -- Insert the INL IBOE CLIN selections
 INSERT INTO [dbo].[BOEFormIBOECLINsXREF]
-SELECT B.[NEW_IBOEFormID],
-	c.[NewCLINID],
-	x.[ContractType]
-FROM [dbo].[BOEFormIBOECLINsXREF] x
-	INNER JOIN @IBOE B ON B.[IBOEFormID] = x.[IBOEFormID]
-	INNER JOIN @CLIN C on C.[CLINID] = x.[CLINID]
+	SELECT B.[NEW_IBOEFormID], c.[NewCLINID], x.[ContractType]
+	FROM [dbo].[BOEFormIBOECLINsXREF] x
+		INNER JOIN @IBOE B ON B.[IBOEFormID] = x.[IBOEFormID]
+		INNER JOIN @CLIN C on C.[CLINID] = x.[CLINID]
 
 -- Insert the INL PBOE CLIN selections
 INSERT INTO [dbo].[BOEFormPBOECLINsXREF]
-SELECT B.[NEW_PBOEFormID],
-	c.[NewCLINID],
-	x.[ContractType]
-FROM [dbo].[BOEFormPBOECLINsXREF] x
-	INNER JOIN @PBOE B ON B.[PBOEFormID] = x.[PBOEFormID]
-	INNER JOIN @CLIN C on C.[CLINID] = x.[CLINID]
+	SELECT B.[NEW_PBOEFormID], c.[NewCLINID], x.[ContractType]
+	FROM [dbo].[BOEFormPBOECLINsXREF] x
+		INNER JOIN @PBOE B ON B.[PBOEFormID] = x.[PBOEFormID]
+		INNER JOIN @CLIN C on C.[CLINID] = x.[CLINID]
 
 INSERT INTO [dbo].[WorkspaceRMSTravelNonzoneFeesAndCosts] ([UpdateDT], [WorkspaceID], ModeID, TravelAgencyFee, MiscOther)
 	SELECT [UpdateDT], @NewWorkspaceID, ModeID, TravelAgencyFee, MiscOther
@@ -2606,11 +2399,6 @@ INSERT INTO [dbo].[WorkspaceRMSTravelEscalationRate] ([UpdateDT], [WorkspaceID],
 	SELECT [UpdateDT], @NewWorkspaceID, [Year], [Escalation], [MiscRate], [PerDiemRate]
 	FROM [dbo].[WorkspaceRMSTravelEscalationRate] WHERE [WorkspaceID] = @CopyFromWorkspaceID
 
---RAISERROR ('Error raised in TRY block.', -- Message text.
---               16, -- Severity.
---               1 -- State.
---               );
-
 IF @@ERROR = 0
 	BEGIN
 		COMMIT TRANSACTION
@@ -2618,166 +2406,152 @@ IF @@ERROR = 0
 		/*Workspace Copy Metric*/
 		IF @CopyFromWorkspaceID IS NOT NULL 
 		BEGIN
+			DECLARE @CreateDate datetime2(7) = GetDate()
 
-		DECLARE @CreateDate datetime2(7) = GetDate()
-
-		INSERT INTO [dbo].[WorkspaceCopySource]
-           ([WorkspaceID]
-           ,[UpdateDT]
-           ,[WorkspaceName]
-           ,[WorkspaceShortName]
-           ,[WorkspaceStateID]
-           ,[ContractStartDate]
-           ,[ContractEndDate]
-           ,[ProposalSubmitDate]
-           ,[WorkspaceDescription]
-           ,[CostVolumeLeadPricerUserID]
-           ,[RFPNumber]
-           ,[TemplateID]
-           ,[ContainsOCI]
-           ,[CreatedByETIUserID]
-           ,[AllowSearch]
-           ,[ResourceListID]
-           ,[PerformingOrganizationListID]
-           ,[PerformingOrganizationChangeFlag]
-           ,[TrackingNumber]
-           ,[ContainsTemplate]
-           ,[NumProPricerExport]
-           ,[ProposalStatusID]
-           ,[StatusComment]
-           ,[BOEExportSortByID]
-           ,[SegmentID]
-           ,[LineOfBusinessID]
-           ,[ProposalClassID]
-           ,[ProposalTitle]
-           ,[IsDeleted]
-           ,[DateDeleted]
-		   ,[LineOfBusinessName]
-		   ,[NumOfBOEs]
-		   ,[CreateDate]
-		   )
-
-	SELECT W.[WorkspaceID]
-		  ,W.[UpdateDT]
-		  ,W.[WorkspaceName]
-		  ,W.[WorkspaceShortName]
-		  ,W.[WorkspaceStateID]
-		  ,W.[ContractStartDate]
-		  ,W.[ContractEndDate]
-		  ,W.[ProposalSubmitDate]
-		  ,W.[WorkspaceDescription]
-		  ,W.[CostVolumeLeadPricerUserID]
-		  ,W.[RFPNumber]
-		  ,W.[TemplateID]
-		  ,W.[ContainsOCI]
-		  ,W.[CreatedByETIUserID]
-		  ,W.[AllowSearch]
-		  ,W.[ResourceListID]
-		  ,W.[PerformingOrganizationListID]
-		  ,W.[PerformingOrganizationChangeFlag]
-		  ,W.[TrackingNumber]
-		  ,W.[ContainsTemplate]
-		  ,W.[NumProPricerExport]
-		  ,W.[ProposalStatusID]
-		  ,W.[StatusComment]
-		  ,W.[BOEExportSortByID]
-		  ,W.[SegmentID]
-		  ,W.[LineOfBusinessID]
-		  ,W.[ProposalClassID]
-		  ,W.[ProposalTitle]
-		  ,W.[IsDeleted]
-		  ,W.[DateDeleted]
-		  ,LOB.[LineOfBusinessName]	      
-		  ,(SELECT COUNT (*) FROM [dbo].[BOE] WHERE WorkspaceID = @CopyFromWorkspaceID) AS [NumOfBOEs]
-		  ,@CreateDate
-	  FROM [dbo].[Workspace] W
-		LEFT OUTER JOIN [dbo].[LineOfBusiness] LOB ON W.LineOfBusinessID = LOB.LineOfBusinessID
-	  WHERE WorkspaceID = @CopyFromWorkspaceID
-
-
-
-		INSERT INTO [dbo].[WorkspaceCopyTarget]
-           ([WorkspaceID]
-           ,[UpdateDT]
-           ,[WorkspaceName]
-           ,[WorkspaceShortName]
-           ,[WorkspaceStateID]
-           ,[ContractStartDate]
-           ,[ContractEndDate]
-           ,[ProposalSubmitDate]
-           ,[WorkspaceDescription]
-           ,[CostVolumeLeadPricerUserID]
-           ,[RFPNumber]
-           ,[TemplateID]
-           ,[ContainsOCI]
-           ,[CreatedByETIUserID]
-           ,[AllowSearch]
-           ,[ResourceListID]
-           ,[PerformingOrganizationListID]
-           ,[PerformingOrganizationChangeFlag]
-           ,[TrackingNumber]
-           ,[ContainsTemplate]
-           ,[NumProPricerExport]
-           ,[ProposalStatusID]
-           ,[StatusComment]
-           ,[BOEExportSortByID]
-           ,[SegmentID]
-           ,[LineOfBusinessID]
-           ,[ProposalClassID]
-           ,[ProposalTitle]
-           ,[IsDeleted]
-           ,[DateDeleted]
-		   ,[LineOfBusinessName]
-		   ,[NumOfBOEs]
-		   ,[CreateDate]
-		   )
-
-	SELECT W.[WorkspaceID]
-		  ,W.[UpdateDT]
-		  ,W.[WorkspaceName]
-		  ,W.[WorkspaceShortName]
-		  ,W.[WorkspaceStateID]
-		  ,W.[ContractStartDate]
-		  ,W.[ContractEndDate]
-		  ,W.[ProposalSubmitDate]
-		  ,W.[WorkspaceDescription]
-		  ,W.[CostVolumeLeadPricerUserID]
-		  ,W.[RFPNumber]
-		  ,W.[TemplateID]
-		  ,W.[ContainsOCI]
-		  ,W.[CreatedByETIUserID]
-		  ,W.[AllowSearch]
-		  ,W.[ResourceListID]
-		  ,W.[PerformingOrganizationListID]
-		  ,W.[PerformingOrganizationChangeFlag]
-		  ,W.[TrackingNumber]
-		  ,W.[ContainsTemplate]
-		  ,W.[NumProPricerExport]
-		  ,W.[ProposalStatusID]
-		  ,W.[StatusComment]
-		  ,W.[BOEExportSortByID]
-		  ,W.[SegmentID]
-		  ,W.[LineOfBusinessID]
-		  ,W.[ProposalClassID]
-		  ,W.[ProposalTitle]
-		  ,W.[IsDeleted]
-		  ,W.[DateDeleted]
-		  ,LOB.[LineOfBusinessName]	    
-		  ,(SELECT COUNT (*) FROM [dbo].[BOE] WHERE WorkspaceID = @NewWorkspaceID) AS [NumOfBOEs]
-		  ,@CreateDate
-	  FROM [dbo].[Workspace] W
-		LEFT OUTER JOIN [dbo].[LineOfBusiness] LOB ON W.LineOfBusinessID = LOB.LineOfBusinessID
- WHERE WorkspaceID = @NewWorkspaceID
-
-
-	INSERT INTO [dbo].[WorkspaceCopyMetric]
-           ([SourceWorkspaceID]
-           ,[TargetWorkspaceID]
-           ,[CreateDate])
-     VALUES
-           (@CopyFromWorkspaceID
-           ,@NewWorkspaceID
-           ,@CreateDate)
+			INSERT INTO [dbo].[WorkspaceCopySource]
+			   ([WorkspaceID]
+			   ,[UpdateDT]
+			   ,[WorkspaceName]
+			   ,[WorkspaceShortName]
+			   ,[WorkspaceStateID]
+			   ,[ContractStartDate]
+			   ,[ContractEndDate]
+			   ,[ProposalSubmitDate]
+			   ,[WorkspaceDescription]
+			   ,[CostVolumeLeadPricerUserID]
+			   ,[RFPNumber]
+			   ,[TemplateID]
+			   ,[ContainsOCI]
+			   ,[CreatedByETIUserID]
+			   ,[AllowSearch]
+			   ,[ResourceListID]
+			   ,[PerformingOrganizationListID]
+			   ,[PerformingOrganizationChangeFlag]
+			   ,[TrackingNumber]
+			   ,[ContainsTemplate]
+			   ,[NumProPricerExport]
+			   ,[ProposalStatusID]
+			   ,[StatusComment]
+			   ,[BOEExportSortByID]
+			   ,[SegmentID]
+			   ,[LineOfBusinessID]
+			   ,[ProposalClassID]
+			   ,[ProposalTitle]
+			   ,[IsDeleted]
+			   ,[DateDeleted]
+			   ,[LineOfBusinessName]
+			   ,[NumOfBOEs]
+			   ,[CreateDate]
+			   )
+		SELECT W.[WorkspaceID]
+			  ,W.[UpdateDT]
+			  ,W.[WorkspaceName]
+			  ,W.[WorkspaceShortName]
+			  ,W.[WorkspaceStateID]
+			  ,W.[ContractStartDate]
+			  ,W.[ContractEndDate]
+			  ,W.[ProposalSubmitDate]
+			  ,W.[WorkspaceDescription]
+			  ,W.[CostVolumeLeadPricerUserID]
+			  ,W.[RFPNumber]
+			  ,W.[TemplateID]
+			  ,W.[ContainsOCI]
+			  ,W.[CreatedByETIUserID]
+			  ,W.[AllowSearch]
+			  ,W.[ResourceListID]
+			  ,W.[PerformingOrganizationListID]
+			  ,W.[PerformingOrganizationChangeFlag]
+			  ,W.[TrackingNumber]
+			  ,W.[ContainsTemplate]
+			  ,W.[NumProPricerExport]
+			  ,W.[ProposalStatusID]
+			  ,W.[StatusComment]
+			  ,W.[BOEExportSortByID]
+			  ,W.[SegmentID]
+			  ,W.[LineOfBusinessID]
+			  ,W.[ProposalClassID]
+			  ,W.[ProposalTitle]
+			  ,W.[IsDeleted]
+			  ,W.[DateDeleted]
+			  ,LOB.[LineOfBusinessName]	      
+			  ,(SELECT COUNT (*) FROM [dbo].[BOE] WHERE WorkspaceID = @CopyFromWorkspaceID) AS [NumOfBOEs]
+			  ,@CreateDate
+		  FROM [dbo].[Workspace] W
+			LEFT OUTER JOIN [dbo].[LineOfBusiness] LOB ON W.LineOfBusinessID = LOB.LineOfBusinessID
+		  WHERE WorkspaceID = @CopyFromWorkspaceID
+			INSERT INTO [dbo].[WorkspaceCopyTarget]
+			   ([WorkspaceID]
+			   ,[UpdateDT]
+			   ,[WorkspaceName]
+			   ,[WorkspaceShortName]
+			   ,[WorkspaceStateID]
+			   ,[ContractStartDate]
+			   ,[ContractEndDate]
+			   ,[ProposalSubmitDate]
+			   ,[WorkspaceDescription]
+			   ,[CostVolumeLeadPricerUserID]
+			   ,[RFPNumber]
+			   ,[TemplateID]
+			   ,[ContainsOCI]
+			   ,[CreatedByETIUserID]
+			   ,[AllowSearch]
+			   ,[ResourceListID]
+			   ,[PerformingOrganizationListID]
+			   ,[PerformingOrganizationChangeFlag]
+			   ,[TrackingNumber]
+			   ,[ContainsTemplate]
+			   ,[NumProPricerExport]
+			   ,[ProposalStatusID]
+			   ,[StatusComment]
+			   ,[BOEExportSortByID]
+			   ,[SegmentID]
+			   ,[LineOfBusinessID]
+			   ,[ProposalClassID]
+			   ,[ProposalTitle]
+			   ,[IsDeleted]
+			   ,[DateDeleted]
+			   ,[LineOfBusinessName]
+			   ,[NumOfBOEs]
+			   ,[CreateDate]
+			   )
+		SELECT W.[WorkspaceID]
+			  ,W.[UpdateDT]
+			  ,W.[WorkspaceName]
+			  ,W.[WorkspaceShortName]
+			  ,W.[WorkspaceStateID]
+			  ,W.[ContractStartDate]
+			  ,W.[ContractEndDate]
+			  ,W.[ProposalSubmitDate]
+			  ,W.[WorkspaceDescription]
+			  ,W.[CostVolumeLeadPricerUserID]
+			  ,W.[RFPNumber]
+			  ,W.[TemplateID]
+			  ,W.[ContainsOCI]
+			  ,W.[CreatedByETIUserID]
+			  ,W.[AllowSearch]
+			  ,W.[ResourceListID]
+			  ,W.[PerformingOrganizationListID]
+			  ,W.[PerformingOrganizationChangeFlag]
+			  ,W.[TrackingNumber]
+			  ,W.[ContainsTemplate]
+			  ,W.[NumProPricerExport]
+			  ,W.[ProposalStatusID]
+			  ,W.[StatusComment]
+			  ,W.[BOEExportSortByID]
+			  ,W.[SegmentID]
+			  ,W.[LineOfBusinessID]
+			  ,W.[ProposalClassID]
+			  ,W.[ProposalTitle]
+			  ,W.[IsDeleted]
+			  ,W.[DateDeleted]
+			  ,LOB.[LineOfBusinessName]	    
+			  ,(SELECT COUNT (*) FROM [dbo].[BOE] WHERE WorkspaceID = @NewWorkspaceID) AS [NumOfBOEs]
+			  ,@CreateDate
+		  FROM [dbo].[Workspace] W
+			LEFT OUTER JOIN [dbo].[LineOfBusiness] LOB ON W.LineOfBusinessID = LOB.LineOfBusinessID
+	 WHERE WorkspaceID = @NewWorkspaceID
+			INSERT INTO [dbo].[WorkspaceCopyMetric] ([SourceWorkspaceID], [TargetWorkspaceID], [CreateDate])
+				VALUES (@CopyFromWorkspaceID, @NewWorkspaceID, @CreateDate)
 		END
 
 		SELECT @NewWorkspaceID AS WorkspaceID
@@ -2788,11 +2562,7 @@ BEGIN CATCH
 	ROLLBACK TRANSACTION
 	DECLARE @ErrorMessage varchar (500)
 	SELECT @ErrorMessage = ERROR_MESSAGE()
-	RAISERROR (
-			@ErrorMessage, -- Message text.
-	        11, -- Severity,/*Severity Changed to 11*/
-			1 -- State,
-			)
+	RAISERROR (@ErrorMessage, 11, 1)
 	RETURN
 END CATCH
 GO
