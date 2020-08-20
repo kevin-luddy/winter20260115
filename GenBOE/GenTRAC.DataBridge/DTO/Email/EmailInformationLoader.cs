@@ -324,6 +324,33 @@ namespace GenTRAC.DataBridge.DTO
             foreach (ProposalDto proposal in collection)
             {
                 string email = this.RetrieveEmailForRole(proposal, PtmRole.Pricer);
+
+                string contractsEmail = this.RetrieveEmailForRole(proposal, PtmRole.ContractsPOC);
+                if (!email.Contains(contractsEmail))
+                {
+                    email += ";" + contractsEmail;
+                }
+
+                ICollection<ProposalPermissionDto> permissions = this.RetrievePermissions(proposal.Id);
+
+                if (permissions.Any(x => x.Role == PtmRole.SupplyChainPOCMatl))
+                {
+                    string matEmail = this.RetrieveEmailForRole(proposal, PtmRole.SupplyChainPOCMatl);
+                    if (!email.Contains(matEmail))
+                    {
+                        email += ";" + matEmail;
+                    }
+                }
+
+                if (permissions.Any(x => x.Role == PtmRole.SupplyChainPOCSubs))
+                {
+                    string subEmail = this.RetrieveEmailForRole(proposal, PtmRole.SupplyChainPOCSubs);
+                    if (!email.Contains(subEmail))
+                    {
+                        email += ";" + subEmail;
+                    }
+                }
+
                 if (!string.IsNullOrEmpty(email))
                 {
                     EmailInformationDto emailInfo = new EmailInformationDto()

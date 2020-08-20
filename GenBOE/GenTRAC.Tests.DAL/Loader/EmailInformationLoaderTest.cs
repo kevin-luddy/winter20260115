@@ -297,6 +297,18 @@ namespace GenTRAC.Tests.DAL.Loader
 
             this.testData.GetProposalPermission(true, permission);
 
+            permission.Role = PtmRole.ContractsPOC;
+
+            this.testData.GetProposalPermission(true, permission);
+
+            permission.Role = PtmRole.SupplyChainPOCMatl;
+
+            this.testData.GetProposalPermission(true, permission);
+
+            permission.Role = PtmRole.SupplyChainPOCSubs;
+
+            this.testData.GetProposalPermission(true, permission);
+
             ICollection<EmailInformationDto> emails = sut.GetAllEmailsToBeSent(null);
 
             Assert.IsTrue(emails.Any(e => e.ProposalId == testProposal.Id && e.ProposalEmailType == EmailType.CertificationTimelineEmail));
