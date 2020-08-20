@@ -108,6 +108,11 @@ namespace GenBOE.Dtos
                     throw new GenValidationException("Start date must be before End date");
                 }
             }
+            catch (GenValidationException ex)
+            {
+                logger.Warn(ex);
+                throw;
+            }
             catch (Exception ex)
             {
                 logger.Error(ex);

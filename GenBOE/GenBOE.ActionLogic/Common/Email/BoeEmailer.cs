@@ -863,7 +863,7 @@ namespace GenBOE.ActionLogic.Common.Email
                 {
                     if (!boe.AuthorIDs.Any() && !boe.SubcontractorAuthorIDs.Any())
                     {
-                        this.logger.Error("No authors present for BOE [" + boe.Description + "] contained in workspace [" +
+                        this.logger.Warn("No authors present for BOE [" + boe.Description + "] contained in workspace [" +
                                    inWorkspace.WorkspaceName +
                                    "].  NOT sending email to admin that boe is opened for edit.");
                     }
@@ -1093,7 +1093,7 @@ namespace GenBOE.ActionLogic.Common.Email
                 {
                     if (!boe.AuthorIDs.Any() && !boe.SubcontractorAuthorIDs.Any())
                     {
-                        this.logger.Error("No authors present for BOE [" + boe.Description + "] contained in workspace [" +
+                        this.logger.Warn("No authors present for BOE [" + boe.Description + "] contained in workspace [" +
                                    workspace.WorkspaceName +
                                    "].  NOT sending email to admin that boe is opened for edit.");
                     }
@@ -1543,7 +1543,7 @@ namespace GenBOE.ActionLogic.Common.Email
 
             if (!inBOE.AuthorIDs.Any() && !inBOE.SubcontractorAuthorIDs.Any())
             {
-                this.logger.Error("No authors present for BOE [" + inBOE.Description + "] contained in workspace [" +
+                this.logger.Warn("No authors present for BOE [" + inBOE.Description + "] contained in workspace [" +
                            ws.WorkspaceName + "].  NOT sending email to Authors that a WBS was changed.");
             }
             else

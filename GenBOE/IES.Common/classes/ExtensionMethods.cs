@@ -1,9 +1,8 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
-
 
 namespace IES.Common
 {
@@ -190,9 +189,7 @@ namespace IES.Common
                 date = string.Join("/", dateArray);
             }
 
-            DateTime result;
-
-            if (!DateTime.TryParseExact(date, format, CultureInfo.CurrentCulture, DateTimeStyles.None, out result))
+            if (!DateTime.TryParseExact(date, format, CultureInfo.CurrentCulture, DateTimeStyles.None, out DateTime result))
             {
                 throw new FormatException(string.Format("Date must be valid and in the format {0}.", format));
             }
@@ -210,10 +207,7 @@ namespace IES.Common
         /// <exception cref="System.FormatException"></exception>
         public static DateTime ToDateTimeMidMonth(this string date, string format = "MM/yyyy")
         {
-            if (date == null)
-            {
-                throw new ArgumentNullException(nameof(date));
-            }
+            _ = date ?? throw new ArgumentNullException(nameof(date));
 
             // append leading 0 in case the date is missing it.
             if (date.Length == 6)
@@ -222,7 +216,8 @@ namespace IES.Common
             }
 
             // set the time to the 15th of the month at noon (12PM)
-            DateTime dateFirstOfMonth = DateTime.ParseExact(date, format, CultureInfo.CurrentCulture).AddDays(14).AddHours(12);
+            DateTime dateFirstOfMonth = DateTime.TryParseExact(date, format, CultureInfo.CurrentCulture, DateTimeStyles.None, out dateFirstOfMonth) ? dateFirstOfMonth.AddDays(14).AddHours(12) 
+                : throw new FormatException("Date must be valid and in the format {0}.");
 
             return dateFirstOfMonth;
         }
