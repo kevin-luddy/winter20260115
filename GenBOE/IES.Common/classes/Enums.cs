@@ -399,8 +399,7 @@ namespace IES.Common
         WorkspaceUser = 7,
         CreateWorkspacePermissions = 8,
         SubcontractorAuthor = 9,
-        SubcontractAdmin = 10,
-        WorkspaceAuthor = 11
+        SubcontractAdmin = 10
     };
 
     /// <summary>
