@@ -191,7 +191,7 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<SplitString_Result>("[GenBoeEntities].[SplitString](@List, @Delimiter, @EmptyListItem)", listParameter, delimiterParameter, emptyListItemParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> copyWorkspace(Nullable<int> workspaceID, string workspaceName, string workspaceShortName)
+        public virtual ObjectResult<Nullable<int>> copyWorkspace(Nullable<int> workspaceID, string workspaceName, string workspaceShortName, Nullable<int> CostVolumeLeadPricerUserID)
         {
             var workspaceIDParameter = workspaceID.HasValue ?
                 new ObjectParameter("WorkspaceID", workspaceID) :
@@ -204,8 +204,13 @@ namespace GenBOE.Models
             var workspaceShortNameParameter = workspaceShortName != null ?
                 new ObjectParameter("WorkspaceShortName", workspaceShortName) :
                 new ObjectParameter("WorkspaceShortName", typeof(string));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("copyWorkspace", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter);
+
+            var CostVolumeLeadPricerUserIDParameter = CostVolumeLeadPricerUserID.HasValue ?
+                new ObjectParameter("CostVolumeLeadPricerUserID", CostVolumeLeadPricerUserID) :
+                new ObjectParameter("CostVolumeLeadPricerUserID", typeof(int));
+            
+
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("copyWorkspace", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, CostVolumeLeadPricerUserIDParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> createWorkspaceVersion(string versionName, Nullable<int> createdByETIUserID, Nullable<int> workspaceStateID, Nullable<int> workspaceID)
