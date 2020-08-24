@@ -199,3 +199,36 @@
     </div>
     <div class="form-element static">{{convertBool(data.ShareAndAllowSearch)}}</div>
 </div>
+
+<script type="text/javascript">
+    $('#newLeadEstimator-SaveButton').click(function () {
+        $('#newLeadEstimator').dialog('close');
+        $(document).trigger('newLeadEstimatorChosen');
+    });
+    $('#newLeadEstimator-CancelButton').click(function () {
+        $('#newLeadEstimator').dialog('close');
+    });
+</script>
+
+<div id="newLeadEstimator" class="display-none">
+    <div class="container">
+        <div class="form-row">
+            <div class="form-label">
+                <span>{{model.labelLeadPricer}} *</span>
+            </div>
+            <div class="form-element">
+                <input id="NewCostVolumeLeadPricerDisplayName" name="NewCostVolumeLeadPricerDisplayName" value="{{data.CostVolumeLeadPricerDisplayName}}" type="text" maxlength="50" />
+                <input id="newCostVolumeLeadPricerNTID" name="newCostVolumeLeadPricerNTID" type="text" class="display-none" />
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label"></div>
+            <div class="form-element">
+                <div class="buttons">
+                    <button id="newLeadEstimator-SaveButton" class="ies-action" type="button">Set and Complete Creation</button>
+                    <button id="newLeadEstimator-CancelButton" class="ies" name="cancel-button" type="button">Back to Verification</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -531,7 +531,7 @@
             }
 
             $scope.data.CostVolumeLeadPricerDisplayName = response.data.DisplayName;
-            
+            $scope.data.CostVolumeLeadPricerNTID = response.data.CostVolumeLeadPricerNTID;
 
             deferred.resolve();
         },
@@ -546,7 +546,8 @@
         return deferred.promise;
     };
 
-    $scope.create = function () {
+    // Method that calls the back end to create a new Workspace
+    $scope.createNewWs = function () {
         $scope.errors = [];
         $('#urlValidationBox').html('');
         $scope.model.showButtonLoader = true;
@@ -572,6 +573,45 @@
             }
         );
     };
+
+    // wrapper around the create new workspace, that verifies existing / allows a change of Lead Estimator, for exact copies of WS (BOEJ-4728)
+    $scope.create = function () {
+        if ($scope.data.WSExactCopy === null || $scope.data.WSExactCopy === false) {
+            $scope.createNewWs();
+        } else {
+            GenSession.confirmDialog("Estimating / Lead Pricer Verification", "Is the current Estimating/Lead Pricer " + $scope.data.CostVolumeLeadPricerDisplayName + " correct?",
+                function () { $scope.createNewWs(); },
+                function () { $scope.changeEstimator(); }
+            );
+        }
+    }
+
+    // Kicks off process to change lead pricer
+    $scope.changeEstimator = function () {
+        // initialize the dialog
+        $('#newLeadEstimator').dialog({ autoOpen: false, title: 'Set ' + $scope.model.labelLeadPricer, modal: true, resizable: false, width: 500 }).removeClass('display-none');
+
+        // setup new cost volume pricer lookup functionality
+        $('#NewCostVolumeLeadPricerDisplayName').lookupUser({
+            accountNameElementId: 'newCostVolumeLeadPricerNTID',
+            accountNameInitial: $scope.data.CostVolumeLeadPricerNTID,
+            accountDisplayNameInitial: $scope.data.CostVolumeLeadPricerDisplayName,
+            enabled: true,
+            fieldDisplayName: $scope.model.labelLeadPricer,
+            allowGroups: false,
+            checkNameCallbackHandler: function (valid) { }
+        });
+
+        // open the dialog
+        $('#newLeadEstimator').dialog('open');
+    }
+
+    // Ends process of changing lead process
+    $scope.newLeadEstimatorChosen = function (event) {
+        $scope.data.CostVolumeLeadPricerNTID = $('#newCostVolumeLeadPricerNTID').val();
+        $scope.data.CostVolumeLeadPricerDisplayName = $('#NewCostVolumeLeadPricerDisplayName').val();
+        $scope.createNewWs();
+    }
 
     $scope.getWorkspaceType = function () {
         if ($scope.data.IsAttemptingToImport) {
@@ -856,6 +896,7 @@
         $scope.setDecimalPrecisionDefaults();
 
         CreateWorkspace.registerForEvent('WorkspaceToCopyChosen', $scope.workspaceToCopyChosen);
+        CreateWorkspace.registerForEvent('newLeadEstimatorChosen', $scope.newLeadEstimatorChosen);
 
         if ($scope.model.isSSC) {
             if ($scope.model.showEquivalentPersonsOption) {

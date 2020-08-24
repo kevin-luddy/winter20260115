@@ -48,7 +48,11 @@ namespace GenBOE.ActionLogic.Validation
 
             UserDTO user = this.userDataLoader.GetOrCreateUserByNtid((string)value);
 
-            if (this._SecurityInformation.IsSubcontractorUser(user.NTID, user.IsSubcontractor))
+            if (user == null)
+            {
+                response.Add("The supplied NTID does not match a valid user.");
+            } 
+            else if (this._SecurityInformation.IsSubcontractorUser(user.NTID, user.IsSubcontractor))
             {
                 response.Add("Subcontractor users are restricted from Cost Volume Lead/Pricer permissions.");
             }
