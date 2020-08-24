@@ -186,6 +186,8 @@ namespace GenBOE.Web.Controllers
                     wbsModelView.HasBOE = true;
                 }
 
+                wbsModelView.ParentHasBoe = this.ParentHasBoe(wbs, ws);
+
                 model.WbsResults.Add(wbsModelView);
             }
 
@@ -231,6 +233,27 @@ namespace GenBOE.Web.Controllers
             }
 
             return toReturn;
+        }
+
+        /// <summary>
+        /// Check if a parent WBS has a BOE
+        /// </summary>
+        /// <param name="wbs">wbs to check</param>
+        /// <param name="ws">ws containing wbs</param>
+        /// <returns>True if parent WBS has a BOE, otherwise false</returns>
+        private bool ParentHasBoe(WbsDTO wbs, FullWorkspace ws)
+        {
+            ICollection<string> parentWbs = _nestedWbsUtilities.GetParentsWBSNumByChildWBS(wbs);
+            foreach(string parentNumber in parentWbs)
+            {
+                WbsDTO parentDto = ws.WbsElements.FirstOrDefault(x => x.WbsNumber == parentNumber);
+                if (parentDto != null && parentDto.inUse)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         #endregion Display
