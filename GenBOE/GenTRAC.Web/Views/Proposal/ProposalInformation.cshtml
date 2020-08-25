@@ -349,9 +349,9 @@
                 <div class="form-element">
                     <div>
                      <label for="ScheduleProposal-Yes">Yes</label>
-                     <input type="radio" class="radio" id="ScheduleProposal-Yes" value="true" name="IsScheduleProposal" @if (Model.ProposalID > 0 && Model.IsScheduleProposal.HasValue && Model.IsScheduleProposal.Value) {<text>checked</text>} />
+                     <input type="radio" class="radio" id="ScheduleProposal-Yes" value="true" name="IsScheduleProposal" @if ((Model.ProposalID > 0 || Model.IsNewRevision) && Model.IsScheduleProposal.HasValue && Model.IsScheduleProposal.Value) {<text>checked</text>} />
                      <label for="ScheduleProposal-No">No</label>
-                     <input type="radio" class="radio" id="ScheduleProposal-No" value="false" name="IsScheduleProposal" @if (Model.ProposalID > 0 && Model.IsScheduleProposal.HasValue && !Model.IsScheduleProposal.Value) {<text>checked</text>} />
+                     <input type="radio" class="radio" id="ScheduleProposal-No" value="false" name="IsScheduleProposal" @if ((Model.ProposalID > 0 || Model.IsNewRevision) && Model.IsScheduleProposal.HasValue && !Model.IsScheduleProposal.Value) {<text>checked</text>} />
                    </div>
                 </div>
             </div>

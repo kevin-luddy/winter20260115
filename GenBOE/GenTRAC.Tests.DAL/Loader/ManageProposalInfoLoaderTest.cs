@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -50,12 +50,15 @@ namespace GenTRAC.Tests.DAL.Loader
             // proposal initially InProgress
             Assert.AreEqual(ProposalStatus.InProgress, proposal.ProposalStatus);
 
+            string comments = "Test archived";
+
             // change proposal to Archived
             ManageProposalInfoDto manageProposalInfo = new ManageProposalInfoDto()
             {
                 ProposalId = proposal.Id,
                 UpdateDate = proposal.UpdateDate,
-                NewProposalStatus = ProposalStatus.Archived
+                NewProposalStatus = ProposalStatus.Archived,
+                Comments = comments
             };
 
             int? resultProposalId = sut.SaveProposalInfo(manageProposalInfo);
@@ -63,13 +66,17 @@ namespace GenTRAC.Tests.DAL.Loader
 
             proposal = proposalLoader.GetById(resultProposalId.Value);
             Assert.AreEqual(ProposalStatus.Archived, proposal.ProposalStatus);
+            Assert.AreEqual(comments, proposal.ManageProposalInfoComments);
+
+            comments = "Test deleted";
 
             // change proposal to Deleted
             manageProposalInfo = new ManageProposalInfoDto()
             {
                 ProposalId = proposal.Id,
                 UpdateDate = proposal.UpdateDate,
-                NewProposalStatus = ProposalStatus.Deleted
+                NewProposalStatus = ProposalStatus.Deleted,
+                Comments = comments
             };
 
             resultProposalId = sut.SaveProposalInfo(manageProposalInfo);
@@ -77,6 +84,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             proposal = proposalLoader.GetById(resultProposalId.Value);
             Assert.AreEqual(ProposalStatus.Deleted, proposal.ProposalStatus);
+            Assert.AreEqual(comments, proposal.ManageProposalInfoComments);
 
             // setup complete checklist
             ProposalChecklistDto checklist = this.testData.SaveChecklistAsPricer(proposal.Id);
@@ -94,6 +102,8 @@ namespace GenTRAC.Tests.DAL.Loader
             proposal = proposalLoader.GetById(resultProposalId.Value);
             Assert.AreEqual(ProposalStatus.Completed, proposal.ProposalStatus);
 
+            comments = "Test completed";
+
             // change fields on Completed proposal
             manageProposalInfo = new ManageProposalInfoDto()
             {
@@ -103,7 +113,8 @@ namespace GenTRAC.Tests.DAL.Loader
                 TotalPrice = 555555,
                 ProposalSubmittalDate = new DateTime(2015, 1, 1),
                 ChecklistSubmittedDatePricer = new DateTime(2015, 2, 2),
-                ChecklistSubmittedDatePeer = new DateTime(2015, 3, 3)
+                ChecklistSubmittedDatePeer = new DateTime(2015, 3, 3),
+                Comments = comments
             };
 
             resultProposalId = sut.SaveProposalInfo(manageProposalInfo);
@@ -111,6 +122,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             proposal = proposalLoader.GetById(resultProposalId.Value);
             Assert.AreEqual(ProposalStatus.Completed, proposal.ProposalStatus);
+            Assert.AreEqual(comments, proposal.ManageProposalInfoComments);
 
             checklist = proposalChecklistLoader.GetByProposalIds(new Collection<int>() { proposal.Id }).FirstOrDefault();
             Assert.AreEqual(manageProposalInfo.TotalPrice, checklist.SubmittedValue);

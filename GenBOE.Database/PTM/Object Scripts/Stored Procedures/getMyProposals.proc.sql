@@ -24,8 +24,6 @@ AS
 **          Name: [getMyProposals]
 **          Desc: Mimics My Proposal Page
 **                
-**          
-**
 **          Auth: Don Canuso
 **          Date: 4/11/14
 *******************************************************************************
@@ -33,25 +31,11 @@ AS
 *******************************************************************************
 **          Date:       Author:                       Description:
 **          --------    --------                -------------------------------
-**          1/5/2017	twilson3				BOEJ-1693 Show proposals for LOB Viewer permissions for Users (does not include AD Groups)
-**			01/19/2017	n99040					added fields TechLead, IndependentReviewer, LeadEstimator, ProposalMgr, CoverSheetApprover, PricingVErification
-**			01/25/2017	tglick					BOEJ-1766 Lead Estimator is not populating correctly
-**			02/02/2017	tglick					added new fields [Revised Submittal Date], [AbsoluteValue]
-**			3/7/2017	twilson3				BOEJ-1942, BOEJ-1943 Fix permissions for who can see proposals on homepage
-**			11/29/17	pattoncr				Remove domain.
-**			1/24/2017	twilson3				BOEJ-2808 Add RDSB link into PTM
-**			2/06/2018	brunworg				BOEJ-3049 - Add ShowProposalsForMyOrganization capability.
-**			3/06/2018	brunworg				BOEJ-3124 Add Forecasted Tracking Number into PTM
-**			3/9/2018	twilson3				BOEJ-3210 Retrieving Proposal Class Text to see if this is Forecast Proposal
-**			3/13/2018	pattoncr				BOEJ-3122 - UI Home Page - Filter & Icons (Filter for Forecasted/NonForecasted)
-**			3/14/2018	pattoncr				BOEJ-3122 - UI Home Page - Filter & Icons (Filter for Forecasted/NonForecasted) - update to make Proposal Class filter more efficient.
-**			5/23/2018	ranzalon				BOEJ-3516 - Add CustomerTypeId to result
-**			6/06/2018	brunworg				BOEJ-3480 Renamed ProductLine and LineOfBusiness tables.
-**			8/31/18		twilson3				BOEJ-3761: New Submitted Proposal Status
-**			8/31/18 twilson3					BOEJ-3761: New Submitted Proposal Status
 **			3/10/2020	ranzalon				BOEJ-4490 - No Bid
 **			3/31/2020	ranzalon				BOEJ-4531 No Bid Date
-**			6/5/20		Dusan					BOEJ-4657: Adding Forecasted proposals into field for search; cleaned up some formatting on text
+**			6/5/2020	Dusan					BOEJ-4657: Adding Forecasted proposals into field for search; cleaned up some formatting on text
+**			6/18/2020	ranzalon				BOEJ-4636 - Revised Proposals in All
+**			7/15/2020	Dusan					BOEJ-4700: Pull Has / Is Revision Data
 ******************************************************************************/
 	SET NOCOUNT ON 
 
@@ -116,7 +100,11 @@ AS
 		P.RevisedSubmittalDate AS [Revised Submittal Date],
 		P.DocumentId AS DocumentId,
 		P.ForecastedTrackingID AS [Forecasted Tracking Number],
-		PCLU.ProposalClass AS ProposalClass
+		PCLU.ProposalClass AS ProposalClass,
+		CASE 
+			WHEN EXISTS (SELECT 1 FROM Proposal WHERE RevisionOfId = p.ProposalID) OR p.RevisionOfId IS NOT NULL THEN 1
+			ELSE 0
+		END AS HasOrIsRevision
 	FROM dbo.Proposal P 
 		INNER JOIN dbo.ProgramAreaLU PA ON P.ProgramAreaID = PA.ProgramAreaID
 		INNER JOIN dbo.ProposalStatusLU S ON P.ProposalStatusID = S.ProposalStatusID
@@ -124,72 +112,54 @@ AS
 		INNER JOIN dbo.ProposalUserRole PUR ON P.ProposalID = PUR.ProposalID
 		LEFT OUTER JOIN (SELECT MAX(submitDate) AS ChecklistCompleteDate, ProposalID FROM ProposalChecklistComplete GROUP BY ProposalID) CC ON P.ProposalID = CC.ProposalID
 		LEFT OUTER JOIN dbo.ProposalChecklist PC ON P.ProposalID = PC.ProposalID
-		LEFT OUTER JOIN
-			(SELECT PUR.ProposalID,U.DisplayName
-				FROM dbo.ProposalUserRole PUR INNER JOIN dbo.RoleLU R ON PUR.RoleID = R.RoleID INNER JOIN dbo.genTRACUser U ON PUR.UserID = U.UserID
-				WHERE PUR.RoleID = 11 /*11  Peer Reviewer*/
-			) PeerReviewer ON P.ProposalID = PeerReviewer.ProposalID
-		LEFT OUTER JOIN
-			(SELECT PUR.ProposalID,U.DisplayName
-				FROM dbo.ProposalUserRole PUR INNER JOIN dbo.RoleLU R ON PUR.RoleID = R.RoleID INNER JOIN dbo.genTRACUser U ON PUR.UserID = U.UserID
-				WHERE PUR.RoleID = 1 /*1	Capture Manager*/
-			) CaptureManager ON P.ProposalID = CaptureManager.ProposalID
-		LEFT OUTER JOIN 
-			(SELECT PUR.ProposalID, U.DisplayName AS [Cost Volume Lead], U.UserID AS [Cost Volume Lead UserID], U.NTID AS [Cost Volume Lead NTID]
-				FROM dbo.ProposalUserRole PUR INNER JOIN dbo.genTRACUser U ON PUR.UserID = U.UserID
-				WHERE RoleID = 2 /*Cost Volume Lead*/
-			) [CostVolumeLead] ON P.ProposalID = [CostVolumeLead].ProposalID
-		LEFT OUTER JOIN
-			(SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
-				FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
-				WHERE PUR.RoleID = 11
-			) IndependentReviewer ON P.ProposalID = IndependentReviewer.ProposalID
- 		LEFT OUTER JOIN
-			(SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
-				FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
-				WHERE PUR.RoleID = 16
-			) TechLead ON P.ProposalID = TechLead.ProposalID
-		LEFT OUTER JOIN
-			(SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
-				FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
-				WHERE PUR.RoleID = 17
-			) ProposalMgr ON P.ProposalID = ProposalMgr.ProposalID
-		LEFT OUTER JOIN
-			(SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
-				FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
-				WHERE PUR.RoleID = 18
-			) CoverSheetApprover ON P.ProposalID = CoverSheetApprover.ProposalID
-		LEFT OUTER JOIN 
-			(SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
-				FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
-				WHERE PUR.RoleID = 19
-			) PricingVerification ON P.ProposalID = PricingVerification.ProposalID		
-		LEFT JOIN 
-		(
-			SELECT
-				PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
-			FROM ProposalUserRole PUR
-				JOIN genTRACUser U ON PUR.UserID = U.UserID
-			WHERE
-				PUR.RoleID = 3
-		) LeadEstimator ON P.ProposalID = LeadEstimator.ProposalID
-
-	LEFT OUTER JOIN
-		(
-			SELECT 
-				ProposalID,
-				MAX(SubmitDate) AS MaxSubmitDate
-			FROM dbo.ProposalChecklistComplete
-			GROUP BY ProposalID
-		) [ProposalReviewCompleteDate] ON P.ProposalID = [ProposalReviewCompleteDate].ProposalID
+		LEFT OUTER JOIN (SELECT PUR.ProposalID,U.DisplayName
+							FROM dbo.ProposalUserRole PUR INNER JOIN dbo.RoleLU R ON PUR.RoleID = R.RoleID INNER JOIN dbo.genTRACUser U ON PUR.UserID = U.UserID
+							WHERE PUR.RoleID = 11 /*11  Peer Reviewer*/
+						) PeerReviewer ON P.ProposalID = PeerReviewer.ProposalID
+		LEFT OUTER JOIN (SELECT PUR.ProposalID,U.DisplayName
+							FROM dbo.ProposalUserRole PUR INNER JOIN dbo.RoleLU R ON PUR.RoleID = R.RoleID INNER JOIN dbo.genTRACUser U ON PUR.UserID = U.UserID
+							WHERE PUR.RoleID = 1 /*1	Capture Manager*/
+						) CaptureManager ON P.ProposalID = CaptureManager.ProposalID
+		LEFT OUTER JOIN (SELECT PUR.ProposalID, U.DisplayName AS [Cost Volume Lead], U.UserID AS [Cost Volume Lead UserID], U.NTID AS [Cost Volume Lead NTID]
+							FROM dbo.ProposalUserRole PUR INNER JOIN dbo.genTRACUser U ON PUR.UserID = U.UserID
+							WHERE RoleID = 2 /*Cost Volume Lead*/
+						) [CostVolumeLead] ON P.ProposalID = [CostVolumeLead].ProposalID
+		LEFT OUTER JOIN (SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
+							FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
+							WHERE PUR.RoleID = 11
+						) IndependentReviewer ON P.ProposalID = IndependentReviewer.ProposalID
+ 		LEFT OUTER JOIN (SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
+							FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
+							WHERE PUR.RoleID = 16
+						) TechLead ON P.ProposalID = TechLead.ProposalID
+		LEFT OUTER JOIN (SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
+							FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
+							WHERE PUR.RoleID = 17
+						) ProposalMgr ON P.ProposalID = ProposalMgr.ProposalID
+		LEFT OUTER JOIN (SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
+							FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
+							WHERE PUR.RoleID = 18
+						) CoverSheetApprover ON P.ProposalID = CoverSheetApprover.ProposalID
+		LEFT OUTER JOIN (SELECT PUR.ProposalID,	U.DisplayName, U.UserID, U.NTID
+							FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
+							WHERE PUR.RoleID = 19
+						) PricingVerification ON P.ProposalID = PricingVerification.ProposalID		
+		LEFT JOIN (SELECT PUR.ProposalID, U.DisplayName, U.UserID, U.NTID
+						FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
+						WHERE PUR.RoleID = 3
+				  ) LeadEstimator ON P.ProposalID = LeadEstimator.ProposalID
+		LEFT OUTER JOIN (SELECT ProposalID, MAX(SubmitDate) AS MaxSubmitDate
+							FROM dbo.ProposalChecklistComplete
+							GROUP BY ProposalID
+						) [ProposalReviewCompleteDate] ON P.ProposalID = [ProposalReviewCompleteDate].ProposalID
 	WHERE
 	(
 		(
-			(@ProposalStatusID IS NULL AND P.ProposalStatusID IN (1/*In Progress*/,2/*Completed*/,6/*Submitted*/,7/*No Bid*/)) 
+			(@ProposalStatusID IS NULL AND P.ProposalStatusID IN (1/*In Progress*/,2/*Completed*/,6/*Submitted*/,7/*No Bid*/,8/*Revised*/)) 
 			OR (@ProposalStatusID IS NOT NULL AND P.ProposalStatusID = @ProposalStatusID)
 		) AND (
 			(
-				(@ProposalStatusID = 1/*In Progress*/ OR @ProposalStatusID = 6/*Submitted*/) 
+				(@ProposalStatusID = 1/*In Progress*/ OR @ProposalStatusID = 6/*Submitted*/ OR @ProposalStatusID = 8/*Revised*/) 
 				AND (@AssignedStart IS NULL OR CAST (P.DateAssigned AS Date) > = @AssignedStart) 
 				AND (@AssignedEnd IS NULL OR CAST (P.DateAssigned AS Date) < = @AssignedEnd) 
 			) OR (
@@ -201,20 +171,19 @@ AS
 				AND (@AssignedStart IS NULL OR CAST (P.NoBidDate AS Date) > = @AssignedStart) 
 				AND (@AssignedEnd IS NULL OR CAST (P.NoBidDate AS Date) < = @AssignedEnd) 
 			) OR (
-				@ProposalStatusID IS NULL AND
-					(
-						(@AssignedStart IS NULL OR CAST (P.DateAssigned AS Date) > = @AssignedStart) 
-						AND (@AssignedEnd IS NULL OR CAST (P.DateAssigned AS Date) < = @AssignedEnd) 
-					) OR
-					(
-						(@AssignedStart IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) > = @AssignedStart) 
-						AND (@AssignedEnd IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) < = @AssignedEnd) 
-					) 
+				@ProposalStatusID IS NULL 
+				AND (
+					(@AssignedStart IS NULL OR CAST (P.DateAssigned AS Date) > = @AssignedStart) 
+					AND (@AssignedEnd IS NULL OR CAST (P.DateAssigned AS Date) < = @AssignedEnd) 
+				) OR (
+					(@AssignedStart IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) > = @AssignedStart) 
+					AND (@AssignedEnd IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) < = @AssignedEnd) 
+				) 
 			)
 		) AND (
-			(isnull(@ProposalClassFilterID,0) < 1) /* All */
-			OR (isnull(@ProposalClassFilterID,0) = 1 AND PCLU.ProposalClass = 'Forecasted') /* Forecasted */ 
-			OR (isnull(@ProposalClassFilterID,0) = 2 AND PCLU.ProposalClass != 'Forecasted') /* Non-Forecasted */ 
+			(ISNULL(@ProposalClassFilterID,0) < 1) /* All */
+			OR (ISNULL(@ProposalClassFilterID,0) = 1 AND PCLU.ProposalClass = 'Forecasted') /* Forecasted */ 
+			OR (ISNULL(@ProposalClassFilterID,0) = 2 AND PCLU.ProposalClass != 'Forecasted') /* Non-Forecasted */ 
 		)
 	) AND (/*Permissions*/
 		(PUR.UserID = @genTracUserID)

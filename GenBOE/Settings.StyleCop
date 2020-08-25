@@ -118,7 +118,7 @@
       </Rules>
       <AnalyzerSettings>
         <StringProperty Name="CompanyName">Lockheed Martin Corporation</StringProperty>
-        <StringProperty Name="Copyright">Copyright (c) 2011 - 2019 Lockheed Martin Corporation</StringProperty>
+        <StringProperty Name="Copyright">Copyright (c) 2011 - 2020 Lockheed Martin Corporation</StringProperty>
       </AnalyzerSettings>
     </Analyzer>
     <Analyzer AnalyzerId="StyleCop.CSharp.NamingRules">

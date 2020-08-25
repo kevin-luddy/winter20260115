@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -57,5 +57,30 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Comments
         /// </summary>
         public string Comments { get; set; }
+
+        /// <summary>
+        /// Reason Certification is Not Required
+        /// </summary>
+        public ReasonCertificationNotRequired? ReasonCertificationNotRequired { get; set; }
+
+        /// <summary>
+        /// Gets or sets the cut off date utilization list.
+        /// </summary>
+        public ICollection<SelectListItem> ReasonCertificationNotRequiredList { get; set; }
+
+        /// <summary>
+        /// Other text for ReasonCertificationNotRequiredComment
+        /// </summary>
+        public string OtherReasonCommentCertification { get; set; }
+
+        /// <summary>
+        /// Should we display the "Reset" button
+        /// </summary>
+        public bool DisplayCertificationReset { get; set; }
+
+        /// <summary>
+        /// Should we disable the Certification Required checkbox
+        /// </summary>
+        public bool DisableCertificationRequiredChange { get; set; }
     }
 }

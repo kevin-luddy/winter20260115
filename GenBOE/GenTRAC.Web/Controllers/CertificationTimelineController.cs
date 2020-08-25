@@ -1,14 +1,12 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
 namespace GenTRAC.Web.Controllers
 {
     using System;
-    using System.Transactions;
-    using System.Web.Configuration;
     using System.Web.Mvc;
     using ActionLogic.ModelView.Proposals;
     using GenTRAC.ActionLogic;
@@ -69,12 +67,7 @@ namespace GenTRAC.Web.Controllers
                 throw new ArgumentNullException(nameof(model));
             }
 
-            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
-            {
-                this.proposalLogic.SaveCertificationTimeline(proposalId, model);
-
-                scope.Complete();               
-            }
+            this.proposalLogic.SaveCertificationTimeline(proposalId, model);
 
             return this.Json(new { Status = true });
         }
@@ -94,12 +87,7 @@ namespace GenTRAC.Web.Controllers
                 throw new ArgumentNullException(nameof(model));
             }
 
-            using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
-            {
-                this.proposalLogic.CompleteCertificationTimeline(proposalId, model);
-
-                scope.Complete();
-            }
+            this.proposalLogic.CompleteCertificationTimeline(proposalId, model);
 
             return this.Json(new { Status = true });
         }

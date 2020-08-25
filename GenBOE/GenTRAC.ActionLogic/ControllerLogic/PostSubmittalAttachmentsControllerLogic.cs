@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -205,6 +205,29 @@ namespace GenTRAC.ActionLogic
                     scope.Complete();
                 }
             }
+        }
+
+        /// <summary>
+        /// Save only a reference to an attachment, for a revised proposal
+        /// </summary>
+        /// <param name="proposalId">Current Proposal Id</param>
+        /// <param name="attachmentType">Attachment Type</param>
+        /// <returns>Saved attachment</returns>
+        public AttachmentDto SaveAttachmentReferenceForRevisedProposal(int proposalId, AttachmentType attachmentType)
+        {
+            int attachmentId = -1;
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                attachmentId = this.attachmentLoader.SaveAttachmentReferenceForRevisedProposal(proposalId, attachmentType).Value;
+                scope.Complete();
+            }
+
+            AttachmentDto result = this.attachmentLoader.GetAttachmentMetadata(attachmentId);
+            result.ProposalId = proposalId;
+            result.IsRevisionReference = true;
+
+            return result;
         }
 
         /// <summary>

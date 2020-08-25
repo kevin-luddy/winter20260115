@@ -45,12 +45,14 @@ namespace GenBOE.Web.Controllers
     using GenBOE.Objects;
     using GenBOE.Web.Common;
     using GenBOE.Web.ModelView;
+    using GenTRAC.DataBridge.DTO;
     using IES.Common;
     using IES.Common.classes;
     using IES.Common.Compression;
     using IES.Common.Exceptions;
     using IES.Common.OfficeUtilities;
     using IES.Common.PickList;
+    using UserDTO = Dtos.UserDTO;
 
     public class WorkspaceController : GenBOEController
     {
@@ -717,11 +719,10 @@ namespace GenBOE.Web.Controllers
                 IReadOnlyCollection<GenTRAC.DataBridge.Common.Security.SecurityPermissionsResponse> roles = this.ptmSecurityMapper.GetRolesForLoggedInUser();
                 bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
 
-                ICollection<GenTRAC.DataBridge.DTO.ProposalDto> proposals = isAdmin 
-                    ? this.proposalLoader.GetAllSlim().Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid).ToList() 
-                    : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true).Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid).ToList();
-                
-                foreach (GenTRAC.DataBridge.DTO.ProposalDto proposal in proposals)
+                ICollection<ProposalDto> proposals = (isAdmin ? this.proposalLoader.GetAllSlim() : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true))
+                                                                    .Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid && p.ProposalStatus != ProposalStatus.Revised).ToList();
+
+                foreach (ProposalDto proposal in proposals)
                 {
                     trackingNumbers.Add(new SelectListItem
                     {
@@ -1378,10 +1379,9 @@ namespace GenBOE.Web.Controllers
                     // retrieve valid tracking numbers for the current user
                     IReadOnlyCollection<GenTRAC.DataBridge.Common.Security.SecurityPermissionsResponse> roles = this.ptmSecurityMapper.GetRolesForLoggedInUser();
                     bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
-                    
-                    ICollection<GenTRAC.DataBridge.DTO.ProposalDto> proposals = isAdmin 
-                        ? this.proposalLoader.GetAllSlim().Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid).ToList() 
-                        : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true).Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid).ToList();
+
+                    ICollection<ProposalDto> proposals = (isAdmin ? this.proposalLoader.GetAllSlim() : this.proposalLoader.GetProposalsByUser(this._securityInformation.ActiveUserNTID, true))
+                                                                                    .Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid && p.ProposalStatus != ProposalStatus.Revised).ToList();
 
                     if (!string.IsNullOrWhiteSpace(spaceModel.TrackingNumber) && !proposals.Any(p => p.TrackingNumber == spaceModel.TrackingNumber))
                     {
@@ -1393,7 +1393,7 @@ namespace GenBOE.Web.Controllers
                         });
                     }
 
-                    foreach (GenTRAC.DataBridge.DTO.ProposalDto proposal in proposals)
+                    foreach (ProposalDto proposal in proposals)
                     {
                         trackingNumbers.Add(new SelectListItem
                         {
@@ -4790,7 +4790,7 @@ namespace GenBOE.Web.Controllers
             if (proposalId > 0)
             {
                 // found the proposal
-                GenTRAC.DataBridge.DTO.ProposalDto proposal = this.proposalLoader.GetById(proposalId);
+                ProposalDto proposal = this.proposalLoader.GetById(proposalId);
                 rfpNumber = proposal.RFPNumber;
                 title = proposal.ProposalTitle;
                 if (proposal.ContractTypeIds.Any())

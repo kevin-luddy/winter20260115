@@ -72,7 +72,12 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @CutOffDateUtilization int = NULL,
 	  @CertificationTimelineCompleted datetime2 = NULL,
       @CertificationLastEmailed datetime2 = NULL,
-	  @NoBidDate datetime2 = NULL
+	  @NoBidDate datetime2 = NULL,
+	  @IsRevision bit,
+	  @RevisionOfId int,
+	  @ReasonCertificationNotRequired INT = 1,
+	  @OtherReasonComment VARCHAR(1000) = NULL,
+	  @SetupComments VARCHAR(MAX) = NULL
 )
 AS
 /******************************************************************************
@@ -102,6 +107,11 @@ AS
 **			8/29/2018	twilson3				BOEJ-3756 Post Proposal redo
 **			9/27/2018	ranzalon				BOEJ-3739 Classified Cost Volume
 **			3/31/2020	ranzalon				BOEJ-4531 No Bid Date
+**			6/17/2020	ranzalon				BOEJ-4535 IsRevision
+**			6/23/2020	Dusan					BOEJ-4626 Add Certification Not Required
+**			6/23/2020	ranzalon				BOEJ-4669 No new tracking number when IsRevision 
+**			7/2/2020	ranzalon				BOEJ-4687 Link Revisions to Revised Proposal
+**			7/31/2020	ranzalon				BOEJ-4648 Proposal Setup Comments
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -149,7 +159,7 @@ IF @IsForecast = 1
 ELSE
 	BEGIN
 	/* Generate new Tracking ID if this is a new Non-Forecast proposal or editing a Non-Forecast proposal that used to be Forecast */
-		IF @ProposalID < 0 OR @TrackingID = '' OR @TrackingID is NULL
+		IF (@ProposalID < 0 AND @IsRevision = 0) OR @TrackingID = '' OR @TrackingID is NULL
 			BEGIN
 				SELECT TOP 1 
 						@TrackingID = CAST(ProposalYear AS varchar(4)) + '-' + CASE LEN(ProposalNumber) 
@@ -240,6 +250,10 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,[CertificationTimelineCompleted]
 		,[CertificationLastEmailed]
 		,[NoBidDate]
+		,[RevisionOfId]
+		,[ReasonCertificationNotRequired]
+		,[OtherReasonComment]
+		,[SetupComments]
 		)
 	OUTPUT inserted.ProposalID INTO @Inserted
 	VALUES
@@ -301,6 +315,10 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@CertificationTimelineCompleted
 		,@CertificationLastEmailed
 		,@NoBidDate
+		,@RevisionOfId
+		,@ReasonCertificationNotRequired
+		,@OtherReasonComment
+		,@SetupComments
 		)
 
 		SELECT @ProposalID = ID FROM @Inserted
@@ -396,6 +414,10 @@ ELSE
 						,[CertificationTimelineCompleted] = @CertificationTimelineCompleted
 						,[CertificationLastEmailed] = @CertificationLastEmailed
 						,[NoBidDate] = @NoBidDate
+						,[RevisionOfId] = @RevisionOfId
+						,[ReasonCertificationNotRequired] = @ReasonCertificationNotRequired
+						,[OtherReasonComment] = @OtherReasonComment
+						,[SetupComments] = @SetupComments
 
 						WHERE 
 							ProposalID = @ProposalID;

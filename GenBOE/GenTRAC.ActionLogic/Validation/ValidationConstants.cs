@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -436,6 +436,21 @@ namespace GenTRAC.ActionLogic.Validation
             /// The cutoff date utilization required message.
             /// </summary>
             public const string CUTOFF_DATE_UTILIZATION_REQUIRED = "Cut-off Date Utilization is required.";
+
+            /// <summary>
+            /// validation message for other and comment
+            /// </summary>
+            public const string OTHER_REASON_COMMENT_REQUIRED = "When 'Reason Certification is not required' is set to 'Other', the comment is required.";
+
+            /// <summary>
+            /// validation message for wrong status and cert not required
+            /// </summary>
+            public const string CERTIFICATION_NOT_REQUIRED_WRONG_STATE = "Proposal's certification cannot be marked as not-required if the proposal is not in 'Submitted' state.";
+
+            /// <summary>
+            /// This should never happen, but just in case.
+            /// </summary>
+            public const string COMPLETE_FAILED_PROPOSAL = "You cannot complete a proposal with a 'Certification not required' reason. Please save it instead.";
         }
 
         /// <summary>
@@ -944,6 +959,68 @@ namespace GenTRAC.ActionLogic.Validation
             /// Proposal linked to a BOE workspace 
             /// </summary>
             public const string HAS_LINKED_BOE_WORKSPACE = "Delete operation not allowed. Proposal is linked to a BOE workspace.";
+        }
+
+        /// <summary>
+        /// Validation messages for Proposal Revisions
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public static class ProposalRevisionConstants
+        {
+            /// <summary>
+            /// Approval Workflow is not complete
+            /// </summary>
+            public const string WORKFLOW_NOT_COMPLETED = "Approval Workflow must be completed before adding a new Revision.";
+
+            /// <summary>
+            /// Certification Timeline cannot be completed
+            /// </summary>
+            public const string CERT_TIMELINE_COMPLETE = "Certification Timeline cannot be completed before adding a new Revision.";
+
+            /// <summary>
+            /// Proposal can't have "Revised" status/must be most recent revision, or original if not revised
+            /// </summary>
+            public const string NOT_LATEST_VERSION_NEW_REVISION = "A new Revision cannot be added from a Proposal that is alread Revised. It can only be added from the latest version of the Proposal.";
+
+            /// <summary>
+            /// A Revision can only be created by the Lead Estimator or Backup Estimator
+            /// </summary>
+            public const string NOT_PERMITTED_NEW_REVISION = "Only the Lead Estimator or Backup Estimator is permitted to create a new Revision of a Proposal.";
+
+            /// <summary>
+            /// Proposal must have a prior version in order to revert to it
+            /// </summary>
+            public const string NO_PRIOR_VERSION = "This Proposal does not have a prior version to be reverted to.";
+
+            /// <summary>
+            /// Proposal must have a status of In Progress in order to be reverted to the prior version
+            /// </summary>
+            public const string NOT_IN_PROGRESS = "A Proposal must be In Progress in order to be reverted to the prior version.";
+
+            /// <summary>
+            /// Proposal must be most recent revision to be reverted
+            /// </summary>
+            public const string NOT_LATEST_VERSION_PRIOR_VERSION = "A Proposal cannot be reverted to the prior version if it is not the latest Revision of the Proposal.";
+
+            /// <summary>
+            /// A Revision can only be reverted by the Lead Estimator or Backup Estimator
+            /// </summary>
+            public const string NOT_PERMITTED_PRIOR_VERSION = "Only the Lead Estimator or Backup Estimator is permitted to revert a Revision of a Proposal to the prior version.";
+
+            /// <summary>
+            /// Proposal can't be reverted while RDSB Document for it exists
+            /// </summary>
+            public const string CANNOT_HAVE_DOCUMENT = "A Proposal cannot be reverted to the prior version if there is an RDSB Document associated with it.";
+
+            /// <summary>
+            /// Proposal can't be reverted while genBOE Workspace for it exists
+            /// </summary>
+            public const string CANNOT_HAVE_WORKSPACE = "A Proposal cannot be reverted to the prior version if there is a genBOE Workspace associated with it.";
+
+            /// <summary>
+            /// Only one Revision can be made from a Proposal
+            /// </summary>
+            public const string REVISION_ALREADY_EXISTS = "A Revision has already been created for this proposal. Access the new Revision from the PTM home page.";
         }
     }
 }

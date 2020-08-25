@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -9,16 +9,21 @@ namespace GenTRAC.ActionLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
+    using System.Transactions;
+    using System.Web.Configuration;
     using System.Web.Mvc;
     using GenBOE.DataBridge.DTO;
     using GenTRAC.ActionLogic.Email;
     using GenTRAC.ActionLogic.Mediator;
+    using GenTRAC.ActionLogic.ModelView;
     using GenTRAC.ActionLogic.ModelView.Proposals;
     using GenTRAC.ActionLogic.Validation;
+    using GenTRAC.DataBridge;
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
     using GenTRAC.Objects;
@@ -86,7 +91,7 @@ namespace GenTRAC.ActionLogic
         /// The emailer
         /// </summary>
         private IPtmEmailer emailer;
-
+        
         /// <summary>
         /// Create static Regex object for FreeText.
         /// </summary>
@@ -103,7 +108,7 @@ namespace GenTRAC.ActionLogic
         public const string PROPOSAL_GENERAL_INFO_FORM = "proposalGeneralInfoForm";
 
         /// <summary>
-        /// The name of the proposal user info form, needed for validation
+        /// The name of the proposal approvals form, needed for validation
         /// </summary>
         public const string PROPOSAL_APPROVALS_FORM = "proposalApprovalsForm";
 
@@ -113,113 +118,15 @@ namespace GenTRAC.ActionLogic
         public const string PROPOSAL_USER_INFO_FORM = "proposalUserInfoForm";
 
         /// <summary>
-        /// Saves the certification timeline.
+        /// The name of the proposal comments form, needed for validation
         /// </summary>
-        /// <param name="proposalId">The proposal identifier.</param>
-        /// <param name="model">The model.</param>
-        public void SaveCertificationTimeline(int proposalId, ProposalCertificationTimelineModelView model)
-        {
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SaveCertificationTimeline", this.log))
-            {
-                ProposalDto proposal = this.ValidateCertification(proposalId, model, false);
-
-                this.ProposalMediator.SaveProposal(proposal);
-            }
-        }
+        public const string PROPOSAL_COMMENTS_FORM = "proposalCommentsForm";
 
         /// <summary>
-        /// Validates the certification timeline.
+        /// Suffix for Proposal Revision Tracking Numbers
         /// </summary>
-        /// <param name="proposalId">The proposal identifier.</param>
-        /// <param name="model">The model.</param>
-        /// <param name="isComplete">if set to <c>true</c> [is validating as complete].</param>
-        /// <returns>The validated, updated proposal</returns>
-        public ProposalDto ValidateCertification(int proposalId, ProposalCertificationTimelineModelView model, bool isComplete)
-        {
-            if (model == null)
-            {
-                throw new ArgumentNullException(nameof(model));
-            }
-            
-            ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
-            DateTime agreement;
-            if (DateTime.TryParse(model.AgreementDate, out agreement))
-            {
-                proposal.AgreementDate = agreement;
-            }
-            else
-            {
-                proposal.AgreementDate = null;
-            }
-
-            DateTime certification;
-            if (DateTime.TryParse(model.CertificationDate, out certification))
-            {
-                proposal.CertificationDate = certification;
-            }
-            else
-            {
-                proposal.CertificationDate = null;
-            }
-
-            proposal.CutOffDateUtilization = model.CutOffDateUtilization;
-            proposal.Comments = model.Comments;
-            
-            if (proposal.AgreementDate.HasValue && proposal.CertificationDate.HasValue)
-            {
-                TimeSpan span = proposal.CertificationDate.Value - proposal.AgreementDate.Value;
-
-                if (span.TotalDays > 5.0)
-                {
-                    // Comments are now required
-                    if (string.IsNullOrWhiteSpace(proposal.Comments))
-                    {
-                        throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.COMMENTS_REQUIRED);
-                    }
-                }
-            }
-
-            if (isComplete)
-            {
-                proposal.ProposalStatus = ProposalStatus.Completed;
-                proposal.CertificationTimelineCompleted = DateTime.Now;
-
-                // validate that all 3 required fields are set
-                if (!proposal.AgreementDate.HasValue)
-                {
-                    throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.AGREEMENT_DATE_REQUIRED);
-                }
-
-                if (!proposal.CertificationDate.HasValue)
-                {
-                    throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CERTIFICATION_DATE_REQUIRED);
-                }
-
-                if (!proposal.CutOffDateUtilization.HasValue)
-                {
-                    throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CUTOFF_DATE_UTILIZATION_REQUIRED);
-                }
-            }
-
-            proposal.Updateable = UpdateType.Upsert;
-            return proposal;
-        }
-
-        /// <summary>
-        /// Completes the certification timeline.
-        /// </summary>
-        /// <param name="proposalId">The proposal identifier.</param>
-        /// <param name="model">The model.</param>
-        public void CompleteCertificationTimeline(int proposalId, ProposalCertificationTimelineModelView model)
-        {
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.CompleteCertificationTimeline", this.log))
-            {
-                ProposalDto proposal = this.ValidateCertification(proposalId, model, true);
-
-                this.ProposalMediator.SaveProposal(proposal);
-            }
-        }
-
+        public const string REVISION_SUFFIX = "-PR";
+        
         /// <summary>
         /// Constructor
         /// </summary>
@@ -281,9 +188,11 @@ namespace GenTRAC.ActionLogic
         /// <param name="proposalGeneralInfo">Proposal general information model view</param>
         /// <param name="proposalApprovalsInfo">Proposal approvals model view</param>
         /// <param name="proposalUserInfo">Proposal user information model view</param>
+        /// <param name="proposalComments">Proposal comments model view</param>
+        /// <param name="revisionOfId">ID of the revised Proposal if this is a Revision</param>
         /// <returns>true if success else false</returns>
         public int? SaveProposal(ProposalInformationModelView proposalInfo, ProposalGeneralInformationModelView proposalGeneralInfo,
-            ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo)
+            ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ProposalCommentsModelView proposalComments, int? revisionOfId)
         {
             if (proposalInfo == null)
             {
@@ -298,6 +207,11 @@ namespace GenTRAC.ActionLogic
             if (proposalUserInfo == null)
             {
                 throw new ArgumentNullException(nameof(proposalUserInfo));
+            }
+
+            if (proposalComments == null)
+            {
+                throw new ArgumentNullException(nameof(proposalComments));
             }
 
             using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SaveNewProposal", this.log))
@@ -336,8 +250,8 @@ namespace GenTRAC.ActionLogic
                     Customer = proposalInfo.Customer,
                     CustomerType = proposalInfo.CustomerType,
                     DeliveryDate = proposalInfo.AnticipatedDeliveryDate.ToDateTime("MM/dd/yyyy"),
-                    RevisedSubmittalDate = string.IsNullOrEmpty(proposalInfo.RevisedSubmittalDate) ? null : (DateTime?) proposalInfo.RevisedSubmittalDate.ToDateTime("MM/dd/yyyy"),
-                    EstimatedProposalValue = string.IsNullOrEmpty(proposalInfo.EstimatedProposalValue) ? null : (long?) long.Parse(proposalInfo.EstimatedProposalValue.Replace(",", string.Empty)),
+                    RevisedSubmittalDate = string.IsNullOrEmpty(proposalInfo.RevisedSubmittalDate) ? null : (DateTime?)proposalInfo.RevisedSubmittalDate.ToDateTime("MM/dd/yyyy"),
+                    EstimatedProposalValue = string.IsNullOrEmpty(proposalInfo.EstimatedProposalValue) ? null : (long?)long.Parse(proposalInfo.EstimatedProposalValue.Replace(",", string.Empty)),
                     ISGSRole = proposalInfo.ISGSRole,
                     IsScheduleProposal = proposalInfo.IsScheduleProposal,
                     ProgramAreaId = int.Parse(proposalGeneralInfo.ProgramArea),
@@ -365,7 +279,9 @@ namespace GenTRAC.ActionLogic
                     IsCCPDRequired = proposalGeneralInfo.IsCCPDRequired,
                     IsCostVolumeClassified = proposalGeneralInfo.IsCostVolumeClassified,
                     IsForecastProposal = isForecasted,
-                    DocumentId = proposalInfo.DocumentId
+                    DocumentId = proposalInfo.DocumentId,
+                    RevisionOfId = revisionOfId,
+                    ProposalSetupComments = proposalComments.Comments
                 };
 
                 // copy the old values for approvals/certification (comments, workflow status, signatures, additionalapprovalemailtext)
@@ -395,6 +311,52 @@ namespace GenTRAC.ActionLogic
                 }
 
                 return proposalId;
+            }
+        }
+
+        /// <summary>
+        /// Save only the comments for the proposal
+        /// </summary>
+        /// <param name="proposalId">ID of Proposal</param>
+        /// <param name="proposalComments">Comments</param>
+        /// <returns>ID of saved proposal</returns>
+        public int? SaveProposalComments(int proposalId, ProposalCommentsModelView proposalComments)
+        {
+            if (proposalComments == null)
+            {
+                throw new ArgumentNullException(nameof(proposalComments));
+            }
+
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SaveProposalComments", this.log))
+            {
+                // Get original proposal data
+                ProposalDto proposal = this.GetByProposalId(proposalId);
+
+                // update comments
+                proposal.ProposalSetupComments = proposalComments.Comments;
+                proposal.Updateable = UpdateType.Upsert;
+
+                // save
+                return this.ProposalMediator.SaveProposal(proposal);
+            }
+        }
+
+        /// <summary>
+        /// Hard deletes a Proposal
+        /// Currently should only be used when revering a revision to a prior version
+        /// </summary>
+        /// <param name="proposal">Proposal to delete</param>
+        public void DeleteProposal(ProposalDto proposal)
+        {
+            if (proposal == null)
+            {
+                throw new ArgumentNullException(nameof(proposal));
+            }
+
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.DeleteProposal", this.log))
+            {
+                proposal.Updateable = UpdateType.Deleted;
+                this.ProposalLoader.Save(proposal);
             }
         }
 
@@ -639,7 +601,7 @@ namespace GenTRAC.ActionLogic
             this.AddAndDeletePermissions(fullProposalDto, backupPricerPermission, PtmRole.BackupPricer, permissionsToAdd, permissionsToDelete);
 
             ProposalPermissionDto genBoeWorkspaceCreatorPermission = null;
-            if(!string.IsNullOrEmpty(proposalUserInfo.GenBoeWorkspaceCreatorNtid))
+            if (!string.IsNullOrEmpty(proposalUserInfo.GenBoeWorkspaceCreatorNtid))
             {
                 // GenBOE Workspace Creator
                 UserDTO genBoeWorkspaceCreator = UserMapper.GetByNtid(proposalUserInfo.GenBoeWorkspaceCreatorNtid);
@@ -794,7 +756,7 @@ namespace GenTRAC.ActionLogic
                     UpdateDate = proposalUserInfo.UpdateDate
                 };
                 this.AddAndDeletePermissions(fullProposalDto, pricingVerificationPermission, PtmRole.PricingVerification, permissionsToAdd, permissionsToDelete);
-            }           
+            }
 
             // independent Reviewer
             if (string.IsNullOrWhiteSpace(proposalApprovalsInfo.IndependentReviewerNtid))
@@ -906,9 +868,17 @@ namespace GenTRAC.ActionLogic
 
             // Determine visibility status of CertificationTimeline tab
             model.CertificationTimelineVisibility = SecurityAuthorization.None;
-            if (fullProposalDto != null && (fullProposalDto.ProposalStatus == ProposalStatus.Submitted || (fullProposalDto.IsCCPDRequired.HasValue && fullProposalDto.IsCCPDRequired.Value && fullProposalDto.ProposalStatus == ProposalStatus.Completed)))
+            if (fullProposalDto != null && fullProposalDto.IsCCPDRequired.HasValue && fullProposalDto.IsCCPDRequired.Value && 
+                (fullProposalDto.ProposalStatus == ProposalStatus.Submitted || fullProposalDto.ProposalStatus == ProposalStatus.Revised 
+                || fullProposalDto.ProposalStatus == ProposalStatus.Completed))
             {
                 model.CertificationTimelineVisibility = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId).Authorization;
+            }
+
+            model.RevisionHistoryVisibility = SecurityAuthorization.None;
+            if (fullProposalDto != null && (fullProposalDto.IsRevision || fullProposalDto.ProposalStatus == ProposalStatus.Revised))
+            {
+                model.RevisionHistoryVisibility = this.CheckPermissions(PtmSecurityPage.RevisionHistory, proposalId).Authorization;
             }
 
             if (fullProposalDto != null)
@@ -935,6 +905,67 @@ namespace GenTRAC.ActionLogic
                     // assuming all proposals that are completed without certification date were completed before certification was added to PTM
                     model.CompletedBeforeCertification = true;
                 }
+
+                // Display + New Revision button only if the user if the lead or backup estimator and approval workflow is completed
+                bool userIsLeadOrBackupPricer = this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
+
+                model.DisplayNewRevisionButton = fullProposalDto.WorkflowStatus == WorkflowStatus.ProposalLocked && userIsLeadOrBackupPricer;
+
+                // Display Revert to Prior Version button only if user is lead or backup estimator and in latest revision
+                if (fullProposalDto.ProposalStatus == ProposalStatus.InProgress && fullProposalDto.IsRevision && userIsLeadOrBackupPricer)
+                {
+                    model.DisplayRevertRevisionButton = true;
+                }
+
+                model.ReasonCertificationNotRequired = fullProposalDto.ReasonCertificationNotRequired;
+                
+                model.RevisedProposalId = fullProposalDto.RevisionOfId;
+                model.IsNewRevision = false;
+
+                model.HasRdsbDocument = fullProposalDto.DocumentId.HasValue;
+
+                // Only get this if revert button is available, since it won't be needed otherwise and we can save a db call
+                if (model.DisplayRevertRevisionButton)
+                {
+                    ICollection<GenBOE.Dtos.WorkspaceDTO> workspaces = this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo();
+                    model.GenBoeWorkspaces = workspaces.Where(x => x.TrackingNumber == fullProposalDto.TrackingNumber).Select(x => x.Shortname).OrderBy(x => x).ToCollection();
+                }
+            }
+
+            return model;
+        }
+
+        /// <summary>
+        /// Get view for proposal revision index
+        /// </summary>
+        /// <param name="proposalId">Proposal Id for proposal being revised</param>
+        /// <returns>Proposal Revision Index Model View</returns>
+        public ProposalIndexModelView GetDataForProposalRevisionIndex(int proposalId)
+        {
+            ProposalIndexModelView model = new ProposalIndexModelView();
+
+            FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
+            model.IsReadOnly = "false";
+
+            // get the US user status
+            model.IsUsUser = this.securityInformation.IsDomesticUser(Thread.CurrentPrincipal);
+
+            model.PsaVisibility = SecurityAuthorization.None;
+            model.CertificationTimelineVisibility = SecurityAuthorization.None;
+            model.RevisionHistoryVisibility = SecurityAuthorization.None;
+
+            if (fullProposalDto != null)
+            {
+                string newRevisionSuffix;
+                string newRevisionTrackingNumber = this.GetRevisionTrackingNumber(fullProposalDto.TrackingNumber, out newRevisionSuffix);
+
+                model.ProposalID = -1;
+                model.ProposalTrackingNumber = newRevisionTrackingNumber;
+                model.RevisedProposalTitle = fullProposalDto.ProposalTitle;
+                model.ProposalTitle = this.GetNewRevisionProposalTitle(fullProposalDto.ProposalTitle, newRevisionSuffix);
+                model.ProposalStatus = ProposalStatus.InProgress;
+                model.RevisedProposalId = proposalId;
+                model.IsNewRevision = true;
             }
 
             return model;
@@ -1080,10 +1111,143 @@ namespace GenTRAC.ActionLogic
 
             model.CustomerTypesList = EnumUtilities.GetListItemsForEnumSorted(typeof(CustomerType), true, model.CustomerType.ToString());
             model.ISGSRolesList = EnumUtilities.GetListItemsForEnumSorted(typeof(ISGSRole), true, model.ISGSRole.ToString());
-            
+            model.IsNewRevision = false;
+
             return model;
         }
 
+        /// <summary>
+        /// Get view for proposal information
+        /// </summary>
+        /// <param name="proposalId">Proposal Id.  Can be null.</param>
+        /// <returns>Proposal Information Model View</returns>
+        public ProposalInformationModelView GetDataForProposalRevisionInformation(int? proposalId)
+        {
+            ProposalInformationModelView model = new ProposalInformationModelView();
+
+            FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
+            model.IsReadOnly = "false";
+            bool readOnly = false;
+
+            model.ContractTypeHtmlOptions = string.Empty;
+            model.InactiveContractTypes = string.Empty;
+            model.InactiveCostElements = string.Empty;
+
+            if (fullProposalDto != null)
+            {
+                bool includeIDIQ = fullProposalDto.IsScheduleProposal ?? true;
+                // need to populate contract type list based on selected contract type group
+                List<PickListDto> selectedInactiveContractTypes = new List<PickListDto>();
+                StringBuilder selectList = new StringBuilder();
+
+                if (fullProposalDto.ContractTypeGroup >= 0)
+                {
+                    foreach (PickListDto contractType in this.pickListMapper.GetChildren(PickListEnum.ContractType, fullProposalDto.ContractTypeGroup))
+                    {
+                        if (contractType.Text != Constants.IDIQ_CONTRACT_TYPE || includeIDIQ)
+                        {
+                            // include if active, or item was selected
+                            if (contractType.IsActive || fullProposalDto.ContractTypeIds.Contains(contractType.Id))
+                            {
+                                bool selected = false;
+                                if (fullProposalDto.ContractTypeIds.Contains(contractType.Id))
+                                {
+                                    selected = true;
+                                }
+
+                                selectList.Append(string.Format("<option value=\"{0}\"{2}>{1}</option>",
+                                    contractType.Id, contractType.Text, selected ? " selected=\"selected\"" : string.Empty));
+                            }
+
+                            // Show message for selected inactive contract types
+                            if (!contractType.IsActive && fullProposalDto != null && fullProposalDto.ContractTypeIds.Contains(contractType.Id))
+                            {
+                                selectedInactiveContractTypes.Add(contractType);
+                            }
+                        }
+                    }
+                }
+
+                model.ContractTypeHtmlOptions = selectList.ToString();
+
+                if (selectedInactiveContractTypes.Any())
+                {
+                    model.InactiveContractTypes = "The following options are now invalid: <br />" +
+                        string.Join("<br />", selectedInactiveContractTypes.Select(x => x.Text));
+                }
+            }
+
+            List<CostElementType> selectedInactiveCostElements = new List<CostElementType>();
+            List<CostElementType> enumCostElementList = Enum.GetValues(typeof(CostElementType)).Cast<CostElementType>().ToList();
+            model.CostElementsList = new Collection<IES.Common.ListBoxItem>();
+            foreach (CostElementType costElementType in enumCostElementList.OrderBy(x => x.ToString()))
+            {
+                // include if active, or proposal is read only and item was selected
+                // use IsEnumActive instead of extension method so it can be mocked in unit tests
+                if (this.validationMethods.IsEnumActive(costElementType) || (readOnly && fullProposalDto.CostElementTypeIds.Contains((int)costElementType)))
+                {
+                    model.CostElementsList.Add(new IES.Common.ListBoxItem() { ID = (int)costElementType, Name = costElementType.GetDescription() });
+                }
+                else if (!this.validationMethods.IsEnumActive(costElementType) && !readOnly && fullProposalDto != null && fullProposalDto.CostElementTypeIds.Contains((int)costElementType))
+                {
+                    selectedInactiveCostElements.Add(costElementType);
+                }
+            }
+
+            if (selectedInactiveCostElements.Any())
+            {
+                model.InactiveCostElements = "The following options are now invalid<br />(and will be removed when you save the form): <br />" +
+                    string.Join("<br />", selectedInactiveCostElements.Select(x => x.GetDescription()));
+            }
+
+            if (fullProposalDto != null)
+            {
+                model.ProposalTypesList = this.pickListMapper.GetSelectListPickList(PickListEnum.ProposalType, fullProposalDto.ProposalType);
+                model.RequestTypesList = this.pickListMapper.GetSelectListPickList(PickListEnum.TypeOfRequest, fullProposalDto.Request);
+                model.ProposalClassesList = this.pickListMapper.GetSelectListPickList(PickListEnum.ProposalClass, fullProposalDto.ProposalClass);
+
+                string newRevisionSuffix;
+                string newRevisionTrackingNumber = this.GetRevisionTrackingNumber(fullProposalDto.TrackingNumber, out newRevisionSuffix);
+
+                model.ProposalID = -1;
+                model.ProposalTrackingNumber = newRevisionTrackingNumber;
+                model.ProposalTitle = this.GetNewRevisionProposalTitle(fullProposalDto.ProposalTitle, newRevisionSuffix);
+                model.ProposalStatus = ProposalStatus.InProgress;
+
+                model.ContractTypeGroup = fullProposalDto.ContractTypeGroup;
+                model.ContractType = fullProposalDto.ContractTypeIds;
+                model.CostElements = fullProposalDto.CostElementTypeIds;
+                model.Customer = fullProposalDto.Customer;
+                model.CustomerType = fullProposalDto.CustomerType;
+                model.ISGSRole = fullProposalDto.ISGSRole;
+                model.IsScheduleProposal = fullProposalDto.IsScheduleProposal;
+                model.RequestType = fullProposalDto.Request;
+                model.ProposalClass = fullProposalDto.ProposalClass;
+                model.ProposalTypeText = "Not Set";
+                model.ProposalClassText = model.ProposalClassesList.Any(x => x.Value == model.ProposalClass.ToString()) ?
+                    model.ProposalClassesList.First(x => x.Value == model.ProposalClass.ToString()).Text : "Not Set";
+                model.RequestTypeText = model.RequestTypesList.Any(x => x.Value == model.RequestType.ToString()) ?
+                    model.RequestTypesList.First(x => x.Value == model.RequestType.ToString()).Text : "Not Set";
+
+                model.DocumentId = fullProposalDto.DocumentId;
+
+                model.ContractTypeGroupsList = this.pickListMapper.GetSelectListPickList(PickListEnum.ContractTypeGroup, fullProposalDto.ContractTypeGroup);
+            }
+            else
+            {
+                model.ProposalTypesList = this.pickListMapper.GetSelectListPickList(PickListEnum.ProposalType);
+                model.RequestTypesList = this.pickListMapper.GetSelectListPickList(PickListEnum.TypeOfRequest);
+                model.ProposalClassesList = this.pickListMapper.GetSelectListPickList(PickListEnum.ProposalClass);
+                model.ContractTypeGroupsList = this.pickListMapper.GetSelectListPickList(PickListEnum.ContractTypeGroup);
+            }
+
+            model.CustomerTypesList = EnumUtilities.GetListItemsForEnumSorted(typeof(CustomerType), true, model.CustomerType.ToString());
+            model.ISGSRolesList = EnumUtilities.GetListItemsForEnumSorted(typeof(ISGSRole), true, model.ISGSRole.ToString());
+            model.IsNewRevision = true;
+
+            return model;
+        }
+        
         /// <summary>
         /// Get view for proposal post proposal information
         /// </summary>
@@ -1094,15 +1258,12 @@ namespace GenTRAC.ActionLogic
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView();
 
             FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
-            model.IsReadOnly = this.IsCertificationReadOnly(proposalId ?? -1);
 
             if (fullProposalDto != null)
             {
                 model.ProposalID = fullProposalDto.Id;
-                model.AgreementDate = fullProposalDto.AgreementDate.HasValue ?
-                    fullProposalDto.AgreementDate.Value.ToString("MM/dd/yyyy") : string.Empty;
-                model.CertificationDate = fullProposalDto.CertificationDate.HasValue ?
-                    fullProposalDto.CertificationDate.Value.ToString("MM/dd/yyyy") : string.Empty;
+                model.AgreementDate = fullProposalDto.AgreementDate.HasValue ? fullProposalDto.AgreementDate.Value.ToString("MM/dd/yyyy") : string.Empty;
+                model.CertificationDate = fullProposalDto.CertificationDate.HasValue ? fullProposalDto.CertificationDate.Value.ToString("MM/dd/yyyy") : string.Empty;
 
                 if (fullProposalDto.CertificationDate.HasValue && fullProposalDto.AgreementDate.HasValue)
                 {
@@ -1114,14 +1275,23 @@ namespace GenTRAC.ActionLogic
                     model.DaysToCertification = string.Empty;
                 }
 
+                model.ReasonCertificationNotRequired = fullProposalDto.ReasonCertificationNotRequired;
+                model.OtherReasonCommentCertification = fullProposalDto.OtherReasonComment;
+                model.IsReadOnly = this.IsCertificationReadOnly(proposalId ?? -1, fullProposalDto.ProposalStatus, model.ReasonCertificationNotRequired.HasValue);
+
                 model.CutOffDateUtilization = fullProposalDto.CutOffDateUtilization;
                 List<SelectListItem> cutoffList = EnumUtilities.GetListItemsForEnumSorted(typeof(CutOffDateUtilization), false, model.CutOffDateUtilization.ToString()).ToList();
+                List<SelectListItem> reasonCertificationNotRequiredList = EnumUtilities.GetListItemsForEnumSorted(typeof(ReasonCertificationNotRequired), false, model.ReasonCertificationNotRequired.ToString()).ToList();
 
                 // Add Blank to top of list
                 cutoffList.Insert(0, new SelectListItem { Text = string.Empty });
                 model.CutOffDateUtilizationList = cutoffList;
 
+                reasonCertificationNotRequiredList.Insert(0, new SelectListItem { Text = string.Empty });
+                model.ReasonCertificationNotRequiredList = reasonCertificationNotRequiredList;
                 model.Comments = fullProposalDto.Comments;
+                model.DisplayCertificationReset = string.Equals(model.IsReadOnly.ToLower(), "true") && model.ReasonCertificationNotRequired.HasValue && this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
+                model.DisableCertificationRequiredChange = fullProposalDto.ProposalStatus == ProposalStatus.Completed && !model.ReasonCertificationNotRequired.HasValue;
             }
 
             return model;
@@ -1131,9 +1301,10 @@ namespace GenTRAC.ActionLogic
         /// Get view for proposal general information
         /// </summary>
         /// <param name="proposalId">Proposal Id.  Can be null.</param>
+        /// <param name="isNewRevision">Whether creating a new revision</param>
         /// <returns>Proposal General Information Model View</returns>
         /// SUPPRESSION NOTE: Different namespaces are used to put together the modelview
-        public ProposalGeneralInformationModelView GetDataForProposalGeneralInformation(int? proposalId)
+        public ProposalGeneralInformationModelView GetDataForProposalGeneralInformation(int? proposalId, bool isNewRevision)
         {
             FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
             ProposalGeneralInformationModelView model = new ProposalGeneralInformationModelView();
@@ -1145,12 +1316,12 @@ namespace GenTRAC.ActionLogic
             }
 
             model.LinesOfBusinessList = this.pickListMapper.GetSelectListPickList(PickListEnum.LineOfBusiness, lobId);
-            
+
             model.PricingToolsList = EnumUtilities.GetListItemsForEnumSorted(typeof(PricingTool), false, model.PricingTool.ToString());
             model.BOEToolsList = EnumUtilities.GetListItemsForEnumSorted(typeof(BOETool), false, model.BOETool.ToString());
 
             model.IsReadOnly = this.IsProposalReadOnly(proposalId, fullProposalDto);
-            model.IsPTMChecklistUIEnabled = (!proposalId.HasValue || fullProposalDto.ProposalChecklistPPRData == null) ? true : this.IsPTMChecklistUIEnabled(fullProposalDto.ProposalChecklistPPRData.Version);
+            model.IsPTMChecklistUIEnabled = (!proposalId.HasValue || proposalId < 0 || fullProposalDto.ProposalChecklistPPRData == null) ? true : this.IsPTMChecklistUIEnabled(fullProposalDto.ProposalChecklistPPRData.Version);
 
             if (fullProposalDto != null)
             {
@@ -1166,9 +1337,9 @@ namespace GenTRAC.ActionLogic
                 model.ProgramName = fullProposalDto.ProgramName;
                 model.UpdateDate = fullProposalDto.UpdateDate;
                 model.ProgramProposalStatus = fullProposalDto.ProgramProposalStatus;
-                model.IsCCPDRequired = fullProposalDto.IsCCPDRequired;
+                model.IsCCPDRequired = isNewRevision ? null : fullProposalDto.IsCCPDRequired;
                 model.IsCostVolumeClassified = fullProposalDto.IsCostVolumeClassified;
-                model.IsCCPDReadOnly = fullProposalDto.LeadEstimatorSignedDate.HasValue;
+                model.IsCCPDReadOnly = isNewRevision ? false : fullProposalDto.LeadEstimatorSignedDate.HasValue;
 
                 // Automatically adds selected option, even if the option is not active.
                 model.ProposalLocationsList = EnumUtilities.GetListItemsForEnumSorted(typeof(ProposalLocation), false, model.ProposalLocation.ToString());
@@ -1177,7 +1348,7 @@ namespace GenTRAC.ActionLogic
                 model.ProgramAreaSelectedText = this.pickListMapper.GetById(PickListEnum.ProgramArea, fullProposalDto.ProgramAreaId).Text;
 
                 model.LineOfBusiness = fullProposalDto.LineOfBusinessID.ToString();
-                
+
                 model.ProgramAreaHtmlOptions = this.GetProgramAreasForLineOfBusiness(fullProposalDto.LineOfBusinessID, fullProposalDto.ProgramAreaId);
             }
             else
@@ -1223,7 +1394,7 @@ namespace GenTRAC.ActionLogic
                     groupName = IES.Common.ConfigurationUtilities.GetAppSetting("CoverSheetApprovers");
                     break;
             }
-            
+
             return this.userLoader.GetUserDTOsByADGroup(groupName.GetObjectName(), groupName.GetDomain());
         }
 
@@ -1231,13 +1402,14 @@ namespace GenTRAC.ActionLogic
         /// Get view data for proposal approval users
         /// </summary>
         /// <param name="proposalId">Proposal Id.  Can be null.</param>
+        /// <param name="isNewRevision">Whether creating a new revision</param>
         /// <returns>Proposal Approvals Model View</returns>
-        public ProposalApprovalsModelView GetDataForProposalApprovals(int? proposalId)
+        public ProposalApprovalsModelView GetDataForProposalApprovals(int? proposalId, bool isNewRevision)
         {
             ProposalApprovalsModelView model = new ProposalApprovalsModelView();
 
             FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
-            model.IsReadOnly = this.IsProposalReadOnly(proposalId, fullProposalDto);
+            model.IsReadOnly = isNewRevision ? "false" : this.IsProposalReadOnly(proposalId, fullProposalDto);
 
             // get the selection lists based on adusergroups found in web.config for specified users
             model.PricingVerificationList = this.GetUsersForSelectList(PtmRole.PricingVerification);
@@ -1263,7 +1435,7 @@ namespace GenTRAC.ActionLogic
                         case PtmRole.Pricer:
                             model.LeadEstimatorNtid = user.Ntid;
                             model.LeadEstimatorDisplayName = user.DisplayName;
-                            model.IsLeadEstimatorReadOnly = fullProposalDto.LeadEstimatorSignedDate.HasValue;
+                            model.IsLeadEstimatorReadOnly = isNewRevision ? false : fullProposalDto.LeadEstimatorSignedDate.HasValue;
 
                             if (!model.LeadEstimatorList.Any(x => x.Ntid == user.Ntid))
                             {
@@ -1274,7 +1446,7 @@ namespace GenTRAC.ActionLogic
                         case PtmRole.PricingVerification:
                             model.PricingVerificationNtid = user.Ntid;
                             model.PricingVerificationDisplayName = user.DisplayName;
-                            model.IsPricingVerificationReadOnly = fullProposalDto.PricingVerifierSignedDate.HasValue;
+                            model.IsPricingVerificationReadOnly = isNewRevision ? false : fullProposalDto.PricingVerifierSignedDate.HasValue;
 
                             if (!model.PricingVerificationList.Any(x => x.Ntid == user.Ntid))
                             {
@@ -1285,7 +1457,7 @@ namespace GenTRAC.ActionLogic
                         case PtmRole.LOBEstLead:
                             model.LOBEstimatingLeadMgrNtid = user.Ntid;
                             model.LOBEstimatingLeadMgrDisplayName = user.DisplayName;
-                            model.IsLOBEstimatingLeadMgrReadOnly = fullProposalDto.LOBEstimatingLeadSignedDate.HasValue;
+                            model.IsLOBEstimatingLeadMgrReadOnly = isNewRevision ? false : fullProposalDto.LOBEstimatingLeadSignedDate.HasValue;
 
                             if (model.IsCCPDRequired != true && !model.LOBEstimatingLeadList.Any(x => x.Ntid == user.Ntid))
                             {
@@ -1300,7 +1472,7 @@ namespace GenTRAC.ActionLogic
                         case PtmRole.CoverSheetApprover:
                             model.CoverSheetApproverNtid = user.Ntid;
                             model.CoverSheetApproverDisplayName = user.DisplayName;
-                            model.IsCoverSheetApproverReadOnly = fullProposalDto.CoverSheetApproverSignedDate.HasValue;
+                            model.IsCoverSheetApproverReadOnly = isNewRevision ? false : fullProposalDto.CoverSheetApproverSignedDate.HasValue;
 
                             if (!model.CoverSheetApproverList.Any(x => x.Ntid == user.Ntid))
                             {
@@ -1311,7 +1483,7 @@ namespace GenTRAC.ActionLogic
                         case PtmRole.PeerReviewer:
                             model.IndependentReviewerNtid = user.Ntid;
                             model.IndependentReviewerDisplayName = user.DisplayName;
-                            model.IsIndependentReviewerReadOnly = fullProposalDto.IndependentReviewerSignedDate.HasValue;
+                            model.IsIndependentReviewerReadOnly = isNewRevision ? false : fullProposalDto.IndependentReviewerSignedDate.HasValue;
 
                             if (!model.IndependentReviewerList.Any(x => x.Ntid == user.Ntid))
                             {
@@ -1325,7 +1497,7 @@ namespace GenTRAC.ActionLogic
                 }
 
                 // If we have started the approval process and the pricing verifier or independent/peer reviewer are not set (not required sometimes), then set them to read-only
-                if (fullProposalDto.LeadEstimatorSignedDate.HasValue)
+                if (fullProposalDto.LeadEstimatorSignedDate.HasValue && !isNewRevision)
                 {
                     if (!permissions.Any(p => p.Role == PtmRole.PricingVerification))
                     {
@@ -1355,7 +1527,7 @@ namespace GenTRAC.ActionLogic
 
             FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
             model.IsReadOnly = this.IsProposalReadOnly(proposalId, fullProposalDto);
-            
+
             if (fullProposalDto != null)
             {
                 model.UpdateDate = fullProposalDto.UpdateDate;
@@ -1434,20 +1606,22 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
-        /// Get the full proposal DTO
+        /// Get the data for the Proposal Comments partial view
         /// </summary>
-        /// <param name="proposalId">Proposal Id</param>
-        /// <returns>full Proposal DTO</returns>
-        private FullProposal GetFullProposalDto(int? proposalId)
+        /// <param name="proposalId">proposal id</param>
+        /// <returns>Modelview for Proposal Comments</returns>
+        public ProposalCommentsModelView GetDataForProposalComments(int? proposalId)
         {
-            FullProposal fullProposal = null;
-            if (proposalId.HasValue && proposalId >= 0)
+            ProposalCommentsModelView model = new ProposalCommentsModelView();
+
+            if (proposalId.HasValue)
             {
-                ProposalDto proposal = this.ProposalLoader.GetById(proposalId.Value);
-                fullProposal = this.ObjectFactory.CreateFullProposal(proposal);
+                ProposalDto fullProposalDto = this.GetByProposalId(proposalId.Value);
+
+                model.Comments = fullProposalDto?.ProposalSetupComments;
             }
 
-            return fullProposal;
+            return model;
         }
 
         /// <summary>
@@ -1553,7 +1727,7 @@ namespace GenTRAC.ActionLogic
             {
                 inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROPOSALMGR_REQUIRED));
             }
-            
+
             // if this is a saved proposal, this will only validate the changed users, else validate all of the users
 
             ProposalUserInformationModelView savedProposalUsers = this.GetDataForProposalUserInformation(proposalId);
@@ -1604,7 +1778,7 @@ namespace GenTRAC.ActionLogic
                     isValid = this.validationMethods.IsValidLMandUsEmployeeProperties(originalUser, requiredUsPerson, requiredLmEmployee) != false;
                 }
 
-                if(!isValid)
+                if (!isValid)
                 {
                     inValidationErrors.Add(new ValidationMessage(errorMessage));
                 }
@@ -1674,7 +1848,7 @@ namespace GenTRAC.ActionLogic
                 {
                     inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.TYPE_OF_REQUEST_REQUIRED));
                 }
-                
+
                 if (!string.IsNullOrEmpty(proposalInfo.RFPIssuedDate))
                 {
                     try
@@ -1730,7 +1904,7 @@ namespace GenTRAC.ActionLogic
 
                 if (string.IsNullOrWhiteSpace(proposalApprovalsInfo.LeadEstimatorNtid))
                 {
-                    inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.LEAD_ESTIMATOR_REQUIRED)); 
+                    inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.LEAD_ESTIMATOR_REQUIRED));
                 }
 
                 if (proposalUserInfo.AdditionalPricingResource1NtId != null &&
@@ -1795,7 +1969,7 @@ namespace GenTRAC.ActionLogic
                 {
                     inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.LEAD_ESTIMATOR_AND_LOB_LEAD_CANNOT_BE_SAME_PERSON));
                 }
-                
+
                 if (string.IsNullOrWhiteSpace(proposalInfo.RFPNumber))
                 {
                     inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.RFP_NUMBER_REQUIRED));
@@ -1813,7 +1987,7 @@ namespace GenTRAC.ActionLogic
 
                 if (!proposalInfo.IsScheduleProposal.HasValue)
                 {
-                    inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SCHEDULE_PROPOSAL_REQUIRED)); 
+                    inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SCHEDULE_PROPOSAL_REQUIRED));
                 }
             }
 
@@ -1852,6 +2026,27 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
+        /// Validate that new revision doesn't already exist
+        /// </summary>
+        /// <param name="proposalInfo">Proposal Info</param>
+        public void ValidateNewRevisionDoesNotExist(ProposalInformationModelView proposalInfo)
+        {
+            if (proposalInfo == null)
+            {
+                throw new ArgumentNullException(nameof(proposalInfo));
+            }
+
+            if (this.ProposalLoader.GetIdByTrackingNumber(proposalInfo.ProposalTrackingNumber) > 0)
+            {
+                ValidationMessage validationError = new ValidationMessage(ValidationConstants.ProposalRevisionConstants.REVISION_ALREADY_EXISTS);
+                validationError.FormIDToTarget = GenTRAC.ActionLogic.ProposalControllerLogic.PROPOSAL_INFO_FORM;
+
+                // Throw error now - won't ever be able to save this revision, so no need to validate anything else
+                throw new ValidationException(new Collection<ValidationMessage>() { validationError } );
+            }
+        }
+
+        /// <summary>
         /// Get the active user.
         /// </summary>
         /// <returns>Current active user</returns>
@@ -1880,7 +2075,7 @@ namespace GenTRAC.ActionLogic
         public string GetContractTypesForContractTypeGroup(string contractTypeGroup, bool includeIDIQ)
         {
             StringBuilder selectList = new StringBuilder();
-           
+
             if (!string.IsNullOrEmpty(contractTypeGroup))
             {
                 int group = int.Parse(contractTypeGroup);
@@ -1930,16 +2125,21 @@ namespace GenTRAC.ActionLogic
         /// Determines whether certification of proposal is read only based on proposal state and current user
         /// </summary>
         /// <param name="proposalId">The proposal Id.</param>
+        /// <param name="proposalStatus">Proposal Status</param>
+        /// <param name="markedAsCertificationNotRequired">Certification is marked as not-required</param>
         /// <returns>"true" if readonly, "false" if editable</returns>
-        public string IsCertificationReadOnly(int proposalId)
+        public string IsCertificationReadOnly(int proposalId, ProposalStatus proposalStatus, bool markedAsCertificationNotRequired)
         {
-            bool readOnly = false;
+            bool readOnly = proposalStatus == ProposalStatus.Revised || markedAsCertificationNotRequired;
 
-            // check permission of current user
-            SecurityAuthorizationAndRole authorization = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId);
-            if (authorization.Authorization == SecurityAuthorization.Read)
+            if (!readOnly)
             {
-                readOnly = true;
+                // check permission of current user
+                SecurityAuthorizationAndRole authorization = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId);
+                if (authorization.Authorization == SecurityAuthorization.Read)
+                {
+                    readOnly = true;
+                }
             }
 
             return readOnly.ToString().ToLower();
@@ -1992,5 +2192,407 @@ namespace GenTRAC.ActionLogic
             UserDTO lobEstMgrDel = this.userLoader.GetByNtid(lobEstMgrDelNtid);
             this.emailer.SendPreferredToolsEmail(this.securityInformation.ActiveUserData, lobEstMgrDel, proposalInfo);
         }
+
+        #region Proposal Revisions
+
+        /// <summary>
+        /// Validate the Proposal before creating a new Revision
+        /// </summary>
+        /// <param name="proposalId">Proposal to validate</param>
+        public void ValidateSaveNewRevision(int proposalId)
+        {
+            ProposalDto proposal = this.GetByProposalId(proposalId);
+            
+            ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+
+            if (proposal.WorkflowStatus != WorkflowStatus.ProposalLocked)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.WORKFLOW_NOT_COMPLETED));
+            }
+
+            if (proposal.ProposalStatus == ProposalStatus.Completed && proposal.CertificationTimelineCompleted.HasValue)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.CERT_TIMELINE_COMPLETE));
+            }
+
+            if (proposal.ProposalStatus == ProposalStatus.Revised)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_LATEST_VERSION_NEW_REVISION));
+            }
+                        
+            if (!this.IsCurrentUserPricerOrBackupOrSysAdmin(proposal.Id))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED_NEW_REVISION));
+            }
+
+            if (validationErrors.Any())
+            {
+                throw new ValidationException(validationErrors);
+            }
+        }
+
+        /// <summary>
+        /// Set the given proposal to the Revised Status when creating a new Revision
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <param name="proposalUpdateDate">Proposal DTO Update Date</param>
+        public void SetProposalRevised(int proposalId, DateTime proposalUpdateDate)
+        {
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SetProposalRevised", this.log))
+            {
+                this.ProposalLoader.UpdateProposalStatus(proposalId, proposalUpdateDate, ProposalStatus.Revised);
+            }
+        }
+
+        /// <summary>
+        /// Revert a Revised Proposal to its previous state - Submitted for CCoPD "Yes", Completed for CCoPD "No"
+        /// </summary>
+        /// <param name="proposalId">ID of Revised Proposal</param>
+        public void RevertRevisedProposal(int proposalId)
+        {
+            ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
+
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.RevertRevisedProposal", this.log))
+            {
+                if(proposal.IsCCPDRequired.HasValue && proposal.IsCCPDRequired.Value)
+                {
+                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Submitted);
+                } 
+                else
+                {
+                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Completed);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Validate that a Proposal is able to be reverted to the prior version
+        /// </summary>
+        /// <param name="proposal">Proposal being reverted</param>
+        public void ValidateRevertRevisionToPriorVersion(ProposalDto proposal)
+        {
+            ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+
+            if (proposal.RevisionOfId == null)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NO_PRIOR_VERSION));
+            }
+
+            if (this.ProposalLoader.GetAllSlim().Any(x => x.RevisionOfId == proposal.Id))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_LATEST_VERSION_PRIOR_VERSION));
+            }
+
+            if (proposal.ProposalStatus != ProposalStatus.InProgress)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_IN_PROGRESS));
+            }
+
+            if (!this.IsCurrentUserPricerOrBackupOrSysAdmin(proposal.Id))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.NOT_PERMITTED_PRIOR_VERSION));
+            }
+
+            if (proposal.DocumentId.HasValue)
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.CANNOT_HAVE_DOCUMENT));
+            }
+
+            if (this.workspaceDTODataLoader.GetAllWsNamesAndTrackingNumberInfo().Any(x => x.TrackingNumber == proposal.TrackingNumber))
+            {
+                validationErrors.Add(new ValidationMessage(ValidationConstants.ProposalRevisionConstants.CANNOT_HAVE_WORKSPACE));
+            }
+
+            if (validationErrors.Any())
+            {
+                throw new ValidationException(validationErrors);
+            }
+        }
+
+        /// <summary>
+        /// Get the new tracking number for the Revision
+        /// Tracking number will be appended with "-PRx" where x is the number of the revision
+        /// </summary>
+        /// <param name="currentTrackingNumber">Current Tracking Number</param>
+        /// <param name="newRevisionSuffix">the new Revision suffix</param>
+        /// <returns>New tracking number for the revision</returns>
+        private string GetRevisionTrackingNumber(string currentTrackingNumber, out string newRevisionSuffix)
+        {
+            // Get base tracking number without any revision suffix
+            int suffixIndex = currentTrackingNumber.IndexOf(REVISION_SUFFIX);
+            string baseTrackingNumber = currentTrackingNumber;
+            if (suffixIndex > 0)
+            {
+                baseTrackingNumber = currentTrackingNumber.Substring(0, suffixIndex);
+            }
+
+            ICollection<ProposalDto> trackingNumberData = this.ProposalLoader.GetAllSlim().Where(x => x.TrackingNumber != null && 
+                (x.TrackingNumber == baseTrackingNumber || x.TrackingNumber.StartsWith(baseTrackingNumber))).ToCollection();
+            if (trackingNumberData.Count() > 1)
+            {
+                // Second or later revision
+                // extract the revision numbers
+                ICollection<string> revisionNumberStrings = trackingNumberData.Where(x => x.TrackingNumber.StartsWith(baseTrackingNumber) && x.TrackingNumber != baseTrackingNumber)
+                    .Select(x => x.TrackingNumber.Substring(suffixIndex + REVISION_SUFFIX.Length)).ToCollection();
+                ICollection<int> revisionNumbers = new Collection<int>();
+
+                // convert numbers to ints
+                foreach (string revision in revisionNumberStrings)
+                {
+                    int revisionNumber;
+                    if (int.TryParse(revision, out revisionNumber))
+                    {
+                        revisionNumbers.Add(revisionNumber);
+                    }
+                }
+
+                // get the highest number, or 0 if there are none
+                int highestRevision = revisionNumbers.Any() ? revisionNumbers.OrderByDescending(x => x).First() : 0;
+
+                // increment the highest revision number to get the new suffix
+                newRevisionSuffix = REVISION_SUFFIX + ++highestRevision;
+            }
+            else
+            {
+                // First revision - PR1
+                newRevisionSuffix = REVISION_SUFFIX + "1";
+            }
+
+            return baseTrackingNumber + newRevisionSuffix;
+        }
+
+        /// <summary>
+        /// Get a new unique title for the revision by adding the revision suffix, removing any previous suffix
+        /// </summary>
+        /// <param name="oldTitle">Title of the old Proposal</param>
+        /// <param name="revisionSuffix">New Revision Suffix from the new Tracking Number</param>
+        /// <returns>the new title</returns>
+        private string GetNewRevisionProposalTitle(string oldTitle, string revisionSuffix)
+        {
+            // Remove any existing suffix from the old title
+            string baseTitle = oldTitle;
+            int suffixIndex = oldTitle.IndexOf(REVISION_SUFFIX);
+
+            if(suffixIndex > 0)
+            {
+                baseTitle = oldTitle.Substring(0, suffixIndex);
+            }
+
+            // append the new suffix
+            string newTitle = baseTitle + revisionSuffix;
+
+            // confirm it's unique
+            // note: shouldn't happen very often that it's not unique unless a user edits the title to the title of a future revision
+            bool titleUnique;
+            int additionalSuffix = 0;
+
+            do
+            {
+                if (!this.ProposalLoader.IsProposalTitleUnique(-1, newTitle))
+                {
+                    // if not unique, append a number to the end, incrementing until unique
+                    titleUnique = false;
+                    newTitle = baseTitle + revisionSuffix + "_" + additionalSuffix++;
+                }
+                else
+                {
+                    titleUnique = true;
+                }
+            }
+            while (!titleUnique);
+
+            return newTitle;
+        }
+
+        /// <summary>
+        /// Gets Revision History for the specific proposal
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Revision History</returns>
+        public ICollection<RevisionHistoryModelView> GetRevisionHistory(int proposalId)
+        {
+            ICollection<RevisionHistoryModelView> result = this.ProposalLoader.GetRevisionHistory(proposalId);
+
+            foreach (RevisionHistoryModelView prop in result)
+            {
+                prop.DisplayProposalSetupTab &= this.CheckPermissions(PtmSecurityPage.Proposal, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                prop.DisplayChecklistTab &= this.CheckPermissions(PtmSecurityPage.Checklist, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                prop.DisplayPSATab &= this.CheckPermissions(PtmSecurityPage.PostSubmittalAttachments, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                prop.DisplayApprovalsTab &= this.CheckPermissions(PtmSecurityPage.Approvals, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                prop.DisplayCertificationTab &= this.CheckPermissions(PtmSecurityPage.CertificationTimeline, prop.ProposalId).Authorization != SecurityAuthorization.None;
+                prop.DisplayRevisionTab &= this.CheckPermissions(PtmSecurityPage.RevisionHistory, prop.ProposalId).Authorization != SecurityAuthorization.None;
+            }
+
+            return result;
+        }
+
+        #endregion
+
+        #region Certification Timeline Validate / Save
+
+        /// <summary>
+        /// Saves the certification timeline.
+        /// </summary>
+        /// <param name="proposalId">The proposal identifier.</param>
+        /// <param name="model">The model.</param>
+        public void SaveCertificationTimeline(int proposalId, ProposalCertificationTimelineModelView model)
+        {
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.SaveCertificationTimeline", this.log))
+            {
+                this.ValidateCertification(proposalId, model, false);
+                ProposalDto proposal = this.ConvertCertificationModelToDto(proposalId, model, false);
+
+                using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+                {
+                    this.ProposalMediator.SaveProposal(proposal);
+                    scope.Complete();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Validates the certification timeline.
+        /// </summary>
+        /// <param name="proposalId">The proposal identifier.</param>
+        /// <param name="model">The model.</param>
+        /// <param name="isComplete">if set to <c>true</c> [is validating as complete].</param>
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "*")]
+        internal void ValidateCertification(int proposalId, ProposalCertificationTimelineModelView model, bool isComplete)
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
+
+            if (model.ReasonCertificationNotRequired.HasValue && isComplete)
+            {
+                throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.COMPLETE_FAILED_PROPOSAL);
+            }
+
+            if (model.ReasonCertificationNotRequired.HasValue && proposal.ProposalStatus != ProposalStatus.Submitted)
+            {
+                throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CERTIFICATION_NOT_REQUIRED_WRONG_STATE);
+            }
+
+            if (model.ReasonCertificationNotRequired == ReasonCertificationNotRequired.Other && string.IsNullOrEmpty(model.OtherReasonCommentCertification))
+            {
+                throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.OTHER_REASON_COMMENT_REQUIRED);
+            }
+
+            if (!model.ReasonCertificationNotRequired.HasValue)
+            {
+                DateTime? agreement = DateTime.TryParse(model.AgreementDate, out DateTime agreementDt) ? (DateTime?)agreementDt : null;
+                DateTime? certification = DateTime.TryParse(model.CertificationDate, out DateTime certificationDt) ? (DateTime?)certificationDt : null;
+
+                if (agreement.HasValue && certification.HasValue)
+                {
+                    TimeSpan span = certification.Value - agreement.Value;
+
+                    if (span.TotalDays > 5.0)
+                    {
+                        // Comments are now required
+                        if (string.IsNullOrWhiteSpace(model.Comments))
+                        {
+                            throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.COMMENTS_REQUIRED);
+                        }
+                    }
+                }
+
+                if (isComplete)
+                {
+                    // validate that all 3 required fields are set
+                    if (!agreement.HasValue)
+                    {
+                        throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.AGREEMENT_DATE_REQUIRED);
+                    }
+
+                    if (!certification.HasValue)
+                    {
+                        throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CERTIFICATION_DATE_REQUIRED);
+                    }
+
+                    if (!model.CutOffDateUtilization.HasValue)
+                    {
+                        throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CUTOFF_DATE_UTILIZATION_REQUIRED);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Converts the page viewmodel into the Dto
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <param name="model">Certification Model View</param>
+        /// <param name="isComplete">Are we completing the proposal</param>
+        /// <returns>Proposal DTO</returns>
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "*")]
+        internal ProposalDto ConvertCertificationModelToDto(int proposalId, ProposalCertificationTimelineModelView model, bool isComplete)
+        {
+            ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
+            proposal.Updateable = UpdateType.Upsert;
+
+            if (model.ReasonCertificationNotRequired.HasValue)
+            {
+                isComplete = true;
+                proposal.ReasonCertificationNotRequired = model.ReasonCertificationNotRequired;
+                proposal.OtherReasonComment = model.OtherReasonCommentCertification;
+
+                proposal.AgreementDate = null;
+                proposal.CertificationDate = null;
+                proposal.CutOffDateUtilization = null;
+                proposal.Comments = null;
+            }
+            else
+            {
+                // Marking the proposal required (when it was not required before) resets the flow
+                if (proposal.ReasonCertificationNotRequired.HasValue)
+                {
+                    proposal.ProposalStatus = ProposalStatus.Submitted;
+                    proposal.CertificationTimelineCompleted = null;
+                }
+
+                proposal.AgreementDate = DateTime.TryParse(model.AgreementDate, out DateTime agreementDate) ? (DateTime?)agreementDate : null;
+                proposal.CertificationDate = DateTime.TryParse(model.CertificationDate, out DateTime certificationDate) ? (DateTime?)certificationDate : null;
+
+                proposal.CutOffDateUtilization = model.CutOffDateUtilization;
+                proposal.Comments = model.Comments;
+
+                proposal.ReasonCertificationNotRequired = null;
+                proposal.OtherReasonComment = null;
+            }
+
+            if (isComplete)
+            {
+                proposal.ProposalStatus = ProposalStatus.Completed;
+                proposal.CertificationTimelineCompleted = DateTime.Now;
+            }
+
+            return proposal;
+        }
+
+        /// <summary>
+        /// Completes the certification timeline.
+        /// </summary>
+        /// <param name="proposalId">The proposal identifier.</param>
+        /// <param name="model">The model.</param>
+        public void CompleteCertificationTimeline(int proposalId, ProposalCertificationTimelineModelView model)
+        {
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ProposalControllerLogic.CompleteCertificationTimeline", this.log))
+            {
+                this.ValidateCertification(proposalId, model, true);
+                ProposalDto proposal = this.ConvertCertificationModelToDto(proposalId, model, true);
+
+                using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+                {
+                    this.ProposalMediator.SaveProposal(proposal);
+                    scope.Complete();
+                }
+            }
+        }
+
+        #endregion
     }
 }

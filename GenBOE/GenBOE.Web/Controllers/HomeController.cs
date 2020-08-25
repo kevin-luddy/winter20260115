@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -26,9 +26,11 @@ namespace GenBOE.Web.Controllers
     using GenBOE.Objects;
     using GenBOE.Web.Common;
     using GenBOE.Web.ModelView;
+    using GenTRAC.DataBridge.DTO;
     using IES.Common;
     using IES.Common.Exceptions;
     using IES.Common.PickList;
+    using UserDTO = Dtos.UserDTO;
 
     public class HomeController : GenBOEController
     {
@@ -143,12 +145,11 @@ namespace GenBOE.Web.Controllers
             IReadOnlyCollection<GenTRAC.DataBridge.Common.Security.SecurityPermissionsResponse> roles = this.ptmSecurityMapper.GetRolesForUser(leadEstimatorNtId);
             bool isAdmin = roles.Any(r => r.AuthorizedRole == PtmRole.Admin);
 
-            ICollection<GenTRAC.DataBridge.DTO.ProposalDto> proposals = isAdmin
-                ? this.proposalLoader.GetAllSlim().Where(p => !p.IsForecastProposal).ToList()
-                : this.proposalLoader.GetProposalsByUser(leadEstimatorNtId, true).Where(p => !p.IsForecastProposal).ToList();
+            ICollection<ProposalDto> proposals = (isAdmin ? this.proposalLoader.GetAllSlim() : this.proposalLoader.GetProposalsByUser(leadEstimatorNtId, true))
+                                                            .Where(p => !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.NoBid && p.ProposalStatus != ProposalStatus.Revised).ToList();
 
             Collection<SelectListItem> trackingNumbers = new Collection<SelectListItem>();
-            foreach (GenTRAC.DataBridge.DTO.ProposalDto proposal in proposals)
+            foreach (ProposalDto proposal in proposals)
             {
                 trackingNumbers.Add(new SelectListItem
                 {

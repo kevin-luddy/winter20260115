@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -407,7 +407,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             ProposalLogReportModelView mv = new ProposalLogReportModelView
             {
-                ProposalLogStatus = new Collection<int> { (int)ProposalReportStatus.Active, (int)ProposalReportStatus.All, (int)ProposalReportStatus.Archived, (int)ProposalReportStatus.Deleted, (int)ProposalReportStatus.Revision },
+                ProposalLogStatus = new Collection<int> { (int)ProposalReportStatus.Active, (int)ProposalReportStatus.All, (int)ProposalReportStatus.Archived, (int)ProposalReportStatus.Deleted },
                 ProposalLogFilterOption = ProposalLogFilterOption.AllProposalsFilter,
                 ExecutionUserIds = "1"
             };
@@ -529,7 +529,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             ProposalLogReportModelView mv = new ProposalLogReportModelView
             {
-                ProposalLogStatus = new Collection<int> { (int)ProposalReportStatus.Active, (int)ProposalReportStatus.All, (int)ProposalReportStatus.Archived, (int)ProposalReportStatus.Deleted, (int)ProposalReportStatus.Revision },
+                ProposalLogStatus = new Collection<int> { (int)ProposalReportStatus.Active, (int)ProposalReportStatus.All, (int)ProposalReportStatus.Archived, (int)ProposalReportStatus.Deleted },
                 ProposalLogFilterOption = ProposalLogFilterOption.SubmitDateRangeFilter,
                 SubmitStartDate = "02/02/2012",
                 SubmitEndDate = "12/24/2019",
@@ -559,7 +559,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             ProposalLogReportModelView mv = new ProposalLogReportModelView
             {
-                ProposalLogStatus = new Collection<int> { (int)ProposalReportStatus.Active, (int)ProposalReportStatus.All, (int)ProposalReportStatus.Archived, (int)ProposalReportStatus.Deleted, (int)ProposalReportStatus.Revision },
+                ProposalLogStatus = new Collection<int> { (int)ProposalReportStatus.Active, (int)ProposalReportStatus.All, (int)ProposalReportStatus.Archived, (int)ProposalReportStatus.Deleted, (int)ProposalReportStatus.Revised },
                 ProposalLogFilterOption = ProposalLogFilterOption.TrackingNumberFilter,
                 TrackingNumber = "2013",
                 ExecutionUserIds = "1"
@@ -587,7 +587,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             ProposalLogReportModelView mv = new ProposalLogReportModelView
             {
-                ProposalLogStatus = new Collection<int> { (int)ProposalReportStatus.Active, (int)ProposalReportStatus.All, (int)ProposalReportStatus.Archived, (int)ProposalReportStatus.Deleted, (int)ProposalReportStatus.Revision },
+                ProposalLogStatus = new Collection<int> { (int)ProposalReportStatus.Active, (int)ProposalReportStatus.All, (int)ProposalReportStatus.Archived, (int)ProposalReportStatus.Deleted },
                 ProposalLogFilterOption = ProposalLogFilterOption.TrackingNumberFilter,
                 TrackingNumber = "2013",
                 ExecutionUserIds = "1"
@@ -1010,7 +1010,7 @@ namespace GenTRAC.Tests.ActionLogic
             // test Revision proposal, specific customer types/program Areas, and pricer
             mv = new ProposalActivityReportModelView
             {
-                ProposalStatus = ProposalReportStatus.Revision,
+                ProposalStatus = ProposalReportStatus.Revised,
                 ProposalActivityFilterOption = ProposalActivityFilterOption.SpecificCustomerTypesFilter,
                 ProgramAreaIds = new Collection<int> { 667, 1234, 2344 },
                 CustomerTypeIds = new Collection<int> { 1 },
@@ -1018,7 +1018,7 @@ namespace GenTRAC.Tests.ActionLogic
             };
 
             url = sut.PopulateProposalActivitySSRSParameters(mv);
-            Assert.IsTrue(url.AbsoluteUri.Contains(Constants.Report.PROPOSAL_STATUS + "=" + ((int)ProposalReportStatus.Revision).ToString()));
+            Assert.IsTrue(url.AbsoluteUri.Contains(Constants.Report.PROPOSAL_STATUS + "=" + ((int)ProposalReportStatus.Revised).ToString()));
             Assert.IsTrue(url.AbsoluteUri.Contains(Constants.Report.PROGRAM_AREA + "=667,1234,2344"));
             Assert.IsTrue(url.AbsoluteUri.Contains(Constants.Report.CUSTOMER_TYPE + "=1"));
             Assert.IsTrue(url.AbsoluteUri.Contains(Constants.Report.ALL_PROPOSALS + "=False"));

@@ -15,7 +15,6 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -118,6 +117,7 @@
     <Compile Include="Mediator\UserMediator.cs" />
     <Compile Include="ModelView\PostSubmittalAttachments\PostSubmittalAttachmentModelView.cs" />
     <Compile Include="ModelView\Proposals\ProposalCertificationTimelineModelView.cs" />
+    <Compile Include="ModelView\Proposals\ProposalCommentsModelView.cs" />
     <Compile Include="ModelView\Reports\DfarsReportModelView.cs" />
     <Compile Include="Synchronization\ActiveDirectorySynchronization.cs" />
     <Compile Include="UrlValidator.cs" />
@@ -168,7 +168,6 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GenBOE.Models\GenBOE.Models.csproj">
@@ -190,7 +189,6 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\Libraries\StyleCop Files\StyleCop.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

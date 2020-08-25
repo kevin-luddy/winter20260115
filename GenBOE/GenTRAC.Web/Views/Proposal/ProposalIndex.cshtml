@@ -9,7 +9,7 @@
 
 		$(function () {
 			var readOnly = @Model.IsReadOnly;
-			var ProposalIdWhenPageRendered = @ViewBag.proposalid;
+			var ProposalIdWhenPageRendered = @Model.ProposalID;
 			var ExistingProposal = ProposalIdWhenPageRendered != null;
 			var widgetConfig = {};
 			widgetConfig.ContextID = "newProposal";
@@ -101,7 +101,7 @@
 									ProposalIndexWidget.RedirectHomeDirty,
 									null);
 							} else {
-								ProposalIndexWidget.RedirectHome();
+								ProposalIndexWidget.RedirectHome(true);
 							}
 						}
 					}],
@@ -114,37 +114,50 @@
 			ProposalIndexWidget = new GenWidget(widgetConfig);
 
 			var widgetCounter = 0;
-			GenSession.ShowLoadingBox();
+            GenSession.ShowLoadingBox();
+
+            data = {};
+            data.isnewrevision = '@Model.IsNewRevision';
+            var proposalId = '@Model.ProposalID';
+            
+            @if (Model.IsNewRevision)
+            {
+                <text>
+                    proposalId = @Model.RevisedProposalId;
+                </text>
+            }
 
 			// create the composite widgets
 			$.ajax({
-				type: 'POST',
+                type: 'POST',
 				url: GenSession.CreateUrl({
-					controller: '@WebConstants.Controller.PROPOSAL',
+                    controller: '@WebConstants.Controller.PROPOSAL',
 					action: '@WebConstants.Action.DISPLAY_PROPOSAL_INFORMATION',
-					id: '@ViewBag.proposalid'
-				}),
+					id: proposalId
+                }),
 				contentType: 'application/json; charset=utf-8',
-				dataType: 'html',
+                dataType: 'html',
+                data: JSON.stringify(data),
 				success: function (response) {
 					$('#proposalInfoDataPlaceholder').html(response);
-					ProposalIndexWidget.ShouldHideLoadingBox();
-					ProposalIndexWidget.refreshModule();
-				},
+                    ProposalIndexWidget.ShouldHideLoadingBox();
+                    ProposalIndexWidget.refreshModule();
+                },
 				error: function () {
-					ProposalIndexWidget.ShouldHideLoadingBox();
-				}
-			});
+                    ProposalIndexWidget.ShouldHideLoadingBox();
+                }
+            });
 
 			$.ajax({
 				type: 'POST',
 				url: GenSession.CreateUrl({
 					controller: '@WebConstants.Controller.PROPOSAL',
 					action: '@WebConstants.Action.DISPLAY_PROPOSAL_GENERAL_INFORMATION',
-					id: '@ViewBag.proposalid'
+					id: proposalId
 				}),
 				contentType: 'application/json; charset=utf-8',
 				dataType: 'html',
+                data: JSON.stringify(data),
 				success: function (response) {
 					$('#proposalGeneralInfoDataPlaceholder').html(response);
 					ProposalIndexWidget.ShouldHideLoadingBox();
@@ -162,10 +175,11 @@
 				url: GenSession.CreateUrl({
 					controller: '@WebConstants.Controller.PROPOSAL',
 					action: '@WebConstants.Action.DISPLAY_PROPOSAL_APPROVALS',
-					id: '@ViewBag.proposalid'
+					id: proposalId
 				}),
 				contentType: 'application/json; charset=utf-8',
 				dataType: 'html',
+                data: JSON.stringify(data),
 				success: function (response) {
 					$('#proposalApprovalsPlaceholder').html(response);
 					ProposalIndexWidget.ShouldHideLoadingBox();
@@ -181,7 +195,7 @@
 				url: GenSession.CreateUrl({
 					controller: '@WebConstants.Controller.PROPOSAL',
 					action: '@WebConstants.Action.DISPLAY_PROPOSAL_USER_INFORMATION',
-					id: '@ViewBag.proposalid'
+					id: proposalId
 				}),
 				contentType: 'application/json; charset=utf-8',
 				dataType: 'html',
@@ -193,7 +207,26 @@
 				error: function () {
 					ProposalIndexWidget.ShouldHideLoadingBox();
 				}
-			});
+			});            
+
+			$.ajax({
+				type: 'POST',
+				url: GenSession.CreateUrl({
+					controller: '@WebConstants.Controller.PROPOSAL',
+					action: '@WebConstants.Action.DISPLAY_PROPOSAL_COMMENTS',
+					id: proposalId
+				}),
+				contentType: 'application/json; charset=utf-8',
+				dataType: 'html',
+				success: function (response) {
+					$('#proposalCommentsPlaceholder').html(response);
+					ProposalIndexWidget.ShouldHideLoadingBox();
+					ProposalIndexWidget.refreshModule();
+				},
+				error: function () {
+					ProposalIndexWidget.ShouldHideLoadingBox();
+				}
+            });
 
 			// override refreshModule
 			ProposalIndexWidget.originalRefreshModule = ProposalIndexWidget.refreshModule;
@@ -201,14 +234,14 @@
 			// Hide the Loading Box after all 4 composite widgets have loaded (on success or error)
 			ProposalIndexWidget.ShouldHideLoadingBox = function () {
 				widgetCounter++;
-				if (widgetCounter == 4) {
+				if (widgetCounter == 5) {
                 @if (!((bool)Model.IsUsUser) && (Model.ProposalID == -1))
                 {
                     <text>
 					ITCOConfirmationDialog(function (result) {
 						if (!result) {
 							// If 'Cancel' was selected return to home page.
-							ProposalIndexWidget.RedirectHome();
+							ProposalIndexWidget.RedirectHome(true);
 						}
 					});
                     </text>
@@ -224,14 +257,15 @@
 				ProposalIndexWidget.cleanDirty();
 				ProposalInfoWidget.cleanDirty();
 				ProposalGeneralInformationWidget.cleanDirty();
-				ProposalApprovalsWidget.cleanDirty();
-				ProposalUserInfoWidget.cleanDirty();
+                ProposalApprovalsWidget.cleanDirty();
+                ProposalUserInfoWidget.cleanDirty();
+                ProposalCommentsWidget.cleanDirty();
 			}
 
 			// Cleans all the dirty forms then redirects home
 			ProposalIndexWidget.RedirectHomeDirty = function () {
 				ProposalIndexWidget.cleanAllDirtyForms();
-				ProposalIndexWidget.RedirectHome();
+				ProposalIndexWidget.RedirectHome(true);
 			};
 
 			ProposalIndexWidget.refreshModule = function () {
@@ -249,7 +283,10 @@
 				}
 				if (typeof (GoToProposalWidget) != 'undefined') {
 					GoToProposalWidget.refreshModule();
-				}
+                }
+                if (typeof (ProposalCommentsWidget) != 'undefined') {
+                    ProposalCommentsWidget.refreshModule();
+                }
 
 				ProposalIndexWidget.originalRefreshModule();
 			};
@@ -257,41 +294,49 @@
 			// returns all of the data from the child widgets.
 			ProposalIndexWidget.GetData = function () {
 				var dataToSave = {};
-				dataToSave.proposalId = @ViewBag.proposalid;
+                dataToSave.proposalId = @(Model.IsNewRevision ? Model.RevisedProposalId : Model.ProposalID); 
 				dataToSave.ProposalInfo = ProposalInfoWidget.getForm("proposalInfoForm").getData();
 				dataToSave.ProposalInfo.ProposalClassText = $('#ProposalClass option:selected').text();
 				dataToSave.ProposalGeneralInfo = ProposalGeneralInformationWidget.getForm("proposalGeneralInfoForm").getData();
 				dataToSave.ProposalApprovalsInfo = ProposalApprovalsWidget.getForm("proposalApprovalsForm").getData();
-				dataToSave.ProposalUserInfo = ProposalUserInfoWidget.getForm("proposalUserInfoForm").getData();
+                dataToSave.ProposalUserInfo = ProposalUserInfoWidget.getForm("proposalUserInfoForm").getData();
+                dataToSave.RevisionOfId = '@Model.RevisedProposalId';
+                dataToSave.IsNewRevision = '@Model.IsNewRevision';
+                dataToSave.ProposalComments = ProposalCommentsWidget.getForm("proposalCommentsForm").getData();
 				return dataToSave;
 			};
 
-			ProposalIndexWidget.ValidateAndSaveFullPage = function (buttonPressed) {
-				var dataToSend = ProposalIndexWidget.GetData();
+            ProposalIndexWidget.ValidateAndSaveFullPage = function (buttonPressed) {
+                if (readOnly) {
+                    // only save comments when readonly
+                    ProposalIndexWidget.SaveComments(buttonPressed);
+                } else {
+                    var dataToSend = ProposalIndexWidget.GetData();
 
-				var boeToolToSave = dataToSend.ProposalGeneralInfo.BOETool;
-				var pricingToolToSave = dataToSend.ProposalGeneralInfo.PricingTool;
-				var preferredBoeTool = '@((int)BOETool.genBOE)';
-				var preferredPricingTool = '@((int)PricingTool.ProPricer)';
-				var isForecasted = $('select[name="ProposalClass"] option:selected').text() === '@Constants.PROPOSAL_CLASS_FORECASTED';
+                    var boeToolToSave = dataToSend.ProposalGeneralInfo.BOETool;
+                    var pricingToolToSave = dataToSend.ProposalGeneralInfo.PricingTool;
+                    var preferredBoeTool = '@((int)BOETool.genBOE)';
+                    var preferredPricingTool = '@((int)PricingTool.ProPricer)';
+                    var isForecasted = $('select[name="ProposalClass"] option:selected').text() === '@Constants.PROPOSAL_CLASS_FORECASTED';
 
-            // Popup should show if they select a non-preferred tool (non-forecasted proposals only), but not if they've already been shown it for that selection
-            // Also shouldn't show if they select no tool so that validation still happens
-            if (!isForecasted && ((boeToolToSave != preferredBoeTool && boeToolToSave != originalBoeTool && boeToolToSave != 0) || (pricingToolToSave != preferredPricingTool && pricingToolToSave != originalPricingTool && pricingToolToSave != 0))) {
-                GenSession.confirmDialog(
-                    "Non-Preferred BOE/Pricing Tool",
-                    "You've selected a BOE and/or Pricing Tool other than the Space preferred tool. Please ensure that you have received advance approval from your LOB Estimating Manager/Delegate. Would you like to continue?",
-                    function () { ProposalIndexWidget.ContinueValidateAndSaveFullPage(buttonPressed, dataToSend); },
-                    null
-                );
-            } else {
-                ProposalIndexWidget.ContinueValidateAndSaveFullPage(buttonPressed, dataToSend);
-            }      
+                    // Popup should show if they select a non-preferred tool (non-forecasted proposals only), but not if they've already been shown it for that selection
+                    // Also shouldn't show if they select no tool so that validation still happens
+                    if (!isForecasted && ((boeToolToSave != preferredBoeTool && boeToolToSave != originalBoeTool && boeToolToSave != 0) || (pricingToolToSave != preferredPricingTool && pricingToolToSave != originalPricingTool && pricingToolToSave != 0))) {
+                        GenSession.confirmDialog(
+                            "Non-Preferred BOE/Pricing Tool",
+                            "You've selected a BOE and/or Pricing Tool other than the Space preferred tool. Please ensure that you have received advance approval from your LOB Estimating Manager/Delegate. Would you like to continue?",
+                            function () { ProposalIndexWidget.ContinueValidateAndSaveFullPage(buttonPressed, dataToSend); },
+                            null
+                        );
+                    } else {
+                        ProposalIndexWidget.ContinueValidateAndSaveFullPage(buttonPressed, dataToSend);
+                    }
+                }
         };
 
         ProposalIndexWidget.ContinueValidateAndSaveFullPage = function (buttonPressed, dataToSend) {
             dataToSend = JSON.stringify(dataToSend);
-
+            
             // Validate the proposal information.
             ProposalIndexWidget.saveRequest({
                 type: 'POST',
@@ -326,7 +371,7 @@
                     ProposalIndexWidget.refreshModule();
                 }
             }, buttonPressed);
-        };
+            };
 
         /*
          * Display a warning for the user letting them know they won't have access to the proposal after it is saved.
@@ -421,7 +466,7 @@
         ProposalIndexWidget.SaveFullPage = function (buttonPressed, isRedirectHome) {
             var dataToSend = ProposalIndexWidget.GetData();
             dataToSend = JSON.stringify(dataToSend);
-
+                        
             // Make the call
             ProposalIndexWidget.saveRequest({
                 type: 'POST',
@@ -468,19 +513,56 @@
                 GenSession.alertDialog('Invalid users', 'There are invalid users that were not changed.', null, null, ProposalIndexWidget.ReloadPage);
             } else {
                 if (isRedirectHome) {
-                    ProposalIndexWidget.RedirectHome();
+                    ProposalIndexWidget.RedirectHome(false);
                 } else {
                     ProposalIndexWidget.ReloadPage(proposalId);
                 }
             }
         };
 
-        ProposalIndexWidget.RedirectHome = function () {
-            window.location = GenSession.CreateUrl({
-                controller: '@WebConstants.Controller.HOME',
-                action: '@WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME'
-            });
-        };
+        ProposalIndexWidget.RedirectHome = function (isCancel) {
+            if (isCancel && '@(Model.IsNewRevision && Model.RevisedProposalId.HasValue)' == 'True') {
+                // Redirect Revisions back to original proposal
+                window.location = GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.PROPOSAL',
+                    action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
+                    id: '@Model.RevisedProposalId'
+                });
+            } else {
+                window.location = GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.HOME',
+                    action: '@WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME'
+                });
+            }
+            };
+
+            ProposalIndexWidget.SaveComments = function (buttonPressed) {
+                // Save only the comments - used when page is read-only and only comments are editable
+                var dataToSend = {};
+                dataToSend.proposalId = @Model.ProposalID;
+                dataToSend.ProposalComments = ProposalCommentsWidget.getForm("proposalCommentsForm").getData();
+                dataToSend = JSON.stringify(dataToSend);
+
+                // Make the call
+                ProposalIndexWidget.saveRequest({
+                    type: 'POST',
+                    url: GenSession.CreateUrl({
+                        controller: '@WebConstants.Controller.PROPOSAL',
+                        action: '@WebConstants.Action.SAVE_PROPOSAL_COMMENTS'
+                    }),
+                    contentType: 'application/json; charset=utf-8',
+                    data: dataToSend,
+                    success: function (response) {
+                        ProposalIndexWidget.SaveSuccess(response.proposalId, false, false);
+                    },
+                    error: function () {
+                        ProposalIndexWidget.refreshModule();
+                    }
+                }, buttonPressed);
+            }
+
+            // Always show buttons on this page so comments can be saved
+            ProposalIndexWidget.showButtons();
     });
     </script>
 
@@ -489,6 +571,7 @@
     <div id="proposalGeneralInfoDataPlaceholder"></div>
     <div id="proposalApprovalsPlaceholder"></div>
     <div id="proposalUserInfoDataPlaceholder" data-proposal-type="standard"></div>
+    <div id="proposalCommentsPlaceholder"></div>
     <div class="module-content-data" style="width: 982px">
         @using (Html.BeginForm("", "", FormMethod.Post, new { id = "proposalForm", name = "proposalForm" }))
         {

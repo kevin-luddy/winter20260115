@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -638,6 +638,7 @@ namespace GenTRAC.ActionLogic
             manageProposalInfoDetailsView.ProposalTitle = fullProposal.ProposalTitle;
             manageProposalInfoDetailsView.OldStatus = fullProposal.ProposalStatus;
             manageProposalInfoDetailsView.UpdateDate = fullProposal.UpdateDate;
+            manageProposalInfoDetailsView.Comments = fullProposal.ManageProposalInfoComments;
 
             // populate dates and price when Completed
             if (fullProposal.ProposalStatus == ProposalStatus.Completed || fullProposal.ProposalStatus == ProposalStatus.Submitted)
@@ -735,7 +736,8 @@ namespace GenTRAC.ActionLogic
                     ProposalSubmittalDate = proposalSubmittalDate,
                     TotalPrice = totalPrice,
                     ChecklistSubmittedDatePricer = checklistSubmittedDatePricer,
-                    ChecklistSubmittedDatePeer = checklistSubmittedDatePeer
+                    ChecklistSubmittedDatePeer = checklistSubmittedDatePeer,
+                    Comments = manageProposalInfo.Comments
                 };
 
                 toReturn = this.manageProposalInfoLoader.SaveProposalInfo(manageProposalInfoDto);

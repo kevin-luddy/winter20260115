@@ -74,6 +74,7 @@
             {
                 foreach (GenTRAC.ActionLogic.ModelView.Home.HomeProposalGridModelView item in Model.DataRows)
                 {
+                    string deleteDisabledClass = item.IsDeleteAllowed ? string.Empty : "disabled-icon";
                 <tr class="row-template proposalDataRows">
                     <td>
                         @if (item.IsForecastProposal)
@@ -126,17 +127,21 @@
                         <div title="View or Edit the proposal record" class="button proposal-button" onclick="HomeProposalWidget.ShowProposal(event, '@item.ProposalId');"></div>
                         @if (!item.IsForecastProposal)
                         {
-                        <div title="View or Edit the checklists" class="button checklist-button" onclick="HomeProposalWidget.ShowChecklist(event, '@item.ProposalId');"></div>
-                        <div title="View or Edit the Approvals" class="button approval-button" onclick="HomeProposalWidget.ShowApprovals(event, '@item.ProposalId');"></div>
-                        if (item.IsDeleteAllowed)
-                        {
-                            <div class="button delete-document-div" title="Delete Proposal">
-                                <span class="fa fa-remove delete-document-icon" onclick="HomeProposalWidget.ShowConfirmDelete(event, '@item.ProposalId')"></span>
-                            </div>
+                            <div title="View or Edit the checklists" class="button checklist-button" onclick="HomeProposalWidget.ShowChecklist(event, '@item.ProposalId');"></div>
+                            <div title="View or Edit the Approvals" class="button approval-button" onclick="HomeProposalWidget.ShowApprovals(event, '@item.ProposalId');"></div>
                         }
-                        <br />
-                        <div title="View or Edit Post Submittal Attachments" class="fa fa-paperclip button psa-button" onclick="HomeProposalWidget.ShowPostSubmittalAttachments(event, '@item.ProposalId');"></div>                        
-                            if (item.Workspaces.Any() || (Model.CanCreateBOEWorkspace  && item.Status != ProposalStatus.NoBid))
+                        <div class="button delete-document-div" title="@item.DeleteButtonTitle">
+                            <span class="fa fa-remove delete-document-icon @deleteDisabledClass" 
+                                @if (item.IsDeleteAllowed) {
+                                    <text>onclick = "HomeProposalWidget.ShowConfirmDelete(event, '@item.ProposalId')"</text>
+                                }
+                            ></span>
+                        </div>
+                        @if(!item.IsForecastProposal)
+                        { 
+                            <br />
+                            <div title="View or Edit Post Submittal Attachments" class="fa fa-paperclip button psa-button" onclick="HomeProposalWidget.ShowPostSubmittalAttachments(event, '@item.ProposalId');"></div>                        
+                            if (item.Workspaces.Any() || (Model.CanCreateBOEWorkspace && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised))
                             {
                                 <div class="dropdown">
                                     <button class="dropbtn boe-button"></button>
@@ -145,7 +150,7 @@
                                         {
                                             <a href="@(boeUrl)@workspace" target="_blank">@workspace</a>
                                         }
-                                        @if (Model.CanCreateBOEWorkspace && item.Status != ProposalStatus.NoBid)
+                                        @if (Model.CanCreateBOEWorkspace && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised)
                                         {
                                             <a href="@(boeUrl)default/Workspace/CreateWorkspace?TrackingNumber=@item.TrackingNumber" target="_blank">Create New genBOE Workspace</a>
                                         }
@@ -170,7 +175,7 @@
                                         </div>
                                     </div>
                                 }
-                                else if (item.HasWriteAccessToLinkedDocument && item.Status != ProposalStatus.NoBid)
+                                else if (item.HasWriteAccessToLinkedDocument && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised)
                                 {
                                     <div class="add-document-div">
                                         <div class="document-button-div fa-stack add-document-icon-stack">
@@ -184,13 +189,6 @@
                                 }
                             }
                         }
-                        @if (item.IsForecastProposal && item.IsDeleteAllowed)
-                        {
-                            <div class="button delete-document-div" title="Delete Proposal">
-                                <span class="fa fa-remove delete-document-icon" onclick="HomeProposalWidget.ShowConfirmDelete(event, '@item.ProposalId')"></span>
-                            </div>
-                        }
-
                     </td>
                 </tr>
                 }

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -8,6 +8,7 @@ namespace GenTRAC.ActionLogic.ModelView.Home
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using GeneralHelper;
     using IES.Common;
 
@@ -206,7 +207,18 @@ namespace GenTRAC.ActionLogic.ModelView.Home
         /// <summary>
         /// Indicates whether the current user has delete access (admin or lead estimator) for the proposal, and the proposal is in a deletable state.
         /// </summary>
-        public bool IsDeleteAllowed { get; set; }
+        public bool IsDeleteAllowed 
+        { 
+            get
+            {
+                return this.PermissionedToDelete && !this.HasLinkedDocument && !this.Workspaces.Any() && !this.HasOrIsRevision;
+            }
+        }
+
+        /// <summary>
+        /// Indicates whether the current proposal has, or is, a revision
+        /// </summary>
+        public bool HasOrIsRevision { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is forecast proposal.
@@ -242,6 +254,10 @@ namespace GenTRAC.ActionLogic.ModelView.Home
                     {
                         return Constants.GREY_BACKGROUND_CSS_CLASS_STRING;
                     }
+                    else if (this.Status.Equals(ProposalStatus.Revised))
+                    {
+                        return Constants.REVISED_DATE_CSS_STYLE_STRING;
+                    }
                     else if (Helpers.IsProposalCertificationLate(this.Status, this.ProposalCompletedDate))
                     {
                         return Constants.SUBMITTED_LATE_BACKGROUND_CSS_CLASS_STRING;
@@ -275,5 +291,56 @@ namespace GenTRAC.ActionLogic.ModelView.Home
         /// Gets or sets the workspaces linked to this proposal.
         /// </summary>
         public ICollection<string> Workspaces { get; set; }
-    } 
+
+        /// <summary>
+        /// Do user's permissions allow the user to delete the proposal
+        /// </summary>
+        public bool PermissionedToDelete { get; set; }
+
+        /// <summary>
+        /// Delete button title
+        /// </summary>
+        public string DeleteButtonTitle
+        {
+            get
+            {
+                string result;
+
+                if (this.IsDeleteAllowed)
+                {
+                    result = "Delete Proposal";
+                }
+                else
+                {
+                    string deleteReason = string.Empty;
+
+                    if (!this.PermissionedToDelete)
+                    {
+                        deleteReason = "The user lacks sufficient permissions.";
+                    }
+                    else
+                    {
+                        if (this.HasLinkedDocument)
+                        {
+                            deleteReason += "An RDSB document links to the proposal. ";
+                        }
+
+                        if (this.Workspaces.Any())
+                        {
+                            deleteReason += $"The following GenBOE workspace(s) link to the proposal: { string.Join(", ", this.Workspaces) }. ";
+                        }
+
+                        if (this.HasOrIsRevision)
+                        {
+                            deleteReason += "The proposal has been Revised, or is itself a Revision. ";
+                        }
+                    }
+
+                    result = $"The proposal cannot be deleted. { deleteReason }";
+                }
+
+                return result;
+            }
+        }
+    }
 }

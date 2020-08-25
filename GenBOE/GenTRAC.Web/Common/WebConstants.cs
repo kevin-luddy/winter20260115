@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -167,7 +167,7 @@ namespace GenTRAC.Web.Common
             /// Display Who's Online Popup
             /// </summary>
             public const string WHOS_ONLINE = "DisplayWhosOnline";
-
+            
             #region Admin
 
             /// <summary>
@@ -309,6 +309,11 @@ namespace GenTRAC.Web.Common
             public const string DISPLAY_PROPOSAL_USER_INFORMATION = "DisplayProposalUserInformation";
 
             /// <summary>
+            /// Display proposal comments
+            /// </summary>
+            public const string DISPLAY_PROPOSAL_COMMENTS = "DisplayProposalComments";
+
+            /// <summary>
             /// Validates the proposal
             /// </summary>
             public const string VALIDATE_PROPOSAL_INFORMATION = "ValidateProposal";
@@ -319,9 +324,24 @@ namespace GenTRAC.Web.Common
             public const string SAVE_PROPOSAL_INFORMATION = "SaveProposal";
 
             /// <summary>
+            /// Saves only the comments for a read-only proposal
+            /// </summary>
+            public const string SAVE_PROPOSAL_COMMENTS = "SaveProposalComments";
+
+            /// <summary>
             /// Displays the proposal details, the tab form that shows the proposal, checklist, and revisions
             /// </summary>
-            public const string DISPLAY_PROPOSAL_DETAILS = "DisplayProposalDetails";
+            public const string DISPLAY_PROPOSAL_DETAILS = "DisplayProposalDetails"; 
+
+            /// <summary>
+            /// Displays the proposal details for creating a Revision
+            /// </summary>
+            public const string DISPLAY_PROPOSAL_REVISION_DETAILS = "DisplayProposalRevisionDetails";
+
+            /// <summary>
+            /// Validate the proposal details for creating a Revision
+            /// </summary>
+            public const string VALIDATE_PROPOSAL_REVISION_DETAILS = "ValidateNewProposalRevision";             
 
             /// <summary>
             /// Filter Program Areas based on selected Line of Business
@@ -337,6 +357,16 @@ namespace GenTRAC.Web.Common
             /// Marks the proposal for deletion
             /// </summary>
             public const string DELETE_PROPOSAL = "DeleteProposal";
+
+            /// <summary>
+            /// Displays Revision History Tab
+            /// </summary>
+            public const string DISPLAY_REVISION_HISTORY = "DisplayRevisionHistory";
+
+            /// <summary>
+            /// Reverts the Proposal to the prior version
+            /// </summary>
+            public const string REVERT_PROPOSAL_TO_PRIOR_VERSION = "RevertProposalToPriorVersion";
 
             #endregion Proposal
 
@@ -857,6 +887,16 @@ namespace GenTRAC.Web.Common
             /// Proposal post information
             /// </summary>
             public const string PROPOSAL_CERTIFICATION_TIMELINE = "CertificationTimeline";
+
+            /// <summary>
+            /// Proposal Revision History
+            /// </summary>
+            public const string PROPOSAL_RevisionHistory = "RevisionHistory";
+
+            /// <summary>
+            /// Proposal Comments
+            /// </summary>
+            public const string PROPOSAL_COMMENTS = "ProposalComments";
 
             #endregion Proposal
 

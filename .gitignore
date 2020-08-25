@@ -1,5 +1,5 @@
-﻿# Started from https://gist.github.com/kmorcinek/2710267
-
+﻿# Based on http://gist.githubusercontent.com/kmorcinek/2710267/raw/.gitignore
+#
 # User-specific files
 *.suo
 *.user
@@ -48,11 +48,12 @@ x64/
 *.vssscc
 .builds
 *.pidb
+*.log
 *.scc
 *.jfm
 
-# App Logs (e.g. performance logs)
-logs/
+# Application Logs
+**/[Ll]ogs/*.csv
 
 # OS generated files #
 .DS_Store*

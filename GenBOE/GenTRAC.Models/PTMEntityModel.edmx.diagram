@@ -72,8 +72,6 @@
         <AssociationConnector Association="genTRACModel.FK_ProposalPPRChecklistXREF_ResponseTypeLU" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_SystemUserRole_RoleLU" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.ProposalCostElementXREF" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="genTRACModel.Attachment" Width="1.5" PointX="5.25" PointY="33.75" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_Attachment" />
         <EntityTypeShape EntityType="genTRACModel.genTracData" Width="1.5" PointX="10.375" PointY="9.75" />
         <EntityTypeShape EntityType="genTRACModel.ContractTypeGroupLU" Width="1.5" PointX="13.625" PointY="0.875" />
         <EntityTypeShape EntityType="genTRACModel.ContractTypeLU" Width="1.5" PointX="11.375" PointY="0.875" />
@@ -94,6 +92,11 @@
         <AssociationConnector Association="genTRACModel.FK__CannedRes__Quest__4999D985" />
         <AssociationConnector Association="genTRACModel.FK__ProposalP__Canne__4A8DFDBE" />
         <EntityTypeShape EntityType="genTRACModel.DataMartEmployee" Width="1.5" PointX="12.375" PointY="7.75" />
+        <EntityTypeShape EntityType="genTRACModel.ProposalsAttachment" Width="1.5" PointX="8.5" PointY="24.625" />
+        <AssociationConnector Association="genTRACModel.FK__Proposals__Propo__5A5A5133" />
+        <EntityTypeShape EntityType="genTRACModel.Attachment" Width="1.5" PointX="14.375" PointY="7.875" />
+        <AssociationConnector Association="genTRACModel.FK__Proposals__Attac__5B4E756C" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_Proposal" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

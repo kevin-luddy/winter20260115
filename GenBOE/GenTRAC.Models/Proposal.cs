@@ -22,9 +22,10 @@ namespace GenTRAC.Models
             this.ProposalPPRChecklistXREFs = new HashSet<ProposalPPRChecklistXREF>();
             this.ProposalUserRoles = new HashSet<ProposalUserRole>();
             this.CostElementLUs = new HashSet<CostElementLU>();
-            this.Attachments = new HashSet<Attachment>();
             this.ContractTypeLUs = new HashSet<ContractTypeLU>();
             this.ProposalChecklists = new HashSet<ProposalChecklist>();
+            this.ProposalsAttachments = new HashSet<ProposalsAttachment>();
+            this.Proposal1 = new HashSet<Proposal>();
         }
     
         public int ProposalID { get; set; }
@@ -88,6 +89,11 @@ namespace GenTRAC.Models
         public Nullable<System.DateTime> CertificationLastEmailed { get; set; }
         public Nullable<bool> CostVolumeClassified { get; set; }
         public Nullable<System.DateTime> NoBidDate { get; set; }
+        public string OtherReasonComment { get; set; }
+        public Nullable<int> ReasonCertificationNotRequired { get; set; }
+        public Nullable<int> RevisionOfId { get; set; }
+        public string SetupComments { get; set; }
+        public string InformationComments { get; set; }
     
         public virtual BOEToolLU BOEToolLU { get; set; }
         public virtual CustomerTypeLU CustomerTypeLU { get; set; }
@@ -110,8 +116,6 @@ namespace GenTRAC.Models
         public virtual ICollection<ProposalUserRole> ProposalUserRoles { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CostElementLU> CostElementLUs { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Attachment> Attachments { get; set; }
         public virtual ContractTypeGroupLU ContractTypeGroupLU { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ContractTypeLU> ContractTypeLUs { get; set; }
@@ -120,5 +124,10 @@ namespace GenTRAC.Models
         public virtual LineOfBusinessLU LineOfBusinessLU { get; set; }
         public virtual ProgramAreaLU ProgramAreaLU { get; set; }
         public virtual CutOffDateUtilizationLU CutOffDateUtilizationLU { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProposalsAttachment> ProposalsAttachments { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Proposal> Proposal1 { get; set; }
+        public virtual Proposal Proposal2 { get; set; }
     }
 }

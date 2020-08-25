@@ -15,7 +15,8 @@ CREATE PROCEDURE [dbo].[updateProposalInformation]
       @ProposalSubmittalDate [date],
       @ISGSTotalPrice [bigint],
       @PricerChecklistSubmittalDate [date],
-      @PeerChecklistSubmittalDate [date]
+      @PeerChecklistSubmittalDate [date],
+	  @InformationComments VARCHAR(MAX) = NULL
 )
 AS
 /******************************************************************************
@@ -38,6 +39,7 @@ AS
 **			1/12/2017	gbrunwo					BOEJ-1688 Update PTM SPs to not 
 **												display technical details to the user
 **			5/31/2018	ranzalon				BOEJ-3405 - remove TempProposalSubmittalDate
+**			8/10/2020	ranzalon				BOEJ-4649 Manage Proposal Info Comments
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -89,6 +91,15 @@ IF (SELECT UpdateDate FROM [dbo].[Proposal] WHERE ProposalID = @ProposalID) = @U
 					ProposalID = @ProposalID AND
 					ResponseTypeID = 2 /*Peer*/
 			END
+
+		IF @InformationComments IS NOT NULL
+		  BEGIN                  
+			  UPDATE [dbo].[Proposal]
+					SET  [UpdateDate] = @UpdateDate
+						,[InformationComments] = @InformationComments
+					 WHERE 
+						  ProposalID = @ProposalID
+		  END
     
       END
       

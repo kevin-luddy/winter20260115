@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2019 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -49,5 +49,10 @@ namespace GenTRAC.DataBridge.DTO
         /// Checklist submitted date (Peer)
         /// </summary>
         public DateTime? ChecklistSubmittedDatePeer { get; set; }
+
+        /// <summary>
+        /// Comments on the Manage Proposal Information page
+        /// </summary>
+        public string Comments { get; set; }
     }
 }
