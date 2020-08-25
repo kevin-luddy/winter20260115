@@ -72,10 +72,6 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='LeadEstimators']/@value">
     </parameterentry>
   </parameter>
-  <parameter name="LOBLeads" description="doesn't matter" defaultvalue="__LOBLeads__" tags="">
-    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='LOBLeads']/@value">
-    </parameterentry>
-  </parameter>
   <parameter name="LOBManagers" description="doesn't matter" defaultvalue="__LOBManagers__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='LOBManagers']/@value">
     </parameterentry>

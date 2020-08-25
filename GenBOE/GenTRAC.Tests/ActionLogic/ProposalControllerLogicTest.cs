@@ -1425,6 +1425,39 @@ namespace GenTRAC.Tests.ActionLogic
         }
 
         /// <summary>
+        /// Test ValidateProposal properly validates for SSC Role not being set
+        /// </summary>
+        [TestMethod]
+        public void C_ValidateProposalSscRoleRequiredTest()
+        {
+            var sut = this.CreateSystem();
+
+            ICollection<ValidationMessage> validationMessages = new List<ValidationMessage>();
+
+            ProposalInformationModelView proposalInfo = new ProposalInformationModelView()
+            {
+                ProposalTitle = "ProposalTitle",
+                ContractType = new List<int>() { 1 },
+                CostElements = new List<int>() { 1 },
+                AnticipatedDeliveryDate = DateTime.Now.AddDays(100).ToString("MM/dd/yyyy"),
+                RevisedSubmittalDate = "01/01/2013",
+                IsScheduleProposal = false,
+                RFPNumber = "rfp",
+                RFPIssuedDate = "11/11/2018",
+                RFPReceivedDate = "11/11/2018",
+                ISGSRole = ISGSRole.NotSet,
+                RequestType = 0
+            };
+
+            this.proposalLoader.Setup(x => x.IsProposalTitleUnique(It.IsAny<int>(), It.IsAny<string>())).Returns(true);
+
+            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeid2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId" }, new ProposalUserInformationModelView(), validationMessages, false);
+
+            Assert.AreEqual(1, validationMessages.Count);
+            Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ProposalValidationConstants.SSC_ROLE_REQUIRED)).Count());
+        }
+
+        /// <summary>
         /// Get proposal information test
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
@@ -1822,7 +1855,6 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(ResourceType.Strategist, proposalUserInfo.AdditionalPricingResource2Type);
             Assert.IsTrue(proposalApprovalsInfo.LeadEstimatorList.Any(x => x.Ntid == user.Ntid));
             Assert.IsTrue(proposalApprovalsInfo.PricingVerificationList.Any(x => x.Ntid == user.Ntid));
-            Assert.IsTrue(proposalApprovalsInfo.LOBEstimatingLeadList.Any(x => x.Ntid == user.Ntid));
             Assert.IsTrue(proposalApprovalsInfo.CoverSheetApproverList.Any(x => x.Ntid == user.Ntid));
             Assert.IsTrue(proposalApprovalsInfo.IndependentReviewerList.Any(x => x.Ntid == user.Ntid));
         }

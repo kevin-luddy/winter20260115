@@ -1378,9 +1378,6 @@ namespace GenTRAC.ActionLogic
                 case PtmRole.Pricer:
                     groupName = IES.Common.ConfigurationUtilities.GetAppSetting("LeadEstimators");
                     break;
-                case PtmRole.LOBEstLead:
-                    groupName = IES.Common.ConfigurationUtilities.GetAppSetting("LOBLeads");
-                    break;
                 case PtmRole.LOBEstMgr:
                     groupName = IES.Common.ConfigurationUtilities.GetAppSetting("LOBManagers");
                     break;
@@ -1413,7 +1410,6 @@ namespace GenTRAC.ActionLogic
 
             // get the selection lists based on adusergroups found in web.config for specified users
             model.PricingVerificationList = this.GetUsersForSelectList(PtmRole.PricingVerification);
-            model.LOBEstimatingLeadList = this.GetUsersForSelectList(PtmRole.LOBEstLead);
             model.LOBEstimatingMgrList = this.GetUsersForSelectList(PtmRole.LOBEstMgr);
             model.CoverSheetApproverList = this.GetUsersForSelectList(PtmRole.CoverSheetApprover);
             model.LeadEstimatorList = this.GetUsersForSelectList(PtmRole.Pricer);
@@ -1459,11 +1455,7 @@ namespace GenTRAC.ActionLogic
                             model.LOBEstimatingLeadMgrDisplayName = user.DisplayName;
                             model.IsLOBEstimatingLeadMgrReadOnly = isNewRevision ? false : fullProposalDto.LOBEstimatingLeadSignedDate.HasValue;
 
-                            if (model.IsCCPDRequired != true && !model.LOBEstimatingLeadList.Any(x => x.Ntid == user.Ntid))
-                            {
-                                model.LOBEstimatingLeadList.Add(user);
-                            }
-                            else if (model.IsCCPDRequired == true && !model.LOBEstimatingMgrList.Any(x => x.Ntid == user.Ntid))
+                            if (!model.LOBEstimatingMgrList.Any(x => x.Ntid == user.Ntid))
                             {
                                 model.LOBEstimatingMgrList.Add(user);
                             }
@@ -2017,6 +2009,12 @@ namespace GenTRAC.ActionLogic
                 {
                     inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROPOSAL_TITLE_MUST_BE_UNIQUE));
                 }
+            }
+
+            // This is to catch the error in new proposals where a selection isn't made
+            if (proposalInfo.ISGSRole == ISGSRole.NotSet && !inValidationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.SSC_ROLE_REQUIRED))
+            {
+                inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SSC_ROLE_REQUIRED));
             }
 
             if (!proposalInfo.ContractType.Any())
