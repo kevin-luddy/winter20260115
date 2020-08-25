@@ -698,7 +698,7 @@
             }
 
             // enable checkbox if it or parent doesn't have BOE
-            if ((!d.HasBOE && !d.ParentHasBoe) && !$scope.checkAllClicked) {
+            if ((!d.HasBOE && !d.ParentOrChildHasBoe) && !$scope.checkAllClicked) {
                 d.Disabled = false;
             }
         });
@@ -774,7 +774,7 @@
             var data = {};
             data.selectedWbsIDs = [];
             $scope.data.forEach(function (d) {
-                if (d.Selected != undefined && d.Selected && !d.Disabled && !d.HasBOE && !d.ParentHasBoe) {
+                if (d.Selected != undefined && d.Selected && !d.Disabled && !d.HasBOE && !d.ParentOrChildHasBoe) {
                     data.selectedWbsIDs.push(d.WbsID.toString());
                 }
             });
@@ -842,7 +842,7 @@
             $scope.data = response.data.WbsResults;
             // select and disable WBS that have BOEs, make sure the rest are enabled and deselected
             $scope.data.forEach(function (d) {
-                if (d.HasBOE || d.InUse || d.ParentHasBoe) {
+                if (d.HasBOE || d.InUse || d.ParentOrChildHasBoe) {
                     console.log('1', d);
                     d.Selected = false;
                     d.Disabled = true;

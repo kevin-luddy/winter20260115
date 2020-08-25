@@ -100,6 +100,22 @@
                 <% } %>
             </ul> 
         </div>
+        <div <% if (!Model.Where(m => m.ImportType == (int)WbsImportResult.ParentHasWbs).Any()) { %> class="display-none"<% } %>>
+            <div class="title"><%: Model.Where(m => m.ImportType == (int)WbsImportResult.ParentHasWbs).Count() %> WBS elements will not be updated because a Parent WBS has a BOE:</div>
+            <ul>
+                <% foreach (ImportWbsResultsModelView result in Model.Where(m => m.ImportType == (int)WbsImportResult.ParentHasWbs)) { %>
+                <li><%: result.WbsNumber %>&nbsp;<%: result.WbsTitle %></li>
+                <% } %>
+            </ul>
+        </div>
+        <div <% if (!Model.Where(m => m.ImportType == (int)WbsImportResult.ChildHasWbs).Any()) { %> class="display-none"<% } %>>
+            <div class="title"><%: Model.Where(m => m.ImportType == (int)WbsImportResult.ChildHasWbs).Count() %> WBS elements will not be updated because a Child WBS has a BOE:</div>
+            <ul>
+                <% foreach (ImportWbsResultsModelView result in Model.Where(m => m.ImportType == (int)WbsImportResult.ChildHasWbs)) { %>
+                <li><%: result.WbsNumber %>&nbsp;<%: result.WbsTitle %></li>
+                <% } %>
+            </ul>
+        </div>
         <div <% if (!Model.Where(m => m.ImportType == (int)WbsImportResult.InUseClinRemoved).Any()) { %> class="display-none"<% } %>>
             <div class="title"><%: Model.Where(m => m.ImportType == (int)WbsImportResult.InUseClinRemoved).Distinct().Count()%> CLINs will not be removed from WBSs because they are in use:</div>
             <ul>

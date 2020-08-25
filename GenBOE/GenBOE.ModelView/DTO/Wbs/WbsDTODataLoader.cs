@@ -277,7 +277,7 @@ namespace GenBOE.DataBridge.DTO
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
                     toReturn = (from w in gbe.WorkBreakdownStructures
-                                where w.WorkspaceID == workspaceId && wbsNumber.StartsWith(w.WBSNumber)
+                                where w.WorkspaceID == workspaceId && wbsNumber.StartsWith(w.DisplayedWBSNumber)
                                 select new WbsDTO()
                                 {
                                     Id = w.WBSID,
@@ -328,7 +328,7 @@ namespace GenBOE.DataBridge.DTO
                 {
                     toReturn = (from w in gbe.WorkBreakdownStructures
                                 where w.WorkspaceID == workspaceId 
-                                    && w.WBSNumber.StartsWith(wbsNumber)
+                                    && w.DisplayedWBSNumber.StartsWith(wbsNumber)
                                 select new WbsDTO()
                                 {
                                     Id = w.WBSID,
