@@ -40,11 +40,10 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
         /// <summary>
         /// Checks that WBSRenumbervalidation correctly
-        /// test for a circular reference as well as if
-        /// the WBS already exisits for a current BOE. 
+        /// test for a circular reference
         /// </summary>
         [TestMethod]
-        public void WBSRenumbervalidationTest()
+        public void WBSRenumbervalidationTest_CircularReference()
         {
             //Variable Declarations
             string value = "123";
@@ -89,11 +88,111 @@ namespace GenBOE.Tests.ActionLogic.Validation
             Collection<string> returnValueinUse = sut.validation(value, inDatainUse);
 
             //Assert
-            Assert.AreEqual(3, returnValue.Count);
+            Assert.AreEqual(2, returnValue.Count);
             Assert.AreEqual("Test", returnValue[0]);
             Assert.AreEqual("The new WBS # would create a circular reference.", returnValue[1]);
-            Assert.AreEqual("WBS # cannot be changed to 123 because a BOE currently exists for 123", returnValue[2]);
             Assert.AreEqual(0, returnValueinUse.Count);
+        }
+
+        /// <summary>
+        /// Checks that WBSRenumbervalidation correctly
+        /// tests for a Parent WBS having a BOE
+        /// </summary>
+        [TestMethod]
+        public void WBSRenumbervalidationTest_ParentHasWbs()
+        {
+            //Variable Declarations
+            string value = "1.1";
+            Collection<Dictionary<string, string>> inData = new Collection<Dictionary<string, string>>(){
+                new Dictionary<string, string>() { {"WbsID", "1"}, {"WorkspaceID", "2"} }};
+
+            ICollection<FullWbs> parentWbs = new Collection<FullWbs>(){
+                 new FullWbs() { Id = 2, WorkspaceID = 1, WbsNumber = "1", inUse = true }};
+            ICollection<FullWbs> childWbs = new Collection<FullWbs>();
+
+            FullWbs wbs = new FullWbs() { Id = 1, WorkspaceID = 2, inUse = true, WbsNumber = "3" };
+            FullWbs wbsinUse = new FullWbs() { Id = 11, inUse = false, WbsNumber = "123" };
+            FullWorkspace ws = new FullWorkspace() { Id = 2 };
+
+            Collection<string> wbsValidatorMessages = new Collection<string>() { "Test" };
+            Collection<string> wbsValidatorMessagesNull = new Collection<string>();
+            ValidationFactory validationFactory = GetValidationFactory();
+            Mock<ValidationFactoryWrapper> _ValidationFactory = new Mock<ValidationFactoryWrapper>();
+            _ValidationFactory.Setup(x => x.Instance).Returns(validationFactory);
+
+            wbsUniqueNumberValidator.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>());
+
+            factory.Setup(x => x.CreateFullWbs(wbs.Id)).Returns(wbs);
+            factory.Setup(x => x.CreateFullWbs(wbsinUse.Id)).Returns(wbsinUse);
+
+            retriever.Setup(x => x.GetFullWorkspaceById(wbs.WorkspaceID)).Returns(ws);
+            retriever.Setup(x => x.GetFullWorkspaceById(-1)).Returns(ws);
+
+            _VariableCircularReferenceChecker.Setup(x => x.WBSRenumberCreatesCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<FullWbs>(), value, null, ws)).Returns(false);
+
+            retriever.Setup(x => x.GetParentWbs(wbs.WorkspaceID, wbs.WbsNumber)).Returns(new Collection<FullWbs>());
+            retriever.Setup(x => x.GetParentWbs(wbs.WorkspaceID, value)).Returns(parentWbs);
+            retriever.Setup(x => x.GetChildWbs(wbs.WorkspaceID, It.IsAny<string>())).Returns(childWbs);
+
+            WBSRenumberValidator sut = new WBSRenumberValidator(_VariableCircularReferenceChecker.Object, factory.Object);
+
+            //Act
+            Collection<string> returnValue = sut.validation(value, inData);
+
+            //Assert
+            Assert.AreEqual(1, returnValue.Count);
+            Assert.IsTrue(returnValue[0].Contains("would now be a parent of"));
+        }
+
+
+        /// <summary>
+        /// Checks that WBSRenumbervalidation correctly
+        /// tests for a Child WBS having a BOE
+        /// </summary>
+        [TestMethod]
+        public void WBSRenumbervalidationTest_ChildHasWbs()
+        {
+            //Variable Declarations
+            string value = "1";
+            Collection<Dictionary<string, string>> inData = new Collection<Dictionary<string, string>>(){
+                new Dictionary<string, string>() { {"WbsID", "1"}, {"WorkspaceID", "2"} }};
+
+            ICollection<FullWbs> parentWbs = new Collection<FullWbs>();
+            ICollection<FullWbs> childWbs = new Collection<FullWbs>(){
+                 new FullWbs() { Id = 2, WorkspaceID = 1, WbsNumber = "1.1", inUse = true }};
+
+            FullWbs wbs = new FullWbs() { Id = 1, WorkspaceID = 2, inUse = true, WbsNumber = "3" };
+            FullWbs wbsinUse = new FullWbs() { Id = 11, inUse = false, WbsNumber = "123" };
+            FullWorkspace ws = new FullWorkspace() { Id = 2 };
+
+            Collection<string> wbsValidatorMessages = new Collection<string>() { "Test" };
+            Collection<string> wbsValidatorMessagesNull = new Collection<string>();
+            ValidationFactory validationFactory = GetValidationFactory();
+            Mock<ValidationFactoryWrapper> _ValidationFactory = new Mock<ValidationFactoryWrapper>();
+            _ValidationFactory.Setup(x => x.Instance).Returns(validationFactory);
+
+            wbsUniqueNumberValidator.Setup(x => x.validation(It.IsAny<string>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>());
+
+            factory.Setup(x => x.CreateFullWbs(wbs.Id)).Returns(wbs);
+            factory.Setup(x => x.CreateFullWbs(wbsinUse.Id)).Returns(wbsinUse);
+
+            retriever.Setup(x => x.GetFullWorkspaceById(wbs.WorkspaceID)).Returns(ws);
+            retriever.Setup(x => x.GetFullWorkspaceById(-1)).Returns(ws);
+
+            _VariableCircularReferenceChecker.Setup(x => x.WBSRenumberCreatesCircularReference(It.IsAny<VariableCircularReferenceCheckerCache>(), It.IsAny<FullWbs>(), value, null, ws)).Returns(false);
+
+            retriever.Setup(x => x.GetParentWbs(wbs.WorkspaceID, It.IsAny<string>())).Returns(parentWbs);
+            retriever.Setup(x => x.GetChildWbs(wbs.WorkspaceID, value)).Returns(childWbs);
+            retriever.Setup(x => x.GetChildWbs(wbs.WorkspaceID, wbs.WbsNumber)).Returns(new Collection<FullWbs>());
+
+            WBSRenumberValidator sut = new WBSRenumberValidator(_VariableCircularReferenceChecker.Object, factory.Object);
+
+            //Act
+            Collection<string> returnValue = sut.validation(value, inData);
+
+            //Assert
+            Assert.AreEqual(1, returnValue.Count);
+            Assert.IsTrue(returnValue[0].Contains("would now be a child of"));
         }
 
         /// <summary>
