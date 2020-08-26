@@ -57,15 +57,18 @@ namespace IES.Common.Exceptions
                 }
                 else if ((filterContext.Exception.GetType() == typeof(EntityCommandExecutionException) || filterContext.Exception.GetType() == typeof(EntityException) || filterContext.Exception.GetType() == typeof(SqlException)) && filterContext.Exception.Message.Contains("See the inner exception for details."))
                 {
-                    log.Error(filterContext.Exception.InnerException);
                     if (filterContext.Exception.InnerException != null && filterContext.Exception.InnerException.Message != null && filterContext.Exception.InnerException.Message.Contains("has been updated and is out of sync with the data in your browser."))
                     {
+                        log.Warn(filterContext.Exception.InnerException);
+
                         message = "A newer version was recently saved by another user. To prevent overriding information, please copy your changes, open the current version and reapply the changes as necessary.";
                         title = "Save Error";
                         details = filterContext.Exception.InnerException.Message;
                     }
                     else
                     {
+                        log.Error(filterContext.Exception.InnerException);
+
                         message = @"An error has occurred. Any changes you made recently might be lost. Please copy your changes, refresh the page and try again. If the error persists, please contact the GenBOE Helpdesk at " + supportEmailLink;
                         title = "Application Error";
                         details = message;
