@@ -1,6 +1,6 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2020.4, on 7/16/2020.
+    This file was auto-generated for Release: 2020.4, on 8/25/2020.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
@@ -129,6 +129,48 @@ GO
 
 /*
 	7/1/2020 [Dusan]	BOEJ-4638 Post submittal attachments working with Revisioned Proposal
+
+	## END ##
+*/
+
+/*
+	## START ##
+
+	7/31/2020 [ranzalon] - BOEJ-4648 - Comments for Proposal Setup
+*/
+
+IF NOT EXISTS (SELECT * FROM sys.all_columns C INNER JOIN sys.tables T on C.object_id = T.object_id INNER JOIN sys.schemas S ON T.schema_id = S.schema_id WHERE S.name = 'dbo' AND 
+	T.name = 'Proposal' AND C.name = 'SetupComments')
+BEGIN 
+
+ALTER TABLE dbo.[Proposal]
+ADD [SetupComments] VARCHAR(max) NULL;
+
+END
+
+/*
+	7/31/2020 [ranzalon] - BOEJ-4648 - Comments for Proposal Setup
+
+	## END ##
+*/
+
+/*
+	## START ##
+
+	8/10/2020 [ranzalon] - BOEJ-4649 - Comments for Manage Proposal Info
+*/
+
+IF NOT EXISTS (SELECT * FROM sys.all_columns C INNER JOIN sys.tables T on C.object_id = T.object_id INNER JOIN sys.schemas S ON T.schema_id = S.schema_id WHERE S.name = 'dbo' AND 
+	T.name = 'Proposal' AND C.name = 'InformationComments')
+BEGIN 
+
+ALTER TABLE dbo.[Proposal]
+ADD [InformationComments] VARCHAR(max) NULL;
+
+END
+
+/*
+	8/10/2020 [ranzalon] - BOEJ-4649 - Comments for Manage Proposal Info
 
 	## END ##
 */
@@ -687,6 +729,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		6/30/2020	Dusan				BOEJ-4639 Add Revision Type
 **										BOEJ-4590 Add Material POC and Subcontracts POC
 **										BOEJ-4631 Add Reason Cert Not Required
+**		7/30/2020	Dusan				BOEJ-4639 Add Latest Revision
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -802,12 +845,16 @@ SELECT
 		WHEN 3 THEN p.OtherReasonComment -- Other
 		ELSE rCNR.Text
 	END AS ReasonCertificationNotRequired,
-	CASE p.RevisionOfId
-		WHEN NULL THEN 'Original'
+	CASE 
+		WHEN p.RevisionOfId IS NULL THEN 'Original'
 		ELSE 'Proposal Revision'
 	END AS RevisionType,
 	MaterialPOC.DisplayName AS MaterialPOC,
-	SubcontractsPOC.DisplayName AS SubcontractsPOC
+	SubcontractsPOC.DisplayName AS SubcontractsPOC,
+	CASE
+		WHEN p.ProposalStatusID = 8 THEN 'No'
+		ELSE 'Yes'
+	END AS IsLatestVersion
   FROM [dbo].[Proposal] P
 	INNER JOIN [dbo].[ProgramAreaLU] PA ON P.ProgramAreaID = PA.ProgramAreaID
 	INNER JOIN [dbo].[LineOfBusinessLU] LOB ON P.LineOfBusinessID = LOB.LineOfBusinessID
@@ -1971,6 +2018,7 @@ AS
 **		6/30/2020	Dusan				BOEJ-4639 Add Revision Type
 **										BOEJ-4590 Add Material POC and Subcontracts POC
 **										BOEJ-4631 Add Reason Cert Not Required
+**		7/30/2020	Dusan				BOEJ-4639 Add Latest Revision
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -2235,6 +2283,7 @@ SELECT V.[ProposalID]
 	 ,V.RevisionType
 	 ,V.MaterialPOC
 	 ,V.SubcontractsPOC
+	 ,V.IsLatestVersion
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(
@@ -4574,7 +4623,8 @@ CREATE PROCEDURE [dbo].[updateProposalInformation]
       @ProposalSubmittalDate [date],
       @ISGSTotalPrice [bigint],
       @PricerChecklistSubmittalDate [date],
-      @PeerChecklistSubmittalDate [date]
+      @PeerChecklistSubmittalDate [date],
+	  @InformationComments VARCHAR(MAX) = NULL
 )
 AS
 /******************************************************************************
@@ -4597,6 +4647,7 @@ AS
 **			1/12/2017	gbrunwo					BOEJ-1688 Update PTM SPs to not 
 **												display technical details to the user
 **			5/31/2018	ranzalon				BOEJ-3405 - remove TempProposalSubmittalDate
+**			8/10/2020	ranzalon				BOEJ-4649 Manage Proposal Info Comments
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -4648,6 +4699,15 @@ IF (SELECT UpdateDate FROM [dbo].[Proposal] WHERE ProposalID = @ProposalID) = @U
 					ProposalID = @ProposalID AND
 					ResponseTypeID = 2 /*Peer*/
 			END
+
+		IF @InformationComments IS NOT NULL
+		  BEGIN                  
+			  UPDATE [dbo].[Proposal]
+					SET  [UpdateDate] = @UpdateDate
+						,[InformationComments] = @InformationComments
+					 WHERE 
+						  ProposalID = @ProposalID
+		  END
     
       END
       
@@ -5704,7 +5764,8 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @IsRevision bit,
 	  @RevisionOfId int,
 	  @ReasonCertificationNotRequired INT = 1,
-	  @OtherReasonComment VARCHAR(1000) = NULL
+	  @OtherReasonComment VARCHAR(1000) = NULL,
+	  @SetupComments VARCHAR(MAX) = NULL
 )
 AS
 /******************************************************************************
@@ -5738,6 +5799,7 @@ AS
 **			6/23/2020	Dusan					BOEJ-4626 Add Certification Not Required
 **			6/23/2020	ranzalon				BOEJ-4669 No new tracking number when IsRevision 
 **			7/2/2020	ranzalon				BOEJ-4687 Link Revisions to Revised Proposal
+**			7/31/2020	ranzalon				BOEJ-4648 Proposal Setup Comments
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -5879,6 +5941,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,[RevisionOfId]
 		,[ReasonCertificationNotRequired]
 		,[OtherReasonComment]
+		,[SetupComments]
 		)
 	OUTPUT inserted.ProposalID INTO @Inserted
 	VALUES
@@ -5943,6 +6006,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@RevisionOfId
 		,@ReasonCertificationNotRequired
 		,@OtherReasonComment
+		,@SetupComments
 		)
 
 		SELECT @ProposalID = ID FROM @Inserted
@@ -6041,6 +6105,7 @@ ELSE
 						,[RevisionOfId] = @RevisionOfId
 						,[ReasonCertificationNotRequired] = @ReasonCertificationNotRequired
 						,[OtherReasonComment] = @OtherReasonComment
+						,[SetupComments] = @SetupComments
 
 						WHERE 
 							ProposalID = @ProposalID;
