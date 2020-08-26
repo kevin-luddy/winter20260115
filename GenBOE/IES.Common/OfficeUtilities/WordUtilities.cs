@@ -160,7 +160,7 @@ namespace IES.Common.OfficeUtilities
             {
                 Table tableElement = row.Ancestors<Table>().First();
                 ICollection<TableRow> tableRows = tableElement.Elements<TableRow>().ToList();
-                foreach (TableRow currentRow in tableRows)
+                foreach (TableRow currentRow in tableRows.Where(x => x.Elements<TableCell>().Count() >= columnToDelete + 1))
                 {
                     TableCell cellToDelete = currentRow.Elements<TableCell>().ElementAt(columnToDelete);
                     currentRow.RemoveChild(cellToDelete);
