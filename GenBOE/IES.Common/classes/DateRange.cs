@@ -1,7 +1,14 @@
-﻿using System;
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace IES.Common.classes
 {
+    using System;
+    using IES.Common.Exceptions;
+
     public class DateRange : IEquatable<DateRange> {
 
         Nullable<DateTime> startDate, endDate;
@@ -33,7 +40,7 @@ namespace IES.Common.classes
                 if ((inStartDate.HasValue && inEndDate.HasValue) &&
                     (inEndDate.Value < inStartDate.Value))
                 {
-                    throw new InvalidOperationException("Start Date must be less than or equal to End Date");
+                    throw new GenValidationException("Start Date must be less than or equal to End Date");
                 }
         }
         public DateRange GetIntersection(DateRange other) {
@@ -43,7 +50,7 @@ namespace IES.Common.classes
             }
             if (!Intersects(other))
             {
-                throw new InvalidOperationException("Date's do not intersect");
+                throw new GenValidationException("Date's do not intersect");
             }
             return new DateRange(GetLaterStartDate(other.StartDate), GetEarlierEndDate(other.EndDate));
         }
