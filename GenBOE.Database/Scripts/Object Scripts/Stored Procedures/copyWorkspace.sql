@@ -48,6 +48,7 @@ AS
 **		12/17/19	twilson3			BOEJ-4434 Fix Assigned
 **		1/22/20		ranzalon			Fixed bug with missing RteTemplateSourceId
 **		6/11/20		Dusan				BOEJ-4655 Exact copy should copy WS email settings
+**		8/27/20		ranzalon			BOEJ-4760 - Template Boe
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -212,6 +213,7 @@ INSERT INTO [dbo].[Workspace]
 		   ,[LastProPricerProposal]
 		   ,[RteSizeLimit]
 		   ,[RevisedSubmittalDate]
+		   ,[TemplateBoe]
            )
 SELECT [UpdateDT]
       ,@WorkspaceName--[WorkspaceName]
@@ -257,6 +259,7 @@ SELECT [UpdateDT]
 	  ,null --LastProPricerProposal
 	  ,[RteSizeLimit]
 	  ,[RevisedSubmittalDate]
+	  ,[TemplateBoe]
   FROM [dbo].[Workspace]
 WHERE WorkspaceID = @WorkspaceID
 

@@ -34,6 +34,7 @@ AS
 **		5/15/20		Dusan				Changed Split_String function call to call our SplitString function
 **		6/11/20		Dusan				BOEJ-4655 Exact copy should copy WS email settings
 **		7/28/20		RJ					BOEJ-4713 Remove email settings
+**		8/27/20		ranzalon			BOEJ-4760 - Template Boe
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -110,6 +111,7 @@ BEGIN TRY
 			   ,[LastProPricerProposal]
 			   ,[RteSizeLimit]
 			   ,[RevisedSubmittalDate]
+			   ,[TemplateBoe]
 			   )
 		SELECT [UpdateDT]
 		  ,@WorkspaceName
@@ -154,6 +156,7 @@ BEGIN TRY
 		  ,null --LastProPricerProposal
 		  ,[RteSizeLimit]
 		  ,[RevisedSubmittalDate]
+		  ,[TemplateBoe]
 	  FROM [version].[Workspace]
 	WHERE WorkspaceID = @WorkspaceID AND VersionID = @VersionID
 

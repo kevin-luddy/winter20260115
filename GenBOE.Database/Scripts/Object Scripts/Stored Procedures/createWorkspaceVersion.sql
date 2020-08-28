@@ -44,6 +44,7 @@ AS
 **		12/5/19		twilson3			BOEJ-4429 - RTE Templates
 **		12/13/19	twilson3			BOEJ-4434 - RTE Template Answers
 **		12/17/19	twilson3			BOEJ-4434 Fix Assigned
+**		8/27/20		ranzalon			BOEJ-4760 - Template Boe
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 
@@ -144,7 +145,8 @@ INSERT INTO [version].[Workspace]
 ,[LastProPricerInstance]
 ,[LastProPricerProposal]
 ,[RteSizeLimit]
-,[RevisedSubmittalDate])
+,[RevisedSubmittalDate]
+,[TemplateBoe])
 SELECT [WorkspaceID]
 ,[WorkspaceName]
 ,[WorkspaceShortName]
@@ -191,6 +193,7 @@ SELECT [WorkspaceID]
 ,[LastProPricerProposal]
 ,[RteSizeLimit]
 ,[RevisedSubmittalDate]
+,[TemplateBoe]
 FROM [dbo].[Workspace]
 WHERE WorkspaceID = @WorkspaceID
 

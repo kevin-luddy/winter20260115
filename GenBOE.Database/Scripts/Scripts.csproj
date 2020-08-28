@@ -313,6 +313,7 @@
     <Content Include="Release Scripts\Release 2020.2\Release 2020.2.sql" />
     <Content Include="Release Scripts\Release 2020.3\Release 2020.3.sql" />
     <Content Include="Release Scripts\Release 2020.5\Release 2020.5.sql" />
+    <Content Include="Release Scripts\Release 2020.6\Release 2020.6.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2020.3 Generated On 7_21_2020.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2020.2 Generated On 6_9_2020.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - Release 2020.1 Generated On 6_1_2020.sql" />

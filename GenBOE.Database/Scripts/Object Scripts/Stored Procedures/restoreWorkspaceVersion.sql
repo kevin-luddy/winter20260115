@@ -65,6 +65,7 @@ AS
 **		12/13/19	twilson3			BOEJ-4434 - RTE Template Answers
 **		12/17/19	twilson3			BOEJ-4434 - Fix Assigned
 **		02/13/20	ranzalon			BOEJ-4506 - Fix RTE Assigned, RTE template deletion order
+**		8/27/20		ranzalon			BOEJ-4760 - Template Boe
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -581,6 +582,7 @@ UPDATE [dbo].[Workspace]
 	,[LastProPricerProposal] = vW.[LastProPricerProposal]
 	,[RteSizeLimit] = vW.[RteSizeLimit]
 	,[RevisedSubmittalDate] = vW.[RevisedSubmittalDate]
+	,[TemplateBoe] = vW.[TemplateBoe]
 FROM [dbo].[Workspace] W
 	INNER JOIN [version].[Workspace] vW ON W.WorkspaceID = vW.WorkspaceID
 	LEFT OUTER JOIN [dbo].[ResourceList] RL ON vW.ResourceListID = RL.ResourceListID
