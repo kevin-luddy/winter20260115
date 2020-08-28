@@ -204,5 +204,10 @@ namespace GenBOE.Dtos
         /// Get/Set the RTE Size Limit (number of characters)
         /// </summary>
         public int? RteSizeLimit { get; set; }
+
+        /// <summary>
+        /// This drives MOQ Type usage. Yes -> new, more complex types. No -> legacy / original code.
+        /// </summary>
+        public bool UsingTemplateBOE { get; set; }
     }
 }
