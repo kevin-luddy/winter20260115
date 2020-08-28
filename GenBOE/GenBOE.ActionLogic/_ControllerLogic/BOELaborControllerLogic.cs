@@ -12,6 +12,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Linq;
     using System.Transactions;
     using System.Web.Configuration;
+    using System.Web.Mvc;
     using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
@@ -3308,6 +3309,24 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     throw new GenValidationException("Too much decimal precision in " + fieldName);
                 }
             }
+        }
+
+        /// <summary>
+        /// Get a list of MOQ Types for dropdown
+        /// </summary>
+        /// <returns>MOQ Types</returns>
+        public ICollection<SelectListItem> GetMOQTypeSelectList()
+        {
+            ICollection<MOQType> validMOQTypes = this.GetMOQTypes();
+
+            // convert selected MOQ types to select list items
+            List<SelectListItem> results = validMOQTypes.Select(t => new SelectListItem
+            {
+                Text = t.GetDescription(),
+                Value = ((int)t).ToString()
+            }).ToList();
+
+            return results;
         }
     }
 

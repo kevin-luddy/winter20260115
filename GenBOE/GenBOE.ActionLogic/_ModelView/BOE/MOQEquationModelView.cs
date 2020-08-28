@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel.DataAnnotations;
+    using System.Web.Mvc;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.DTO;
@@ -174,7 +175,16 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Gets or sets the RTE Custom Template Answers at Task level.
         /// </summary>
         public ICollection<RTECustomTemplateQuestionAnswerModelView> MoqTemplateAnswers { get; set; }
-        
+
+        /// <summary>
+        /// This drives MOQ Type usage. Yes -> new, more complex types. No -> legacy / original code.
+        /// </summary>
+        public bool UsingTemplateBOE { get; set; }
+
+        /// <summary>
+        /// MOQ Types for DropDown
+        /// </summary>
+        public ICollection<SelectListItem> MOQTypes { get; set; }
     }
 
     public enum MOQEquationType

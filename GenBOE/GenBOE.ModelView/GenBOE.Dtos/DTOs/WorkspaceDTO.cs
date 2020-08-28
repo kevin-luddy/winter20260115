@@ -208,6 +208,6 @@ namespace GenBOE.Dtos
         /// <summary>
         /// This drives MOQ Type usage. Yes -> new, more complex types. No -> legacy / original code.
         /// </summary>
-        public bool UsingTemplateBOE { get; set; }
+        public bool UsingTemplateBOE { get; set; } = true;
     }
 }

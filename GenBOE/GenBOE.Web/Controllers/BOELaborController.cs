@@ -2083,7 +2083,7 @@ namespace GenBOE.Web.Controllers
                                                where workspaceVariable.Id == wID
                                                select workspaceVariable).ToList();
 
-                taskElement.MOQHoursEquation = ActionLogic.Common.MOQ.Parser.UntagVariables(taskElement.MOQHoursEquation, inUseWorkspaceVariables);
+                taskElement.MOQHoursEquation = Parser.UntagVariables(taskElement.MOQHoursEquation, inUseWorkspaceVariables);
 
                 theModelView = _BoeLaborControllerLogic.GetMOQModelView(taskElement, ws);
             }
@@ -2096,6 +2096,8 @@ namespace GenBOE.Web.Controllers
 
             theModelView.HelpText = _BoeLaborControllerLogic.GetMOQTypesHelpText();
             theModelView.MOQTextLabel = _BoeLaborControllerLogic.GetMOQTextLabel();
+            theModelView.UsingTemplateBOE = ws.UsingTemplateBOE;
+            theModelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList();
 
             return theModelView;
         }
@@ -2185,7 +2187,7 @@ namespace GenBOE.Web.Controllers
             return validationErrors;
         }
 
-        #endregion Private Methods
+        #endregion
     }
 }
 

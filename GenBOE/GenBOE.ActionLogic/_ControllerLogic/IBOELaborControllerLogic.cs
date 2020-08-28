@@ -8,6 +8,7 @@ namespace GenBOE.ActionLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Web.Mvc;
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
@@ -279,5 +280,11 @@ namespace GenBOE.ActionLogic
         /// <param name="taskElement">Task Element containing the Labor Types</param>
         /// <param name="modelView">Collection of the Labor Type Order</param>
         void ReOrderLaborTypeOrder(FullWorkspace ws, BoeTaskElementDTO taskElement, LaborTypeOrderCollection modelView);
+
+        /// <summary>
+        /// Get a list of MOQ Types for dropdown
+        /// </summary>
+        /// <returns>MOQ Types</returns>
+        ICollection<SelectListItem> GetMOQTypeSelectList();
     }
 }

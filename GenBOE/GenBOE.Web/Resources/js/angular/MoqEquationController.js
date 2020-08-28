@@ -5,6 +5,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         $scope.model = $window.MOQEquationFieldModel;
         $scope.model.IsCostEquation = ($scope.model.MoqEquationType == 'Cost');
         $scope.model.insertWorkspaceModalOpen = false;
+        $scope.model.SelectedMoqTypes = [];
     }
 
     // Called when the Insert Workspace Variable dropdown item is clicked.
@@ -47,4 +48,18 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         $('#CopyMoqFromBoeLink').data('moq-task-id', $scope.model.TaskElementId);
         $(document).trigger("COPY_MOQ_SELECT");
     }
+
+    // Adds MOQ Type to Selected MOQ Types (and removes it from the dropdown of available types)
+    $scope.AddMoqType = function () {
+        $scope.model.SelectedMoqTypes.push($scope.model.MOQType);
+        var index = $scope.model.MOQTypes.indexOf($scope.model.MOQType);
+        $scope.model.MOQTypes.splice(index, 1);     
+    }
+
+    // Removes MOQ Type from Selected MOQ Types (and adds it into the dropdown)
+    $scope.RemoveMoqType = function (item) {
+        $scope.model.MOQTypes.push(item);
+        var index = $scope.model.SelectedMoqTypes.indexOf(item);
+        $scope.model.SelectedMoqTypes.splice(index, 1);
+    }    
 }]);

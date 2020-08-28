@@ -17,16 +17,18 @@
 <script type="text/javascript">
     var MOQEquationFieldModel = {
         BaseUrl: '<%=this.ResolveClientUrl("~/")%>',
-        IsReadOnly: <%=ViewData["READONLY"]%>,
         MoqEquationLabel: '<%=Model.MOQEquationLabel%>',
         MoqEquationType: '<%=Model.TypeOfMoqEquation%>',
-        WorkspaceVariables: <%=serializer.Serialize(workspaceVariables)%>,
+        MOQType: '<%=Model.MOQType%>',
+        TaskElementId: <%=Model.TaskElementId > 0 ? Model.TaskElementId : -1%>,
         ShowSearchMetricsLink: <%=Model.ShowSearchMetricsLink ? "true" : "false"%>,
-        TaskElementId: <%=Model.TaskElementId > 0 ? Model.TaskElementId : -1%>
+        UsingTemplateBOE: <%=Model.UsingTemplateBOE ? "true" : "false"%>,
+        IsReadOnly: <%=ViewData["READONLY"]%>,
+        WorkspaceVariables: <%=serializer.Serialize(workspaceVariables)%>,
+        MOQTypes: <%=serializer.Serialize(Model.MOQTypes.Select(x => new { id = x.Value, text = x.Text }))%>
         };
 </script>
 <script type="text/javascript">
-
     // Get the read-only attribute passed in from the controller
     var MOQEquationFieldWidget_ReadOnly = '<%= ViewData["READONLY"] %>'.isTrue();
         
@@ -991,7 +993,6 @@
         $(document).trigger('MOQWidgetLoaded', "MOQEquationField");
         $(document).trigger('WidgetLoaded', "MOQEquationField");
     });
-
 </script>
 
 <div id="MOQEquationField" class="bootstrap" data-ng-controller="MoqEquationController" data-ng-init="init()">
@@ -1024,7 +1025,7 @@
         <div class="form-element">
             <div class="validation-box" style="width: 520px; display: block">
                 <div>
-                    <b><div id="MOQEquation-ErrorTitle">Invalid MOQ Equation.</div></b>
+                    <div id="MOQEquation-ErrorTitle"><b>Invalid MOQ Equation.</b></div>
                     <div id="MOQEquation-ErrorText"></div>
                 </div>
                 <div class="clear"></div>
@@ -1036,11 +1037,35 @@
 
 
 
-
-
-    <div class="form-row">
+    <div data-ng-if="model.UsingTemplateBOE" class="form-row">
         <div class="form-label">
-            <span helptext="<%: Model.HelpText %>">MOQ Type **</span>
+            <span>MOQ Type(s)</span>
+        </div>
+    </div>
+
+    
+    <div data-ng-if="model.UsingTemplateBOE" data-ng-repeat="item in model.SelectedMoqTypes" class="form-row">
+        MOQ ITEM FOR.. Id: {{item.id}}, Type: {{item.text}}
+        <input type="button" data-ng-click="RemoveMoqType(item)" value="DELETE" />
+    </div>
+
+
+    <div data-ng-if="model.UsingTemplateBOE" class="form-row">
+        <div class="form-label">
+            <span>Add New MOQ Type *</span>
+        </div>
+        <div class="form-element">
+            <select data-ng-model="model.MOQType" data-ng-options="moqType.text for moqType in model.MOQTypes" class="moqTypes">
+            </select>
+            <input type="button" data-ng-click="AddMoqType()" value="ADD" />
+        </div>
+    </div>
+
+
+
+    <div data-ng-if="!model.UsingTemplateBOE" class="form-row">
+        <div class="form-label">
+            <span>MOQ Type **</span>
             <div class="help-icon" onclick="MOQEquationFieldWidget.ToggleHelp(this);"></div>
             <div class="help-dialog" style="max-width: 275px;">
                 <div class="help-dialog-text"><%: Html.Raw(Model.HelpText) %></div>
@@ -1048,20 +1073,14 @@
         </div>
         <div class="form-element" id="MoqType">
             <select id="MOQType" name="MOQType" class="moqTypes">
-                <%= ViewData["MOQTypes"] %>
+                <%=ViewData["MOQTypes"]%>
             </select>
         </div>
     </div>
-    <div class="form-row">
+    <div data-ng-if="!model.UsingTemplateBOE" class="form-row">
         <div class="form-label"><%: Model.MOQTextLabel %> **</div>
         <div class="form-element moq-text-area"><% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(Model.MoqTemplateAnswers, "MOQText", Model.MOQText));  %></div>
     </div>
-    
-
-
-
-    
-    
     <div id="UsedHistoricalMetrics" class="form-row display-none">
         <div class="form-label">
             <%if (Model.Company == CompanyConfiguration.MST) 
