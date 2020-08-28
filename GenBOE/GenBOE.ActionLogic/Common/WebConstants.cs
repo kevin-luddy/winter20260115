@@ -371,7 +371,6 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_DISPLAY_IWTA_TASK_ELEMENT_DETAILS = "DisplayIWTATaskElementDetails";
         public static readonly string ACTION_DISPLAY_TASK_ELEMENT = "DisplayTask";
         public static readonly string ACTION_DISPLAY_MOQ_HOURS_EQUATION_FIELD = "DisplayMOQHoursEquationField";
-        public static readonly string ACTION_DISPLAY_MOQ_COST_EQUATION_FIELD = "DisplayMOQCostEquationField";
         public static readonly string ACTION_IMPORT_LABOR_SPREAD = "ImportLaborSpread";
         public static readonly string ACTION_COMPLETE_IMPORT_LABOR_SPREAD = "CompleteImportLaborSpread";
         public static readonly string ACTION_IMPORT_LABOR_TYPE_AND_SPREAD = "ImportLaborTypeAndSpread";

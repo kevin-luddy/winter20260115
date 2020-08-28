@@ -7,7 +7,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         $scope.model.insertWorkspaceModalOpen = false;
     }
 
-
     // Called when the Insert Workspace Variable dropdown item is clicked.
     $scope.InsertWorkspaceVariableClicked = function () {
         // show the modal
@@ -28,7 +27,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
             if (angular.isDefined(selectedVariable)) {
                 // add the variable to the MOQ equation field
-                var moqEquationField = $('#' + $scope.model.MoqEquationName + 'MOQEquationField #MOQEquation');
+                var moqEquationField = $('#' + $scope.model + 'MOQEquationField #MOQEquation');
                 var previousValue = moqEquationField.val();
                 moqEquationField.val(previousValue + selectedVariable.WorkspaceVariableName);
 

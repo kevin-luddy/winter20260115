@@ -1124,6 +1124,7 @@
                     postedData.TaskElementData.MOQHoursEquation = '0';
                 }
 
+// ToDo: DUSAN - MOQ TYPE
                 postedData.TaskElementData.MOQType = $('#MOQType').val();
                 postedData.TaskElementData.TaskOrdinaryVariables = [];
                 postedData.TaskElementData.WorkspaceVariableIDs = [];
@@ -1266,6 +1267,8 @@
                 // there seems to be an issue with the jquery serializer when dealing with rich text pasted from excel so we need to get these field contents again
                 postedData.TaskElementData.RteTemplateAnswers = [];
                 GetRteTemplateJson(TaskElementDetailsWidget.TaskDescription, 'TaskDescription', postedData.TaskElementData);
+
+// ToDo: DUSAN - MOQ TYPE
                 GetRteTemplateJson(TaskElementDetailsWidget.MOQText, 'MOQText', postedData.TaskElementData);
 
                 // Filter out the blank row before save

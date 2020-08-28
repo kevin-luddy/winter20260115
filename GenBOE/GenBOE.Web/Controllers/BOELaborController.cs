@@ -568,7 +568,6 @@ namespace GenBOE.Web.Controllers
             Stopwatch sw = InitializeAction(_log, "DisplayMOQEquationField", SecurityPage.MOQEquationField, SecurityAuthorization.Read, ws, boeID);
 
             var theModelView = CreateMOQModelView(ws, boeID, taskElementID);
-            theModelView.MoqEquationName = "MOQHours";
             ViewBag.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
 
             ViewResult toReturn = View(WebConstants.VIEW_MOQ_EQUATION_FIELD, theModelView);
@@ -609,24 +608,6 @@ namespace GenBOE.Web.Controllers
 
             // Finalize Action
             FinalizeAction(_log, "CopyMoqEquation", sw);
-            return toReturn;
-        }
-
-        public ViewResult DisplayMOQCostEquationField(string workspace, int boeID, int taskElementID)
-        {
-            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-            // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayMOQEquationField", SecurityPage.MOQEquationField, SecurityAuthorization.Read, ws, boeID);
-
-            var theModelView = CreateMOQModelView(ws, boeID, taskElementID);
-            theModelView.TypeOfMoqEquation = MOQEquationType.Cost;
-            theModelView.MoqEquationName = "MOQCost";
-
-            ViewResult toReturn = View(WebConstants.VIEW_MOQ_EQUATION_FIELD, theModelView);
-
-            // Finalize Action
-            FinalizeAction(_log, "DisplayMOQEquationField", sw);
             return toReturn;
         }
 
@@ -2082,7 +2063,6 @@ namespace GenBOE.Web.Controllers
 
             MOQEquationModelView modelView = new MOQEquationModelView(copyTaskElement, _VariableSelectBOEtoSumCalculation, workspace);
             modelView.MOQTextLabel = _BoeLaborControllerLogic.GetMOQTextLabel();
-            modelView.MoqEquationName = "MOQHours";
 
             _BoeLaborControllerLogic.GetMetricByTaskElementIds(new Collection<int> { originalSourceTaskElementId }, modelView);
 

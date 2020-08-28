@@ -14,12 +14,10 @@
     bool showMoqQuestions = Model.MoqTemplateAnswers.Any();;
     int numberMoqQuestions = showMoqQuestions ? Model.MoqTemplateAnswers.Count : 1;
 %>
-
 <script type="text/javascript">
     var MOQEquationFieldModel = {
         BaseUrl: '<%=this.ResolveClientUrl("~/")%>',
         IsReadOnly: <%=ViewData["READONLY"]%>,
-        MoqEquationName: '<%=Model.MoqEquationName%>',
         MoqEquationLabel: '<%=Model.MOQEquationLabel%>',
         MoqEquationType: '<%=Model.TypeOfMoqEquation%>',
         WorkspaceVariables: <%=serializer.Serialize(workspaceVariables)%>,
@@ -27,41 +25,40 @@
         TaskElementId: <%=Model.TaskElementId > 0 ? Model.TaskElementId : -1%>
         };
 </script>
-
 <script type="text/javascript">
 
     // Get the read-only attribute passed in from the controller
-    var <%: Model.MoqEquationName %>MOQEquationFieldWidget_ReadOnly = '<%= ViewData["READONLY"] %>'.isTrue();
+    var MOQEquationFieldWidget_ReadOnly = '<%= ViewData["READONLY"] %>'.isTrue();
         
     //create base js object;
-    var <%: Model.MoqEquationName %>MOQEquationFieldWidget = new Widget("<%: Model.MoqEquationName %>MOQEquationField", <%: Model.MoqEquationName %>MOQEquationFieldWidget_ReadOnly);
+    var MOQEquationFieldWidget = new Widget("MOQEquationField", MOQEquationFieldWidget_ReadOnly);
     
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.initialLoad = false;
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.MarkedEquation = "";
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.WorkspaceVariables = <%= serializer.Serialize(workspaceVariables) %>;
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.OrdinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
+    MOQEquationFieldWidget.initialLoad = false;
+    MOQEquationFieldWidget.MarkedEquation = "";
+    MOQEquationFieldWidget.WorkspaceVariables = <%= serializer.Serialize(workspaceVariables) %>;
+    MOQEquationFieldWidget.OrdinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
     
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQCalculating = false;
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQValidating = false;
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQValid = false;
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.SavePending = false;
+    MOQEquationFieldWidget.MOQCalculating = false;
+    MOQEquationFieldWidget.MOQValidating = false;
+    MOQEquationFieldWidget.MOQValid = false;
+    MOQEquationFieldWidget.SavePending = false;
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.NewOrdinaryVariableID = -1;
+    MOQEquationFieldWidget.NewOrdinaryVariableID = -1;
     <% if (Model.TypeOfMoqEquation == MOQEquationType.Cost) { %>
     // This will avoid collisions with IDs when placed on the same page as an Hours MOQ Equation.  250 was chosen because that's the char limit in the text box
     // so you are guaranteed there will never be 250 variables.
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.NewOrdinaryVariableID = -250;
+    MOQEquationFieldWidget.NewOrdinaryVariableID = -250;
     <% } %>
     
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.HarvestWorkspaceVariablesForSave = function() {
+    MOQEquationFieldWidget.HarvestWorkspaceVariablesForSave = function() {
     
         var toReturn = [];
 
-        var workspaceVariableFields = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetAllVariableFields().filter('[wsVar]');
+        var workspaceVariableFields = MOQEquationFieldWidget.GetAllVariableFields().filter('[wsVar]');
 
-        for (var ndx = 0; ndx < <%: Model.MoqEquationName %>MOQEquationFieldWidget.WorkspaceVariables.length; ndx++)
+        for (var ndx = 0; ndx < MOQEquationFieldWidget.WorkspaceVariables.length; ndx++)
         {
-            var variableID = <%: Model.MoqEquationName %>MOQEquationFieldWidget.WorkspaceVariables[ndx].WorkspaceVariableID;
+            var variableID = MOQEquationFieldWidget.WorkspaceVariables[ndx].WorkspaceVariableID;
             var variableField = workspaceVariableFields.filter('[pkid=' + variableID + ']');
             
             if (variableField.length)
@@ -73,22 +70,22 @@
         return toReturn;
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.HarvestOrdinaryVariablesForSave = function() {
+    MOQEquationFieldWidget.HarvestOrdinaryVariablesForSave = function() {
         var toReturn = [];
-        var currentVariableInputs = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetAllVariableFields().filter('[ordVar]');
+        var currentVariableInputs = MOQEquationFieldWidget.GetAllVariableFields().filter('[ordVar]');
 
-        for (var ndx = 0; ndx < <%: Model.MoqEquationName %>MOQEquationFieldWidget.OrdinaryVariables.length; ndx++)
+        for (var ndx = 0; ndx < MOQEquationFieldWidget.OrdinaryVariables.length; ndx++)
         {
-            var currentTaskOrdinaryVariable = <%: Model.MoqEquationName %>MOQEquationFieldWidget.OrdinaryVariables[ndx];
+            var currentTaskOrdinaryVariable = MOQEquationFieldWidget.OrdinaryVariables[ndx];
             var variableID = currentTaskOrdinaryVariable.OrdinaryVariableID;
             var variableField = currentVariableInputs.filter('[pkid=' + variableID + ']');
             var variableValue;
             
-            if (variableField.length && (variableValue = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetOrdinaryVariableFieldValue(variableField)).length > 0)
+            if (variableField.length && (variableValue = MOQEquationFieldWidget.GetOrdinaryVariableFieldValue(variableField)).length > 0)
             {
                 currentTaskOrdinaryVariable.Deleted = false;
                 currentTaskOrdinaryVariable.OrdinaryVariableValue = variableValue;
-                currentTaskOrdinaryVariable.IsPercentage = <%: Model.MoqEquationName %>MOQEquationFieldWidget.OrdinaryVariableFieldIsPercentage(variableField);
+                currentTaskOrdinaryVariable.IsPercentage = MOQEquationFieldWidget.OrdinaryVariableFieldIsPercentage(variableField);
 
                 if (variableField.attr('BOEToSum') != undefined)
                 {
@@ -125,7 +122,7 @@
             else
             {
                 currentTaskOrdinaryVariable.Deleted = true;
-                currentTaskOrdinaryVariable.OrdinaryVariableValue = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetOrdinaryVariableFieldValue(variableField);
+                currentTaskOrdinaryVariable.OrdinaryVariableValue = MOQEquationFieldWidget.GetOrdinaryVariableFieldValue(variableField);
                 currentTaskOrdinaryVariable.OrdinaryVariableValueType = currentTaskOrdinaryVariable.OrdinaryVariableValueType.toString();
             }
             
@@ -141,7 +138,7 @@
                 var variableAlreadyInReturnSet = false;
                 var currentVariableInput = $(currentVariableInputs[inputNdx]);
                 var currentVariableInputID = currentVariableInput.attr('pkid');
-                var currentVariableInputValue = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetOrdinaryVariableFieldValue(currentVariableInput);
+                var currentVariableInputValue = MOQEquationFieldWidget.GetOrdinaryVariableFieldValue(currentVariableInput);
 
                 if (currentVariableInputValue.length > 0)
                 {
@@ -160,7 +157,7 @@
                         newOrdinaryVariable.OrdinaryVariableID = currentVariableInputID;
                         newOrdinaryVariable.OrdinaryVariableName = currentVariableInput.attr('name');;
                         newOrdinaryVariable.OrdinaryVariableValue = currentVariableInputValue;
-                        newOrdinaryVariable.IsPercentage = <%: Model.MoqEquationName %>MOQEquationFieldWidget.OrdinaryVariableFieldIsPercentage(currentVariableInput);
+                        newOrdinaryVariable.IsPercentage = MOQEquationFieldWidget.OrdinaryVariableFieldIsPercentage(currentVariableInput);
                         newOrdinaryVariable.DefaultSize = currentVariableInput.closest('tr').data('variable-default-size');
 
                         newOrdinaryVariable.BOEToSum = JSON.parse(currentVariableInput.attr('BOEToSum'));
@@ -185,31 +182,31 @@
         return toReturn;
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.InsertWorkspaceVariableDialogIsOpen = function () {
+    MOQEquationFieldWidget.InsertWorkspaceVariableDialogIsOpen = function () {
         var scope = angular.element(document.getElementById('MOQHoursMOQEquationField')).scope();
         return scope.model.insertWorkspaceModalOpen;
     };
     
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.InsertMOQElementDialogClosing = function () {
-        if (!<%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQValid && !<%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQValidating)
+    MOQEquationFieldWidget.InsertMOQElementDialogClosing = function () {
+        if (!MOQEquationFieldWidget.MOQValid && !MOQEquationFieldWidget.MOQValidating)
         {
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.ShowMOQValidationError();
+            MOQEquationFieldWidget.ShowMOQValidationError();
         }
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetAllVariableFields = function() {
-        return $('#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Variables [wsVar], #<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Variables [ordVar]');
+    MOQEquationFieldWidget.GetAllVariableFields = function() {
+        return $('#MOQEquationField #MOQEquation-Variables [wsVar], #MOQEquationField #MOQEquation-Variables [ordVar]');
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.RefreshStyles = function() {
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.applyReadOnly();
+    MOQEquationFieldWidget.RefreshStyles = function() {
+        MOQEquationFieldWidget.applyReadOnly();
 
-        if (<%: Model.MoqEquationName %>MOQEquationFieldWidget.isReadOnly())
+        if (MOQEquationFieldWidget.isReadOnly())
         {
-            $("#<%: Model.MoqEquationName %>MOQEquationField #InsertWorkspaceVariableLink").parent().prev().remove();
-            $("#<%: Model.MoqEquationName %>MOQEquationField #InsertWorkspaceVariableLink").parent().remove();
-            $("#<%: Model.MoqEquationName %>MOQEquationField #SearchEstimatingCatalogLink").parent().prev().remove();
-            $("#<%: Model.MoqEquationName %>MOQEquationField #SearchEstimatingCatalogLink").parent().remove();
+            $("#MOQEquationField #InsertWorkspaceVariableLink").parent().prev().remove();
+            $("#MOQEquationField #InsertWorkspaceVariableLink").parent().remove();
+            $("#MOQEquationField #SearchEstimatingCatalogLink").parent().prev().remove();
+            $("#MOQEquationField #SearchEstimatingCatalogLink").parent().remove();
 
             /*
                 MOQ-Type (drop-down) and MOQ-Text EFFECTIVELY inherit THEIR editability from the Task Details widget.
@@ -227,7 +224,7 @@
                 in the view models (or at least in the controllers) and then forwarded to the views as booleans.
             */
             if (!TaskElementDetailsWidget.isReadOnly()) {
-                var moqSection = $('#<%:Model.MoqEquationName%>MOQEquationField');
+                var moqSection = $('#MOQEquationField');
 
                 var moqTypeElement = $("#MOQType", moqSection);
                 $('.replacedWidgetText', moqTypeElement.parent()).addClass('display-none');
@@ -240,15 +237,15 @@
         refreshModule($('.task-element-details.module'));
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.ValidateMOQEquation = function () {
+    MOQEquationFieldWidget.ValidateMOQEquation = function () {
         TaskElementDetailsWidget.waitingBeforeSubmit = true;
 
         GenSession.ShowLoadingBox();
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQValidating = true;
+        MOQEquationFieldWidget.MOQValidating = true;
 
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.HideError();
+        MOQEquationFieldWidget.HideError();
 
-        var moqEquation = $.trim($("#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation").val());
+        var moqEquation = $.trim($("#MOQEquationField #MOQEquation").val());
 
         var dataToSend = { "moqEquation" : moqEquation }
         dataToSend = JSON.stringify(dataToSend);
@@ -262,134 +259,134 @@
             dataType: 'json',
             data: dataToSend,
             success: function(response, textStatus) {
-                <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQValidated(response);
+                MOQEquationFieldWidget.MOQValidated(response);
 
-                if(<%: Model.MoqEquationName %>MOQEquationFieldWidget.isReadOnly() && '<%: ViewData["ShouldMoqReadOnlyBeReversed"] %>' == 'True')
+                if(MOQEquationFieldWidget.isReadOnly() && '<%: ViewData["ShouldMoqReadOnlyBeReversed"] %>' == 'True')
                 {
                     $('.magnifier-button').addClass('display-none');
                     $('#MoqType').children('.replacedWidgetText').remove();
                     $('.moqTypes').removeClass('display-none');
 
-                    var moqSection = $('#<%:Model.MoqEquationName%>MOQEquationField');
+                    var moqSection = $('#MOQEquationField');
                     RemoveRTETemplateReadOnly(TaskElementDetailsWidget.MOQText, 'MOQText', moqSection);
                 }
             },
             error: function(response, textStatus) {
-                <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQValidationError(response);
+                MOQEquationFieldWidget.MOQValidationError(response);
             }
         });
     };
     
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQValidationError = function (exceptionstring) {
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.SetMOQError("Invalid MOQ Equation", "A general validation error occurred. Please check the MOQ equation for validity.");
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.ShowMOQValidationError();
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQValidating = false;
+    MOQEquationFieldWidget.MOQValidationError = function (exceptionstring) {
+        MOQEquationFieldWidget.SetMOQError("Invalid MOQ Equation", "A general validation error occurred. Please check the MOQ equation for validity.");
+        MOQEquationFieldWidget.ShowMOQValidationError();
+        MOQEquationFieldWidget.MOQValidating = false;
         TaskElementDetailsWidget.waitingBeforeSubmit = false;
         GenSession.HideLoadingBox();
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.SetMOQError = function (errorSubject, errorMessage) {
+    MOQEquationFieldWidget.SetMOQError = function (errorSubject, errorMessage) {
         if (errorSubject != undefined && errorMessage != undefined)
         {
-            $("#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-ErrorTitle").html(errorSubject);
-            $("#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-ErrorText").html(errorMessage);
+            $("#MOQEquationField #MOQEquation-ErrorTitle").html(errorSubject);
+            $("#MOQEquationField #MOQEquation-ErrorText").html(errorMessage);
         }
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.ShowMOQValidationError = function () {
-        $("#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Variables").hide();
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.ShowMOQError();
+    MOQEquationFieldWidget.ShowMOQValidationError = function () {
+        $("#MOQEquationField #MOQEquation-Variables").hide();
+        MOQEquationFieldWidget.ShowMOQError();
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.ShowMOQError = function() {
-        $("#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Error").show();
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.SetMOQResult("");
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.RefreshStyles();
+    MOQEquationFieldWidget.ShowMOQError = function() {
+        $("#MOQEquationField #MOQEquation-Error").show();
+        MOQEquationFieldWidget.SetMOQResult("");
+        MOQEquationFieldWidget.RefreshStyles();
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.HideError = function () {
-        $("#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Error").hide();
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.RefreshStyles();
+    MOQEquationFieldWidget.HideError = function () {
+        $("#MOQEquationField #MOQEquation-Error").hide();
+        MOQEquationFieldWidget.RefreshStyles();
     };
     
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.FocusError = function () {
-        $("#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-ErrorTitle").focus();
+    MOQEquationFieldWidget.FocusError = function () {
+        $("#MOQEquationField #MOQEquation-ErrorTitle").focus();
     }
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQEquationPreparedForSubmit = function() {
+    MOQEquationFieldWidget.MOQEquationPreparedForSubmit = function() {
     
-        if (<%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQValidating || <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQCalculating)
+        if (MOQEquationFieldWidget.MOQValidating || MOQEquationFieldWidget.MOQCalculating)
         {
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.SavePending = true;
+            MOQEquationFieldWidget.SavePending = true;
         }
 
-        return (!$("#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Error").is(":visible") &&
-                !<%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQValidating &&
-                !<%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQCalculating &&
-                <%: Model.MoqEquationName %>MOQEquationFieldWidget.ReadyForCalculate());
+        return (!$("#MOQEquationField #MOQEquation-Error").is(":visible") &&
+                !MOQEquationFieldWidget.MOQValidating &&
+                !MOQEquationFieldWidget.MOQCalculating &&
+                MOQEquationFieldWidget.ReadyForCalculate());
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQValidated = function (results) {
+    MOQEquationFieldWidget.MOQValidated = function (results) {
         TaskElementDetailsWidget.waitingBeforeSubmit = true;
         GenSession.ShowLoadingBox();
         // Set Widget valid flag
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQValid = results.Status;
+        MOQEquationFieldWidget.MOQValid = results.Status;
 
         if (results.Status)
         {
             var variables = results.Variables;
 
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.RemoveInvalidVariables(variables);
+            MOQEquationFieldWidget.RemoveInvalidVariables(variables);
 
             for (var ndx = 0; ndx < variables.length; ndx++)
             {
                 if (ndx == 0)
                 {
-                    <%: Model.MoqEquationName %>MOQEquationFieldWidget.MarkedEquation = variables[ndx];
+                    MOQEquationFieldWidget.MarkedEquation = variables[ndx];
                 }
                 else
                 {
-                    var defaultSize = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetVariableDefaultSize(variables[ndx]);
-                    <%: Model.MoqEquationName %>MOQEquationFieldWidget.AddVariableField(variables[ndx], defaultSize);
+                    var defaultSize = MOQEquationFieldWidget.GetVariableDefaultSize(variables[ndx]);
+                    MOQEquationFieldWidget.AddVariableField(variables[ndx], defaultSize);
                 }
             }
             // Reinitialize imported historical metric data.
             $('#MOQDefaultSizes').val("");
             $('#HistoricalMetricEquation').val("");
     
-            var currentVariables = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetAllVariableFields();
+            var currentVariables = MOQEquationFieldWidget.GetAllVariableFields();
 
             if (currentVariables.length > 0)
             {
-                $("#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Variables").show();
-                $("#<%: Model.MoqEquationName %>MOQEquationField .moqVariableNote").removeClass('display-none');
+                $("#MOQEquationField #MOQEquation-Variables").show();
+                $("#MOQEquationField .moqVariableNote").removeClass('display-none');
             }
             else
             {
-                $("#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Variables").hide();
+                $("#MOQEquationField #MOQEquation-Variables").hide();
             }
              
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.RefreshStyles();
+            MOQEquationFieldWidget.RefreshStyles();
 
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.CalculateMOQResult();
+            MOQEquationFieldWidget.CalculateMOQResult();
         }
         else
         {
             // Set the validation error text
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.SetMOQError("Invalid MOQ Equation", results.Message);
+            MOQEquationFieldWidget.SetMOQError("Invalid MOQ Equation", results.Message);
 
             // If the user isn't inserting a variable, we'll show the error
-            if (!<%: Model.MoqEquationName %>MOQEquationFieldWidget.InsertWorkspaceVariableDialogIsOpen() &&
+            if (!MOQEquationFieldWidget.InsertWorkspaceVariableDialogIsOpen() &&
                 (!TaskElementDetailsWidget.getDialog('MOQEquation-SearchEstimatingCatalogDialogMST').isOpen() ||
                 !TaskElementDetailsWidget.getDialog('MOQEquation-SearchEstimatingCatalogDialogCommon').isOpen()))
             {
-                <%: Model.MoqEquationName %>MOQEquationFieldWidget.ShowMOQValidationError();
+                MOQEquationFieldWidget.ShowMOQValidationError();
             }
 
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.SavePending = false;
+            MOQEquationFieldWidget.SavePending = false;
         }
 
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQValidating = false;
+        MOQEquationFieldWidget.MOQValidating = false;
         GenSession.HideLoadingBox();
         TaskElementDetailsWidget.waitingBeforeSubmit = false;
     };
@@ -400,7 +397,7 @@
     * @param {String} currentVariable Variable name
     * @returns {String}
     */
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetVariableDefaultSize = function(currentVariable) {
+    MOQEquationFieldWidget.GetVariableDefaultSize = function(currentVariable) {
         var metricEquation = $('#HistoricalMetricEquation').val().toUpperCase();
         var defaultSize = "";
         if (metricEquation.length) {
@@ -419,9 +416,9 @@
         return defaultSize;
      };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.RemoveInvalidVariables = function(currentVariables)
+    MOQEquationFieldWidget.RemoveInvalidVariables = function(currentVariables)
     {
-         var currentVariableInputs = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetAllVariableFields();
+         var currentVariableInputs = MOQEquationFieldWidget.GetAllVariableFields();
 
          if (currentVariableInputs.length > 0)
          {
@@ -447,17 +444,17 @@
          }  
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.AddVariableField = function(variableName, defaultSize)
+    MOQEquationFieldWidget.AddVariableField = function(variableName, defaultSize)
     {
         var workspaceVariable = undefined;
         var ordinaryVariable = undefined;
-        var existingVariableField = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetAllVariableFields().filter('[name="' + variableName + '"]');
+        var existingVariableField = MOQEquationFieldWidget.GetAllVariableFields().filter('[name="' + variableName + '"]');
         if (!existingVariableField.length)
         {
-            var moqEquationVariablesElement = $('#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Variables');
+            var moqEquationVariablesElement = $('#MOQEquationField #MOQEquation-Variables');
 
             // Workspace Variable Field
-            if ((workspaceVariable = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetWorkspaceVariable(variableName)) != undefined)
+            if ((workspaceVariable = MOQEquationFieldWidget.GetWorkspaceVariable(variableName)) != undefined)
             {
                 // Summed BOE Workspace Variable
                 if (workspaceVariable.WorkspaceVariableValueType == 2) {
@@ -469,7 +466,7 @@
                 }
             }
             // Existing (Saved) Task Ordinary Variable Field
-            else if ((ordinaryVariable = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetOrdinaryVariable(variableName)) != undefined)
+            else if ((ordinaryVariable = MOQEquationFieldWidget.GetOrdinaryVariable(variableName)) != undefined)
             {
                 var defaultSizeLabel = '';
                 if (ordinaryVariable.DefaultSize != undefined && ordinaryVariable.DefaultSize != '') {
@@ -477,9 +474,9 @@
                 }
                 if (ordinaryVariable.OrdinaryVariableID < 0) {
                     // Actually a new variable that came from a refreshed patial view.
-                    <%: Model.MoqEquationName %>MOQEquationFieldWidget.NewOrdinaryVariableID--;
+                    MOQEquationFieldWidget.NewOrdinaryVariableID--;
                 }
-                if (<%: Model.MoqEquationName %>MOQEquationFieldWidget.isReadOnly()) {
+                if (MOQEquationFieldWidget.isReadOnly()) {
                     // READ ONLY Summed BOE Existing Task Ordinary Variable code
                     if (ordinaryVariable.OrdinaryVariableValueType == '<%: (int)VarValueType.SumOfBOEs %>') {
                         moqEquationVariablesElement.append('<tr var="' + ordinaryVariable.OrdinaryVariableID + '" data-variable-default-size="' + ordinaryVariable.Size + '"><td class="variableLabel">' + ordinaryVariable.OrdinaryVariableName + ':</td><td><a ordVar="true" readOnlyVar="true" pkid="' + ordinaryVariable.OrdinaryVariableID + '" name="' + ordinaryVariable.OrdinaryVariableName + '" SortBOEBy="' + ordinaryVariable.SortBOEBy + '">' + Helper.addCommas(ordinaryVariable.OrdinaryVariableValue) + '</a></td></tr>');
@@ -507,45 +504,45 @@
                 if (defaultSize != undefined && defaultSize != '') {
                     defaultSizeLabel = '(' + defaultSize + ')';
                 }
-                <%: Model.MoqEquationName %>MOQEquationFieldWidget.NewOrdinaryVariableID--;
-                moqEquationVariablesElement.append('<tr var="' + <%: Model.MoqEquationName %>MOQEquationFieldWidget.NewOrdinaryVariableID + '" data-variable-default-size="' + defaultSize + '"><td class="variableLabel">' + defaultSizeLabel + variableName + ':</td><td><input ordVar="true" pkid="' + <%: Model.MoqEquationName %>MOQEquationFieldWidget.NewOrdinaryVariableID + '" name="' + variableName + '" class="variableInput" value="' + defaultSize + '" BOEToSum="[]" WBSToSum="[]" CLINToSum="[]" ResourceTypes="[]" SortBOEBy="<%:(int)VarSortBOEBy.WBS%>"/>  <% if(IsSubContractor==false) { %>  <a class="sumVariable" var="' + <%: Model.MoqEquationName %>MOQEquationFieldWidget.NewOrdinaryVariableID + '">Select BOEs to sum</a>  <% } %>    </td></tr>');
+                MOQEquationFieldWidget.NewOrdinaryVariableID--;
+                moqEquationVariablesElement.append('<tr var="' + MOQEquationFieldWidget.NewOrdinaryVariableID + '" data-variable-default-size="' + defaultSize + '"><td class="variableLabel">' + defaultSizeLabel + variableName + ':</td><td><input ordVar="true" pkid="' + MOQEquationFieldWidget.NewOrdinaryVariableID + '" name="' + variableName + '" class="variableInput" value="' + defaultSize + '" BOEToSum="[]" WBSToSum="[]" CLINToSum="[]" ResourceTypes="[]" SortBOEBy="<%:(int)VarSortBOEBy.WBS%>"/>  <% if(IsSubContractor==false) { %>  <a class="sumVariable" var="' + MOQEquationFieldWidget.NewOrdinaryVariableID + '">Select BOEs to sum</a>  <% } %>    </td></tr>');
             }
         }
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetWorkspaceVariable =  function(variableName)
+    MOQEquationFieldWidget.GetWorkspaceVariable =  function(variableName)
     {
-        for (var variableNdx = 0; variableNdx < <%: Model.MoqEquationName %>MOQEquationFieldWidget.WorkspaceVariables.length; variableNdx++)
+        for (var variableNdx = 0; variableNdx < MOQEquationFieldWidget.WorkspaceVariables.length; variableNdx++)
         {
-            if ($.trim(variableName.toUpperCase()) == $.trim(<%: Model.MoqEquationName %>MOQEquationFieldWidget.WorkspaceVariables[variableNdx].WorkspaceVariableName.toUpperCase()))
+            if ($.trim(variableName.toUpperCase()) == $.trim(MOQEquationFieldWidget.WorkspaceVariables[variableNdx].WorkspaceVariableName.toUpperCase()))
             {
-                return <%: Model.MoqEquationName %>MOQEquationFieldWidget.WorkspaceVariables[variableNdx];
+                return MOQEquationFieldWidget.WorkspaceVariables[variableNdx];
             }
         }
 
         return undefined;
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetOrdinaryVariable =  function(variableName)
+    MOQEquationFieldWidget.GetOrdinaryVariable =  function(variableName)
     {
-        for (var variableNdx = 0; variableNdx < <%: Model.MoqEquationName %>MOQEquationFieldWidget.OrdinaryVariables.length; variableNdx++)
+        for (var variableNdx = 0; variableNdx < MOQEquationFieldWidget.OrdinaryVariables.length; variableNdx++)
         {
-            if ($.trim(variableName.toUpperCase()) == $.trim(<%: Model.MoqEquationName %>MOQEquationFieldWidget.OrdinaryVariables[variableNdx].OrdinaryVariableName.toUpperCase()))
+            if ($.trim(variableName.toUpperCase()) == $.trim(MOQEquationFieldWidget.OrdinaryVariables[variableNdx].OrdinaryVariableName.toUpperCase()))
             {
-                return <%: Model.MoqEquationName %>MOQEquationFieldWidget.OrdinaryVariables[variableNdx];
+                return MOQEquationFieldWidget.OrdinaryVariables[variableNdx];
             }
         }
 
         return undefined;
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.CalculateMOQResult = function () {
-        if (<%: Model.MoqEquationName %>MOQEquationFieldWidget.ReadyForCalculate())
+    MOQEquationFieldWidget.CalculateMOQResult = function () {
+        if (MOQEquationFieldWidget.ReadyForCalculate())
         {
             GenSession.ShowLoadingBox();
-            var moqEquation = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetInputEquation();
+            var moqEquation = MOQEquationFieldWidget.GetInputEquation();
         
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQCalculating = true;
+            MOQEquationFieldWidget.MOQCalculating = true;
 
             var dataToSend = { "moqEquation" : moqEquation }
             dataToSend = JSON.stringify(dataToSend);
@@ -558,35 +555,35 @@
                 contentType: 'application/json; charset=utf-8',
                 dataType: 'json',
                 data: dataToSend,
-                success: <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQCalculationSuccess,
-                error: <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQCalculationError
+                success: MOQEquationFieldWidget.MOQCalculationSuccess,
+                error: MOQEquationFieldWidget.MOQCalculationError
             });
         }
         else
         {
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.SetMOQResult("");
+            MOQEquationFieldWidget.SetMOQResult("");
 
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.SavePending = false;
+            MOQEquationFieldWidget.SavePending = false;
         }
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.ReadyForCalculate = function() {
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.HideError();
+    MOQEquationFieldWidget.ReadyForCalculate = function() {
+        MOQEquationFieldWidget.HideError();
                
-        var currentVariableInputs = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetAllVariableFields().filter('[ordVar]');
+        var currentVariableInputs = MOQEquationFieldWidget.GetAllVariableFields().filter('[ordVar]');
 
         if (currentVariableInputs.length > 0)
         {
             for (var inputNdx = 0; inputNdx < currentVariableInputs.length; inputNdx++)
             {
-                var currentValue = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetOrdinaryVariableFieldValue(currentVariableInputs[inputNdx]);
+                var currentValue = MOQEquationFieldWidget.GetOrdinaryVariableFieldValue(currentVariableInputs[inputNdx]);
 
                 if (currentValue.length > 0)
                 {
                     if (!currentValue.match(/^[\+\-]*[\d,]*\.?[\d,]+%?$/))
                     {
-                        <%: Model.MoqEquationName %>MOQEquationFieldWidget.SetMOQError("Invalid MOQ Variables", "All MOQ equation variables must be valid numerical values. Please check each variable field below.");
-                        <%: Model.MoqEquationName %>MOQEquationFieldWidget.ShowMOQError();
+                        MOQEquationFieldWidget.SetMOQError("Invalid MOQ Variables", "All MOQ equation variables must be valid numerical values. Please check each variable field below.");
+                        MOQEquationFieldWidget.ShowMOQError();
                         return false;
                     }
                     else
@@ -596,8 +593,8 @@
                 }
                 else
                 {
-                    <%: Model.MoqEquationName %>MOQEquationFieldWidget.SetMOQError("Incomplete MOQ Variables", "All MOQ equation variable fields must contain values. Please fill in all of the variable fields below.");
-                    <%: Model.MoqEquationName %>MOQEquationFieldWidget.ShowMOQError();
+                    MOQEquationFieldWidget.SetMOQError("Incomplete MOQ Variables", "All MOQ equation variable fields must contain values. Please fill in all of the variable fields below.");
+                    MOQEquationFieldWidget.ShowMOQError();
                     return false;
                 }
             }
@@ -606,9 +603,9 @@
         return true;
     };
     
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetInputEquation = function() {
-        var markedEquation = $.trim(<%: Model.MoqEquationName %>MOQEquationFieldWidget.MarkedEquation);
-        var ordinaryVariableInputs = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetAllVariableFields().filter('[ordVar]');
+    MOQEquationFieldWidget.GetInputEquation = function() {
+        var markedEquation = $.trim(MOQEquationFieldWidget.MarkedEquation);
+        var ordinaryVariableInputs = MOQEquationFieldWidget.GetAllVariableFields().filter('[ordVar]');
 
         if (ordinaryVariableInputs.length > 0)
         {
@@ -616,14 +613,14 @@
             {
                 var currentVariableInput = $(ordinaryVariableInputs[inputNdx]);
                 var currentVariableInputName = currentVariableInput.attr('name');
-                var currentVariableInputValue = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetOrdinaryVariableFieldValue(ordinaryVariableInputs[inputNdx]);
+                var currentVariableInputValue = MOQEquationFieldWidget.GetOrdinaryVariableFieldValue(ordinaryVariableInputs[inputNdx]);
                 var result = currentVariableInputName.replace(/\(\d+.*\) /g, "");
                 var currentVariableRegEx = new RegExp("<" + result + ">", "gi");
                 markedEquation = markedEquation.replace(currentVariableRegEx, currentVariableInputValue);
             }
         }
         
-        workspaceVariableDivs = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetAllVariableFields().filter('[wsVar]');
+        workspaceVariableDivs = MOQEquationFieldWidget.GetAllVariableFields().filter('[wsVar]');
 
         if (workspaceVariableDivs.length > 0)
         {
@@ -641,7 +638,7 @@
         return markedEquation;
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetOrdinaryVariableFieldValue = function(ordinaryVariableField) {
+    MOQEquationFieldWidget.GetOrdinaryVariableFieldValue = function(ordinaryVariableField) {
         ordinaryVariableField = $(ordinaryVariableField);
 
         var fieldValue = '';
@@ -656,7 +653,7 @@
         return fieldValue;
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.OrdinaryVariableFieldIsPercentage = function(ordinaryVariableField) {
+    MOQEquationFieldWidget.OrdinaryVariableFieldIsPercentage = function(ordinaryVariableField) {
         ordinaryVariableField = $(ordinaryVariableField);
 
         var fieldValue = '';
@@ -671,68 +668,68 @@
         return fieldValue.match(/%/) != null;
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQCalculationSuccess = function (results) {
+    MOQEquationFieldWidget.MOQCalculationSuccess = function (results) {
         GenSession.ShowLoadingBox();
 
         if (results.Status)
         {
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.SetMOQResult(results.Result);
+            MOQEquationFieldWidget.SetMOQResult(results.Result);
            
-            if (<%: Model.MoqEquationName %>MOQEquationFieldWidget.SavePending)
+            if (MOQEquationFieldWidget.SavePending)
             {
-                <%: Model.MoqEquationName %>MOQEquationFieldWidget.SavePending = false;
-                <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQCalculating = false;
-                <%: Model.MoqEquationName %>MOQEquationFieldWidget.CallSaveManually();
+                MOQEquationFieldWidget.SavePending = false;
+                MOQEquationFieldWidget.MOQCalculating = false;
+                MOQEquationFieldWidget.CallSaveManually();
             }
 
             // MOQ equation has been changed, the change has been validated, and the new hours total (<result>) has been determined - OK to apply recalculations
             var scope = angular.element(document.querySelector("#TaskElementsComposite")).scope();
-            scope.moqUpdated(<%:Model.MoqEquationName%>MOQEquationFieldWidget.initialLoad);
+            scope.moqUpdated(MOQEquationFieldWidget.initialLoad);
             scope.$apply();
         }
         else {
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQCalculationError(results.Message);
+            MOQEquationFieldWidget.MOQCalculationError(results.Message);
 
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.SavePending = false;
+            MOQEquationFieldWidget.SavePending = false;
         }
 
         // if the moqEquation is empty, resource types/spreads will be calculated as if the equation  = 0, but we don't want to show the result as 0 to the user 
-        var moqEquation = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetInputEquation();
+        var moqEquation = MOQEquationFieldWidget.GetInputEquation();
         if (moqEquation.length == 0)
             {
-              <%: Model.MoqEquationName %>MOQEquationFieldWidget.SetMOQResult("");
+              MOQEquationFieldWidget.SetMOQResult("");
             }
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQCalculating = false;
-        <%:Model.MoqEquationName%>MOQEquationFieldWidget.initialLoad = false;
+        MOQEquationFieldWidget.MOQCalculating = false;
+        MOQEquationFieldWidget.initialLoad = false;
 
         GenSession.HideLoadingBox();
     }; 
     
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQCalculationError = function (exceptionstring) {
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.SetMOQError("MOQ Calculation Error", exceptionstring);
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.ShowMOQError();
+    MOQEquationFieldWidget.MOQCalculationError = function (exceptionstring) {
+        MOQEquationFieldWidget.SetMOQError("MOQ Calculation Error", exceptionstring);
+        MOQEquationFieldWidget.ShowMOQError();
         
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.SavePending = false;
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.MOQCalculating = false;
-        <%:Model.MoqEquationName%>MOQEquationFieldWidget.initialLoad = false;
+        MOQEquationFieldWidget.SavePending = false;
+        MOQEquationFieldWidget.MOQCalculating = false;
+        MOQEquationFieldWidget.initialLoad = false;
 
         GenSession.HideLoadingBox();
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.SetMOQResult = function (result) {
-        $("#<%: Model.MoqEquationName %>MOQEquationField #equals").text(Helper.addCommas(result));
+    MOQEquationFieldWidget.SetMOQResult = function (result) {
+        $("#MOQEquationField #equals").text(Helper.addCommas(result));
         $(document).trigger('MOQEquationReady');
     };
     
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.CallSaveManually = function() {
+    MOQEquationFieldWidget.CallSaveManually = function() {
         $(document).trigger('SaveBOEUpdatesAndClose');
     }; 
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.FilterFieldToIntegers =  function(field) {
+    MOQEquationFieldWidget.FilterFieldToIntegers =  function(field) {
         field.value = field.value.replace(/[^+\-\,\.0-9]/g, '');
     };
     
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.OpenSumOfBOEsByWBS = function (event, eventData) {
+    MOQEquationFieldWidget.OpenSumOfBOEsByWBS = function (event, eventData) {
         ShowLoadingBox();
         $.ajax({
             type: 'POST',
@@ -742,7 +739,7 @@
                 'boe/<%: (int)ViewData["BOEID"] %>'),
             success: function (response) {
                 HideLoadingBox();
-                $('#<%: Model.MoqEquationName %>VariableSumOfBOEsByWBSDialogContainer').html(response);
+                $('#VariableSumOfBOEsByWBSDialogContainer').html(response);
                 $(document).trigger(event, eventData);
                
             },
@@ -752,7 +749,7 @@
         });
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.OpenSumOfBOEsByCLIN = function (event, eventData) {
+    MOQEquationFieldWidget.OpenSumOfBOEsByCLIN = function (event, eventData) {
         ShowLoadingBox();
         $.ajax({
             type: 'POST',
@@ -762,7 +759,7 @@
                 'boe/<%: (int)ViewData["BOEID"] %>'),
             success: function (response) {
                 HideLoadingBox();
-                $('#<%: Model.MoqEquationName %>VariableSumOfBOEsByCLINDialogContainer').html(response);
+                $('#VariableSumOfBOEsByCLINDialogContainer').html(response);
                 $(document).trigger(event, eventData);
             },
             error: function () {
@@ -771,61 +768,57 @@
         });
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.InterceptVariableSumOfBOEsByWBSEvent = function (event, eventData) {
+    MOQEquationFieldWidget.InterceptVariableSumOfBOEsByWBSEvent = function (event, eventData) {
         var VariableBOESumByWBSDialog = $('#VariableBOESumByWBS');
 
-        if (VariableBOESumByWBSDialog == undefined || VariableBOESumByWBSDialog.length == 0)
-        {
-            if (eventData.MoqEquationName == '<%: Model.MoqEquationName %>') {
-                // if the WBS dialog has not been created yet, then first create it (the event will be retriggered in the OpenSumOfBOEsByWBS function)
-                <%: Model.MoqEquationName %>MOQEquationFieldWidget.OpenSumOfBOEsByWBS(event, eventData);
-            }
+        if (VariableBOESumByWBSDialog == undefined || VariableBOESumByWBSDialog.length == 0) {
+            // if the WBS dialog has not been created yet, then first create it (the event will be retriggered in the OpenSumOfBOEsByWBS function)
+            MOQEquationFieldWidget.OpenSumOfBOEsByWBS(event, eventData);
         }
     };
 
-    <%: Model.MoqEquationName %>MOQEquationFieldWidget.InterceptVariableSumOfBOEsByCLINEvent = function (event, eventData) {
+    MOQEquationFieldWidget.InterceptVariableSumOfBOEsByCLINEvent = function (event, eventData) {
         var VariableBOESumByCLINDialog = $('#VariableBOESumByCLIN');
 
         if (VariableBOESumByCLINDialog == undefined || VariableBOESumByCLINDialog.length == 0)
         {
             // if the CLIN dialog has not been created yet, then first create it (the event will be retriggered in the OpenSumOfBOEsByCLIN function)
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.OpenSumOfBOEsByCLIN(event, eventData);
+            MOQEquationFieldWidget.OpenSumOfBOEsByCLIN(event, eventData);
         }
     };
     
     //bind any events that the objects need to observe to and member functions.
     $(function () {
-        $("#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation").change(function() {
+        $("#MOQEquationField #MOQEquation").change(function() {
             $(document).trigger('ValidateMOQEquation');
         });
 
-        $("#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation").change(<%: Model.MoqEquationName %>MOQEquationFieldWidget.setDirty);
+        $("#MOQEquationField #MOQEquation").change(MOQEquationFieldWidget.setDirty);
 
         // use change instead of focusout to catch all changes having to deal with the moq equation or variables. focusout was not catching changes on boe to sum variable in IE
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.registerForLiveEvent('change', "#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Variables input.variableInput", function() {
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.CalculateMOQResult();
+        MOQEquationFieldWidget.registerForLiveEvent('change', "#MOQEquationField #MOQEquation-Variables input.variableInput", function() {
+            MOQEquationFieldWidget.CalculateMOQResult();
         });
         
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.registerForLiveEvent('click', '#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Variables a[readOnlyVar]', function() {
+        MOQEquationFieldWidget.registerForLiveEvent('click', '#MOQEquationField #MOQEquation-Variables a[readOnlyVar]', function() {
             var eventData = {};
             var variable = undefined;
 
             if ($(this).is('[wsVar]')) {
-                variable = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetWorkspaceVariable($(this).attr('name'));
+                variable = MOQEquationFieldWidget.GetWorkspaceVariable($(this).attr('name'));
 
                 if (variable == undefined) { return; }
 
                 eventData.dialogTitle = 'Summed BOEs for ' + variable.WorkspaceVariableName;
             }
             else if ($(this).is('[ordVar]')) {
-                variable = <%: Model.MoqEquationName %>MOQEquationFieldWidget.GetOrdinaryVariable($(this).attr('name'));
+                variable = MOQEquationFieldWidget.GetOrdinaryVariable($(this).attr('name'));
 
                 if (variable == undefined) { return; }
 
                 eventData.dialogTitle = 'Summed BOEs for ' + variable.OrdinaryVariableName;
             }
             
-            eventData.MoqEquationName = '<%: Model.MoqEquationName %>';
             eventData.BOEToSum = variable.BOEToSum;
             eventData.WBSToSum = variable.WBSToSum;
             eventData.CLINToSum = variable.CLINToSum;
@@ -841,7 +834,7 @@
             }
         });
         
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.registerForLiveEvent('click', '#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Variables a.sumVariable', function() {
+        MOQEquationFieldWidget.registerForLiveEvent('click', '#MOQEquationField #MOQEquation-Variables a.sumVariable', function() {
             var pkid = $(this).attr('var');
 
             var selectedInput = $(this).siblings('input[ordVar][pkid=' + pkid + ']');
@@ -854,7 +847,6 @@
             eventData.CLINToSum = JSON.parse(selectedInput.attr('CLINToSum'));
             eventData.ResourceTypes = JSON.parse(selectedInput.attr('ResourceTypes'));
             eventData.SortBOEBy = selectedInput.attr('SortBOEBy');
-            eventData.MoqEquationName = '<%: Model.MoqEquationName %>';
             eventData.ReadOnly = false;
             
             if (eventData.BOEToSum.length || eventData.WBSToSum.length || eventData.CLINToSum.length) {
@@ -873,10 +865,10 @@
             }
         });
         
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.registerForLiveEvent('click', '#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Variables span.clearVariable a', function() {
+        MOQEquationFieldWidget.registerForLiveEvent('click', '#MOQEquationField #MOQEquation-Variables span.clearVariable a', function() {
             var pkid = $(this).parent().attr('var');
 
-            $(this).parents('#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Variables')
+            $(this).parents('#MOQEquationField #MOQEquation-Variables')
                 .find('input[pkid=' + pkid + ']')
                 .attr('BOEToSum', '[]')
                 .attr('WBSToSum', '[]')
@@ -890,10 +882,10 @@
                 .remove();
         });
         
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.registerForEvent('VariableBOESumByCLIN_Create', function (event, eventData) {
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.setDirty();
+        MOQEquationFieldWidget.registerForEvent('VariableBOESumByCLIN_Create', function (event, eventData) {
+            MOQEquationFieldWidget.setDirty();
 
-            var variableInput = $('#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Variables input[pkid=' + eventData.pkid + ']');
+            var variableInput = $('#MOQEquationField #MOQEquation-Variables input[pkid=' + eventData.pkid + ']');
 
             variableInput
                 .val(Helper.addCommas(eventData.Sum))
@@ -915,10 +907,10 @@
             $(document).trigger('ValidateMOQEquation');
         });
         
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.registerForEvent('VariableBOESumByWBS_Create', function (event, eventData) {
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.setDirty();
+        MOQEquationFieldWidget.registerForEvent('VariableBOESumByWBS_Create', function (event, eventData) {
+            MOQEquationFieldWidget.setDirty();
 
-            var variableInput = $('#<%: Model.MoqEquationName %>MOQEquationField #MOQEquation-Variables input[pkid=' + eventData.pkid + ']');
+            var variableInput = $('#MOQEquationField #MOQEquation-Variables input[pkid=' + eventData.pkid + ']');
             
             variableInput
                 .val(Helper.addCommas(eventData.Sum))
@@ -940,30 +932,30 @@
             $(document).trigger('ValidateMOQEquation');
         });
         
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.registerForEvent('VariableBOESumByWBS_Open', <%: Model.MoqEquationName %>MOQEquationFieldWidget.InterceptVariableSumOfBOEsByWBSEvent);
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.registerForEvent('VariableBOESumByWBS_OpenNew', <%: Model.MoqEquationName %>MOQEquationFieldWidget.InterceptVariableSumOfBOEsByWBSEvent);
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.registerForEvent('VariableBOESumByWBS_OpenReadOnly', <%: Model.MoqEquationName %>MOQEquationFieldWidget.InterceptVariableSumOfBOEsByWBSEvent);
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.registerForEvent('VariableBOESumByCLIN_Open', <%: Model.MoqEquationName %>MOQEquationFieldWidget.InterceptVariableSumOfBOEsByCLINEvent);
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.registerForEvent('VariableBOESumByCLIN_OpenNew', <%: Model.MoqEquationName %>MOQEquationFieldWidget.InterceptVariableSumOfBOEsByCLINEvent);
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.registerForEvent('VariableBOESumByCLIN_OpenReadOnly', <%: Model.MoqEquationName %>MOQEquationFieldWidget.InterceptVariableSumOfBOEsByCLINEvent);
+        MOQEquationFieldWidget.registerForEvent('VariableBOESumByWBS_Open', MOQEquationFieldWidget.InterceptVariableSumOfBOEsByWBSEvent);
+        MOQEquationFieldWidget.registerForEvent('VariableBOESumByWBS_OpenNew', MOQEquationFieldWidget.InterceptVariableSumOfBOEsByWBSEvent);
+        MOQEquationFieldWidget.registerForEvent('VariableBOESumByWBS_OpenReadOnly', MOQEquationFieldWidget.InterceptVariableSumOfBOEsByWBSEvent);
+        MOQEquationFieldWidget.registerForEvent('VariableBOESumByCLIN_Open', MOQEquationFieldWidget.InterceptVariableSumOfBOEsByCLINEvent);
+        MOQEquationFieldWidget.registerForEvent('VariableBOESumByCLIN_OpenNew', MOQEquationFieldWidget.InterceptVariableSumOfBOEsByCLINEvent);
+        MOQEquationFieldWidget.registerForEvent('VariableBOESumByCLIN_OpenReadOnly', MOQEquationFieldWidget.InterceptVariableSumOfBOEsByCLINEvent);
 
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.registerForEvent('ValidateMOQEquation', function(event, options){
+        MOQEquationFieldWidget.registerForEvent('ValidateMOQEquation', function(event, options){
             if(options != undefined && options.initialLoad != undefined && options.initialLoad != null) {
-                <%: Model.MoqEquationName %>MOQEquationFieldWidget.initialLoad = options.initialLoad;
+                MOQEquationFieldWidget.initialLoad = options.initialLoad;
             } else {
-                <%: Model.MoqEquationName %>MOQEquationFieldWidget.initialLoad = false;
+                MOQEquationFieldWidget.initialLoad = false;
             }
 
-            <%: Model.MoqEquationName %>MOQEquationFieldWidget.ValidateMOQEquation();
+            MOQEquationFieldWidget.ValidateMOQEquation();
         });
 
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.registerForEvent('InsertMOQElementDialogClosing', <%: Model.MoqEquationName %>MOQEquationFieldWidget.InsertMOQElementDialogClosing);
+        MOQEquationFieldWidget.registerForEvent('InsertMOQElementDialogClosing', MOQEquationFieldWidget.InsertMOQElementDialogClosing);
         
-        <%: Model.MoqEquationName %>MOQEquationFieldWidget.RefreshStyles();
+        MOQEquationFieldWidget.RefreshStyles();
 
-        TaskElementDetailsWidget.ChildWidgets.push(<%: Model.MoqEquationName %>MOQEquationFieldWidget);
+        TaskElementDetailsWidget.ChildWidgets.push(MOQEquationFieldWidget);
 
-        if (<%: Model.MoqEquationName %>MOQEquationFieldWidget_ReadOnly) {
+        if (MOQEquationFieldWidget_ReadOnly) {
             // Disable dropdown.
             $('.magnifier-button').addClass('display-none');
         }
@@ -987,7 +979,7 @@
         TaskElementDetailsWidget.CheckToShowMetrics();
         TaskElementDetailsWidget.MOQText = CreateRteTemplate('<%:showMoqQuestions%>'.isTrue(), <%:numberMoqQuestions%>);
 
-        if(!<%: Model.MoqEquationName %>MOQEquationFieldWidget.isReadOnly() || '<%: ViewData["ShouldMoqReadOnlyBeReversed"] %>' == 'True' || !TaskElementDetailsWidget.isReadOnly())
+        if(!MOQEquationFieldWidget.isReadOnly() || '<%: ViewData["ShouldMoqReadOnlyBeReversed"] %>' == 'True' || !TaskElementDetailsWidget.isReadOnly())
         {
             InitializeRteTemplate(TaskElementDetailsWidget.MOQText, 'MOQText', <%:rteFieldSize%>);
         }
@@ -1002,7 +994,7 @@
 
 </script>
 
-<div id="<%: Model.MoqEquationName %>MOQEquationField" class="bootstrap" data-ng-controller="MoqEquationController" data-ng-init="init()">
+<div id="MOQEquationField" class="bootstrap" data-ng-controller="MoqEquationController" data-ng-init="init()">
     <div class="form-row">
         <div class="form-label">{{model.MoqEquationLabel}} **</div>
         <div class="form-element">
@@ -1014,7 +1006,7 @@
                     <li><a id="CopyMoqFromBoeLink" data-ng-click="CopyMoqFromBoeClicked()">Copy MOQ from BOE</a></li>
                 </ul>
             </div>
-            <input type="text" id="MOQEquation" name="<%: Model.MoqEquationName %>MOQEquation" value="<%: Model.MOQEquation %>" class="moq-equation-input" maxlength="250" />
+            <input type="text" id="MOQEquation" name="MOQEquation" value="<%: Model.MOQEquation %>" class="moq-equation-input" maxlength="250" />
             <div>
                 <input id="MOQDefaultSizes" value="" type="hidden" />
                 <input id="HistoricalMetricEquation" value="" type="hidden" />
@@ -1041,10 +1033,15 @@
     </div>
     <table id="MOQEquation-Variables" class="moqVariables"></table>
     <div class="moqVariableNote clear display-none"><b>Note:</b> The value of Variables that are the sum of select BOEs will change if the <i>Totals</i> of the select BOEs change.</div>
+
+
+
+
+
     <div class="form-row">
         <div class="form-label">
             <span helptext="<%: Model.HelpText %>">MOQ Type **</span>
-            <div class="help-icon" onclick="<%: Model.MoqEquationName %>MOQEquationFieldWidget.ToggleHelp(this);"></div>
+            <div class="help-icon" onclick="MOQEquationFieldWidget.ToggleHelp(this);"></div>
             <div class="help-dialog" style="max-width: 275px;">
                 <div class="help-dialog-text"><%: Html.Raw(Model.HelpText) %></div>
             </div>
@@ -1059,12 +1056,18 @@
         <div class="form-label"><%: Model.MOQTextLabel %> **</div>
         <div class="form-element moq-text-area"><% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(Model.MoqTemplateAnswers, "MOQText", Model.MOQText));  %></div>
     </div>
+    
+
+
+
+    
+    
     <div id="UsedHistoricalMetrics" class="form-row display-none">
         <div class="form-label">
             <%if (Model.Company == CompanyConfiguration.MST) 
               {%>
             Historical Measures<br />Used
-            <div class="help-icon" style="margin-top:1px;" onclick="<%: Model.MoqEquationName %>MOQEquationFieldWidget.ToggleHelp(this);"></div>
+            <div class="help-icon" style="margin-top:1px;" onclick="MOQEquationFieldWidget.ToggleHelp(this);"></div>
             <div class="help-dialog" style="max-width: 275px;">
                 <div class="help-dialog-text">The historical measures used to estimate the labor for this task.  If the historical measure is no longer used, it should be deleted.</div>
             </div>
@@ -1074,7 +1077,7 @@
             <span>Historical Metrics
                 <br />
                 Used</span>
-            <div class="help-icon" style="margin-top:1px;" onclick="<%: Model.MoqEquationName %>MOQEquationFieldWidget.ToggleHelp(this);"></div>
+            <div class="help-icon" style="margin-top:1px;" onclick="MOQEquationFieldWidget.ToggleHelp(this);"></div>
             <div class="help-dialog" style="max-width: 275px;">
                 <div class="help-dialog-text">The historical metrics used to estimate the labor for this task.  If the historical metric is no longer used, it should be deleted.</div>
             </div>
@@ -1123,5 +1126,5 @@
         </div>
     </div>
 </div>
-<div id="<%: Model.MoqEquationName %>VariableSumOfBOEsByWBSDialogContainer"></div>
-<div id="<%: Model.MoqEquationName %>VariableSumOfBOEsByCLINDialogContainer"></div>
+<div id="VariableSumOfBOEsByWBSDialogContainer"></div>
+<div id="VariableSumOfBOEsByCLINDialogContainer"></div>

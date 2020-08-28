@@ -33,7 +33,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.TaskOrdinaryVariables = new Collection<BoeTaskOrdinaryVariableModelView>();
             this.WorkspaceVariableIDs = new Collection<int>();
             this.TypeOfMoqEquation = MOQEquationType.Hours;
-            this.MoqEquationName = string.Empty;
             this.TaskElementId = 0;
             this.MOQType = MOQType.None;
             this.MOQText = string.Empty;
@@ -119,11 +118,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Hours or Cost.
         /// </summary>
         public MOQEquationType TypeOfMoqEquation { get; set; }
-
-        /// <summary>
-        /// This is for naming the specific moq equation on a page where multiple equations exist.
-        /// </summary>
-        public string MoqEquationName { get; set; }
 
         /// <summary>
         /// Task element containing the MOQ equation.
