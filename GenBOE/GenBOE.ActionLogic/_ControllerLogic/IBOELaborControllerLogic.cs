@@ -285,9 +285,9 @@ namespace GenBOE.ActionLogic
         /// <summary>
         /// Get a list of MOQ Types for dropdown
         /// </summary>
-        /// <param name="templateBoeMoqTypes">Return only Template BOEs MOQ Types</param>
+        /// <param name="wsUsingTemplateBOEs">Return only Template BOEs MOQ Types</param>
         /// <returns>MOQ Types</returns>
-        ICollection<SelectListItem> GetMOQTypeSelectList(bool templateBoeMoqTypes);
+        ICollection<SelectListItem> GetMOQTypeSelectList(bool wsUsingTemplateBOEs);
 
         /// <summary>
         /// Returns a list of labels to be used in the MOQ Types page.

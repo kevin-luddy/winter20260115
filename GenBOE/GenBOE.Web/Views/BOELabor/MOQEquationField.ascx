@@ -8,8 +8,6 @@
 <% 
     IEnumerable<WorkspaceVariableModelView> workspaceVariables = (IEnumerable<WorkspaceVariableModelView>)ViewData["WorkspaceVariables"];
     var serializer = new JavaScriptSerializer { MaxJsonLength = Int32.MaxValue };
-    bool IsSubContractor = (bool)ViewData["IsSubContractor"];
-    int rteFieldSize = ViewBag.RteFieldSize;
     int taskElementId = Model.TaskElementId > 0 ? Model.TaskElementId : -1;
     bool showMoqQuestions = Model.MoqTemplateAnswers.Any();;
     int numberMoqQuestions = showMoqQuestions ? Model.MoqTemplateAnswers.Count : 1;
@@ -17,6 +15,7 @@
 <script type="text/javascript">
     var workspaceVariables = <%= serializer.Serialize(workspaceVariables) %>;
     var MOQEquationFieldWidget_ReadOnly = '<%= ViewData["READONLY"] %>'.isTrue();
+    var rteFieldSize = <%:ViewBag.RteFieldSize%>;
 
     var MOQEquationFieldModel = {
         BaseUrl: '<%=this.ResolveClientUrl("~/")%>',
@@ -24,11 +23,14 @@
         MoqEquationType: '<%=Model.TypeOfMoqEquation%>',
         MOQType: '<%=Model.MOQType%>',
         TaskElementId: <%=Model.TaskElementId > 0 ? Model.TaskElementId : -1%>,
+        RteFieldSize: rteFieldSize,
         ShowSearchMetricsLink: '<%=Model.ShowSearchMetricsLink%>'.isTrue(),
         UsingTemplateBOE: '<%=Model.UsingTemplateBOE%>'.isTrue(),
         IsReadOnly: MOQEquationFieldWidget_ReadOnly,
         WorkspaceVariables: workspaceVariables,
-        MOQTypes: <%=serializer.Serialize(Model.MOQTypes.Select(x => new { id = x.Value, text = x.Text }))%>
+        MOQTypes: <%=serializer.Serialize(Model.MOQTypes.Select(x => new { id = x.Value, text = x.Text }))%>,
+        MoqTypeData:<%=serializer.Serialize(Model.MoqTypeTableDataLabels)%>,
+        MoqRteFields:<%=serializer.Serialize(Model.MoqRteFields)%>
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -37,7 +39,7 @@
     var sumOfBoes = '<%:(int)VarValueType.SumOfBOEs %>';
     var discrete = '<%:(int)VarValueType.Discrete %>';
     var shouldMoqReadOnlyBeReversed = '<%:ViewData["ShouldMoqReadOnlyBeReversed"]%>'.isTrue();
-    var isNotSubContractor = '<%:IsSubContractor == false%>'.isTrue();
+    var isNotSubContractor = '<%:(bool)ViewData["IsSubContractor"] == false%>'.isTrue();
     var sortBOEByWBS = '<%:(int)VarSortBOEBy.WBS%>';
     var sortBOEByClin = '<%:(int)VarSortBOEBy.CLIN%>';
 
@@ -78,7 +80,7 @@
         TaskElementDetailsWidget.MOQText = CreateRteTemplate('<%:showMoqQuestions%>'.isTrue(), <%:numberMoqQuestions%>);
 
         if (!MOQEquationFieldWidget.isReadOnly() || shouldMoqReadOnlyBeReversed || !TaskElementDetailsWidget.isReadOnly()) {
-            InitializeRteTemplate(TaskElementDetailsWidget.MOQText, 'MOQText', <%:rteFieldSize%>);
+            InitializeRteTemplate(TaskElementDetailsWidget.MOQText, 'MOQText', rteFieldSize);
         }
         else {
             HandleRTETemplateDataForReadOnly(TaskElementDetailsWidget.MOQText, 'MOQText');
@@ -136,28 +138,128 @@
             <span>MOQ Type(s) *</span>
         </div>
         <div id="AddMOQWarning" class="form-element" data-ng-hide="model.SelectedMoqTypes.length > 0">
-            Please add at least one MOQ Type.
+            Please add MOQ Type(s).
+        </div>
+    </div>
+    
+    <div data-ng-if="model.UsingTemplateBOE" class="form-element moqRteFieldContainer" data-ng-repeat="item in model.SelectedMoqTypes">
+        <div class="form-row">
+            <div class="form-label moqTypeHeader">
+                {{item.text}} (Id: {{item.id}})
+            </div>
+            <button data-ng-if="!model.IsReadOnly" type="button" class="ies-danger moqTypesButton" data-ng-click="RemoveMoqType(item)">Delete</button>
+        </div>
+
+        <div class="tableData" data-ng-if="item.id == <%:(int)MOQType.Historical%> || item.id == <%:(int)MOQType.Comparative%>">
+            TABLE DATA
+        </div>
+
+        <div class="form-row" data-ng-if="item.id == <%:(int)MOQType.SOW%>">            
+            <div class="form-label">
+                <span>Description of Hours required & location in SOW:</span>
+            </div>
+            <div class="form-element">
+                <textarea cols="20" name="SowHoursLocation_{{item.id}}" data-ng-model="model.MoqRteFields.SowHoursLocation"></textarea>
+            </div>
+        </div>
+        <div class="form-row" data-ng-if="item.id == <%:(int)MOQType.CostEstimatingRelationships%> || item.id == <%:(int)MOQType.ParametricEstimates%> || item.id == <%:(int)MOQType.AnalogousRelationships%>">
+            <div class="form-label">
+                <span data-ng-if="item.id == <%:(int)MOQType.CostEstimatingRelationships%>">CER</span>
+                <span data-ng-if="item.id == <%:(int)MOQType.ParametricEstimates%>">Parametric model or tool</span>
+                <span data-ng-if="item.id == <%:(int)MOQType.AnalogousRelationships%>">Analogous relationship</span>
+                 name:
+            </div>
+            <div class="form-element">
+                <input type="text" class="cerPmArTextBox" data-ng-model="model.MoqRteFields.CerName" />
+            </div>
+        </div>
+        <div class="form-row" data-ng-if="item.id == <%:(int)MOQType.CostEstimatingRelationships%> || item.id == <%:(int)MOQType.ParametricEstimates%> || item.id == <%:(int)MOQType.AnalogousRelationships%>">
+            <div class="form-label">
+                <span data-ng-if="item.id == <%:(int)MOQType.CostEstimatingRelationships%>">CER</span>
+                <span data-ng-if="item.id == <%:(int)MOQType.ParametricEstimates%>">Parametric model or tool</span>
+                <span data-ng-if="item.id == <%:(int)MOQType.AnalogousRelationships%>">Analogous relationship</span>
+                 location in the proposal:
+            </div>
+            <div class="form-element">
+                <input type="text" class="cerPmArTextBox" data-ng-model="model.MoqRteFields.CerLocation" />
+            </div>
+        </div>
+        <div class="form-row" data-ng-if="item.id == <%:(int)MOQType.LOE%>">
+            <div class="form-label">
+                <span>Description of Hours required:</span>
+            </div>
+            <div class="form-element">
+                <textarea cols="20" name="DescriptionHoursRequired_{{item.id}}" data-ng-model="model.MoqRteFields.DescriptionHoursRequired"></textarea>
+            </div>
+        </div>
+        <div class="form-row" data-ng-if="item.id == <%:(int)MOQType.SME%>">
+            <div class="form-label">
+                <span>The SME selected Expert judgement for this basis of estimate for the following reasons:</span>
+            </div>
+            <div class="form-element">
+                <textarea cols="20" name="SmeReason_{{item.id}}" data-ng-model="model.MoqRteFields.SmeReason"></textarea>
+            </div>           
+        </div>
+        <div class="form-row" data-ng-if="item.id == <%:(int)MOQType.SME%>">
+            <div class="form-label">
+                <span>The logic and assumptions used to estimate hours is:</span>
+            </div>
+            <div class="form-element">
+                <textarea cols="20" name="SmeHoursLogic_{{item.id}}" data-ng-model="model.MoqRteFields.SmeHoursLogic"></textarea>
+            </div>
+        </div>
+        <div class="form-row" data-ng-if="item.id == <%:(int)MOQType.SME%>">
+            <div class="form-label">
+                <span>The logic and assumptions used to estimate duration is:</span>
+            </div>
+            <div class="form-element">
+                <textarea cols="20" name="SmeDurationLogic_{{item.id}}" data-ng-model="model.MoqRteFields.SmeDurationLogic"></textarea>
+            </div>
+        </div>
+        <div class="form-row" data-ng-if="item.id == <%:(int)MOQType.SME%>">
+            <div class="form-label">
+                <span>The following tasks are estimates in this BOE:</span>
+            </div>
+            <div class="form-element">
+                <textarea cols="20" name="SmeTaskEstimates_{{item.id}}" data-ng-model="model.MoqRteFields.SmeTaskEstimates"></textarea>
+            </div>
+        </div>
+        <div class="form-row" data-ng-if="item.id != <%:(int)MOQType.SME%>">
+            <div class="form-label">
+                <span>Rationale: {{model.MoqRteFields.Rationale}}</span>
+            </div>
+            <div class="form-element">
+                <textarea cols="20" name="Rationale_{{item.id}}" data-ng-model="model.MoqRteFields.Rationale"></textarea>
+            </div>
+        </div>
+        <div class="form-row" data-ng-if="item.id != <%:(int)MOQType.SOW%> && item.id != <%:(int)MOQType.NonLabor%>">
+            <div class="form-label">
+                <span>Skill Mix Rationale: {{model.MoqRteFields.SkillMixRationale}}</span>
+            </div>
+            <div class="form-element">
+                <textarea cols="20" name="SkillMixRationale_{{item.id}}" data-ng-model="model.MoqRteFields.SkillMixRationale"></textarea>
+            </div>
+        </div>
+        <div class="form-row" data-ng-if="item.id != <%:(int)MOQType.SME%> && item.id != <%:(int)MOQType.NonLabor%>">
+            <div class="form-label">
+                <span>Calculation:</span>
+            </div>
+            <div class="form-element">
+                <textarea cols="20" name="Calculation_{{item.id}}" data-ng-model="model.MoqRteFields.Calculation"></textarea>
+            </div>
         </div>
     </div>
 
-    
-    <div data-ng-if="model.UsingTemplateBOE" data-ng-repeat="item in model.SelectedMoqTypes" class="form-row">
-        MOQ ITEM FOR.. Id: {{item.id}}, Type: {{item.text}}
-        <button type="button" class="ies-danger" data-ng-click="RemoveMoqType(item)">Delete</button>
-    </div>
-
-
-    <div data-ng-if="model.UsingTemplateBOE" class="form-row">
+    <div data-ng-if="model.UsingTemplateBOE && !model.IsReadOnly" class="form-row">
         <div class="form-label">
             <span>Add New MOQ Type</span>
         </div>
         <div class="form-element">
             <select data-ng-model="model.selectedMOQType" data-ng-options="moqType.text for moqType in model.MOQTypes" class="moqTypes">
             </select>
-            <button id="addMoqType" type="button" class="ies-action" data-ng-click="AddMoqType()" data-ng-disabled="!model.selectedMOQType">Add</button>
+            <button class="moqTypesButton ies-action" type="button"data-ng-click="AddMoqType()" data-ng-disabled="!model.selectedMOQType">Add</button>
         </div>
     </div>
-
 
 
     <div data-ng-if="!model.UsingTemplateBOE" class="form-row">

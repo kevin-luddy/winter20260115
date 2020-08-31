@@ -8334,15 +8334,44 @@ input.labelLookFeel {
     display: block;
 }
 
-#addMoqType {
+/* Moq Types */
+
+.moqTypesButton {
     height: 20px;
-    line-height: 14px;
+    line-height: 14px !important;
     margin-left: 10px;
-    margin-top: -2px;
+    margin-top: -2px !important;
 }
 
 #AddMOQWarning {
     color:goldenrod;
     font-style:italic;
     margin-top:2px;
+}
+
+.cerPmArTextBox {
+    width:400px;
+}
+
+.moqRteFieldContainer {
+    margin-left: 136px;
+    min-width: 60%;
+    margin-bottom: 15px;
+}
+
+.moqRteFieldContainer .form-label {
+    min-width: 260px;
+}
+
+.moqRteFieldContainer .tableData {
+    padding: 30px;
+    background-color: lightgray;
+    width: 600px;
+    height: 200px;
+    margin-bottom: 10px;
+}
+
+.moqRteFieldContainer .moqTypeHeader {
+    font-style: italic;
+    width: 700px;
 }

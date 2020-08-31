@@ -50,9 +50,38 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
     // Adds MOQ Type to Selected MOQ Types (and removes it from the dropdown of available types)
     $scope.AddMoqType = function () {
-        $scope.model.SelectedMoqTypes.push($scope.model.selectedMOQType);
-        var index = $scope.model.MOQTypes.indexOf($scope.model.selectedMOQType);
+        var selectedItem = $scope.model.selectedMOQType;
+        $scope.model.SelectedMoqTypes.push(selectedItem);
+        var index = $scope.model.MOQTypes.indexOf(selectedItem);
         $scope.model.MOQTypes.splice(index, 1);
+
+        // ToDo: DUSAN -> need to bind it back to the model
+        // ToDo: Dusan -> need to make the RTE items a part of an array model, instead of a single thing
+
+        // setTimeout is needed to allow for the objects to be added into the DOM, before we can transform them into RTE
+        setTimeout(function () {
+            if ($scope.model.IsReadOnly) {
+                HandleRTEDataForReadOnly('SowHoursLocation_' + selectedItem.id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('DescriptionHoursRequired_' + selectedItem.id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('SmeReason_' + selectedItem.id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('SmeHoursLogic_' + selectedItem.id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('SmeDurationLogic_' + selectedItem.id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('SmeTaskEstimates_' + selectedItem.id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('Rationale_' + selectedItem.id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('SkillMixRationale_' + selectedItem.id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('Calculation_' + selectedItem.id, '.replacedWidgetText');
+            } else {
+                InitializeRTE('SowHoursLocation_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('DescriptionHoursRequired_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('SmeReason_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('SmeHoursLogic_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('SmeDurationLogic_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('SmeTaskEstimates_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('Rationale_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('SkillMixRationale_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('Calculation_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+            }
+        }, 1);
     }
 
     // Removes MOQ Type from Selected MOQ Types (and adds it into the dropdown)

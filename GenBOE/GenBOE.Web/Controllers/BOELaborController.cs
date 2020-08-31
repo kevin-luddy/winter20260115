@@ -14,6 +14,7 @@ namespace GenBOE.Web.Controllers
     using System.Transactions;
     using System.Web.Mvc;
     using GenBOE.ActionLogic;
+    using GenBOE.ActionLogic._ModelView;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.Common.MOQ;
@@ -2099,6 +2100,7 @@ namespace GenBOE.Web.Controllers
             theModelView.UsingTemplateBOE = ws.UsingTemplateBOE;
             theModelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(ws.UsingTemplateBOE);
             theModelView.MoqTypeTableDataLabels = this._BoeLaborControllerLogic.GetMoqTypeLabels();
+            theModelView.MoqRteFields = new MoqRteFields();
 
             return theModelView;
         }

@@ -309,6 +309,7 @@
     <Compile Include="_ModelView\GenBOEHomepageModelView.cs" />
     <Compile Include="_ModelView\LaborTabDataModelView.cs" />
     <Compile Include="_ModelView\AdjacentItems.cs" />
+    <Compile Include="_ModelView\MOQTypes\MoqRteFields.cs" />
     <Compile Include="_ModelView\MOQTypes\MoqTypeTableDataLabels.cs" />
     <Compile Include="_ModelView\Task\LaborTaskDataModelView.cs" />
     <Compile Include="_ModelView\Task\LaborTaskModelView.cs" />
