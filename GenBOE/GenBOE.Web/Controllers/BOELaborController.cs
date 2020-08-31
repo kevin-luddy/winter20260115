@@ -2097,7 +2097,8 @@ namespace GenBOE.Web.Controllers
             theModelView.HelpText = _BoeLaborControllerLogic.GetMOQTypesHelpText();
             theModelView.MOQTextLabel = _BoeLaborControllerLogic.GetMOQTextLabel();
             theModelView.UsingTemplateBOE = ws.UsingTemplateBOE;
-            theModelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList();
+            theModelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(ws.UsingTemplateBOE);
+            theModelView.MoqTypeTableDataLabels = this._BoeLaborControllerLogic.GetMoqTypeLabels();
 
             return theModelView;
         }

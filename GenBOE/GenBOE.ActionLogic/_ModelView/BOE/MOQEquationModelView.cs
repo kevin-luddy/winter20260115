@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
     using System.Collections.ObjectModel;
     using System.ComponentModel.DataAnnotations;
     using System.Web.Mvc;
+    using GenBOE.ActionLogic._ModelView;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.DTO;
@@ -185,6 +186,64 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// MOQ Types for DropDown
         /// </summary>
         public ICollection<SelectListItem> MOQTypes { get; set; }
+
+        #region Template BOEs MOQ Type code
+
+        #region RTE Fields
+
+        /// <summary>
+        /// Rationale
+        /// </summary>
+        public string Rationale { get; set; }
+
+        /// <summary>
+        /// Skill Mix Rationale
+        /// </summary>
+        public string SkillMixRationale { get; set; }
+
+        /// <summary>
+        /// Calculation
+        /// </summary>
+        public string Calculation { get; set; }
+
+        /// <summary>
+        /// CER, Parametric model or tool name, or Analogous relationship name
+        /// </summary>
+        public string CerName { get; set; }
+
+        /// <summary>
+        /// CER, Parametric model or tool name, or Analogous relationship location in the proposal
+        /// </summary>
+        public string CerLocation { get; set; }
+
+        /// <summary>
+        /// Description of Hours required
+        /// </summary>
+        public string DescriptionHoursRequired { get; set; }
+
+        /// <summary>
+        /// The SME selected Expert judgement for this basis of estimate for the following reasons
+        /// </summary>
+        public string SmeReason { get; set; }
+
+        /// <summary>
+        /// The logic and assumptions used to estimate hours is
+        /// </summary>
+        public string SmeHoursLogic { get; set; }
+
+        /// <summary>
+        /// The logic and assumptions used to estimate duration is
+        /// </summary>
+        public string SmeDurationLogic { get; set; }
+
+        #endregion
+
+        /// <summary>
+        /// Labels for the Data Table Fields
+        /// </summary>
+        public MoqTypeTableDataLabels MoqTypeTableDataLabels { get; set; }
+
+        #endregion
     }
 
     public enum MOQEquationType

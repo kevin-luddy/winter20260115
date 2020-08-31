@@ -9,6 +9,7 @@ namespace GenBOE.ActionLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Web.Mvc;
+    using GenBOE.ActionLogic._ModelView;
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
@@ -284,7 +285,14 @@ namespace GenBOE.ActionLogic
         /// <summary>
         /// Get a list of MOQ Types for dropdown
         /// </summary>
+        /// <param name="templateBoeMoqTypes">Return only Template BOEs MOQ Types</param>
         /// <returns>MOQ Types</returns>
-        ICollection<SelectListItem> GetMOQTypeSelectList();
+        ICollection<SelectListItem> GetMOQTypeSelectList(bool templateBoeMoqTypes);
+
+        /// <summary>
+        /// Returns a list of labels to be used in the MOQ Types page.
+        /// </summary>
+        /// <returns>Labels for MOQ Type Data Table Fields</returns>
+        MoqTypeTableDataLabels GetMoqTypeLabels();
     }
 }

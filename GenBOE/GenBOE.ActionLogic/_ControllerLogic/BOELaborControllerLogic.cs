@@ -14,6 +14,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Web.Configuration;
     using System.Web.Mvc;
     using GenBOE.ActionLogic;
+    using GenBOE.ActionLogic._ModelView;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
@@ -3314,19 +3315,30 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <summary>
         /// Get a list of MOQ Types for dropdown
         /// </summary>
+        /// <param name="wsUsingTemplateBOEs">Return only Template BOEs MOQ Types</param>
         /// <returns>MOQ Types</returns>
-        public ICollection<SelectListItem> GetMOQTypeSelectList()
+        public ICollection<SelectListItem> GetMOQTypeSelectList(bool wsUsingTemplateBOEs)
         {
-            ICollection<MOQType> validMOQTypes = this.GetMOQTypes();
+            ICollection<MOQType> templateBoeMoqTypes = wsUsingTemplateBOEs 
+                ? new List<MOQType>() { MOQType.Historical, MOQType.Comparative, MOQType.CostEstimatingRelationships, MOQType.ParametricEstimates, MOQType.AnalogousRelationships, MOQType.SOW, MOQType.LOE, MOQType.SME, MOQType.NonLabor } 
+                : this.GetMOQTypes();
 
-            // convert selected MOQ types to select list items
-            List<SelectListItem> results = validMOQTypes.Select(t => new SelectListItem
+            List<SelectListItem> results = templateBoeMoqTypes.Select(t => new SelectListItem
             {
                 Text = t.GetDescription(),
                 Value = ((int)t).ToString()
             }).ToList();
 
             return results;
+        }
+
+        /// <summary>
+        /// Returns a list of labels to be used in the MOQ Types page.
+        /// </summary>
+        /// <returns>Labels for MOQ Type Data Table Fields</returns>
+        public virtual MoqTypeTableDataLabels GetMoqTypeLabels()
+        {
+            throw new NotImplementedException();
         }
     }
 
