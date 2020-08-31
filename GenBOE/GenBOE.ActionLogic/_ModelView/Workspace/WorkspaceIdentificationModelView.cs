@@ -74,7 +74,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
                 this.PerfOrgSorting = workspaceDTO.PerfOrgSorting;
                 this.RteSizeLimit = workspaceDTO.RteSizeLimit;
                 this.EnableTemplateBoeSelect = workspaceDTO.WorkspaceState == WorkspaceState.Initialization;
-                // this.UsingTemplateBoe = workspaceDTO.UsingTemplateBOE; // TODO - add after pull
+                this.UsingTemplateBoe = workspaceDTO.UsingTemplateBOE;
             }
             if (costVolumeLeadDTO != null)
             {
