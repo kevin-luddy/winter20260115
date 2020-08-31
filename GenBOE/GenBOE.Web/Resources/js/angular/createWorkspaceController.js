@@ -83,7 +83,8 @@
             IsUsingTM: CreateWorkspaceModelView.IsSSC, // by default on for SSC, off for RMS
             TrackingNumber: $scope.model.ptmTrackingNumber, // SSC only
             ProposalClass: '-1',                    // SSC only
-            SelectedContractTypes: []               // SSC only, array of strings
+            SelectedContractTypes: [],              // SSC only, array of strings
+            UsingTemplateBoe: ''
         };
     };
 
@@ -621,6 +622,7 @@
         var deferred = $q.defer();
         // use default for the workspace name since this is not a real workspace yet
         var validateUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, CreateWorkspaceModelView.ValidateIndentificationAction);
+
         $http({
             method: 'POST',
             url: validateUrl,
@@ -800,6 +802,7 @@
             $scope.data.IsUsingEquivalentPerson = result.IsUsingEquivalentPerson;
             $scope.data.IsUsingTM = result.IsUsingTM;
             $scope.data.RteSizeLimit = result.RteSizeLimit;
+            $scope.data.UsingTemplateBoe = result.UsingTemplateBoe;
                 
             if ($scope.data.WSExactCopy) {
                 $scope.data.ContainsOCI = result.ContainsOCI;

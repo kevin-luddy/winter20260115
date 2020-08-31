@@ -3784,9 +3784,10 @@ table.manage-historical-metrics-grid
     min-width: 180px;
 }
 
-.workspace-identification input.disabled {
+.workspace-identification input.disabled,
+.workspace-identification select.disabled {
     color: gray;
-    background-color:gainsboro;
+    background-color: gainsboro;
 }
 
 .create-workspace-form .full

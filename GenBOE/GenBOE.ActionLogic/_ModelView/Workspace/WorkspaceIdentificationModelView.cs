@@ -73,6 +73,8 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
                 this.ResourceSorting = workspaceDTO.ResourceSorting;
                 this.PerfOrgSorting = workspaceDTO.PerfOrgSorting;
                 this.RteSizeLimit = workspaceDTO.RteSizeLimit;
+                this.EnableTemplateBoeSelect = workspaceDTO.WorkspaceState == WorkspaceState.Initialization;
+                // this.UsingTemplateBoe = workspaceDTO.UsingTemplateBOE; // TODO - add after pull
             }
             if (costVolumeLeadDTO != null)
             {
@@ -209,5 +211,15 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// </summary>
         [Range(100, 100000, ErrorMessage = "Rich Text Editor Character Limit must be between 100 and 100,000.")]
         public int? RteSizeLimit { get; set; }
+
+        /// <summary>
+        /// Get/Set whether to enable the Template BOE dropdown
+        /// </summary>
+        public bool EnableTemplateBoeSelect { get; set; }
+
+        /// <summary>
+        /// Get/Set whether using template BOE
+        /// </summary>
+        public bool UsingTemplateBoe { get; set; }
     }
 }

@@ -5559,7 +5559,8 @@ namespace GenBOE.Web.Controllers
                     ProjectMapType = (int)workspace.ProjectMapType,
                     AllowGridEdit = workspace.AllowGridEdit,
                     LineOfBusinessID = workspace.LineOfBusiness.Id,
-                    RteSizeLimit = workspace.RteSizeLimit
+                    RteSizeLimit = workspace.RteSizeLimit,
+                    UsingTemplateBoe = false // TODO - update with new dto value
                 };
 
                 toReturn = Json(modelView);

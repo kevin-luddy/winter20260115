@@ -80,5 +80,10 @@ namespace GenBOE.Web.ModelView
         /// Get/Set the RTE character size limit
         /// </summary>
         public int? RteSizeLimit { get; set; }
+
+        /// <summary>
+        /// Get/Set whether using Template BOE
+        /// </summary>
+        public bool UsingTemplateBoe { get; set; }
     }
 }

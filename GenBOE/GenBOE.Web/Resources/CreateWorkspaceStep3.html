@@ -322,18 +322,34 @@
         <span id="approxPages" data-ng-bind-html-unsafe="approxPages"></span>
     </div>
 </div>
-<div id="RteSizeRow" class="form-row" data-ng-show="!model.isSSC && !data.IsAttemptingToImport">
-	<div class="form-label">
-		<span>Create Sikorsky Custom Fields</span>
-	</div>
-	<div class="form-element">
-		<input type="checkbox" data-ng-model="data.CreateSikorskyCustomFields" />
-	</div>
+<div class="form-row">
+    <div class="form-label">
+        <span>Template BOE *</span>
+        <div id="using-template-boe-help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
+        <div id="using-template-boe-help-dialog" class="help-dialog" style="width: 200px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">Will this Workspace use the MOQ Template in its BOEs?</div>
+        </div>
+    </div>
+    <div class="form-element" id="TemplateBoeSelect">
+        <select name="UsingTemplateBoe" id="UsingTemplateBoe" data-ng-model="data.UsingTemplateBoe">
+            <option data-ng-value="true">Yes</option>
+            <option data-ng-value="false">No</option>
+        </select>
+    </div>
+</div>
+<div id="SikorskyCustomFieldsRow" class="form-row" data-ng-show="!model.isSSC && !data.IsAttemptingToImport">
+    <div class="form-label">
+        <span>Create Sikorsky Custom Fields</span>
+    </div>
+    <div class="form-element">
+        <input type="checkbox" data-ng-model="data.CreateSikorskyCustomFields" />
+    </div>
 </div>
 {{setupIdentificationPage()}}
 <script type="text/javascript">
     (function () {
-        SetupMonthPicker("#ContractStartDate");      
+        SetupMonthPicker("#ContractStartDate");
         SetupMonthPicker("#ContractEndDate");
     })();
 </script>
