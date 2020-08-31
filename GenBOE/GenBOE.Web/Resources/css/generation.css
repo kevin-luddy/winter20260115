@@ -8333,3 +8333,16 @@ input.labelLookFeel {
     margin-top: 15px;
     display: block;
 }
+
+#addMoqType {
+    height: 20px;
+    line-height: 14px;
+    margin-left: 10px;
+    margin-top: -2px;
+}
+
+#AddMOQWarning {
+    color:goldenrod;
+    font-style:italic;
+    margin-top:2px;
+}
