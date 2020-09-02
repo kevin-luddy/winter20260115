@@ -4,7 +4,7 @@
     $scope.step = 1;                        // Current step of the wizard
     $scope.errors = [];
     $scope.identificationPageSetup = false; // Has the identification page been setup yet.  Used to make sure the setup code is only run once when Step 3 is shown to user.
-    
+
     // model houses the labels, dropdowns, etc for page setup
     $scope.model = {
         stepTitle: '',                      // Current Step Title for the page
@@ -42,8 +42,8 @@
     };
 
     // data houses the data being saved and sent to the back-end
-    $scope.data = {}; 
-    
+    $scope.data = {};
+
     $scope.resetData = function () {
 
         // reset all of the data
@@ -661,6 +661,7 @@
                 $scope.data.SelectedContractTypes = response.data.ContractTypes;
                 $scope.data.ProposalSubmittalDate = response.data.AnticipatedDeliveryDate;
                 $scope.data.RevisedSubmittalDate = response.data.RevisedSubmittalDate;
+                $scope.data.UsingTemplateBoe = response.data.UsingTemplateBoe;
                 deferred.resolve();
             },
             function errorCallback(error) {

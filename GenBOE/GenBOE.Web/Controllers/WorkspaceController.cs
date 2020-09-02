@@ -4784,6 +4784,7 @@ namespace GenBOE.Web.Controllers
             int proposalClassId = -1;
             string anticipatedDeliveryDate = string.Empty;
             string revisedSubmittalDate = string.Empty;
+            bool usingTemplateBoe = false;
 
             // see if this is a valid PTM Tracking Number
             int proposalId = this.proposalLoader.GetIdByTrackingNumber(trackingNumber);
@@ -4817,6 +4818,9 @@ namespace GenBOE.Web.Controllers
                 revisedSubmittalDate = proposal.RevisedSubmittalDate.HasValue
                     ? proposal.RevisedSubmittalDate.Value.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR)
                     : string.Empty;
+
+                // Default Template BOE switch to Yes if CCoPD is set to true
+                usingTemplateBoe = proposal.IsCCPDRequired.HasValue ? proposal.IsCCPDRequired.Value : false;
             }
             else
             {
@@ -4824,7 +4828,8 @@ namespace GenBOE.Web.Controllers
             }
 
             return Json(new { TrackingNumberRevision = nextRevision, LOBId = lobId, RFPNumber = rfpNumber, ContractTypes = selectedContractTypes,
-                Title = title, ProposalClassId = proposalClassId, AnticipatedDeliveryDate = anticipatedDeliveryDate, RevisedSubmittalDate = revisedSubmittalDate
+                Title = title, ProposalClassId = proposalClassId, AnticipatedDeliveryDate = anticipatedDeliveryDate, RevisedSubmittalDate = revisedSubmittalDate,
+                UsingTemplateBoe = usingTemplateBoe
             });
         }
 
