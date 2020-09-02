@@ -44,7 +44,6 @@ namespace GenBOE.Models
         public virtual DbSet<BOEFormIBOE> BOEFormIBOEs { get; set; }
         public virtual DbSet<BOEFormPBOE> BOEFormPBOEs { get; set; }
         public virtual DbSet<BOELaborSpread> BOELaborSpreads { get; set; }
-        public virtual DbSet<BOELaborType> BOELaborTypes { get; set; }
         public virtual DbSet<BOELaborTypeCustomFieldValueXREF> BOELaborTypeCustomFieldValueXREFs { get; set; }
         public virtual DbSet<BOEPotentialRole> BOEPotentialRoles { get; set; }
         public virtual DbSet<BOEStateHistory> BOEStateHistories { get; set; }
@@ -99,7 +98,6 @@ namespace GenBOE.Models
         public virtual DbSet<ProPricerFieldXREF> ProPricerFieldXREFs { get; set; }
         public virtual DbSet<ProPricerTypeLU> ProPricerTypeLUs { get; set; }
         public virtual DbSet<RateTypeLU> RateTypeLUs { get; set; }
-        public virtual DbSet<RealignedWorkspaceXREF> RealignedWorkspaceXREFs { get; set; }
         public virtual DbSet<ReportLU> ReportLUs { get; set; }
         public virtual DbSet<Resource> Resources { get; set; }
         public virtual DbSet<ResourceList> ResourceLists { get; set; }
@@ -154,7 +152,6 @@ namespace GenBOE.Models
         public virtual DbSet<WorkspaceOffloadRate> WorkspaceOffloadRates { get; set; }
         public virtual DbSet<ProjectMapTypeLU> ProjectMapTypeLUs { get; set; }
         public virtual DbSet<TMResourceRate> TMResourceRates { get; set; }
-        public virtual DbSet<ProjectMap> ProjectMaps { get; set; }
         public virtual DbSet<ProjectMapSpread> ProjectMapSpreads { get; set; }
         public virtual DbSet<WorkspaceEmailXREF> WorkspaceEmailXREFs { get; set; }
         public virtual DbSet<SikorskyLegacyResource> SikorskyLegacyResources { get; set; }
@@ -172,6 +169,8 @@ namespace GenBOE.Models
         public virtual DbSet<RteTemplateQuestion> RteTemplateQuestions { get; set; }
         public virtual DbSet<RteTemplateAnswer> RteTemplateAnswers { get; set; }
         public virtual DbSet<RteTemplateSource> RteTemplateSources { get; set; }
+        public virtual DbSet<BOELaborType> BOELaborTypes { get; set; }
+        public virtual DbSet<ProjectMap> ProjectMaps { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]
         public virtual IQueryable<SplitString_Result> SplitString(string list, string delimiter, string emptyListItem)
@@ -4004,7 +4003,7 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertWBSElement", wBSIDParameter, wBSNumberParameter, displayedWBSNumberParameter, wBSTitleParameter, cLINIDParameter, workspaceIDParameter, updateDTParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertWorkspace(Nullable<int> workspaceID, string workspaceName, string workspaceShortName, Nullable<int> workspaceStateID, Nullable<System.DateTime> contractStartDate, Nullable<System.DateTime> contractEndDate, Nullable<System.DateTime> proposalSubmitDate, string workspaceDescription, Nullable<int> costVolumeLeadPricerETIUserID, string rFPNumber, Nullable<int> templateID, Nullable<bool> containsOCI, string trackingNumber, Nullable<bool> containsTemplate, Nullable<int> numProPricerExport, Nullable<int> createdByETIUserID, Nullable<int> proposalStatusID, string statusComment, Nullable<int> performingOrganizationListID, Nullable<int> resourceListID, Nullable<System.DateTime> updateDT, Nullable<int> bOEExportSortByID, Nullable<int> segmentID, Nullable<int> lineOfBusinessID, string contractTypeID, Nullable<int> proposalClassID, string proposalTitle, Nullable<int> resourcePrecision, Nullable<System.DateTime> recalculationStartedDate, Nullable<byte> costPrecision, Nullable<bool> isUsingEquivalentPerson, Nullable<bool> isUsingTM, Nullable<int> projectMapTypeID, Nullable<bool> allowGridEdit, Nullable<int> customSorting, Nullable<int> resourceSorting, Nullable<int> perfOrgSorting, Nullable<int> lastProPricerInstance, string lastProPricerProposal, Nullable<int> rteSizeLimit, Nullable<System.DateTime> revisedSubmittalDate)
+        public virtual ObjectResult<Nullable<int>> upsertWorkspace(Nullable<int> workspaceID, string workspaceName, string workspaceShortName, Nullable<int> workspaceStateID, Nullable<System.DateTime> contractStartDate, Nullable<System.DateTime> contractEndDate, Nullable<System.DateTime> proposalSubmitDate, string workspaceDescription, Nullable<int> costVolumeLeadPricerETIUserID, string rFPNumber, Nullable<int> templateID, Nullable<bool> containsOCI, string trackingNumber, Nullable<bool> containsTemplate, Nullable<int> numProPricerExport, Nullable<int> createdByETIUserID, Nullable<int> proposalStatusID, string statusComment, Nullable<int> performingOrganizationListID, Nullable<int> resourceListID, Nullable<System.DateTime> updateDT, Nullable<int> bOEExportSortByID, Nullable<int> segmentID, Nullable<int> lineOfBusinessID, string contractTypeID, Nullable<int> proposalClassID, string proposalTitle, Nullable<int> resourcePrecision, Nullable<System.DateTime> recalculationStartedDate, Nullable<byte> costPrecision, Nullable<bool> isUsingEquivalentPerson, Nullable<bool> isUsingTM, Nullable<int> projectMapTypeID, Nullable<bool> allowGridEdit, Nullable<int> customSorting, Nullable<int> resourceSorting, Nullable<int> perfOrgSorting, Nullable<int> lastProPricerInstance, string lastProPricerProposal, Nullable<int> rteSizeLimit, Nullable<System.DateTime> revisedSubmittalDate, Nullable<bool> templateBoe)
         {
             var workspaceIDParameter = workspaceID.HasValue ?
                 new ObjectParameter("WorkspaceID", workspaceID) :
@@ -4170,7 +4169,11 @@ namespace GenBOE.Models
                 new ObjectParameter("RevisedSubmittalDate", revisedSubmittalDate) :
                 new ObjectParameter("RevisedSubmittalDate", typeof(System.DateTime));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertWorkspace", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, workspaceStateIDParameter, contractStartDateParameter, contractEndDateParameter, proposalSubmitDateParameter, workspaceDescriptionParameter, costVolumeLeadPricerETIUserIDParameter, rFPNumberParameter, templateIDParameter, containsOCIParameter, trackingNumberParameter, containsTemplateParameter, numProPricerExportParameter, createdByETIUserIDParameter, proposalStatusIDParameter, statusCommentParameter, performingOrganizationListIDParameter, resourceListIDParameter, updateDTParameter, bOEExportSortByIDParameter, segmentIDParameter, lineOfBusinessIDParameter, contractTypeIDParameter, proposalClassIDParameter, proposalTitleParameter, resourcePrecisionParameter, recalculationStartedDateParameter, costPrecisionParameter, isUsingEquivalentPersonParameter, isUsingTMParameter, projectMapTypeIDParameter, allowGridEditParameter, customSortingParameter, resourceSortingParameter, perfOrgSortingParameter, lastProPricerInstanceParameter, lastProPricerProposalParameter, rteSizeLimitParameter, revisedSubmittalDateParameter);
+            var templateBoeParameter = templateBoe.HasValue ?
+                new ObjectParameter("TemplateBoe", templateBoe) :
+                new ObjectParameter("TemplateBoe", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertWorkspace", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, workspaceStateIDParameter, contractStartDateParameter, contractEndDateParameter, proposalSubmitDateParameter, workspaceDescriptionParameter, costVolumeLeadPricerETIUserIDParameter, rFPNumberParameter, templateIDParameter, containsOCIParameter, trackingNumberParameter, containsTemplateParameter, numProPricerExportParameter, createdByETIUserIDParameter, proposalStatusIDParameter, statusCommentParameter, performingOrganizationListIDParameter, resourceListIDParameter, updateDTParameter, bOEExportSortByIDParameter, segmentIDParameter, lineOfBusinessIDParameter, contractTypeIDParameter, proposalClassIDParameter, proposalTitleParameter, resourcePrecisionParameter, recalculationStartedDateParameter, costPrecisionParameter, isUsingEquivalentPersonParameter, isUsingTMParameter, projectMapTypeIDParameter, allowGridEditParameter, customSortingParameter, resourceSortingParameter, perfOrgSortingParameter, lastProPricerInstanceParameter, lastProPricerProposalParameter, rteSizeLimitParameter, revisedSubmittalDateParameter, templateBoeParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> upsertWorkspacePerformingOrganization(Nullable<int> performingOrganizationID, string performingOrganizationName, string performingOrganizationDescription, Nullable<int> performingOrganizationListID, Nullable<System.DateTime> updateDT)

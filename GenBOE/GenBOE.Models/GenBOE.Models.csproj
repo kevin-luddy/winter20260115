@@ -369,9 +369,6 @@
     <Compile Include="RateTypeLU.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="RealignedWorkspaceXREF.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="ReportLU.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>

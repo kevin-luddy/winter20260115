@@ -17,11 +17,11 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CLIN()
         {
-            this.BOELaborTypes = new HashSet<BOELaborType>();
             this.MSTTravelTrips = new HashSet<MSTTravelTrip>();
             this.SumOfBOE_OrdinaryVariableXREF = new HashSet<SumOfBOE_OrdinaryVariableXREF>();
             this.SumOfBOE_WorkspaceVariableXREF = new HashSet<SumOfBOE_WorkspaceVariableXREF>();
             this.WBS_CLIN_BOE_XREF = new HashSet<WBS_CLIN_BOE_XREF>();
+            this.BOELaborTypes = new HashSet<BOELaborType>();
         }
     
         public int CLINID { get; set; }
@@ -34,8 +34,6 @@ namespace GenBOE.Models
         public string DisplayedCLINNumber { get; set; }
         public Nullable<int> ContractTypeID { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BOELaborType> BOELaborTypes { get; set; }
         public virtual ContractTypeLU ContractTypeLU { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MSTTravelTrip> MSTTravelTrips { get; set; }
@@ -46,5 +44,7 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WBS_CLIN_BOE_XREF> WBS_CLIN_BOE_XREF { get; set; }
         public virtual Workspace Workspace { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BOELaborType> BOELaborTypes { get; set; }
     }
 }

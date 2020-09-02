@@ -37,7 +37,7 @@ namespace GenBOE.Models
         public Nullable<int> WBSID { get; set; }
         public Nullable<int> CLINID { get; set; }
         public Nullable<bool> CanOffload { get; set; }
-        public int LaborSortID { get; set; }
+        public int LaborSortId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOELaborSpread> BOELaborSpreads { get; set; }

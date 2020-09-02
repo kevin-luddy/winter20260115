@@ -17,16 +17,16 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public SpreadCurveLU()
         {
-            this.BOELaborTypes = new HashSet<BOELaborType>();
             this.ODCTypes = new HashSet<ODCType>();
+            this.BOELaborTypes = new HashSet<BOELaborType>();
         }
     
         public int SpreadCurveID { get; set; }
         public string SpreadCurve { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BOELaborType> BOELaborTypes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ODCType> ODCTypes { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BOELaborType> BOELaborTypes { get; set; }
     }
 }

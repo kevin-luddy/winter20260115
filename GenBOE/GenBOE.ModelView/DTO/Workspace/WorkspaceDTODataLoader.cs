@@ -904,7 +904,8 @@ namespace GenBOE.DataBridge.DTO
                         wsToSave.LastProPricerInstance, 
                         wsToSave.LastProPricerProposal,
                         wsToSave.RteSizeLimit,
-                        wsToSave.RevisedSubmittalDate).FirstOrDefault());
+                        wsToSave.RevisedSubmittalDate,
+                        false /*TODO update with value*/).FirstOrDefault());
 
                     // if the result ID is not a positive number, something bad went wrong so Log it
                     if (resultID <= 0)
