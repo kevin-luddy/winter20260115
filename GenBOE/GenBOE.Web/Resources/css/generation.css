@@ -8369,9 +8369,22 @@ input.labelLookFeel {
     width: 600px;
     height: 200px;
     margin-bottom: 10px;
+    display: inline-block;
+    float: left;
+    clear:both;
 }
 
 .moqRteFieldContainer .moqTypeHeader {
     font-style: italic;
     width: 700px;
+}
+
+.moqRteFieldContainer .form-row {
+    clear:both;
+}
+
+.tableDataButtons {
+    display: inline-block;
+    float: left;
+    margin-left: 13px;
 }

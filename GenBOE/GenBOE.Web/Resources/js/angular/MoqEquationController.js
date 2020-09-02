@@ -4,7 +4,11 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         $scope.model = $window.MOQEquationFieldModel;
         $scope.model.IsCostEquation = ($scope.model.MoqEquationType == 'Cost');
         $scope.model.insertWorkspaceModalOpen = false;
-        $scope.model.SelectedMoqTypes = [];
+
+        // initialize RTE fields for existing data
+        angular.forEach($scope.model.SelectedMoqTypes.map(e => e.SelectedMOQType.toString()), function (id) {
+            $scope.InitializeRteFields(id);
+        });
     }
 
     // Called when the Insert Workspace Variable dropdown item is clicked.
@@ -52,45 +56,62 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     $scope.AddMoqType = function () {
         var selectedItem = $scope.model.selectedMOQType;
         $scope.model.SelectedMoqTypes.push(selectedItem);
-        var index = $scope.model.MOQTypes.indexOf(selectedItem);
-        $scope.model.MOQTypes.splice(index, 1);
+        $scope.InitializeRteFields(selectedItem.SelectedMOQType);
 
-        // ToDo: DUSAN -> need to bind it back to the model
-        // ToDo: Dusan -> need to make the RTE items a part of an array model, instead of a single thing
-
-        // setTimeout is needed to allow for the objects to be added into the DOM, before we can transform them into RTE
-        setTimeout(function () {
-            if ($scope.model.IsReadOnly) {
-                HandleRTEDataForReadOnly('SowHoursLocation_' + selectedItem.id, '.replacedWidgetText');
-                HandleRTEDataForReadOnly('DescriptionHoursRequired_' + selectedItem.id, '.replacedWidgetText');
-                HandleRTEDataForReadOnly('SmeReason_' + selectedItem.id, '.replacedWidgetText');
-                HandleRTEDataForReadOnly('SmeHoursLogic_' + selectedItem.id, '.replacedWidgetText');
-                HandleRTEDataForReadOnly('SmeDurationLogic_' + selectedItem.id, '.replacedWidgetText');
-                HandleRTEDataForReadOnly('SmeTaskEstimates_' + selectedItem.id, '.replacedWidgetText');
-                HandleRTEDataForReadOnly('Rationale_' + selectedItem.id, '.replacedWidgetText');
-                HandleRTEDataForReadOnly('SkillMixRationale_' + selectedItem.id, '.replacedWidgetText');
-                HandleRTEDataForReadOnly('Calculation_' + selectedItem.id, '.replacedWidgetText');
-            } else {
-                InitializeRTE('SowHoursLocation_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-                InitializeRTE('DescriptionHoursRequired_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-                InitializeRTE('SmeReason_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-                InitializeRTE('SmeHoursLogic_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-                InitializeRTE('SmeDurationLogic_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-                InitializeRTE('SmeTaskEstimates_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-                InitializeRTE('Rationale_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-                InitializeRTE('SkillMixRationale_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-                InitializeRTE('Calculation_' + selectedItem.id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-            }
-        }, 1);
+        selectedItem.TableData = [];
+        $scope.CreateNewTable(selectedItem.TableData);
     }
 
     // Removes MOQ Type from Selected MOQ Types (and adds it into the dropdown)
     $scope.RemoveMoqType = function (item) {
         GenSession.confirmDialog('Delete MOQ Type?', 'Are you sure you want to delete the selected MOQ Type, and all associated data?<br/> Once deleted, this can not be undone.', function () {
             $scope.$apply(function () {
-                $scope.model.MOQTypes.push(item);
                 var index = $scope.model.SelectedMoqTypes.indexOf(item);
                 $scope.model.SelectedMoqTypes.splice(index, 1);
+            });
+        });
+    }
+
+    // Initializes RTE fields for the selected MOQ Type option
+    $scope.InitializeRteFields = function (id) {
+        // setTimeout is needed to allow for the objects to be added into the DOM, before we can transform them into RTE
+        setTimeout(function () {
+            if ($scope.model.IsReadOnly) {
+                HandleRTEDataForReadOnly('SowHoursLocation_' + id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('DescriptionHoursRequired_' + id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('SmeReason_' + id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('SmeHoursLogic_' + id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('SmeDurationLogic_' + id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('SmeTaskEstimates_' + id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('Rationale_' + id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('SkillMixRationale_' + id, '.replacedWidgetText');
+                HandleRTEDataForReadOnly('Calculation_' + id, '.replacedWidgetText');
+            } else {
+                InitializeRTE('SowHoursLocation_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('DescriptionHoursRequired_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('SmeReason_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('SmeHoursLogic_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('SmeDurationLogic_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('SmeTaskEstimates_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('Rationale_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('SkillMixRationale_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('Calculation_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+            }
+        }, 50);
+    }
+
+    // Create New Table Data for the MOQ Type
+    $scope.CreateNewTable = function (tableDataArray) {
+        var newTable = {};
+        tableDataArray.push(newTable);
+    }
+
+    // Remove existing Table Data
+    $scope.RemoveTable = function (item, tableDataArray) {
+        GenSession.confirmDialog('Delete Data Table?', 'Are you sure you want to delete the selected Data Table?<br/> Once deleted, this can not be undone.', function () {
+            $scope.$apply(function () {
+                var index = tableDataArray.indexOf(item);
+                tableDataArray.splice(index, 1);
             });
         });
     }

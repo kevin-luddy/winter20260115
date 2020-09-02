@@ -187,19 +187,15 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// </summary>
         public ICollection<SelectListItem> MOQTypes { get; set; }
 
-        #region Template BOEs MOQ Type code
-
         /// <summary>
-        /// <MOQ Rte Fields
+        /// Selected MOQ Types and their underlying data
         /// </summary>
-        public MoqRteFields MoqRteFields { get; set; }
+        public ICollection<MoqTypeSelection> SelectedMoqTypes { get; set; } = new List<MoqTypeSelection>();
 
         /// <summary>
         /// Labels for the Data Table Fields
         /// </summary>
         public MoqTypeTableDataLabels MoqTypeTableDataLabels { get; set; }
-
-        #endregion
     }
 
     public enum MOQEquationType

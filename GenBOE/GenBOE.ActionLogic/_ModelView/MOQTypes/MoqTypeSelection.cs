@@ -6,11 +6,30 @@
 
 namespace GenBOE.ActionLogic._ModelView
 {
+    using System.Collections.Generic;
+    using IES.Common;
+
     /// <summary>
-    /// Rte Fields to support MOQ Data Collection
+    /// MOQ Type selection, with underlying data
     /// </summary>
-    public class MoqRteFields
+    public class MoqTypeSelection
     {
+        /// <summary>
+        /// Selected MOQ Type that corresponds to this 
+        /// </summary>
+        public MOQType SelectedMOQType { get; set; }
+
+        /// <summary>
+        /// Description of the Selected MOQ Type
+        /// </summary>
+        public string SelectedMOQTypeText
+        {
+            get
+            {
+                return this.SelectedMOQType.GetDescription();
+            }
+        }
+
         /// <summary>
         /// Rationale
         /// </summary>
@@ -65,5 +84,10 @@ namespace GenBOE.ActionLogic._ModelView
         /// Tasks are estimates
         /// </summary>
         public string SmeTaskEstimates { get; set; }
+
+        /// <summary>
+        /// Table Data
+        /// </summary>
+        public ICollection<MoqTableData> TableData { get; set; } = new List<MoqTableData>();
     }
 }

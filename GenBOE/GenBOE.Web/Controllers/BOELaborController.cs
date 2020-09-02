@@ -2100,7 +2100,13 @@ namespace GenBOE.Web.Controllers
             theModelView.UsingTemplateBOE = ws.UsingTemplateBOE;
             theModelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(ws.UsingTemplateBOE);
             theModelView.MoqTypeTableDataLabels = this._BoeLaborControllerLogic.GetMoqTypeLabels();
-            theModelView.MoqRteFields = new MoqRteFields();
+            theModelView.SelectedMoqTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() 
+            { 
+                SelectedMOQType = MOQType.CostEstimatingRelationships,
+                CerLocation = "CER LOCATION",
+                CerName = "CER NAME",
+                Rationale = "Cer Rationale"
+            }};
 
             return theModelView;
         }
