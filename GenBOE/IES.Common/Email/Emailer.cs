@@ -461,12 +461,18 @@ namespace IES.Common
                    "<a href=\"{2}\">Proposal Details tab</a>."
         };
 
+        /// <summary>
+        /// Email content sent for monthly Certification Timeline reminder email
+        /// </summary>
         public static readonly EmailContent CERTIFICATION_TIMELINE_EMAIL = new EmailContent
         {
-            Subject = "PTM: Certification Timeline ALERT",
+            Subject = "PTM: Certification Timeline ALERT (Action Required)",
             Body = "PTM records indicate that for proposal tracking number {0} ({1}), the Certification Timeline data has not been completed.  " +
-                "If your proposal has been certified, please complete <a href=\"{2}\">this section</a> in PTM as soon as possible .  " +
-                "This e-mail will be sent monthly as a reminder.  Thank You"
+                "If your proposal has been certified, please complete the Certification Timeline section in PTM as soon as possible.<br/><br/>" +
+                "Reminders to the Contracts, Estimating, and Supply Chain team:<br/><br/>" +
+                "If the proposal has not been negotiated and is scheduled to start negotiations within the next few weeks, Contracts should initiate completion of the Pre-Negotiation checklist at this time.<br/><br/>" +
+                "It is incumbent upon the proposal team to ensure we are providing timely disclosures to the customer through Contracts and are tracking them in our Contracts disclosure log for traceability and documentation purposes.<br/><br/>" +
+                "This e-mail will be sent monthly as a reminder, until the certification is complete.  Thank You"
         };
 
         /// <summary>

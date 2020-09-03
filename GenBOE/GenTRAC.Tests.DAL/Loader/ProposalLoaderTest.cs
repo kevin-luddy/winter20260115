@@ -924,5 +924,87 @@ namespace GenTRAC.Tests.DAL.Loader
 
             Assert.IsNotNull(proposals);
         }
+
+        /// <summary>
+        /// Tests GetWorkflowCompletedLineText for In Progress proposals
+        /// </summary>
+        [TestMethod]
+        public void TestGetWorkflowCompletedLineText_InProgress()
+        {
+            DateTime anticipatedDeliveryDate = DateTime.Now;
+            string result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.InProgress, anticipatedDeliveryDate, null, null);
+
+            Assert.AreEqual("Due: " + anticipatedDeliveryDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR), result);
+        }
+        
+        /// <summary>
+        /// Tests GetWorkflowCompletedLineText for In Progress proposals with a revised delivery date
+        /// </summary>
+        [TestMethod]
+        public void TestGetWorkflowCompletedLineText_InProgress_Revised()
+        {
+            DateTime anticipatedDeliveryDate = DateTime.Now;
+            DateTime revisedDeliveryDate = DateTime.Now.AddDays(1);
+            string result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.InProgress, anticipatedDeliveryDate, null, revisedDeliveryDate);
+
+            Assert.AreEqual("Due: " + revisedDeliveryDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR), result);
+        }
+
+        /// <summary>
+        /// Tests GetWorkflowCompletedLineText for Completed/Submitted/Revised proposals 
+        /// </summary>
+        [TestMethod]
+        public void TestGetWorkflowCompletedLineText_CompletedSubmittedRevised()
+        {
+            DateTime anticipatedDeliveryDate = DateTime.Now;
+            DateTime maxCompleteDate = DateTime.Now.AddDays(2);
+            string expectedResultPrefix = "Approval Workflow Completed: ";
+
+            // Test Completed
+            string result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.Completed, anticipatedDeliveryDate, maxCompleteDate, null);
+            Assert.AreEqual(expectedResultPrefix + maxCompleteDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR), result);
+
+            // Test Submitted
+            result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.Submitted, anticipatedDeliveryDate, maxCompleteDate, null);
+            Assert.AreEqual(expectedResultPrefix + maxCompleteDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR), result);
+
+            // Test Revised
+            result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.Revised, anticipatedDeliveryDate, maxCompleteDate, null);
+            Assert.AreEqual(expectedResultPrefix + maxCompleteDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR), result);
+        }
+
+        /// <summary>
+        /// Tests GetWorkflowCompletedLineText for Completed/Submitted/Revised proposals with no max complete date
+        /// </summary>
+        [TestMethod]
+        public void TestGetWorkflowCompletedLineText_CompletedSubmittedRevised_NA()
+        {
+            DateTime anticipatedDeliveryDate = DateTime.Now;
+            string expectedResultPrefix = "Approval Workflow Completed: ";
+
+            string result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.Revised, anticipatedDeliveryDate, null, null);
+            Assert.AreEqual(expectedResultPrefix + "N/A", result);
+        }
+
+        /// <summary>
+        /// Tests GetWorkflowCompletedLineText for Archived/Deleted/No Bid proposals 
+        /// </summary>
+        [TestMethod]
+        public void TestGetWorkflowCompletedLineText_ArchivedDeletedNoBid()
+        {
+            DateTime anticipatedDeliveryDate = DateTime.Now;
+
+            // Test Archived
+            string result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.Archived, anticipatedDeliveryDate, null, null);
+            Assert.AreEqual(ProposalStatus.Archived.GetDescription(), result);
+
+            // Test Deleted
+            result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.Deleted, anticipatedDeliveryDate, null, null);
+            Assert.AreEqual(ProposalStatus.Deleted.GetDescription(), result);
+
+            // Test No Bid
+            result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.NoBid, anticipatedDeliveryDate, null, null);
+            Assert.AreEqual(ProposalStatus.NoBid.GetDescription(), result);
+        }
     }
 }
