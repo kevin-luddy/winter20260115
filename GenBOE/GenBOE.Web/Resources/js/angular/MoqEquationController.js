@@ -64,7 +64,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
     // Removes MOQ Type from Selected MOQ Types (and adds it into the dropdown)
     $scope.RemoveMoqType = function (item) {
-        GenSession.confirmDialog('Delete MOQ Type?', 'Are you sure you want to delete the selected MOQ Type, and all associated data?<br/> Once deleted, this can not be undone.', function () {
+        GenSession.confirmDialog('Delete MOQ Type?', 'Are you sure you want to delete the selected MOQ Type and all associated data?<br/> Once deleted, this can not be undone.', function () {
             $scope.$apply(function () {
                 var index = $scope.model.SelectedMoqTypes.indexOf(item);
                 $scope.model.SelectedMoqTypes.splice(index, 1);
@@ -114,6 +114,63 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
                 tableDataArray.splice(index, 1);
             });
         });
+    }
+
+    // Generates string for the description of what MOQ types are based on
+    $scope.PortionOfTask = function () {
+        if ($scope.model.SelectedMoqTypes.length > 1) {
+            return 'This portion of the task is based on ';
+        } else {
+            return 'This task is based on ';
+        }
+    }
+
+    // Generates placeholder text for MOQ Types
+    $scope.MoqTypesPlaceholder = function (field, selectedMOQType) {
+    /*
+        Enum values:
+        Historical = 5001,
+        Comparative = 5002,
+        CostEstimatingRelationships = 5003,
+        ParametricEstimates = 5004,
+        AnalogousRelationships = 5005,
+        SOW = 5006,
+        LOE = 5007,
+        SME = 5008,
+        NonLabor = 5009
+    */
+        switch (field) {
+            case 'Rationale':
+                switch (parseInt(selectedMOQType)) {
+                    case 5001:
+                        return 'Need to provide how the actual hours are relevant to the proposed effort.  Explain complexity factors.';
+                    case 5002:
+                        return 'Need to provide how the similar historical actuals are relevant to the proposed effort.  Explain all complexity factors and skill mix.';
+                    case 5003:
+                        return 'If CERs is not submitted in advance to USG, provide a complete explanation of how the model works, the historical or other data sources used, and how any model output was used to calculate proposed hours.  Proposal teams cannot claim the model is Lockheed Martin Proprietary Information and not provide.';
+                    case 5004:
+                        return 'If parametric estimating model is not submitted in advance to USG, provide a complete explanation of how the model works, the historical or other data sources used, and how any model output was used to calculate proposed hours.  Proposal teams cannot claim the model is Lockheed Martin Proprietary Information and not provide.';
+                    case 5005:
+                        return 'If AR is not submitted in advance to USG, provide a complete explanation of how the model works, the historical or other data sources used, and how any model output was used to calculate proposed hours.  Proposal teams cannot claim the model is Lockheed Martin Proprietary Information and not provide.';
+                    case 5006:
+                        return 'Document any business area hours per month used.';
+                    case 5007:
+                        return 'Document any business area hours per month used & why LOE selected.';
+                    case 5009:
+                        return 'Document any Non-Labor values used & why.';
+                    case 5008:
+                        return 'For each task please provide task name, a description of the task and the number of hours.  In the SME judgement estimate please break estimated tasks into small enough chunks that customer can fully understand what is being estimated.';
+                }
+                break;
+            case 'Location':
+                switch (parseInt(selectedMOQType)) {
+                    case 5003:
+                    case 5004:
+                    case 5005:
+                        return 'Reminder:  need to provide a copy of any model used/created that was used for estimating.';
+                }
+                break;
+        }
     }
 }]);
 

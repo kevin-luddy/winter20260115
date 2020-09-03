@@ -8364,14 +8364,12 @@ input.labelLookFeel {
 }
 
 .moqRteFieldContainer .tableData {
-    padding: 30px;
-    background-color: lightgray;
-    width: 600px;
-    height: 200px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     display: inline-block;
     float: left;
     clear:both;
+    margin-left:20px;
+    background-color: #f5f5f5;
 }
 
 .moqRteFieldContainer .moqTypeHeader {
@@ -8387,4 +8385,44 @@ input.labelLookFeel {
     display: inline-block;
     float: left;
     margin-left: 13px;
+}
+
+.moqTypeNote {
+    font-weight:bold; 
+    clear:both; 
+    margin-bottom: 10px;
+}
+
+.tableData td.form-label {
+    width: 250px;
+}
+
+.tableData td input {
+    width: 350px;
+}
+
+.tableData table {
+    margin-bottom: 0;
+}
+
+.moqTaskBasedOn {
+    margin-bottom: 10px;
+}
+
+.tableData tr {
+    border-bottom: 1px solid black;
+    text-align: left;
+    height: 30px;
+}
+
+.tableData tr:first-child {
+    border-top: 1px solid black;
+}
+
+.tableData td {
+    padding: 0 10px;
+}
+
+.ng-invalid {
+    border-color:red;
 }
