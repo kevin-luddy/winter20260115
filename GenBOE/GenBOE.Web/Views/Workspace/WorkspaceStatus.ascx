@@ -79,33 +79,53 @@
         WorkspaceSettings.LoadWorkspaceStatus();
     });
 
-    WorkspaceStatusWidget.SaveWorkspaceStatus = function() {
+    WorkspaceStatusWidget.SaveWorkspaceStatus = function () {
         if (WorkspaceStatusWidget.preparedForSubmit()) {
             $('#Save-WorkspaceStatus').addClass('display-none');
             $('#Loader-WorkspaceStatus').removeClass('display-none');
 
-            var dataToSend = JSON.stringify(WorkspaceStatusWidget.data);
-            WorkspaceStatusWidget.ajaxRequest({
-                type: 'POST',
-                url: CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
-                        '<%: WebConstants.CONTROLLER_WORKSPACE %>',
-                        '<%: WebConstants.ACTION_SAVE_WORKSPACE_STATUS %>', ''),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                data: dataToSend,
-                success: function () {
-                    $(document).trigger("UPDATE_STATUS", WorkspaceStatusWidget.data.WorkspaceStatus);
-                    $(document).trigger('ReloadWSStatusPage');
-                  
-                },
-                error: function () {
-                    refreshModule($('.workspace-status.module'));
-                    $('#Save-WorkspaceStatus').removeClass('display-none');
-                    $('#Loader-WorkspaceStatus').addClass('display-none');
-                }
-            }, $(this));
-        }    
+            var fromState = "<%:Model.WorkspaceStatus %>";
+
+            if (fromState == "Initialization") {
+                Session.confirmDialog(
+                    "Validate Template BOE",
+                    "Please validate the Template BOE setting under Workspace Identification. Once the Workspace leaves the Initialization state, this setting cannot be changed.<br/>Would you like to continue?",
+                    function () {
+                        WorkspaceStatusWidget.ContinueSaveWorkspaceStatus();
+                    },
+                    function () {
+                        $('#Save-WorkspaceStatus').removeClass('display-none');
+                        $('#Loader-WorkspaceStatus').addClass('display-none');
+                    });
+            } else {
+                WorkspaceStatusWidget.ContinueSaveWorkspaceStatus();
+            }
+        }
     };
+
+    WorkspaceStatusWidget.ContinueSaveWorkspaceStatus = function () {
+        var dataToSend = JSON.stringify(WorkspaceStatusWidget.data);  
+        
+        WorkspaceStatusWidget.ajaxRequest({
+            type: 'POST',
+            url: CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
+                    '<%: WebConstants.CONTROLLER_WORKSPACE %>',
+                '<%: WebConstants.ACTION_SAVE_WORKSPACE_STATUS %>', ''),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: dataToSend,
+            success: function () {
+                $(document).trigger("UPDATE_STATUS", WorkspaceStatusWidget.data.WorkspaceStatus);
+                $(document).trigger('ReloadWSStatusPage');
+
+            },
+            error: function () {
+                refreshModule($('.workspace-status.module'));
+                $('#Save-WorkspaceStatus').removeClass('display-none');
+                $('#Loader-WorkspaceStatus').addClass('display-none');
+            }
+        }, $(this));
+    }
 
     $(function () {
         WorkspaceStatusWidget.afterDOMLoad();
