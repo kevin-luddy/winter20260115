@@ -163,9 +163,9 @@ namespace GenTRAC.Web.Common
             AddActionToController(WebConstants.Action.SAVE_PROPOSAL_COMMENTS, PtmSecurityPage.Proposal, SecurityAuthorization.ReadUpdate, proposalControllerActions);
             AddActionToController(WebConstants.Action.DELETE_PROPOSAL, PtmSecurityPage.Proposal, SecurityAuthorization.CreateReadUpdateDelete, proposalControllerActions);
             AddActionToController(WebConstants.Action.DISPLAY_PROPOSAL_DETAILS, PtmSecurityPage.Proposal, SecurityAuthorization.Read, proposalControllerActions);
-            AddActionToController(WebConstants.Action.DISPLAY_PROPOSAL_REVISION_DETAILS, PtmSecurityPage.Proposal, SecurityAuthorization.CreateReadUpdateDelete, proposalControllerActions);
-            AddActionToController(WebConstants.Action.VALIDATE_PROPOSAL_REVISION_DETAILS, PtmSecurityPage.Proposal, SecurityAuthorization.CreateReadUpdateDelete, proposalControllerActions);            
-            AddActionToController(WebConstants.Action.REVERT_PROPOSAL_TO_PRIOR_VERSION, PtmSecurityPage.Proposal, SecurityAuthorization.CreateReadUpdateDelete, proposalControllerActions);
+            AddActionToController(WebConstants.Action.DISPLAY_PROPOSAL_REVISION_DETAILS, PtmSecurityPage.Proposal, SecurityAuthorization.ReadUpdate, proposalControllerActions);
+            AddActionToController(WebConstants.Action.VALIDATE_PROPOSAL_REVISION_DETAILS, PtmSecurityPage.Proposal, SecurityAuthorization.ReadUpdate, proposalControllerActions);            
+            AddActionToController(WebConstants.Action.REVERT_PROPOSAL_TO_PRIOR_VERSION, PtmSecurityPage.Proposal, SecurityAuthorization.ReadUpdate, proposalControllerActions);
             AddActionToController(WebConstants.Action.PROPOSAL_FILTER_PROGRAM_AREA, PtmSecurityPage.Proposal, SecurityAuthorization.Read, proposalControllerActions);
             AddActionToController(WebConstants.Action.PROPOSAL_FILTER_CONTRACT_TYPES, PtmSecurityPage.Proposal, SecurityAuthorization.Read, proposalControllerActions);
             AddActionToController(WebConstants.Action.DISPLAY_REVISION_HISTORY, PtmSecurityPage.Proposal, SecurityAuthorization.Read, proposalControllerActions);
