@@ -220,6 +220,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// <summary>
         /// Get/Set whether using template BOE
         /// </summary>
+        [Required(ErrorMessage = "A selection for Template BOE is required.")]
         public bool UsingTemplateBoe { get; set; }
     }
 }

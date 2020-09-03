@@ -3139,6 +3139,7 @@ namespace GenBOE.Web.Controllers
                 ws.ResourceSorting = workspaceDetails.ResourceSorting;
                 ws.PerfOrgSorting = workspaceDetails.PerfOrgSorting;
                 ws.RteSizeLimit = workspaceDetails.RteSizeLimit;
+                ws.UsingTemplateBOE = workspaceDetails.UsingTemplateBoe;
 
                 // Populate the company specific properties
                 _ControllerLogic.PopulateCompanySpecificWorkspaceProperties(workspaceDetails, ws);
@@ -5109,6 +5110,7 @@ namespace GenBOE.Web.Controllers
                     newWorkspaceDTO.IsUsingEquivalentPerson = newWorkspace.IsUsingEquivalentPerson;
                     newWorkspaceDTO.IsUsingTM = newWorkspace.IsUsingTM;
                     newWorkspaceDTO.RteSizeLimit = newWorkspace.RteSizeLimit;
+                    newWorkspaceDTO.UsingTemplateBOE = newWorkspace.UsingTemplateBoe;
                     
                     if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                     {

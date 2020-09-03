@@ -143,5 +143,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// Get/Set the RTE Size Limit (number of characters)
         /// </summary>
         int? RteSizeLimit { get; set; }
+
+        /// <summary>
+        /// Get/Set whether using Template BOE
+        /// </summary>
+        bool UsingTemplateBoe { get; set; }
     }
 }
