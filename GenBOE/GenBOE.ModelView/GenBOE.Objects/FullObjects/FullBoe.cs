@@ -11,6 +11,7 @@ namespace GenBOE.Objects
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Reflection;
+    using GenBOE.ActionLogic._ModelView;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using IES.Common;
@@ -39,6 +40,7 @@ namespace GenBOE.Objects
         private ReadOnlyCollection<TravelDTO> travels;
         private ReadOnlyCollection<BoeApproverResponseDTO> approverResponses;
         private ReadOnlyCollection<BOECommentDTO> comments;
+        private ReadOnlyCollection<MoqTypeSelection> moqTypeSelections;
 
         /// <summary>
         /// Default Constructor
@@ -531,5 +533,21 @@ namespace GenBOE.Objects
         /// Template Questions & Answers
         /// </summary>
         public ICollection<RTECustomTemplateQuestionAnswerModelView> TemplateQuestionsAndAnswers { get; set; }
+
+        /// <summary>
+        /// MOQ Type Selections for the BOE
+        /// </summary>
+        public IReadOnlyCollection<MoqTypeSelection> MoqTypeSelections
+        {
+            get
+            {
+                if (this.moqTypeSelections == null)
+                {
+                    this.moqTypeSelections = this.retriever.GetMoqTypeSelectionsByBoeId(this.Id).ToList().AsReadOnly();
+                }
+
+                return this.moqTypeSelections;
+            }
+        }
     }
 }

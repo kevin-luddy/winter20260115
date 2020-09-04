@@ -568,7 +568,7 @@ namespace GenBOE.Web.Controllers
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "DisplayMOQEquationField", SecurityPage.MOQEquationField, SecurityAuthorization.Read, ws, boeID);
 
-            var theModelView = CreateMOQModelView(ws, boeID, taskElementID);
+            var theModelView = CreateMOQModelView(ws, boe, taskElementID);
             ViewBag.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
 
             ViewResult toReturn = View(WebConstants.VIEW_MOQ_EQUATION_FIELD, theModelView);
@@ -591,10 +591,7 @@ namespace GenBOE.Web.Controllers
         {
             FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(workspace);
 
-            Stopwatch sw = new Stopwatch();
-
-            // Initialize Action
-            sw = InitializeAction(_log, "CopyMoqEquation", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, fullWorkspace, boeID);
+            Stopwatch sw = InitializeAction(_log, "CopyMoqEquation", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, fullWorkspace, boeID);
 
             BoeTaskElementDTO copyTaskElement = this.Factory.CreateTaskElement(taskElementId, fullWorkspace.DecimalPrecision, fullWorkspace.CostDecimalPrecision);
 
@@ -2070,15 +2067,15 @@ namespace GenBOE.Web.Controllers
             return modelView;
         }
 
-        private MOQEquationModelView CreateMOQModelView(FullWorkspace ws, int boeID, int taskElementID)
+        private MOQEquationModelView CreateMOQModelView(FullWorkspace ws, FullBoe boe, int taskElementID)
         {
             var theModelView = new MOQEquationModelView();
 
             if (taskElementID > 0)
             {
                 BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision);
-                SetMOQEquationViewData(ws, boeID, taskElement.MOQType);
-                DataRelationshipVerifier.VerifyDataRelation(taskElement, boeID);
+                SetMOQEquationViewData(ws, boe.Id, taskElement.MOQType);
+                DataRelationshipVerifier.VerifyDataRelation(taskElement, boe.Id);
                 var inUseWorkspaceVariables = (from wID in taskElement.WorkspaceVariableIDs
                                                from workspaceVariable in ws.WorkspaceVariables
                                                where workspaceVariable.Id == wID
@@ -2090,47 +2087,21 @@ namespace GenBOE.Web.Controllers
             }
             else
             {
-                SetMOQEquationViewData(ws, boeID, MOQType.None);
+                SetMOQEquationViewData(ws, boe.Id, MOQType.None);
                 _BoeLaborControllerLogic.SetShowMetricLink(theModelView);
-                theModelView.MoqTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, boeID, taskElementID).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ).ToList();
+                theModelView.MoqTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, boe.Id, taskElementID).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ).ToList();
             }
 
             theModelView.HelpText = _BoeLaborControllerLogic.GetMOQTypesHelpText();
             theModelView.MOQTextLabel = _BoeLaborControllerLogic.GetMOQTextLabel();
             theModelView.UsingTemplateBOE = ws.UsingTemplateBOE;
             theModelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(ws.UsingTemplateBOE);
-            theModelView.MoqTypeTableDataLabels = this._BoeLaborControllerLogic.GetMoqTypeLabels();
-            theModelView.SelectedMoqTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() 
-            { 
-                SelectedMOQType = MOQType.CostEstimatingRelationships,
-                CerLocation = "CER LOCATION",
-                CerName = "CER NAME",
-                Rationale = "Cer Rationale"
-            },
-            new MoqTypeSelection()
+
+            if (ws.UsingTemplateBOE)
             {
-                SelectedMOQType = MOQType.Historical,
-                Rationale = "historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. ",
-                TableData = new List<MoqTableData>() 
-                {
-                    new MoqTableData()
-                    {
-                        TableName = "table 1",
-                        TotalRelevantHours = 100,
-                        TotalWbsHours = 1000,
-                        DateOfReport = "whenever",
-                        PoPEnd = DateTime.Now.AddDays(-100),
-                        PoPStart = DateTime.Now.AddDays(-300),
-                        AdditionalQueryFilters = "additional query",
-                        ContractNumber = "contract number",
-                        HistoricalProgramName = "program name",
-                        QueryType = "Weekly",
-                        RepositoryName = "repo name",
-                        WbsElement = "some wbs"
-                    }
-                }
+                theModelView.MoqTypeTableDataLabels = this._BoeLaborControllerLogic.GetMoqTypeLabels();
+                theModelView.SelectedMoqTypes = boe.MoqTypeSelections.Where(x => x.TaskId == taskElementID || true).ToList(); // ToDo: REMOVE || true once the real data is coming in!!!
             }
-            };
 
             return theModelView;
         }
@@ -2147,38 +2118,27 @@ namespace GenBOE.Web.Controllers
                                         where p.Role == Role.SubcontractorAuthor && p.ETIUserId == workspace.CurrentActiveUser.UserID
                                         select p).Any();
 
-            if (isSubcontractorUser)
-            {
-                ViewData["IsSubContractor"] = true;
-            }
-            else
-            {
-                ViewData["IsSubContractor"] = false;
-            }
+            VariableCircularReferenceCheckerCache circularReferenceCache = new VariableCircularReferenceCheckerCache();
+            ICollection<WorkspaceVariableModelView> wsVariables = workspace.WorkspaceVariables.Select(x => 
+                new WorkspaceVariableModelView(x, _VariableSelectBOEtoSumCalculation, workspace) 
+                { 
+                    Disabled = _VariableCircularReferenceChecker.WorkspaceVariableCreatesCircularReference(circularReferenceCache, boeId, x, workspace) 
+                }).ToList();
 
-            var allWorkspaceVariables = workspace.WorkspaceVariables;
+            ViewBag.IsSubContractor = isSubcontractorUser;
+            ViewBag.BOEID = boeId;
+            ViewBag.WorkspaceVariables = wsVariables;
+            ViewBag.RteFieldSize = workspace.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
 
-            ViewData["BOEID"] = boeId;
-
-            var circularReferenceCache = new VariableCircularReferenceCheckerCache();
-            ViewData["WorkspaceVariables"] = from v in allWorkspaceVariables
-                                             select new WorkspaceVariableModelView(v, _VariableSelectBOEtoSumCalculation, workspace)
-                                             {
-                                                 Disabled = _VariableCircularReferenceChecker.WorkspaceVariableCreatesCircularReference(circularReferenceCache, boeId, v, workspace)
-                                             };
-
-            // get MOQ Types
+            // ToDo: DUSAN -> CAN THIS BE REMOVED????
             List<SelectListItem> moqTypeSelects = (from m in _CommonDataMapper.getMOQType()
                                                    select new SelectListItem { Value = m.MOQTypeID.ToString(), Text = m.MOQTypeName, Selected = (m.MOQTypeID == (int)moqType) }).ToList();
-
             // Add a default element as the first item in the dropdown collection
             SelectListItem defaultItem = new SelectListItem();
             defaultItem.Value = "0";
             defaultItem.Text = "";
             moqTypeSelects.Insert(0, defaultItem);
-
-            ViewData["MOQTypes"] = this.ConvertToOptionList(moqTypeSelects);
-            ViewBag.RteFieldSize = workspace.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
+            ViewBag.MOQTypes = this.ConvertToOptionList(moqTypeSelects);
         }
 
         /// <summary>

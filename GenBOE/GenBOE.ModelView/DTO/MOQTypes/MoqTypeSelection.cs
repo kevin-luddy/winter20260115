@@ -15,6 +15,16 @@ namespace GenBOE.ActionLogic._ModelView
     public class MoqTypeSelection
     {
         /// <summary>
+        /// Task Id that the MOQ Object belongs to
+        /// </summary>
+        public int TaskId { get; set; }
+
+        /// <summary>
+        /// Boe Id that the task belongs to. The task then owns the MOQ Object. This is needed for the FullWS objects
+        /// </summary>
+        public int BoeId { get; set; }
+
+        /// <summary>
         /// Selected MOQ Type that corresponds to this 
         /// </summary>
         public MOQType SelectedMOQType { get; set; }

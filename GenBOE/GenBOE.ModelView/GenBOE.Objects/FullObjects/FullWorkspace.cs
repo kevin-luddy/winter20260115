@@ -11,6 +11,7 @@ namespace GenBOE.Objects
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Reflection;
+    using GenBOE.ActionLogic._ModelView;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -84,6 +85,7 @@ namespace GenBOE.Objects
         private IDictionary<int, ICollection<BoeApproverResponseDTO>> boeMappingWithApproverResponses;
         private ReadOnlyCollection<RteTemplateSource> rteOverrides;
         private ReadOnlyCollection<RTECustomTemplateQuestionAnswerModelView> templateQuestionsAndAnswers;
+        private ReadOnlyCollection<MoqTypeSelection> moqTypeSelections;
 
         #endregion
 
@@ -1209,6 +1211,22 @@ namespace GenBOE.Objects
                 }
 
                 return this.templateQuestionsAndAnswers;
+            }
+        }
+
+        /// <summary>
+        /// MOQ Type Selections for the entire workspace
+        /// </summary>
+        public IReadOnlyCollection<MoqTypeSelection> MoqTypeSelections
+        {
+            get
+            {
+                if (this.moqTypeSelections == null)
+                {
+                    this.moqTypeSelections = this.retriever.GetMoqTypeSelectionsByWorkspaceId(this.Id).ToList().AsReadOnly();
+                }
+
+                return this.moqTypeSelections;
             }
         }
     }

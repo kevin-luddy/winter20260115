@@ -6,9 +6,11 @@
 
 namespace GenBOE.Objects
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using GenBOE.ActionLogic._ModelView;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using IES.Common;
@@ -993,6 +995,94 @@ namespace GenBOE.Objects
         public ICollection<RTECustomTemplateQuestionAnswerModelView> GetQuestionsAndAnswersByWorkspaceId(int workspaceId)
         {
             return this.rteTemplateDataLoader.GetQuestionsAndAnswersByWorkspaceId(workspaceId);
+        }
+
+        /// <summary>
+        /// Gets MOQ Type selections for the workspace
+        /// </summary>
+        /// <param name="wsId">WS Id</param>
+        /// <returns>Selected MOQ Types with data</returns>
+        public ICollection<MoqTypeSelection> GetMoqTypeSelectionsByWorkspaceId(int wsId)
+        {
+            // ToDo: Hook into loader
+
+            return new List<MoqTypeSelection>() {
+                new MoqTypeSelection()
+                {
+                    SelectedMOQType = MOQType.CostEstimatingRelationships,
+                    CerLocation = "CER LOCATION",
+                    CerName = "CER NAME",
+                    Rationale = "Cer Rationale",
+                    BoeId = wsId
+                },
+                new MoqTypeSelection()
+                {
+                    SelectedMOQType = MOQType.Historical,
+                    Rationale = "historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. ",
+                    TableData = new List<MoqTableData>()
+                    {
+                        new MoqTableData()
+                        {
+                            TableName = "table 1",
+                            TotalRelevantHours = 100,
+                            TotalWbsHours = 1000,
+                            DateOfReport = "whenever",
+                            PoPEnd = DateTime.Now.AddDays(-100),
+                            PoPStart = DateTime.Now.AddDays(-300),
+                            AdditionalQueryFilters = "additional query",
+                            ContractNumber = "contract number",
+                            HistoricalProgramName = "program name",
+                            QueryType = "Weekly",
+                            RepositoryName = "repo name",
+                            WbsElement = "some wbs"
+                        }
+                    }
+                }
+            };
+        }
+
+        /// <summary>
+        /// Gets MOQ Type selections for the BOE
+        /// </summary>
+        /// <param name="boeId">Boe Id</param>
+        /// <returns>Selected MOQ Types with data</returns>
+        public ICollection<MoqTypeSelection> GetMoqTypeSelectionsByBoeId(int boeId)
+        {
+            // ToDo: Hook into loader
+
+            return new List<MoqTypeSelection>() {
+                new MoqTypeSelection()
+                {
+                    SelectedMOQType = MOQType.CostEstimatingRelationships,
+                    CerLocation = "CER LOCATION",
+                    CerName = "CER NAME",
+                    Rationale = "Cer Rationale",
+                    BoeId = boeId
+                },
+                new MoqTypeSelection()
+                {
+                    SelectedMOQType = MOQType.Historical,
+                    Rationale = "historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. ",
+                    TableData = new List<MoqTableData>()
+                    {
+                        new MoqTableData()
+                        {
+                            TableName = "table 1",
+                            TotalRelevantHours = 100,
+                            TotalWbsHours = 1000,
+                            DateOfReport = "whenever",
+                            PoPEnd = DateTime.Now.AddDays(-100),
+                            PoPStart = DateTime.Now.AddDays(-300),
+                            AdditionalQueryFilters = "additional query",
+                            ContractNumber = "contract number",
+                            HistoricalProgramName = "program name",
+                            QueryType = "Weekly",
+                            RepositoryName = "repo name",
+                            WbsElement = "some wbs"
+                        }
+                    }
+                }
+            };
         }
     }
 }

@@ -8,6 +8,7 @@ namespace GenBOE.Objects
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using GenBOE.ActionLogic._ModelView;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using IES.Common;
@@ -573,5 +574,19 @@ namespace GenBOE.Objects
         /// <param name="workspaceId">Workspace Id</param>
         /// <returns>Questions and Answers</returns>
         ICollection<RTECustomTemplateQuestionAnswerModelView> GetQuestionsAndAnswersByWorkspaceId(int workspaceId);
+
+        /// <summary>
+        /// Gets MOQ Type selections for the workspace
+        /// </summary>
+        /// <param name="wsId">WS Id</param>
+        /// <returns>Selected MOQ Types with data</returns>
+        ICollection<MoqTypeSelection> GetMoqTypeSelectionsByWorkspaceId(int wsId);
+
+        /// <summary>
+        /// Gets MOQ Type selections for the BOE
+        /// </summary>
+        /// <param name="boeId">Boe Id</param>
+        /// <returns>Selected MOQ Types with data</returns>
+        ICollection<MoqTypeSelection> GetMoqTypeSelectionsByBoeId(int boeId);
     }
 }
