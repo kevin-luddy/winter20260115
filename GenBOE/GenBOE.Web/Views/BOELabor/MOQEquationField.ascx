@@ -11,6 +11,10 @@
     int taskElementId = Model.TaskElementId > 0 ? Model.TaskElementId : -1;
     bool showMoqQuestions = Model.MoqTemplateAnswers.Any();;
     int numberMoqQuestions = showMoqQuestions ? Model.MoqTemplateAnswers.Count : 1;
+
+    // these 2 fields, as well as the processing below is necessary to deal with the date serialization weirdness
+    string dateFixRegexSearch = @"\""\\/Date\((-?\d+)\)\\/\""";
+    string dateFixRegexReplace = "new Date($1)";
 %>
 <script type="text/javascript">
     var workspaceVariables = <%= serializer.Serialize(workspaceVariables) %>;
@@ -30,7 +34,7 @@
         WorkspaceVariables: workspaceVariables,
         MOQTypes: <%=serializer.Serialize(Model.MOQTypes.Select(x => new { SelectedMOQType = x.Value, SelectedMOQTypeText = x.Text }))%>,
         MoqTypeTableDataLabels:<%=serializer.Serialize(Model.MoqTypeTableDataLabels)%>,
-        SelectedMoqTypes:<%=serializer.Serialize(Model.SelectedMoqTypes)%>,
+        SelectedMoqTypes:<%=Regex.Replace(serializer.Serialize(Model.SelectedMoqTypes), dateFixRegexSearch, dateFixRegexReplace)%>,
         IsRMS:'<%:Model.Company == CompanyConfiguration.MST%>'.isTrue()
     };
 
@@ -59,17 +63,17 @@
                         '<%:WebConstants.ACTION_DISPLAY_VARIABLE_BOE_SUM_BY_CLIN %>',
                         'boe/<%: (int)ViewData["BOEID"] %>');
 
-    // bind any events that the objects need to observe to and member functions.
-    $(function () {
+    // Initializes the widget. Has to be called after Angular is done initializing / binding, instead of on page load. This is necessary here due to the DOM complexity
+    initializeWidget = function () {
         MOQEquationFieldWidget = InitializeMOQEquationFieldWidget(MOQEquationFieldWidget_ReadOnly, workspaceVariables, ordinaryVariables, newOrdinaryVariableID, sumOfBoes, discrete,
             validationUrl, shouldMoqReadOnlyBeReversed, calculateMOQResultUrl, openSumOfBoesByWbsUrl, openSumOfBoesByClinUrl, isNotSubContractor, sortBOEByWBS, sortBOEByClin);
 
-        TaskElementDetailsWidget.ChildWidgets.push(MOQEquationFieldWidget);        
+        TaskElementDetailsWidget.ChildWidgets.push(MOQEquationFieldWidget);
         TaskElementDetailsWidget.registerForDelegateEvent('click', '.menu-icon', function (event) {
-            if($('#menu-options-box').hasClass("display-none")){
+            if ($('#menu-options-box').hasClass("display-none")) {
                 $('#menu-options-box').removeClass('display-none');
             }
-            else{
+            else {
                 $('#menu-options-box').addClass('display-none');
             }
         });
@@ -78,7 +82,7 @@
             event.stopPropagation();
         });
         TaskElementDetailsWidget.CheckToShowMetrics();
-        TaskElementDetailsWidget.MOQText = CreateRteTemplate('<%:showMoqQuestions%>'.isTrue(), <%:numberMoqQuestions%>);
+        TaskElementDetailsWidget.MOQText = CreateRteTemplate('<%:showMoqQuestions%>'.isTrue(), <%: numberMoqQuestions %>);
 
         if (!MOQEquationFieldWidget.isReadOnly() || shouldMoqReadOnlyBeReversed || !TaskElementDetailsWidget.isReadOnly()) {
             InitializeRteTemplate(TaskElementDetailsWidget.MOQText, 'MOQText', rteFieldSize);
@@ -88,8 +92,8 @@
         }
 
         $(document).trigger('MOQWidgetLoaded', "MOQEquationField");
-        $(document).trigger('WidgetLoaded', "MOQEquationField");        
-    });
+        $(document).trigger('WidgetLoaded', "MOQEquationField");
+    }
 </script>
 
 <div id="MOQEquationField" class="bootstrap" data-ng-controller="MoqEquationController" data-ng-init="init()">
@@ -202,7 +206,7 @@
                         </tr>
                         <tr>
                             <td class="form-label">{{model.MoqTypeTableDataLabels.TotalWbsHours}} *</td>
-                            <td><input type="number" required step=".01" min="0.01" data-ng-model="tableData.TotalWbsHours" /></td>
+                            <td><input type="number" required min="0" data-ng-model="tableData.TotalWbsHours" /></td>
                         </tr>
                         <tr>
                             <td class="form-label">{{model.MoqTypeTableDataLabels.AdditionalQueryFilters}} *</td>
@@ -210,7 +214,7 @@
                         </tr>
                         <tr>
                             <td class="form-label">{{model.MoqTypeTableDataLabels.TotalRelevantHours}} *</td>
-                            <td><input type="number" required step=".01" min="0.01" data-ng-model="tableData.TotalRelevantHours" /></td>
+                            <td><input type="number" required min="0" data-ng-model="tableData.TotalRelevantHours" /></td>
                         </tr>
                    </table>
                 </div>

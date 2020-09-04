@@ -5,10 +5,14 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         $scope.model.IsCostEquation = ($scope.model.MoqEquationType == 'Cost');
         $scope.model.insertWorkspaceModalOpen = false;
 
-        // initialize RTE fields for existing data
-        angular.forEach($scope.model.SelectedMoqTypes.map(e => e.SelectedMOQType.toString()), function (id) {
-            $scope.InitializeRteFields(id);
-        });
+        // This is needed to allow for some other processing to finish, otherwise we get errors from angular.js
+        setTimeout(function () { 
+            initializeWidget();
+
+            angular.forEach($scope.model.SelectedMoqTypes.map(e => e.SelectedMOQType.toString()), function (id) {
+                $scope.InitializeRteFields(id);
+            });
+        }, 10);
     }
 
     // Called when the Insert Workspace Variable dropdown item is clicked.
@@ -97,7 +101,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
                 InitializeRTE('SkillMixRationale_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
                 InitializeRTE('Calculation_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
             }
-        }, 50);
+        }, 1);
     }
 
     // Create New Table Data for the MOQ Type
@@ -127,18 +131,18 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
     // Generates placeholder text for MOQ Types
     $scope.MoqTypesPlaceholder = function (field, selectedMOQType) {
-    /*
-        Enum values:
-        Historical = 5001,
-        Comparative = 5002,
-        CostEstimatingRelationships = 5003,
-        ParametricEstimates = 5004,
-        AnalogousRelationships = 5005,
-        SOW = 5006,
-        LOE = 5007,
-        SME = 5008,
-        NonLabor = 5009
-    */
+        /*
+            Enum values:
+            Historical = 5001,
+            Comparative = 5002,
+            CostEstimatingRelationships = 5003,
+            ParametricEstimates = 5004,
+            AnalogousRelationships = 5005,
+            SOW = 5006,
+            LOE = 5007,
+            SME = 5008,
+            NonLabor = 5009
+        */
         switch (field) {
             case 'Rationale':
                 switch (parseInt(selectedMOQType)) {
@@ -177,7 +181,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 // initialize MOQ Equation Widget.. moved here so that way this much script is not in the ascx page
 InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, workspaceVariables, ordinaryVariables, newOrdinaryVariableID, sumOfBOEs, discrete, validationUrl, shouldMoqReadOnlyBeReversed,
                                         calculateMOQResultUrl, openSumOfBoesByWbsUrl, openSumOfBoesByClinUrl, isNotSubContractor, sortBOEByWBS, sortBOEByClin) {
-
     // create base js object;
     var MOQEquationFieldWidget = new Widget("MOQEquationField", MOQEquationFieldWidget_ReadOnly);
 
@@ -994,8 +997,6 @@ InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, wo
         MOQEquationFieldWidget.ValidateMOQEquation();
     });
     MOQEquationFieldWidget.registerForEvent('InsertMOQElementDialogClosing', MOQEquationFieldWidget.InsertMOQElementDialogClosing);
-
-    MOQEquationFieldWidget.RefreshStyles();
 
     if (MOQEquationFieldWidget_ReadOnly) {
         $('.magnifier-button').addClass('display-none');

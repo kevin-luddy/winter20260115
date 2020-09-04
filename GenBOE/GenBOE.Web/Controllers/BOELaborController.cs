@@ -2106,7 +2106,31 @@ namespace GenBOE.Web.Controllers
                 CerLocation = "CER LOCATION",
                 CerName = "CER NAME",
                 Rationale = "Cer Rationale"
-            }};
+            },
+            new MoqTypeSelection()
+            {
+                SelectedMOQType = MOQType.Historical,
+                Rationale = "historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. historical rationale.. ",
+                TableData = new List<MoqTableData>() 
+                {
+                    new MoqTableData()
+                    {
+                        TableName = "table 1",
+                        TotalRelevantHours = 100,
+                        TotalWbsHours = 1000,
+                        DateOfReport = "whenever",
+                        PoPEnd = DateTime.Now.AddDays(-100),
+                        PoPStart = DateTime.Now.AddDays(-300),
+                        AdditionalQueryFilters = "additional query",
+                        ContractNumber = "contract number",
+                        HistoricalProgramName = "program name",
+                        QueryType = "Weekly",
+                        RepositoryName = "repo name",
+                        WbsElement = "some wbs"
+                    }
+                }
+            }
+            };
 
             return theModelView;
         }

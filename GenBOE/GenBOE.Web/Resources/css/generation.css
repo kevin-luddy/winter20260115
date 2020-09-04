@@ -8393,12 +8393,16 @@ input.labelLookFeel {
     margin-bottom: 10px;
 }
 
-.tableData td.form-label {
-    width: 250px;
+.tableData td {
+    width: 350px;
 }
 
 .tableData td input {
-    width: 350px;
+    width: 300px;
+}
+
+.tableData td.form-label {
+    width: 250px;
 }
 
 .tableData table {
