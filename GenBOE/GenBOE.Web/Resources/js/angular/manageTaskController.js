@@ -27,6 +27,7 @@
     $scope.model.AdjacentItems = {};
     $scope.model.AdjacentItems.PreviousId = undefined;
     $scope.model.AdjacentItems.NextId = undefined;
+    $scope.selectedMoqTypes = [];
 
     $scope.isPreviousTaskDisabled = function () {
         return $scope.model.AdjacentItems.PreviousId === undefined || $scope.model.AdjacentItems.PreviousId === null;
@@ -93,6 +94,10 @@
 
         angular.forEach($scope.PerfOrgModels, function (item, key) {
             item.Label = item.PerformingOrgName + '-' + item.PerformingOrgDesc;
+        });
+
+        TaskElementDetailsWidget.registerForEvent('MOQ_TYPE_SELECTION_CHANGED', function (e, moqData) {
+            $scope.moqSelectionUpdated(moqData);
         });
 
         // load the main data
@@ -1089,6 +1094,12 @@
             $scope.setDirty();
         });
     };
+
+    // Selected MOQ Types were updated, need to update the dropdown in Labor Types
+    $scope.moqSelectionUpdated = function (data) {
+        $scope.selectedMoqTypes = data;
+console.error($scope.selectedMoqTypes);
+    }
 
     var save = function (callback, wsLocked) {
         if (wsLocked === undefined) {

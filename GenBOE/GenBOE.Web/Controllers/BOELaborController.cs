@@ -14,7 +14,6 @@ namespace GenBOE.Web.Controllers
     using System.Transactions;
     using System.Web.Mvc;
     using GenBOE.ActionLogic;
-    using GenBOE.ActionLogic._ModelView;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.Common.MOQ;
@@ -117,7 +116,6 @@ namespace GenBOE.Web.Controllers
             // Perform Action            
             ViewBag.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
             ViewData["BOEID"] = boeID;
-            MOQType selectedMoqType = MOQType.None;
             bool containsDiscrete = false;
             bool isReadOnly = bool.Parse((string)this.ViewData["READONLY"]);
             //create a var for list items
@@ -129,7 +127,6 @@ namespace GenBOE.Web.Controllers
                 // Because of current workflow, no need to convert to Summary Task Element here since the summarized data is not used
                 BoeTaskElementDTO element = this.Factory.CreateTaskElement(taskElementID.Value, ws.DecimalPrecision, ws.CostDecimalPrecision);
                 DataRelationshipVerifier.VerifyDataRelation(element, boeID);
-                selectedMoqType = element.MOQType;
                 taskDescription = element.Description;
                 containsDiscrete = element.taskElementLabors.Any(x => x.SpreadCurveID == SpreadCurves.DiscreteHours || x.SpreadCurveID == SpreadCurves.DiscreteCost);
 
@@ -170,7 +167,6 @@ namespace GenBOE.Web.Controllers
                 IsOffloadWorkspace = ws.ProjectMapType == ProjectMapType.StandardWithOffload,
                 BOEIsMulti = boe.IsMultiClinWbs,
                 BOEState = (int)boe.State,
-                MOQTypes = this.ConvertToOptionList(this.GetMOQTypeSelectList(selectedMoqType)),
                 AllowDateShift = (taskDateShiftAuthorization == SecurityAuthorization.CreateReadUpdateDelete),
                 HoursLabel = FullObjectHelper.HoursLabel(ws),
                 BoeId = boeID,
@@ -178,7 +174,8 @@ namespace GenBOE.Web.Controllers
                 TaskElementId = taskElementID,
                 ContainsDiscrete = containsDiscrete,
                 DescriptionTemplateAnswers = rteAnswers.Where(t => t.SourceId == (int)RteTemplateSource.TaskDescription).ToList(),
-                TaskDescription = taskDescription
+                TaskDescription = taskDescription,
+                UsingTemplateBOE = ws.UsingTemplateBOE
             };
 
             this._BoeLaborControllerLogic.GetMetricSearchDialogParameters(modelView);
@@ -2100,7 +2097,7 @@ namespace GenBOE.Web.Controllers
             if (ws.UsingTemplateBOE)
             {
                 theModelView.MoqTypeTableDataLabels = this._BoeLaborControllerLogic.GetMoqTypeLabels();
-                theModelView.SelectedMoqTypes = boe.MoqTypeSelections.Where(x => x.TaskId == taskElementID || true).ToList(); // ToDo: REMOVE || true once the real data is coming in!!!
+                theModelView.SelectedMoqTypes = boe.MoqTypeSelections.Where(x => x.TaskId == taskElementID || true).ToList(); // ToDo: Dusan REMOVE || true once the real data is coming in!!!
             }
 
             return theModelView;

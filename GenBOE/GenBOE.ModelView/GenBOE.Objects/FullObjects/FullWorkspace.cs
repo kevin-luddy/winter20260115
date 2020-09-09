@@ -11,7 +11,7 @@ namespace GenBOE.Objects
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Reflection;
-    using GenBOE.ActionLogic._ModelView;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;

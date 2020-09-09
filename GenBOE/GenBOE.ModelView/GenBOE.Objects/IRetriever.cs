@@ -8,7 +8,7 @@ namespace GenBOE.Objects
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using GenBOE.ActionLogic._ModelView;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using IES.Common;

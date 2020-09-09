@@ -9,9 +9,8 @@ namespace GenBOE.ActionLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Web.Mvc;
-    using GenBOE.ActionLogic._ModelView;
-    using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.ModelView;
+    using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;

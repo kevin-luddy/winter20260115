@@ -10,13 +10,12 @@ namespace GenBOE.ActionLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using GenBOE.ActionLogic._ModelView;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.DataBridge.Common;

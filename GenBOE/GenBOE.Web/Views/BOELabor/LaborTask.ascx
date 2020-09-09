@@ -575,10 +575,12 @@
                                             <th class="element-of-cost">Element of Cost</th>
                                             <th class="resource">Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>)*</th>
                                             <th class="performing-org">Performing Org (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_PERF_ORGS%>'); return false;">View</a>)*</th>
-                                            <% if (Model.BOEIsMulti)
-                                               {%>
-                                            <th class="resource-wbs">WBS</th>
-                                            <th class="resource-clin">CLIN</th>
+                                            <% if (Model.UsingTemplateBOE) { %>
+                                                <th class="resourceMoqType">MOQ Type *</th>
+                                            <% } %>
+                                            <% if (Model.BOEIsMulti) { %>
+                                                <th class="resource-wbs">WBS</th>
+                                                <th class="resource-clin">CLIN</th>
                                             <% } %>
                                         </tr>
                                     </thead>
@@ -606,19 +608,25 @@
                                                      <input data-ng-if="!showDropdowns" tabindex ="{{tabindex + 2}}" type="text" data-ng-model="item.PerfOrgInput" placeholder="Add Performing Org" uib-typeahead="perfOrg as perfOrg.PerformingOrgName for perfOrg in PerfOrgModels | filter:{Label:$viewValue}" typeahead-template-url="customPerfOrgTemplate.html" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" typeahead-min-length="perfOrgTypeaheadLength" data-ng-change="perfOrgUpdated(item)" typeahead-on-select="perfOrgSelected($item, item)">
                                                 </div>
                                             </td>
-                                            <% if (Model.BOEIsMulti) {%>
-                                            <td class="resource-wbs">
-                                                <select tabindex ="{{tabindex + 3}}" class="wbs" data-ng-model="item.WBSID" data-ng-change="setDirty()" name="WBSID">
-                                                    <!-- keep option tag on one line to avoid insertion of line breaks (br) -->
-                                                    <option data-ng-repeat="option in ManageTaskModel.WBSElements" data-ng-value="option.Value">{{option.Text}}</option>
-                                                </select>                                          </td>
-                                            <td class="resource-clin">
-                                                <select tabindex ="{{tabindex + 4}}" class="wbs" data-ng-model="item.CLINID" data-ng-change="setDirty()" name="CLINID">
-                                                    <!-- keep option tag on one line to avoid insertion of line breaks (br) -->
-                                                    <option data-ng-repeat="option in ManageTaskModel.CLINElements" data-ng-value="option.Value">{{option.Text}}</option>
-                                                </select>
-                                            </td>
-                                            <%  }%>
+                                            <% if (Model.UsingTemplateBOE) { %>
+                                                <td class="resourceMoqType">
+                                                    <select required data-ng-model="item.selectedMOQType" data-ng-options="moqType.SelectedMOQTypeText for moqType in selectedMoqTypes" class="moqTypes">
+                                                    </select>
+                                                </td>
+                                            <% } %>
+                                            <% if (Model.BOEIsMulti) { %>
+                                                <td class="resource-wbs">
+                                                    <select tabindex ="{{tabindex + 3}}" class="wbs" data-ng-model="item.WBSID" data-ng-change="setDirty()" name="WBSID">
+                                                        <!-- keep option tag on one line to avoid insertion of line breaks (br) -->
+                                                        <option data-ng-repeat="option in ManageTaskModel.WBSElements" data-ng-value="option.Value">{{option.Text}}</option>
+                                                    </select>                                          </td>
+                                                <td class="resource-clin">
+                                                    <select tabindex ="{{tabindex + 4}}" class="wbs" data-ng-model="item.CLINID" data-ng-change="setDirty()" name="CLINID">
+                                                        <!-- keep option tag on one line to avoid insertion of line breaks (br) -->
+                                                        <option data-ng-repeat="option in ManageTaskModel.CLINElements" data-ng-value="option.Value">{{option.Text}}</option>
+                                                    </select>
+                                                </td>
+                                            <% } %>
                                         </tr>
                                     </tbody>
                                 </table>

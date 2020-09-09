@@ -11,9 +11,8 @@ namespace GenBOE.ActionLogic.ModelView.BOE
     using System.Collections.ObjectModel;
     using System.ComponentModel.DataAnnotations;
     using System.Web.Mvc;
-    using GenBOE.ActionLogic._ModelView;
-    using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.ModelView;
+    using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;

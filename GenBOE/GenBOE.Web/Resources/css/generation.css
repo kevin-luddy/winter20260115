@@ -7267,8 +7267,11 @@ td.ltpercentspread div.ScrollingLock{
     width: 90px;
 }
 
-.labor-types-grid th.segment
-{
+.labor-types-grid th.resourceMoqType {
+    width: 100px;
+}
+
+.labor-types-grid th.segment {
     width: 60px;
 }
 
@@ -8428,5 +8431,5 @@ input.labelLookFeel {
 }
 
 .ng-invalid {
-    border-color:red;
+    border-color:red !important;
 }

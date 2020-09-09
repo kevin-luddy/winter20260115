@@ -14,13 +14,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Web.Configuration;
     using System.Web.Mvc;
     using GenBOE.ActionLogic;
-    using GenBOE.ActionLogic._ModelView;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.MOQ;
     using GenBOE.ActionLogic.IO.Import;
-    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.DataBridge.Common;

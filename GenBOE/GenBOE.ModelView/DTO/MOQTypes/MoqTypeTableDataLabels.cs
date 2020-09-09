@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.ActionLogic._ModelView
+namespace GenBOE.ActionLogic.ModelView
 {
     /// <summary>
     /// A Class that will hold labels for MOQ Type Table Fields
