@@ -95,7 +95,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
                 HandleRTEDataForReadOnly('SmeTaskEstimates_' + id, '.replacedWidgetText');
                 HandleRTEDataForReadOnly('Rationale_' + id, '.replacedWidgetText');
                 HandleRTEDataForReadOnly('SkillMixRationale_' + id, '.replacedWidgetText');
-                HandleRTEDataForReadOnly('Calculation_' + id, '.replacedWidgetText');
             } else {
                 InitializeRTE('SowHoursLocation_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
                 InitializeRTE('DescriptionHoursRequired_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
@@ -105,7 +104,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
                 InitializeRTE('SmeTaskEstimates_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
                 InitializeRTE('Rationale_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
                 InitializeRTE('SkillMixRationale_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-                InitializeRTE('Calculation_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
             }
         }, 1);
     }
@@ -181,6 +179,11 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
                 }
                 break;
         }
+    }
+
+    // Toggles an item between collapsed and expended
+    $scope.toggle = function (item) {
+        item.collapsed = !item.collapsed;
     }
 }]);
 

@@ -1098,7 +1098,6 @@
     // Selected MOQ Types were updated, need to update the dropdown in Labor Types
     $scope.moqSelectionUpdated = function (data) {
         $scope.selectedMoqTypes = data;
-console.error($scope.selectedMoqTypes);
     }
 
     var save = function (callback, wsLocked) {

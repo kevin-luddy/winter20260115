@@ -51,11 +51,6 @@ namespace GenBOE.ActionLogic.ModelView
         public string SkillMixRationale { get; set; }
 
         /// <summary>
-        /// Calculation
-        /// </summary>
-        public string Calculation { get; set; }
-
-        /// <summary>
         /// SOW Hours / Location
         /// </summary>
         public string SowHoursLocation { get; set; }

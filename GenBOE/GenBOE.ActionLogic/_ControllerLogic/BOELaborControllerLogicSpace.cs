@@ -181,7 +181,7 @@ namespace GenBOE.ActionLogic
             return new MoqTypeTableDataLabels()
             {
                 RepositoryName = "Repository Name",
-                QueryType = "Query Type (Weekly/Monthly)",
+                QueryType = "Query Type",
             };
         }
     }

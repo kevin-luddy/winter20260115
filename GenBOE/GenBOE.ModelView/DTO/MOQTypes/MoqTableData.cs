@@ -31,7 +31,7 @@ namespace GenBOE.ActionLogic.ModelView
         /// <summary>
         /// Date Of Report
         /// </summary>
-        public string DateOfReport { get; set; }
+        public DateTime DateOfReport { get; set; }
 
         /// <summary>
         /// Historical Program Name
