@@ -24,3 +24,30 @@ END
 
 	## END ##
 */
+
+/*
+	## START ##
+
+	9/10/2020 [ranzalon] - BOEJ-4774 New MOQ types
+*/
+
+IF NOT EXISTS (SELECT * FROM [dbo].[MOQTypeLU] WHERE [MOQTypeID] >= 5001 AND [MOQTypeID] <= 5009)
+BEGIN 
+
+INSERT INTO [dbo].[MOQTypeLU] ([MOQTypeID],[MOQType]) VALUES (5001, 'Actual Program or Task Cost Data (Historical)'),
+	(5002, 'Comparative Analysis'), 
+	(5003, 'Cost Estimating Relationships (CERs) R2'), 
+	(5004, 'Parametric Estimates'),
+	(5005, 'Analogous Relationships (ARs)'),
+	(5006, 'Statement of Work (SOW)'),
+	(5007, 'Level of Effort (LOE)'),
+	(5008, 'Subject Matter Expert (SME) Judgement'),
+	(5009, 'Non-Labor');
+
+END
+
+/*
+	9/10/2020 [ranzalon] - BOEJ-4774 New MOQ types
+
+	## END ##
+*/
