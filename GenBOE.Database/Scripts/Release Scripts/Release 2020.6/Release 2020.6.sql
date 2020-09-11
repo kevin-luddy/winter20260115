@@ -35,7 +35,7 @@ IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[MO
 BEGIN
 
 CREATE TABLE [dbo].[MOQTypeSelection] (
-	[MOQTypeSelectionId] [int] NOT NULL PRIMARY KEY,
+	[MOQTypeSelectionId] [int] NOT NULL PRIMARY KEY IDENTITY(1,1),
 	[TaskId] [int] NOT NULL FOREIGN KEY REFERENCES [dbo].[BOETaskElement](BOETaskElementID),
 	[MOQTypeSelection] [int] NOT NULL FOREIGN KEY REFERENCES [dbo].[MOQTypeLU](MOQTypeID),
 	[UpdateDT] [datetime2](7) NOT NULL,
@@ -75,7 +75,7 @@ IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[MO
 BEGIN
 
 CREATE TABLE [dbo].[MOQTypeSelectionTableData](
-	[MOQTypeSelectionTableDataId] [int] NOT NULL PRIMARY KEY,
+	[MOQTypeSelectionTableDataId] [int] NOT NULL PRIMARY KEY IDENTITY(1,1),
 	[MOQTypeSelectionId] [int] NOT NULL FOREIGN KEY REFERENCES [dbo].[MOQTypeSelection](MOQTypeSelectionId),
 	[UpdateDT] [datetime2](7) NOT NULL,
 	[Order] [int] NOT NULL,
