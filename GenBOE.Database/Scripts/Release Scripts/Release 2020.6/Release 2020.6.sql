@@ -38,7 +38,7 @@ CREATE TABLE [dbo].[MOQTypeSelection] (
 	[MOQTypeSelectionId] [int] NOT NULL PRIMARY KEY,
 	[TaskId] [int] NOT NULL FOREIGN KEY REFERENCES [dbo].[BOETaskElement](BOETaskElementID),
 	[MOQTypeSelection] [int] NOT NULL FOREIGN KEY REFERENCES [dbo].[MOQTypeLU](MOQTypeID),
-	[LastUpdateDate] [datetime2](7) NOT NULL,
+	[UpdateDT] [datetime2](7) NOT NULL,
 	[Order] [int] NOT NULL,
 	[CERName] [varchar](255) NULL,
 	[CERLocation] [varchar](255) NULL,
@@ -55,7 +55,7 @@ CREATE TABLE [version].[MOQTypeSelection] (
 	[MOQTypeSelectionId] [int] NOT NULL,
 	[TaskId] [int] NOT NULL,
 	[MOQTypeSelection] [int] NOT NULL,
-	[LastUpdateDate] [datetime2](7) NOT NULL,
+	[UpdateDT] [datetime2](7) NOT NULL,
 	[Order] [int] NOT NULL,
 	[CERName] [varchar](255) NULL,
 	[CERLocation] [varchar](255) NULL,
@@ -77,6 +77,7 @@ BEGIN
 CREATE TABLE [dbo].[MOQTypeSelectionTableData](
 	[MOQTypeSelectionTableDataId] [int] NOT NULL PRIMARY KEY,
 	[MOQTypeSelectionId] [int] NOT NULL FOREIGN KEY REFERENCES [dbo].[MOQTypeSelection](MOQTypeSelectionId),
+	[UpdateDT] [datetime2](7) NOT NULL,
 	[Order] [int] NOT NULL,
 	[TableName] [varchar](255) NULL,
 	[RepositoryName] [varchar](50) NULL,
@@ -97,6 +98,7 @@ CREATE TABLE [dbo].[MOQTypeSelectionTableData](
 CREATE TABLE [version].[MOQTypeSelectionTableData](
 	[MOQTypeSelectionTableDataId] [int] NOT NULL,
 	[MOQTypeSelectionId] [int] NOT NULL,
+	[UpdateDT] [datetime2](7) NOT NULL,
 	[Order] [int] NOT NULL,
 	[TableName] [varchar](255) NULL,
 	[RepositoryName] [varchar](50) NULL,
