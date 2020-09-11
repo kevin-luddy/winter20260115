@@ -85,6 +85,8 @@
     <Content Include="Object Scripts\Stored Procedures\deleteMaterialTaskElement.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteMetricDetail.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteMockTestData.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteMOQTypeSelection.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteMOQTypeSelectionTableData.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteMSTTravelTrip.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteMSTTravelTripCustomFieldValue.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteMSTTravelTripTaskelement.sql" />
@@ -222,6 +224,8 @@
     <Content Include="Object Scripts\Stored Procedures\upsertCustomField.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertCustomFieldValue.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertLOB.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertMOQTypeSelection.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertMOQTypeSelectionTableData.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertMSTTravelTrip.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertMSTTravelTripCustomFieldValue.sql" />
     <Content Include="Object Scripts\Stored Procedures\UpsertMSTZoneTravelOrigin.sql" />
