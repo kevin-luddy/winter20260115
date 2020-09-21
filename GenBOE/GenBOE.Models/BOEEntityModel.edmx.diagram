@@ -342,6 +342,12 @@
         <AssociationConnector Association="GenBOE.Models.FK_BOELaborTypeCustomFieldValueXREF_BOELaborType" />
         <AssociationConnector Association="GenBOE.Models.FK__ProjectMa__Legac__3AD8B324" />
         <AssociationConnector Association="GenBOE.Models.FK__ProjectMa__Proje__6AB11821" />
+        <EntityTypeShape EntityType="GenBOE.Models.MOQTypeSelection" Width="1.5" PointX="30.75" PointY="117.625" />
+        <EntityTypeShape EntityType="GenBOE.Models.MOQTypeSelectionTableData" Width="1.5" PointX="33" PointY="117.75" />
+        <AssociationConnector Association="GenBOE.Models.FK__BOELaborT__MOQTy__4C865AC6" />
+        <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__TaskI__31D2648A" />
+        <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__32C688C3" />
+        <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__378B3DE0" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -171,6 +171,8 @@ namespace GenBOE.Models
         public virtual DbSet<RteTemplateSource> RteTemplateSources { get; set; }
         public virtual DbSet<BOELaborType> BOELaborTypes { get; set; }
         public virtual DbSet<ProjectMap> ProjectMaps { get; set; }
+        public virtual DbSet<MOQTypeSelection> MOQTypeSelections { get; set; }
+        public virtual DbSet<MOQTypeSelectionTableData> MOQTypeSelectionTableDatas { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]
         public virtual IQueryable<SplitString_Result> SplitString(string list, string delimiter, string emptyListItem)
@@ -2706,7 +2708,7 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertBOELaborSpread", bOELaborSpreadIDParameter, bOELaborTypeIDParameter, laborSpreadDateParameter, laborSpreadValueParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertBOELaborType(Nullable<int> bOELaborTypeID, Nullable<int> resourceID, Nullable<int> performingOrganizationID, Nullable<System.DateTime> bOELaborTypeStartDate, Nullable<System.DateTime> bOELaborTypeEndDate, Nullable<int> spreadCurveID, Nullable<decimal> percentSpread, Nullable<decimal> valueSpread, Nullable<int> bOETaskElementID, Nullable<int> spreadTypeID, Nullable<System.DateTime> updateDT, Nullable<bool> percentSpreadLocked, Nullable<bool> hourSpreadLocked, Nullable<int> wBSID, Nullable<int> cLINID, Nullable<bool> canOffload, Nullable<int> laborSortID)
+        public virtual ObjectResult<Nullable<int>> upsertBOELaborType(Nullable<int> bOELaborTypeID, Nullable<int> resourceID, Nullable<int> performingOrganizationID, Nullable<System.DateTime> bOELaborTypeStartDate, Nullable<System.DateTime> bOELaborTypeEndDate, Nullable<int> spreadCurveID, Nullable<decimal> percentSpread, Nullable<decimal> valueSpread, Nullable<int> bOETaskElementID, Nullable<int> spreadTypeID, Nullable<System.DateTime> updateDT, Nullable<bool> percentSpreadLocked, Nullable<bool> hourSpreadLocked, Nullable<int> wBSID, Nullable<int> cLINID, Nullable<bool> canOffload, Nullable<int> laborSortID, Nullable<int> mOQTypeSelectionId)
         {
             var bOELaborTypeIDParameter = bOELaborTypeID.HasValue ?
                 new ObjectParameter("BOELaborTypeID", bOELaborTypeID) :
@@ -2776,7 +2778,11 @@ namespace GenBOE.Models
                 new ObjectParameter("LaborSortID", laborSortID) :
                 new ObjectParameter("LaborSortID", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertBOELaborType", bOELaborTypeIDParameter, resourceIDParameter, performingOrganizationIDParameter, bOELaborTypeStartDateParameter, bOELaborTypeEndDateParameter, spreadCurveIDParameter, percentSpreadParameter, valueSpreadParameter, bOETaskElementIDParameter, spreadTypeIDParameter, updateDTParameter, percentSpreadLockedParameter, hourSpreadLockedParameter, wBSIDParameter, cLINIDParameter, canOffloadParameter, laborSortIDParameter);
+            var mOQTypeSelectionIdParameter = mOQTypeSelectionId.HasValue ?
+                new ObjectParameter("MOQTypeSelectionId", mOQTypeSelectionId) :
+                new ObjectParameter("MOQTypeSelectionId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertBOELaborType", bOELaborTypeIDParameter, resourceIDParameter, performingOrganizationIDParameter, bOELaborTypeStartDateParameter, bOELaborTypeEndDateParameter, spreadCurveIDParameter, percentSpreadParameter, valueSpreadParameter, bOETaskElementIDParameter, spreadTypeIDParameter, updateDTParameter, percentSpreadLockedParameter, hourSpreadLockedParameter, wBSIDParameter, cLINIDParameter, canOffloadParameter, laborSortIDParameter, mOQTypeSelectionIdParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> upsertBOELaborTypeCustomFieldValue(Nullable<int> bLTCFVID, Nullable<int> bOELaborTypeID, Nullable<int> customFieldID, Nullable<int> customFieldValueID, string customFieldValue, Nullable<System.DateTime> updateDT, Nullable<bool> isOpenEnded)

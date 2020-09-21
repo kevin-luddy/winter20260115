@@ -38,6 +38,7 @@ namespace GenBOE.Models
         public Nullable<int> CLINID { get; set; }
         public Nullable<bool> CanOffload { get; set; }
         public int LaborSortId { get; set; }
+        public Nullable<int> MOQTypeSelectionId { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOELaborSpread> BOELaborSpreads { get; set; }
@@ -50,5 +51,6 @@ namespace GenBOE.Models
         public virtual WorkBreakdownStructure WorkBreakdownStructure { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOELaborTypeCustomFieldValueXREF> BOELaborTypeCustomFieldValueXREFs { get; set; }
+        public virtual MOQTypeSelection MOQTypeSelection { get; set; }
     }
 }
