@@ -347,8 +347,8 @@ AS
 		[CLINID] [int] NULL,
 		[CanOffload] bit NULL,
 		[LaborSortId] [int] NOT NULL,
-		[OrderID] [int] NOT NULL,
-		[MOQTypeSelectionId] [int] NOT NULL
+		[MOQTypeSelectionId] [int] NULL,
+		[OrderID] [int] NOT NULL
 	)
 	DECLARE @BOELaborTypeID [int],
 		@ResourceID [int],
@@ -366,8 +366,8 @@ AS
 		@CLINID [int],
 		@CanOffload bit,
 		@LaborSortId [int],
-		@OrderID [int],
-		@MOQTypeSelectionId [int]
+		@MOQTypeSelectionId [int],
+		@OrderID [int]
 	DECLARE @InsertedItem AS Table (Id int)
 
 	INSERT INTO @TT_BOELaborType SELECT * FROM @BOELaborType

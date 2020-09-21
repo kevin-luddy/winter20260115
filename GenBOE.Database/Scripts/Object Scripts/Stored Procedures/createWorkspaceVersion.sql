@@ -1135,7 +1135,8 @@ INSERT INTO [version].[MOQTypeSelection]
 [DurationLogicAndAssumptions],
 [EstimateTasks],
 [Rationale],
-[SkillMix]
+[SkillMix],
+[VersionId]
 )
 SELECT M.[MOQTypeSelectionId],
 M.[TaskId],
@@ -1150,7 +1151,8 @@ M.[HoursLogicAndAssumptions],
 M.[DurationLogicAndAssumptions],
 M.[EstimateTasks],
 M.[Rationale],
-M.[SkillMix]
+M.[SkillMix],
+@VersionID
 FROM [dbo].[MOQTypeSelection] M
 INNER JOIN [dbo].[BOETaskElement] T ON M.TaskId = T.BOETaskElementID
 INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
@@ -1173,7 +1175,8 @@ INSERT INTO [version].[MOQTypeSelectionTableData]
 [PeriodOfPerformanceEndDate],
 [TotalWbsHours],
 [AdditionalQueryFilters],
-[TotalRelevantHoursAfterQueryFilters]
+[TotalRelevantHoursAfterQueryFilters],
+[VersionId]
 )
 SELECT TD.[MOQTypeSelectionTableDataId],
 TD.[MOQTypeSelectionId],
@@ -1190,7 +1193,8 @@ TD.[PeriodOfPerformanceStartDate],
 TD.[PeriodOfPerformanceEndDate],
 TD.[TotalWbsHours],
 TD.[AdditionalQueryFilters],
-TD.[TotalRelevantHoursAfterQueryFilters]
+TD.[TotalRelevantHoursAfterQueryFilters],
+@VersionID
 FROM [dbo].[MOQTypeSelectionTableData] TD
 INNER JOIN [dbo].[MOQTypeSelection] M ON TD.MOQTypeSelectionId = M.MOQTypeSelectionId
 INNER JOIN [dbo].[BOETaskElement] T ON M.TaskId = T.BOETaskElementID
