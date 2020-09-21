@@ -36,8 +36,8 @@ CREATE TYPE [dbo].[TT_BOELaborType] AS TABLE(
 	[CLINID] [int] NULL,
 	[CanOffload] bit NULL,
 	[LaborSortId] [int] NOT NULL,
-	[OrderID] [int] NOT NULL,
-	[MOQTypeSelectionId] [int] NULL
+	[MOQTypeSelectionId] [int] NULL,
+	[OrderID] [int] NOT NULL
 );
 GO
 
