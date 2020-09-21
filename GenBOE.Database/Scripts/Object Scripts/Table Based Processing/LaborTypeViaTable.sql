@@ -36,7 +36,8 @@ CREATE TYPE [dbo].[TT_BOELaborType] AS TABLE(
 	[CLINID] [int] NULL,
 	[CanOffload] bit NULL,
 	[LaborSortId] [int] NOT NULL,
-	[OrderID] [int] NOT NULL
+	[OrderID] [int] NOT NULL,
+	[MOQTypeSelectionId] [int] NULL
 );
 GO
 
@@ -261,6 +262,7 @@ AS
 **		8/17/2017	Dusan				BOEJ-2469 Add Old Resource (2.16.1)
 **		10/2/2017	twilson3			BOEJ-2520 Cleanup DB, remove old ProjectMap columns
 **		12/2/19		ranzalon			BOEJ-4464 - Added LaborSortId
+**		9/15/20		ranzalon			BOEJ-4825 - Added MOQTypeSelectionId
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -283,7 +285,8 @@ SET
 	[WBSID]	= T.WBSID,
 	[CLINID] = T.CLINID,
 	[CanOffload] = T.CanOffload,
-	[LaborSortId] = T.LaborSortId
+	[LaborSortId] = T.LaborSortId,
+	[MOQTypeSelectionId] = T.MOQTypeSelectionId
 FROM [dbo].[BOELaborType] L
 	INNER JOIN @BOELaborType T ON 
 		L.[BOELaborTypeID] = T.[BOELaborTypeID] AND
@@ -320,6 +323,7 @@ AS
 **		10/2/2017	twilson3			BOEJ-2520 Cleanup DB, remove old ProjectMap columns
 **		6/5/2017	twilson3			BOEJ-3510 Updated insert order to match the input
 **		12/2/19		ranzalon			BOEJ-4464 - Added LaborSortId
+**		9/15/20		ranzalon			BOEJ-4825 - Added MOQTypeSelectionId
 *******************************************************************************/
 	SET NOCOUNT ON 
 
@@ -343,7 +347,8 @@ AS
 		[CLINID] [int] NULL,
 		[CanOffload] bit NULL,
 		[LaborSortId] [int] NOT NULL,
-		[OrderID] [int] NOT NULL
+		[OrderID] [int] NOT NULL,
+		[MOQTypeSelectionId] [int] NOT NULL
 	)
 	DECLARE @BOELaborTypeID [int],
 		@ResourceID [int],
@@ -361,7 +366,8 @@ AS
 		@CLINID [int],
 		@CanOffload bit,
 		@LaborSortId [int],
-		@OrderID [int]
+		@OrderID [int],
+		@MOQTypeSelectionId [int]
 	DECLARE @InsertedItem AS Table (Id int)
 
 	INSERT INTO @TT_BOELaborType SELECT * FROM @BOELaborType
@@ -384,7 +390,8 @@ AS
 				@CLINID = CLINID,
 				@CanOffload = CanOffload,
 				@LaborSortId = LaborSortId,
-				@OrderID = OrderID
+				@OrderID = OrderID,
+				@MOQTypeSelectionId = MOQTypeSelectionId
 			FROM @TT_BOELaborType
 			WHERE BOELaborTypeID < 0
 			ORDER BY OrderID ASC
@@ -408,6 +415,7 @@ AS
 				   ,[CLINID]
 				   ,[CanOffload]
 				   ,[LaborSortId]
+				   ,[MOQTypeSelectionId]
 				   )
 			 OUTPUT inserted.BOELaborTypeID INTO @InsertedItem
 			 VALUES
@@ -427,7 +435,8 @@ AS
 					@WBSID,
 					@CLINID,
 					@CanOffload,
-					@LaborSortId) 
+					@LaborSortId,
+					@MOQTypeSelectionId) 
 
 			SELECT @BOELaborTypeID = Id FROM @InsertedItem
 	

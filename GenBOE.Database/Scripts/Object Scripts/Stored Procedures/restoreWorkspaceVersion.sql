@@ -66,6 +66,7 @@ AS
 **		12/17/19	twilson3			BOEJ-4434 - Fix Assigned
 **		02/13/20	ranzalon			BOEJ-4506 - Fix RTE Assigned, RTE template deletion order
 **		8/27/20		ranzalon			BOEJ-4760 - Template Boe
+**		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -237,6 +238,20 @@ DELETE FROM [dbo].[RteTemplateAssigned]
 
 DELETE FROM [dbo].[RteTemplate]
 	WHERE WorkspaceID = @WorkspaceID
+
+DELETE FROM [dbo].[MOQTypeSelection]
+	FROM [dbo].[MOQTypeSelection] M
+	INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
+	INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+	INNER JOIN dbo.Workspace WS ON B.WorkspaceID = WS.WorkspaceID
+	WHERE WS.WorkspaceID = @WorkspaceID
+DELETE FROM [dbo].[MOQTypeSelectionTableData]
+	FROM [dbo].[MOQTypeSelectionTableData] TD
+	INNER JOIN [dbo].[MOQTypeSelection] M ON TD.MOQTypeSelectionId = M.MOQTypeSelectionId
+	INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
+	INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+	INNER JOIN dbo.Workspace WS ON B.WorkspaceID = WS.WorkspaceID
+	WHERE WS.WorkspaceID = @WorkspaceID
 
 DELETE FROM  [dbo].[BOETaskElement]
 	FROM [dbo].[BOETaskElement] BTE
@@ -2491,6 +2506,113 @@ END
 
 /** End RTE Templates **/ 
 
+/** Begin MOQ Types **/
+
+IF EXISTS (SELECT 1 FROM [version].[MOQTypeSelection] WHERE VersionID = @VersionID)
+BEGIN
+
+SET IDENTITY_INSERT [dbo].[MOQTypeSelection] ON
+INSERT INTO [dbo].[MOQTypeSelection]
+([MOQTypeSelectionId],
+[TaskId],
+[MOQTypeSelection],
+[UpdateDT],
+[Order],
+[CERName],
+[CERLocation],
+[HoursDescription],
+[SubjectMatterExpert],
+[HoursLogicAndAssumptions],
+[DurationLogicAndAssumptions],
+[EstimateTasks],
+[Rationale],
+[SkillMix]
+)
+SELECT M.[MOQTypeSelectionId],
+	M.[TaskId],
+	M.[MOQTypeSelection],
+	M.[UpdateDT],
+	M.[Order],
+	M.[CERName],
+	M.[CERLocation],
+	M.[HoursDescription],
+	M.[SubjectMatterExpert],
+	M.[HoursLogicAndAssumptions],
+	M.[DurationLogicAndAssumptions],
+	M.[EstimateTasks],
+	M.[Rationale],
+	M.[SkillMix]
+FROM [version].[MOQTypeSelection] M
+INNER JOIN [version].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
+INNER JOIN [version].[BOE] B ON T.BOEID  = B.BOEID
+INNER JOIN [version].[Workspace] WS ON B.WorkspaceID = WS.WorkspaceID
+WHERE 
+M.VersionId = @VersionID AND
+T.VersionID = @VersionID AND
+B.VersionID = @VersionID AND
+WS.VersionID = @VersionID AND
+WS.WorkspaceID = @WorkspaceID
+
+SET IDENTITY_INSERT [dbo].[MOQTypeSelection] OFF
+
+END
+IF EXISTS (SELECT 1 FROM [version].[MOQTypeSelectionTableData] WHERE VersionID = @VersionID)
+BEGIN
+
+SET IDENTITY_INSERT [dbo].[MOQTypeSelectionTableData] ON
+INSERT INTO [dbo].[MOQTypeSelectionTableData]
+([MOQTypeSelectionTableDataId],
+[MOQTypeSelectionId],
+[UpdateDT],
+[Order],
+[TableName],
+[RepositoryName],
+[QueryType],
+[DateOfReport],
+[HistoricalProgramName],
+[ContractNumber],
+[WbsElement],
+[PeriodOfPerformanceStartDate],
+[PeriodOfPerformanceEndDate],
+[TotalWbsHours],
+[AdditionalQueryFilters],
+[TotalRelevantHoursAfterQueryFilters]
+)
+SELECT TD.[MOQTypeSelectionTableDataId],
+TD.[MOQTypeSelectionId],
+TD.[UpdateDT],
+TD.[Order],
+TD.[TableName],
+TD.[RepositoryName],
+TD.[QueryType],
+TD.[DateOfReport],
+TD.[HistoricalProgramName],
+TD.[ContractNumber],
+TD.[WbsElement],
+TD.[PeriodOfPerformanceStartDate],
+TD.[PeriodOfPerformanceEndDate],
+TD.[TotalWbsHours],
+TD.[AdditionalQueryFilters],
+TD.[TotalRelevantHoursAfterQueryFilters]
+FROM [version].[MOQTypeSelectionTableData] TD
+INNER JOIN [version].[MOQTypeSelection] M ON TD.[MOQTypeSelectionId] = M.[MOQTypeSelectionId]
+INNER JOIN [version].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
+INNER JOIN [version].[BOE] B ON T.BOEID  = B.BOEID
+INNER JOIN [version].[Workspace] WS ON B.WorkspaceID = WS.WorkspaceID
+WHERE 
+TD.VersionId = @VersionID AND
+M.VersionId = @VersionID AND
+T.VersionID = @VersionID AND
+B.VersionID = @VersionID AND
+WS.VersionID = @VersionID AND
+WS.WorkspaceID = @WorkspaceID
+
+SET IDENTITY_INSERT [dbo].[MOQTypeSelectionTableData] OFF
+
+END
+
+/** End MOQ Types **/
+
 IF EXISTS (SELECT 1 FROM [version].[BOELaborType] WHERE VersionID = @VersionID)
 BEGIN
 /*Updated for WI 8398*/
@@ -2513,6 +2635,7 @@ INSERT INTO [dbo].[BOELaborType]
 ,[CLINID]
 ,[CanOffload]
 ,[LaborSortID]
+,[MOQTypeSelectionId]
 )
 SELECT BLT.[BOELaborTypeID]
 ,R.[ResourceID]
@@ -2531,6 +2654,7 @@ SELECT BLT.[BOELaborTypeID]
 ,BLT.[CLINID]
 ,BLT.[CanOffload]
 ,BLT.[LaborSortID]
+,BLT.[MOQTypeSelectionId]
 FROM [version].[BOELaborType] BLT
 INNER JOIN [version].[BOETaskElement] BTE ON BLT.BOETaskElementID = BTE.BOETaskElementID
 INNER JOIN [version].BOE B ON BTE.BOEID  = B.BOEID
@@ -3127,6 +3251,8 @@ BEGIN CATCH
 	SET IDENTITY_INSERT [dbo].[Location] OFF
 	SET IDENTITY_INSERT [dbo].[MaterialTaskElement] OFF
 	SET IDENTITY_INSERT [dbo].[MileageReimbursementRate] OFF
+	SET IDENTITY_INSERT [dbo].[MOQTypeSelection] OFF
+	SET IDENTITY_INSERT [dbo].[MOQTypeSelectionTableData] OFF
 	SET IDENTITY_INSERT [dbo].[ODCSpread] OFF
 	SET IDENTITY_INSERT [dbo].[ODCTaskElement] OFF
 	SET IDENTITY_INSERT [dbo].[ODCType] OFF
