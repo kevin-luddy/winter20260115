@@ -610,7 +610,7 @@
                                             </td>
                                             <% if (Model.UsingTemplateBOE) { %>
                                                 <td class="resourceMoqType">
-                                                    <select required data-ng-model="item.selectedMOQType" data-ng-options="moqType.SelectedMOQTypeText for moqType in selectedMoqTypes" class="moqTypes">
+                                                    <select required data-ng-model="item.SelectedMOQType" data-ng-options="moqType.SelectedMOQTypeText for moqType in SelectedMoqTypes" class="moqTypes">
                                                     </select>
                                                 </td>
                                             <% } %>

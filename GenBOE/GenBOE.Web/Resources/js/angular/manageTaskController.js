@@ -27,7 +27,7 @@
     $scope.model.AdjacentItems = {};
     $scope.model.AdjacentItems.PreviousId = undefined;
     $scope.model.AdjacentItems.NextId = undefined;
-    $scope.selectedMoqTypes = [];
+    $scope.SelectedMoqTypes = [];
 
     $scope.isPreviousTaskDisabled = function () {
         return $scope.model.AdjacentItems.PreviousId === undefined || $scope.model.AdjacentItems.PreviousId === null;
@@ -1097,7 +1097,7 @@
 
     // Selected MOQ Types were updated, need to update the dropdown in Labor Types
     $scope.moqSelectionUpdated = function (data) {
-        $scope.selectedMoqTypes = data;
+        $scope.SelectedMoqTypes = data;
     }
 
     var save = function (callback, wsLocked) {

@@ -299,6 +299,9 @@
                                             <th class="element-of-cost">Element of Cost</th>
                                             <th class="resource">Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>)*</th>
                                             <th class="performing-org">Performing Org (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_PERF_ORGS%>'); return false;">View</a>)*</th>
+                                            <% if (Model.UsingTemplateBOE) { %>
+                                                <th class="resourceMoqType">MOQ Type *</th>
+                                            <% } %>
                                             <% if (Model.BOEIsMulti)
                                                {%>
                                                 <th class="resource-wbs">WBS</th>
@@ -317,9 +320,12 @@
                                             <td>
                                                 <div title="{{item.PerformingOrgName}}">{{item.PerformingOrgName}}</div>
                                             </td>
+                                            <% if (Model.UsingTemplateBOE) { %>
+                                                <td class="resourceMoqType">{{item.SelectedMOQType}}</td>
+                                            <% } %>
                                             <% if (Model.BOEIsMulti) {%>
-                                            <td class="resource-wbs">{{ getWbsText(item.WBSID) }}                                            </td>
-                                            <td class="resource-clin">{{ getClinText(item.CLINID) }}</td>
+                                                <td class="resource-wbs">{{ getWbsText(item.WBSID) }}</td>
+                                                <td class="resource-clin">{{ getClinText(item.CLINID) }}</td>
                                             <%  }%>
                                         </tr>
                                     </tbody>
