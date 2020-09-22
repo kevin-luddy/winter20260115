@@ -843,11 +843,9 @@
             // select and disable WBS that have BOEs, make sure the rest are enabled and deselected
             $scope.data.forEach(function (d) {
                 if (d.HasBOE || d.InUse || d.ParentOrChildHasBoe) {
-                    console.log('1', d);
                     d.Selected = false;
                     d.Disabled = true;
                 } else {
-                    console.log('2', d);
                     d.Selected = false;
                     d.Disabled = false;
                 }
