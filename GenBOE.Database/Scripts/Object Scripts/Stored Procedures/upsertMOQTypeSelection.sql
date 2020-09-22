@@ -44,7 +44,7 @@ AS
 *******************************************************************************/
 SET NOCOUNT ON 
 
-DECLARE @MOQTypeSelection AS Table (MOQTypeSelectionId int)
+DECLARE @MOQTypeSelectionTable AS Table (MOQTypeSelectionId int)
 
 IF @MOQTypeSelectionId  < 0  /*Insert Record*/
 	BEGIN
@@ -65,7 +65,7 @@ IF @MOQTypeSelectionId  < 0  /*Insert Record*/
 				[Rationale],
 				[SkillMix]
 		   )
-     OUTPUT inserted.MOQTypeSelectionId INTO @MOQTypeSelection
+     OUTPUT inserted.MOQTypeSelectionId INTO @MOQTypeSelectionTable
      VALUES
            (
 				@TaskId,
@@ -83,7 +83,7 @@ IF @MOQTypeSelectionId  < 0  /*Insert Record*/
 				@SkillMix
             ) 
             
-	SELECT @MOQTypeSelectionId = MOQTypeSelectionId FROM @MOQTypeSelection
+	SELECT @MOQTypeSelectionId = MOQTypeSelectionId FROM @MOQTypeSelectionTable
 
 END
 

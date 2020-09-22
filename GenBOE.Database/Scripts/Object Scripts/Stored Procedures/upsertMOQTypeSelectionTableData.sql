@@ -25,9 +25,7 @@ CREATE PROCEDURE [dbo].[upsertMOQTypeSelectionTableData]
 	@PeriodOfPerformanceEndDate datetime2,
 	@TotalWbsHours decimal,
 	@AdditionalQueryFilters varchar(2500),
-	@TotalRelevantHoursAfterQueryFilters decimal,
-	@MiscField1 varchar(2500),
-	@MiscField2 varchar(2500)
+	@TotalRelevantHoursAfterQueryFilters decimal
 )
 AS
 /******************************************************************************
@@ -90,9 +88,7 @@ IF @MOQTypeSelectionTableDataId  < 0  /*Insert Record*/
 				@PeriodOfPerformanceEndDate,
 				@TotalWbsHours,
 				@AdditionalQueryFilters,
-				@TotalRelevantHoursAfterQueryFilters,
-				@MiscField1,
-				@MiscField2
+				@TotalRelevantHoursAfterQueryFilters
             ) 
             
 	SELECT @MOQTypeSelectionTableDataId = MOQTypeSelectionTableDataId FROM @MOQTypeSelectionTableData
@@ -121,9 +117,7 @@ ELSE
 					[PeriodOfPerformanceEndDate] = @PeriodOfPerformanceEndDate,
 					[TotalWbsHours] = @TotalWbsHours,
 					[AdditionalQueryFilters] = @AdditionalQueryFilters,
-					[TotalRelevantHoursAfterQueryFilters] = @TotalRelevantHoursAfterQueryFilters,
-					[MiscField1] = @MiscField1,
-					[MiscField2] = @MiscField2
+					[TotalRelevantHoursAfterQueryFilters] = @TotalRelevantHoursAfterQueryFilters
 				WHERE
 					[MOQTypeSelectionTableDataId] = @MOQTypeSelectionTableDataId
 
