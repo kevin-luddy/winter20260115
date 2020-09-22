@@ -26,7 +26,7 @@
         <table class="grid readonly">
             <thead>
                 <tr>
-                    <th class="report" style="width:181px">Report</th>
+                    <th class="report">Report</th>
                     <th class="description">Description</th>
                     <th class="last-child action" style="width: 42px;">View</th>
                 </tr>
