@@ -20,14 +20,14 @@ namespace GenBOE.ActionLogic.IO.Import
         private Logger log = new Logger(typeof(TrainingImporter));
 
         // Individual column names
-        private const string courseColumn = "Course Type / Program Number";
+        private const string courseColumn = "Item Number";
         private const string nameColumn = "Learner Name";
-        private const string courseCompleteColumn = "Course P/T Comp Date";
-        private const string learnerIdColumn = "Learner ID";
-        private const string WORKSHEET_NAME = "Report";
+        private const string courseCompleteColumn = "Item Comp Date";
+        private const string learnerIdColumn = "User ID";
+        private const string WORKSHEET_NAME = "LMC Learning History";
         
         // Array of the columns that must be contained in the imported file
-        private readonly string[] requiredColumns = new string[] { courseColumn, nameColumn, courseCompleteColumn, learnerIdColumn };
+        private readonly string[] requiredColumns = new string[] { learnerIdColumn, nameColumn, courseColumn, courseCompleteColumn };
 
         /// <summary>
         /// Gets the required columns.
@@ -71,8 +71,8 @@ namespace GenBOE.ActionLogic.IO.Import
                             throw new NotExcelFileException();
                         }
 
-                        // Remove the first 2 rows so that ExcelUtilities will find the correct Header Row
-                        ExcelUtilities.RemoveFirstRows(worksheetPart, 2);
+                        ////// Remove the first 2 rows so that ExcelUtilities will find the correct Header Row
+                        ////ExcelUtilities.RemoveFirstRows(worksheetPart, 2);
 
                         ICollection<Dictionary<string, string>> allRows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(document, WORKSHEET_NAME, this.requiredColumns, allColumns.ToArray(), null, null, this.requiredColumns);
 
