@@ -111,7 +111,9 @@
     <Compile Include="Common\Delegates.cs" />
     <Compile Include="Common\Interfaces\ISecurityUserAuthorizationsDataLoader.cs" />
     <Compile Include="Common\security\SecurityAccessSpaceSystems.cs" />
+    <Compile Include="DTO\MOQTypes\IMoqTypeDataLoader.cs" />
     <Compile Include="DTO\MOQTypes\MoqTableData.cs" />
+    <Compile Include="DTO\MOQTypes\MoqTypeDataLoader.cs" />
     <Compile Include="DTO\MOQTypes\MoqTypeSelection.cs" />
     <Compile Include="DTO\MOQTypes\MoqTypeTableDataLabels.cs" />
     <Compile Include="DTO\RteTemplate\IRteTemplateDataLoader.cs" />

@@ -7,12 +7,22 @@
 namespace GenBOE.ActionLogic.ModelView
 {
     using System;
+    using IES.Common;
 
     /// <summary>
     /// MOQ Table Data class
     /// </summary>
-    public class MoqTableData
+    public class MoqTableData : UpdateableDTO
     {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public MoqTableData()
+        {
+            Id = -1;
+            Order = 2000;
+        }
+
         /// <summary>
         /// Table Name
         /// </summary>
@@ -72,5 +82,10 @@ namespace GenBOE.ActionLogic.ModelView
         /// Total Relevant hours
         /// </summary>
         public decimal TotalRelevantHours { get; set; }
+
+        /// <summary>
+        /// Number representing the order the MOQ Type table is displayed in when there are multiple MOQ Type tables
+        /// </summary>
+        public int Order { get; set; }
     }
 }

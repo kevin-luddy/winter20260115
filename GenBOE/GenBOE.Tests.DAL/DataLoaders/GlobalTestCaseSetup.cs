@@ -793,7 +793,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 outputFormat.Template = "Mock_" + tempName;
                 outputFormat.TemplateDescription = "Mock_" + tempName + " longer description";
                 outputFormat.TemplateFile = (from t in gbe.OutputFormatTemplates  // just pull from db
-                                             where t.TemplateID == 1
                                              select t.TemplateFile).First();
                 _GlobalWorkspaceExportFile = outputFormat.TemplateFile;
                 gbe.OutputFormatTemplates.Add(outputFormat);
@@ -843,13 +842,13 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 gbe.SaveChanges();
                 Models.OutputFormatTemplateWorkspaceXREF lsOutputFormatXREF = new Models.OutputFormatTemplateWorkspaceXREF();
                 lsOutputFormatXREF.OutputFormatID = -1;
-                lsOutputFormatXREF.TemplateID = 1; // portrait
+                lsOutputFormatXREF.TemplateID = 9001; // master
                 lsOutputFormatXREF.WorkspaceID = workspaceToUse;
                 gbe.OutputFormatTemplateWorkspaceXREFs.Add(lsOutputFormatXREF);
                 gbe.SaveChanges();
                 Models.OutputFormatTemplateWorkspaceXREF portraitOutputFormatXREF = new Models.OutputFormatTemplateWorkspaceXREF();
                 portraitOutputFormatXREF.OutputFormatID = -1;
-                portraitOutputFormatXREF.TemplateID = 2; // landscape
+                portraitOutputFormatXREF.TemplateID = 100001; // ssc portrait
                 portraitOutputFormatXREF.WorkspaceID = workspaceToUse;
                 gbe.OutputFormatTemplateWorkspaceXREFs.Add(portraitOutputFormatXREF);
                 gbe.SaveChanges();

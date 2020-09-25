@@ -1381,7 +1381,8 @@ namespace GenBOE
                                                                                                                                                 new ResolvedParameter(typeof(IBOEHistoryDTODataLoader)),
                                                                                                                                                 new ResolvedParameter(typeof(ITMResourceRateDTODataLoader)),
                                                                                                                                                 new ResolvedParameter(typeof(IProjectMapDataLoader)),
-                                                                                                                                                new ResolvedParameter(typeof(IRteTemplateDataLoader))));
+                                                                                                                                                new ResolvedParameter(typeof(IRteTemplateDataLoader)),
+                                                                                                                                                new ResolvedParameter(typeof(IMoqTypeDataLoader))));
 
 
             GenBOEUnityContainer.Container.RegisterType(typeof(IFullObjectFactory), typeof(FullObjectFactory), GetLifetimeManager());
@@ -1392,6 +1393,7 @@ namespace GenBOE
             GenBOEUnityContainer.Container.RegisterType(typeof(GenTRAC.DataBridge.DTO.IUserMapper), typeof(GenTRAC.DataBridge.DTO.UserMapper), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(GenTRAC.DataBridge.DTO.IUserLoader)), new ResolvedParameter(typeof(CacheDataLoader)), new ResolvedParameter(typeof(ISecurityInformation)), new ResolvedParameter(typeof(IActiveDirectoryUtilities)), new ResolvedParameter(typeof(ICache))));
             GenBOEUnityContainer.Container.RegisterType(typeof(ISystemSettingDTODataLoader), typeof(SystemSettingDTODataLoader), GetLifetimeManager());
             GenBOEUnityContainer.Container.RegisterType(typeof(IRteTemplateDataLoader), typeof(RteTemplateDataLoader), GetLifetimeManager());
+            GenBOEUnityContainer.Container.RegisterType(typeof(IMoqTypeDataLoader), typeof(MoqTypeDataLoader), GetLifetimeManager());
 
         }
 

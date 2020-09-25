@@ -5260,5 +5260,161 @@ namespace GenBOE.Models
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("copyWorkspaceVersion", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, versionIDParameter, boeListParameter);
         }
+    
+        public virtual int deleteMOQTypeSelection(Nullable<int> mOQTypeSelectionId, Nullable<System.DateTime> updateDT)
+        {
+            var mOQTypeSelectionIdParameter = mOQTypeSelectionId.HasValue ?
+                new ObjectParameter("MOQTypeSelectionId", mOQTypeSelectionId) :
+                new ObjectParameter("MOQTypeSelectionId", typeof(int));
+    
+            var updateDTParameter = updateDT.HasValue ?
+                new ObjectParameter("UpdateDT", updateDT) :
+                new ObjectParameter("UpdateDT", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteMOQTypeSelection", mOQTypeSelectionIdParameter, updateDTParameter);
+        }
+    
+        public virtual int deleteMOQTypeSelectionTableData(Nullable<int> mOQTypeSelectionTableDataId, Nullable<System.DateTime> updateDT)
+        {
+            var mOQTypeSelectionTableDataIdParameter = mOQTypeSelectionTableDataId.HasValue ?
+                new ObjectParameter("MOQTypeSelectionTableDataId", mOQTypeSelectionTableDataId) :
+                new ObjectParameter("MOQTypeSelectionTableDataId", typeof(int));
+    
+            var updateDTParameter = updateDT.HasValue ?
+                new ObjectParameter("UpdateDT", updateDT) :
+                new ObjectParameter("UpdateDT", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteMOQTypeSelectionTableData", mOQTypeSelectionTableDataIdParameter, updateDTParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> upsertMOQTypeSelection(Nullable<int> mOQTypeSelectionId, Nullable<int> taskId, Nullable<int> mOQTypeSelection, Nullable<System.DateTime> updateDT, Nullable<int> order, string cERName, string cERLocation, string hoursDescription, string subjectMatterExpert, string hoursLogicAndAssumptions, string durationLogicAndAssumptions, string estimateTasks, string rationale, string skillMix)
+        {
+            var mOQTypeSelectionIdParameter = mOQTypeSelectionId.HasValue ?
+                new ObjectParameter("MOQTypeSelectionId", mOQTypeSelectionId) :
+                new ObjectParameter("MOQTypeSelectionId", typeof(int));
+    
+            var taskIdParameter = taskId.HasValue ?
+                new ObjectParameter("TaskId", taskId) :
+                new ObjectParameter("TaskId", typeof(int));
+    
+            var mOQTypeSelectionParameter = mOQTypeSelection.HasValue ?
+                new ObjectParameter("MOQTypeSelection", mOQTypeSelection) :
+                new ObjectParameter("MOQTypeSelection", typeof(int));
+    
+            var updateDTParameter = updateDT.HasValue ?
+                new ObjectParameter("UpdateDT", updateDT) :
+                new ObjectParameter("UpdateDT", typeof(System.DateTime));
+    
+            var orderParameter = order.HasValue ?
+                new ObjectParameter("Order", order) :
+                new ObjectParameter("Order", typeof(int));
+    
+            var cERNameParameter = cERName != null ?
+                new ObjectParameter("CERName", cERName) :
+                new ObjectParameter("CERName", typeof(string));
+    
+            var cERLocationParameter = cERLocation != null ?
+                new ObjectParameter("CERLocation", cERLocation) :
+                new ObjectParameter("CERLocation", typeof(string));
+    
+            var hoursDescriptionParameter = hoursDescription != null ?
+                new ObjectParameter("HoursDescription", hoursDescription) :
+                new ObjectParameter("HoursDescription", typeof(string));
+    
+            var subjectMatterExpertParameter = subjectMatterExpert != null ?
+                new ObjectParameter("SubjectMatterExpert", subjectMatterExpert) :
+                new ObjectParameter("SubjectMatterExpert", typeof(string));
+    
+            var hoursLogicAndAssumptionsParameter = hoursLogicAndAssumptions != null ?
+                new ObjectParameter("HoursLogicAndAssumptions", hoursLogicAndAssumptions) :
+                new ObjectParameter("HoursLogicAndAssumptions", typeof(string));
+    
+            var durationLogicAndAssumptionsParameter = durationLogicAndAssumptions != null ?
+                new ObjectParameter("DurationLogicAndAssumptions", durationLogicAndAssumptions) :
+                new ObjectParameter("DurationLogicAndAssumptions", typeof(string));
+    
+            var estimateTasksParameter = estimateTasks != null ?
+                new ObjectParameter("EstimateTasks", estimateTasks) :
+                new ObjectParameter("EstimateTasks", typeof(string));
+    
+            var rationaleParameter = rationale != null ?
+                new ObjectParameter("Rationale", rationale) :
+                new ObjectParameter("Rationale", typeof(string));
+    
+            var skillMixParameter = skillMix != null ?
+                new ObjectParameter("SkillMix", skillMix) :
+                new ObjectParameter("SkillMix", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertMOQTypeSelection", mOQTypeSelectionIdParameter, taskIdParameter, mOQTypeSelectionParameter, updateDTParameter, orderParameter, cERNameParameter, cERLocationParameter, hoursDescriptionParameter, subjectMatterExpertParameter, hoursLogicAndAssumptionsParameter, durationLogicAndAssumptionsParameter, estimateTasksParameter, rationaleParameter, skillMixParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> upsertMOQTypeSelectionTableData(Nullable<int> mOQTypeSelectionTableDataId, Nullable<int> mOQTypeSelectionId, Nullable<System.DateTime> updateDT, Nullable<int> order, string tableName, string repositoryName, string queryType, Nullable<System.DateTime> dateOfReport, string historicalProgramName, string contractNumber, string wbsElement, Nullable<System.DateTime> periodOfPerformanceStartDate, Nullable<System.DateTime> periodOfPerformanceEndDate, Nullable<decimal> totalWbsHours, string additionalQueryFilters, Nullable<decimal> totalRelevantHoursAfterQueryFilters)
+        {
+            var mOQTypeSelectionTableDataIdParameter = mOQTypeSelectionTableDataId.HasValue ?
+                new ObjectParameter("MOQTypeSelectionTableDataId", mOQTypeSelectionTableDataId) :
+                new ObjectParameter("MOQTypeSelectionTableDataId", typeof(int));
+    
+            var mOQTypeSelectionIdParameter = mOQTypeSelectionId.HasValue ?
+                new ObjectParameter("MOQTypeSelectionId", mOQTypeSelectionId) :
+                new ObjectParameter("MOQTypeSelectionId", typeof(int));
+    
+            var updateDTParameter = updateDT.HasValue ?
+                new ObjectParameter("UpdateDT", updateDT) :
+                new ObjectParameter("UpdateDT", typeof(System.DateTime));
+    
+            var orderParameter = order.HasValue ?
+                new ObjectParameter("Order", order) :
+                new ObjectParameter("Order", typeof(int));
+    
+            var tableNameParameter = tableName != null ?
+                new ObjectParameter("TableName", tableName) :
+                new ObjectParameter("TableName", typeof(string));
+    
+            var repositoryNameParameter = repositoryName != null ?
+                new ObjectParameter("RepositoryName", repositoryName) :
+                new ObjectParameter("RepositoryName", typeof(string));
+    
+            var queryTypeParameter = queryType != null ?
+                new ObjectParameter("QueryType", queryType) :
+                new ObjectParameter("QueryType", typeof(string));
+    
+            var dateOfReportParameter = dateOfReport.HasValue ?
+                new ObjectParameter("DateOfReport", dateOfReport) :
+                new ObjectParameter("DateOfReport", typeof(System.DateTime));
+    
+            var historicalProgramNameParameter = historicalProgramName != null ?
+                new ObjectParameter("HistoricalProgramName", historicalProgramName) :
+                new ObjectParameter("HistoricalProgramName", typeof(string));
+    
+            var contractNumberParameter = contractNumber != null ?
+                new ObjectParameter("ContractNumber", contractNumber) :
+                new ObjectParameter("ContractNumber", typeof(string));
+    
+            var wbsElementParameter = wbsElement != null ?
+                new ObjectParameter("WbsElement", wbsElement) :
+                new ObjectParameter("WbsElement", typeof(string));
+    
+            var periodOfPerformanceStartDateParameter = periodOfPerformanceStartDate.HasValue ?
+                new ObjectParameter("PeriodOfPerformanceStartDate", periodOfPerformanceStartDate) :
+                new ObjectParameter("PeriodOfPerformanceStartDate", typeof(System.DateTime));
+    
+            var periodOfPerformanceEndDateParameter = periodOfPerformanceEndDate.HasValue ?
+                new ObjectParameter("PeriodOfPerformanceEndDate", periodOfPerformanceEndDate) :
+                new ObjectParameter("PeriodOfPerformanceEndDate", typeof(System.DateTime));
+    
+            var totalWbsHoursParameter = totalWbsHours.HasValue ?
+                new ObjectParameter("TotalWbsHours", totalWbsHours) :
+                new ObjectParameter("TotalWbsHours", typeof(decimal));
+    
+            var additionalQueryFiltersParameter = additionalQueryFilters != null ?
+                new ObjectParameter("AdditionalQueryFilters", additionalQueryFilters) :
+                new ObjectParameter("AdditionalQueryFilters", typeof(string));
+    
+            var totalRelevantHoursAfterQueryFiltersParameter = totalRelevantHoursAfterQueryFilters.HasValue ?
+                new ObjectParameter("TotalRelevantHoursAfterQueryFilters", totalRelevantHoursAfterQueryFilters) :
+                new ObjectParameter("TotalRelevantHoursAfterQueryFilters", typeof(decimal));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertMOQTypeSelectionTableData", mOQTypeSelectionTableDataIdParameter, mOQTypeSelectionIdParameter, updateDTParameter, orderParameter, tableNameParameter, repositoryNameParameter, queryTypeParameter, dateOfReportParameter, historicalProgramNameParameter, contractNumberParameter, wbsElementParameter, periodOfPerformanceStartDateParameter, periodOfPerformanceEndDateParameter, totalWbsHoursParameter, additionalQueryFiltersParameter, totalRelevantHoursAfterQueryFiltersParameter);
+        }
     }
 }

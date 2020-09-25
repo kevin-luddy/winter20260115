@@ -4316,6 +4316,14 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <Parameter Name="MetricDetailID" Type="int" Mode="In" />
         </Function>
         <Function Name="deleteMockTestData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="deleteMOQTypeSelection" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="MOQTypeSelectionId" Type="int" Mode="In" />
+          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
+        </Function>
+        <Function Name="deleteMOQTypeSelectionTableData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="MOQTypeSelectionTableDataId" Type="int" Mode="In" />
+          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
+        </Function>
         <Function Name="deleteMSTTravelTrip" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="MSTTravelTripID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
@@ -5163,6 +5171,40 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <Parameter Name="Id" Type="int" Mode="In" />
           <Parameter Name="Text" Type="varchar" Mode="In" />
           <Parameter Name="IsActive" Type="bit" Mode="In" />
+        </Function>
+        <Function Name="upsertMOQTypeSelection" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="MOQTypeSelectionId" Type="int" Mode="In" />
+          <Parameter Name="TaskId" Type="int" Mode="In" />
+          <Parameter Name="MOQTypeSelection" Type="int" Mode="In" />
+          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
+          <Parameter Name="Order" Type="int" Mode="In" />
+          <Parameter Name="CERName" Type="varchar" Mode="In" />
+          <Parameter Name="CERLocation" Type="varchar" Mode="In" />
+          <Parameter Name="HoursDescription" Type="varchar(max)" Mode="In" />
+          <Parameter Name="SubjectMatterExpert" Type="varchar(max)" Mode="In" />
+          <Parameter Name="HoursLogicAndAssumptions" Type="varchar(max)" Mode="In" />
+          <Parameter Name="DurationLogicAndAssumptions" Type="varchar(max)" Mode="In" />
+          <Parameter Name="EstimateTasks" Type="varchar(max)" Mode="In" />
+          <Parameter Name="Rationale" Type="varchar(max)" Mode="In" />
+          <Parameter Name="SkillMix" Type="varchar(max)" Mode="In" />
+        </Function>
+        <Function Name="upsertMOQTypeSelectionTableData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="MOQTypeSelectionTableDataId" Type="int" Mode="In" />
+          <Parameter Name="MOQTypeSelectionId" Type="int" Mode="In" />
+          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
+          <Parameter Name="Order" Type="int" Mode="In" />
+          <Parameter Name="TableName" Type="varchar" Mode="In" />
+          <Parameter Name="RepositoryName" Type="varchar" Mode="In" />
+          <Parameter Name="QueryType" Type="varchar" Mode="In" />
+          <Parameter Name="DateOfReport" Type="datetime2" Mode="In" />
+          <Parameter Name="HistoricalProgramName" Type="varchar" Mode="In" />
+          <Parameter Name="ContractNumber" Type="varchar" Mode="In" />
+          <Parameter Name="WbsElement" Type="varchar" Mode="In" />
+          <Parameter Name="PeriodOfPerformanceStartDate" Type="datetime2" Mode="In" />
+          <Parameter Name="PeriodOfPerformanceEndDate" Type="datetime2" Mode="In" />
+          <Parameter Name="TotalWbsHours" Type="decimal" Mode="In" />
+          <Parameter Name="AdditionalQueryFilters" Type="varchar" Mode="In" />
+          <Parameter Name="TotalRelevantHoursAfterQueryFilters" Type="decimal" Mode="In" />
         </Function>
         <Function Name="upsertMSTTravelTrip" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="MSTTravelTripID" Type="int" Mode="In" />
@@ -12242,6 +12284,48 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             <End Role="ProjectMap" EntitySet="ProjectMaps" />
             <End Role="ProjectMapSpread" EntitySet="ProjectMapSpreads" />
           </AssociationSet>
+          <FunctionImport Name="deleteMOQTypeSelection">
+            <Parameter Name="MOQTypeSelectionId" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="deleteMOQTypeSelectionTableData">
+            <Parameter Name="MOQTypeSelectionTableDataId" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="upsertMOQTypeSelection" ReturnType="Collection(Int32)">
+            <Parameter Name="MOQTypeSelectionId" Mode="In" Type="Int32" />
+            <Parameter Name="TaskId" Mode="In" Type="Int32" />
+            <Parameter Name="MOQTypeSelection" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+            <Parameter Name="Order" Mode="In" Type="Int32" />
+            <Parameter Name="CERName" Mode="In" Type="String" />
+            <Parameter Name="CERLocation" Mode="In" Type="String" />
+            <Parameter Name="HoursDescription" Mode="In" Type="String" />
+            <Parameter Name="SubjectMatterExpert" Mode="In" Type="String" />
+            <Parameter Name="HoursLogicAndAssumptions" Mode="In" Type="String" />
+            <Parameter Name="DurationLogicAndAssumptions" Mode="In" Type="String" />
+            <Parameter Name="EstimateTasks" Mode="In" Type="String" />
+            <Parameter Name="Rationale" Mode="In" Type="String" />
+            <Parameter Name="SkillMix" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="upsertMOQTypeSelectionTableData" ReturnType="Collection(Int32)">
+            <Parameter Name="MOQTypeSelectionTableDataId" Mode="In" Type="Int32" />
+            <Parameter Name="MOQTypeSelectionId" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+            <Parameter Name="Order" Mode="In" Type="Int32" />
+            <Parameter Name="TableName" Mode="In" Type="String" />
+            <Parameter Name="RepositoryName" Mode="In" Type="String" />
+            <Parameter Name="QueryType" Mode="In" Type="String" />
+            <Parameter Name="DateOfReport" Mode="In" Type="DateTime" />
+            <Parameter Name="HistoricalProgramName" Mode="In" Type="String" />
+            <Parameter Name="ContractNumber" Mode="In" Type="String" />
+            <Parameter Name="WbsElement" Mode="In" Type="String" />
+            <Parameter Name="PeriodOfPerformanceStartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="PeriodOfPerformanceEndDate" Mode="In" Type="DateTime" />
+            <Parameter Name="TotalWbsHours" Mode="In" Type="Decimal" />
+            <Parameter Name="AdditionalQueryFilters" Mode="In" Type="String" />
+            <Parameter Name="TotalRelevantHoursAfterQueryFilters" Mode="In" Type="Decimal" />
+          </FunctionImport>
           <EntitySet Name="MOQTypeSelections" EntityType="GenBOE.Models.MOQTypeSelection" />
           <EntitySet Name="MOQTypeSelectionTableDatas" EntityType="GenBOE.Models.MOQTypeSelectionTableData" />
           <AssociationSet Name="FK__BOELaborT__MOQTy__4C865AC6" Association="GenBOE.Models.FK__BOELaborT__MOQTy__4C865AC6">
@@ -15872,6 +15956,10 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="deleteMOQTypeSelection" FunctionName="GenBOE.Models.Store.deleteMOQTypeSelection" />
+          <FunctionImportMapping FunctionImportName="deleteMOQTypeSelectionTableData" FunctionName="GenBOE.Models.Store.deleteMOQTypeSelectionTableData" />
+          <FunctionImportMapping FunctionImportName="upsertMOQTypeSelection" FunctionName="GenBOE.Models.Store.upsertMOQTypeSelection" />
+          <FunctionImportMapping FunctionImportName="upsertMOQTypeSelectionTableData" FunctionName="GenBOE.Models.Store.upsertMOQTypeSelectionTableData" />
           <EntitySetMapping Name="MOQTypeSelections">
             <EntityTypeMapping TypeName="GenBOE.Models.MOQTypeSelection">
               <MappingFragment StoreEntitySet="MOQTypeSelection">

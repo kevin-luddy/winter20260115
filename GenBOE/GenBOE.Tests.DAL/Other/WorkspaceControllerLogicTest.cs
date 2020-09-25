@@ -88,7 +88,7 @@ namespace GenBOE.Tests.DAL.Other
 
             retriever = new Retriever(new ClinDTODataLoader(), new WbsDTODataLoader(), new WorkspaceDTODataLoader(), new BoeDTODataLoader(), null, null, null, null,
                 new ResourceTypeLoader(), boeTaskElementDTODataLoader, null, resourceLoader.Object, null, null, null, null, null, null,
-                perfLoader.Object, perfListLoader.Object, null, null, null, null, userLoader.Object, null, null, null, null, new ProjectMapDataLoader(new ProjectMapSpreadLoader()), null);
+                perfLoader.Object, perfListLoader.Object, null, null, null, null, userLoader.Object, null, null, null, null, new ProjectMapDataLoader(new ProjectMapSpreadLoader()), null, null);
 
             permissionsLoader.Setup(x => x.GetBOEPermissions(It.IsAny<ICollection<int>>())).Returns(new Collection<PermissionsDTO>());
 

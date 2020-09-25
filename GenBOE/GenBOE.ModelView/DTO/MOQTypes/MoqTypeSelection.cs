@@ -12,8 +12,17 @@ namespace GenBOE.ActionLogic.ModelView
     /// <summary>
     /// MOQ Type selection, with underlying data
     /// </summary>
-    public class MoqTypeSelection
+    public class MoqTypeSelection : UpdateableDTO
     {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public MoqTypeSelection()
+        {
+            Id = -1;
+            Order = 2000;
+        }
+
         /// <summary>
         /// Task Id that the MOQ Object belongs to
         /// </summary>
@@ -89,6 +98,11 @@ namespace GenBOE.ActionLogic.ModelView
         /// Tasks are estimates
         /// </summary>
         public string SmeTaskEstimates { get; set; }
+
+        /// <summary>
+        /// Number representing the order the MOQ Type is displayed in when there are multiple MOQ Types
+        /// </summary>
+        public int Order { get; set; }
 
         /// <summary>
         /// Table Data

@@ -873,7 +873,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             RteTemplateDataLoader rteLoader = new RteTemplateDataLoader();
             ProPricerDTODataLoader ppLoader = new ProPricerDTODataLoader();
             BoeTaskElementDTODataLoader taskLoader = new BoeTaskElementDTODataLoader(new ResourceTypeLoader(), new ResourceSpreadLoader(), new OrdinaryVariableLoader(), new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader());
-            IRetriever retriever = new Retriever(null, null, wsLoader, null, null, null, null, null, null, taskLoader, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+            IRetriever retriever = new Retriever(null, null, wsLoader, null, null, null, null, null, null, taskLoader, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
             FullObjectFactory fullObjectFactory = new FullObjectFactory(null, null, null, null, null, null, null, null, null, null, null, null);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), fullObjectFactory);
