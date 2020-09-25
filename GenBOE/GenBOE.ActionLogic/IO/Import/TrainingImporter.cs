@@ -112,7 +112,7 @@ namespace GenBOE.ActionLogic.IO.Import
                             CourseId = courseId,
                             LastCompleted = DateTime.FromOADate(lastCompleted),
                             UserDisplayName = row[nameColumn],
-                            UserId = row[learnerIdColumn]
+                            UserId = row[learnerIdColumn].ToUpper().Replace("E", string.Empty).Replace("G", string.Empty) // For some reason Atlas prepends "E" for employees and "G" for subs, to the front of the id, that AD uses
                         };
 
                         modelList.Add(model);
