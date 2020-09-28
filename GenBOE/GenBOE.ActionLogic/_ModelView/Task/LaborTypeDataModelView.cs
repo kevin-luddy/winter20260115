@@ -310,7 +310,7 @@ namespace GenBOE.ActionLogic.ModelView
         /// <summary>
         /// Selected MOQ Type
         /// </summary>
-        public MOQType? SelectedMOQType { get; set; } = MOQType.CostEstimatingRelationships;
+        public MOQType? SelectedMOQType { get; set; }
     }
 
     /// <summary>
