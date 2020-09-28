@@ -59,7 +59,7 @@ namespace GenBOE.DataBridge.DTO
                                     Rationale = m.Rationale,
                                     SkillMixRationale = m.SkillMix,
                                     BoeId = t.BOEID
-                                }).ToCollection<MoqTypeSelection>();
+                                }).OrderBy(x => x.Order).ToCollection<MoqTypeSelection>();
 
                     this.GetTableDataForMoqTypes(toReturn, gbe);
                 }
@@ -102,7 +102,7 @@ namespace GenBOE.DataBridge.DTO
                                     Rationale = m.Rationale,
                                     SkillMixRationale = m.SkillMix,
                                     BoeId = t.BOEID
-                                }).ToCollection<MoqTypeSelection>();
+                                }).OrderBy(x => x.Order).ToCollection<MoqTypeSelection>();
 
                     this.GetTableDataForMoqTypes(toReturn, gbe);
                 }
@@ -144,7 +144,7 @@ namespace GenBOE.DataBridge.DTO
                                     Rationale = m.Rationale,
                                     SkillMixRationale = m.SkillMix,
                                     BoeId = t.BOEID
-                                }).ToCollection<MoqTypeSelection>();
+                                }).OrderBy(x => x.Order).ToCollection<MoqTypeSelection>();
 
                     this.GetTableDataForMoqTypes(toReturn, gbe);
                 }
@@ -201,9 +201,9 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    toReturn = Convert.ToInt32(gbe.upsertMOQTypeSelection(dtoToUpsert.Id, dtoToUpsert.TaskId, (int)dtoToUpsert.SelectedMOQType, dtoToUpsert.UpdateDate, 
+                    toReturn = gbe.upsertMOQTypeSelection(dtoToUpsert.Id, dtoToUpsert.TaskId, (int)dtoToUpsert.SelectedMOQType, dtoToUpsert.UpdateDate, 
                         dtoToUpsert.Order, dtoToUpsert.CerName, dtoToUpsert.CerLocation, dtoToUpsert.DescriptionHoursRequired, dtoToUpsert.SmeReason, 
-                        dtoToUpsert.SmeHoursLogic, dtoToUpsert.SmeDurationLogic, dtoToUpsert.SmeTaskEstimates, dtoToUpsert.Rationale, dtoToUpsert.SkillMixRationale).FirstOrDefault());
+                        dtoToUpsert.SmeHoursLogic, dtoToUpsert.SmeDurationLogic, dtoToUpsert.SmeTaskEstimates, dtoToUpsert.Rationale, dtoToUpsert.SkillMixRationale).FirstOrDefault();
 
                     foreach(MoqTableData table in dtoToUpsert.TableData)
                     {
@@ -222,29 +222,35 @@ namespace GenBOE.DataBridge.DTO
         /// </summary>
         /// <param name="moqTypeSelections"></param>
         /// <param name="gbe"></param>
+        [DbQuery]
         private void GetTableDataForMoqTypes(ICollection<MoqTypeSelection> moqTypeSelections, GenBoeEntities gbe)
         {
+            ICollection<int> moqTypeIds = moqTypeSelections.Select(x => x.Id).ToCollection();
+            ICollection<MoqTableData> allTableData = (from td in gbe.MOQTypeSelectionTableDatas
+                                                      .Where(d => moqTypeIds.Contains(d.MOQTypeSelectionId))
+                                   select new MoqTableData
+                                   {
+                                       Id = td.MOQTypeSelectionTableDataId,
+                                       MOQTypeSelectionId = td.MOQTypeSelectionId,
+                                       UpdateDate = td.UpdateDT,
+                                       Order = td.Order,
+                                       TableName = td.TableName,
+                                       RepositoryName = td.RepositoryName,
+                                       QueryType = td.QueryType,
+                                       DateOfReport = td.DateOfReport,
+                                       HistoricalProgramName = td.HistoricalProgramName,
+                                       ContractNumber = td.ContractNumber,
+                                       WbsElement = td.WbsElement,
+                                       PoPStart = td.PeriodOfPerformanceStartDate,
+                                       PoPEnd = td.PeriodOfPerformanceEndDate,
+                                       TotalWbsHours = td.TotalWbsHours,
+                                       AdditionalQueryFilters = td.AdditionalQueryFilters,
+                                       TotalRelevantHours = td.TotalRelevantHoursAfterQueryFilters
+                                   }).OrderBy(x => x.Order).ToCollection<MoqTableData>();
+
             foreach (MoqTypeSelection selection in moqTypeSelections)
             {
-                selection.TableData = (from td in gbe.MOQTypeSelectionTableDatas.Where(d => d.MOQTypeSelectionId == selection.Id)
-                 select new MoqTableData
-                 {
-                     Id = td.MOQTypeSelectionTableDataId,
-                     UpdateDate = td.UpdateDT,
-                     Order = td.Order,
-                     TableName = td.TableName,
-                     RepositoryName = td.RepositoryName,
-                     QueryType = td.QueryType,
-                     DateOfReport = td.DateOfReport,
-                     HistoricalProgramName = td.HistoricalProgramName,
-                     ContractNumber = td.ContractNumber,
-                     WbsElement = td.WbsElement,
-                     PoPStart = td.PeriodOfPerformanceStartDate,
-                     PoPEnd = td.PeriodOfPerformanceEndDate,
-                     TotalWbsHours = td.TotalWbsHours,
-                     AdditionalQueryFilters = td.AdditionalQueryFilters,
-                     TotalRelevantHours = td.TotalRelevantHoursAfterQueryFilters
-                 }).ToCollection<MoqTableData>();
+                selection.TableData.AddRange(allTableData.Where(x => x.MOQTypeSelectionId == selection.Id));
             }
         }
     }

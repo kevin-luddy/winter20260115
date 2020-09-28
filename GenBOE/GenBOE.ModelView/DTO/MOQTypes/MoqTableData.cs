@@ -87,5 +87,10 @@ namespace GenBOE.ActionLogic.ModelView
         /// Number representing the order the MOQ Type table is displayed in when there are multiple MOQ Type tables
         /// </summary>
         public int Order { get; set; }
+
+        /// <summary>
+        /// ID of the MOQ Type Selection this table data belongs to
+        /// </summary>
+        public int MOQTypeSelectionId { get; set; }
     }
 }

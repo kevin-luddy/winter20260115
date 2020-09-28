@@ -35,16 +35,11 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [ClassInitialize]
         public static void InitializeGlobalTestCaseSetup(TestContext testContext)
         {
-            Initialize();
-        }
-
-        private static void Initialize()
-        {
             GlobalTestCaseSetup.ResetGlobalWorkspaceID();
             GlobalTestCaseSetup.CreateBOE(GlobalTestCaseSetup.GlobalWorkspaceID);
             GlobalTestCaseSetup.CreateGlobalTaskElementID();
         }
-        
+                
         /// <summary>
         /// This method tests the GetByIds method as well as Upsert and Delete
         /// </summary>
@@ -71,7 +66,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
             savedMoqTypeSelection.Updateable = UpdateType.Deleted;
             int? deletedMoqTypeId = sut.Save(savedMoqTypeSelection);
 
-            Assert.IsNotNull(deletedMoqTypeId);
+            savedMoqTypeSelection = sut.GetById(savedMoqTypeId.Value);
+            Assert.IsNull(savedMoqTypeSelection);
         }
 
         /// <summary>
@@ -92,7 +88,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
             ICollection <MoqTypeSelection> result = sut.GetByWorkspaceId(GlobalTestCaseSetup.GlobalWorkspaceID);
 
-            Assert.IsTrue(result.Any());
             Assert.AreEqual(1, result.Count);
 
             MoqTypeSelection savedMoqTypeSelection = result.First();
@@ -102,7 +97,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
             savedMoqTypeSelection.Updateable = UpdateType.Deleted;
             int? deletedMoqTypeId = sut.Save(savedMoqTypeSelection);
 
-            Assert.IsNotNull(deletedMoqTypeId);
+            savedMoqTypeSelection = sut.GetById(savedMoqTypeId.Value);
+            Assert.IsNull(savedMoqTypeSelection);
         }
 
         /// <summary>
@@ -123,7 +119,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
             ICollection<MoqTypeSelection> result = sut.GetByBoeId(GlobalTestCaseSetup.GlobalBOEID);
 
-            Assert.IsTrue(result.Any());
             Assert.AreEqual(1, result.Count);
 
             MoqTypeSelection savedMoqTypeSelection = result.First();
@@ -133,7 +128,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
             savedMoqTypeSelection.Updateable = UpdateType.Deleted;
             int? deletedMoqTypeId = sut.Save(savedMoqTypeSelection);
 
-            Assert.IsNotNull(deletedMoqTypeId);
+            savedMoqTypeSelection = sut.GetById(savedMoqTypeId.Value);
+            Assert.IsNull(savedMoqTypeSelection);
         }
 
         /// <summary>
@@ -223,14 +219,14 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(expectedMoqTypeSelection.BoeId, resultMoqTypeSelection.BoeId);
 
             // Assert Table Data
-            Assert.IsTrue(resultMoqTypeSelection.TableData.Any());
-            Assert.AreEqual(2, resultMoqTypeSelection.TableData.Count);
-            for (int i = 0; i < 2; i++)
+            Assert.AreEqual(expectedMoqTypeSelection.TableData.Count, resultMoqTypeSelection.TableData.Count);
+            for (int i = 0; i < expectedMoqTypeSelection.TableData.Count; i++)
             {
                 MoqTableData expected = expectedMoqTypeSelection.TableData.ElementAt(i);
                 MoqTableData result = resultMoqTypeSelection.TableData.ElementAt(i);
 
                 Assert.IsTrue(result.Id > 0);
+                Assert.AreEqual(expectedMoqTypeId, result.MOQTypeSelectionId);
                 Assert.AreEqual(expected.Order, result.Order);
                 Assert.AreEqual(expected.TableName, result.TableName);
                 Assert.AreEqual(expected.RepositoryName, result.RepositoryName);
