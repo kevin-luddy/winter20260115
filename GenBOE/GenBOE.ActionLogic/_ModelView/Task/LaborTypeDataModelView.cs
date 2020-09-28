@@ -306,6 +306,11 @@ namespace GenBOE.ActionLogic.ModelView
         /// The value of the order in which the resource will appear in the task listing
         /// </summary>
         public int LaborTypeOrder { get; set; }
+
+        /// <summary>
+        /// Selected MOQ Type
+        /// </summary>
+        public MOQType? SelectedMOQType { get; set; } = MOQType.CostEstimatingRelationships;
     }
 
     /// <summary>

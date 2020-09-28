@@ -1225,6 +1225,9 @@
                         // remove the UpdateDate 
                         delete spread.UpdateDate;
                     });
+                    if (resourceTypeEntry.SelectedMOQType) {
+                        resourceTypeEntry.SelectedMOQType = resourceTypeEntry.SelectedMOQType.SelectedMOQType;
+                    }
                 }
 
                 // remove the UpdateDate 
