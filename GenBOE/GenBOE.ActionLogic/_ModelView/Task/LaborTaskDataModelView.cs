@@ -61,5 +61,10 @@ namespace GenBOE.ActionLogic.ModelView
         /// Gets or sets the Adjacent Tasks.
         /// </summary>
         public AdjacentItems AdjacentItems { get; set; }
+
+        /// <summary>
+        /// Selected MOQ Types
+        /// </summary>
+        public ICollection<MoqTypeSelection> MOQTypes { get; set; }
     }
 }
