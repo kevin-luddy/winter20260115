@@ -84,10 +84,14 @@ namespace GenBOE.ActionLogic.Validation
                                 // Check for parents with the new value
                                 ICollection<FullWbs> newParentWbs = updatedWbs.AllParentWbs;
                                 FullWbs inUseParent = newParentWbs.FirstOrDefault(x => x.inUse && !currentWbs.AllParentWbs.Any(y => y.Id == x.Id) && currentWbs.Id != x.Id);
-                                if (inUseParent != null)
+                                if (inUseParent != null) 
                                 {
-                                    response.Add("WBS # cannot be changed to " + valueToValidate + " because a BOE currently exists for " + inUseParent.WbsNumber
-                                        + " which would now be a parent of " + valueToValidate + ". All BOEs for one WBS will need to be first moved to the other before making this change.");
+                                    int wbsLevel = valueToValidate.Count(x => x == '.') + 1;
+                                    string wbsSuffix = string.Concat(Enumerable.Repeat(".X", wbsLevel - 1));
+                                    response.Add("WBS # cannot be changed to " + valueToValidate + " because a BOE currently exists for WBS " + inUseParent.WbsNumber
+                                        + " which would become a parent of WBS " + valueToValidate + ". BOEs may not be written at both parent and child levels. "
+                                        + "To resolve the issue, you must first rename WBS " + inUseParent.WbsNumber + " to a level " + wbsLevel + " (child) WBS such as " 
+                                        + inUseParent.WbsNumber + wbsSuffix + ". Afterwards you may rename WBS " + wbs.WbsNumber + " to WBS " + valueToValidate + ".");
                                 }
 
                                 // Check for children with the new value
@@ -95,8 +99,11 @@ namespace GenBOE.ActionLogic.Validation
                                 FullWbs inUseChild = newChildWbs.FirstOrDefault(x => x.inUse && !currentWbs.AllChildWbs.Any(y => y.Id == x.Id) && currentWbs.Id != x.Id);
                                 if (inUseChild != null)
                                 {
-                                    response.Add("WBS # cannot be changed to " + valueToValidate + " because a BOE currently exists for " + inUseChild.WbsNumber
-                                        + " which would now be a child of " + valueToValidate + ". All BOEs for one WBS will need to be first moved to the other before making this change.");
+                                    int wbsLevel = inUseChild.WbsNumber.Count(x => x == '.') + 1;
+                                    string wbsSuffix = string.Concat(Enumerable.Repeat(".0", wbsLevel - 1));
+                                    response.Add("WBS # cannot be changed to " + valueToValidate + " because a BOE currently exists for WBS " + inUseChild.WbsNumber
+                                        + " which would become a child of WBS " + valueToValidate + ". BOEs may not be written at both parent and child levels. "
+                                        + "To resolve the issue, you must rename this WBS to a level " + wbsLevel + " WBS such as " + valueToValidate + wbsSuffix + ".");
                                 }
                             }
                         }
