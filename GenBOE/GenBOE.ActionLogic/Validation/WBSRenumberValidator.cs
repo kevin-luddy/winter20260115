@@ -101,8 +101,8 @@ namespace GenBOE.ActionLogic.Validation
                                 {
                                     int wbsLevel = inUseChild.WbsNumber.Count(x => x == '.') + 1;
                                     string wbsSuffix = string.Concat(Enumerable.Repeat(".0", wbsLevel - 1));
-                                    response.Add("WBS # cannot be changed to " + valueToValidate + " because a BOE currently exists for WBS " + inUseChild.WbsNumber
-                                        + " which would become a child of WBS " + valueToValidate + ". BOEs may not be written at both parent and child levels. "
+                                    response.Add("WBS # cannot be changed to " + valueToValidate + " because BOEs exist for one or more level " + wbsLevel
+                                        + " WBSs under WBS " + valueToValidate + ". BOEs may not be written at both parent and child levels. "
                                         + "To resolve the issue, you must rename this WBS to a level " + wbsLevel + " WBS such as " + valueToValidate + wbsSuffix + ".");
                                 }
                             }
