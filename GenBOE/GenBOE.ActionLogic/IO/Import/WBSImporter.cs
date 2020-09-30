@@ -435,7 +435,9 @@ namespace GenBOE.ActionLogic.IO.Import
         CircularReferences = 9,
         InUseClinRemoved = 10,
         DeleteWbs = 13,
-        WbsInUse = 14
+        WbsInUse = 14,
+        ParentHasWbs = 15,
+        ChildHasWbs = 16
     }
 
     [ExcludeFromCodeCoverage]

@@ -82,6 +82,12 @@ namespace GenBOE.ActionLogic.ModelView
         public bool Deleted { get; set; }
 
         public bool InUse { get; set; }
+
         public bool HasBOE { get; set; }
+
+        /// <summary>
+        /// Whether a parent WBS has a BOE
+        /// </summary>
+        public bool ParentOrChildHasBoe { get; set; }
     }
 }

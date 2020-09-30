@@ -584,14 +584,15 @@
     $scope.save = function (saveAndAdd) {
         if ($scope.edit.isDirty) {
             var savingBOEs = false;
+            var displayNoClinAlert = false;
             var totalWbsWithAssociatedBoes = 0;
             if ($scope.edit.wbs.ClinsInUse != undefined)
             {
                 totalWbsWithAssociatedBoes = $scope.edit.wbs.ClinsInUse.length;
             }
 
-            if ($scope.edit.wbs.HasBOE && totalWbsWithAssociatedBoes == 0) {   // BOEs exists, but none of them are mapped to a CLIN
-                GenSession.alertDialog('BOE Previously Created With No CLIN', 'A BOE was previously created with no CLIN. A new BOE will be created for each selected CLIN. The BOE previously created with no CLIN will not be affected. The BOEs can be edited on the Manage BOEs page.');
+            if ($scope.edit.wbs.HasBOE && totalWbsWithAssociatedBoes === 0) {   // BOEs exists, but none of them are mapped to a CLIN
+                displayNoClinAlert = true;
             } else if (totalWbsWithAssociatedBoes > 0 && $scope.edit.wbs.ClinIDs.length > totalWbsWithAssociatedBoes) {  // there are existing BOEs AND also new CLIN selections
                 // business logic dictates that in this scenario, a new BOE will be created for each new CLIN selected
                 savingBOEs = true;
@@ -609,6 +610,10 @@
             }).then(function successCallback(response) {
                 if (savingBOEs) {
                     RaiseNotification('BOE created for selected WBS');
+                }
+
+                if (displayNoClinAlert) {
+                    GenSession.alertDialog('BOE Previously Created With No CLIN', 'A BOE was previously created with no CLIN. A new BOE will be created for each selected CLIN. The BOE previously created with no CLIN will not be affected. The BOEs can be edited on the Manage BOEs page.');
                 }
 
                 if (saveAndAdd) {
@@ -634,6 +639,7 @@
     $scope.onEditClose = function () {
         $scope.edit.open = false;
         $scope.edit.isDirty = false;
+        $scope.modalErrors = [];
     };
 
     $scope.export = function (isTemplate) {
@@ -697,8 +703,8 @@
                 checkedWbsNumbers.push(d.WbsNumber);
             }
 
-            // enable checkbox if doesn't have BOE
-            if (!d.HasBOE && !$scope.checkAllClicked) {
+            // enable checkbox if it or parent doesn't have BOE
+            if ((!d.HasBOE && !d.ParentOrChildHasBoe) && !$scope.checkAllClicked) {
                 d.Disabled = false;
             }
         });
@@ -774,7 +780,7 @@
             var data = {};
             data.selectedWbsIDs = [];
             $scope.data.forEach(function (d) {
-                if (d.Selected != undefined && d.Selected && !d.Disabled && !d.HasBOE) {
+                if (d.Selected != undefined && d.Selected && !d.Disabled && !d.HasBOE && !d.ParentOrChildHasBoe) {
                     data.selectedWbsIDs.push(d.WbsID.toString());
                 }
             });
@@ -842,7 +848,7 @@
             $scope.data = response.data.WbsResults;
             // select and disable WBS that have BOEs, make sure the rest are enabled and deselected
             $scope.data.forEach(function (d) {
-                if (d.HasBOE || d.InUse) {
+                if (d.HasBOE || d.InUse || d.ParentOrChildHasBoe) {
                     d.Selected = false;
                     d.Disabled = true;
                 } else {

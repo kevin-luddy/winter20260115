@@ -186,6 +186,8 @@ namespace GenBOE.Web.Controllers
                     wbsModelView.HasBOE = true;
                 }
 
+                wbsModelView.ParentOrChildHasBoe = this.ParentOrChildHasBoe(wbs, ws);
+
                 model.WbsResults.Add(wbsModelView);
             }
 
@@ -231,6 +233,36 @@ namespace GenBOE.Web.Controllers
             }
 
             return toReturn;
+        }
+
+        /// <summary>
+        /// Check if a parent WBS has a BOE
+        /// </summary>
+        /// <param name="wbs">wbs to check</param>
+        /// <param name="ws">ws containing wbs</param>
+        /// <returns>True if parent WBS has a BOE, otherwise false</returns>
+        private bool ParentOrChildHasBoe(WbsDTO wbs, FullWorkspace ws)
+        {
+            ICollection<string> parentWbs = _nestedWbsUtilities.GetParentsWBSNumByChildWBS(wbs);
+            foreach(string parentNumber in parentWbs)
+            {
+                WbsDTO parentDto = ws.WbsElements.FirstOrDefault(x => x.WbsNumber == parentNumber);
+                if (parentDto != null && parentDto.inUse)
+                {
+                    return true;
+                }
+            }
+
+            ICollection<WbsDTO> childWbs = wbsLoader.GetAllChildWbs(ws.Id, wbs.WbsNumber);
+            foreach (WbsDTO childDto in childWbs)
+            {
+                if (childDto.inUse)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         #endregion Display
@@ -478,7 +510,7 @@ namespace GenBOE.Web.Controllers
                     var updatedWBSs = importResults.Where(w => w.ImportTypes.Contains(WbsImportResult.UpdateWbs)).ToList();
 
                     var cache = new VariableCircularReferenceCheckerCache();
-                    foreach (var updatedWBS in updatedWBSs)
+                    foreach (ImportedWbs updatedWBS in updatedWBSs)
                     {
                         if (updatedWBS.Id > 0)
                         {
@@ -489,6 +521,26 @@ namespace GenBOE.Web.Controllers
                                 {
                                     updatedWBS.ImportTypes.Remove(WbsImportResult.UpdateWbs);
                                     updatedWBS.ImportTypes.Add(WbsImportResult.CircularReferences);
+                                }
+
+                                // Validate renumbering
+                                if (updatedWBS.ImportTypes.Any(x => x == WbsImportResult.UpdateWbs) && !updatedWBS.ImportTypes.Any(x => x == WbsImportResult.DeleteWbs))
+                                {
+                                    string validationHelperResponse = _ValidationHelper.WBSRenumberValidation(ws.Id, updatedWBS.Id, updatedWBS.WbsNumber);
+                                    
+                                    if (validationHelperResponse != null)
+                                    {
+                                        if (validationHelperResponse.Contains("parent"))
+                                        {
+                                            updatedWBS.ImportTypes.Remove(WbsImportResult.UpdateWbs);
+                                            updatedWBS.ImportTypes.Add(WbsImportResult.ParentHasWbs);
+                                        }
+                                        else if (validationHelperResponse.Contains("child"))
+                                        {
+                                            updatedWBS.ImportTypes.Remove(WbsImportResult.UpdateWbs);
+                                            updatedWBS.ImportTypes.Add(WbsImportResult.ChildHasWbs);
+                                        }
+                                    }
                                 }
                             }
                         }

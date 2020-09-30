@@ -249,7 +249,7 @@
         <table class="grid readonly">
             <thead>
                 <tr>
-                    <th class="report" style="width:181px">Report</th>
+                    <th class="report">Report</th>
                     <th class="description">Description</th>
                     <th id="ActionHeader" class="last-child" style="width: 125px; text-align: right; padding-right: 15px;">Export</th>
                 </tr>

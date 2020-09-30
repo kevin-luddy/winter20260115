@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic.Validation
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using GenBOE.ActionLogic.WBS;
     using GenBOE.Objects;
 
     public class WBSRenumberValidator : Validator
@@ -77,13 +78,32 @@ namespace GenBOE.ActionLogic.Validation
                             int workspaceID;
                             if (Int32.TryParse(workspaceIDString, out workspaceID))
                             {
-                                ICollection<FullWbs> allWbs = currentWbs.AllParentWbs;
-                                allWbs = new Collection<FullWbs>(allWbs.Concat(currentWbs.AllChildWbs).ToArray());
+                                // Create a full wbs with just the wbs number and ws id so we can get parents and children without bringing in the loader
+                                FullWbs updatedWbs = new FullWbs() { WbsNumber = valueToValidate, WorkspaceID = workspaceID };
 
-                                FullWbs alreadyUsedWbs = allWbs.FirstOrDefault(x => x.inUse && x.Id != currentWbs.Id);
-                                if (alreadyUsedWbs != null)
+                                // Check for parents with the new value
+                                ICollection<FullWbs> newParentWbs = updatedWbs.AllParentWbs;
+                                FullWbs inUseParent = newParentWbs.FirstOrDefault(x => x.inUse && !currentWbs.AllParentWbs.Any(y => y.Id == x.Id) && currentWbs.Id != x.Id);
+                                if (inUseParent != null) 
                                 {
-                                    response.Add("WBS # cannot be changed to " + valueToValidate + " because a BOE currently exists for " + alreadyUsedWbs.WbsNumber);
+                                    int wbsLevel = valueToValidate.Count(x => x == '.') + 1;
+                                    string wbsSuffix = string.Concat(Enumerable.Repeat(".X", wbsLevel - 1));
+                                    response.Add("WBS # cannot be changed to " + valueToValidate + " because a BOE currently exists for WBS " + inUseParent.WbsNumber
+                                        + " which would become a parent of WBS " + valueToValidate + ". BOEs may not be written at both parent and child levels. "
+                                        + "To resolve the issue, you must first rename WBS " + inUseParent.WbsNumber + " to a level " + wbsLevel + " (child) WBS such as " 
+                                        + inUseParent.WbsNumber + wbsSuffix + ". Afterwards you may rename WBS " + wbs.WbsNumber + " to WBS " + valueToValidate + ".");
+                                }
+
+                                // Check for children with the new value
+                                ICollection<FullWbs> newChildWbs = updatedWbs.AllChildWbs;
+                                FullWbs inUseChild = newChildWbs.FirstOrDefault(x => x.inUse && !currentWbs.AllChildWbs.Any(y => y.Id == x.Id) && currentWbs.Id != x.Id);
+                                if (inUseChild != null)
+                                {
+                                    int wbsLevel = inUseChild.WbsNumber.Count(x => x == '.') + 1;
+                                    string wbsSuffix = string.Concat(Enumerable.Repeat(".0", wbsLevel - 1));
+                                    response.Add("WBS # cannot be changed to " + valueToValidate + " because BOEs exist for one or more level " + wbsLevel
+                                        + " WBSs under WBS " + valueToValidate + ". BOEs may not be written at both parent and child levels. "
+                                        + "To resolve the issue, you must rename this WBS to a level " + wbsLevel + " WBS such as " + valueToValidate + wbsSuffix + ".");
                                 }
                             }
                         }

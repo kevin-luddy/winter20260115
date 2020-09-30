@@ -4362,7 +4362,11 @@ table.manage-historical-metrics-grid
 }
 
 .exports .report,
-.general-reports .report,
+.general-reports .report
+{
+    width: 182px;
+}
+
 .summary-reports .report,
 .customer-reports .report,
 .finance-reports .report,
