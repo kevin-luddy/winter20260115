@@ -86,6 +86,7 @@ namespace GenTRAC.ActionLogic.Email
                 
                 if (email.ProposalEmailType == EmailType.CertificationTimelineEmail)
                 {
+                    subjectReplaceTokens = new string[2] { email.TrackingNumber, email.ProposalTitle };
                     bodyReplaceTokens = new string[2] { email.TrackingNumber, email.ProposalTitle };
                 }
                 else
