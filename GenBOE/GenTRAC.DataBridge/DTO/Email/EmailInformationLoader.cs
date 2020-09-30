@@ -94,7 +94,7 @@ namespace GenTRAC.DataBridge.DTO
                 {
                     this.ProcessApprovers(emailList, this.ProposalLoader.GetProposalsByWorkflowStatus(WorkflowStatus.Started), EmailType.InitialApprovalEmail);
                     this.ProcessLOBApprover(emailList, this.ProposalLoader.GetProposalsByWorkflowStatus(WorkflowStatus.AllApproved), EmailType.InitialLOBApprovalEmail);
-                    
+
                     // only get cutoff emails if this is not for a specific approval
                     this.ProcessApprovers(emailList, this.ProposalLoader.GetProposalsByWorkflowStatusAndCutoffDate(WorkflowStatus.InitialApproverEmail, cutoffDate), EmailType.SecondApprovalEmail);
                     this.ProcessApprovers(emailList, this.ProposalLoader.GetProposalsByWorkflowStatusAndCutoffDate(WorkflowStatus.SecondApproverEmail, cutoffDate), EmailType.FinalApprovalEmail);

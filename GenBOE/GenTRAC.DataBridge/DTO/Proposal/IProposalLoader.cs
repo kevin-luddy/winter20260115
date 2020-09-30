@@ -130,7 +130,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Gets the proposals certification timeline past due.
         /// </summary>
-        /// <returns>>A list of proposals.</returns>
+        /// <returns>A list of proposals.</returns>
         ICollection<ProposalDto> GetProposalsCertificationTimelinePastDue();
 
         /// <summary>
