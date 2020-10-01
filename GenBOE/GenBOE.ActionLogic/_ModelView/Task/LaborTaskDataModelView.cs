@@ -25,6 +25,7 @@ namespace GenBOE.ActionLogic.ModelView
             this.ValidationErrors = new List<ValidationMessage>();
             this.TaskCustomFields = new List<BOECustomFieldModelView>();
             this.LaborCustomFields = new List<BOECustomFieldModelView>();
+            this.MOQTypes = new Collection<MoqTypeSelection>();
         }
 
         /// <summary>

@@ -8,11 +8,12 @@ namespace GenBOE.DataBridge.DTO
 {
     using System.Collections.Generic;
     using GenBOE.ActionLogic.ModelView;
+    using IES.Common;
 
     /// <summary>
     /// Interface for the MOQ Type Data Loader
     /// </summary>
-    public interface IMoqTypeDataLoader
+    public interface IMoqTypeDataLoader: IDataLoader<MoqTypeSelection>
     {
         /// <summary>
         /// Get all MOQ Type Selections for the given Workspace ID

@@ -479,7 +479,8 @@ namespace GenBOE
                         new ResolvedParameter(typeof(IOffloadRatesDTOLoader)),
                         new ResolvedParameter(typeof(IProjectMapDataLoader)),
                         new ResolvedParameter(typeof(RMSZoneTravelRatesFeesDataLoader)),
-                        new ResolvedParameter(typeof(IRteTemplateDataLoader))));
+                        new ResolvedParameter(typeof(IRteTemplateDataLoader)),
+                        new ResolvedParameter(typeof(IMoqTypeDataLoader))));
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEOtherDirectCostControllerLogic), typeof(BOEOtherDirectCostControllerLogicMST), GetLifetimeManager(), new InjectionConstructor());
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEMaterialControllerLogic), typeof(BOEMaterialControllerLogicMST), GetLifetimeManager(), new InjectionConstructor());
                     GenBOEUnityContainer.Container.RegisterType(typeof(IGenBOEControllerLogic), typeof(GenBOEControllerLogicMST), GetLifetimeManager(), new InjectionMember[] { });

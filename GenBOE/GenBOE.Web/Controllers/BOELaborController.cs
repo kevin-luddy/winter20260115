@@ -774,7 +774,7 @@ namespace GenBOE.Web.Controllers
                 validationErrors.AddRange(rteValidationErrors);
             }
 
-            BoeTaskElementDTO dto = this._BoeLaborControllerLogic.ConvertModelViewToDto(modelView, ws);
+            BoeTaskElementDTO dto = this._BoeLaborControllerLogic.ConvertModelViewToDto(modelView, ws); 
 
             // Validate DTO 
             if (!isLocked)
@@ -788,7 +788,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Save
-            this._BoeLaborControllerLogic.SaveLaborTaskData(ws, dto, modelView.TaskElementData.MetricIds, modelView.TaskElementData.RteTemplateAnswers);
+            this._BoeLaborControllerLogic.SaveLaborTaskData(ws, dto, modelView.TaskElementData.MetricIds, modelView.TaskElementData.RteTemplateAnswers, modelView.MOQTypes);
 
             // Finalize Action
             this.FinalizeAction(this._log, WebConstants.ACTION_SAVE_TASK_DATA_MODEL, sw);

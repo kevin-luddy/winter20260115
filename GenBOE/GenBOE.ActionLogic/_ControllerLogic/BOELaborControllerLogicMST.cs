@@ -72,7 +72,8 @@ namespace GenBOE.ActionLogic
             TaskElementValidation taskElementValidation,
             IVariableCircularReferenceChecker circularReferenceChecker,
             ICommonDataMapper commonDataMapper,
-            IRteTemplateDataLoader rteTemplateDataLoader
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            IMoqTypeDataLoader moqTypeDataLoader
             )
             : base(inBoeTaskElementRecalc,
                 inBoeStateMachine,
@@ -91,7 +92,8 @@ namespace GenBOE.ActionLogic
                 taskElementValidation,
                 circularReferenceChecker,
                 commonDataMapper,
-                rteTemplateDataLoader)
+                rteTemplateDataLoader,
+                moqTypeDataLoader)
         {
             this._mstMetricsLoader = inMSTMetricLoader;
             this.rteTemplateDataLoader = rteTemplateDataLoader;

@@ -46,7 +46,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [TestMethod]
         public void GetByIdsTest()
         {
-            MoqTypeDataLoader sut = new MoqTypeDataLoader();
+            IMoqTypeDataLoader sut = new MoqTypeDataLoader();
 
             MoqTypeSelection moqTypeSelectionToSave = CreateTestMoqTypeSelection();
 
@@ -76,7 +76,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [TestMethod]
         public void GetByWorkspaceIdTest()
         {
-            MoqTypeDataLoader sut = new MoqTypeDataLoader();
+            IMoqTypeDataLoader sut = new MoqTypeDataLoader();
 
             MoqTypeSelection moqTypeSelectionToSave = CreateTestMoqTypeSelection();
             moqTypeSelectionToSave.Updateable = UpdateType.Upsert;
@@ -107,7 +107,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [TestMethod]
         public void GetByBoeIdTest()
         {
-            MoqTypeDataLoader sut = new MoqTypeDataLoader();
+            IMoqTypeDataLoader sut = new MoqTypeDataLoader();
 
             MoqTypeSelection moqTypeSelectionToSave = CreateTestMoqTypeSelection();
             moqTypeSelectionToSave.Updateable = UpdateType.Upsert;

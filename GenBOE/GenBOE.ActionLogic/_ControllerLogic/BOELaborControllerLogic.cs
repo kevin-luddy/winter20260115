@@ -49,6 +49,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IPerformingOrgDTODataLoader PerfOrgLoader;
         private readonly IOrdinaryVariableLoader _taskVariableLoader;
         private readonly IRteTemplateDataLoader rteTemplateDataLoader;
+        private readonly IMoqTypeDataLoader moqTypeDataLoader;
 
         /// <summary>
         /// Task Element Validation Class
@@ -76,7 +77,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             TaskElementValidation taskElementValidation,
             IVariableCircularReferenceChecker circularReferenceChecker,
             ICommonDataMapper commonDataMapper,
-            IRteTemplateDataLoader rteTemplateDataLoader)
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            IMoqTypeDataLoader moqTypeDataLoader)
         {
             this._BoeTaskElementRecalculation = inBoeTaskElementRecalc;
             this._boeStateMachine = inBoeStateMachine;
@@ -96,6 +98,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.circularReferenceChecker = circularReferenceChecker;
             this.CommonDataMapper = commonDataMapper;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
+            this.moqTypeDataLoader = moqTypeDataLoader;
         }
 
         #region Public Members
@@ -803,12 +806,20 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// Save the Labor Task data
         /// </summary>
         /// <param name="ws">Workspace</param>
-        /// <param name="modelView">Labor Task dto</param>
-        public void SaveLaborTaskData(FullWorkspace ws, BoeTaskElementDTO dtoToSave, ICollection<int> metricIds, ICollection<RTECustomTemplateQuestionAnswerModelView> answers)
+        /// <param name="dtoToSave">Task DTO</param>
+        /// <param name="metricIds">Metric IDs</param>
+        /// <param name="answers">RTE Template Answers</param>
+        /// <param name="moqTypes">MOQ Types for the task</param>
+        public void SaveLaborTaskData(FullWorkspace ws, BoeTaskElementDTO dtoToSave, ICollection<int> metricIds, ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<MoqTypeSelection> moqTypes)
         {
             if (ws == null)
             {
                 throw new ArgumentNullException(nameof(ws));
+            }
+
+            if (moqTypes == null)
+            {
+                throw new ArgumentNullException(nameof(moqTypes));
             }
 
             #region Identify workspace variables for update and if Other BOE Recalcuations needed
@@ -873,7 +884,34 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     answers.ForEach(x => { x.TaskId = newTaskId; });
                     this.rteTemplateDataLoader.SaveAnswers(answers);
                 }
-                
+
+                if (ws.UsingTemplateBOE)
+                {
+                    // Update MOQ Types via kill and fill
+                    // Get existing MOQ Types and table data, set them all to deleted, and save
+                    ICollection<MoqTypeSelection> existingMoqTypes = this.moqTypeDataLoader.GetByBoeId(dtoToSave.BoeID).Where(x => x.TaskId == dtoToSave.Id).ToCollection();
+                    foreach(var moqType in existingMoqTypes)
+                    {
+                        moqType.Updateable = UpdateType.Deleted;
+                    }
+
+                    this.moqTypeDataLoader.Save(existingMoqTypes);
+
+                    // Set all incoming MOQ Types as Upsert and set ids to -1 for insert
+                    foreach (var moqType in moqTypes)
+                    {
+                        moqType.Id = -1;
+                        moqType.Updateable = UpdateType.Upsert;
+                        foreach(var table in moqType.TableData)
+                        {
+                            table.Id = -1;
+                            table.Updateable = UpdateType.Upsert;
+                        }
+                    }
+
+                    this.moqTypeDataLoader.Save(moqTypes);
+                }
+
                 ws.RefreshBoes();
 
                 // Save historical metrics for BOE Task Element
