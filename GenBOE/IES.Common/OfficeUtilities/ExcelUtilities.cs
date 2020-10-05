@@ -10,6 +10,7 @@ namespace IES.Common.OfficeUtilities
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Runtime.Serialization;
@@ -504,7 +505,7 @@ namespace IES.Common.OfficeUtilities
 
                     // If the cell contains a formattable number and is not to be interpreted only as text, we'll continue. Parsing with double because Excel stores numbers as floating point but displays
                     // the number rounded when the floating point number spans many decimal places. By using double it will return the number you see in the spreadsheet. 
-                    if (!textOnly && Double.TryParse(toReturn, out numericalValue))
+                    if (Double.TryParse(toReturn, out numericalValue) && !textOnly)
                     {
                         var numberFormatID = (cellFormat as CellFormat).NumberFormatId;
 
@@ -599,6 +600,11 @@ namespace IES.Common.OfficeUtilities
                                 }
                             }
                         }
+                    }
+                    else if (numericalValue > 0 && toReturn != numericalValue.ToString())
+                    {
+                        // Handle Excel weirdness where a WBS # such as 1.1 gets turned into a floating point number like 1.1000000000000001
+                        toReturn = numericalValue.ToString();
                     }
                 }
             }
