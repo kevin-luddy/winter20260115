@@ -15,8 +15,6 @@ namespace GenBOE.ActionLogic.WBS
 
         void SetParentsAndChildrenInUse(Collection<WbsDTO> WbsDTOs);
 
-        void SetParentsInUse(Collection<WbsDTO> WbsDTOs);
-
         void SetChildrenInUse(Collection<WbsDTO> WbsDTOs);
 
         Collection<string> GetParentsWBSNumByChildWBS(string inWBSNumber);
