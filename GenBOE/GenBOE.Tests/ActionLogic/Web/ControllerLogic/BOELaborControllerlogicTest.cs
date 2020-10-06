@@ -230,7 +230,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 PercentSpreadLocked = false,
                 CustomFieldValues = new Collection<CustomFieldSelectionModelView> { laborCustomFieldSelection },
                 Spreads = new Collection<LaborSpreadDataModelView>() { spread },
-                LaborTypeOrder = 1
+                LaborTypeOrder = 1,
+                SelectedMOQType = MOQType.Comparative
             };
 
             toReturn.LaborTypesData = new Collection<LaborTypeDataModelView> { labor };
@@ -1674,6 +1675,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                     Assert.AreEqual(expectedLabor.StartDate, resultLabor.StartDate.Value.ToString("MM/yyyy"));
                     Assert.AreEqual(expectedLabor.EndDate, resultLabor.EndDate.Value.ToString("MM/yyyy"));
                     Assert.AreEqual(expectedLabor.LaborTypeOrder, resultLabor.LaborTypeOrder);
+                    Assert.AreEqual(expectedLabor.SelectedMOQType, (MOQType?)resultLabor.MoqTypeSelectionId);
 
                     // Assert Labor Custom Fields
                     Assert.IsTrue(resultLabor.CustomFieldValueContainers.Any());
@@ -2784,6 +2786,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             Assert.AreEqual(testLabor.SpreadType, result.LaborTypesData.First().RateType == RateType.Hours ? SpreadType.Hours : SpreadType.Cost);
             Assert.AreEqual(testLabor.WBSID, result.LaborTypesData.First().WBSID);
             Assert.AreEqual(testLabor.CLINID, result.LaborTypesData.First().CLINID);
+            Assert.AreEqual(testLabor.MoqTypeSelectionId, (int?)result.LaborTypesData.First().SelectedMOQType);
 
             // Assert Labor Types Custom Fields
             Assert.IsTrue(result.LaborTypesData.First().CustomFieldValues.Any());

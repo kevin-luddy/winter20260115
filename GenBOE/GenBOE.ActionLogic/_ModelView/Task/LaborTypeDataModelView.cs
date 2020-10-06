@@ -102,6 +102,7 @@ namespace GenBOE.ActionLogic.ModelView
             this.HourSpreadLocked = inBoeLaborType.HourSpreadLocked;
             this.WBSID = inBoeLaborType.WBSID;
             this.CLINID = inBoeLaborType.CLINID;
+            this.SelectedMOQType = (MOQType?)inBoeLaborType.MoqTypeSelectionId;
             
             if (inBoeLaborType.LaborSpreads != null && inBoeLaborType.LaborSpreads.Any())
             {

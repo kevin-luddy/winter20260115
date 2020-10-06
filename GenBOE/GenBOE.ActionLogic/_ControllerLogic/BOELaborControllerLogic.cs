@@ -2223,6 +2223,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     resourceToAdd.WBSID = labor.WBSID > (int?)0 ? labor.WBSID : null;
                     resourceToAdd.CLINID = labor.CLINID > (int?)0 ? labor.CLINID : null;
                     resourceToAdd.LaborTypeOrder = labor.LaborTypeOrder;
+                    resourceToAdd.MoqTypeSelectionId = (int?)labor.SelectedMOQType;
                     resourceToAdd.Updateable = UpdateType.Upsert;
 
                     // Convert start/end date
