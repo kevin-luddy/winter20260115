@@ -447,7 +447,8 @@ namespace GenBOE
                         new ResolvedParameter(typeof(TaskElementValidation)),
                         new ResolvedParameter(typeof(IVariableCircularReferenceChecker)),
                         new ResolvedParameter(typeof(ICommonDataMapper)),
-                        new ResolvedParameter(typeof(IRteTemplateDataLoader))));
+                        new ResolvedParameter(typeof(IRteTemplateDataLoader)),
+                        new ResolvedParameter(typeof(IMoqTypeDataLoader))));
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEControllerLogic), typeof(BOEControllerLogicMST), GetLifetimeManager(), new InjectionConstructor(
                         new ResolvedParameter(typeof(IMSTMetricLoader)),
                         new ResolvedParameter(typeof(IBOESummary)),
@@ -508,7 +509,8 @@ namespace GenBOE
                         new ResolvedParameter(typeof(TaskElementValidation)),
                         new ResolvedParameter(typeof(IVariableCircularReferenceChecker)),
                         new ResolvedParameter(typeof(ICommonDataMapper)),
-                        new ResolvedParameter(typeof(IRteTemplateDataLoader))));
+                        new ResolvedParameter(typeof(IRteTemplateDataLoader)),
+                        new ResolvedParameter(typeof(IMoqTypeDataLoader))));
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEControllerLogic), typeof(BOEControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor(
                         new ResolvedParameter(typeof(IBOESummary)),
                         new ResolvedParameter(typeof(IUserDTODataLoader)),

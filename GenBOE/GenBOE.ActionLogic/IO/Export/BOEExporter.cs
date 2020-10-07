@@ -4801,26 +4801,47 @@ namespace GenBOE.ActionLogic.IO.Export
                     }
                     else if (sdtTitle == FieldName_MethodOfQuoting || sdtTitle == FieldName_Rationale)
                     {
-                        OpenXmlCompositeElement item;
-                        if ((item = element.ChildElements.OfType<SdtContentBlock>().FirstOrDefault()) != null ||
-                            (item = element.ChildElements.OfType<SdtContentRun>().FirstOrDefault()) != null)
+                        if (exportInputs.Workspace.UsingTemplateBOE)
                         {
-                            if (taskElement.MOQText == null)
-                            {
-                                taskElement.MOQText = "<p><br></p>"; // filler text that allows removal of place-holder text, otherwise "Method of Quoting" remains
-                            }
-
-                            if (exportInputs.Workspace.IsProjectMapWorkspace)
-                            {
-                                SetElementText(item, taskElement.MOQText);
-                            }
-                            else
-                            {
-                                WordUtilities.SetElementTextWithHTML(mainPart, item, taskElement.MOQText, ref counters);
-                            }
+                            // remove this for Workspaces using Template BOE
+                            element.Parent.RemoveIt();
                         }
+                        else
+                        {
+                            OpenXmlCompositeElement item;
+                            if ((item = element.ChildElements.OfType<SdtContentBlock>().FirstOrDefault()) != null ||
+                                (item = element.ChildElements.OfType<SdtContentRun>().FirstOrDefault()) != null)
+                            {
+                                if (taskElement.MOQText == null)
+                                {
+                                    taskElement.MOQText = "<p><br></p>"; // filler text that allows removal of place-holder text, otherwise "Method of Quoting" remains
+                                }
 
-                        alias.RemoveIt();
+                                if (exportInputs.Workspace.IsProjectMapWorkspace)
+                                {
+                                    SetElementText(item, taskElement.MOQText);
+                                }
+                                else
+                                {
+                                    WordUtilities.SetElementTextWithHTML(mainPart, item, taskElement.MOQText, ref counters);
+                                }
+                            }
+
+                            alias.RemoveIt();
+                        }
+                    }
+                    else if (sdtTitle == "Template BOE MOQ Placeholder")
+                    {
+                        // Placeholder
+                        if (exportInputs.Workspace.UsingTemplateBOE)
+                        {
+                            // TODO populate and update else-if
+                        }
+                        else
+                        {
+                            // remove this for Workspaces not using Template BOE
+                            element.Parent.RemoveIt();
+                        }
                     }
                     else if (sdtTitle == FieldName_MOQSSDS)
                     {
