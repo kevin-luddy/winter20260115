@@ -11,6 +11,7 @@ namespace GenBOE.Web.Controllers
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Transactions;
     using System.Web.Mvc;
@@ -38,6 +39,7 @@ namespace GenBOE.Web.Controllers
     using IES.Common.Exceptions;
     using IES.Common.OfficeUtilities;
     using IES.Common.PickList;
+    using Microsoft.VisualBasic.FileIO;
 
     public class ReportsController : GenBOEController
     {
@@ -1010,6 +1012,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="workspace">The workspace.</param>
         /// <param name="formatId">The format identifier.</param>
         /// <returns>ProPricer preview data.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope", Justification = "Inline use, expecting for garbage collection to take care of things.")]
         public ActionResult ProPricerPreview(string workspace, int formatId, ProPricerScope scope)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1088,12 +1091,15 @@ namespace GenBOE.Web.Controllers
                 PpDataReadyForExport ppDataToExport = proPricerExporter.ExportProPricer(format, ws);
                 string[] tasks = ppDataToExport.TaskData.Take(10).ToArray();
                 string[] resources = ppDataToExport.ResourceData.Take(10).ToArray();
+                TextFieldParser parser = null;
 
                 // Add row numbers, remove quotes, and remove the extra ',' at the end
                 for (int i = 0; i < tasks.Length; i++)
                 {
                     string task = ',' + (i + 1).ToString() + "," + tasks[i];
-                    string[] taskRows = task.Split(',');
+                    parser = new TextFieldParser(new StringReader(task)) { HasFieldsEnclosedInQuotes = true, Delimiters = new[] { "," } };
+                    string[] taskRows = parser.ReadFields();
+
                     for (int j = 0; j < taskRows.Length; j++)
                     {
                         string taskRow = taskRows[j];
@@ -1111,7 +1117,9 @@ namespace GenBOE.Web.Controllers
                 for (int i = 0; i < resources.Length; i++)
                 {
                     string resource = ',' + (i+ 1).ToString() + "," + resources[i];
-                    string[] resourceRows = resource.Split(',');
+                    parser = new TextFieldParser(new StringReader(resource)) { HasFieldsEnclosedInQuotes = true, Delimiters = new[] { "," } };
+                    string[] resourceRows = parser.ReadFields();
+
                     for (int j = 0; j < resourceRows.Length; j++)
                     {
                         string resourceRow = resourceRows[j];
