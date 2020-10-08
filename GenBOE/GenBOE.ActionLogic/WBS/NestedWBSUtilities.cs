@@ -53,17 +53,6 @@ namespace GenBOE.ActionLogic.WBS
             this.SetChildrenInUse(WbsDTOs, inUseDTOs);
         }
 
-        public void SetParentsInUse(Collection<WbsDTO> WbsDTOs)
-        {
-            if (WbsDTOs == null)
-            {
-                throw new ArgumentNullException(nameof(WbsDTOs));
-            }
-
-            Collection<WbsDTO> inUseDTOs = this.GetInUseDTOs(WbsDTOs);
-            this.SetParentsInUse(WbsDTOs, inUseDTOs);
-        }
-
         public void SetChildrenInUse(Collection<WbsDTO> WbsDTOs)
         {
             if (WbsDTOs == null)
