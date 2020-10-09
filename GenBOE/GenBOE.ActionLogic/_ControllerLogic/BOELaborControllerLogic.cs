@@ -688,15 +688,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="taskElement">task element</param>
         public ICollection<ValidationMessage> ValidateTaskElementDto(FullWorkspace ws, BoeTaskElementDTO taskElement)
         {
-            if (ws == null)
-            {
-                throw new ArgumentNullException(nameof(ws));
-            }
-
-            if (taskElement == null)
-            {
-                throw new ArgumentNullException(nameof(taskElement));
-            }
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
+            _ = taskElement ?? throw new ArgumentNullException(nameof(taskElement));
             
             ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
             FullBoe boe = factory.CreateFullBoe(taskElement.BoeID);
@@ -708,7 +701,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             ICollection<WorkspaceVariableDTO> invalidWorkspaceVariables = circularReferenceChecker.WorkspaceVariablesCreateCircularReference(circularReferenceCache, taskElement.BoeID, inUseWorkspaceVariables, ws);
             ICollection<string> allInvalidVariableNames = invalidWorkspaceVariables.Select(w => w.WorkspaceVariableName).Union(invalidOrdinaryVariables.Select(o => o.OrdinaryVariableName)).ToCollection();
 
-            if (allInvalidVariableNames.Count() > 0)
+            if (allInvalidVariableNames.Any())
             {
                 validationErrors.Add(new ValidationMessage("TaskVariable", "Some variables included in the MOQ Equation will cause circular references to occur. The following variables must be removed before saving: " + String.Join(", ", allInvalidVariableNames)));
             }
@@ -1210,19 +1203,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
         public string ValidateMOQEquation(int inBoeID, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace inWorkspaceDTO)
         {
             string result = string.Empty;
-
-            if (laborTaskData == null)
-            {
-                throw new ArgumentNullException(nameof(laborTaskData));
-            }
-            if (inValidationErrors == null)
-            {
-                throw new ArgumentNullException(nameof(inValidationErrors));
-            }
-            if (inWorkspaceDTO == null)
-            {
-                throw new ArgumentNullException(nameof(inWorkspaceDTO));
-            }
+            _ = laborTaskData ?? throw new ArgumentNullException(nameof(laborTaskData));
+            _ = inValidationErrors ?? throw new ArgumentNullException(nameof(inValidationErrors));
+            _ = inWorkspaceDTO ?? throw new ArgumentNullException(nameof(inWorkspaceDTO));
 
             //  Ensure the MOQ Equation is valid. if not, display a validation error to the user, don't allow the save
             try
@@ -1259,7 +1242,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     result = Parser.Calculate(laborTaskData.TaskElementData.MOQHoursEquation, boeTaskVars2, workspaceVars, this.VariableSelectBOEtoSumCalculation, data, inWorkspaceDTO);
                 }
             }
-
             catch (GeneralMOQParsingException)
             {
                 inValidationErrors.Add(new ValidationMessage("Invalid MOQ Equation ", "An invalid MOQ equation was entered."));
@@ -1334,29 +1316,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="inWorkspaceDTO">workspace</param>
         public void ValidateTaskDetails(FullBoe boeDTO, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace inWorkspaceDTO)
         {
-            if (boeDTO == null)
-            {
-                throw new ArgumentNullException(nameof(boeDTO));
-            }
-            if (laborTaskData == null)
-            {
-                throw new ArgumentNullException(nameof(laborTaskData));
-            }
-            if (inValidationErrors == null)
-            {
-                throw new ArgumentNullException(nameof(inValidationErrors));
-            }
-            if (inWorkspaceDTO == null)
-            {
-                throw new ArgumentNullException(nameof(inWorkspaceDTO));
-            }
-
-            if (laborTaskData.TaskElementData == null)
-            {
-                throw new ArgumentException("Property inTaskData.TaskDetails cannot be null", nameof(laborTaskData));
-            }
-
-            BoeTaskElementDTO taskElement;
+            _ = boeDTO ?? throw new ArgumentNullException(nameof(boeDTO));
+            _ = inValidationErrors ?? throw new ArgumentNullException(nameof(inValidationErrors));
+            _ = inWorkspaceDTO ?? throw new ArgumentNullException(nameof(inWorkspaceDTO));
+            _ = laborTaskData ?? throw new ArgumentNullException(nameof(laborTaskData));
+            _ = laborTaskData.TaskElementData ?? throw new ArgumentNullException(nameof(laborTaskData), "TaskElementData cannot be null");
 
             // validate RTE field length
             if(inWorkspaceDTO.RteSizeLimit.HasValue)
@@ -1364,13 +1328,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 this.ValidateTaskElementRteSizeLimit(laborTaskData, inWorkspaceDTO, inValidationErrors);
             }
 
-            this.ValidateTaskElementDates(laborTaskData, inWorkspaceDTO, boeDTO, inValidationErrors, out taskElement);
-
+            this.ValidateTaskElementDates(laborTaskData, inWorkspaceDTO, boeDTO, inValidationErrors, out BoeTaskElementDTO taskElement);
             this.ValidateLaborTypeDates(laborTaskData, inValidationErrors);
-
             this.ValidateLaborTypeCustomFields(laborTaskData, inWorkspaceDTO, taskElement, inValidationErrors);
-
             this.ValidateTaskCustomFields(laborTaskData, inWorkspaceDTO, inValidationErrors);
+            this.ValidateMoqTypes(inWorkspaceDTO, laborTaskData, inValidationErrors);
         }
 
         /// <summary>
@@ -1648,6 +1610,34 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     string.IsNullOrEmpty(selection.OpenEndedValue))
                 {
                     inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldMetaData.FieldName)));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Validates MOQ Types for UI, only fully required fields
+        /// </summary>
+        /// <param name="ws">Full WS</param>
+        /// <param name="taskData">Task Data</param>
+        /// <param name="errors">Validation Errors</param>
+        private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors)
+        {
+            if(ws.UsingTemplateBOE)
+            {
+                if(taskData.MOQTypes.None())
+                {
+                    // DUSAN -> need to do this -> BOEJ-4790:
+                    // errors.Add(GenerateResourceTypeError(resourceType, string.Format(MOQ_TYPE_REQUIRED_FOR_RESOURCE_TYPE, resourceStartDateString, resourceEndDateString, resourceTypeString, resourceTypeValueString)));
+
+                    errors.Add(new ValidationMessage() { });
+                }
+                else
+                {
+                    // walk through the selected types and validate them
+                    taskData.MOQTypes.Where(x => x.SelectedMOQType == MOQType.Historical || x.SelectedMOQType == MOQType.Comparative).ForEach(moqType => 
+                    { 
+                        // DUSAN --> ?? is table data required??  BOEJ-4824
+                    });
                 }
             }
         }

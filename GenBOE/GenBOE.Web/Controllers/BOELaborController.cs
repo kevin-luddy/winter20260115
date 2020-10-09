@@ -2138,45 +2138,6 @@ namespace GenBOE.Web.Controllers
             ViewBag.MOQTypes = this.ConvertToOptionList(moqTypeSelects);
         }
 
-        /// <summary>
-        /// Map each validation-error field-name to its corresponding "target" form ID so it will be dispayed in the
-        /// correct area on the page.
-        /// </summary>
-        /// <param name="validationErrors">Validation errors</param>
-        /// <returns>Validation errors</returns>
-        private Collection<ValidationMessage> PreProcessValidationErrors(Collection<ValidationMessage> validationErrors)
-        {
-            /*
-             * FieldName values are derived from the JSON-posted LaborTabDataModelView view model properties.  We essentially
-             * need to map each "eligible" field-name prefix to the appropriate (UI) form ID.
-             * 
-             */
-            foreach (ValidationMessage error in validationErrors)
-            {
-                if (!string.IsNullOrEmpty(error.FieldName))
-                {
-                    if (error.FieldName.StartsWith("TaskElementDetailData"))
-                    {
-                        error.FormIDToTarget = "TaskElementDetailsForm";
-                    }
-                    else if (error.FieldName.StartsWith("BOESummary"))
-                    {
-                        error.FormIDToTarget = "BoeHeaderForm";
-                    }
-                    else if (error.FieldName.StartsWith("LaborSpreadData") || error.FieldName.StartsWith("LaborSpreadGrid"))
-                    {
-                        error.FormIDToTarget = "LaborSpreadForm";
-                    }
-                    else if (error.FieldName.StartsWith("LaborTypesData") || error.FieldName.StartsWith("ResourceTypesSummaryData"))
-                    {
-                        error.FormIDToTarget = "LaborTypesForm";
-                    }
-                }
-            }
-
-            return validationErrors;
-        }
-
         #endregion
     }
 }
