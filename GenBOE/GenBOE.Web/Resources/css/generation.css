@@ -8332,3 +8332,9 @@ input.labelLookFeel {
     margin-top: 15px;
     display: block;
 }
+
+.nonPrintableLabel {
+    color: darkgrey;
+    padding-top: 5px;
+    padding-left:10px;
+}
