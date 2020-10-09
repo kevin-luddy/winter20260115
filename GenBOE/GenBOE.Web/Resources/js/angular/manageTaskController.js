@@ -55,7 +55,7 @@
             var hash = '#LMLabor/task/' + $scope.model.AdjacentItems.NextId.toString();
             if (window.location.hash === hash) {
                 hash = hash + "?t=2";
-            } 
+            }
 
             $scope.navigateToUrl(hash);
         }
@@ -164,13 +164,13 @@
     $scope.getLaborCustomFieldText = function (item, customField) {
         var text = '';
         item.CustomFieldValues.some(function (cfv) {
-            if (cfv.CustomFieldID === customField.CustomFieldMetaData.CustomFieldID) { 
+            if (cfv.CustomFieldID === customField.CustomFieldMetaData.CustomFieldID) {
                 if (cfv.isOpenEnded) {
                     text = cfv.OpenEndedValue;
                 } else {
                     // need to find the matching value in the options of the customfield
                     customField.CustomFieldOptions.some(function (cfo) {
-                        if (cfo.CustomFieldOptionID === cfv.CustomFieldValueID) { 
+                        if (cfo.CustomFieldOptionID === cfv.CustomFieldValueID) {
                             text = cfo.ID + "-" + cfo.Description;
                             return true;
                         }
@@ -404,7 +404,7 @@
                 if (cfv !== undefined) {
 
                     $scope.model.TaskElementData.CustomFieldValues.some(function (cfv) {
-                        if (cfv.CustomFieldValueID === option.CustomFieldOptionID) { 
+                        if (cfv.CustomFieldValueID === option.CustomFieldOptionID) {
                             selectedItem.selectedID = cfv.SelectionID;
                             selectedItem.selectedOptionID = option.CustomFieldOptionID;
                             selectedItem.updateDateLong = cfv.UpdateDateLong;
@@ -453,7 +453,7 @@
                 if (cfv !== undefined) {
 
                     item.CustomFieldValues.some(function (cfv) {
-                        if (cfv.CustomFieldValueID === option.CustomFieldOptionID) { 
+                        if (cfv.CustomFieldValueID === option.CustomFieldOptionID) {
                             selectedItem.selectedID = cfv.SelectionID;
                             selectedItem.selectedOptionID = option.CustomFieldOptionID;
                             selectedItem.updateDateLong = cfv.UpdateDateLong;
@@ -494,7 +494,7 @@
             }
         });
 
-        $scope.totalCost = cost.toString(); 
+        $scope.totalCost = cost.toString();
         $scope.totalHours = hours.toString();
 
         cost = new BigNumber(0.0);
@@ -515,9 +515,9 @@
         });
 
         $scope.totalSpreadCost = cost.toString();
-        $scope.totalSpreadHours = hours.toString(); 
+        $scope.totalSpreadHours = hours.toString();
 
-        $scope.deltaHours = $scope.getMOQTotal().minus($scope.totalSpreadHours).toString(); 
+        $scope.deltaHours = $scope.getMOQTotal().minus($scope.totalSpreadHours).toString();
         $scope.validateTotals();
     };
 
@@ -551,7 +551,7 @@
 
     /* Calculates the percent spread based on hours / MOQ */
     $scope.calculatePercentSpread = function (item, moqTotal) {
-        
+
         if (item.RateType !== ManageTaskModel.RateTypeCost) {
             // assuming item.HourSpreadLocked or using discrete spread
             var percentSpread = new BigNumber(0);
@@ -770,7 +770,7 @@
 
                         item.SpreadData.push(spreadValue);
                         var invalid = false;
-                        
+
 
                         // check precision
                         var precision = $scope.getPrecision(item);
@@ -856,7 +856,7 @@
                         }
                     }
                 });
-                
+
                 // remake the spread array
                 $scope.generateSpreadTable();
                 $scope.recalculateTotals();
@@ -873,13 +873,13 @@
     };
 
     /* Calculate the spread for one row */
-    var calculateSpread = function (item, value) { 
+    var calculateSpread = function (item, value) {
         $(document).trigger("SHOW_LOADING_BOX");
         var precision = ManageTaskModel.DecimalPrecision;
         if (item.RateType === ManageTaskModel.RateTypeCost) {
             precision = ManageTaskModel.CostDecimalPrecision;
         }
-        var data = { value: value, start: item.StartDate, end: item.EndDate, curve: item.SpreadCurveID, rateType: item.RateType, percentLocked: item.PercentSpreadLocked, percentSpread: item.PercentSpread};
+        var data = { value: value, start: item.StartDate, end: item.EndDate, curve: item.SpreadCurveID, rateType: item.RateType, percentLocked: item.PercentSpreadLocked, percentSpread: item.PercentSpread };
         var dataArray = [];
         dataArray.push(data);
         var postedData = {
@@ -902,7 +902,7 @@
             // remake the spread array
             $scope.generateSpreadTable();
             $scope.recalculateTotals();
-            
+
             $(document).trigger("HIDE_LOADING_BOX");
         }, function errorCallback(response) {
             if (response.data && response.data.MessageList) {
@@ -1034,7 +1034,7 @@
             $scope.isLoading = false;
             $(document).trigger("HIDE_LOADING_BOX");
         });
-    };    
+    };
 
     $scope.encode = function (text, elementId) {
         $('#' + elementId).html(text);
@@ -1134,7 +1134,27 @@
                     postedData.TaskElementData.MOQHoursEquation = '0';
                 }
 
-// ToDo: DUSAN - MOQ TYPE
+                // New MOQ Type Data, MOQEquationFieldModel is declared in MOQEquationField.ascx and then used in the page / AngularJS
+                if (MOQEquationFieldModel && MOQEquationFieldModel.SelectedMoqTypes) {
+
+                    // Collect & set RTE Data
+                    for (item in MOQEquationFieldModel.SelectedMoqTypes) {
+                        var moqType = MOQEquationFieldModel.SelectedMoqTypes[item];
+                        var moqTypeId = moqType.SelectedMOQType;
+                        
+                        moqType.SowHoursLocation = $('textarea[name="SowHoursLocation_' + moqTypeId + '"]').val();
+                        moqType.DescriptionHoursRequired = $('textarea[name="DescriptionHoursRequired_' + moqTypeId + '"]').val();
+                        moqType.SmeReason = $('textarea[name="SmeReason_' + moqTypeId + '"]').val();
+                        moqType.SmeHoursLogic = $('textarea[name="SmeHoursLogic_' + moqTypeId + '"]').val();
+                        moqType.SmeDurationLogic = $('textarea[name="SmeDurationLogic_' + moqTypeId + '"]').val();
+                        moqType.SmeTaskEstimates = $('textarea[name="SmeTaskEstimates' + moqTypeId + '"]').val();
+                        moqType.Rationale = $('textarea[name="Rationale_' + moqTypeId + '"]').val();
+                        moqType.SkillMixRationale = $('textarea[name="SkillMixRationale_' + moqTypeId + '"]').val();
+                    }
+
+                    postedData.MOQTypes = MOQEquationFieldModel.SelectedMoqTypes;
+                }
+
                 postedData.TaskElementData.MOQType = $('#MOQType').val();
                 postedData.TaskElementData.TaskOrdinaryVariables = [];
                 postedData.TaskElementData.WorkspaceVariableIDs = [];
@@ -1281,7 +1301,6 @@
                 postedData.TaskElementData.RteTemplateAnswers = [];
                 GetRteTemplateJson(TaskElementDetailsWidget.TaskDescription, 'TaskDescription', postedData.TaskElementData);
 
-// ToDo: DUSAN - MOQ TYPE
                 GetRteTemplateJson(TaskElementDetailsWidget.MOQText, 'MOQText', postedData.TaskElementData);
 
                 // Filter out the blank row before save
