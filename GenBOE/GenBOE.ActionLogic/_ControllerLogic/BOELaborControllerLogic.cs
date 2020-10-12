@@ -891,13 +891,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     this.moqTypeDataLoader.Save(existingMoqTypes);
 
                     // Set all incoming MOQ Types as Upsert and set ids to -1 for insert
-                    foreach (var moqType in moqTypes)
+                    int i = -1;
+                    foreach (MoqTypeSelection moqType in moqTypes)
                     {
-                        moqType.Id = -1;
+                        moqType.Id = i--;
                         moqType.Updateable = UpdateType.Upsert;
-                        foreach(var table in moqType.TableData)
+
+                        moqType.TaskId = newTaskId;
+
+                        foreach(MoqTableData table in moqType.TableData)
                         {
-                            table.Id = -1;
+                            table.Id = i--;
                             table.Updateable = UpdateType.Upsert;
                         }
                     }
@@ -1629,7 +1633,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     // DUSAN -> need to do this -> BOEJ-4790:
                     // errors.Add(GenerateResourceTypeError(resourceType, string.Format(MOQ_TYPE_REQUIRED_FOR_RESOURCE_TYPE, resourceStartDateString, resourceEndDateString, resourceTypeString, resourceTypeValueString)));
 
-                    errors.Add(new ValidationMessage() { });
+                    errors.Add(new ValidationMessage("Please add at least a single MOQ Type") { });
                 }
                 else
                 {
@@ -1638,6 +1642,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     { 
                         // DUSAN --> ?? is table data required??  BOEJ-4824
                     });
+                }
+
+                if(taskData.LaborTypesData.Any(x => !x.SelectedMOQType.HasValue))
+                {
+                    errors.Add(new ValidationMessage("Please select MOQ Type for all Resource Types") { });
                 }
             }
         }

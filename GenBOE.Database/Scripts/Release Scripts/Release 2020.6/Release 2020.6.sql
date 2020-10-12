@@ -141,7 +141,6 @@ CREATE TABLE [version].[MOQTypeSelectionTableData](
 )
 
 END
-
 /*
 	9/10/2020 [ranzalon] - BOEJ-4773 New Tables for MOQ Types
 
@@ -153,17 +152,11 @@ END
 
 	9/15/2020 [ranzalon] - BOEJ-4825 - MOQ Type Selection for Resource Types
 */
-
 IF NOT EXISTS (SELECT * FROM sys.all_columns C INNER JOIN sys.tables T on C.object_id = T.object_id INNER JOIN sys.schemas S ON T.schema_id = S.schema_id WHERE S.name = 'dbo' AND 
 	T.name = 'BOELaborType' AND C.name = 'MOQTypeSelectionId')
 BEGIN 
-
-ALTER TABLE [dbo].[BOELaborType]
-ADD [MOQTypeSelectionId] [int] NULL FOREIGN KEY REFERENCES [dbo].[MOQTypeSelection](MOQTypeSelectionId)
-
-ALTER TABLE [version].[BOELaborType]
-ADD [MOQTypeSelectionId] [int] NULL 
-
+	ALTER TABLE [dbo].[BOELaborType] ADD [MOQTypeSelectionId] [int] NULL FOREIGN KEY REFERENCES [dbo].[MOQTypeLU](MOQTypeID);
+	ALTER TABLE [version].[BOELaborType] ADD [MOQTypeSelectionId] [int] NULL;
 END
 /*
 	9/15/2020 [ranzalon] - BOEJ-4825 - MOQ Type Selection for Resource Types

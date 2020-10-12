@@ -165,6 +165,7 @@ namespace GenBOE.ActionLogic.Validation
                     {
                         ConcurrentBag<LaborValidationClass> dateErrors = new ConcurrentBag<LaborValidationClass>();
                         ConcurrentBag<LaborValidationClass> valueErrors = new ConcurrentBag<LaborValidationClass>();
+                        ConcurrentBag<LaborValidationClass> otherErrors = new ConcurrentBag<LaborValidationClass>();
 
                         Parallel.Invoke(
                             // Doing this because the MOQ calculation usually takes the longest.. So we are going to run the other checks in parallel to the check that deals w/ the MOQ equation.
@@ -173,7 +174,7 @@ namespace GenBOE.ActionLogic.Validation
                             {
                                 ValidateTaskDates(boeStartDate, boeEndDate, taskElement, ref dateErrors);
                                 ValidateResourceTypesForIndividualTask(ws, taskElement, ref dateErrors, ref valueErrors);
-                                ValidateResourceTypesMoqSelection(ws, taskElement, dateErrors);
+                                ValidateResourceTypesMoqSelection(ws, taskElement, otherErrors);
                             }
                         );
 
@@ -192,6 +193,12 @@ namespace GenBOE.ActionLogic.Validation
                             string valuesHeader = string.Format(VALUES_HEADER, hoursLabel);
                             temp.Add(new LaborValidationClass() { ErrorMessage = new ValidationMessage(valuesHeader), ErrorType = LaborValidationErrorTypeEnum.Other, BoeId = taskElement.BoeID, TaskElementId = taskElement.Id });
                             temp.AddRange(valueErrors);
+                        }
+
+                        if (otherErrors.Any())
+                        {
+                            temp.Add(new LaborValidationClass() { ErrorMessage = new ValidationMessage(GENERIC_FAILURE), ErrorType = LaborValidationErrorTypeEnum.Other, BoeId = taskElement.BoeID, TaskElementId = taskElement.Id });
+                            temp.AddRange(otherErrors);
                         }
 
                         if (temp.Any())

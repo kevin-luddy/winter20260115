@@ -51,6 +51,6 @@ namespace GenBOE.Models
         public virtual WorkBreakdownStructure WorkBreakdownStructure { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOELaborTypeCustomFieldValueXREF> BOELaborTypeCustomFieldValueXREFs { get; set; }
-        public virtual MOQTypeSelection MOQTypeSelection { get; set; }
+        public virtual MOQTypeLU MOQTypeSelection { get; set; }
     }
 }
