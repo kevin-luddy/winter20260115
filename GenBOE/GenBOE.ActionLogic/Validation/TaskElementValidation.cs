@@ -173,7 +173,7 @@ namespace GenBOE.ActionLogic.Validation
                             {
                                 ValidateTaskDates(boeStartDate, boeEndDate, taskElement, ref dateErrors);
                                 ValidateResourceTypesForIndividualTask(ws, taskElement, ref dateErrors, ref valueErrors);
-                                ValidateResourceTypesMoqSelection(ws, taskElement, valueErrors);
+                                ValidateResourceTypesMoqSelection(ws, taskElement, dateErrors);
                             }
                         );
 
