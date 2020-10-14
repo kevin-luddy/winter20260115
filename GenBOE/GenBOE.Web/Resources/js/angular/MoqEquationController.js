@@ -12,8 +12,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
             angular.forEach($scope.model.SelectedMoqTypes.map(e => e.SelectedMOQType.toString()), function (id) {
                 $scope.InitializeRteFields(id);
             });
-
-            $(document).trigger('MOQ_TYPE_SELECTION_CHANGED', [$scope.model.SelectedMoqTypes]);
         }, 10);
     }
 

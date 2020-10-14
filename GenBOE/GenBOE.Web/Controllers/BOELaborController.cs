@@ -2097,7 +2097,7 @@ namespace GenBOE.Web.Controllers
             if (ws.UsingTemplateBOE)
             {
                 theModelView.MoqTypeTableDataLabels = this._BoeLaborControllerLogic.GetMoqTypeLabels();
-                theModelView.SelectedMoqTypes = boe.MoqTypeSelections.Where(x => x.TaskId == taskElementID || true).ToList(); // ToDo: Dusan REMOVE || true once the real data is coming in!!!
+                theModelView.SelectedMoqTypes = boe.MoqTypeSelections.Where(x => x.TaskId == taskElementID).ToList();
             }
 
             return theModelView;

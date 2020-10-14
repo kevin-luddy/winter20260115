@@ -610,9 +610,7 @@
                                             </td>
                                             <% if (Model.UsingTemplateBOE) { %>
                                                 <td class="resourceMoqType">
-                                                    <select required data-ng-model="item.SelectedMOQType" class="moqTypes">
-                                                        <option data-ng-repeat="option in SelectedMoqTypes" data-ng-value="option.SelectedMOQType">{{option.SelectedMOQTypeText}}</option>
-                                                    </select>
+                                                    <select data-ng-options="option.SelectedMOQType as option.SelectedMOQTypeText for option in SelectedMoqTypes" data-ng-model="item.SelectedMOQType"></select>
                                                 </td>
                                             <% } %>
                                             <% if (Model.BOEIsMulti) { %>
@@ -620,7 +618,8 @@
                                                     <select tabindex ="{{tabindex + 3}}" class="wbs" data-ng-model="item.WBSID" data-ng-change="setDirty()" name="WBSID">
                                                         <!-- keep option tag on one line to avoid insertion of line breaks (br) -->
                                                         <option data-ng-repeat="option in ManageTaskModel.WBSElements" data-ng-value="option.Value">{{option.Text}}</option>
-                                                    </select>                                          </td>
+                                                    </select>
+                                                </td>
                                                 <td class="resource-clin">
                                                     <select tabindex ="{{tabindex + 4}}" class="wbs" data-ng-model="item.CLINID" data-ng-change="setDirty()" name="CLINID">
                                                         <!-- keep option tag on one line to avoid insertion of line breaks (br) -->
@@ -840,7 +839,6 @@
     </div>
 
     <div class="buttons-left" data-ng-hide="isLoading"></div>
-
     <div class="buttons" data-ng-hide="isLoading">  
          <div class="required-note">
             <div>* required for saving as draft.</div>
@@ -913,7 +911,6 @@
 
         </div>
     </div>
-
     <div id="MOQEquation-SearchEstimatingCatalogDialogMST">
         <div>
             <form id="SearchEstimatingCatalogDialogFormMST">
@@ -1086,7 +1083,6 @@
             </div>
         </div>
     </div>
-
     <div id="LaborTypeImportErrors" style="display: none;" title="Errors During Import of Resource Types">
         Errors occurred during import of the Resource Types. No changes were made to the Workspace.
         <br /><br />
@@ -1095,7 +1091,6 @@
         <br />
         <button class="ies" name="ok-button" type="button">OK</button>
     </div>
-
     <div id="ImportLaborTypeResults" class="import-verification dialog form" style="display: none;">
         <span>The import file will make the following updates. To continue with the import,
             click <i>Complete Import</i>, otherwise click <i>Back</i> to import a different
@@ -1228,8 +1223,7 @@
             <button id="ManageLaborType-CompleteImportButton" class="ies-action" name="complete-import-button" type="button">Complete import</button>
             <div id="ManageLaborType-CompleteImportLoader" class="loader display-none"></div>
         </div>
-    </div>
-        
+    </div>        
     <div id="ReOrderLaborTypesDialog" class="reorder-labor-types-dialog" style="display: none;">
         <div class="container">
             <% using (Html.BeginForm("", "", FormMethod.Post, new { id = "ReOrderLaborTypesForm" }))
@@ -1260,7 +1254,6 @@
          <% } %>
         </div>
     </div>
-
     <div id="DuplicateLaborTypesDialog" class="duplicate-labor-types-dialog" style="display: none;">
         <% using (Html.BeginForm("", "", FormMethod.Post, new { id = "DuplicateLaborTypesForm" }))
        { %>

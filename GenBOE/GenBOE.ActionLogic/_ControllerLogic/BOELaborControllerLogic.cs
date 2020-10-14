@@ -312,7 +312,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
 
             // Convert to ModelView
-            LaborTaskDataModelView toReturn = this.ConvertDtoToModelView(ws, taskElementDto);
+            LaborTaskDataModelView toReturn = this.ConvertDtoToModelView(ws, boe, taskElementDto);
             toReturn.AdjacentItems = this.FindAdjacentTasks(boe, taskElementId);
             toReturn.ValidationErrors = this.taskElementValidation.ValidateTaskElementsWithErrorMessages(ws, new List<BoeTaskElementDTO>() { taskElementDto }).Select(e => e.ErrorMessage).ToList();
             
@@ -1990,28 +1990,24 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// Converts Boe Task Element Dto to Labor Task Data Model View
         /// </summary>
         /// <param name="ws">The Workspace.</param>
+        /// <param name="boe">The Boe</param>
         /// <param name="dto">Task Element DTO</param>
         /// <returns>Converted MV</returns>
-        private LaborTaskDataModelView ConvertDtoToModelView(FullWorkspace ws, BoeTaskElementDTO dto)
+        private LaborTaskDataModelView ConvertDtoToModelView(FullWorkspace ws, FullBoe boe, BoeTaskElementDTO dto)
         {
-            LaborTaskDataModelView toReturn = new LaborTaskDataModelView();
-
-            // Get Task Element Data
-            toReturn.TaskElementData = new TaskElementDetailModelView(dto);
-
-            //Load the customFields
-            toReturn.TaskCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.Task);
-            toReturn.LaborCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.LaborTypes);
-
-
-            Collection<CustomFieldSelectionModelView> taskCustomFieldSelection = new Collection<CustomFieldSelectionModelView>();
-            Collection<CustomFieldValueContainer> taskCustomFieldValues = dto.CustomFieldValueContainers;
-
-            if (taskCustomFieldValues != null)
+            LaborTaskDataModelView toReturn = new LaborTaskDataModelView()
             {
-                foreach (CustomFieldValueContainer value in taskCustomFieldValues)
+                TaskElementData = new TaskElementDetailModelView(dto),
+                TaskCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.Task),
+                LaborCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.LaborTypes),
+                MOQTypes = boe.MoqTypeSelections.Where(x => x.TaskId == dto.Id).ToList()
+            };
+
+            if (dto.CustomFieldValueContainers != null)
+            {
+                foreach (CustomFieldValueContainer value in dto.CustomFieldValueContainers)
                 {
-                    taskCustomFieldSelection.Add(new CustomFieldSelectionModelView() {
+                    toReturn.TaskElementData.CustomFieldValues.Add(new CustomFieldSelectionModelView() {
                         CustomFieldValueID = value.CustomFieldValueID,
                         SelectionID = value.ContainerID,
                         UpdateDate = value.UpdateDate,
@@ -2020,14 +2016,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         OpenEndedValue = value.OpenEndedValue
                     });
                 }
-                toReturn.TaskElementData.CustomFieldValues = taskCustomFieldSelection;
             }
-
-            toReturn.LaborTypesData = new Collection<LaborTypeDataModelView>();
 
             HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(this._ResourceLoader.GetByIds(dto.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Distinct().ToList()));
             HashSet<PerformingOrgDTO> performingOrgsFromDb = new HashSet<PerformingOrgDTO>(this.PerfOrgLoader.GetByIds(dto.taskElementLabors.Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
-
 
             foreach (ResourceTypeDto labor in dto.taskElementLabors)
             {
@@ -2069,7 +2061,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
             
             toReturn.ContainsDiscrete = toReturn.LaborTypesData.Select(x => x.SpreadCurveID).Any(x => x.Value == SpreadCurves.DiscreteCost || x.Value == SpreadCurves.DiscreteHours);
-                        
+
             return toReturn;
         }
 

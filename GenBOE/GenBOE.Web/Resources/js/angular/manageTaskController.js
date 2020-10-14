@@ -934,11 +934,13 @@
             data: data,
             url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.action, '')
         }).then(function (response) {
-
             $scope.model = response.data;
+            $scope.SelectedMoqTypes = response.data.MOQTypes;
+
             if (!$scope.model.LaborTypesData) {
                 $scope.model.LaborTypesData = [];
             }
+
             $scope.TaskCustomFields = $scope.model.TaskCustomFields;
             $scope.LaborCustomFields = $scope.model.LaborCustomFields;
 
@@ -1026,7 +1028,6 @@
             if (callback && typeof callback === 'function') {
                 callback();
             }
-
         }, function errorCallback(response) {
             if (response.data && response.data.MessageList) {
                 $scope.errors = response.data.MessageList;
@@ -1141,7 +1142,7 @@
                     for (item in MOQEquationFieldModel.SelectedMoqTypes) {
                         var moqType = MOQEquationFieldModel.SelectedMoqTypes[item];
                         var moqTypeId = moqType.SelectedMOQType;
-                        
+                       
                         moqType.SowHoursLocation = $('textarea[name="SowHoursLocation_' + moqTypeId + '"]').val();
                         moqType.DescriptionHoursRequired = $('textarea[name="DescriptionHoursRequired_' + moqTypeId + '"]').val();
                         moqType.SmeReason = $('textarea[name="SmeReason_' + moqTypeId + '"]').val();
@@ -1712,6 +1713,7 @@
             ResourceInput: undefined,
             ResourceName: undefined,
             ResourceType: undefined,
+            SelectedMOQType: undefined,
             SpreadCurveID: '-1',
             SpreadData: [],
             SpreadDataInvalid: [],
