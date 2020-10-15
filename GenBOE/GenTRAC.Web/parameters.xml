@@ -96,6 +96,10 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='APPLICATION_VERSION']/@value">
     </parameterentry>
   </parameter>
+  <parameter name="DisableAllEmails" description="doesn't matter" defaultvalue="__DisableAllEmails__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='DisableAllEmails']/@value">
+    </parameterentry>
+  </parameter>
 
   <!--system.web-->
   <parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
