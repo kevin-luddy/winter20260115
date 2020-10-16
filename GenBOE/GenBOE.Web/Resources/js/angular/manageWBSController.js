@@ -371,6 +371,9 @@
             // create form data
             var fd = new FormData();
             fd.append("file", $scope.dialog.file);
+            if ($scope.dialog.importExisting) {
+                fd.append("ImportType", "Existing");
+            }
 
             // get url from form
             var url = $('#ImportWBSDialog-Form').attr('action');

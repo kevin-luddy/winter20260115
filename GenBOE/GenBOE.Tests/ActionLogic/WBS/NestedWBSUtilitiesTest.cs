@@ -86,54 +86,6 @@ namespace GenBOE.Tests.ActionLogic.WBS
         }
 
         [TestMethod]
-        public void SetParentsInUseTest()
-        {
-            NestedWBSUtilities sut = new NestedWBSUtilities();
-
-            WbsDTO wbs0 = new WbsDTO() { WbsNumber = "1", inUse = false };
-            WbsDTO wbs1 = new WbsDTO() { WbsNumber = "1.1", inUse = false };
-            WbsDTO wbs2 = new WbsDTO() { WbsNumber = "1.1.1", inUse = true };
-            WbsDTO wbs3 = new WbsDTO() { WbsNumber = "1.1.2", inUse = false };
-            WbsDTO wbs4 = new WbsDTO() { WbsNumber = "1.1.2.1", inUse = true };
-            WbsDTO wbs5 = new WbsDTO() { WbsNumber = "1.1.2.2", inUse = true };
-            WbsDTO wbs6 = new WbsDTO() { WbsNumber = "1.1.2.3", inUse = true };
-            WbsDTO wbs7 = new WbsDTO() { WbsNumber = "1.1.3", inUse = true };
-            WbsDTO wbs8 = new WbsDTO() { WbsNumber = "1.1.3.1", inUse = false };
-            WbsDTO wbs9 = new WbsDTO() { WbsNumber = "1.1.3.2", inUse = false };
-            WbsDTO wbs10 = new WbsDTO() { WbsNumber = "1.1.4", inUse = true };
-            WbsDTO wbs11 = new WbsDTO() { WbsNumber = "1.1.5", inUse = true };
-            WbsDTO wbs12 = new WbsDTO() { WbsNumber = "1.2", inUse = false };
-            WbsDTO wbs13 = new WbsDTO() { WbsNumber = "1.2.1", inUse = true };
-            WbsDTO wbs14 = new WbsDTO() { WbsNumber = "1.2.2", inUse = true };
-            WbsDTO wbs15 = new WbsDTO() { WbsNumber = "1.2.3", inUse = true };
-            WbsDTO wbs16 = new WbsDTO() { WbsNumber = "1.2.4", inUse = true };
-            WbsDTO wbs17 = new WbsDTO() { WbsNumber = "1.2.5", inUse = false };
-            Collection<WbsDTO> wbsCollection = new Collection<WbsDTO>() {
-                wbs0, wbs1, wbs2, wbs3, wbs4, wbs5, wbs6, wbs7, wbs8, wbs9, wbs10, wbs11, wbs12, wbs13, wbs14, wbs15, wbs16, wbs17 };
-
-            sut.SetParentsInUse(wbsCollection);
-
-            Assert.IsTrue(wbsCollection[0].inUse == true);
-            Assert.IsTrue(wbsCollection[1].inUse == true);
-            Assert.IsTrue(wbsCollection[2].inUse == true);
-            Assert.IsTrue(wbsCollection[3].inUse == true);
-            Assert.IsTrue(wbsCollection[4].inUse == true);
-            Assert.IsTrue(wbsCollection[5].inUse == true);
-            Assert.IsTrue(wbsCollection[6].inUse == true);
-            Assert.IsTrue(wbsCollection[7].inUse == true);
-            Assert.IsTrue(wbsCollection[8].inUse == false);
-            Assert.IsTrue(wbsCollection[9].inUse == false);
-            Assert.IsTrue(wbsCollection[10].inUse == true);
-            Assert.IsTrue(wbsCollection[11].inUse == true);
-            Assert.IsTrue(wbsCollection[12].inUse == true);
-            Assert.IsTrue(wbsCollection[13].inUse == true);
-            Assert.IsTrue(wbsCollection[14].inUse == true);
-            Assert.IsTrue(wbsCollection[15].inUse == true);
-            Assert.IsTrue(wbsCollection[16].inUse == true);
-            Assert.IsTrue(wbsCollection[17].inUse == false);
-        }
-
-        [TestMethod]
         public void SetChildrenInUseTest()
         {
             NestedWBSUtilities sut = new NestedWBSUtilities();
@@ -195,14 +147,6 @@ namespace GenBOE.Tests.ActionLogic.WBS
         {
             NestedWBSUtilities sut = new NestedWBSUtilities();
             sut.SetParentsAndChildrenInUse(null);
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public void SetParentsInUse_NullTest()
-        {
-            NestedWBSUtilities sut = new NestedWBSUtilities();
-            sut.SetParentsInUse(null);
         }
 
         [TestMethod]

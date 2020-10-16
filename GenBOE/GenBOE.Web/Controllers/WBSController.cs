@@ -164,7 +164,6 @@ namespace GenBOE.Web.Controllers
             model.ContainsOCI = ws.ContainsOCI;
             model.AvailableClins = ws.ClinsNoMultiClin.OrderBy(x => x.ClinNumber).Select(c => new ManageCLINModelView(c, string.Empty)).ToList();
 
-            _nestedWbsUtilities.SetParentsInUse(wbsDTOs);
             _nestedWbsUtilities.AdjustLevels(wbsDTOs);
 
             Collection<int> wbsids = GetWBSUsedByWorkspaceVariables(ws);

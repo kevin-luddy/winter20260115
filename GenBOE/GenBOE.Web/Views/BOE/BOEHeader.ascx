@@ -133,6 +133,9 @@
         <div id="SourcesOfDataRow" class="form-row">
             <div class="form-label">
                 <%: Model.LabelSourcesOfData %>
+                <%if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) { %>
+                <div class="nonPrintableLabel" title="This field is not printed in any reports">Non-Printable</div>
+                <%} %>
             </div>
             <div class="form-element" id="sources-element">
                 <% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(DataSourceAnswers, "DataSource", Model.DataSource));  %>
