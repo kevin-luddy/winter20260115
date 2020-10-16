@@ -1781,10 +1781,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
         }
 
         /// <summary>
+        /// THESE ARE LEGACY MOQ TYPES AS OF 10/2020
+        /// 
         /// Gets the valid <see cref="MOQType"/>'s for this company configuration
         /// </summary>
         /// <returns>valid <see cref="MOQType"/>'s for this company configuration</returns>
-        public virtual ICollection<MOQType> GetMOQTypes()
+        internal virtual ICollection<MOQType> GetMOQTypes()
         {
             return new MOQType[]
             {
@@ -3344,18 +3346,20 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <summary>
         /// Get a list of MOQ Types for dropdown
         /// </summary>
-        /// <param name="wsUsingTemplateBOEs">Return only Template BOEs MOQ Types</param>
+        /// <param name="useNewMoqTypes">Are we be using new MOQ Types (after 10/2020)</param>
+        /// <param name="moqType">Selected MOQ Type</param>
         /// <returns>MOQ Types</returns>
-        public ICollection<SelectListItem> GetMOQTypeSelectList(bool wsUsingTemplateBOEs)
+        public ICollection<SelectListItem> GetMOQTypeSelectList(bool useNewMoqTypes, MOQType? moqType)
         {
-            ICollection<MOQType> templateBoeMoqTypes = wsUsingTemplateBOEs 
+            ICollection<MOQType> templateBoeMoqTypes = useNewMoqTypes 
                 ? new List<MOQType>() { MOQType.Historical, MOQType.Comparative, MOQType.CostEstimatingRelationships, MOQType.ParametricEstimates, MOQType.AnalogousRelationships, MOQType.SOW, MOQType.LOE, MOQType.SME, MOQType.NonLabor } 
                 : this.GetMOQTypes();
 
             List<SelectListItem> results = templateBoeMoqTypes.Select(t => new SelectListItem
             {
                 Text = t.GetDescription(),
-                Value = ((int)t).ToString()
+                Value = ((int)t).ToString(),
+                Selected = t == moqType
             }).ToList();
 
             return results;

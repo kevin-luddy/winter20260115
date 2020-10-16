@@ -209,5 +209,10 @@ namespace GenBOE.Dtos
         /// This drives MOQ Type usage. Yes -> new, more complex types. No -> legacy / original code.
         /// </summary>
         public bool UsingTemplateBOE { get; set; } = true;
+
+        /// <summary>
+        /// WS Creation Date
+        /// </summary>
+        public DateTime? CreationDate { get; set; }
     }
 }

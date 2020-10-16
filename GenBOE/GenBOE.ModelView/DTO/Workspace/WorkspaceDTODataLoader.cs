@@ -287,7 +287,8 @@ namespace GenBOE.DataBridge.DTO
                                     LastProPricerProposal = w.LastProPricerProposal,
                                     RteSizeLimit = w.RteSizeLimit,
                                     RevisedSubmittalDate = w.RevisedSubmittalDate,
-                                    UsingTemplateBOE = w.TemplateBoe
+                                    UsingTemplateBOE = w.TemplateBoe,
+                                    CreationDate = w.WorkspaceCreationDate
                                 }).ToCollection();
 
                     toReturn.ToList().ForEach(w =>
@@ -379,7 +380,8 @@ namespace GenBOE.DataBridge.DTO
                                         LastProPricerProposal = w.LastProPricerProposal,
                                         RteSizeLimit = w.RteSizeLimit,
                                         RevisedSubmittalDate = w.RevisedSubmittalDate,
-                                        UsingTemplateBOE = w.TemplateBoe
+                                        UsingTemplateBOE = w.TemplateBoe,
+                                        CreationDate = w.WorkspaceCreationDate
                                     }).FirstOrDefault();
 
                         if (toReturn != null)

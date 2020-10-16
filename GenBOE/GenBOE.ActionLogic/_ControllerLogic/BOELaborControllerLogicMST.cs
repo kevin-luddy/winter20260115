@@ -100,12 +100,14 @@ namespace GenBOE.ActionLogic
         }
 
         /// <summary>
+        /// THESE ARE LEGACY MOQ TYPES AS OF 10/2020
+        /// 
         /// Gets the valid <see cref="MOQType" />'s for the MST configuration
         /// </summary>
         /// <returns>
         /// valid <see cref="MOQType" />'s for this company configuration
         /// </returns>
-        public override ICollection<MOQType> GetMOQTypes()
+        internal override ICollection<MOQType> GetMOQTypes()
         {
             return new MOQType[]
             {

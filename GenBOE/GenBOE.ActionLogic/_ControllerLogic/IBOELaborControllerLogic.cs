@@ -116,12 +116,6 @@ namespace GenBOE.ActionLogic
         string GetMOQTextLabel();
 
         /// <summary>
-        /// Gets the valid <see cref="MOQType"/>'s for this company configuration
-        /// </summary>
-        /// <returns>valid <see cref="MOQType"/>'s for this company configuration</returns>
-        ICollection<MOQType> GetMOQTypes();
-
-        /// <summary>
         /// Populates the passed in <see cref="MOQEquationModelView"/> with metrics
         /// </summary>
         /// <param name="ids">The TaskElement id's for which metrics will be retrieved</param>
@@ -287,9 +281,10 @@ namespace GenBOE.ActionLogic
         /// <summary>
         /// Get a list of MOQ Types for dropdown
         /// </summary>
-        /// <param name="wsUsingTemplateBOEs">Return only Template BOEs MOQ Types</param>
+        /// <param name="useNewMoqTypes">Are we be using new MOQ Types (after 10/2020)</param>
+        /// <param name="moqType">Selected MOQ Type</param>
         /// <returns>MOQ Types</returns>
-        ICollection<SelectListItem> GetMOQTypeSelectList(bool wsUsingTemplateBOEs);
+        ICollection<SelectListItem> GetMOQTypeSelectList(bool useNewMoqTypes, MOQType? moqType);
 
         /// <summary>
         /// Returns a list of labels to be used in the MOQ Types page.

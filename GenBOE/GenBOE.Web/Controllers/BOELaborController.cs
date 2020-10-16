@@ -55,6 +55,11 @@ namespace GenBOE.Web.Controllers
         private readonly IOffloadRatesDTOLoader offloadRatesLoader;
         private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 
+        /// <summary>
+        /// Starting date for MOQ Templates. WS created after this date will be using new MOQ Types.
+        /// </summary>
+        private readonly DateTime moqTemplateUsageStartDate = DateTime.Parse(ConfigurationUtilities.GetAppSetting("MoqTemplateStartDate"));
+
         #endregion Private Fields
 
         /// <summary>
@@ -190,29 +195,6 @@ namespace GenBOE.Web.Controllers
             // Finalize Action
             this.FinalizeAction(this._log, WebConstants.ACTION_DISPLAY_TASK_ELEMENT, sw);
             return toReturn;
-        }
-
-        private List<SelectListItem> GetMOQTypeSelectList(int selectedEnumValue)
-        {
-            return GetMOQTypeSelectList(selectedEnumValue.GetEnumeratedValueNullable<MOQType>());
-        }
-
-        private List<SelectListItem> GetMOQTypeSelectList(MOQType? selectedValue)
-        {
-            ICollection<MOQType> validMOQTypes = this._BoeLaborControllerLogic.GetMOQTypes();
-
-            // convert selected MOQ types to select list items
-            List<SelectListItem> results = validMOQTypes.Select(t => new SelectListItem
-            {
-                Text = t.GetDescription(),
-                Value = ((int)t).ToString(),
-                Selected = (selectedValue.HasValue && t == selectedValue.Value)
-            }).ToList();
-
-            // add "no-value-selected" item
-            results.Insert(0, new SelectListItem { Text = string.Empty, Value = "0", Selected = false });
-
-            return results;
         }
 
         virtual public ActionResult ValidateResource(string workspace, string searchTerm)
@@ -2092,7 +2074,9 @@ namespace GenBOE.Web.Controllers
             theModelView.HelpText = _BoeLaborControllerLogic.GetMOQTypesHelpText();
             theModelView.MOQTextLabel = _BoeLaborControllerLogic.GetMOQTextLabel();
             theModelView.UsingTemplateBOE = ws.UsingTemplateBOE;
-            theModelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(ws.UsingTemplateBOE);
+
+            
+            theModelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(ws.CreationDate >= moqTemplateUsageStartDate, null);
 
             if (ws.UsingTemplateBOE)
             {
@@ -2127,14 +2111,8 @@ namespace GenBOE.Web.Controllers
             ViewBag.WorkspaceVariables = wsVariables;
             ViewBag.RteFieldSize = workspace.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
 
-            // ToDo: DUSAN -> CAN THIS BE REMOVED????
-            List<SelectListItem> moqTypeSelects = (from m in _CommonDataMapper.getMOQType()
-                                                   select new SelectListItem { Value = m.MOQTypeID.ToString(), Text = m.MOQTypeName, Selected = (m.MOQTypeID == (int)moqType) }).ToList();
-            // Add a default element as the first item in the dropdown collection
-            SelectListItem defaultItem = new SelectListItem();
-            defaultItem.Value = "0";
-            defaultItem.Text = "";
-            moqTypeSelects.Insert(0, defaultItem);
+            List<SelectListItem> moqTypeSelects = this._BoeLaborControllerLogic.GetMOQTypeSelectList(workspace.CreationDate >= moqTemplateUsageStartDate, moqType).ToList();
+            moqTypeSelects.Insert(0, new SelectListItem() { Value = "0", Text = string.Empty });
             ViewBag.MOQTypes = this.ConvertToOptionList(moqTypeSelects);
         }
 
