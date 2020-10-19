@@ -343,17 +343,5 @@ namespace GenBOE.ActionLogic
 
             model.MetricsSearchDialogParameters.SearchMetricsDialogIdSuffix = CommonConstants.MSTMetricsDialogSuffix;
         }
-
-        /// <summary>
-        /// Returns a list of labels to be used in the MOQ Types page.
-        /// </summary>
-        /// <returns>Labels for MOQ Type Data Table Fields</returns>
-        public override MoqTypeTableDataLabels GetMoqTypeLabels()
-        {
-            return new MoqTypeTableDataLabels() 
-            {
-                ContractNumber = "Contract Number"
-            };
-        }
     }
 }

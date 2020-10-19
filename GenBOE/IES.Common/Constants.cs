@@ -305,6 +305,16 @@ namespace IES.Common
         public const string CUSTOM_FIELD_IS_REQUIRED = "Custom Field {0} is required.";
 
         /// <summary>
+        /// MOQ Type is required for labor type
+        /// </summary>
+        public const string MOQ_TYPE_REQUIRED_FOR_RESOURCE_TYPE = "MOQ Type selection is required for the Resource Type (Start Date: {0}, End Date: {1}, Value Spread: {2})";
+
+        /// <summary>
+        /// At least 1 MOQ type is required for a task.
+        /// </summary>
+        public const string MOQ_TYPE_REQUIRED_FOR_TASK = "MOQ Type is required for the task. Please add at least one.";
+
+        /// <summary>
         /// The field cannot be changed in a task in a locked workspace
         /// </summary>
         public const string CANNOT_CHANGE_IN_LOCKED_TASK = "{0} cannot be changed while the Workspace is locked.";

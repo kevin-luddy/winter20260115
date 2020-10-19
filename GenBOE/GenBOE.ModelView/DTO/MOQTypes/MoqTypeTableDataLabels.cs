@@ -16,10 +16,9 @@ namespace GenBOE.ActionLogic.ModelView
         /// </summary>
         public MoqTypeTableDataLabels()
         {
-            this.RepositoryName = string.Empty;
-            this.QueryType = string.Empty;
-            this.ContractNumber = string.Empty;
-
+            this.RepositoryName = "Repository Name";
+            this.QueryType = "Query Type";
+            this.ContractNumber = "Contract Number";
             this.TableName = "Table Name";
             this.DateOfReport = "Date of Report";
             this.HistoricalProgramName = "Historical Program Name";

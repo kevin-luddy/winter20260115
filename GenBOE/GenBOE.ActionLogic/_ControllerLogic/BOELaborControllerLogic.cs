@@ -1630,10 +1630,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 if(taskData.MOQTypes.None())
                 {
-                    // DUSAN -> need to do this -> BOEJ-4790:
-                    // errors.Add(GenerateResourceTypeError(resourceType, string.Format(MOQ_TYPE_REQUIRED_FOR_RESOURCE_TYPE, resourceStartDateString, resourceEndDateString, resourceTypeString, resourceTypeValueString)));
-
-                    errors.Add(new ValidationMessage("Please add at least a single MOQ Type") { });
+                    errors.Add(new ValidationMessage(Constants.MOQ_TYPE_REQUIRED_FOR_TASK));
                 }
                 else
                 {
@@ -1644,10 +1641,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     });
                 }
 
-                if(taskData.LaborTypesData.Any(x => !x.SelectedMOQType.HasValue))
+                taskData.LaborTypesData.Where(x => !x.SelectedMOQType.HasValue).ForEach(resourceType => 
                 {
-                    errors.Add(new ValidationMessage("Please select MOQ Type for all Resource Types") { });
-                }
+                    string resourceValue = resourceType.CostSpread.HasValue && resourceType.CostSpread > 0 ?
+                                    "$" + Utilities.AdjustPrecision(resourceType.CostSpread.Value, 2).ToString()
+                                        : Utilities.AdjustPrecision(resourceType.HourSpread.Value, ws.DecimalPrecision).ToString();
+
+                    errors.Add(new ValidationMessage(string.Format(Constants.MOQ_TYPE_REQUIRED_FOR_RESOURCE_TYPE, resourceType.StartDate, resourceType.EndDate, resourceValue)));
+                });
             }
         }
 
@@ -3371,7 +3372,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <returns>Labels for MOQ Type Data Table Fields</returns>
         public virtual MoqTypeTableDataLabels GetMoqTypeLabels()
         {
-            throw new NotImplementedException();
+            return new MoqTypeTableDataLabels();
         }
     }
 
