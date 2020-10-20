@@ -1471,7 +1471,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Gets the proposals certification timeline past due.
         /// </summary>
-        /// <returns>>A list of proposals.</returns>
+        /// <returns>A list of proposals.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         [DbQuery]
         public ICollection<ProposalDto> GetProposalsCertificationTimelinePastDue()

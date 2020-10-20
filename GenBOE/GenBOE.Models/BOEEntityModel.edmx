@@ -4184,6 +4184,7 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
           <Parameter Name="WorkspaceName" Type="varchar" Mode="In" />
           <Parameter Name="WorkspaceShortName" Type="varchar" Mode="In" />
+          <Parameter Name="CostVolumeLeadPricerUserID" Type="int" Mode="In" />
         </Function>
         <Function Name="copyWorkspaceVersion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
@@ -10571,6 +10572,7 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
             <Parameter Name="WorkspaceName" Mode="In" Type="String" />
             <Parameter Name="WorkspaceShortName" Mode="In" Type="String" />
+            <Parameter Name="CostVolumeLeadPricerUserID" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="createWorkspaceVersion" ReturnType="Collection(Int32)">
             <Parameter Name="VersionName" Mode="In" Type="String" />

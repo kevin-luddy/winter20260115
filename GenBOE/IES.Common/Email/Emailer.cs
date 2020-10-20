@@ -303,6 +303,9 @@ namespace IES.Common
                         // put the From and To addresses in exception try b/c they can generate exceptions if they are invalid (and not slipped through the logic above)
                         // and the exceptions need to be caught.
                         message.From = new MailAddress(fromAddress);
+
+                        // clear the To addresses so recipients aren't re-added on multiple attempts
+                        message.To.Clear();
                         message.To.Add(inRecipient);
 
                         // only add cc if there's a valid email address
@@ -315,6 +318,31 @@ namespace IES.Common
                         {
                             smtp.Send(message);
                         }
+
+                        emailSent = true;
+                        dispose = true;
+                    }
+                    catch (SmtpFailedRecipientsException e)
+                    {
+                        // The email failed to send to some of the recipients, but still sent, so log the error but mark as sent
+                        foreach (SmtpFailedRecipientException ex in e.InnerExceptions)
+                        {
+                            this.log.Error(ex,
+                            string.Format(
+                                "There was an error sending email to recipient {0}. SmtpStatus is {1}.",
+                                ex.FailedRecipient, ex.StatusCode.GetDescription()));
+                        }
+
+                        emailSent = true;
+                        dispose = true;
+                    }
+                    catch (SmtpFailedRecipientException e)
+                    {
+                        // The email failed to send to one of the recipients, but still sent, so log the error but mark as sent
+                        this.log.Error(e,
+                            string.Format(
+                                "There was an error sending email to recipient {0}. SmtpStatus is {1}.",
+                                e.FailedRecipient, e.StatusCode.GetDescription()));
 
                         emailSent = true;
                         dispose = true;
@@ -461,12 +489,18 @@ namespace IES.Common
                    "<a href=\"{2}\">Proposal Details tab</a>."
         };
 
+        /// <summary>
+        /// Email content sent for monthly Certification Timeline reminder email
+        /// </summary>
         public static readonly EmailContent CERTIFICATION_TIMELINE_EMAIL = new EmailContent
         {
-            Subject = "PTM: Certification Timeline ALERT",
+            Subject = "PTM: Certification Timeline ALERT for {0} - {1} (Action Required)",
             Body = "PTM records indicate that for proposal tracking number {0} ({1}), the Certification Timeline data has not been completed.  " +
-                "If your proposal has been certified, please complete <a href=\"{2}\">this section</a> in PTM as soon as possible .  " +
-                "This e-mail will be sent monthly as a reminder.  Thank You"
+                "If your proposal has been certified, please complete the Certification Timeline section in PTM as soon as possible.<br/><br/>" +
+                "Reminders to the Contracts, Estimating, and Supply Chain team:<br/><br/>" +
+                "If the proposal has not been negotiated and is scheduled to start negotiations within the next few weeks, Contracts should initiate completion of the Pre-Negotiation checklist at this time.<br/><br/>" +
+                "It is incumbent upon the proposal team to ensure we are providing timely disclosures to the customer through Contracts and are tracking them in our Contracts disclosure log for traceability and documentation purposes.<br/><br/>" +
+                "This e-mail will be sent monthly as a reminder, until the certification is complete.  Thank You"
         };
 
         /// <summary>

@@ -94,7 +94,7 @@ namespace GenTRAC.DataBridge.DTO
                 {
                     this.ProcessApprovers(emailList, this.ProposalLoader.GetProposalsByWorkflowStatus(WorkflowStatus.Started), EmailType.InitialApprovalEmail);
                     this.ProcessLOBApprover(emailList, this.ProposalLoader.GetProposalsByWorkflowStatus(WorkflowStatus.AllApproved), EmailType.InitialLOBApprovalEmail);
-                    
+
                     // only get cutoff emails if this is not for a specific approval
                     this.ProcessApprovers(emailList, this.ProposalLoader.GetProposalsByWorkflowStatusAndCutoffDate(WorkflowStatus.InitialApproverEmail, cutoffDate), EmailType.SecondApprovalEmail);
                     this.ProcessApprovers(emailList, this.ProposalLoader.GetProposalsByWorkflowStatusAndCutoffDate(WorkflowStatus.SecondApproverEmail, cutoffDate), EmailType.FinalApprovalEmail);
@@ -324,6 +324,33 @@ namespace GenTRAC.DataBridge.DTO
             foreach (ProposalDto proposal in collection)
             {
                 string email = this.RetrieveEmailForRole(proposal, PtmRole.Pricer);
+
+                string contractsEmail = this.RetrieveEmailForRole(proposal, PtmRole.ContractsPOC);
+                if (!email.Contains(contractsEmail))
+                {
+                    email += ";" + contractsEmail;
+                }
+
+                ICollection<ProposalPermissionDto> permissions = this.RetrievePermissions(proposal.Id);
+
+                if (permissions.Any(x => x.Role == PtmRole.SupplyChainPOCMatl))
+                {
+                    string matEmail = this.RetrieveEmailForRole(proposal, PtmRole.SupplyChainPOCMatl);
+                    if (!email.Contains(matEmail))
+                    {
+                        email += ";" + matEmail;
+                    }
+                }
+
+                if (permissions.Any(x => x.Role == PtmRole.SupplyChainPOCSubs))
+                {
+                    string subEmail = this.RetrieveEmailForRole(proposal, PtmRole.SupplyChainPOCSubs);
+                    if (!email.Contains(subEmail))
+                    {
+                        email += ";" + subEmail;
+                    }
+                }
+
                 if (!string.IsNullOrEmpty(email))
                 {
                     EmailInformationDto emailInfo = new EmailInformationDto()

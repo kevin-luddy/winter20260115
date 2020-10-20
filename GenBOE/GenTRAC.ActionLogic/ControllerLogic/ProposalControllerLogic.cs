@@ -912,8 +912,7 @@ namespace GenTRAC.ActionLogic
                 model.DisplayNewRevisionButton = fullProposalDto.WorkflowStatus == WorkflowStatus.ProposalLocked && userIsLeadOrBackupPricer;
 
                 // Display Revert to Prior Version button only if user is lead or backup estimator and in latest revision
-                if ((fullProposalDto.ProposalStatus == ProposalStatus.InProgress || fullProposalDto.ProposalStatus == ProposalStatus.Completed || 
-                    fullProposalDto.ProposalStatus == ProposalStatus.Submitted) && fullProposalDto.IsRevision && userIsLeadOrBackupPricer)
+                if (fullProposalDto.ProposalStatus == ProposalStatus.InProgress && fullProposalDto.IsRevision && userIsLeadOrBackupPricer)
                 {
                     model.DisplayRevertRevisionButton = true;
                 }
@@ -2012,6 +2011,12 @@ namespace GenTRAC.ActionLogic
                 }
             }
 
+            // This is to catch the error in new proposals where a selection isn't made
+            if (proposalInfo.ISGSRole == ISGSRole.NotSet && !inValidationErrors.Any(x => x.ValidationIssue == ValidationConstants.ProposalValidationConstants.SSC_ROLE_REQUIRED))
+            {
+                inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.SSC_ROLE_REQUIRED));
+            }
+
             if (!proposalInfo.ContractType.Any())
             {
                 inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CONTRACT_TYPE_REQUIRED));
@@ -2418,7 +2423,6 @@ namespace GenTRAC.ActionLogic
 
             return result;
         }
-        
         #endregion
 
         #region Certification Timeline Validate / Save

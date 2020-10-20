@@ -632,7 +632,8 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="inWorkspaceIDtoCopy">Id of workspace to exact copy</param>
         /// <param name="newWorkspaceName">New unique workspace name.</param>
         /// <param name="newShortName">New unique short name for the workspace.</param>
-        public virtual int ExactCopyWorkspace(int inWorkspaceIDtoCopy, string newWorkspaceName, string newShortName)
+        /// <param name="costVolumeLeadPricerId">Cost Volume Lead Pricer / Estimator Id</param>
+        public virtual int ExactCopyWorkspace(int inWorkspaceIDtoCopy, string newWorkspaceName, string newShortName, int costVolumeLeadPricerId)
         {
             if (inWorkspaceIDtoCopy <= 0) { throw new ArgumentNullException(nameof(inWorkspaceIDtoCopy)); }
 
@@ -647,7 +648,7 @@ namespace GenBOE.DataBridge.DTO
                         gbe.Database.CommandTimeout = 300;  // give the SP enough time to execute
 
                         // Save the workspace identification and output format template
-                        outNewWorkspaceID = gbe.copyWorkspace(inWorkspaceIDtoCopy, newWorkspaceName, newShortName).FirstOrDefault().GetValueOrDefault();
+                        outNewWorkspaceID = gbe.copyWorkspace(inWorkspaceIDtoCopy, newWorkspaceName, newShortName, costVolumeLeadPricerId).FirstOrDefault().GetValueOrDefault();
                     }
                 }
             } catch (SqlException ex)

@@ -79,14 +79,22 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
-        public int CopyWorkspaceExactly(int workspaceIDToCopy, string newWorkspaceName, string newShortName)
+        /// <summary>
+        /// Performs an exact copy of a workspace
+        /// </summary>
+        /// <param name="workspaceIDToCopy">Workspace Id to copy</param>
+        /// <param name="newWorkspaceName">New WS Name</param>
+        /// <param name="newShortName">New WS Short Name</param>
+        /// <param name="costVolumeLeadPricerId">Cost Volume Lead Pricer / Estimator user id</param>
+        /// <returns>New Workspace Id</returns>
+        public int CopyWorkspaceExactly(int workspaceIDToCopy, string newWorkspaceName, string newShortName, int costVolumeLeadPricerId)
         {
             if (workspaceIDToCopy <= 0)
             {
                 throw new ArgumentNullException(nameof(workspaceIDToCopy));
             }
 
-            return this.workspaceLoader.ExactCopyWorkspace(workspaceIDToCopy, newWorkspaceName, newShortName);
+            return this.workspaceLoader.ExactCopyWorkspace(workspaceIDToCopy, newWorkspaceName, newShortName, costVolumeLeadPricerId);
         }
 
         public bool CopyWorkspace(FullWorkspace workspaceToCopy, FullWorkspace newWorkspace, Collection<int> BOEToCopy,

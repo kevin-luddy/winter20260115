@@ -378,5 +378,8 @@
     <Content Include="_Other Scripts\RemoveNonDiscreteLaborSpreads.sql" />
     <Content Include="_Other Scripts\Sql To Move Templates for Hotfix 2.9.5.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="_Full Script Files For Specific Versions\BOE - 2020.3.11 8_26_2020.sql" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

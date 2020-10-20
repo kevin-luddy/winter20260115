@@ -74,14 +74,25 @@ namespace GenTRAC.ActionLogic.Email
                         proposalUrl = email.ProposalSetupUrl.ToString();
                         break;
                     case EmailType.CertificationTimelineEmail:
-                        proposalUrl = email.ProposalCertificationUrl.ToString();
+                        // no url for email
+                        proposalUrl = string.Empty;
                         break;
                     default:
                         proposalUrl = email.ProposalApprovalUrl.ToString();
                         break;
                 }
 
-                string[] bodyReplaceTokens = new string[3] { email.TrackingNumber, email.ProposalTitle, proposalUrl };
+                string[] bodyReplaceTokens;
+                
+                if (email.ProposalEmailType == EmailType.CertificationTimelineEmail)
+                {
+                    subjectReplaceTokens = new string[2] { email.TrackingNumber, email.ProposalTitle };
+                    bodyReplaceTokens = new string[2] { email.TrackingNumber, email.ProposalTitle };
+                }
+                else
+                {
+                    bodyReplaceTokens = new string[3] { email.TrackingNumber, email.ProposalTitle, proposalUrl };
+                }
 
                 EmailContent emailContent = GetEmailContent(email.ProposalEmailType, email.AdditionalText);
 

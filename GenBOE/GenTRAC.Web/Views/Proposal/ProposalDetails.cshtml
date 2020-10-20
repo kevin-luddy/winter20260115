@@ -408,20 +408,8 @@
             $('button[name="new-revision-button"]').addClass('disabled');
         }
 
-        if ('@(Model.ProposalStatus == ProposalStatus.Completed || Model.ProposalStatus == ProposalStatus.Submitted)' == 'True') {
-            $('button[name="revert-revision-button"]').addClass('disabled');
-        }
-
         if ('@(Model.HasRdsbDocument || Model.GenBoeWorkspaces.Any())' == 'True') {
             $('button[name="revert-revision-button"]').addClass('hasDocumentOrWorkspace');
-        }
-
-        // Adjust margins for revision buttons
-        if ('@(Model.DisplayRevertRevisionButton)' == 'True') {
-            $('#revisionButtons').removeClass('newRevisionButtonMargin');
-            if ('@(!Model.DisplayNewRevisionButton)' == 'True') {
-                $('#revisionButtons').addClass('revertRevisionMargin');
-            }
         }
 
         $('button[name="new-revision-button"]:not(.disabled)').click(function () {
@@ -517,7 +505,7 @@
                         </text>
                     }
                 </div>
-                <div id="revisionButtons" class="newRevisionButtonMargin">
+                <div id="revisionButtons">
                     @if (Model.DisplayNewRevisionButton)
                     {
                         <button name="new-revision-button" type="button" class="ies stateful_button">+ New Revision</button>
@@ -533,6 +521,7 @@
                         <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#PSA" tab="PSA">Post Submittal Attachments</a><div class="tab-right"></div></li>
                         <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Approvals" tab="Approvals">Approvals</a><div class="tab-right"></div></li>
                         <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#CertificationTimeline" tab="CertificationTimeline">Certification Timeline</a><div class="tab-right"></div></li>
+                        <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#RevisionHistory" tab="RevisionHistory">Revision History</a><div class="tab-right"></div></li>
                     </ul>
                 </div>
             <div class="tabs-right"></div>

@@ -1115,8 +1115,7 @@ button.ies-danger.disabled {
 }
 
 #certificationTimelineForm div.form-element {
-    min-width: 120px;
-    text-align: right;
+    width: 400px;    
 }
 
 #CertificationTimelineComment {
@@ -1154,14 +1153,6 @@ button.ies-danger.disabled {
 
 #revisionButtons {
     float: right;
-}
-
-.newRevisionButtonMargin {
-    margin-right: 135px;
-}
-
-.revertRevisionMargin {
-    margin-right: 88px;
 }
 
 /* Revision Tab */

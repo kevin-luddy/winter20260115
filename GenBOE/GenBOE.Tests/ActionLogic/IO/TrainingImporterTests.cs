@@ -41,7 +41,7 @@ namespace GenBOE.Tests.ActionLogic.IO
 
             Assert.IsNotNull(trainings);
             Assert.IsTrue(trainings.Count > 0);
-            Assert.AreEqual(1, trainings.Count(t => t.UserId == "111034" && t.CourseId == Constants.TINA_TRAINING_COURSEID && t.UserDisplayName == "Zaremski, Dennis R" && t.LastCompleted == DateTime.Parse("6/4/2018")));           
+            Assert.AreEqual(1, trainings.Count(t => t.UserId == "111034" && t.CourseId == Constants.TINA_TRAINING_COURSEID && t.UserDisplayName == "Zaremski, Dennis Raymond" && t.LastCompleted == DateTime.Parse("6/4/2018")));           
 
             ICollection<TrainingModelView> overdue = sut.GetOverdueTraining(new ActiveDirectoryUtilities(), trainings, "TINA Training");
             Assert.IsNotNull(overdue);

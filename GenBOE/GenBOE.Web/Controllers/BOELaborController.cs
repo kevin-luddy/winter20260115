@@ -981,7 +981,7 @@ namespace GenBOE.Web.Controllers
             }
             catch (GeneralMOQCalculationException ex1)
             {
-                _log.Error(ex1, "MOQ Calculation Exception");
+                _log.Warn(ex1, "MOQ Calculation Exception");
                 toReturn = Json(new { Status = false, Message = ex1.Message });
             }
 

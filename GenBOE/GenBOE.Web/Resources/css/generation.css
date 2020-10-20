@@ -8476,3 +8476,9 @@ textarea.ng-invalid {
     margin: -16px 0 0 -15px;
     width: 1100px;
 }
+
+.nonPrintableLabel {
+    color: darkgrey;
+    padding-top: 5px;
+    padding-left:10px;
+}

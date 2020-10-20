@@ -4931,7 +4931,7 @@ namespace GenBOE.Web.Controllers
             UserDTO LeadPricer = this.UserLoader.GetUserByID(ws.CostVolumeLeadPricerUserID);
 
             int[] selectedContractTypes = this.GetSelectedContractTypeOptionList(ws);
-            return Json(new {Name= newWsName, ShortName= newWsShortName, DisplayName= LeadPricer.DisplayName, LOBId= ws.LineOfBusiness.Id, ProposalClass= (ws.ProposalClass.Id).ToString(), ContractTypes = selectedContractTypes });
+            return Json(new {Name= newWsName, ShortName= newWsShortName, DisplayName= LeadPricer.DisplayName, CostVolumeLeadPricerNTID = LeadPricer.NTID, LOBId= ws.LineOfBusiness.Id, ProposalClass= (ws.ProposalClass.Id).ToString(), ContractTypes = selectedContractTypes });
         }
 
         public JsonResult IsWorkspaceNameAvailable(String value)
@@ -4967,10 +4967,7 @@ namespace GenBOE.Web.Controllers
         [MaxDbQuery(-1)]
         public JsonResult SaveNewWorkspace([CreateWorkspaceBinder] ICreateWorkspaceModelView newWorkspace)
         {
-            if (newWorkspace == null)
-            {
-                throw new ArgumentNullException(nameof(newWorkspace));
-            }
+            _ = newWorkspace ?? throw new ArgumentNullException(nameof(newWorkspace));
 
             bool finishedWithoutErrors = true;
 
@@ -5022,9 +5019,9 @@ namespace GenBOE.Web.Controllers
             #region Do the initial save
 
             // Objects we could be saving
-            int newWorkspaceID = 0;
+            int newWorkspaceID;
             UserDTO createdByUserDTO = this.UserLoader.GetUserForActiveUser();
-            WorkspaceDTO newWorkspaceDTO = null;
+            WorkspaceDTO newWorkspaceDTO;
             
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
@@ -5032,8 +5029,8 @@ namespace GenBOE.Web.Controllers
                 {
                     if (newWorkspace.WorkspaceToCopyID > 0)
                     {
-                        newWorkspaceID = _WorkspaceCopier.CopyWorkspaceExactly(newWorkspace.WorkspaceToCopyID, newWorkspace.WorkspaceName, newWorkspace.Shortname);
-
+                        UserDTO newCostVolumeLeadPricerDTO = this.UserLoader.GetOrCreateUserByNtid(newWorkspace.CostVolumeLeadPricerNTID);
+                        newWorkspaceID = _WorkspaceCopier.CopyWorkspaceExactly(newWorkspace.WorkspaceToCopyID, newWorkspace.WorkspaceName, newWorkspace.Shortname, newCostVolumeLeadPricerDTO.UserID);
                         newWorkspaceDTO = this.Factory.CreateFullWorkspace(newWorkspaceID);
 
                         // Set Project Map Workspaces to Working state - they can't be set to Initialization
@@ -5087,8 +5084,7 @@ namespace GenBOE.Web.Controllers
                     }
 
                     // Get/Save Cost Volume Lead
-                    UserData costVolumeUserData = _ADUtils.GetUserByQualifiedAccount(newWorkspace.CostVolumeLeadPricerNTID, false);
-                    UserDTO costVolumeLeadPricerDTO = this.UserLoader.GetOrCreateUserByNtid(costVolumeUserData.Ntid);
+                    UserDTO costVolumeLeadPricerDTO = this.UserLoader.GetOrCreateUserByNtid(newWorkspace.CostVolumeLeadPricerNTID);
 
                     // Create the Workspace
                     newWorkspaceDTO = new WorkspaceDTO();
