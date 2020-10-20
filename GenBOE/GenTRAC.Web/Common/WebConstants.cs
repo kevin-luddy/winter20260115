@@ -358,6 +358,12 @@ namespace GenTRAC.Web.Common
             /// </summary>
             public const string DELETE_PROPOSAL = "DeleteProposal";
 
+            /// <summary>
+            /// Displays Revision History Tab
+            /// </summary>
+            public const string DISPLAY_REVISION_HISTORY = "DisplayRevisionHistory";
+
+            /// <summary>
             /// Reverts the Proposal to the prior version
             /// </summary>
             public const string REVERT_PROPOSAL_TO_PRIOR_VERSION = "RevertProposalToPriorVersion";
