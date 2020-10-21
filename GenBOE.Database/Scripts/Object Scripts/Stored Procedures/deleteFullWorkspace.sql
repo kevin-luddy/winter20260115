@@ -35,7 +35,8 @@ AS
 **		6/29/2018	twilson3			BOEJ-3551 New Homepage Table
 **		10/25/2018	twilson3			BOEJ-3878 Email Table and WorkspaceOffloadRate Table.  Moved deletes around to mimic deleteMockTestData.sql for easier Compare in future
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
-**		5/22/20	Dusan					BOEJ-4616 Cleanning up the method, as it was neglegted
+**		5/22/20		Dusan				BOEJ-4616 Cleanning up the method, as it was neglegted
+**		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
 *******************************************************************************/
 SET NOCOUNT ON 
 	IF @WorkspaceID IS NULL
@@ -132,6 +133,17 @@ SET NOCOUNT ON
 			FROM dbo.BOELaborType LT 
 				INNER JOIN dbo.BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
 				INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
+				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
+		DELETE FROM dbo.MOQTypeSelection
+			FROM dbo.MOQTypeSelection M
+				INNER JOIN dbo.BOETaskElement T ON M.TaskId = T.BOETaskElementID
+				INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
+				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
+		DELETE FROM dbo.MOQTypeSelectionTableData
+			FROM dbo.MOQTypeSelectionTableData TD
+				INNER JOIN dbo.MOQTypeSelection M on TD.MOQTypeSelectionId = M.MOQTypeSelectionId
+				INNER JOIN dbo.BOETaskElement T ON M.TaskId = T.BOETaskElementID
+				INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
 				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
 		DELETE FROM dbo.BOEApprovalHistory 
 				FROM dbo.BOEApprovalHistory BAH 

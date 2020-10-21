@@ -11,6 +11,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
     using System.Collections.ObjectModel;
     using System.Linq;
     using GenBOE.ActionLogic.Common.Calculations;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
@@ -360,6 +361,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
                         StartDateValue = DateTime.Parse("02/2014"),
                         EndDateValue = DateTime.Parse("04/2014"),
                         ValueSpread = 30,
+                        MoqTypeSelectionId = 5001,
                         LaborSpreads = new Collection<ResourceSpreadDto>()
                         {
                             new ResourceSpreadDto() { LaborSpreadDate = new DateTime(2014, 2, 1), LaborSpreadValue = 10 },
@@ -374,6 +376,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
                         StartDateValue = DateTime.Parse("01/2014"),
                         EndDateValue = DateTime.Parse("04/2014"),
                         ValueSpread = 40,
+                        MoqTypeSelectionId = 5001,
                         LaborSpreads = new Collection<ResourceSpreadDto>()
                         {
                             new ResourceSpreadDto() { LaborSpreadDate = new DateTime(2014, 1, 1), LaborSpreadValue = 10 },
@@ -389,6 +392,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
                         StartDateValue = DateTime.Parse("04/2014"),
                         EndDateValue = DateTime.Parse("04/2014"),
                         ValueSpread = 10,
+                        MoqTypeSelectionId = 5001,
                         LaborSpreads = new Collection<ResourceSpreadDto>()
                         {
                             new ResourceSpreadDto() { LaborSpreadDate = new DateTime(2014, 4, 1), LaborSpreadValue = 10 }
@@ -587,6 +591,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
             this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
+            this.retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(boe.Id)).Returns(new List<MoqTypeSelection>());
 
             ICollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>();
             taskElementData.Add(new BoeTaskElementDTO()
@@ -603,6 +608,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
                         StartDateValue = DateTime.Parse("02/2014"),
                         EndDateValue = DateTime.Parse("03/2014"),
                         ValueSpread = 20,
+                        MoqTypeSelectionId = 5001,
                         LaborSpreads = new Collection<ResourceSpreadDto>()
                         {
                             new ResourceSpreadDto() { LaborTypeId = 20, LaborSpreadDate = new DateTime(2014, 2, 1), LaborSpreadValue = 10 },
@@ -617,6 +623,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
                         StartDateValue = DateTime.Parse("02/2014"),
                         EndDateValue = DateTime.Parse("04/2014"),
                         ValueSpread = 33,
+                        MoqTypeSelectionId = 5001,
                         LaborSpreads = new Collection<ResourceSpreadDto>()
                         {
                             new ResourceSpreadDto() { LaborTypeId = 30, LaborSpreadDate = new DateTime(2014, 1, 1), LaborSpreadValue = 0 }, // start date is outside of PoP, but 0 value
@@ -632,6 +639,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
                         StartDateValue = DateTime.Parse("04/2014"),
                         EndDateValue = DateTime.Parse("04/2014"),
                         ValueSpread = 3,
+                        MoqTypeSelectionId = 5001,
                         LaborSpreads = new Collection<ResourceSpreadDto>()
                         {
                             new ResourceSpreadDto() { LaborSpreadDate = new DateTime(2014, 4, 1), LaborSpreadValue = 3 }

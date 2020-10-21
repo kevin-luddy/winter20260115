@@ -59,7 +59,8 @@ namespace GenBOE.DataBridge.DTO
                                         WBSID = laborType.WBSID,
                                         CLINID = laborType.CLINID,
                                         CanOffload = laborType.CanOffload ?? false,
-                                        LaborTypeOrder = laborType.LaborSortID
+                                        LaborTypeOrder = laborType.LaborSortId,
+                                        MoqTypeSelectionId = laborType.MOQTypeSelectionId
                                     }).ToList();
 
                     LoadSikorskyFields(gbe, toReturn);
@@ -103,7 +104,8 @@ namespace GenBOE.DataBridge.DTO
                                         WBSID = laborType.WBSID,
                                         CLINID = laborType.CLINID,
                                         CanOffload = laborType.CanOffload ?? false,
-                                        LaborTypeOrder = laborType.LaborSortID
+                                        LaborTypeOrder = laborType.LaborSortId,
+                                        MoqTypeSelectionId = laborType.MOQTypeSelectionId
                         }).ToList();
 
                     LoadSikorskyFields(gbe, toReturn);
@@ -208,7 +210,8 @@ namespace GenBOE.DataBridge.DTO
                             dtoToUpsert.WBSID,
                             dtoToUpsert.CLINID,
                             dtoToUpsert.CanOffload,
-                            dtoToUpsert.LaborTypeOrder).FirstOrDefault();
+                            dtoToUpsert.LaborTypeOrder,
+                            dtoToUpsert.MoqTypeSelectionId).FirstOrDefault();
                     }
                 }
 
@@ -239,7 +242,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 "BOELaborTypeID", "UpdateDT", "ResourceID", "PerformingOrganizationID", "BOELaborTypeStartDate", "BOELaborTypeEndDate", 
                 "SpreadCurveID", "PercentSpread", "ValueSpread", "BOETaskElementID", "SpreadTypeID", "PercentSpreadLocked", "HourSpreadLocked",
-                "WBSID", "CLINID", "CanOffload", "LaborSortID"
+                "WBSID", "CLINID", "CanOffload", "LaborSortId", "MOQTypeSelectionId"
             };
 
             return metaData;
@@ -296,7 +299,8 @@ namespace GenBOE.DataBridge.DTO
             entity.WBSID = dtoToConvert.WBSID;
             entity.CLINID = dtoToConvert.CLINID;
             entity.CanOffload = dtoToConvert.CanOffload;
-            entity.LaborSortID = dtoToConvert.LaborTypeOrder;
+            entity.LaborSortId = dtoToConvert.LaborTypeOrder;
+            entity.MOQTypeSelectionId = dtoToConvert.MoqTypeSelectionId;
 
             return entity;
         }

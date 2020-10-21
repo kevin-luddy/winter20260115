@@ -10,12 +10,12 @@ namespace GenBOE.ActionLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.DataBridge.Common;
@@ -72,7 +72,8 @@ namespace GenBOE.ActionLogic
             TaskElementValidation taskElementValidation,
             IVariableCircularReferenceChecker circularReferenceChecker,
             ICommonDataMapper commonDataMapper,
-            IRteTemplateDataLoader rteTemplateDataLoader
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            IMoqTypeDataLoader moqTypeDataLoader
             )
             : base(inBoeTaskElementRecalc,
                 inBoeStateMachine,
@@ -91,19 +92,22 @@ namespace GenBOE.ActionLogic
                 taskElementValidation,
                 circularReferenceChecker,
                 commonDataMapper,
-                rteTemplateDataLoader)
+                rteTemplateDataLoader,
+                moqTypeDataLoader)
         {
             this._mstMetricsLoader = inMSTMetricLoader;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
         /// <summary>
+        /// THESE ARE LEGACY MOQ TYPES AS OF 10/2020
+        /// 
         /// Gets the valid <see cref="MOQType" />'s for the MST configuration
         /// </summary>
         /// <returns>
         /// valid <see cref="MOQType" />'s for this company configuration
         /// </returns>
-        public override ICollection<MOQType> GetMOQTypes()
+        internal override ICollection<MOQType> GetMOQTypes()
         {
             return new MOQType[]
             {
@@ -259,7 +263,6 @@ namespace GenBOE.ActionLogic
             this._mstMetricsLoader.Save(taskElementID, metricIDs);
         }
 
-
         /// <summary>
         /// Returns a <see cref="bool"/> indicating if the read only flag should be overridden
         /// </summary>
@@ -339,6 +342,18 @@ namespace GenBOE.ActionLogic
             }
 
             model.MetricsSearchDialogParameters.SearchMetricsDialogIdSuffix = CommonConstants.MSTMetricsDialogSuffix;
+        }
+
+        /// <summary>
+        /// Returns a list of labels to be used in the MOQ Types page.
+        /// </summary>
+        /// <returns>Labels for MOQ Type Data Table Fields</returns>
+        public override MoqTypeTableDataLabels GetMoqTypeLabels()
+        {
+            return new MoqTypeTableDataLabels() 
+            {
+                ContractNumber = "Contract Number"
+            };
         }
     }
 }

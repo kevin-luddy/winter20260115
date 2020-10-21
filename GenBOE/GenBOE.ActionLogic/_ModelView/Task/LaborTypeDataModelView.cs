@@ -102,6 +102,7 @@ namespace GenBOE.ActionLogic.ModelView
             this.HourSpreadLocked = inBoeLaborType.HourSpreadLocked;
             this.WBSID = inBoeLaborType.WBSID;
             this.CLINID = inBoeLaborType.CLINID;
+            this.SelectedMOQType = (MOQType?)inBoeLaborType.MoqTypeSelectionId;
             
             if (inBoeLaborType.LaborSpreads != null && inBoeLaborType.LaborSpreads.Any())
             {
@@ -306,6 +307,11 @@ namespace GenBOE.ActionLogic.ModelView
         /// The value of the order in which the resource will appear in the task listing
         /// </summary>
         public int LaborTypeOrder { get; set; }
+
+        /// <summary>
+        /// Selected MOQ Type
+        /// </summary>
+        public MOQType? SelectedMOQType { get; set; }
     }
 
     /// <summary>

@@ -6,9 +6,11 @@
 
 namespace GenBOE.Objects
 {
+    using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using IES.Common;
@@ -49,6 +51,7 @@ namespace GenBOE.Objects
         private ITMResourceRateDTODataLoader tmResourceRateLoader;
         private IProjectMapDataLoader projectMapDataLoader;
         private IRteTemplateDataLoader rteTemplateDataLoader;
+        private IMoqTypeDataLoader moqTypeDataLoader;
 
         /// <summary>
         /// Constructor
@@ -95,7 +98,7 @@ namespace GenBOE.Objects
             IEscalationRatesDTOLoader escalationRateLoader, ITripDTODataLoader tripDataLoader, IPerDiemDTODataLoader perDiemLoader,
             IMiscTravelRateDTOLoader miscTravelRateLoader, IUserDTODataLoader userDataLoader, ILocationDTODataLoader locationLoader,
             ICustomFieldValueDTODataLoader customFieldValueLoader, IBOEHistoryDTODataLoader boeHistoryLoader, ITMResourceRateDTODataLoader tmResourceRateLoader,
-            IProjectMapDataLoader projectMapDataLoader, IRteTemplateDataLoader rteTemplateDataLoader)
+            IProjectMapDataLoader projectMapDataLoader, IRteTemplateDataLoader rteTemplateDataLoader, IMoqTypeDataLoader moqTypeDataLoader)
         {
             this.clinLoader = clinLoader;
             this.wbsLoader = wbsLoader;
@@ -128,6 +131,7 @@ namespace GenBOE.Objects
             this.tmResourceRateLoader = tmResourceRateLoader;
             this.projectMapDataLoader = projectMapDataLoader;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
+            this.moqTypeDataLoader = moqTypeDataLoader;
         }
 
         #endregion
@@ -993,6 +997,26 @@ namespace GenBOE.Objects
         public ICollection<RTECustomTemplateQuestionAnswerModelView> GetQuestionsAndAnswersByWorkspaceId(int workspaceId)
         {
             return this.rteTemplateDataLoader.GetQuestionsAndAnswersByWorkspaceId(workspaceId);
+        }
+
+        /// <summary>
+        /// Gets MOQ Type selections for the workspace
+        /// </summary>
+        /// <param name="wsId">WS Id</param>
+        /// <returns>Selected MOQ Types with data</returns>
+        public ICollection<MoqTypeSelection> GetMoqTypeSelectionsByWorkspaceId(int wsId)
+        {
+            return this.moqTypeDataLoader.GetByWorkspaceId(wsId);
+        }
+
+        /// <summary>
+        /// Gets MOQ Type selections for the BOE
+        /// </summary>
+        /// <param name="boeId">Boe Id</param>
+        /// <returns>Selected MOQ Types with data</returns>
+        public ICollection<MoqTypeSelection> GetMoqTypeSelectionsByBoeId(int boeId)
+        {
+            return this.moqTypeDataLoader.GetByBoeId(boeId);
         }
     }
 }

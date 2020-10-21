@@ -25,6 +25,7 @@ namespace GenBOE.ActionLogic.ModelView
             this.ValidationErrors = new List<ValidationMessage>();
             this.TaskCustomFields = new List<BOECustomFieldModelView>();
             this.LaborCustomFields = new List<BOECustomFieldModelView>();
+            this.MOQTypes = new Collection<MoqTypeSelection>();
         }
 
         /// <summary>
@@ -61,5 +62,10 @@ namespace GenBOE.ActionLogic.ModelView
         /// Gets or sets the Adjacent Tasks.
         /// </summary>
         public AdjacentItems AdjacentItems { get; set; }
+
+        /// <summary>
+        /// Selected MOQ Types
+        /// </summary>
+        public ICollection<MoqTypeSelection> MOQTypes { get; set; }
     }
 }

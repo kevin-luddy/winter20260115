@@ -2082,7 +2082,8 @@ function InitializeRTE(elementName, options, widget) {
 		plugins: [
 			"advlist autolink link image lists charmap preview hr anchor pagebreak, code",
 			"searchreplace visualblocks visualchars fullscreen insertdatetime nonbreaking",
-			"save table contextmenu directionality template paste textcolor"
+			"save table contextmenu directionality template paste textcolor",
+			"fullscreen placeholder"
 		],
 		content_css: "/Resources/css/tinymce.css",
 		menu: {

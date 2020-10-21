@@ -19,7 +19,7 @@ namespace GenBOE.Models
         public int BOELaborTypeID { get; set; }
         public int CustomFieldValueID { get; set; }
     
-        public virtual BOELaborType BOELaborType { get; set; }
         public virtual CustomFieldValue CustomFieldValue { get; set; }
+        public virtual BOELaborType BOELaborType { get; set; }
     }
 }

@@ -27,6 +27,7 @@
     $scope.model.AdjacentItems = {};
     $scope.model.AdjacentItems.PreviousId = undefined;
     $scope.model.AdjacentItems.NextId = undefined;
+    $scope.SelectedMoqTypes = [];
 
     $scope.isPreviousTaskDisabled = function () {
         return $scope.model.AdjacentItems.PreviousId === undefined || $scope.model.AdjacentItems.PreviousId === null;
@@ -54,7 +55,7 @@
             var hash = '#LMLabor/task/' + $scope.model.AdjacentItems.NextId.toString();
             if (window.location.hash === hash) {
                 hash = hash + "?t=2";
-            } 
+            }
 
             $scope.navigateToUrl(hash);
         }
@@ -93,6 +94,10 @@
 
         angular.forEach($scope.PerfOrgModels, function (item, key) {
             item.Label = item.PerformingOrgName + '-' + item.PerformingOrgDesc;
+        });
+
+        TaskElementDetailsWidget.registerForEvent('MOQ_TYPE_SELECTION_CHANGED', function (e, moqData) {
+            $scope.moqSelectionUpdated(moqData);
         });
 
         // load the main data
@@ -159,13 +164,13 @@
     $scope.getLaborCustomFieldText = function (item, customField) {
         var text = '';
         item.CustomFieldValues.some(function (cfv) {
-            if (cfv.CustomFieldID === customField.CustomFieldMetaData.CustomFieldID) { 
+            if (cfv.CustomFieldID === customField.CustomFieldMetaData.CustomFieldID) {
                 if (cfv.isOpenEnded) {
                     text = cfv.OpenEndedValue;
                 } else {
                     // need to find the matching value in the options of the customfield
                     customField.CustomFieldOptions.some(function (cfo) {
-                        if (cfo.CustomFieldOptionID === cfv.CustomFieldValueID) { 
+                        if (cfo.CustomFieldOptionID === cfv.CustomFieldValueID) {
                             text = cfo.ID + "-" + cfo.Description;
                             return true;
                         }
@@ -399,7 +404,7 @@
                 if (cfv !== undefined) {
 
                     $scope.model.TaskElementData.CustomFieldValues.some(function (cfv) {
-                        if (cfv.CustomFieldValueID === option.CustomFieldOptionID) { 
+                        if (cfv.CustomFieldValueID === option.CustomFieldOptionID) {
                             selectedItem.selectedID = cfv.SelectionID;
                             selectedItem.selectedOptionID = option.CustomFieldOptionID;
                             selectedItem.updateDateLong = cfv.UpdateDateLong;
@@ -448,7 +453,7 @@
                 if (cfv !== undefined) {
 
                     item.CustomFieldValues.some(function (cfv) {
-                        if (cfv.CustomFieldValueID === option.CustomFieldOptionID) { 
+                        if (cfv.CustomFieldValueID === option.CustomFieldOptionID) {
                             selectedItem.selectedID = cfv.SelectionID;
                             selectedItem.selectedOptionID = option.CustomFieldOptionID;
                             selectedItem.updateDateLong = cfv.UpdateDateLong;
@@ -489,7 +494,7 @@
             }
         });
 
-        $scope.totalCost = cost.toString(); 
+        $scope.totalCost = cost.toString();
         $scope.totalHours = hours.toString();
 
         cost = new BigNumber(0.0);
@@ -510,9 +515,9 @@
         });
 
         $scope.totalSpreadCost = cost.toString();
-        $scope.totalSpreadHours = hours.toString(); 
+        $scope.totalSpreadHours = hours.toString();
 
-        $scope.deltaHours = $scope.getMOQTotal().minus($scope.totalSpreadHours).toString(); 
+        $scope.deltaHours = $scope.getMOQTotal().minus($scope.totalSpreadHours).toString();
         $scope.validateTotals();
     };
 
@@ -546,7 +551,7 @@
 
     /* Calculates the percent spread based on hours / MOQ */
     $scope.calculatePercentSpread = function (item, moqTotal) {
-        
+
         if (item.RateType !== ManageTaskModel.RateTypeCost) {
             // assuming item.HourSpreadLocked or using discrete spread
             var percentSpread = new BigNumber(0);
@@ -765,7 +770,7 @@
 
                         item.SpreadData.push(spreadValue);
                         var invalid = false;
-                        
+
 
                         // check precision
                         var precision = $scope.getPrecision(item);
@@ -851,7 +856,7 @@
                         }
                     }
                 });
-                
+
                 // remake the spread array
                 $scope.generateSpreadTable();
                 $scope.recalculateTotals();
@@ -868,13 +873,13 @@
     };
 
     /* Calculate the spread for one row */
-    var calculateSpread = function (item, value) { 
+    var calculateSpread = function (item, value) {
         $(document).trigger("SHOW_LOADING_BOX");
         var precision = ManageTaskModel.DecimalPrecision;
         if (item.RateType === ManageTaskModel.RateTypeCost) {
             precision = ManageTaskModel.CostDecimalPrecision;
         }
-        var data = { value: value, start: item.StartDate, end: item.EndDate, curve: item.SpreadCurveID, rateType: item.RateType, percentLocked: item.PercentSpreadLocked, percentSpread: item.PercentSpread};
+        var data = { value: value, start: item.StartDate, end: item.EndDate, curve: item.SpreadCurveID, rateType: item.RateType, percentLocked: item.PercentSpreadLocked, percentSpread: item.PercentSpread };
         var dataArray = [];
         dataArray.push(data);
         var postedData = {
@@ -897,7 +902,7 @@
             // remake the spread array
             $scope.generateSpreadTable();
             $scope.recalculateTotals();
-            
+
             $(document).trigger("HIDE_LOADING_BOX");
         }, function errorCallback(response) {
             if (response.data && response.data.MessageList) {
@@ -929,11 +934,13 @@
             data: data,
             url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.action, '')
         }).then(function (response) {
-
             $scope.model = response.data;
+            $scope.SelectedMoqTypes = response.data.MOQTypes;
+
             if (!$scope.model.LaborTypesData) {
                 $scope.model.LaborTypesData = [];
             }
+
             $scope.TaskCustomFields = $scope.model.TaskCustomFields;
             $scope.LaborCustomFields = $scope.model.LaborCustomFields;
 
@@ -1021,7 +1028,6 @@
             if (callback && typeof callback === 'function') {
                 callback();
             }
-
         }, function errorCallback(response) {
             if (response.data && response.data.MessageList) {
                 $scope.errors = response.data.MessageList;
@@ -1029,7 +1035,7 @@
             $scope.isLoading = false;
             $(document).trigger("HIDE_LOADING_BOX");
         });
-    };    
+    };
 
     $scope.encode = function (text, elementId) {
         $('#' + elementId).html(text);
@@ -1090,6 +1096,11 @@
         });
     };
 
+    // Selected MOQ Types were updated, need to update the dropdown in Labor Types
+    $scope.moqSelectionUpdated = function (data) {
+        $scope.SelectedMoqTypes = data;
+    };
+
     var save = function (callback, wsLocked) {
         if (wsLocked === undefined) {
             wsLocked = false;
@@ -1122,6 +1133,27 @@
                 // set MOQ equation to "0" if it is empty
                 if (postedData.TaskElementData.MOQHoursEquation === undefined || postedData.TaskElementData.MOQHoursEquation === '') {
                     postedData.TaskElementData.MOQHoursEquation = '0';
+                }
+
+                // New MOQ Type Data, MOQEquationFieldModel is declared in MOQEquationField.ascx and then used in the page / AngularJS
+                if (MOQEquationFieldModel && MOQEquationFieldModel.SelectedMoqTypes) {
+
+                    // Collect & set RTE Data
+                    for (item in MOQEquationFieldModel.SelectedMoqTypes) {
+                        var moqType = MOQEquationFieldModel.SelectedMoqTypes[item];
+                        var moqTypeId = moqType.SelectedMOQType;
+                       
+                        moqType.SowHoursLocation = $('textarea[name="SowHoursLocation_' + moqTypeId + '"]').val();
+                        moqType.DescriptionHoursRequired = $('textarea[name="DescriptionHoursRequired_' + moqTypeId + '"]').val();
+                        moqType.SmeReason = $('textarea[name="SmeReason_' + moqTypeId + '"]').val();
+                        moqType.SmeHoursLogic = $('textarea[name="SmeHoursLogic_' + moqTypeId + '"]').val();
+                        moqType.SmeDurationLogic = $('textarea[name="SmeDurationLogic_' + moqTypeId + '"]').val();
+                        moqType.SmeTaskEstimates = $('textarea[name="SmeTaskEstimates' + moqTypeId + '"]').val();
+                        moqType.Rationale = $('textarea[name="Rationale_' + moqTypeId + '"]').val();
+                        moqType.SkillMixRationale = $('textarea[name="SkillMixRationale_' + moqTypeId + '"]').val();
+                    }
+
+                    postedData.MOQTypes = MOQEquationFieldModel.SelectedMoqTypes;
                 }
 
                 postedData.TaskElementData.MOQType = $('#MOQType').val();
@@ -1214,6 +1246,8 @@
                         // remove the UpdateDate 
                         delete spread.UpdateDate;
                     });
+
+                    resourceTypeEntry.SelectedMOQType = resourceTypeEntry.SelectedMOQType;
                 }
 
                 // remove the UpdateDate 
@@ -1266,6 +1300,7 @@
                 // there seems to be an issue with the jquery serializer when dealing with rich text pasted from excel so we need to get these field contents again
                 postedData.TaskElementData.RteTemplateAnswers = [];
                 GetRteTemplateJson(TaskElementDetailsWidget.TaskDescription, 'TaskDescription', postedData.TaskElementData);
+
                 GetRteTemplateJson(TaskElementDetailsWidget.MOQText, 'MOQText', postedData.TaskElementData);
 
                 // Filter out the blank row before save
@@ -1678,6 +1713,7 @@
             ResourceInput: undefined,
             ResourceName: undefined,
             ResourceType: undefined,
+            SelectedMOQType: undefined,
             SpreadCurveID: '-1',
             SpreadData: [],
             SpreadDataInvalid: [],

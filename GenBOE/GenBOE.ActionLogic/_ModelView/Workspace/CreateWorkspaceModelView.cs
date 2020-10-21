@@ -247,6 +247,12 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         public int? RteSizeLimit { get; set; }
 
         /// <summary>
+        /// Get/Set whether using Template BOE
+        /// </summary>
+        [Required(ErrorMessage = "A selection for Template BOE is required.")]
+        public bool UsingTemplateBoe { get; set; }
+
+        /// <summary>
         /// Get/Set CreateSikorskyCustomFields flag (only for new RMS workspaces, not copies)
         /// RMS Only, always false for SSC
         /// </summary>

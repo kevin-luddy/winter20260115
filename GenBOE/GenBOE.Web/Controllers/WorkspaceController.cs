@@ -3139,6 +3139,7 @@ namespace GenBOE.Web.Controllers
                 ws.ResourceSorting = workspaceDetails.ResourceSorting;
                 ws.PerfOrgSorting = workspaceDetails.PerfOrgSorting;
                 ws.RteSizeLimit = workspaceDetails.RteSizeLimit;
+                ws.UsingTemplateBOE = workspaceDetails.UsingTemplateBoe;
 
                 // Populate the company specific properties
                 _ControllerLogic.PopulateCompanySpecificWorkspaceProperties(workspaceDetails, ws);
@@ -4784,6 +4785,7 @@ namespace GenBOE.Web.Controllers
             int proposalClassId = -1;
             string anticipatedDeliveryDate = string.Empty;
             string revisedSubmittalDate = string.Empty;
+            bool usingTemplateBoe = false;
 
             // see if this is a valid PTM Tracking Number
             int proposalId = this.proposalLoader.GetIdByTrackingNumber(trackingNumber);
@@ -4817,6 +4819,9 @@ namespace GenBOE.Web.Controllers
                 revisedSubmittalDate = proposal.RevisedSubmittalDate.HasValue
                     ? proposal.RevisedSubmittalDate.Value.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR)
                     : string.Empty;
+
+                // Default Template BOE switch to Yes if CCoPD is set to true
+                usingTemplateBoe = proposal.IsCCPDRequired.HasValue ? proposal.IsCCPDRequired.Value : false;
             }
             else
             {
@@ -4824,7 +4829,8 @@ namespace GenBOE.Web.Controllers
             }
 
             return Json(new { TrackingNumberRevision = nextRevision, LOBId = lobId, RFPNumber = rfpNumber, ContractTypes = selectedContractTypes,
-                Title = title, ProposalClassId = proposalClassId, AnticipatedDeliveryDate = anticipatedDeliveryDate, RevisedSubmittalDate = revisedSubmittalDate
+                Title = title, ProposalClassId = proposalClassId, AnticipatedDeliveryDate = anticipatedDeliveryDate, RevisedSubmittalDate = revisedSubmittalDate,
+                UsingTemplateBoe = usingTemplateBoe
             });
         }
 
@@ -5100,6 +5106,7 @@ namespace GenBOE.Web.Controllers
                     newWorkspaceDTO.IsUsingEquivalentPerson = newWorkspace.IsUsingEquivalentPerson;
                     newWorkspaceDTO.IsUsingTM = newWorkspace.IsUsingTM;
                     newWorkspaceDTO.RteSizeLimit = newWorkspace.RteSizeLimit;
+                    newWorkspaceDTO.UsingTemplateBOE = newWorkspace.UsingTemplateBoe;
                     
                     if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                     {
@@ -5555,7 +5562,8 @@ namespace GenBOE.Web.Controllers
                     ProjectMapType = (int)workspace.ProjectMapType,
                     AllowGridEdit = workspace.AllowGridEdit,
                     LineOfBusinessID = workspace.LineOfBusiness.Id,
-                    RteSizeLimit = workspace.RteSizeLimit
+                    RteSizeLimit = workspace.RteSizeLimit,
+                    UsingTemplateBoe = workspace.UsingTemplateBOE
                 };
 
                 toReturn = Json(modelView);

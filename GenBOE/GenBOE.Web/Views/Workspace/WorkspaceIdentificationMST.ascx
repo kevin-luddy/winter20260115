@@ -162,6 +162,12 @@
        if ('<%: Model.RteSizeLimit.HasValue %>' === "True") {
            displayApproxPages('<%: Model.RteSizeLimit %>');
        }
+
+       if ('<%: Model.EnableTemplateBoeSelect %>' == "True") {
+           var dropdown = $('#UsingTemplateBoe');
+           dropdown.removeClass('disabled');
+           dropdown.removeAttr('disabled');
+       }
     });
 </script>
 
@@ -362,6 +368,18 @@
             <div class="form-element">
                 <%: Html.TextBox("RteSizeLimit", Model.RteSizeLimit) %>
                 <span id="approxPages"></span>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">
+                <span helptext="Does this Workspace use the MOQ Template in its BOEs?">Template BOE</span>
+            </div>
+            <div class="form-element">
+                <%: Html.DropDownListFor(c => c.UsingTemplateBoe, new List<SelectListItem>()
+                    {
+                        new SelectListItem() { Text = "Yes", Value = "True" },
+                        new SelectListItem() { Text = "No", Value = "False" }
+                    }, new { @class = "disabled", @disabled = "true" }) %>
             </div>
         </div>
         <button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>

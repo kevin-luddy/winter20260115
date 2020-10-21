@@ -278,6 +278,12 @@
     <Compile Include="MOQTypeLU.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="MOQTypeSelection.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="MOQTypeSelectionTableData.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="MSTTravelModeLU.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
@@ -367,9 +373,6 @@
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="RateTypeLU.cs">
-      <DependentUpon>BOEEntityModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RealignedWorkspaceXREF.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ReportLU.cs">

@@ -49,7 +49,8 @@ CREATE  PROCEDURE [dbo].[upsertWorkspace]
 @LastProPricerInstance int,
 @LastProPricerProposal varchar(50),
 @RteSizeLimit int,
-@RevisedSubmittalDate DateTime2(7)
+@RevisedSubmittalDate DateTime2(7),
+@TemplateBoe bit
 )
 AS
 /******************************************************************************
@@ -79,6 +80,7 @@ AS
 **			6/18/18		ranzalon				BOEJ-3448 - ProPricer API updates
 **			10/2/18		ranzalon				BOEJ-3699 - RTE Size Limit
 **			9/25/19		ranzalon				BOEJ-4349 - Revised Submittal Date
+**			8/27/20		ranzalon				BOEJ-4760 - Template Boe
 *******************************************************************************/
 
 /*
@@ -188,6 +190,7 @@ IF @WorkspaceID  < 0  /*Insert Record*/
 		   ,[LastProPricerProposal]
 		   ,[RteSizeLimit]
 		   ,[RevisedSubmittalDate]
+		   ,[TemplateBoe]
            )
      OUTPUT inserted.WorkspaceID INTO @InsertedWorkspace           
      VALUES
@@ -228,6 +231,7 @@ IF @WorkspaceID  < 0  /*Insert Record*/
 		   ,@LastProPricerProposal
 		   ,@RteSizeLimit
 		   ,@RevisedSubmittalDate
+		   ,@TemplateBoe
            )
 
       SELECT @WorkspaceID = WorkspaceID FROM @InsertedWorkspace
@@ -370,6 +374,7 @@ ELSE
 									,[LastProPricerProposal] = @LastProPricerProposal
 									,[RteSizeLimit] = @RteSizeLimit
 									,[RevisedSubmittalDate] = @RevisedSubmittalDate
+									,[TemplateBoe] = @TemplateBoe
                         WHERE 
                               WorkspaceID = @WorkspaceID
                               

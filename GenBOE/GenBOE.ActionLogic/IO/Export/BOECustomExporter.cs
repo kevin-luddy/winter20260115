@@ -2379,20 +2379,31 @@ namespace GenBOE.ActionLogic.IO.Export
                 WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQEquationContainer);
             }
 
-            if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQRationale))
+            if (exportInputs.Workspace.UsingTemplateBOE)
             {
-                if (WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_MethodOfQuoting) != null)
-                {
-                    laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_MethodOfQuoting, laborTaskElement.MOQText);
-                }
-                else if (WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_MethodOfQuoting_NoSpacing) != null)
-                {
-                    laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_MethodOfQuoting_NoSpacing, laborTaskElement.MOQText);
-                }
+                // Remove the non-Template BOE MOQ Rationale
+                WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQRationaleContainer);
+
+                // placeholder for Template BOE MOQ Types
             }
             else
             {
-                WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQRationaleContainer);
+                // TODO - remove the Template BOE MOQ Type container
+                if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQRationale))
+                {
+                    if (WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_MethodOfQuoting) != null)
+                    {
+                        laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_MethodOfQuoting, laborTaskElement.MOQText);
+                    }
+                    else if (WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_MethodOfQuoting_NoSpacing) != null)
+                    {
+                        laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_MethodOfQuoting_NoSpacing, laborTaskElement.MOQText);
+                    }
+                }
+                else
+                {
+                    WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQRationaleContainer);
+                }
             }
 
             //Remove "Method of Quoting" Section heading if there are no MOQ selections made
@@ -4490,7 +4501,14 @@ namespace GenBOE.ActionLogic.IO.Export
                 boeExportTaskElement.BOETaskID = boeTaskElement.BOETaskID;
                 boeExportTaskElement.EndDate = boeTaskElement.EndDate;
                 boeExportTaskElement.MOQEquation = boeTaskElement.MOQHoursEquation;
-                boeExportTaskElement.MOQText = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.MOQText, RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides);
+                if (exportInputs.Workspace.UsingTemplateBOE)
+                {
+                    // TODO - populate MOQ Type data for Template BOE
+                }
+                else
+                {
+                    boeExportTaskElement.MOQText = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.MOQText, RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides);
+                }
                 boeExportTaskElement.MOQType = boeTaskElement.MOQType.GetDescription();
                 boeExportTaskElement.OrdinaryVariables = boeTaskElement.OrdinaryVariables;
                 boeExportTaskElement.StartDate = boeTaskElement.StartDate;

@@ -17,13 +17,13 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Resource()
         {
-            this.BOELaborTypes = new HashSet<BOELaborType>();
             this.MSTTravelTrips = new HashSet<MSTTravelTrip>();
             this.ODCTypes = new HashSet<ODCType>();
             this.WorkspaceResources = new HashSet<WorkspaceResource>();
             this.TMResourceRates = new HashSet<TMResourceRate>();
             this.BOEFormIBOEResourcesXREFs = new HashSet<BOEFormIBOEResourcesXREF>();
             this.BOEFormPBOEResourcesXREFs = new HashSet<BOEFormPBOEResourcesXREF>();
+            this.BOELaborTypes = new HashSet<BOELaborType>();
         }
     
         public int ResourceID { get; set; }
@@ -38,8 +38,6 @@ namespace GenBOE.Models
         public bool DeletedFlag { get; set; }
         public int RateTypeID { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BOELaborType> BOELaborTypes { get; set; }
         public virtual CostElementLU CostElementLU { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MSTTravelTrip> MSTTravelTrips { get; set; }
@@ -56,5 +54,7 @@ namespace GenBOE.Models
         public virtual ICollection<BOEFormIBOEResourcesXREF> BOEFormIBOEResourcesXREFs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOEFormPBOEResourcesXREF> BOEFormPBOEResourcesXREFs { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BOELaborType> BOELaborTypes { get; set; }
     }
 }

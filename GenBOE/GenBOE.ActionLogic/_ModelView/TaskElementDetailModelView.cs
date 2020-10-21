@@ -59,6 +59,7 @@ namespace GenBOE.ActionLogic.ModelView
                 this.MOQHoursEquation = inBoeTaskElement.MOQHoursEquation;
                 this.UpdateDate = inBoeTaskElement.UpdateDate;
                 this.LaborTypeWarning = inBoeTaskElement.LaborTypeWarningFlag.HasValue ? inBoeTaskElement.LaborTypeWarningFlag.Value : false;
+                this.CustomFieldValues = new Collection<CustomFieldSelectionModelView>();
             }
         }
 

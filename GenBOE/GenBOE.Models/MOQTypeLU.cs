@@ -18,6 +18,7 @@ namespace GenBOE.Models
         public MOQTypeLU()
         {
             this.BOETaskElements = new HashSet<BOETaskElement>();
+            this.MOQTypeSelections = new HashSet<MOQTypeSelection>();
         }
     
         public int MOQTypeID { get; set; }
@@ -25,5 +26,7 @@ namespace GenBOE.Models
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOETaskElement> BOETaskElements { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MOQTypeSelection> MOQTypeSelections { get; set; }
     }
 }

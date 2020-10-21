@@ -185,6 +185,11 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         int? RteSizeLimit { get; set; }
 
         /// <summary>
+        /// Get/Set whether using Template BOE
+        /// </summary>
+        bool UsingTemplateBoe { get; set; }
+
+        /// <summary>
         /// Whether to create Sikorsky Custom Fields
         /// </summary>
         bool CreateSikorskyCustomFields { get; set; }

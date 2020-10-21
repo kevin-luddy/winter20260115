@@ -25,7 +25,7 @@
         </div>
         <div data-ng-show="data.WSExactCopy" class="form-element static">Create an exact duplicate of the workspace. Authors, Approvers, BOE Statuses and Workspace Status will remain the same.</div>
         <div data-ng-hide="data.WSExactCopy" class="form-element static">
-            <span data-ng-show="data.CopyPermissions">Permissions<br/></span>
+            <span data-ng-show="data.CopyPermissions">Permissions<br /></span>
             <span data-ng-show="data.CopyTasks">Tasks of selected BOEs<br /></span>
             <span data-ng-show="data.CopyLaborSpreads">Labor Spreads of selected BOEs<br /></span>
         </div>
@@ -169,6 +169,12 @@
         <b>Rich Text Character Limit:</b>
     </div>
     <div class="form-element static">{{data.RteSizeLimit}}</div>
+</div>
+<div class="form-row" id="UsingTemplateBoe">
+    <div class="form-label">
+        <b>Template BOE:</b>
+    </div>
+    <div class="form-element static">{{convertBool(data.UsingTemplateBoe)}}</div>
 </div>
 <div class="form-row" data-ng-show="!model.isSSC && !data.IsAttemptingToImport">
     <div class="form-label">

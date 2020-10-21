@@ -39,6 +39,7 @@ CREATE  PROCEDURE [dbo].[deleteWorkspaceVersion]
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
 **		12/13/19	twilson3			BOEJ-4434 - RTE Template Answers
 **		12/17/19	twilson3			BOEJ-4434 Fix Assigned
+**		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
 *******************************************************************************/
 AS
 SET NOCOUNT ON
@@ -104,6 +105,10 @@ IF EXISTS (SELECT VersionID FROM  [version].[CustomFieldValue] WHERE VersionID =
 				DELETE FROM [version].[CustomFieldValue] WHERE VersionID = @VersionID
 IF EXISTS (SELECT VersionID FROM  [version].[MaterialTaskElement] WHERE VersionID = @VersionID)		
 				DELETE FROM [version].[MaterialTaskElement] WHERE VersionID = @VersionID
+IF EXISTS (SELECT VersionID FROM  [version].[MOQTypeSelection] WHERE VersionID = @VersionID)		
+				DELETE FROM [version].[MOQTypeSelection] WHERE VersionID = @VersionID
+IF EXISTS (SELECT VersionID FROM  [version].[MOQTypeSelectionTableData] WHERE VersionID = @VersionID)		
+				DELETE FROM [version].[MOQTypeSelectionTableData] WHERE VersionID = @VersionID
 IF EXISTS (SELECT VersionID FROM  [version].[ODCSpread] WHERE VersionID = @VersionID)		
 				DELETE FROM [version].[ODCSpread] WHERE VersionID = @VersionID
 IF EXISTS (SELECT VersionID FROM  [version].[ODCTaskElement] WHERE VersionID = @VersionID)		

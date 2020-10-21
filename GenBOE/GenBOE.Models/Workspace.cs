@@ -89,6 +89,7 @@ namespace GenBOE.Models
         public Nullable<int> RteSizeLimit { get; set; }
         public Nullable<System.DateTime> WorkspaceCreationDate { get; set; }
         public Nullable<System.DateTime> RevisedSubmittalDate { get; set; }
+        public bool TemplateBoe { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<BOE> BOEs { get; set; }

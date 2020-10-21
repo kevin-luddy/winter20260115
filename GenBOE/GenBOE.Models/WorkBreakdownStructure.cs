@@ -17,11 +17,11 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public WorkBreakdownStructure()
         {
-            this.BOELaborTypes = new HashSet<BOELaborType>();
             this.MSTTravelTrips = new HashSet<MSTTravelTrip>();
             this.SumOfBOE_OrdinaryVariableXREF = new HashSet<SumOfBOE_OrdinaryVariableXREF>();
             this.SumOfBOE_WorkspaceVariableXREF = new HashSet<SumOfBOE_WorkspaceVariableXREF>();
             this.WBS_CLIN_BOE_XREF = new HashSet<WBS_CLIN_BOE_XREF>();
+            this.BOELaborTypes = new HashSet<BOELaborType>();
         }
     
         public int WBSID { get; set; }
@@ -32,8 +32,6 @@ namespace GenBOE.Models
         public Nullable<int> WorkspaceID { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BOELaborType> BOELaborTypes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MSTTravelTrip> MSTTravelTrips { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SumOfBOE_OrdinaryVariableXREF> SumOfBOE_OrdinaryVariableXREF { get; set; }
@@ -42,5 +40,7 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WBS_CLIN_BOE_XREF> WBS_CLIN_BOE_XREF { get; set; }
         public virtual Workspace Workspace { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BOELaborType> BOELaborTypes { get; set; }
     }
 }

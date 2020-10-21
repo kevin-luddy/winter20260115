@@ -44,6 +44,8 @@ AS
 **		12/5/19		twilson3			BOEJ-4429 - RTE Templates
 **		12/13/19	twilson3			BOEJ-4434 - RTE Template Answers
 **		12/17/19	twilson3			BOEJ-4434 Fix Assigned
+**		8/27/20		ranzalon			BOEJ-4760 - Template Boe
+**		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 
@@ -144,7 +146,8 @@ INSERT INTO [version].[Workspace]
 ,[LastProPricerInstance]
 ,[LastProPricerProposal]
 ,[RteSizeLimit]
-,[RevisedSubmittalDate])
+,[RevisedSubmittalDate]
+,[TemplateBoe])
 SELECT [WorkspaceID]
 ,[WorkspaceName]
 ,[WorkspaceShortName]
@@ -191,6 +194,7 @@ SELECT [WorkspaceID]
 ,[LastProPricerProposal]
 ,[RteSizeLimit]
 ,[RevisedSubmittalDate]
+,[TemplateBoe]
 FROM [dbo].[Workspace]
 WHERE WorkspaceID = @WorkspaceID
 
@@ -1117,6 +1121,87 @@ INNER JOIN dbo.BOE B ON BH.BOEID  = B.BOEID
 INNER JOIN dbo.Workspace WS ON B.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID
 
+INSERT INTO [version].[MOQTypeSelection]
+([MOQTypeSelectionId],
+[TaskId],
+[MOQTypeSelection],
+[UpdateDT],
+[Order],
+[CERName],
+[CERLocation],
+[HoursDescription],
+[SubjectMatterExpert],
+[HoursLogicAndAssumptions],
+[DurationLogicAndAssumptions],
+[EstimateTasks],
+[Rationale],
+[SkillMix],
+[VersionId]
+)
+SELECT M.[MOQTypeSelectionId],
+M.[TaskId],
+M.[MOQTypeSelection],
+M.[UpdateDT],
+M.[Order],
+M.[CERName],
+M.[CERLocation],
+M.[HoursDescription],
+M.[SubjectMatterExpert],
+M.[HoursLogicAndAssumptions],
+M.[DurationLogicAndAssumptions],
+M.[EstimateTasks],
+M.[Rationale],
+M.[SkillMix],
+@VersionID
+FROM [dbo].[MOQTypeSelection] M
+INNER JOIN [dbo].[BOETaskElement] T ON M.TaskId = T.BOETaskElementID
+INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
+WHERE W.WorkspaceID = @WorkspaceID
+
+INSERT INTO [version].[MOQTypeSelectionTableData]
+([MOQTypeSelectionTableDataId],
+[MOQTypeSelectionId],
+[UpdateDT],
+[Order],
+[TableName],
+[RepositoryName],
+[QueryType],
+[DateOfReport],
+[HistoricalProgramName],
+[ContractNumber],
+[WbsElement],
+[PeriodOfPerformanceStartDate],
+[PeriodOfPerformanceEndDate],
+[TotalWbsHours],
+[AdditionalQueryFilters],
+[TotalRelevantHoursAfterQueryFilters],
+[VersionId]
+)
+SELECT TD.[MOQTypeSelectionTableDataId],
+TD.[MOQTypeSelectionId],
+TD.[UpdateDT],
+TD.[Order],
+TD.[TableName],
+TD.[RepositoryName],
+TD.[QueryType],
+TD.[DateOfReport],
+TD.[HistoricalProgramName],
+TD.[ContractNumber],
+TD.[WbsElement],
+TD.[PeriodOfPerformanceStartDate],
+TD.[PeriodOfPerformanceEndDate],
+TD.[TotalWbsHours],
+TD.[AdditionalQueryFilters],
+TD.[TotalRelevantHoursAfterQueryFilters],
+@VersionID
+FROM [dbo].[MOQTypeSelectionTableData] TD
+INNER JOIN [dbo].[MOQTypeSelection] M ON TD.MOQTypeSelectionId = M.MOQTypeSelectionId
+INNER JOIN [dbo].[BOETaskElement] T ON M.TaskId = T.BOETaskElementID
+INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+INNER JOIN dbo.Workspace W ON B.WorkspaceID = W.WorkspaceID
+WHERE W.WorkspaceID = @WorkspaceID
+
 /*Updated for WI 8398*/
 INSERT INTO [version].[BOELaborType]
 ([BOELaborTypeID]
@@ -1137,6 +1222,7 @@ INSERT INTO [version].[BOELaborType]
 ,[CLINID]
 ,[CanOffload]
 ,[LaborSortId]
+,[MOQTypeSelectionId]
 )
 SELECT BLT.[BOELaborTypeID]
 ,BLT.[ResourceID]
@@ -1156,6 +1242,7 @@ SELECT BLT.[BOELaborTypeID]
 ,BLT.CLINID
 ,BLT.[CanOffload]
 ,BLT.[LaborSortId]
+,BLT.[MOQTypeSelectionId]
 FROM [dbo].[BOELaborType] BLT
 INNER JOIN [dbo].[BOETaskElement] BTE ON BLT.BOETaskElementID = BTE.BOETaskElementID
 INNER JOIN dbo.BOE B ON BTE.BOEID  = B.BOEID

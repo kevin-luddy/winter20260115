@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using GenBOE.Models;
 using IES.Common;
 
 namespace GenBOE.Dtos
@@ -59,6 +60,7 @@ namespace GenBOE.Dtos
 
         public string TaskTitle { get; set; }
         public string MOQText { get; set; }
+        public Collection<MOQTypeSelection> MOQTypes { get; set; }
         public string SourceOfData { get; set; }
         public Collection<BOEExportTaskElementLabor> taskElementLabors { get; set; }
         public string MOQEquation { get; set; }

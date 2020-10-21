@@ -55,6 +55,11 @@ namespace GenBOE.Web.Controllers
         private readonly IOffloadRatesDTOLoader offloadRatesLoader;
         private readonly IRteTemplateDataLoader rteTemplateDataLoader;
 
+        /// <summary>
+        /// Starting date for MOQ Templates. WS created after this date will be using new MOQ Types.
+        /// </summary>
+        private readonly DateTime moqTemplateUsageStartDate = DateTime.Parse(ConfigurationUtilities.GetAppSetting("MoqTemplateStartDate"));
+
         #endregion Private Fields
 
         /// <summary>
@@ -116,7 +121,6 @@ namespace GenBOE.Web.Controllers
             // Perform Action            
             ViewBag.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
             ViewData["BOEID"] = boeID;
-            MOQType selectedMoqType = MOQType.None;
             bool containsDiscrete = false;
             bool isReadOnly = bool.Parse((string)this.ViewData["READONLY"]);
             //create a var for list items
@@ -128,7 +132,6 @@ namespace GenBOE.Web.Controllers
                 // Because of current workflow, no need to convert to Summary Task Element here since the summarized data is not used
                 BoeTaskElementDTO element = this.Factory.CreateTaskElement(taskElementID.Value, ws.DecimalPrecision, ws.CostDecimalPrecision);
                 DataRelationshipVerifier.VerifyDataRelation(element, boeID);
-                selectedMoqType = element.MOQType;
                 taskDescription = element.Description;
                 containsDiscrete = element.taskElementLabors.Any(x => x.SpreadCurveID == SpreadCurves.DiscreteHours || x.SpreadCurveID == SpreadCurves.DiscreteCost);
 
@@ -169,7 +172,6 @@ namespace GenBOE.Web.Controllers
                 IsOffloadWorkspace = ws.ProjectMapType == ProjectMapType.StandardWithOffload,
                 BOEIsMulti = boe.IsMultiClinWbs,
                 BOEState = (int)boe.State,
-                MOQTypes = this.ConvertToOptionList(this.GetMOQTypeSelectList(selectedMoqType)),
                 AllowDateShift = (taskDateShiftAuthorization == SecurityAuthorization.CreateReadUpdateDelete),
                 HoursLabel = FullObjectHelper.HoursLabel(ws),
                 BoeId = boeID,
@@ -177,7 +179,8 @@ namespace GenBOE.Web.Controllers
                 TaskElementId = taskElementID,
                 ContainsDiscrete = containsDiscrete,
                 DescriptionTemplateAnswers = rteAnswers.Where(t => t.SourceId == (int)RteTemplateSource.TaskDescription).ToList(),
-                TaskDescription = taskDescription
+                TaskDescription = taskDescription,
+                UsingTemplateBOE = ws.UsingTemplateBOE
             };
 
             this._BoeLaborControllerLogic.GetMetricSearchDialogParameters(modelView);
@@ -192,29 +195,6 @@ namespace GenBOE.Web.Controllers
             // Finalize Action
             this.FinalizeAction(this._log, WebConstants.ACTION_DISPLAY_TASK_ELEMENT, sw);
             return toReturn;
-        }
-
-        private List<SelectListItem> GetMOQTypeSelectList(int selectedEnumValue)
-        {
-            return GetMOQTypeSelectList(selectedEnumValue.GetEnumeratedValueNullable<MOQType>());
-        }
-
-        private List<SelectListItem> GetMOQTypeSelectList(MOQType? selectedValue)
-        {
-            ICollection<MOQType> validMOQTypes = this._BoeLaborControllerLogic.GetMOQTypes();
-
-            // convert selected MOQ types to select list items
-            List<SelectListItem> results = validMOQTypes.Select(t => new SelectListItem
-            {
-                Text = t.GetDescription(),
-                Value = ((int)t).ToString(),
-                Selected = (selectedValue.HasValue && t == selectedValue.Value)
-            }).ToList();
-
-            // add "no-value-selected" item
-            results.Insert(0, new SelectListItem { Text = string.Empty, Value = "0", Selected = false });
-
-            return results;
         }
 
         virtual public ActionResult ValidateResource(string workspace, string searchTerm)
@@ -567,8 +547,7 @@ namespace GenBOE.Web.Controllers
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "DisplayMOQEquationField", SecurityPage.MOQEquationField, SecurityAuthorization.Read, ws, boeID);
 
-            var theModelView = CreateMOQModelView(ws, boeID, taskElementID);
-            theModelView.MoqEquationName = "MOQHours";
+            var theModelView = CreateMOQModelView(ws, boe, taskElementID);
             ViewBag.RteFieldSize = ws.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
 
             ViewResult toReturn = View(WebConstants.VIEW_MOQ_EQUATION_FIELD, theModelView);
@@ -591,10 +570,7 @@ namespace GenBOE.Web.Controllers
         {
             FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(workspace);
 
-            Stopwatch sw = new Stopwatch();
-
-            // Initialize Action
-            sw = InitializeAction(_log, "CopyMoqEquation", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, fullWorkspace, boeID);
+            Stopwatch sw = InitializeAction(_log, "CopyMoqEquation", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, fullWorkspace, boeID);
 
             BoeTaskElementDTO copyTaskElement = this.Factory.CreateTaskElement(taskElementId, fullWorkspace.DecimalPrecision, fullWorkspace.CostDecimalPrecision);
 
@@ -609,24 +585,6 @@ namespace GenBOE.Web.Controllers
 
             // Finalize Action
             FinalizeAction(_log, "CopyMoqEquation", sw);
-            return toReturn;
-        }
-
-        public ViewResult DisplayMOQCostEquationField(string workspace, int boeID, int taskElementID)
-        {
-            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-            // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "DisplayMOQEquationField", SecurityPage.MOQEquationField, SecurityAuthorization.Read, ws, boeID);
-
-            var theModelView = CreateMOQModelView(ws, boeID, taskElementID);
-            theModelView.TypeOfMoqEquation = MOQEquationType.Cost;
-            theModelView.MoqEquationName = "MOQCost";
-
-            ViewResult toReturn = View(WebConstants.VIEW_MOQ_EQUATION_FIELD, theModelView);
-
-            // Finalize Action
-            FinalizeAction(_log, "DisplayMOQEquationField", sw);
             return toReturn;
         }
 
@@ -798,7 +756,7 @@ namespace GenBOE.Web.Controllers
                 validationErrors.AddRange(rteValidationErrors);
             }
 
-            BoeTaskElementDTO dto = this._BoeLaborControllerLogic.ConvertModelViewToDto(modelView, ws);
+            BoeTaskElementDTO dto = this._BoeLaborControllerLogic.ConvertModelViewToDto(modelView, ws); 
 
             // Validate DTO 
             if (!isLocked)
@@ -812,7 +770,7 @@ namespace GenBOE.Web.Controllers
             }
 
             // Save
-            this._BoeLaborControllerLogic.SaveLaborTaskData(ws, dto, modelView.TaskElementData.MetricIds, modelView.TaskElementData.RteTemplateAnswers);
+            this._BoeLaborControllerLogic.SaveLaborTaskData(ws, dto, modelView.TaskElementData.MetricIds, modelView.TaskElementData.RteTemplateAnswers, modelView.MOQTypes);
 
             // Finalize Action
             this.FinalizeAction(this._log, WebConstants.ACTION_SAVE_TASK_DATA_MODEL, sw);
@@ -2082,40 +2040,49 @@ namespace GenBOE.Web.Controllers
 
             MOQEquationModelView modelView = new MOQEquationModelView(copyTaskElement, _VariableSelectBOEtoSumCalculation, workspace);
             modelView.MOQTextLabel = _BoeLaborControllerLogic.GetMOQTextLabel();
-            modelView.MoqEquationName = "MOQHours";
 
             _BoeLaborControllerLogic.GetMetricByTaskElementIds(new Collection<int> { originalSourceTaskElementId }, modelView);
 
             return modelView;
         }
 
-        private MOQEquationModelView CreateMOQModelView(FullWorkspace ws, int boeID, int taskElementID)
+        private MOQEquationModelView CreateMOQModelView(FullWorkspace ws, FullBoe boe, int taskElementID)
         {
             var theModelView = new MOQEquationModelView();
 
             if (taskElementID > 0)
             {
                 BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision);
-                SetMOQEquationViewData(ws, boeID, taskElement.MOQType);
-                DataRelationshipVerifier.VerifyDataRelation(taskElement, boeID);
+                SetMOQEquationViewData(ws, boe.Id, taskElement.MOQType);
+                DataRelationshipVerifier.VerifyDataRelation(taskElement, boe.Id);
                 var inUseWorkspaceVariables = (from wID in taskElement.WorkspaceVariableIDs
                                                from workspaceVariable in ws.WorkspaceVariables
                                                where workspaceVariable.Id == wID
                                                select workspaceVariable).ToList();
 
-                taskElement.MOQHoursEquation = ActionLogic.Common.MOQ.Parser.UntagVariables(taskElement.MOQHoursEquation, inUseWorkspaceVariables);
+                taskElement.MOQHoursEquation = Parser.UntagVariables(taskElement.MOQHoursEquation, inUseWorkspaceVariables);
 
                 theModelView = _BoeLaborControllerLogic.GetMOQModelView(taskElement, ws);
             }
             else
             {
-                SetMOQEquationViewData(ws, boeID, MOQType.None);
+                SetMOQEquationViewData(ws, boe.Id, MOQType.None);
                 _BoeLaborControllerLogic.SetShowMetricLink(theModelView);
-                theModelView.MoqTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, boeID, taskElementID).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ).ToList();
+                theModelView.MoqTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, boe.Id, taskElementID).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ).ToList();
             }
 
             theModelView.HelpText = _BoeLaborControllerLogic.GetMOQTypesHelpText();
             theModelView.MOQTextLabel = _BoeLaborControllerLogic.GetMOQTextLabel();
+            theModelView.UsingTemplateBOE = ws.UsingTemplateBOE;
+
+            
+            theModelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(ws.CreationDate >= moqTemplateUsageStartDate, null);
+
+            if (ws.UsingTemplateBOE)
+            {
+                theModelView.MoqTypeTableDataLabels = this._BoeLaborControllerLogic.GetMoqTypeLabels();
+                theModelView.SelectedMoqTypes = boe.MoqTypeSelections.Where(x => x.TaskId == taskElementID).ToList();
+            }
 
             return theModelView;
         }
@@ -2132,80 +2099,24 @@ namespace GenBOE.Web.Controllers
                                         where p.Role == Role.SubcontractorAuthor && p.ETIUserId == workspace.CurrentActiveUser.UserID
                                         select p).Any();
 
-            if (isSubcontractorUser)
-            {
-                ViewData["IsSubContractor"] = true;
-            }
-            else
-            {
-                ViewData["IsSubContractor"] = false;
-            }
+            VariableCircularReferenceCheckerCache circularReferenceCache = new VariableCircularReferenceCheckerCache();
+            ICollection<WorkspaceVariableModelView> wsVariables = workspace.WorkspaceVariables.Select(x => 
+                new WorkspaceVariableModelView(x, _VariableSelectBOEtoSumCalculation, workspace) 
+                { 
+                    Disabled = _VariableCircularReferenceChecker.WorkspaceVariableCreatesCircularReference(circularReferenceCache, boeId, x, workspace) 
+                }).ToList();
 
-            var allWorkspaceVariables = workspace.WorkspaceVariables;
-
-            ViewData["BOEID"] = boeId;
-
-            var circularReferenceCache = new VariableCircularReferenceCheckerCache();
-            ViewData["WorkspaceVariables"] = from v in allWorkspaceVariables
-                                             select new WorkspaceVariableModelView(v, _VariableSelectBOEtoSumCalculation, workspace)
-                                             {
-                                                 Disabled = _VariableCircularReferenceChecker.WorkspaceVariableCreatesCircularReference(circularReferenceCache, boeId, v, workspace)
-                                             };
-
-            // get MOQ Types
-            List<SelectListItem> moqTypeSelects = (from m in _CommonDataMapper.getMOQType()
-                                                   select new SelectListItem { Value = m.MOQTypeID.ToString(), Text = m.MOQTypeName, Selected = (m.MOQTypeID == (int)moqType) }).ToList();
-
-            // Add a default element as the first item in the dropdown collection
-            SelectListItem defaultItem = new SelectListItem();
-            defaultItem.Value = "0";
-            defaultItem.Text = "";
-            moqTypeSelects.Insert(0, defaultItem);
-
-            ViewData["MOQTypes"] = this.ConvertToOptionList(moqTypeSelects);
+            ViewBag.IsSubContractor = isSubcontractorUser;
+            ViewBag.BOEID = boeId;
+            ViewBag.WorkspaceVariables = wsVariables;
             ViewBag.RteFieldSize = workspace.RteSizeLimit ?? Constants.MAX_RTE_LENGTH;
+
+            List<SelectListItem> moqTypeSelects = this._BoeLaborControllerLogic.GetMOQTypeSelectList(workspace.CreationDate >= moqTemplateUsageStartDate, moqType).ToList();
+            moqTypeSelects.Insert(0, new SelectListItem() { Value = "0", Text = string.Empty });
+            ViewBag.MOQTypes = this.ConvertToOptionList(moqTypeSelects);
         }
 
-        /// <summary>
-        /// Map each validation-error field-name to its corresponding "target" form ID so it will be dispayed in the
-        /// correct area on the page.
-        /// </summary>
-        /// <param name="validationErrors">Validation errors</param>
-        /// <returns>Validation errors</returns>
-        private Collection<ValidationMessage> PreProcessValidationErrors(Collection<ValidationMessage> validationErrors)
-        {
-            /*
-             * FieldName values are derived from the JSON-posted LaborTabDataModelView view model properties.  We essentially
-             * need to map each "eligible" field-name prefix to the appropriate (UI) form ID.
-             * 
-             */
-            foreach (ValidationMessage error in validationErrors)
-            {
-                if (!string.IsNullOrEmpty(error.FieldName))
-                {
-                    if (error.FieldName.StartsWith("TaskElementDetailData"))
-                    {
-                        error.FormIDToTarget = "TaskElementDetailsForm";
-                    }
-                    else if (error.FieldName.StartsWith("BOESummary"))
-                    {
-                        error.FormIDToTarget = "BoeHeaderForm";
-                    }
-                    else if (error.FieldName.StartsWith("LaborSpreadData") || error.FieldName.StartsWith("LaborSpreadGrid"))
-                    {
-                        error.FormIDToTarget = "LaborSpreadForm";
-                    }
-                    else if (error.FieldName.StartsWith("LaborTypesData") || error.FieldName.StartsWith("ResourceTypesSummaryData"))
-                    {
-                        error.FormIDToTarget = "LaborTypesForm";
-                    }
-                }
-            }
-
-            return validationErrors;
-        }
-
-        #endregion Private Methods
+        #endregion
     }
 }
 

@@ -697,4 +697,19 @@
             }
             return input;
         };
+    })
+
+    // filter used by MOQ Types
+    .filter('moqTypesFilter', function () {
+        return function (moqOptions, selectedMoqTypes) {
+            var out = [];
+
+            for (var i = 0; i < moqOptions.length; i += 1) {
+                var id = moqOptions[i].SelectedMOQType;
+                if (selectedMoqTypes.map(e => e.SelectedMOQType.toString()).indexOf(id.toString()) < 0) {
+                    out.push(moqOptions[i]);
+                }
+            }
+            return out;
+        };
     });

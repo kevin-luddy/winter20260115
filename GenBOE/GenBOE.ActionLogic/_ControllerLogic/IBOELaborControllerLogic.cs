@@ -8,8 +8,9 @@ namespace GenBOE.ActionLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using GenBOE.ActionLogic.ControllerLogic;
+    using System.Web.Mvc;
     using GenBOE.ActionLogic.ModelView;
+    using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -113,12 +114,6 @@ namespace GenBOE.ActionLogic
         /// </summary>
         /// <returns>per company configuration MOQ text label text</returns>
         string GetMOQTextLabel();
-
-        /// <summary>
-        /// Gets the valid <see cref="MOQType"/>'s for this company configuration
-        /// </summary>
-        /// <returns>valid <see cref="MOQType"/>'s for this company configuration</returns>
-        ICollection<MOQType> GetMOQTypes();
 
         /// <summary>
         /// Populates the passed in <see cref="MOQEquationModelView"/> with metrics
@@ -245,8 +240,11 @@ namespace GenBOE.ActionLogic
         /// Save the Labor Task data
         /// </summary>
         /// <param name="ws">Workspace</param>
-        /// <param name="modelView">Labor Task dto</param>
-        void SaveLaborTaskData(FullWorkspace ws, BoeTaskElementDTO dtoToSave, ICollection<int> metricIds, ICollection<RTECustomTemplateQuestionAnswerModelView> answers);
+        /// <param name="dtoToSave">Task DTO</param>
+        /// <param name="metricIds">Metric IDs</param>
+        /// <param name="answers">RTE Template Answers</param>
+        /// <param name="moqTypes">MOQ Types for the task</param>
+        void SaveLaborTaskData(FullWorkspace ws, BoeTaskElementDTO dtoToSave, ICollection<int> metricIds, ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<MoqTypeSelection> moqTypes);
 
         /// <summary>
         /// Converts Labor Task Data Model View to BOE Task Element DTO 
@@ -279,5 +277,19 @@ namespace GenBOE.ActionLogic
         /// <param name="taskElement">Task Element containing the Labor Types</param>
         /// <param name="modelView">Collection of the Labor Type Order</param>
         void ReOrderLaborTypeOrder(FullWorkspace ws, BoeTaskElementDTO taskElement, LaborTypeOrderCollection modelView);
+
+        /// <summary>
+        /// Get a list of MOQ Types for dropdown
+        /// </summary>
+        /// <param name="useNewMoqTypes">Are we be using new MOQ Types (after 10/2020)</param>
+        /// <param name="moqType">Selected MOQ Type</param>
+        /// <returns>MOQ Types</returns>
+        ICollection<SelectListItem> GetMOQTypeSelectList(bool useNewMoqTypes, MOQType? moqType);
+
+        /// <summary>
+        /// Returns a list of labels to be used in the MOQ Types page.
+        /// </summary>
+        /// <returns>Labels for MOQ Type Data Table Fields</returns>
+        MoqTypeTableDataLabels GetMoqTypeLabels();
     }
 }

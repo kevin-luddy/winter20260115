@@ -250,7 +250,28 @@ namespace IES.Common
         [Description("Level-of-Effort/Support")]
         MSTLevelOfEffortSupport = 2007,
         [Description("Engineering/Judgmental Estimates")]
-        MSTEngineeringJudgmentalEstimates = 2008
+        MSTEngineeringJudgmentalEstimates = 2008,
+        /*
+         * New MOQ Types as of 9/2020
+         */
+        [Description("Actual Program or Task Cost Data (Historical)")]
+        Historical = 5001,
+        [Description("Comparative Analysis")]
+        Comparative = 5002,
+        [Description("Cost Estimating Relationships (CERs) R2")]
+        CostEstimatingRelationships = 5003,
+        [Description("Parametric Estimates")]
+        ParametricEstimates = 5004,
+        [Description("Analogous Relationships (ARs)")]
+        AnalogousRelationships = 5005,
+        [Description("Statement of Work (SOW)")]
+        SOW = 5006,
+        [Description("Level of Effort (LOE)")]
+        LOE = 5007,
+        [Description("Subject Matter Expert (SME) Judgement")]
+        SME = 5008,
+        [Description("Non-Labor")]
+        NonLabor = 5009
     }
 
     /// <summary>

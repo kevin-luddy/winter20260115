@@ -756,6 +756,9 @@
     <Content Include="Scripts\tinymce\plugins\pagebreak\plugin.min.js" />
     <Content Include="Scripts\tinymce\plugins\paste\plugin.js" />
     <Content Include="Scripts\tinymce\plugins\paste\plugin.min.js" />
+    <Content Include="Scripts\tinymce\plugins\placeholder\LICENSE.txt" />
+    <Content Include="Scripts\tinymce\plugins\placeholder\plugin.js" />
+    <Content Include="Scripts\tinymce\plugins\placeholder\plugin.min.js" />
     <Content Include="Scripts\tinymce\plugins\preview\plugin.js" />
     <Content Include="Scripts\tinymce\plugins\preview\plugin.min.js" />
     <Content Include="Scripts\tinymce\plugins\print\plugin.js" />

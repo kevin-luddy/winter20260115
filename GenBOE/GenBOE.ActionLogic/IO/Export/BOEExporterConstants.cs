@@ -37,7 +37,6 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string Container_TaskSpreadTables = "TaskSpreadTablesContainer";
         internal const string Container_TaskID = "TaskIDContainer";
         internal const string Container_Travel = "TravelContainer";
-        internal const string Container_Travels = "TravelsContainer";
 
         internal const string CustomFields_BOEContainer = "CustomFields-BOE";
         internal const string CustomFields_LaborContainer = "CustomFields-Labor";
@@ -247,8 +246,7 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string Marker_BOESummaryResourceRowMarker = "BOESummaryResourceRowMarker";
         internal const string Marker_BOESummaryBOERowMarker = "BOESummaryBOERowMarker";
         internal const string Marker_BOESummaryTaskRowMarker = "BOESummaryTaskRowMarker";
-
-
+        
         internal const string SectionTitlePrefix = "SectionTitle-";
 
         internal const string Table_BOECostSummary = "BOECostSummaryTable";
@@ -322,6 +320,48 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string CustomFieldName_KeyPersonnel = "Field-B";
         internal const string CustomFieldName_EstimateMethod = "Estimate Method";
         internal const string CustomFieldName_SOW = "SOW";
+
+        #region MOQ Type Constants
+
+        internal const string Container_MOQSelection = "MOQSelectionContainer";
+        internal const string Container_CerPmAr = "CER/PM/ARContainer";
+        internal const string Container_SowLoe = "SOW/LOEContainer";
+        internal const string Container_SME = "SMEContainer";
+        internal const string Container_MOQTypeRationale = "MOQTypeRationaleContainer";
+        internal const string Container_SkillMix = "SkillMixContainer";
+        internal const string FieldName_MOQTypeSelectionTitle = "MOQTypeSelectionTitle";
+        internal const string FieldName_CerPmArNameLabel = "CER/PM/ARNameLabel";
+        internal const string FieldName_CerPmArName = "CER/PM/ARName";
+        internal const string FieldName_CerPmArLocationLabel = "CER/PM/ARLocationLabel";
+        internal const string FieldName_CerPmArLocation = "CER/PM/ARLocation";
+        internal const string FieldName_HoursDescriptionLabel = "HoursDescriptionLabel";
+        internal const string FieldName_HoursDescription = "HoursDescription";
+        internal const string FieldName_SMEReasonsLabel = "SMEReasonsLabel";
+        internal const string FieldName_SMEReasons = "SMEReasons";
+        internal const string FieldName_SMEHoursLogicLabel = "SMEHoursLogicLabel";
+        internal const string FieldName_SMEHoursLogic = "SMEHoursLogic";
+        internal const string FieldName_SMEEstimateLogicLabel = "SMEEstimateLogicLabel";
+        internal const string FieldName_SMEEstimateLogic = "SMEEstimateLogic";
+        internal const string FieldName_SMETasksLabel = "SMETasksLabel";
+        internal const string FieldName_SMETasks = "SMETasks";
+        internal const string FieldName_Rationale = "Rationale";
+        internal const string FieldName_SkillMix = "SkillMix";
+        internal const string FieldName_TableName = "TableName";
+        internal const string FieldName_RepositoryName = "RepositoryName";
+        internal const string FieldName_QueryType = "QueryType";
+        internal const string FieldName_DateOfReport = "DateOfReport";
+        internal const string FieldName_HistoricalProgramName = "HistoricalProgramName";
+        internal const string FieldName_ContractNumber = "ContractNumber";
+        internal const string FieldName_WbsElement = "WbsElement";
+        internal const string FieldName_PoPStartDate = "PoPStartDate";
+        internal const string FieldName_PoPEndDate = "PoPEndDate";
+        internal const string FieldName_TotalWBSHours = "TotalWBSHours";
+        internal const string FieldName_AdditionalQueryFilters = "AdditionalQueryFilters";
+        internal const string FieldName_TotalRelevantHours = "TotalRelevantHours";
+        internal const string Marker_AdditionalQueryFilters = "AdditionalQueryFiltersRowMarker";
+        internal const string Table_MOQType = "MOQTypeTable";
+
+        #endregion
 
         #endregion
 
