@@ -7,7 +7,7 @@
 namespace GenBOE.ActionLogic.ModelView
 {
     /// <summary>
-    /// A Class that will hold labels for MOQ Type Table Fields
+    /// A Class that holds labels for MOQ Type Table Fields
     /// </summary>
     public class MoqTypeTableDataLabels
     {
@@ -26,8 +26,8 @@ namespace GenBOE.ActionLogic.ModelView
             this.PoPStart = "Period of Performance (PoP): Start Date";
             this.PoPEnd = "Period of Performance (PoP): End Date";
             this.TotalWbsHours = "Total WBS/WBS Element Hours";
-            this.AdditionalQueryFilters = "Additional Query Filters:";
-            this.TotalRelevantHours = "Total Relevant Hours After Additional Query Filters Applied:";
+            this.AdditionalQueryFilters = "Additional Query Filters";
+            this.TotalRelevantHours = "Total Relevant Hours After Additional Query Filters Applied";
         }
 
         /// <summary>

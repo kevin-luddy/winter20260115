@@ -10,6 +10,7 @@ namespace GenBOE.Tests.ActionLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using GenBOE.ActionLogic.Common.Calculations;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.NewValidation;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.ActionLogic.WBS.BOE;
@@ -190,12 +191,13 @@ namespace GenBOE.Tests.ActionLogic
             // set up workspace
             string WorkspaceName = "ValidateWorkspace";
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, UsingTemplateBOE = false };
 
             //setup custom fields
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             //setup a BOE
             ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 20 };
@@ -316,7 +318,7 @@ namespace GenBOE.Tests.ActionLogic
 
             // set up workspace
             string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, UsingTemplateBOE = false };
 
             // set up resource
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
@@ -327,6 +329,7 @@ namespace GenBOE.Tests.ActionLogic
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             //setup a BOE
             ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
@@ -549,6 +552,7 @@ namespace GenBOE.Tests.ActionLogic
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             //setup a BOE
             ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
@@ -689,6 +693,7 @@ namespace GenBOE.Tests.ActionLogic
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             //setup a BOE
             ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
@@ -784,12 +789,11 @@ namespace GenBOE.Tests.ActionLogic
             
             var permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
-
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
             // set up workspace
             string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 3 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 3, UsingTemplateBOE = false };
 
             // set up resource
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
@@ -800,6 +804,7 @@ namespace GenBOE.Tests.ActionLogic
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             //setup a BOE
             ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
@@ -916,6 +921,7 @@ namespace GenBOE.Tests.ActionLogic
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             //setup a BOE
             ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
@@ -1039,7 +1045,7 @@ namespace GenBOE.Tests.ActionLogic
 
             // set up workspace
             string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 1, UsingTemplateBOE = false };
 
             // set up resource
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
@@ -1050,6 +1056,7 @@ namespace GenBOE.Tests.ActionLogic
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             //setup a BOE
             ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
@@ -1158,6 +1165,7 @@ namespace GenBOE.Tests.ActionLogic
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             //setup a BOE
             ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
@@ -1267,7 +1275,7 @@ namespace GenBOE.Tests.ActionLogic
 
             // set up workspace
             string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 1, UsingTemplateBOE = false };
 
             // set up resource
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
@@ -1315,6 +1323,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
             Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
@@ -1410,7 +1419,7 @@ namespace GenBOE.Tests.ActionLogic
 
             // set up workspace
             string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 4 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 4, UsingTemplateBOE = false };
 
             // set up resource
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
@@ -1458,6 +1467,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
@@ -1548,7 +1558,7 @@ namespace GenBOE.Tests.ActionLogic
 
             // set up workspace
             string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 3 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 3, UsingTemplateBOE = false };
 
             // set up resource
             ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
@@ -1596,6 +1606,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
@@ -1712,6 +1723,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
@@ -1857,6 +1869,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
@@ -1949,7 +1962,7 @@ namespace GenBOE.Tests.ActionLogic
             FullBoe boeObject = new FullBoe(boe);
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
-
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
             retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
             retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
@@ -2010,7 +2023,7 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
             // set up workspace
             string WorkspaceName = "ValidateWorkspace";
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ContractStartDate = Convert.ToDateTime("03/01/2010"), ContractEndDate = Convert.ToDateTime("03/01/2014"), ResourceListID = 1, UsingTemplateBOE = false };
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
 
             // set up resource
@@ -2022,6 +2035,7 @@ namespace GenBOE.Tests.ActionLogic
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             //setup a BOE
             ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
@@ -2137,6 +2151,7 @@ namespace GenBOE.Tests.ActionLogic
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             //setup a BOE
             ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
@@ -2947,6 +2962,7 @@ namespace GenBOE.Tests.ActionLogic
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             BoeTaskElementDTO boeTE = new BoeTaskElementDTO
             {
