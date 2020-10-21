@@ -174,8 +174,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             _BoeTaskElementRecalculation = new Mock<BoeTaskElementRecalculation>(_VariableSelectBoeToSum.Object, factory.Object);
             this.rteTemplateDataLoader.Setup(x => x.GetByBoeIdAndTaskId(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int?>())).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
+            this.retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
         }
-        
+
         /// <summary>
         /// Create ModelView for testing and set up necessary methods
         /// </summary>
@@ -649,7 +650,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
                         
@@ -665,7 +666,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             BOELaborControllerLogic sut = CreateSystem();
 
             //test
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -682,7 +683,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -699,7 +700,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -722,7 +723,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -739,7 +740,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -756,7 +757,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -774,7 +775,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -791,7 +792,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -816,7 +817,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -833,7 +834,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, RteSizeLimit = 50 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, RteSizeLimit = 50, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -851,7 +852,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, RteSizeLimit = 50 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, RteSizeLimit = 50, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -869,7 +870,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -888,7 +889,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -907,7 +908,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2018"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -927,7 +928,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -945,7 +946,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -963,7 +964,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = false });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -995,7 +996,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = false });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1027,7 +1028,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1051,7 +1052,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1070,7 +1071,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1101,7 +1102,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1120,7 +1121,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1205,7 +1206,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = false });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1222,7 +1223,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = false });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1239,7 +1240,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = false });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1256,7 +1257,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = false });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1275,7 +1276,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = false });
             FullWorkspace ws = new FullWorkspace(workspace);
 

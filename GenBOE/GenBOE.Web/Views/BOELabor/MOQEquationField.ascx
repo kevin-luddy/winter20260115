@@ -238,7 +238,7 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SOW%>">            
             <div class="form-label">
-                <span>Description of Hours required & location in SOW: **</span>
+                <span>Description of Hours required & location in SOW: *</span>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="SowHoursLocation_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SowHoursLocation"></textarea>
@@ -268,7 +268,7 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.LOE%>">
             <div class="form-label">
-                <span>Description of Hours required: **</span>
+                <span>Description of Hours required: *</span>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="DescriptionHoursRequired_{{moqType.SelectedMOQType}}" data-ng-model="moqType.DescriptionHoursRequired"></textarea>
@@ -276,7 +276,7 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>">
             <div class="form-label">
-                <span>The SME selected Expert judgement for this basis of estimate for the following reasons: **</span>
+                <span>The SME selected Expert judgement for this basis of estimate for the following reasons: *</span>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="SmeReason_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SmeReason"></textarea>
@@ -284,7 +284,7 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>">
             <div class="form-label">
-                <span>The logic and assumptions used to estimate hours is: **</span>
+                <span>The logic and assumptions used to estimate hours is: *</span>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="SmeHoursLogic_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SmeHoursLogic"></textarea>
@@ -292,7 +292,7 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>">
             <div class="form-label">
-                <span>The logic and assumptions used to estimate duration is: **</span>
+                <span>The logic and assumptions used to estimate duration is: *</span>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="SmeDurationLogic_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SmeDurationLogic"></textarea>
@@ -300,7 +300,7 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>">
             <div class="form-label">
-                <span>The following tasks are estimates in this BOE: **</span>
+                <span>The following tasks are estimates in this BOE: *</span>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="SmeTaskEstimates_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Rationale', moqType.SelectedMOQType)}}" data-ng-model="moqType.SmeTaskEstimates"></textarea>
@@ -308,7 +308,7 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.SME%>">
             <div class="form-label">
-                <span>Rationale: **</span>
+                <span>Rationale: *</span>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="Rationale_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Rationale', moqType.SelectedMOQType)}}" data-ng-model="moqType.Rationale"></textarea>
@@ -316,7 +316,7 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.SOW%> && moqType.SelectedMOQType != <%:(int)MOQType.NonLabor%>">
             <div class="form-label">
-                <span>Skill Mix Rationale: **</span>
+                <span>Skill Mix Rationale: *</span>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="SkillMixRationale_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SkillMixRationale"></textarea>
