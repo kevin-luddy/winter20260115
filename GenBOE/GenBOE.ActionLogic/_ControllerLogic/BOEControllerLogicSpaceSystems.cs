@@ -64,14 +64,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
             INestedWBSUtilities inNestedWBSUtilities,
             IProjectMapDataLoader projectMapLoader,
             RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesDataLoader,
-            IRteTemplateDataLoader rteTemplateDataLoader
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            IMoqTypeDataLoader moqTypeDataLoader
             )
             : base(inBOESummary, inUserLoader, inActiveDirectoryUtil,
             inPermissionsLoader, inFactory, inBOEExporter, inBoeCustomExporter, inGenBOEControllerLogic,
             inBoeMediator, inValidationHelper, inBoeCommentLoader, inEmailer, inBoeTaskElementMediator, inWorkspaceVariableLoader, inBOEStateMachine,
             inVariableSelectBOEtoSumCalculation, inBOELaborControllerLogic, inValidateBOE, inSecurityInformation, inBoeSearchLoader, inSecurityAccess,
             inBoeTaskElementRecalculation, inBOEImporter, inVariableCircularReferenceChecker, inConflictBOE, inNestedWBSUtilities, projectMapLoader, zoneTravelRatesFeesDataLoader,
-            rteTemplateDataLoader)
+            rteTemplateDataLoader, moqTypeDataLoader)
         {
         }
 

@@ -76,36 +76,43 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         private Mock<IBoeTaskElementMediator> _taskElementMediator = new Mock<GenBOE.ActionLogic.BLL.IBoeTaskElementMediator>();
         private Mock<Validator> _validator = new Mock<Validator>();
         private Mock<RMSZoneTravelRatesFeesDataLoader> _zoneTravelRatesFeesDataLoader = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+        private Mock<IMoqTypeDataLoader> moqTypeLoader = new Mock<IMoqTypeDataLoader>();
 
         private BOEControllerLogic CreateSystem()
         {
+            this.moqTypeLoader.Setup(x => x.GetByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>());
+
             return new BOEControllerLogic(_boeSummary.Object,
                 _userLoader.Object, _ADUtils.Object, _permissionsLoader.Object, Factory.Object, _boeExporter.Object,
                 _boeCustomExporter.Object, _genBOEControllerLogic.Object, _boeMediator.Object, _validationHelper.Object, _boeCommentDTODataLoader.Object, _emailer.Object,
                 _boeTaskElementMediator.Object, _workspaceVariableDTODataLoader.Object, _boeStateMachine.Object, _variableSelectBOEtoSumCalculation.Object, _boeLaborControllerLogic.Object,
                 _validateBOE.Object, _securityInformation.Object, _boeSearchLoader.Object, _securityAccess.Object, _boeTaskElementRecalculation.Object,
-                _boeImporter.Object, _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null);
+                _boeImporter.Object, _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null, moqTypeLoader.Object);
         }
 
         private BOEControllerLogic CreateSystemSpaceSystems()
         {
+            this.moqTypeLoader.Setup(x => x.GetByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>());
+
             return new BOEControllerLogicSpaceSystems(_boeSummary.Object, _userLoader.Object, _ADUtils.Object, _permissionsLoader.Object, 
                 Factory.Object, _boeExporter.Object, _boeCustomExporter.Object, _genBOEControllerLogic.Object, _boeMediator.Object,
                 _validationHelper.Object, _boeCommentDTODataLoader.Object, _emailer.Object, _boeTaskElementMediator.Object, _workspaceVariableDTODataLoader.Object,
                 _boeStateMachine.Object, _variableSelectBOEtoSumCalculation.Object, _boeLaborControllerLogic.Object, _validateBOE.Object, _securityInformation.Object,
                 _boeSearchLoader.Object, _securityAccess.Object, _boeTaskElementRecalculation.Object, _boeImporter.Object,
-                _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null);
+                _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null, moqTypeLoader.Object);
         }
 
         private BOEControllerLogic CreateSystemMST()
         {
+            this.moqTypeLoader.Setup(x => x.GetByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>());
+
             return new BOEControllerLogicMST(_mstMetricLoader.Object, 
                 _boeSummary.Object, _userLoader.Object, _ADUtils.Object, _permissionsLoader.Object, 
                 Factory.Object, _boeExporter.Object, _boeCustomExporter.Object, _genBOEControllerLogic.Object, _boeMediator.Object,
                 _validationHelper.Object, _boeCommentDTODataLoader.Object, _emailer.Object, _boeTaskElementMediator.Object, _workspaceVariableDTODataLoader.Object,
                 _boeStateMachine.Object, _variableSelectBOEtoSumCalculation.Object, _boeLaborControllerLogic.Object, _validateBOE.Object, _securityInformation.Object,
                 _boeSearchLoader.Object, _securityAccess.Object, _boeTaskElementRecalculation.Object, _boeImporter.Object,
-                _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, new Mock<OffloadRatesDTOLoader>().Object, null, this._zoneTravelRatesFeesDataLoader.Object, null);
+                _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, new Mock<OffloadRatesDTOLoader>().Object, null, this._zoneTravelRatesFeesDataLoader.Object, null, moqTypeLoader.Object);
         }
 
         private void DoGetCreateBOEHeaderMVTest(BOEControllerLogic sut, CompanyConfiguration config)
@@ -867,7 +874,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 _boeCustomExporter.Object, _genBOEControllerLogic.Object, _boeMediator.Object, _validationHelper.Object, _boeCommentDTODataLoader.Object, _emailer.Object,
                 _taskElementMediator.Object, _workspaceVariableDTODataLoader.Object, _boeStateMachine.Object, _variableSelectBOEtoSumCalculation.Object, _boeLaborControllerLogic.Object,
                 _validateBOE.Object, _securityInformation.Object, _boeSearchLoader.Object, _securityAccess.Object, _boeTaskElementRecalculation.Object,
-                _boeImporter.Object, _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null);
+                _boeImporter.Object, _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null, this.moqTypeLoader.Object);
 
             sut.ReOrderTaskElementOrder(ws, boeObject, UserTaskElementCollection);
 
@@ -988,7 +995,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 _boeCustomExporter.Object, _genBOEControllerLogic.Object, _boeMediator.Object, _validationHelper.Object, _boeCommentDTODataLoader.Object, _emailer.Object,
                 _taskElementMediator.Object, _workspaceVariableDTODataLoader.Object, _boeStateMachine.Object, _variableSelectBOEtoSumCalculation.Object, _boeLaborControllerLogic.Object,
                 _validateBOE.Object, _securityInformation.Object, _boeSearchLoader.Object, _securityAccess.Object, _boeTaskElementRecalculation.Object,
-                _boeImporter.Object, _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null);
+                _boeImporter.Object, _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null, this.moqTypeLoader.Object);
 
             sut.ReOrderTaskElementOrder(ws, boeObject, UserTaskElementCollection);
 
