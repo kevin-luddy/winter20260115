@@ -330,6 +330,9 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string Container_MOQTypeRationale = "MOQTypeRationaleContainer";
         internal const string Container_SkillMix = "SkillMixContainer";
         internal const string FieldName_MOQTypeSelectionTitle = "MOQTypeSelectionTitle";
+        internal const string FieldName_MOQTypeSelectionLabel = "MOQTypeSelectionLabel";
+        internal const string FieldName_MOQTypeSelection = "MOQTypeSelection";
+        internal const string FieldName_MOQTypeDescription = "MOQTypeDescription";
         internal const string FieldName_CerPmArNameLabel = "CER/PM/ARNameLabel";
         internal const string FieldName_CerPmArName = "CER/PM/ARName";
         internal const string FieldName_CerPmArLocationLabel = "CER/PM/ARLocationLabel";
@@ -338,10 +341,11 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string FieldName_HoursDescription = "HoursDescription";
         internal const string FieldName_SMEReasonsLabel = "SMEReasonsLabel";
         internal const string FieldName_SMEReasons = "SMEReasons";
+        internal const string FieldName_SMETasksBelowLabel = "SMETasksBelowLabel";
         internal const string FieldName_SMEHoursLogicLabel = "SMEHoursLogicLabel";
         internal const string FieldName_SMEHoursLogic = "SMEHoursLogic";
-        internal const string FieldName_SMEEstimateLogicLabel = "SMEEstimateLogicLabel";
-        internal const string FieldName_SMEEstimateLogic = "SMEEstimateLogic";
+        internal const string FieldName_SMEDurationLogicLabel = "SMEDurationLogicLabel";
+        internal const string FieldName_SMEDurationLogic = "SMEDurationLogic";
         internal const string FieldName_SMETasksLabel = "SMETasksLabel";
         internal const string FieldName_SMETasks = "SMETasks";
         internal const string FieldName_Rationale = "Rationale";
@@ -358,6 +362,7 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string FieldName_TotalWBSHours = "TotalWBSHours";
         internal const string FieldName_AdditionalQueryFilters = "AdditionalQueryFilters";
         internal const string FieldName_TotalRelevantHours = "TotalRelevantHours";
+        internal const string FieldName_ResourceMOQType = "ResourceMOQType";
         internal const string Marker_AdditionalQueryFilters = "AdditionalQueryFiltersRowMarker";
         internal const string Table_MOQType = "MOQTypeTable";
 

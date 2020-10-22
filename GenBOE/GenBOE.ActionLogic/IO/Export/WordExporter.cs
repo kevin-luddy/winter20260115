@@ -366,5 +366,26 @@ namespace GenBOE.ActionLogic.IO.Export
                 }
             }
         }
+
+        /// <summary>
+        /// Remove the table row containing the element
+        /// If no row, just remove the element
+        /// </summary>
+        /// <param name="element">Sdt Element in the row to remove</param>
+        protected void RemoveElementRow(SdtElement element)
+        {
+            if (element != null)
+            {
+                TableRow row = element.Ancestors<TableRow>().FirstOrDefault();
+                if (row != null)
+                {
+                    row.RemoveIt();
+                }
+                else
+                {
+                    row.Parent.RemoveIt();
+                }
+            }
+        }
     }
 }

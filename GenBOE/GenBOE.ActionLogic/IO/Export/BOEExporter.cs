@@ -20,6 +20,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using DocumentFormat.OpenXml.Wordprocessing;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export.BOE;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -4632,13 +4633,13 @@ namespace GenBOE.ActionLogic.IO.Export
             MainDocumentPart mainPart, ref ChunkCounter counters)
         {
             // Iterate over all SdtElements in the document
-            foreach (var alias in taskContainer.TaskContainer.Descendants<SdtAlias>().ToList())
+            foreach (SdtAlias alias in taskContainer.TaskContainer.Descendants<SdtAlias>().ToList())
             {
                 // Get the title of this Alias
                 string sdtTitle = alias.Val.Value;
 
                 // Get the Element that encapsulates the current alias
-                var element = alias.Ancestors<SdtElement>().FirstOrDefault();
+                SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
 
                 // If the current element is not null, populate it with the appropriate data from the BOEExportModelView
                 if (element != null && element != taskContainer.TaskContainer)
@@ -4804,7 +4805,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         if (exportInputs.Workspace.UsingTemplateBOE)
                         {
                             // remove this for Workspaces using Template BOE
-                            element.Parent.RemoveIt();
+                            this.RemoveElementRow(element);
                         }
                         else
                         {
@@ -4830,12 +4831,12 @@ namespace GenBOE.ActionLogic.IO.Export
                             alias.RemoveIt();
                         }
                     }
-                    else if (sdtTitle == "Template BOE MOQ Placeholder")
+                    else if (sdtTitle == BOEExporterConstants.Container_MOQSelection)
                     {
                         // Placeholder
                         if (exportInputs.Workspace.UsingTemplateBOE)
                         {
-                            // TODO populate and update else-if
+                            this.PopulateMOQTypeData(taskElement, mainPart, element, ref counters);
                         }
                         else
                         {
@@ -4879,6 +4880,235 @@ namespace GenBOE.ActionLogic.IO.Export
             }
 
             taskContainer.TaskTypeRow.RemoveIt();
+        }
+
+        /// <summary>
+        /// Populate the MOQ Type Data
+        /// </summary>
+        /// <param name="taskElement">task element</param>
+        /// <param name="mainPart">main document part</param>
+        /// <param name="containerElement">container element</param>
+        /// <param name="counters">chunk counters</param>
+        private void PopulateMOQTypeData(BOEExportTaskElement taskElement, MainDocumentPart mainPart, SdtElement containerElement, ref ChunkCounter counters)
+        {
+            // create/clone template of MOQ Type fields
+            SdtElement moqTypeContainer = null;
+            OpenXmlElement lastElement = containerElement;
+
+            if (containerElement != null)
+            {
+                foreach (MoqTypeSelection moqType in taskElement.MOQTypes)
+                {
+                    moqTypeContainer = containerElement.CloneNode(true) as SdtElement;
+                    lastElement = lastElement.InsertAfterSelf<SdtElement>(moqTypeContainer);
+
+                    SdtElement MoqTypeTableContainer = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.Table_MOQType);
+                    SdtElement RationaleElement = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_Rationale);
+                    SdtElement SkillMixElement = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SkillMix);
+
+                    // populate unique fields and remove unused fields for MOQ Type
+                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_MOQTypeSelectionTitle),
+                        moqType.SelectedMOQType.GetDescription());
+                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_MOQTypeDescription),
+                        this.GetMoqTypeDescription(moqType.SelectedMOQType, taskElement.MOQTypes.Count > 1));
+
+                    switch (moqType.SelectedMOQType)
+                    {
+                        case MOQType.Historical:
+                        case MOQType.Comparative:
+                            this.RemoveCerPrArElements(moqTypeContainer);
+                            this.RemoveSoeLowElements(moqTypeContainer);
+                            this.RemoveSMEElements(moqTypeContainer);
+
+                            // TODO - populate table data
+                            break;
+                        case MOQType.CostEstimatingRelationships:
+                        case MOQType.ParametricEstimates:
+                        case MOQType.AnalogousRelationships:
+                            this.RemoveSoeLowElements(moqTypeContainer);
+                            this.RemoveSMEElements(moqTypeContainer);
+                            this.RemoveElementRow(MoqTypeTableContainer);
+
+                            string labelPrefix;
+                            if (moqType.SelectedMOQType == MOQType.CostEstimatingRelationships)
+                            {
+                                labelPrefix = "CER";
+                            }
+                            else if (moqType.SelectedMOQType == MOQType.ParametricEstimates)
+                            {
+                                labelPrefix = "Parametric model or tool";
+                            }
+                            else
+                            {
+                                labelPrefix = "Analogous relationship";
+                            }
+
+                            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArNameLabel), labelPrefix + " name");
+                            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArName), moqType.CerName);
+                            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArLocationLabel), labelPrefix + " location in the proposal");
+                            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArLocation), moqType.CerLocation);
+                            break;
+                        case MOQType.SOW:
+                        case MOQType.LOE:
+                            this.RemoveCerPrArElements(moqTypeContainer);
+                            this.RemoveSMEElements(moqTypeContainer);
+                            this.RemoveElementRow(MoqTypeTableContainer);
+                            // TODO - does SOW have skill mix?
+                            string label = "Description of Hours required";
+                            if (moqType.SelectedMOQType == MOQType.SOW)
+                            {
+                                label += " & location in SOW";
+                            }
+
+                            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_HoursDescriptionLabel), label);
+                            WordUtilities.SetElementTextWithHTML(mainPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_HoursDescription),
+                                moqType.DescriptionHoursRequired, ref counters, true);
+                            break;
+                        case MOQType.SME:
+                            this.RemoveCerPrArElements(moqTypeContainer);
+                            this.RemoveSoeLowElements(moqTypeContainer);
+                            this.RemoveElementRow(MoqTypeTableContainer);
+                        
+                            WordUtilities.SetElementTextWithHTML(mainPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEReasons),
+                                moqType.SmeReason, ref counters, true);
+                            WordUtilities.SetElementTextWithHTML(mainPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEHoursLogic),
+                                moqType.SmeHoursLogic, ref counters, true);
+                            WordUtilities.SetElementTextWithHTML(mainPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEDurationLogic),
+                                moqType.SmeDurationLogic, ref counters, true);
+                            WordUtilities.SetElementTextWithHTML(mainPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMETasks),
+                                moqType.SmeTaskEstimates, ref counters, true);
+                            break;
+                        case MOQType.NonLabor:
+                            this.RemoveCerPrArElements(moqTypeContainer);
+                            this.RemoveSoeLowElements(moqTypeContainer);
+                            this.RemoveSMEElements(moqTypeContainer);
+                            this.RemoveElementRow(MoqTypeTableContainer);
+                            break;
+                        default:
+                            break;
+                    }
+
+                    // populate rationale/skill mix for all
+                    if (moqType.SelectedMOQType != MOQType.SME)
+                    {
+                        WordUtilities.SetElementTextWithHTML(mainPart, RationaleElement, moqType.Rationale, ref counters, true);
+                    }
+                    else
+                    {
+                        this.RemoveElementRow(RationaleElement);
+                    }
+
+                    if (moqType.SelectedMOQType != MOQType.NonLabor)
+                    {
+                        WordUtilities.SetElementTextWithHTML(mainPart, SkillMixElement, moqType.SkillMixRationale, ref counters, true);
+                    }
+                    else
+                    {
+                        this.RemoveElementRow(SkillMixElement);
+                    }
+                }
+
+                // delete template            
+                this.RemoveElement(containerElement);
+            }
+        }
+
+        /// <summary>
+        /// Remove the CER/PR/AR elements
+        /// </summary>
+        /// <param name="moqTypeContainer"></param>
+        private void RemoveCerPrArElements(SdtElement moqTypeContainer)
+        {
+            SdtElement CerPmArName = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArName);
+            SdtElement CerPmArLocation = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArLocation);
+
+            this.RemoveElementRow(CerPmArName);
+            this.RemoveElementRow(CerPmArLocation);
+        }
+
+        /// <summary>
+        /// Remove the SOE/LOW Elements
+        /// </summary>
+        /// <param name="moqTypeContainer"></param>
+        private void RemoveSoeLowElements(SdtElement moqTypeContainer)
+        {
+            SdtElement hoursDescription = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_HoursDescription);
+
+            this.RemoveElementRow(hoursDescription);
+        }
+
+        /// <summary>
+        /// Remove the SME Elements
+        /// </summary>
+        /// <param name="moqTypeContainer"></param>
+        private void RemoveSMEElements(SdtElement moqTypeContainer)
+        {
+            SdtElement smeReasons = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEReasons);
+            SdtElement smeTasksBelowLabel = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMETasksBelowLabel);
+            SdtElement smeHoursLogic = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEHoursLogic);
+            SdtElement smeDurationLogic = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEDurationLogic);
+            SdtElement smeTasks = WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMETasks);
+
+            this.RemoveElementRow(smeReasons);
+            this.RemoveElementRow(smeTasksBelowLabel);
+            this.RemoveElementRow(smeHoursLogic);
+            this.RemoveElementRow(smeDurationLogic);
+            this.RemoveElementRow(smeTasks);
+        }
+
+        /// <summary>
+        /// Get the MOQ Type description
+        /// </summary>
+        /// <param name="moqType">MOQ Type</param>
+        /// <param name="multiMoq">If there is more than one MOQ Type</param>
+        /// <returns></returns>
+        private string GetMoqTypeDescription(MOQType moqType, bool multiMoq)
+        {
+            string toReturn;
+
+            if (multiMoq)
+            {
+                toReturn = "This task is based on ";
+            }
+            else
+            {
+                toReturn = "This portion of the task is based on ";
+            }
+
+            switch (moqType)
+            {
+                case MOQType.Historical:
+                    toReturn += "historical data:";
+                    break;
+                case MOQType.Comparative:
+                    toReturn += "similar historical data:";
+                    break;
+                case MOQType.CostEstimatingRelationships:
+                    toReturn += "a Cost Estimating Relationship (CER). Please provide:";
+                    break;
+                case MOQType.ParametricEstimates:
+                    toReturn += "Parametric Model/tool. Please provide:";
+                    break;
+                case MOQType.AnalogousRelationships:
+                    toReturn += "Analogous Relationship. Please provide:";
+                    break;
+                case MOQType.SOW:
+                    toReturn += "a Statement of Work (SOW) directive:";
+                    break;
+                case MOQType.LOE:
+                    toReturn += "a Level of Effort (LOE):";
+                    break;
+                case MOQType.SME:
+                    toReturn += "Subject Matter Expert (SME) Judgement.";
+                    break;
+                case MOQType.NonLabor:
+                    toReturn = "This task is Non-Labor:";
+                    break;
+                default:
+                    break;
+            }
+
+            return toReturn;
         }
 
         /// <summary>

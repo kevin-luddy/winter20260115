@@ -448,7 +448,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 if (selectedComponents.Contains(BoeCustomReportComponent.ResourceInfoAndSpreadTables))
                 {
-                    var orderedResources = laborTaskElement.taskElementLabors
+                    IOrderedEnumerable<BOEExportTaskElementLabor> orderedResources = laborTaskElement.taskElementLabors
                         .Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_ResourceID)
                         && c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_PerformingOrgID))
                         .OrderBy(o => o.ExportFields[BOEExporterConstants.FieldName_ResourceID])
@@ -456,11 +456,11 @@ namespace GenBOE.ActionLogic.IO.Export
 
                     SdtElement currentInsertionPoint = laborResourceContainerTemplateElement;
 
-                    foreach (var resourceElement in orderedResources)
+                    foreach (BOEExportTaskElementLabor resourceElement in orderedResources)
                     {
                         SdtElement laborResourceContainerElement = this.CloneContainerTemplate(laborResourceContainerTemplateElement);
 
-                        this.ProcessResourceHeader(laborResourceContainerElement, resourceElement);
+                        this.ProcessResourceHeader(laborResourceContainerElement, resourceElement, exportInputs.Workspace.UsingTemplateBOE);
                         this.ProcessResourceCustomFields(laborResourceContainerElement, resourceElement, exportInputs.CustomFields, exportInputs);
                         this.ProcessResourceHoursRollupTable(laborResourceContainerElement, resourceElement, allLaborTaskElements, laborTaskElement);
                         this.ProcessResourceCostRollupTable(laborResourceContainerElement, resourceElement, allLaborTaskElements, laborTaskElement);
@@ -573,7 +573,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                         SdtElement odcResourceContainerElement = this.CloneContainerTemplate(odcResourceContainerTemplateElement);
 
-                        this.ProcessResourceHeader(odcResourceContainerElement, boeExportLabor);
+                        this.ProcessResourceHeader(odcResourceContainerElement, boeExportLabor, false);
                         this.ProcessODCResourceCostRollupTable(odcResourceContainerElement, odcTaskElement, odcType);
                         
                         currentInsertionPoint.InsertAfterSelf(odcResourceContainerElement);
@@ -924,7 +924,8 @@ namespace GenBOE.ActionLogic.IO.Export
         /// </summary>
         /// <param name="containerElement">Container element for the resource</param>
         /// <param name="ResourceElement">Resource with data to populate the header</param>
-        private void ProcessResourceHeader(SdtElement containerElement, BOEExportTaskElementLabor ResourceElement)
+        /// <param name="templateBOE">If Workspace is using Template BOE</param>
+        private void ProcessResourceHeader(SdtElement containerElement, BOEExportTaskElementLabor ResourceElement, bool templateBOE)
         {
             IDictionary<string, string> resourceHeaderDataValueMappings = new Dictionary<string, string>
             {
@@ -948,6 +949,22 @@ namespace GenBOE.ActionLogic.IO.Export
             else
             {
                 resourceHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_ResourceDescription, "NO PERF ORG");
+            }
+
+            if (templateBOE)
+            {
+                if (ResourceElement.ExportFields.ContainsKey(BOEExporterConstants.FieldName_ResourceMOQType))
+                {
+                    resourceHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_ResourceMOQType, ResourceElement.ExportFields[BOEExporterConstants.FieldName_ResourceMOQType]);
+                }
+                else
+                {
+                    resourceHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_ResourceMOQType, "NO MOQ TYPE");
+                }
+            }
+            else
+            {
+                this.RemoveElementRow(WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_ResourceMOQType));
             }
 
             foreach (KeyValuePair<string, string> entry in resourceHeaderDataValueMappings)
