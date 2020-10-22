@@ -50,8 +50,6 @@ namespace GenBOE.ActionLogic.Validation
 
         private static string RESOURCE_SPREAD_VALUE_FAILED = "Sum of Spread Values for the Resource Type (Start Date: {0}, End Date: {1}, Value Spread ({2}): {3}) does not match the Resource Type Value.";
 
-        private static string MOQ_TYPE_REQUIRED_FOR_RESOURCE_TYPE = "MOQ Type selection is required for the Resource Type (Start Date: {0}, End Date: {1}, Value Spread ({2}): {3}) ";
-        
         private static string DATES_HEADER = "<b><i>The following errors are due to dates which are outside of the period of performance.  Please adjust the dates to fall within the " 
             + "period of performance.  Using the \"Recalculate Task Element\" button will automatically adjust the resource dates.  *Note:  Any discrete spreads which fall outside of " 
             + "the adjusted period of performance will be deleted and a delta value may remain.</i></b><br />";
@@ -174,7 +172,6 @@ namespace GenBOE.ActionLogic.Validation
                             {
                                 ValidateTaskDates(boeStartDate, boeEndDate, taskElement, ref dateErrors);
                                 ValidateResourceTypesForIndividualTask(ws, taskElement, ref dateErrors, ref valueErrors);
-                                ValidateResourceTypesMoqSelection(ws, taskElement, otherErrors);
                             }
                         );
 
@@ -378,35 +375,6 @@ namespace GenBOE.ActionLogic.Validation
             }
 
             return true;
-        }
-
-        /// <summary>
-        /// Validates Validate Resource Types Moq Selections; only applicable if using Template BOEs (new MOQ Types)
-        /// 
-        /// This is used during "validate" BOE, so the ** fields are required as well
-        /// </summary>
-        /// <param name="ws">Workspace</param>
-        /// <param name="taskElement">Task Element</param>
-        /// <param name="errors">Errors which will be updated if needed</param>
-        private static void ValidateResourceTypesMoqSelection(FullWorkspace ws, BoeTaskElementDTO taskElement, ConcurrentBag<LaborValidationClass> errors)
-        {
-            if (ws.UsingTemplateBOE)
-            {
-                taskElement.taskElementLabors.Where(x => !x.MoqTypeSelectionId.HasValue).ToList().ForEach(resourceType => 
-                {
-                    string resourceTypeString = resourceType.SpreadType == SpreadType.Cost ? "cost" : FullObjectHelper.HoursLabel(ws);
-                    string resourceTypeValueString = resourceType.SpreadType == SpreadType.Cost ?
-                                    "$" + Utilities.AdjustPrecision(resourceType.ValueSpread.Value, 2).ToString()
-                                        : Utilities.AdjustPrecision(resourceType.ValueSpread.Value, ws.DecimalPrecision).ToString();
-
-                    string resourceStartDateString = resourceType.StartDateValue.ToShortDateString();
-                    string resourceEndDateString = resourceType.EndDateValue.ToShortDateString();
-
-                    errors.Add(GenerateResourceTypeError(resourceType, string.Format(MOQ_TYPE_REQUIRED_FOR_RESOURCE_TYPE, resourceStartDateString, resourceEndDateString, resourceTypeString, resourceTypeValueString)));
-                });
-
-                // DUSAN -> Additional validation for BOEJ-4824 (RTE Fields as well as table data)
-            }
         }
 
         #endregion

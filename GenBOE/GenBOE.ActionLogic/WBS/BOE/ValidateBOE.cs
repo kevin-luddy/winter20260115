@@ -13,12 +13,14 @@ namespace GenBOE.ActionLogic.WBS.BOE
     using Common;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Import;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
+    using MoreLinq;
 
     public class ValidateBOE : IValidateBOE
     {
@@ -232,6 +234,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
             {
                 ValidationBOE.BOECommentandApprovals.Add("All BOE Comments do not have a response from the Author.");
             }
+
+            this.ValidateTemplateMoqTypes(ws, inBOE, ValidationBOE);
 
             // Setting the name for the WBS - incase we have multiple WBS's we would want to list them out.
             ValidationBOE.BOEName = (inBOE.Wbs != null ? inBOE.Wbs.WbsString : CommonConstants.Unassigned_WBS_Display_Text) + " " + (inBOE.Clin != null ? inBOE.Clin.ClinString : CommonConstants.Unassigned_CLIN_Display_Text) + " " + inBOE.Title;
@@ -467,7 +471,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                 // (rule only valid for Labor TE)
                 // validate MOQ Type
-                if (boeTask.TaskElementType == TaskElementType.Labor && boeTask.MOQType.Equals(MOQType.None))
+                if (!workspace.UsingTemplateBOE && boeTask.TaskElementType == TaskElementType.Labor && boeTask.MOQType == MOQType.None)
                 {
                     TaskElementMessages.Add(BoeDTO.MOQ_TYPE_REQUIRED);
                 }
@@ -569,7 +573,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 ValidateRTEFieldLength(workspace, boeTask.Description, "Task Description", TaskElementMessages);
                 ValidateRTEFieldLength(workspace, boeTask.MOQText, "MOQ Rationale", TaskElementMessages);
 
-                var resourcesFromTask = workspace.ResourcesForWsResourceListId.Where(x => (boeTask.taskElementLabors.Where(y => y.ResourceID.HasValue).Select(z => z.ResourceID.Value)).Contains(x.Id));
+                List<ResourceDTO> resourcesFromTask = workspace.ResourcesForWsResourceListId.Where(x => (boeTask.taskElementLabors.Where(y => y.ResourceID.HasValue).Select(z => z.ResourceID.Value)).Contains(x.Id)).ToList();
                 TotalLaborSpreadValue = ValidateResourceLabors(workspace, inBOE, boeTasks, LaborTypeMessages, offloadRatesDtos, boeTask, resourcesFromTask);
 
                 // only check moq equation total if this is a labor task element
@@ -601,17 +605,190 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// </summary>        
         private void ValidateTaskMoqText(FullWorkspace workspace, FullBoe inBOE, Collection<string> TaskElementMessages, BoeTaskElementDTO boeTask)
         {
-            if (string.IsNullOrEmpty(boeTask.MOQText)) // if no data in the field itself
+            if (!workspace.UsingTemplateBOE)
             {
-                // the field is valid if templates are being used, AND all required prompts are answered
-                var taskTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, inBOE.Id, boeTask.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ);
-                if (!taskTemplateWithPrompts.Any() || taskTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText)))
+                // Legacy MOQ Types
+                if (string.IsNullOrEmpty(boeTask.MOQText)) // if no data in the field itself
                 {
-                    TaskElementMessages.Add(this.FormatMOQTextErrorMessage(BoeDTO.MOQ_TEXT_REQUIRED));
+                    // the field is valid if templates are being used, AND all required prompts are answered
+                    var taskTemplateWithPrompts = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspace.Id, inBOE.Id, boeTask.Id).Where(t => t.SourceId == (int)RteTemplateSource.TaskMOQ);
+                    if (!taskTemplateWithPrompts.Any() || taskTemplateWithPrompts.Any(t => t.Required && string.IsNullOrEmpty(t.AnswerText)))
+                    {
+                        TaskElementMessages.Add(this.FormatMOQTextErrorMessage(BoeDTO.MOQ_TEXT_REQUIRED));
+                    }
                 }
             }
         }
 
+        /// <summary>
+        /// Validate Template MOQ Types
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="boe">BOE to validate</param>
+        /// <param name="boeValidation">Boe Validation</param>
+        private void ValidateTemplateMoqTypes(FullWorkspace ws, FullBoe boe, ValidationBOEModelView boeValidation)
+        {
+            ICollection<string> errorMessages;
+
+            if (ws.UsingTemplateBOE)
+            {
+                foreach(BoeTaskElementDTO task in boe.TaskElements)
+                {
+                    errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList());
+                    errorMessages.AddRange(ValidateTemplateMoqForLaborType(task, ws.DecimalPrecision));
+
+                    if (errorMessages.Any())
+                    {
+                        ValidationBOETasks taskValidation = boeValidation.Tasks.FirstOrDefault(x => x.TaskId == task.Id);
+                        if (taskValidation == null)
+                        {
+                            taskValidation = new ValidationBOETasks() { TaskId = task.Id, TaskMessage = $"Task: {task.Id} {task.TaskTitle}", TaskElementDetails = new ValidationBOETaskElementDetails() { TaskElementDetailsHeader = "Task Element Details" } };
+                            boeValidation.Tasks.Add(taskValidation);
+                        }
+
+                        taskValidation.TaskElementDetails.TaskElementDetailValidationMessages.AddRange(errorMessages);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Validate MOQ Template data on a Task Level. Does NOT validate Labor Type level selection
+        /// </summary>
+        /// <param name="moqTypesForTask">MOQ Types that belong to the task</param>
+        /// <returns>Errors, if any</returns>
+        public static Collection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask)
+        {
+            _ = moqTypesForTask ?? throw new ArgumentNullException(nameof(moqTypesForTask));
+
+            Collection<string> errorMessages = new Collection<string>();
+
+            if (!moqTypesForTask.Any())
+            {
+                errorMessages.Add(Constants.MOQ_TYPE_REQUIRED_FOR_TASK);
+            }
+            else
+            {
+                MoqTypeTableDataLabels labels = new MoqTypeTableDataLabels();
+
+                moqTypesForTask.ForEach(moqType =>
+                {
+                    switch (moqType.SelectedMOQType)
+                    {
+                        case (MOQType.AnalogousRelationships):
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "Analogous relationship name", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.CerLocation, "Analogous relationship location in the proposal", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", errorMessages);
+                            break;
+                        case (MOQType.Comparative):
+                        case (MOQType.Historical):
+                            if (moqType.TableData.None()) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: Table data is required."); }
+                            moqType.TableData.ForEach(row =>
+                            {
+                                ValidateRequiredField(moqType.SelectedMOQType, row.TableName, labels.TableName, errorMessages);
+
+                                if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+                                {
+                                    ValidateRequiredField(moqType.SelectedMOQType, row.RepositoryName, labels.RepositoryName, errorMessages);
+                                    ValidateRequiredField(moqType.SelectedMOQType, row.QueryType, labels.QueryType, errorMessages);
+                                }
+                                else
+                                {
+                                    ValidateRequiredField(moqType.SelectedMOQType, row.ContractNumber, labels.ContractNumber, errorMessages);
+                                }
+
+                                if (row.DateOfReport.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} is required."); }
+
+                                ValidateRequiredField(moqType.SelectedMOQType, row.HistoricalProgramName, labels.HistoricalProgramName, errorMessages);
+                                ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, errorMessages);
+                                if (row.PoPStart.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
+                                if (row.PoPEnd.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
+                                if (row.PoPEnd < row.PoPStart) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be before {labels.PoPEnd}."); }
+                                if (row.TotalWbsHours <= 0) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalWbsHours} must be a number greater than 0."); }
+                                ValidateRequiredField(moqType.SelectedMOQType, row.AdditionalQueryFilters, labels.AdditionalQueryFilters, errorMessages);
+                                if (row.TotalRelevantHours <= 0) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalRelevantHours} must be a number greater than 0."); }
+                            });
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", errorMessages);
+                            break;
+                        case (MOQType.CostEstimatingRelationships):
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "CER tool name", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.CerLocation, "CER tool location in the proposal", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", errorMessages);
+                            break;
+                        case (MOQType.LOE):
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", errorMessages);
+                            break;
+                        case (MOQType.NonLabor):
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", errorMessages);
+                            break;
+                        case (MOQType.ParametricEstimates):
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "Parametric model name", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.CerLocation, "Parametric model location in the proposal", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", errorMessages);
+                            break;
+                        case (MOQType.SME):
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeReason, "The SME selected Expert judgement reasons", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeHoursLogic, "The logic and assumptions used to estimate hours", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeDurationLogic, "The logic and assumptions used to estimate duration", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeTaskEstimates, "The SME tasks estimated in this BOE", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", errorMessages);
+                            break;
+                        case (MOQType.SOW):
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SowHoursLocation, "Description of Hours required & location in SOW", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", errorMessages);
+                            break;
+                        default:
+                            errorMessages.Add("Invalid MOQ Type selected");
+                            break;
+                    };
+                });
+            }
+
+            return errorMessages;
+        }
+
+        /// <summary>
+        /// Validates Moq Selection for a Labor Type
+        /// </summary>
+        /// <param name="task">Task to validate</param>
+        /// <param name="decimalPrecision">WS Decimal Precision</param>
+        /// <returns>Errors, if any</returns>
+        private static Collection<string> ValidateTemplateMoqForLaborType(BoeTaskElementDTO task, int decimalPrecision)
+        {
+            Collection<string> errorMessages = new Collection<string>();
+
+            task.taskElementLabors.Where(x => !x.MoqTypeSelectionId.HasValue).ForEach(resourceType =>
+            {
+                string resourceValue = resourceType.SpreadType == SpreadType.Cost ?
+                            "$" + Utilities.AdjustPrecision(resourceType.ValueSpread.Value, 2).ToString()
+                                : Utilities.AdjustPrecision(resourceType.ValueSpread.Value, decimalPrecision).ToString();
+
+                errorMessages.Add(string.Format(Constants.MOQ_TYPE_REQUIRED_FOR_RESOURCE_TYPE, resourceType.StartDate, resourceType.EndDate, resourceValue));
+            });
+
+            return errorMessages;
+        }
+
+        /// <summary>
+        /// Validates a required field
+        /// </summary>
+        /// <param name="moqType">Moq Type</param>
+        /// <param name="field">Property to check</param>
+        /// <param name="label">Label for the field</param>
+        /// <param name="errorMessages">Error Messages</param>
+        private static void ValidateRequiredField(MOQType moqType, string field, string label, Collection<string> errorMessages)
+        {
+            if (string.IsNullOrEmpty(field)) 
+            { 
+                errorMessages.Add($"{moqType.GetDescription()}: {label} is required."); 
+            }
+        }
 
         /// <summary>
         /// Validates Tasks Description, including RTE Templates in the process
@@ -629,7 +806,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
             }
         }
 
-        private decimal ValidateResourceLabors(FullWorkspace workspace, FullBoe inBOE, ValidationBOETasks boeTasks, Collection<string> LaborTypeMessages, ICollection<OffloadRatesDTO> offloadRatesDtos, BoeTaskElementDTO boeTask, IEnumerable<ResourceDTO> resourcesFromTask)
+        private decimal ValidateResourceLabors(FullWorkspace workspace, FullBoe inBOE, ValidationBOETasks boeTasks, Collection<string> LaborTypeMessages, ICollection<OffloadRatesDTO> offloadRatesDtos, BoeTaskElementDTO boeTask, ICollection<ResourceDTO> resourcesFromTask)
         {
             decimal TotalLaborSpreadValue = 0;
 

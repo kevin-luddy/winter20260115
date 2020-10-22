@@ -14,14 +14,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Web.Configuration;
     using System.Web.Mvc;
     using GenBOE.ActionLogic;
-    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.MOQ;
     using GenBOE.ActionLogic.IO.Import;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.Validation;
+    using GenBOE.ActionLogic.WBS.BOE;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -1317,46 +1318,46 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="boeDTO">boe</param>
         /// <param name="laborTaskData">task modelview includes task details, labors, and spreads</param>
         /// <param name="inValidationErrors">validation errors</param>
-        /// <param name="inWorkspaceDTO">workspace</param>
-        public void ValidateTaskDetails(FullBoe boeDTO, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace inWorkspaceDTO)
+        /// <param name="ws">workspace</param>
+        public void ValidateTaskDetails(FullBoe boeDTO, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace ws)
         {
             _ = boeDTO ?? throw new ArgumentNullException(nameof(boeDTO));
             _ = inValidationErrors ?? throw new ArgumentNullException(nameof(inValidationErrors));
-            _ = inWorkspaceDTO ?? throw new ArgumentNullException(nameof(inWorkspaceDTO));
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
             _ = laborTaskData ?? throw new ArgumentNullException(nameof(laborTaskData));
             _ = laborTaskData.TaskElementData ?? throw new ArgumentNullException(nameof(laborTaskData), "TaskElementData cannot be null");
 
             // validate RTE field length
-            if(inWorkspaceDTO.RteSizeLimit.HasValue)
+            if(ws.RteSizeLimit.HasValue)
             {
-                this.ValidateTaskElementRteSizeLimit(laborTaskData, inWorkspaceDTO, inValidationErrors);
+                this.ValidateTaskElementRteSizeLimit(laborTaskData, ws, inValidationErrors);
             }
 
-            this.ValidateTaskElementDates(laborTaskData, inWorkspaceDTO, boeDTO, inValidationErrors, out BoeTaskElementDTO taskElement);
+            this.ValidateTaskElementDates(laborTaskData, ws, boeDTO, inValidationErrors, out BoeTaskElementDTO taskElement);
             this.ValidateLaborTypeDates(laborTaskData, inValidationErrors);
-            this.ValidateLaborTypeCustomFields(laborTaskData, inWorkspaceDTO, taskElement, inValidationErrors);
-            this.ValidateTaskCustomFields(laborTaskData, inWorkspaceDTO, inValidationErrors);
-            this.ValidateMoqTypes(inWorkspaceDTO, laborTaskData, inValidationErrors);
+            this.ValidateLaborTypeCustomFields(laborTaskData, ws, taskElement, inValidationErrors);
+            this.ValidateTaskCustomFields(laborTaskData, ws, inValidationErrors);
+            this.ValidateMoqTypes(ws, laborTaskData, inValidationErrors);
         }
 
         /// <summary>
         /// Validate the RTE Size Limit in the Task Element
         /// </summary>
         /// <param name="laborTaskData">Task Composite MV</param>
-        /// <param name="inWorkspaceDTO">Workspace</param>
+        /// <param name="ws">Workspace</param>
         /// <param name="inValidationErrors">Validation Errors collection</param>
-        private void ValidateTaskElementRteSizeLimit(LaborTaskDataModelView laborTaskData, FullWorkspace inWorkspaceDTO, ICollection<ValidationMessage> inValidationErrors)
+        private void ValidateTaskElementRteSizeLimit(LaborTaskDataModelView laborTaskData, WorkspaceDTO ws, ICollection<ValidationMessage> inValidationErrors)
         {
-            if (!string.IsNullOrEmpty(laborTaskData.TaskElementData.TaskDescription) && inWorkspaceDTO.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.TaskDescription).Length)
+            if (!string.IsNullOrEmpty(laborTaskData.TaskElementData.TaskDescription) && ws.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.TaskDescription).Length)
             {
                 inValidationErrors.Add(new ValidationMessage("TaskDescription",
-                    string.Format("The maximum length of Task Description is {0} characters.", inWorkspaceDTO.RteSizeLimit.Value)));
+                    string.Format("The maximum length of Task Description is {0} characters.", ws.RteSizeLimit.Value)));
             }
 
-            if (!string.IsNullOrEmpty(laborTaskData.TaskElementData.MOQText) && inWorkspaceDTO.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.MOQText).Length)
+            if (!string.IsNullOrEmpty(laborTaskData.TaskElementData.MOQText) && ws.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.MOQText).Length)
             {
                 inValidationErrors.Add(new ValidationMessage("MOQText",
-                    string.Format("The maximum length of MOQ Rationale is {0} characters.", inWorkspaceDTO.RteSizeLimit.Value)));
+                    string.Format("The maximum length of MOQ Rationale is {0} characters.", ws.RteSizeLimit.Value)));
             }
         }
 
@@ -1364,11 +1365,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// Validate Task Element dates
         /// </summary>
         /// <param name="laborTaskData">Task Composite MV</param>
-        /// <param name="inWorkspaceDTO">Workspace</param>
+        /// <param name="ws">Workspace</param>
         /// <param name="boeDTO">BOE</param>
         /// <param name="inValidationErrors">Validation Errors collection</param>
         /// <param name="taskElement">Task Element</param>
-        private void ValidateTaskElementDates(LaborTaskDataModelView laborTaskData, FullWorkspace inWorkspaceDTO, FullBoe boeDTO, ICollection<ValidationMessage> inValidationErrors, out BoeTaskElementDTO taskElement)
+        private void ValidateTaskElementDates(LaborTaskDataModelView laborTaskData, WorkspaceDTO ws, FullBoe boeDTO, ICollection<ValidationMessage> inValidationErrors, out BoeTaskElementDTO taskElement)
         {
             if (!laborTaskData.TaskElementData.TaskElementDetailID.HasValue || laborTaskData.TaskElementData.TaskElementDetailID.Value < 0)
             {
@@ -1395,7 +1396,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
             else
             {
-                taskElement = this.factory.CreateTaskElement(laborTaskData.TaskElementData.TaskElementDetailID.Value, inWorkspaceDTO.DecimalPrecision, inWorkspaceDTO.CostDecimalPrecision);
+                taskElement = this.factory.CreateTaskElement(laborTaskData.TaskElementData.TaskElementDetailID.Value, ws.DecimalPrecision, ws.CostDecimalPrecision);
                 laborTaskData.TaskElementData.StartDate = taskElement.StartDate.Value.ToMonthString();
                 laborTaskData.TaskElementData.EndDate = taskElement.EndDate.Value.ToMonthString();
             }
@@ -1443,13 +1444,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// Validate the Labor Type Custom Fields
         /// </summary>
         /// <param name="laborTaskData">Task Composite MV</param>
-        /// <param name="inWorkspaceDTO">Workspace</param>
+        /// <param name="ws">Workspace</param>
         /// <param name="taskElement">Task Element</param>
         /// <param name="inValidationErrors">Validation Errors collection</param>
-        private void ValidateLaborTypeCustomFields(LaborTaskDataModelView laborTaskData, FullWorkspace inWorkspaceDTO, BoeTaskElementDTO taskElement, ICollection<ValidationMessage> inValidationErrors)
+        private void ValidateLaborTypeCustomFields(LaborTaskDataModelView laborTaskData, FullWorkspace ws, BoeTaskElementDTO taskElement, ICollection<ValidationMessage> inValidationErrors)
         {
             //list of all customfields so we can check requiredness for LT. 
-            Collection<BOECustomFieldModelView> LTCustomFields = this.GetCustomFieldOptionModelViews(inWorkspaceDTO, ControllerCustomFieldType.LaborTypes);
+            Collection<BOECustomFieldModelView> LTCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.LaborTypes);
 
             foreach (BOECustomFieldModelView LTCF in LTCustomFields)
             {
@@ -1570,12 +1571,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// Validate the Task Custom Fields
         /// </summary>
         /// <param name="laborTaskData">Task Composite MV</param>
-        /// <param name="inWorkspaceDTO">Workspace</param>
+        /// <param name="ws">Workspace</param>
         /// <param name="inValidationErrors">Validation Errors collection</param>
-        private void ValidateTaskCustomFields(LaborTaskDataModelView laborTaskData, FullWorkspace inWorkspaceDTO, ICollection<ValidationMessage> inValidationErrors)
+        private void ValidateTaskCustomFields(LaborTaskDataModelView laborTaskData, FullWorkspace ws, ICollection<ValidationMessage> inValidationErrors)
         {
             //list of all customfields so we can check requiredness for task details. 
-            Collection<BOECustomFieldModelView> TaskCustomFields = this.GetCustomFieldOptionModelViews(inWorkspaceDTO, ControllerCustomFieldType.Task);
+            Collection<BOECustomFieldModelView> TaskCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.Task);
 
             ICollection<BOECustomFieldModelView> StandardTaskCustomFields = TaskCustomFields.Where(x => !x.CustomFieldMetaData.isOpenEnded && x.CustomFieldMetaData.isRequired).ToCollection();
 
@@ -1624,53 +1625,45 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="ws">Full WS</param>
         /// <param name="taskData">Task Data</param>
         /// <param name="errors">Validation Errors</param>
-        private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors)
+        private void ValidateMoqTypes(WorkspaceDTO ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors)
         {
-            if(ws.UsingTemplateBOE)
+            if (ws.UsingTemplateBOE)
             {
-                if(taskData.MOQTypes.None())
-                {
-                    // DUSAN -> need to do this -> BOEJ-4790:
-                    // errors.Add(GenerateResourceTypeError(resourceType, string.Format(MOQ_TYPE_REQUIRED_FOR_RESOURCE_TYPE, resourceStartDateString, resourceEndDateString, resourceTypeString, resourceTypeValueString)));
+                ICollection<string> taskErrors = ValidateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes);
 
-                    errors.Add(new ValidationMessage("Please add at least a single MOQ Type") { });
-                }
-                else
-                {
-                    // walk through the selected types and validate them
-                    taskData.MOQTypes.Where(x => x.SelectedMOQType == MOQType.Historical || x.SelectedMOQType == MOQType.Comparative).ForEach(moqType => 
-                    { 
-                        // DUSAN --> ?? is table data required??  BOEJ-4824
-                    });
-                }
+                errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
 
-                if(taskData.LaborTypesData.Any(x => !x.SelectedMOQType.HasValue))
+                taskData.LaborTypesData.Where(x => !x.SelectedMOQType.HasValue).ForEach(resourceType =>
                 {
-                    errors.Add(new ValidationMessage("Please select MOQ Type for all Resource Types") { });
-                }
+                    string resourceValue = resourceType.CostSpread.HasValue && resourceType.CostSpread > 0 ?
+                                    "$" + Utilities.AdjustPrecision(resourceType.CostSpread.Value, 2).ToString()
+                                        : Utilities.AdjustPrecision(resourceType.HourSpread.Value, ws.DecimalPrecision).ToString();
+
+                    errors.Add(new ValidationMessage(string.Format(Constants.MOQ_TYPE_REQUIRED_FOR_RESOURCE_TYPE, resourceType.StartDate, resourceType.EndDate, resourceValue)));
+                });
             }
         }
 
         /// <summary>
         /// Get custom field option model views
         /// </summary>
-        /// <param name="workspace">workspace</param>
+        /// <param name="ws">workspace</param>
         /// <param name="inTypeToGet">level of custom field to retrieve</param>
         /// <returns></returns>
-        public Collection<BOECustomFieldModelView> GetCustomFieldOptionModelViews(FullWorkspace workspace, ControllerCustomFieldType inTypeToGet)
+        public Collection<BOECustomFieldModelView> GetCustomFieldOptionModelViews(FullWorkspace ws, ControllerCustomFieldType inTypeToGet)
         {
-            if (workspace == null)
+            if (ws == null)
             {
-                throw new ArgumentNullException(nameof(workspace));
+                throw new ArgumentNullException(nameof(ws));
             }
 
-            IReadOnlyCollection<CustomFieldDTO> customFields = workspace.CustomFields;
+            IReadOnlyCollection<CustomFieldDTO> customFields = ws.CustomFields;
 
             Collection<BOECustomFieldModelView> customFieldModelViews = new Collection<BOECustomFieldModelView>();
 
             if (customFields != null)
             {
-                IReadOnlyCollection<CustomFieldValueDTO> allCustomFieldValues = workspace.CustomFieldValues;
+                IReadOnlyCollection<CustomFieldValueDTO> allCustomFieldValues = ws.CustomFieldValues;
                 foreach (CustomFieldDTO customField in customFields)
                 {
                     BOECustomFieldsGridModelView metadata = new BOECustomFieldsGridModelView(customField);
@@ -1727,10 +1720,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <summary>
         /// Root-level method for recalculation of the spreads.
         /// </summary>
-        /// <param name="workspaceData">Workspace</param>
+        /// <param name="ws">Workspace</param>
         /// <param name="laborTabData">Contents of the labor tab page that are needed for the recalculation</param>
         /// <returns>Set of changes that need to be applied to the UI as a result of the recalculation</returns>
-        public ICollection<SpreadValueTableChanges> RecalculateSpreads(FullWorkspace workspaceData, LaborTabDataModelView laborTabData)
+        public ICollection<SpreadValueTableChanges> RecalculateSpreads(FullWorkspace ws, LaborTabDataModelView laborTabData)
         {
             if (laborTabData == null)
             {
@@ -1739,7 +1732,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             ICollection<SpreadValueTableChanges> changes = new List<SpreadValueTableChanges>();
 
-            this.RecalculateAfterMOQEquationChange(workspaceData, laborTabData, changes);            
+            this.RecalculateAfterMOQEquationChange(ws, laborTabData, changes);            
 
             return changes;
         }
@@ -3371,7 +3364,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <returns>Labels for MOQ Type Data Table Fields</returns>
         public virtual MoqTypeTableDataLabels GetMoqTypeLabels()
         {
-            throw new NotImplementedException();
+            return new MoqTypeTableDataLabels();
         }
     }
 

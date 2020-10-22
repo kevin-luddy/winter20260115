@@ -175,18 +175,5 @@ namespace GenBOE.ActionLogic
 
             return toReturn;
         }
-
-        /// <summary>
-        /// Returns a list of labels to be used in the MOQ Types page.
-        /// </summary>
-        /// <returns>Labels for MOQ Type Data Table Fields</returns>
-        public override MoqTypeTableDataLabels GetMoqTypeLabels()
-        {
-            return new MoqTypeTableDataLabels()
-            {
-                RepositoryName = "Repository Name",
-                QueryType = "Query Type",
-            };
-        }
     }
 }

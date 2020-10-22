@@ -55,14 +55,14 @@ namespace GenBOE.ActionLogic
         /// <param name="workspace">The Workspace.</param>
         /// <returns>task variables</returns>
         Collection<OrdinaryVariableDto> ConvertTaskVariableModelViewCollectionToTaskOrdinaryVariableCollection(Collection<BoeTaskOrdinaryVariableModelView> inTaskVariableModelViews, int inTaskElementID, int inBoeID, WorkspaceDTO workspace);
-               
+
         /// <summary>
         /// Get custom field option model views
         /// </summary>
-        /// <param name="workspace">workspace</param>
+        /// <param name="ws">workspace</param>
         /// <param name="inTypeToGet">level of custom field to retrieve</param>
         /// <returns></returns>
-        Collection<BOECustomFieldModelView> GetCustomFieldOptionModelViews(FullWorkspace workspace, ControllerCustomFieldType inTypeToGet);
+        Collection<BOECustomFieldModelView> GetCustomFieldOptionModelViews(FullWorkspace ws, ControllerCustomFieldType inTypeToGet);
 
         ICollection<SpreadCurves> GetSpreadCurves(RateType rateType);
         
@@ -83,8 +83,8 @@ namespace GenBOE.ActionLogic
         /// <param name="boeDTO">boe</param>
         /// <param name="laborTaskData">task modelview includes task details, labors, and spreads</param>
         /// <param name="inValidationErrors">validation errors</param>
-        /// <param name="inWorkspaceDTO">workspace</param>
-        void ValidateTaskDetails(FullBoe boeDTO, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace inWorkspaceDTO);
+        /// <param name="ws">workspace</param>
+        void ValidateTaskDetails(FullBoe boeDTO, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace ws);
 
         /// <summary>
         /// Calculate Labor Spreads
