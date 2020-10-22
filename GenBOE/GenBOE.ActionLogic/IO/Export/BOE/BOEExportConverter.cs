@@ -178,7 +178,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
             foreach (BoeDTO boe in exportInputs.Boes)
             {
-                BOEExportModelView modelView = this.ConvertBoeDTOToExportMV(new FullBoe(boe), exportInputs, writelogstatements,
+                BOEExportModelView modelView = this.ConvertBoeDTOToExportMV(boe, exportInputs, writelogstatements,
                     exportFormatDTO, boeSegregationCustomField, revCodeCustomField, taskSegregationCustomField,
                     boePwsCustomField, skillLevelCustomField, siteCustomField, skillMixCustomField, stotCustomField,
                     premiumCustomField, laborTypeRateBOECustomField, laborTypeCompanyCustomField,
@@ -215,7 +215,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// the BOE Export ModelView
         /// </returns>
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-        private BOEExportModelView ConvertBoeDTOToExportMV(FullBoe boe, BOEExportInputs exportInputs,
+        private BOEExportModelView ConvertBoeDTOToExportMV(BoeDTO boe, BOEExportInputs exportInputs,
             bool writelogstatements, WorkspaceExportFormatDTO exportFormatDTO, CustomFieldDTO boeSegregationCustomField,
             CustomFieldDTO revCodeCustomField, CustomFieldDTO taskSegregationCustomField,
             CustomFieldDTO boePwsCustomField, CustomFieldDTO skillLevelCustomField, CustomFieldDTO siteCustomField,
@@ -406,7 +406,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// </returns>
         [SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
         [SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        private Collection<BOEExportTaskElement> PopulateLaborAndMissionTasks(FullBoe boe, BOEExportInputs exportInputs,
+        private Collection<BOEExportTaskElement> PopulateLaborAndMissionTasks(BoeDTO boe, BOEExportInputs exportInputs,
             bool writelogstatements, WorkspaceExportFormatDTO exportFormatDTO,
             IReadOnlyCollection<CustomFieldDTO> workspaceCustomFields,
             IReadOnlyCollection<CustomFieldValueDTO> workspaceCustomFieldValues, CustomFieldDTO revCodeCustomField,
@@ -447,7 +447,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 boeExportTaskElement.TaskTitle = boeTaskElement.TaskTitle;
                 boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
-                boeExportTaskElement.MOQTypes = boe.MoqTypeSelections.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
+                boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
 
                 boeExportTaskElement.SetTaskElementType(boeTaskElement.TaskElementType);
 

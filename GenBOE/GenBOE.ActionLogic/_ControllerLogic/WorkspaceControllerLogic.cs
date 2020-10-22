@@ -1155,7 +1155,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 rteTemplateOverrides = boes.SelectMany(x => x.TemplateQuestionsAndAnswers).ToList();
             }
             
-            BOEExportInputs exportInputs = new BOEExportInputs(boes, ws.Boes.ToList(), tasks, ws, rteTemplateOverrides);
+            BOEExportInputs exportInputs = new BOEExportInputs(boes, ws.Boes.ToList(), tasks, ws, rteTemplateOverrides, ws.MoqTypeSelections.ToList());
             // Need picklist values for contract type for Workspace Identification sheet
             exportInputs.ContractTypes = this.contractTypeLoader.GetPickListValues();
             ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
