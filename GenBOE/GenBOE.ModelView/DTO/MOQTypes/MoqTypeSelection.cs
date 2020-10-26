@@ -60,11 +60,6 @@ namespace GenBOE.ActionLogic.ModelView
         public string SkillMixRationale { get; set; }
 
         /// <summary>
-        /// SOW Hours / Location
-        /// </summary>
-        public string SowHoursLocation { get; set; }
-
-        /// <summary>
         /// CER, Parametric model or tool name, or Analogous relationship name
         /// </summary>
         public string CerName { get; set; }

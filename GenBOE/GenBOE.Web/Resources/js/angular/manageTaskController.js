@@ -1138,7 +1138,6 @@
                         var moqType = MOQEquationFieldModel.SelectedMoqTypes[item];
                         var moqTypeId = moqType.SelectedMOQType;
                        
-                        moqType.SowHoursLocation = $('textarea[name="SowHoursLocation_' + moqTypeId + '"]').val();
                         moqType.DescriptionHoursRequired = $('textarea[name="DescriptionHoursRequired_' + moqTypeId + '"]').val();
                         moqType.SmeReason = $('textarea[name="SmeReason_' + moqTypeId + '"]').val();
                         moqType.SmeHoursLogic = $('textarea[name="SmeHoursLogic_' + moqTypeId + '"]').val();

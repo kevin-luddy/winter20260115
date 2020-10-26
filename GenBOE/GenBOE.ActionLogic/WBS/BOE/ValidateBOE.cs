@@ -740,7 +740,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", errorMessages);
                             break;
                         case (MOQType.SOW):
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SowHoursLocation, "Description of Hours required & location in SOW", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required & location in SOW", errorMessages);
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", errorMessages);
                             break;
                         default:

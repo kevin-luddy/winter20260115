@@ -236,14 +236,6 @@
             </div>
             <div data-ng-if="!model.IsRMS" class="moqTypeNote">Note: Hours cited above are paid hours that exclude unpaid (zero cost) hours and service center hours.</div>
         </div>
-        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SOW%>">            
-            <div class="form-label">
-                <span>Description of Hours required & location in SOW: *</span>
-            </div>
-            <div class="form-element">
-                <textarea cols="20" name="SowHoursLocation_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SowHoursLocation"></textarea>
-            </div>
-        </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%> || moqType.SelectedMOQType == <%:(int)MOQType.ParametricEstimates%> || moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>">
             <div class="form-label">
                 <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%>">CER</span>
@@ -266,9 +258,12 @@
                 <input type="text" class="cerPmArTextBox" required placeholder="{{MoqTypesPlaceholder('Location', moqType.SelectedMOQType)}}" data-ng-model="moqType.CerLocation" />
             </div>
         </div>
-        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.LOE%>">
-            <div class="form-label">
+        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.LOE%> || moqType.SelectedMOQType == <%:(int)MOQType.SOW%>">
+            <div class="form-label" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.LOE%>">
                 <span>Description of Hours required: *</span>
+            </div>
+            <div class="form-label" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SOW%>">
+                <span>Description of Hours required & location in SOW: *</span>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="DescriptionHoursRequired_{{moqType.SelectedMOQType}}" data-ng-model="moqType.DescriptionHoursRequired"></textarea>
