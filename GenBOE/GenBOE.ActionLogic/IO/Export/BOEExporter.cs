@@ -4833,7 +4833,6 @@ namespace GenBOE.ActionLogic.IO.Export
                     }
                     else if (sdtTitle == BOEExporterConstants.Container_MOQSelection)
                     {
-                        // Placeholder
                         if (exportInputs.Workspace.UsingTemplateBOE)
                         {
                             this.PopulateMOQTypeData(taskElement, new Collection<BoeCustomReportComponent>(), mainPart, element, false, ref counters);
