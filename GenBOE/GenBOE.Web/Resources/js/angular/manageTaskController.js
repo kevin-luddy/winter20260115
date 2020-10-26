@@ -1143,7 +1143,7 @@
                         moqType.SmeReason = $('textarea[name="SmeReason_' + moqTypeId + '"]').val();
                         moqType.SmeHoursLogic = $('textarea[name="SmeHoursLogic_' + moqTypeId + '"]').val();
                         moqType.SmeDurationLogic = $('textarea[name="SmeDurationLogic_' + moqTypeId + '"]').val();
-                        moqType.SmeTaskEstimates = $('textarea[name="SmeTaskEstimates' + moqTypeId + '"]').val();
+                        moqType.SmeTaskEstimates = $('textarea[name="SmeTaskEstimates_' + moqTypeId + '"]').val();
                         moqType.Rationale = $('textarea[name="Rationale_' + moqTypeId + '"]').val();
                         moqType.SkillMixRationale = $('textarea[name="SkillMixRationale_' + moqTypeId + '"]').val();
                     }
