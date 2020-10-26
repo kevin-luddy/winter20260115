@@ -96,8 +96,8 @@
             item.Label = item.PerformingOrgName + '-' + item.PerformingOrgDesc;
         });
 
-        TaskElementDetailsWidget.registerForEvent('MOQ_TYPE_SELECTION_CHANGED', function (e, moqData) {
-            $scope.moqSelectionUpdated(moqData);
+        $scope.$on('MOQ_TYPE_SELECTION_CHANGED', function (e, moqData) {
+            $scope.SelectedMoqTypes = moqData;
         });
 
         // load the main data
@@ -927,6 +927,7 @@
         $scope.laborSpreadErrors = [];
         $scope.laborSpreadPasteErrors = [];
         $scope.errors = [];
+        $scope.SelectedMoqTypes = [];
         var data = { boeId: ManageTaskModel.boeId, taskElementId: $scope.taskElementId };
 
         return $http({
@@ -936,7 +937,6 @@
         }).then(function (response) {
             $scope.model = response.data;
             $scope.SelectedMoqTypes = response.data.MOQTypes;
-
             if (!$scope.model.LaborTypesData) {
                 $scope.model.LaborTypesData = [];
             }
@@ -1094,11 +1094,6 @@
             $(document).trigger('BOESUMMARYGRID_RELOAD');
             $scope.setDirty();
         });
-    };
-
-    // Selected MOQ Types were updated, need to update the dropdown in Labor Types
-    $scope.moqSelectionUpdated = function (data) {
-        $scope.SelectedMoqTypes = data;
     };
 
     var save = function (callback, wsLocked) {

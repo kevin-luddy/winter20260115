@@ -65,7 +65,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         selectedItem.TableData = [];
         $scope.CreateNewTable(selectedItem.TableData);
 
-        $(document).trigger('MOQ_TYPE_SELECTION_CHANGED', [$scope.model.SelectedMoqTypes]);
+        $scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
     }
 
     // Removes MOQ Type from Selected MOQ Types (and adds it into the dropdown)
@@ -75,7 +75,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
                 var index = $scope.model.SelectedMoqTypes.indexOf(item);
                 $scope.model.SelectedMoqTypes.splice(index, 1);
 
-                $(document).trigger('MOQ_TYPE_SELECTION_CHANGED', [$scope.model.SelectedMoqTypes]);
+                $scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
             });
         });
     }
