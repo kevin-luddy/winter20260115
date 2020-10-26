@@ -20,6 +20,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using DocumentFormat.OpenXml.Wordprocessing;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export.BOE;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -4632,13 +4633,13 @@ namespace GenBOE.ActionLogic.IO.Export
             MainDocumentPart mainPart, ref ChunkCounter counters)
         {
             // Iterate over all SdtElements in the document
-            foreach (var alias in taskContainer.TaskContainer.Descendants<SdtAlias>().ToList())
+            foreach (SdtAlias alias in taskContainer.TaskContainer.Descendants<SdtAlias>().ToList())
             {
                 // Get the title of this Alias
                 string sdtTitle = alias.Val.Value;
 
                 // Get the Element that encapsulates the current alias
-                var element = alias.Ancestors<SdtElement>().FirstOrDefault();
+                SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
 
                 // If the current element is not null, populate it with the appropriate data from the BOEExportModelView
                 if (element != null && element != taskContainer.TaskContainer)
@@ -4804,7 +4805,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         if (exportInputs.Workspace.UsingTemplateBOE)
                         {
                             // remove this for Workspaces using Template BOE
-                            element.Parent.RemoveIt();
+                            WordUtilities.RemoveTableRowWithTaggedElement(taskContainer.TaskContainer, sdtTitle);
                         }
                         else
                         {
@@ -4830,12 +4831,12 @@ namespace GenBOE.ActionLogic.IO.Export
                             alias.RemoveIt();
                         }
                     }
-                    else if (sdtTitle == "Template BOE MOQ Placeholder")
+                    else if (sdtTitle == BOEExporterConstants.Container_MOQSelection)
                     {
                         // Placeholder
                         if (exportInputs.Workspace.UsingTemplateBOE)
                         {
-                            // TODO populate and update else-if
+                            this.PopulateMOQTypeData(taskElement, new Collection<BoeCustomReportComponent>(), mainPart, element, false, ref counters);
                         }
                         else
                         {
@@ -4880,6 +4881,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             taskContainer.TaskTypeRow.RemoveIt();
         }
+
 
         /// <summary>
         /// Populates content of the resource container

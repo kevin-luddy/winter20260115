@@ -447,6 +447,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 boeExportTaskElement.TaskTitle = boeTaskElement.TaskTitle;
                 boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
+                boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
 
                 boeExportTaskElement.SetTaskElementType(boeTaskElement.TaskElementType);
 

@@ -380,7 +380,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 Assert.AreEqual(workspace.RecalculationStartedDate ?? DateTime.Today, result.DateRecalculationStarted ?? DateTime.Today);
                 Assert.AreEqual(workspace.CostPrecision, result.CostDecimalPrecision);
                 Assert.AreEqual(workspace.CustomSorting, (int)result.CustomFieldSorting);
-                Assert.AreEqual(workspace.ResourceSorting, (int)result.ResourceSorting);// 40
+                Assert.AreEqual(workspace.ResourceSorting, (int)result.ResourceSorting);
+                // 40
                 // UpdateDateLong is not checked
                 // Updateable is not checked
                 Assert.AreEqual(workspace.IsUsingEquivalentPerson, result.IsUsingEquivalentPerson);
@@ -391,9 +392,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 Assert.AreEqual(workspace.LastProPricerProposal, result.LastProPricerProposal);
                 Assert.AreEqual(workspace.RteSizeLimit, result.RteSizeLimit);
                 Assert.AreEqual(workspace.RevisedSubmittalDate, result.RevisedSubmittalDate);
-
-                // ToDo: RJ - uncomment this one (and fix the name in the model) once it's been updated
-                ////Assert.AreEqual(workspace.UsingTemplateBOE, result.UsingTemplateBOE);                
+                Assert.AreEqual(workspace.TemplateBoe, result.UsingTemplateBOE);  
+                // 50
             }
             Type dtoType = typeof(WorkspaceDTO);
             int numProperties = dtoType.GetProperties().Count();

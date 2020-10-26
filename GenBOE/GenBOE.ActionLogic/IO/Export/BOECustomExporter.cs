@@ -21,6 +21,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using DocumentFormat.OpenXml.Wordprocessing;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export.BOE;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -273,12 +274,12 @@ namespace GenBOE.ActionLogic.IO.Export
                 PaddedClinName = (clinDTO != null) ? clinDTO.ClinPaddedNumber : string.Empty,
                 ProposalSubmittalDate = exportInputs.Workspace.ProposalSubmittalDate,
                 ContainsOCI = exportInputs.Workspace.ContainsOCI,
-                DataSource = BOEExportConverter.GetRteOverride(boe.Id, null, boe.DataSource, RteTemplateSource.BoeSources, exportInputs.RTETemplatesOverrides),
+                DataSource = BOEExportConverter.GetRteOverride(boe.Id, null, boe.DataSource, IES.Common.RteTemplateSource.BoeSources, exportInputs.RTETemplatesOverrides),
                 IsMaterial = boe.isMaterial,
                 IsMultiClinWbs = boe.IsMultiClinWbs,
                 StartDate = boe.StartDate,
                 EndDate = boe.EndDate,
-                BOEDescription = BOEExportConverter.GetRteOverride(boe.Id, null, boe.Description, RteTemplateSource.BoeDescription, exportInputs.RTETemplatesOverrides),
+                BOEDescription = BOEExportConverter.GetRteOverride(boe.Id, null, boe.Description, IES.Common.RteTemplateSource.BoeDescription, exportInputs.RTETemplatesOverrides),
                 ExportFormat = exportFormatDTO.ExportFormat,
                 SubmittedDate = boe.SubmitForApprovalDate.Year == DateTime.MinValue.Year ? string.Empty : boe.SubmitForApprovalDate.ToShortDateString(),
                 BOETitle = boe.Title
@@ -1642,6 +1643,16 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     WordUtilities.removeColumnFromTable(referenceBlock);
                 }
+
+                // Delete MOQ Type if WS not using Template BOE 
+                if(!exportInputs.Workspace.UsingTemplateBOE)
+                {
+                    SdtElement moqTypeColumn = WordUtilities.GetTaggedChildElement(resourceTypesTableElement, BOEExporterConstants.FieldName_ResourceMOQType);
+                    if (moqTypeColumn != null)
+                    {
+                        WordUtilities.removeColumnFromTable(moqTypeColumn);
+                    }
+                }
             }
         }
 
@@ -2382,13 +2393,17 @@ namespace GenBOE.ActionLogic.IO.Export
             if (exportInputs.Workspace.UsingTemplateBOE)
             {
                 // Remove the non-Template BOE MOQ Rationale
+                WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeContainer);
                 WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQRationaleContainer);
 
-                // placeholder for Template BOE MOQ Types
+                SdtElement templateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Container_MOQSelection);
+                this.PopulateMOQTypeData(laborTaskElement, selectedComponents, document.MainDocumentPart, templateElement, true, ref counters);
             }
             else
             {
-                // TODO - remove the Template BOE MOQ Type container
+                WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeSelectionTitle);
+                WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.Container_MOQSelection);
+
                 if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQRationale))
                 {
                     if (WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_MethodOfQuoting) != null)
@@ -2410,6 +2425,15 @@ namespace GenBOE.ActionLogic.IO.Export
             if (!selectedComponents.Contains(BoeCustomReportComponent.TaskMOQType) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQEquation) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQRationale))
             {
                 WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQSectionLabel);
+            }
+
+            if (!selectedComponents.Contains(BoeCustomReportComponent.TaskMOQType) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQRationale)
+                && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQSkillMixRationale) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQHistoricalPrompts)
+                && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQComparativeAnalysisPrompts) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQCERsPrompts)
+                && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQARsPrompts) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQSOWPrompts)
+                && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQLOEPrompts) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQSMEJudgementPrompts))
+            {
+                WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeSelectionTitle);
             }
 
             if (laborTaskElement.ExportFields.ContainsKey(BOEExporterConstants.FieldName_TaskHoursTotal))
@@ -4031,7 +4055,7 @@ namespace GenBOE.ActionLogic.IO.Export
             WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceWBS), rowData.WbsString);
             WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceCLIN), rowData.ClinString);
             WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_SummaryReference), rowData.SummaryReference);
-
+            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceMOQType), rowData.MoqType);
         }
 
         private void PopulateResourceTypesTable(SdtElement tableContainerElement, ODCResourceTypesTableData data)
@@ -4496,18 +4520,18 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 BOEExportTaskElement boeExportTaskElement = new BOEExportTaskElement();
                 boeExportTaskElement.BoeID = boeTaskElement.BoeID;
-                boeExportTaskElement.BOETaskDesc = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.Description, RteTemplateSource.TaskDescription, exportInputs.RTETemplatesOverrides);
+                boeExportTaskElement.BOETaskDesc = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.Description, IES.Common.RteTemplateSource.TaskDescription, exportInputs.RTETemplatesOverrides);
                 boeExportTaskElement.BOETaskElementID = boeTaskElement.Id;
                 boeExportTaskElement.BOETaskID = boeTaskElement.BOETaskID;
                 boeExportTaskElement.EndDate = boeTaskElement.EndDate;
                 boeExportTaskElement.MOQEquation = boeTaskElement.MOQHoursEquation;
                 if (exportInputs.Workspace.UsingTemplateBOE)
                 {
-                    // TODO - populate MOQ Type data for Template BOE
+                    boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
                 }
                 else
                 {
-                    boeExportTaskElement.MOQText = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.MOQText, RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides);
+                    boeExportTaskElement.MOQText = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.MOQText, IES.Common.RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides);
                 }
                 boeExportTaskElement.MOQType = boeTaskElement.MOQType.GetDescription();
                 boeExportTaskElement.OrdinaryVariables = boeTaskElement.OrdinaryVariables;
@@ -4710,6 +4734,11 @@ namespace GenBOE.ActionLogic.IO.Export
                     else
                     {
                         boeExportLabor.ExportFields[BOEExporterConstants.FieldName_TaskTypeSkillMix] = String.Empty;
+                    }
+
+                    if (laborType.MoqTypeSelectionId != null)
+                    {
+                        boeExportLabor.ExportFields[BOEExporterConstants.FieldName_ResourceMOQType] = ((MOQType)laborType.MoqTypeSelectionId).GetDescription();
                     }
 
                     BoeExportLabors.Add(boeExportLabor);
