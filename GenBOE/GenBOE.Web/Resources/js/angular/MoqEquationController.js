@@ -61,11 +61,10 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         var selectedItem = $scope.model.selectedMOQType;
         $scope.model.SelectedMoqTypes.push(selectedItem);
         $scope.InitializeRteFields(selectedItem.SelectedMOQType);
-
         selectedItem.TableData = [];
         $scope.CreateNewTable(selectedItem.TableData);
-
         $scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
+        MOQEquationFieldWidget.setDirty();
     }
 
     // Removes MOQ Type from Selected MOQ Types (and adds it into the dropdown)
@@ -74,8 +73,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
             $scope.$apply(function () {
                 var index = $scope.model.SelectedMoqTypes.indexOf(item);
                 $scope.model.SelectedMoqTypes.splice(index, 1);
-
                 $scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
+                MOQEquationFieldWidget.setDirty();
             });
         });
     }
@@ -110,6 +109,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     $scope.CreateNewTable = function (tableDataArray) {
         var newTable = {};
         tableDataArray.push(newTable);
+        MOQEquationFieldWidget.setDirty();
     }
 
     // Remove existing Table Data
@@ -118,6 +118,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
             $scope.$apply(function () {
                 var index = tableDataArray.indexOf(item);
                 tableDataArray.splice(index, 1);
+                MOQEquationFieldWidget.setDirty();
             });
         });
     }
