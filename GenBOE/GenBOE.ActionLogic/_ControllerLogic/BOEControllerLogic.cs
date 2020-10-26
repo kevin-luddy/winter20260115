@@ -25,7 +25,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.ModelView.Clin;
-    using GenBOE.ActionLogic.ModelView.Workspace;
     using GenBOE.ActionLogic.NewValidation;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.ActionLogic.WBS;
@@ -38,6 +37,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using IES.Common;
     using IES.Common.classes;
     using IES.Common.Exceptions;
+    using Microsoft.Practices.ObjectBuilder2;
 
     public class BOEControllerLogic : IBOEControllerLogic
     {
@@ -70,6 +70,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private IProjectMapDataLoader projectMapLoader;
         private RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader;
         private IRteTemplateDataLoader rteTemplateDataLoader;
+        private readonly IMoqTypeDataLoader moqTypeDataLoader;
 
         #region Protected Properties and Constructor
 
@@ -105,7 +106,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             INestedWBSUtilities inNestedWBSUtilities,
             IProjectMapDataLoader projectMapLoader,
             RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader,
-            IRteTemplateDataLoader rteTemplateDataLoader)
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            IMoqTypeDataLoader moqTypeDataLoader)
         {
             this._BOESummary = inBOESummary;
             this.UserLoader = inUserLoader;
@@ -136,6 +138,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.projectMapLoader = projectMapLoader;
             this.zoneTravelRatesFeesLoader = zoneTravelRatesFeesLoader;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
+            this.moqTypeDataLoader = moqTypeDataLoader;
         }
 
         #endregion
@@ -1212,23 +1215,22 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="boe">BOE Containing task elements</param>
         public void DeleteAllBOETaskElements(FullWorkspace ws, FullBoe boe)
         {
-            if (ws == null)
-            {
-                throw new ArgumentNullException(nameof(ws));
-            }
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
+            _ = boe ?? throw new ArgumentNullException(nameof(boe));
 
-            if (boe == null)
-            {
-                throw new ArgumentNullException(nameof(boe));
-            }
+            ICollection<BoeTaskElementDTO> allTEs = boe.TaskElements.ToList();
+            ICollection<MoqTypeSelection> moqTypesToDelete = this.moqTypeDataLoader.GetByBoeId(boe.Id);
 
-            ICollection<BoeTaskElementDTO> allTEs = boe.TaskElements.ToCollection();
-            foreach (BoeTaskElementDTO taskElement in allTEs)
-            {
-                taskElement.Updateable = UpdateType.Deleted;
-            }
+            allTEs.ForEach(taskElement => { taskElement.Updateable = UpdateType.Deleted; });
+            moqTypesToDelete.ForEach(moqType => { moqType.Updateable = UpdateType.Deleted; });
 
-            this._BoeTaskElementMediator.MediatedBulkSaveTaskElements(allTEs, ws);
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+            {
+                this.moqTypeDataLoader.Save(moqTypesToDelete);
+                this._BoeTaskElementMediator.MediatedBulkSaveTaskElements(allTEs, ws);
+
+                scope.Complete();
+            }
         }
 
         /// <summary>
@@ -1239,19 +1241,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="deletedTask">Task to be deleted</param>
         public void DeleteTaskElement(FullWorkspace ws, FullBoe boe, GenericTaskElementGridRow deletedTask)
         {
-            if (ws == null)
-            {
-                throw new ArgumentNullException(nameof(ws));
-            }
-
-            if (boe == null)
-            {
-                throw new ArgumentNullException(nameof(boe));
-            }
-            if (deletedTask == null)
-            {
-                throw new ArgumentNullException(nameof(deletedTask));
-            }
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
+            _ = boe ?? throw new ArgumentNullException(nameof(boe));
+            _ = deletedTask ?? throw new ArgumentNullException(nameof(deletedTask));
 
             // add deleted taskElementGrid to boeDTODeleteTaskElements
             BoeTaskElementDTO boeDTOTaskElement = (from t in boe.TaskElements
@@ -1267,7 +1259,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 boeDTOTaskElement.UpdateDate = deletedTask.UpdateDate;
                 boeDTOTaskElement.Updateable = UpdateType.Deleted;
                 
-                // get the workspace Var IDs
                 IReadOnlyCollection<int> WorkspaceVarIds = boe.WorkspaceVariablesIdsForBoe;
                 ICollection<WorkspaceVariableDTO> workspaceVariablesOldValue = new Collection<WorkspaceVariableDTO>();
                 if (WorkspaceVarIds.Any())
@@ -1283,8 +1274,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     }
                 }
 
+                ICollection<MoqTypeSelection> moqTypesToDelete = this.moqTypeDataLoader.GetByBoeId(boe.Id).Where(x => x.TaskId == boeDTOTaskElement.Id).ToList();
+                moqTypesToDelete.ForEach(moqType => { moqType.Updateable = UpdateType.Deleted; });
+
                 using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
                 {
+                    this.moqTypeDataLoader.Save(moqTypesToDelete);
                     this._BoeTaskElementMediator.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { boeDTOTaskElement }, ws);
 
                     if (WorkspaceVarOldValueID.Any())
