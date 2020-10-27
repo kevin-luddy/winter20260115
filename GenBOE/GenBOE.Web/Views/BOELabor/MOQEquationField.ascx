@@ -145,12 +145,12 @@
         </div>
     </div>
     <div data-ng-if="model.UsingTemplateBOE" class="form-element moqRteFieldContainer" data-ng-repeat="moqType in model.SelectedMoqTypes">
-        <div class="form-row" data-ng-class="{'collapsed': moqType.collapsed}">
-            <div class="form-label moqTypeHeader">
-                <a class="btn btn-success btn-xxs" data-nodrag="" data-ng-click="toggle(moqType)">
-                    <span class="glyphicon glyphicon-chevron-down" data-ng-class="{'glyphicon-chevron-right': moqType.collapsed, 'glyphicon-chevron-down': !moqType.collapsed}"></span>
+        <div class="form-row" data-ng-class="{'collapsedBorder': moqType.collapsed}">
+            <div class="form-label">
+                <a data-nodrag="" data-ng-click="toggle(moqType)">
+                    <div class="moqTypeHeader" data-ng-class="{'collapsed': moqType.collapsed, 'expanded': !moqType.collapsed}"></div>
                 </a>
-                {{moqType.SelectedMOQTypeText}} (Id: {{moqType.SelectedMOQType}})
+                {{moqType.SelectedMOQTypeText}}
             </div>
             <button data-ng-if="!model.IsReadOnly" data-ng-click="RemoveMoqType(moqType)" class="ies-danger moqTypesButton" type="button">Delete MOQ Type</button>
         </div>
@@ -171,7 +171,7 @@
                     <table>
                         <tr>
                             <td class="form-label" data-ng-click="toggle(tableData)">
-                                <span class="btn btn-xxs btn-success glyphicon glyphicon-chevron-down" data-ng-class="{'glyphicon-chevron-right': tableData.collapsed, 'glyphicon-chevron-down': !tableData.collapsed}"></span>
+                                <div class="moqTypeHeader" data-ng-class="{'collapsed': tableData.collapsed, 'expanded': !tableData.collapsed}"></div>
                                 {{model.MoqTypeTableDataLabels.TableName}} *
                             </td>
                             <td><input type="text" required data-ng-model="tableData.TableName" /></td>
