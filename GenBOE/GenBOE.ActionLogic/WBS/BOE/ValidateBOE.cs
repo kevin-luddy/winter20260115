@@ -742,6 +742,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                         case (MOQType.SOW):
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required & location in SOW", errorMessages);
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", errorMessages);
                             break;
                         default:
                             errorMessages.Add("Invalid MOQ Type selected");
