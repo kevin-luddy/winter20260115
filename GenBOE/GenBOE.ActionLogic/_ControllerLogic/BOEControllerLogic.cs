@@ -1219,18 +1219,31 @@ namespace GenBOE.ActionLogic.ControllerLogic
             _ = boe ?? throw new ArgumentNullException(nameof(boe));
 
             ICollection<BoeTaskElementDTO> allTEs = boe.TaskElements.ToList();
-            ICollection<MoqTypeSelection> moqTypesToDelete = this.moqTypeDataLoader.GetByBoeId(boe.Id);
 
             allTEs.ForEach(taskElement => { taskElement.Updateable = UpdateType.Deleted; });
-            moqTypesToDelete.ForEach(moqType => { moqType.Updateable = UpdateType.Deleted; });
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
-                this.moqTypeDataLoader.Save(moqTypesToDelete);
+                this.DeleteMoqTypesForBoe(ws, new List<int>() { boe.Id });
                 this._BoeTaskElementMediator.MediatedBulkSaveTaskElements(allTEs, ws);
 
                 scope.Complete();
             }
+        }
+
+        /// <summary>
+        /// Delete Moq Types For Boes
+        /// </summary>
+        /// <param name="ws">workspace</param>
+        /// <param name="boeIds">BoeIds</param>
+        public void DeleteMoqTypesForBoe(FullWorkspace ws, ICollection<int> boeIds)
+        {
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
+            _ = boeIds ?? throw new ArgumentNullException(nameof(boeIds));
+
+            ICollection<MoqTypeSelection> moqTypesToDelete = ws.MoqTypeSelections.Where(x => boeIds.Contains(x.BoeId)).ToList();
+            moqTypesToDelete.ForEach(moqType => { moqType.Updateable = UpdateType.Deleted; });
+            this.moqTypeDataLoader.Save(moqTypesToDelete);
         }
 
         /// <summary>

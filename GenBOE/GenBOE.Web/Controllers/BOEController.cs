@@ -1154,9 +1154,7 @@ namespace GenBOE.Web.Controllers
         /// </returns>
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
-        public ActionResult SaveManageBOE(
-            string workspace,
-            Collection<ManageBOEModelView> boes)
+        public ActionResult SaveManageBOE(string workspace, Collection<ManageBOEModelView> boes)
         {
             if (boes == null)
             {
@@ -1692,6 +1690,7 @@ namespace GenBOE.Web.Controllers
                 List<WorkspaceVariableDTO> workspaceVariablesEffectedByMulti = new List<WorkspaceVariableDTO>();
 
                 IDictionary<int, int> boeSaveIDDict;
+                _ = ws.MoqTypeSelections; // preload the data prior to transaction
 
                 using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
                 {
@@ -1755,6 +1754,7 @@ namespace GenBOE.Web.Controllers
                     //need to update the labor resources 
                     this._TravelDTOLoader.SaveTravels(travelElementsUpdated);
                     this._BoeTaskElementMediator.MediatedSaveTaskElements(laborElementsUpdated, ws);
+                    this._ControllerLogic.DeleteMoqTypesForBoe(ws, BoesToBeDeleted.Select(x => x.Id).ToList());
                     boeSaveIDDict = this._BoeMediator.MediatedSaveBOEs(ws, boesToSave);
 
                     if (!requestIsADelete)
@@ -2809,6 +2809,8 @@ namespace GenBOE.Web.Controllers
 
                 Collection<int> BoeIDs = new Collection<int>();
                 IDictionary<int, int> boeSaveIDDict;
+                _ = ws.MoqTypeSelections; // preload the data prior to transaction
+
                 using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
                 {
                     if (travelElementsUpdated.Any())
@@ -2887,7 +2889,9 @@ namespace GenBOE.Web.Controllers
                             this.PermissionsLoader.SavePermission(permission);
                         }
                     }
-                    
+
+                    this._ControllerLogic.DeleteMoqTypesForBoe(ws, BoesToBeDeleted.Select(x => x.Id).ToList());
+
                     boeSaveIDDict = this._BoeMediator.MediatedSaveBOEs(ws, boesToSave);
 
                     // Create material task elements for new material boes

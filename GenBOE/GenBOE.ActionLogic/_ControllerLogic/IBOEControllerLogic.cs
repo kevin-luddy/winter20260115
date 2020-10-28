@@ -324,5 +324,12 @@ namespace GenBOE.ActionLogic
         /// <param name="errorMessages">The error messages.</param>
         /// <returns>The updated date as a long</returns>
         long? SaveBOEStates(IDictionary<int, BOEState> boeStates, FullWorkspace ws, IList<string> errorMessages);
+
+        /// <summary>
+        /// Delete Moq Types For Boes
+        /// </summary>
+        /// <param name="ws">workspace</param>
+        /// <param name="boeIds">BoeIds</param>
+        void DeleteMoqTypesForBoe(FullWorkspace ws, ICollection<int> boeIds);
     }
 }
