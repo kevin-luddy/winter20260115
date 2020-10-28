@@ -430,7 +430,7 @@
                     <% using (Html.BeginForm("", "", FormMethod.Post, new { id = "TaskElementDetailsForm" }))
                         { %>
 
-                    <gen-validation data-errors="errors"></gen-validation>
+                    <gen-validation id="mainErrorBox" data-errors="errors"></gen-validation>
                     <div style="margin-bottom:10px; display:none;" id="recalculateTaskElementButton">
                         <button type="button" onclick="TaskElementDetailsWidget.RecalculateAndRefreshPage()" class="ies-danger">Recalculate Task Element</button>
                     </div>

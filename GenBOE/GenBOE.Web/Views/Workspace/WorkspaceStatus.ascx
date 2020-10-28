@@ -84,22 +84,7 @@
             $('#Save-WorkspaceStatus').addClass('display-none');
             $('#Loader-WorkspaceStatus').removeClass('display-none');
 
-            var fromState = "<%:Model.WorkspaceStatus %>";
-
-            if (fromState == "Initialization") {
-                Session.confirmDialog(
-                    "Validate Template BOE",
-                    "Please validate the Template BOE setting under Workspace Identification. Once the Workspace leaves the Initialization state, this setting cannot be changed.<br/>Would you like to continue?",
-                    function () {
-                        WorkspaceStatusWidget.ContinueSaveWorkspaceStatus();
-                    },
-                    function () {
-                        $('#Save-WorkspaceStatus').removeClass('display-none');
-                        $('#Loader-WorkspaceStatus').addClass('display-none');
-                    });
-            } else {
-                WorkspaceStatusWidget.ContinueSaveWorkspaceStatus();
-            }
+            WorkspaceStatusWidget.ContinueSaveWorkspaceStatus();
         }
     };
 
