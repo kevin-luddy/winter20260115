@@ -675,7 +675,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.LaborTypesData.First().ResourceID = null;
 
             ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
-            Assert.AreEqual(2, validations.Count());
+            Assert.AreEqual(1, validations.Count());
         }
 
         [TestMethod]
@@ -692,7 +692,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.LaborTypesData.First().PerformingOrgID = null;
 
             ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
-            Assert.AreEqual(2, validations.Count());
+            Assert.AreEqual(1, validations.Count());
         }
 
         [TestMethod]
@@ -732,7 +732,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.LaborTypesData.First().PercentSpread = null;
 
             ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
-            Assert.AreEqual(2, validations.Count());
+            Assert.AreEqual(1, validations.Count());
         }
 
         [TestMethod]
@@ -749,7 +749,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.LaborTypesData.First().HourSpread = null;
 
             ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
-            Assert.AreEqual(3, validations.Count());
+            Assert.AreEqual(2, validations.Count());
         }
 
         [TestMethod]
@@ -784,7 +784,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.LaborTypesData.First().EndDate = null;
 
             ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
-            Assert.AreEqual(2, validations.Count());
+            Assert.AreEqual(1, validations.Count());
         }
 
         [TestMethod]
@@ -802,7 +802,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.LaborTypesData.First().CLINID = null;
 
             ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
-            Assert.AreEqual(2, validations.Count());
+            Assert.AreEqual(1, validations.Count());
         }
 
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
@@ -938,7 +938,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
-            Assert.AreEqual(2, results.Count());
+            Assert.AreEqual(1, results.Count());
         }
 
         [TestMethod]
@@ -956,7 +956,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
-            Assert.AreEqual(2, results.Count());
+            Assert.AreEqual(1, results.Count());
         }
 
         [TestMethod]
@@ -988,7 +988,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
-            Assert.AreEqual(3, results.Count());
+            Assert.AreEqual(1, results.Count());
         }
 
         [TestMethod]
@@ -1020,7 +1020,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
-            Assert.AreEqual(3, results.Count());
+            Assert.AreEqual(1, results.Count());
         }
 
         [TestMethod]
@@ -1044,7 +1044,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
-            Assert.AreEqual(2, results.Count());
+            Assert.AreEqual(1, results.Count());
         }
 
         [TestMethod]
@@ -1113,7 +1113,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
-            Assert.AreEqual(2, results.Count());
+            Assert.AreEqual(1, results.Count());
         }
 
         [TestMethod]

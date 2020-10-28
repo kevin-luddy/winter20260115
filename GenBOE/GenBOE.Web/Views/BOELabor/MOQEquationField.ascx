@@ -192,7 +192,7 @@
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.DateOfReport}} *</td>
-                            <td><input type="date" required data-ng-model="tableData.DateOfReport" /></td>
+                            <td><input type="date" required data-ng-model="tableData.DateOfReport" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.HistoricalProgramName}} *</td>
@@ -208,15 +208,15 @@
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.PoPStart}} *</td>
-                            <td><input type="date" required data-ng-model="tableData.PoPStart" /></td>
+                            <td><input type="date" required data-ng-model="tableData.PoPStart" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.PoPEnd}} *</td>
-                            <td><input type="date" required data-ng-model="tableData.PoPEnd" /></td>
+                            <td><input type="date" required data-ng-model="tableData.PoPEnd" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.TotalWbsHours}} *</td>
-                            <td><input type="number" required min="0" data-ng-model="tableData.TotalWbsHours" /></td>
+                            <td><input type="number" required min="0" data-ng-model="tableData.TotalWbsHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.AdditionalQueryFilters}} *</td>
@@ -224,7 +224,7 @@
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.TotalRelevantHours}} *</td>
-                            <td><input type="number" required min="0" data-ng-model="tableData.TotalRelevantHours" /></td>
+                            <td><input type="number" required min="0" data-ng-model="tableData.TotalRelevantHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                    </table>
                 </div>
@@ -309,7 +309,7 @@
                 <textarea cols="20" name="Rationale_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Rationale', moqType.SelectedMOQType)}}" data-ng-model="moqType.Rationale"></textarea>
             </div>
         </div>
-        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.SOW%> && moqType.SelectedMOQType != <%:(int)MOQType.NonLabor%>">
+        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.NonLabor%>">
             <div class="form-label">
                 <span>Skill Mix Rationale: *</span>
             </div>
@@ -344,9 +344,14 @@
             </select>
         </div>
     </div>
-    <div data-ng-if="!model.UsingTemplateBOE" class="form-row">
-        <div class="form-label"><%: Model.MOQTextLabel %> **</div>
-        <div class="form-element moq-text-area"><% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(Model.MoqTemplateAnswers, "MOQText", Model.MOQText));  %></div>
+
+    <hr data-ng-show="model.UsingTemplateBOE && '<%:Model.MoqTemplateAnswers.Any()%>'.isTrue()" />
+
+    <div class="form-row">
+        <div data-ng-if="!model.UsingTemplateBOE" class="form-label"><%: Model.MOQTextLabel %> **</div>
+        <div data-ng-if="model.UsingTemplateBOE && '<%:Model.MoqTemplateAnswers.Any()%>'.isTrue()" class="form-label">Additional MOQ Types <br />Information</div>
+
+        <div data-ng-if="!model.UsingTemplateBOE || '<%:Model.MoqTemplateAnswers.Any()%>'.isTrue()" class="form-element moq-text-area"><% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(Model.MoqTemplateAnswers, "MOQText", Model.MOQText));  %></div>
     </div>
 
     <div id="UsedHistoricalMetrics" class="form-row display-none">

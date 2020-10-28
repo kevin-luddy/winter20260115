@@ -372,7 +372,7 @@
         </div>
         <div class="form-row">
             <div class="form-label">
-                <span helptext="Does this Workspace use the MOQ Template in its BOEs?">Template BOE</span>
+                <span helptext="Does this Workspace use the MOQ Template in its BOEs?">MOQ Template BOEs</span>
             </div>
             <div class="form-element">
                 <%: Html.DropDownListFor(c => c.UsingTemplateBoe, new List<SelectListItem>()
