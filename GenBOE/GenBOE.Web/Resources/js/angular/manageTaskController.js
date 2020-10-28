@@ -1343,9 +1343,12 @@
                             $scope.laborTypeErrors = typeErrors;
                             $scope.laborSpreadErrors = spreadErrors;
                             
-                    }
-                    $scope.isSaving = false;
-                    $(document).trigger("HIDE_LOADING_BOX");
+                        }
+                        $scope.isSaving = false;
+                        $(document).trigger("HIDE_LOADING_BOX");
+                        $([document.documentElement, document.body]).animate({
+                            scrollTop: $("#mainErrorBox").offset().top
+                        }, 1000);
                 });
             }
         }
