@@ -173,6 +173,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             Collection<int> BoeIds = boes.Select(x => x.Id).ToCollection();
             _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, It.IsAny<bool>())).Returns(dtoID);
             _retriever.Setup(x => x.GetMaterialsByBoeIds(BoeIds, It.IsAny<bool>())).Returns(MaterialID);
+            _retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             ResourceLoader.Setup(x => x.GetByIds(resourceIds)).Returns(resourcesFromDB);
             boeCustomExporter.Setup(x => x.SetWorkspacePrecisionVariables(workspace));
@@ -281,6 +282,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             _retriever.Setup(x => x.GetFullBoesByWorkspaceId(1)).Returns(boes);
             _retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(1, false, It.IsAny<int>(), It.IsAny<int>())).Returns(TaskElementsID);
             _retriever.Setup(x => x.GetQuestionsAndAnswersByWorkspaceId(workspace.Id)).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
+            _retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(workspace.Id)).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
 
             Collection<int> BoeIds = boes.Select(x => x.Id).ToCollection();
             _retriever.Setup(x => x.GetOdcCollectionByBoeIds(BoeIds, false)).Returns(dtoID);
