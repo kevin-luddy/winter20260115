@@ -239,19 +239,17 @@ DELETE FROM [dbo].[RteTemplateAssigned]
 DELETE FROM [dbo].[RteTemplate]
 	WHERE WorkspaceID = @WorkspaceID
 
-DELETE FROM [dbo].[MOQTypeSelection]
-	FROM [dbo].[MOQTypeSelection] M
-	INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
-	INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
-	INNER JOIN dbo.Workspace WS ON B.WorkspaceID = WS.WorkspaceID
-	WHERE WS.WorkspaceID = @WorkspaceID
 DELETE FROM [dbo].[MOQTypeSelectionTableData]
 	FROM [dbo].[MOQTypeSelectionTableData] TD
 	INNER JOIN [dbo].[MOQTypeSelection] M ON TD.MOQTypeSelectionId = M.MOQTypeSelectionId
 	INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
 	INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
-	INNER JOIN dbo.Workspace WS ON B.WorkspaceID = WS.WorkspaceID
-	WHERE WS.WorkspaceID = @WorkspaceID
+	WHERE B.WorkspaceID = @WorkspaceID
+DELETE FROM [dbo].[MOQTypeSelection]
+	FROM [dbo].[MOQTypeSelection] M
+	INNER JOIN [dbo].[BOETaskElement] T on M.TaskId = T.BOETaskElementID
+	INNER JOIN dbo.BOE B ON T.BOEID  = B.BOEID
+	WHERE B.WorkspaceID = @WorkspaceID
 
 DELETE FROM  [dbo].[BOETaskElement]
 	FROM [dbo].[BOETaskElement] BTE
