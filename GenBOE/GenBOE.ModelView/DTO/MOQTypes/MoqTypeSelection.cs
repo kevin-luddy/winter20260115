@@ -6,12 +6,14 @@
 
 namespace GenBOE.ActionLogic.ModelView
 {
+    using System;
     using System.Collections.Generic;
     using IES.Common;
 
     /// <summary>
     /// MOQ Type selection, with underlying data
     /// </summary>
+    [Serializable]
     public class MoqTypeSelection : UpdateableDTO
     {
         /// <summary>
@@ -102,6 +104,12 @@ namespace GenBOE.ActionLogic.ModelView
         /// <summary>
         /// Table Data
         /// </summary>
-        public ICollection<MoqTableData> TableData { get; set; } = new List<MoqTableData>();
+        public ICollection<MoqTableData> TableData { get => tableData; set => tableData = value; }
+
+        /// <summary>
+        /// Private property, had to do this to not-serialize it
+        /// </summary>
+        [NonSerialized]
+        private ICollection<MoqTableData> tableData = new List<MoqTableData>();
     }
 }

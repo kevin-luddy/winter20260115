@@ -10,14 +10,16 @@ namespace GenBOE.ActionLogic.CopyBOE
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.BLL;
+    using GenBOE.ActionLogic.Common.Calculations;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
+    using MoreLinq;
 
     public class BOECopier
     {
@@ -36,6 +38,7 @@ namespace GenBOE.ActionLogic.CopyBOE
         private IPerformingOrgDTODataLoader perfOrgLoader;
         private IWorkspaceVariableDTODataLoader _workspaceVariableLoader;
         private IBoeTaskElementRecalculation _boeTaskElementRecalculation;
+        private IMoqTypeDataLoader moqTypeLoader;
 
         /// <summary>
         /// RTE Template Data Loader
@@ -58,7 +61,8 @@ namespace GenBOE.ActionLogic.CopyBOE
             IBoeTaskElementRecalculation inBoeTaskElementRecalculation,
             IClinDTODataLoader clinLoader,
             IWbsDTODataLoader wbsLoader,
-            IRteTemplateDataLoader rteTemplateDataLoader)
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            IMoqTypeDataLoader moqTypeLoader)
         {
             this.boeLoader = boeLoader;
             this.clinLoader = clinLoader;
@@ -77,6 +81,7 @@ namespace GenBOE.ActionLogic.CopyBOE
             this._workspaceVariableLoader = workspaceVariableLoader;
             this._boeTaskElementRecalculation = inBoeTaskElementRecalculation;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
+            this.moqTypeLoader = moqTypeLoader;
         }
 
         /// <summary>
@@ -192,29 +197,38 @@ namespace GenBOE.ActionLogic.CopyBOE
 
             foreach (KeyValuePair<int,int> task in duplicateRequest)
             {
-                ICollection<int> inUseMetricIDs = this._boeCopierCompany.GetMetricsUsedByTaskElement(task.Key); //dictionary key is the task id
+                ICollection<int> inUseMetricIDs = this._boeCopierCompany.GetMetricsUsedByTaskElement(task.Key); // dictionary key is the task id
 
                 ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(boe.WorkspaceID, boe.Id, task.Key);
+                ICollection<MoqTypeSelection> originalMoqTypes = boe.MoqTypeSelections.Where(x => x.TaskId == task.Key).ToList();
 
-                for (int i = 1; i <= task.Value; i++)//dictionary value is number of times to duplicate task
+                for (int i = 1; i <= task.Value; i++) //dictionary value is number of times to duplicate task
                 {
                     // Create a new duplicate for each iteration so things like Open Ended Custom Field Values are unique
                     BoeTaskElementDTO taskDuplicate = this.GetDuplicateTask(boe, task.Key);
                     int taskDuplicateId = -1;
 
-                    //Save the specified number of duplicates for the task
+                    // Save the specified number of duplicates for the task
                     if (taskDuplicate != null)
                     {
                         taskDuplicateId = this.SaveDuplicateTask(ws, taskDuplicate, inUseMetricIDs, i);
                     }
 
-                    if (rteTemplateAnswers.Any() && taskDuplicateId > 0)
+                    if(taskDuplicateId > 0)
                     {
-                        ICollection<RTECustomTemplateQuestionAnswerModelView> answerDuplicates = this.GetDuplicateRteTemplateAnswers(rteTemplateAnswers, boe.Id, taskDuplicateId); ;
-
-                        if (answerDuplicates.Any())
+                        if (originalMoqTypes.Any())
                         {
-                            this.rteTemplateDataLoader.SaveAnswers(answerDuplicates);
+                            this.CopyMoqTypes(originalMoqTypes, taskDuplicateId, boe.Id);
+                        }
+
+                        if (rteTemplateAnswers.Any())
+                        {
+                            ICollection<RTECustomTemplateQuestionAnswerModelView> answerDuplicates = this.GetDuplicateRteTemplateAnswers(rteTemplateAnswers, boe.Id, taskDuplicateId); ;
+
+                            if (answerDuplicates.Any())
+                            {
+                                this.rteTemplateDataLoader.SaveAnswers(answerDuplicates);
+                            }
                         }
                     }
                 }   
@@ -620,6 +634,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                     taskElementCopy.BoeID = inDestinationBOE.Id;
                     taskElementCopy.Updateable = UpdateType.Upsert;
                     ICollection<int> inUseMetricIDs = this._boeCopierCompany.GetMetricsUsedByTaskElement(taskElementCopy.Id);
+                    ICollection<MoqTypeSelection> originalMoqTypes = inSourceBOE.MoqTypeSelections.Where(x => x.TaskId == taskElementOrig.Id).ToList();
 
                     // Create new Task Element for Project Map if copying from another workspace
                     if (!inDestinationWorkspace.IsProjectMapWorkspace || !copyWithinSameWorkspace)
@@ -708,27 +723,72 @@ namespace GenBOE.ActionLogic.CopyBOE
 
                     this._IBoeTaskElementMediator.MediatedSaveTaskElements(new Collection<BoeTaskElementDTO> { taskElementCopy }, inDestinationWorkspace);
 
-                    if (taskElementCopy.Id > 0 && inUseMetricIDs.Any())
+                    if(taskElementCopy.Id > 0)
                     {
-                        this._boeCopierCompany.SaveMetricsToTaskElement(taskElementCopy.Id, inUseMetricIDs);
-                    }
-
-                    if( taskElementCopy.Id > 0 && copyWithinSameWorkspace)
-                    {
-                        ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(inSourceBOE.WorkspaceID, inSourceBOE.Id, taskElementOrig.Id);
-
-                        if (rteTemplateAnswers.Any())
+                        if (originalMoqTypes.Any())
                         {
-                            ICollection<RTECustomTemplateQuestionAnswerModelView> answerDuplicates = this.GetDuplicateRteTemplateAnswers(rteTemplateAnswers, inDestinationBOE.Id, taskElementCopy.Id); ;
+                            this.CopyMoqTypes(originalMoqTypes, taskElementCopy.Id, inDestinationBOE.Id);
+                        }
 
-                            if (answerDuplicates.Any())
+                        if (inUseMetricIDs.Any())
+                        {
+                            this._boeCopierCompany.SaveMetricsToTaskElement(taskElementCopy.Id, inUseMetricIDs);
+                        }
+
+                        if (copyWithinSameWorkspace)
+                        {
+                            ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(inSourceBOE.WorkspaceID, inSourceBOE.Id, taskElementOrig.Id);
+
+                            if (rteTemplateAnswers.Any())
                             {
-                                this.rteTemplateDataLoader.SaveAnswers(answerDuplicates);
+                                ICollection<RTECustomTemplateQuestionAnswerModelView> answerDuplicates = this.GetDuplicateRteTemplateAnswers(rteTemplateAnswers, inDestinationBOE.Id, taskElementCopy.Id); ;
+
+                                if (answerDuplicates.Any())
+                                {
+                                    this.rteTemplateDataLoader.SaveAnswers(answerDuplicates);
+                                }
                             }
                         }
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Copies MOQ Type Selections
+        /// </summary>
+        /// <param name="moqTypesToCopy">MOQ Types to copy</param>
+        /// <param name="newTaskId">New Task Id</param>
+        /// <param name="newBoeId">New Boe Id</param>
+        private void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, int newTaskId, int newBoeId)
+        {
+            _ = moqTypesToCopy ?? throw new ArgumentNullException(nameof(moqTypesToCopy));
+
+            List<MoqTypeSelection> moqTypesToSave = new List<MoqTypeSelection>();
+
+            int i = 0;
+            moqTypesToCopy.ForEach(existingMoqType =>
+            {
+                MoqTypeSelection newMoqType = existingMoqType.DeepClone();
+                newMoqType.TableData = new List<MoqTableData>();
+
+                newMoqType.Id = --i;
+                newMoqType.Updateable = UpdateType.Upsert;
+                newMoqType.BoeId = newBoeId;
+                newMoqType.TaskId = newTaskId;
+
+                existingMoqType.TableData.ForEach(existingTable => 
+                {
+                    MoqTableData newTable = existingTable.DeepClone();
+                    newTable.Id = --i; 
+
+                    newMoqType.TableData.Add(newTable); 
+                });
+
+                moqTypesToSave.Add(newMoqType);
+            });
+
+            this.moqTypeLoader.Save(moqTypesToSave);
         }
 
         /// <summary>

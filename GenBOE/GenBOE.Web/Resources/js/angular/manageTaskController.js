@@ -1775,6 +1775,7 @@
             WBSID: laborType.WBSID,
             NewLaborType: false,
             NumberOfDuplicates: 0,
+            SelectedMOQType: laborType.SelectedMOQType,
             LaborTypeOrder: 2000 // New resource types should be put at bottom of order
         };
 
