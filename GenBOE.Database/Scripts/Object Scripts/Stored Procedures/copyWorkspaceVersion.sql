@@ -36,6 +36,7 @@ AS
 **		7/28/20		RJ					BOEJ-4713 Remove email settings
 **		8/27/20		ranzalon			BOEJ-4760 - Template Boe
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
+**		10/29/20	Dusan				BOEJ-4925: Fixed MOQTypeSelectionId not copying
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -1973,8 +1974,7 @@ BEGIN TRY
 		[NewPerformingOrganizationID] [int],
 		[NewBOETaskElementID] [int],
 		[NewWBSID] [int] NULL,
-		[NewCLINID] [int] NULL,
-		[NewMOQTypeSelectionId] [int] NULL
+		[NewCLINID] [int] NULL
 	)	
 	INSERT INTO @BOELaborType
 	SELECT LT.[BOELaborTypeID]
@@ -1994,7 +1994,7 @@ BEGIN TRY
 		  ,LT.[CLINID]
 		  ,LT.[CanOffload]
 		  ,LT.[LaborSortId]
-		  ,M.[MOQTypeSelectionId] 
+		  ,LT.[MOQTypeSelectionId] 
 		  ,0/*PROCESSED*/
 		  ,NULL
 		  ,CASE
@@ -2014,14 +2014,12 @@ BEGIN TRY
 			WHEN C.NewCLINID IS NOT NULL THEN C.NewCLINID
 			ELSE LT.[CLINID]
 			END AS CLINID
-		  ,M.[NewMOQTypeSelectionId]
 	  FROM [version].[BOELaborType] LT
 	INNER JOIN @BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
 	LEFT OUTER JOIN @Resource R ON LT.ResourceID = R.ResourceID
 	LEFT OUTER JOIN @PerformingOrganization PO ON LT.PerformingOrganizationID = PO.PerformingOrganizationID
 	LEFT OUTER JOIN @WorkBreakdownStructure W on LT.WBSID = W.WBSID
 	LEFT OUTER JOIN @CLIN C on LT.CLINID = C.CLINID
-	LEFT OUTER JOIN @MOQTypeSelection M ON LT.MOQTypeSelectionId = M.MOQTypeSelectionId
 	WHERE LT.VersionID = @VersionID
 	
 	DECLARE @BOELaborTypeID int
@@ -2075,7 +2073,7 @@ BEGIN TRY
 			END AS CLINID
 			,[CanOffload]
 			,[LaborSortId]
-			,[NewMOQTypeSelectionId]
+			,[MOQTypeSelectionId]
 	  FROM @BOELaborType
 	WHERE  [BOELaborTypeID] = @BOELaborTypeID
       

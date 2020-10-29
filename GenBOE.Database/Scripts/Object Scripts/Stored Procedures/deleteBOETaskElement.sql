@@ -33,6 +33,7 @@ AS
 **		4/2/18		ranzalon			BOEJ-3268 - Update for Open Ended Custom Fields
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
 **		12/13/19	twilson3			BOEJ-4434 - RTE Template Answers
+**		10/29/20	Dusan				BOEJ-4924 - MOQ Type Selection data
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -147,7 +148,21 @@ SET NOCOUNT ON
 				INNER JOIN dbo.BOETaskElement TE ON B.BOEID = TE.BOEID
 			WHERE TE.BOETaskElementID = @BOETaskElementID
 
-			
+			-- MOQ Type Selection data
+			DELETE FROM dbo.MOQTypeSelectionTableData
+				FROM dbo.MOQTypeSelectionTableData t
+				INNER JOIN dbo.MOQTypeSelection s ON s.MOQTypeSelectionId = t.MOQTypeSelectionId
+				INNER JOIN dbo.BOETaskElement TE ON s.TaskId = TE.BOETaskElementID
+			WHERE
+				TE.BOETaskElementID = @BOETaskElementID
+
+			DELETE FROM dbo.MOQTypeSelection
+				FROM dbo.MOQTypeSelection s
+				INNER JOIN dbo.BOETaskElement TE ON s.TaskId = TE.BOETaskElementID
+			WHERE
+				TE.BOETaskElementID = @BOETaskElementID
+
+			-- Task Element
 			DELETE FROM dbo.BOETaskElement
 			WHERE
 				BOETaskElementID = @BOETaskElementID
