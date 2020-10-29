@@ -12,6 +12,7 @@ namespace GenBOE.ActionLogic.ModelView
     /// <summary>
     /// MOQ Table Data class
     /// </summary>
+    [Serializable]
     public class MoqTableData : UpdateableDTO
     {
         /// <summary>
