@@ -644,11 +644,11 @@ namespace GenBOE.ActionLogic.IO.Export
 
             if (multiMoq)
             {
-                toReturn = "This task is based on ";
+                toReturn = "This portion of the task is based on "; 
             }
             else
             {
-                toReturn = "This portion of the task is based on ";
+                toReturn = "This task is based on ";
             }
 
             switch (moqType)
@@ -660,13 +660,13 @@ namespace GenBOE.ActionLogic.IO.Export
                     toReturn += "similar historical data:";
                     break;
                 case MOQType.CostEstimatingRelationships:
-                    toReturn += "a Cost Estimating Relationship (CER). Please provide:";
+                    toReturn += "a Cost Estimating Relationship (CER):";
                     break;
                 case MOQType.ParametricEstimates:
-                    toReturn += "Parametric Model/tool. Please provide:";
+                    toReturn += "Parametric Model/tool:";
                     break;
                 case MOQType.AnalogousRelationships:
-                    toReturn += "Analogous Relationship. Please provide:";
+                    toReturn += "Analogous Relationship:";
                     break;
                 case MOQType.SOW:
                     toReturn += "a Statement of Work (SOW) directive:";
@@ -675,7 +675,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     toReturn += "a Level of Effort (LOE):";
                     break;
                 case MOQType.SME:
-                    toReturn += "Subject Matter Expert (SME) Judgement.";
+                    toReturn += "Subject Matter Expert (SME) Judgement:";
                     break;
                 case MOQType.NonLabor:
                     toReturn = "This task is Non-Labor:";
@@ -701,6 +701,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 // create/clone template of MOQ Type table
                 SdtElement moqTypeTableContainer = null;
                 OpenXmlElement lastElement = moqTypeTableTemplate;
+                int? lastTableId = moqType.TableData.LastOrDefault()?.Id;
 
                 foreach (MoqTableData table in moqType.TableData)
                 {
@@ -717,8 +718,8 @@ namespace GenBOE.ActionLogic.IO.Export
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_WbsElement), table.WbsElement);
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_PoPStartDate), table.PoPStart.ToString(BOEExporterConstants.DATE_FORMAT_STANDARD));
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_PoPEndDate), table.PoPEnd.ToString(BOEExporterConstants.DATE_FORMAT_STANDARD));
-                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_TotalWBSHours), table.TotalWbsHours.ToString());
-                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_TotalRelevantHours), table.TotalRelevantHours.ToString());
+                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_TotalWBSHours), table.TotalWbsHours.ToString("G29"));
+                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_TotalRelevantHours), table.TotalRelevantHours.ToString("G29"));
                     
                     // populate/remove Additional Query filters based on selected components
                     if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQAdditionalQueryFilters) || !customExport)
@@ -728,6 +729,12 @@ namespace GenBOE.ActionLogic.IO.Export
                     else
                     {
                         WordUtilities.RemoveTableRowWithTaggedElement(moqTypeTableContainer, BOEExporterConstants.FieldName_AdditionalQueryFilters);
+                    }
+
+                    // remove the note unless last/only table
+                    if (table.Id != lastTableId)
+                    {
+                        this.RemoveElement(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_MOQTypeTableNote));
                     }
                 }
 
