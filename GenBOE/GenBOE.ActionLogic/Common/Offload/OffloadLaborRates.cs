@@ -601,7 +601,7 @@ namespace GenBOE.ActionLogic.Common
                         string moqText = string.Format(this.EXISTING_TASK_RATIONALE, justifyingPublication, projectMapOffloadText, originalTaskHours.ToString("F"),
                                         offloadedTaskHours.ToString("F"), (originalTaskHours - offloadedTaskHours).ToString("F"));
 
-                        if (workspace.RteOverrides.Contains(RteTemplateSource.TaskMOQ))
+                        if (workspace.RteOverrides.Contains(RteTemplateSource.TaskMOQ) || workspace.UsingTemplateBOE)
                         {
                             boe.TemplateQuestionsAndAnswers.Add(new RTECustomTemplateQuestionAnswerModelView() 
                             { 
@@ -612,8 +612,8 @@ namespace GenBOE.ActionLogic.Common
                                 SortOrder = 10000,
                                 SourceId = (int)RteTemplateSource.TaskMOQ
                             });
-                        } 
-                        else 
+                        }
+                        else
                         { 
                             taskElement.MOQText += moqText;
                         }

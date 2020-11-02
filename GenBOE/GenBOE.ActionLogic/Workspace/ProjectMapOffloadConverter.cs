@@ -70,6 +70,8 @@ namespace GenBOE.ActionLogic.Workspace
                         // Project map -> activity is fed from BOE. Standard -> fed from task. (facepalm)
                         string activityId = workspace.IsProjectMapWorkspace ? boe.Title : task.BOETaskID;
                         string activityName = workspace.IsProjectMapWorkspace ? boe.Description : task.TaskTitle;
+                        string rationale = (workspace.UsingTemplateBOE ? $"Selected MOQ Type(s): { string.Join(", ", workspace.MoqTypeSelections.Where(x => x.TaskId == task.Id).Select(x => x.SelectedMOQType.GetDescription())) }. " : string.Empty)
+                                                + RTEUtilities.TurnHTMLIntoPlainText(BOEExportConverter.GetRteOverride(task.BoeID, task.Id, task.MOQText, RteTemplateSource.TaskMOQ, rteOverrides));
 
                         ProjectMapModelView dto = new ProjectMapModelView()
                         {
@@ -86,7 +88,7 @@ namespace GenBOE.ActionLogic.Workspace
                             Hours = laborResource.SpreadType == SpreadType.Hours ? laborResource.ValueSpread : null,
                             InitialResource = resource?.ResourceName ?? string.Empty,
                             LegacyID = laborResource.LegacyID,
-                            Rationale = RTEUtilities.TurnHTMLIntoPlainText(BOEExportConverter.GetRteOverride(task.BoeID, task.Id, task.MOQText, RteTemplateSource.TaskMOQ, rteOverrides)),
+                            Rationale = rationale,
                             SowNumber = boe.SOW ?? task.SOW,
                             SowTitle = boe.SOWTitle ?? task.SOWTitle,
                             StartDate = laborResource.StartDate,
