@@ -428,20 +428,11 @@ namespace GenBOE.ActionLogic.IO.Export
 
                     #endregion
 
-                    // populate unique fields and remove unused fields for MOQ Type
-                    if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQType) || !customExport)
-                    {
-                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_MOQTypeSelection),
-                            moqType.SelectedMOQType.GetDescription());
-                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_MOQTypeDescription),
-                            this.GetMoqTypeDescription(moqType.SelectedMOQType, laborTaskElement.MOQTypes.Count > 1));
-                    }
-                    else
-                    {
-                        this.RemoveElement(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_MOQTypeSelectionLabel));
-                        this.RemoveElement(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_MOQTypeSelection));
-                        this.RemoveElement(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_MOQTypeDescription));
-                    }
+                    // populate unique fields and remove unused fields for MOQ Type                    
+                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_MOQTypeSelection),
+                        moqType.SelectedMOQType.GetDescription());
+                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_MOQTypeDescription),
+                        this.GetMoqTypeDescription(moqType.SelectedMOQType, laborTaskElement.MOQTypes.Count > 1));
 
                     switch (moqType.SelectedMOQType)
                     {
@@ -460,15 +451,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                 this.RemoveSMERows(moqTypeContainer);
                             }
 
-                            if (customExport && (moqType.SelectedMOQType == MOQType.Historical && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQHistoricalPrompts)
-                                || moqType.SelectedMOQType == MOQType.Comparative && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQComparativeAnalysisPrompts)))
-                            {
-                                this.RemoveElement(moqTypeTableContainer);
-                            }
-                            else
-                            {
-                                this.PopulateMOQTableData(moqType, selectedComponents, moqTypeTableContainer, customExport);
-                            }
+                            this.PopulateMOQTableData(moqType, selectedComponents, moqTypeTableContainer);
                             break;
                         case MOQType.CostEstimatingRelationships:
                         case MOQType.ParametricEstimates:
@@ -486,33 +469,24 @@ namespace GenBOE.ActionLogic.IO.Export
                                 this.RemoveMoqTableRow(moqTypeContainer);
                             }
 
-                            if (customExport && (moqType.SelectedMOQType == MOQType.CostEstimatingRelationships && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQCERsPrompts)
-                                || moqType.SelectedMOQType == MOQType.ParametricEstimates && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQParametricEstimatesPrompts)
-                                || moqType.SelectedMOQType == MOQType.AnalogousRelationships && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQARsPrompts)))
+                            string labelPrefix;
+                            if (moqType.SelectedMOQType == MOQType.CostEstimatingRelationships)
                             {
-                                this.RemoveElement(cerPmArContainer);
+                                labelPrefix = "CER";
+                            }
+                            else if (moqType.SelectedMOQType == MOQType.ParametricEstimates)
+                            {
+                                labelPrefix = "Parametric model or tool";
                             }
                             else
                             {
-                                string labelPrefix;
-                                if (moqType.SelectedMOQType == MOQType.CostEstimatingRelationships)
-                                {
-                                    labelPrefix = "CER";
-                                }
-                                else if (moqType.SelectedMOQType == MOQType.ParametricEstimates)
-                                {
-                                    labelPrefix = "Parametric model or tool";
-                                }
-                                else
-                                {
-                                    labelPrefix = "Analogous relationship";
-                                }
-
-                                WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArNameLabel), labelPrefix + " name");
-                                WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArName), moqType.CerName);
-                                WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArLocationLabel), labelPrefix + " location in the proposal");
-                                WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArLocation), moqType.CerLocation);
+                                labelPrefix = "Analogous relationship";
                             }
+
+                            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArNameLabel), labelPrefix + " name");
+                            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArName), moqType.CerName);
+                            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArLocationLabel), labelPrefix + " location in the proposal");
+                            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArLocation), moqType.CerLocation);
                             break;
                         case MOQType.SOW:
                         case MOQType.LOE:
@@ -529,23 +503,15 @@ namespace GenBOE.ActionLogic.IO.Export
                                 this.RemoveMoqTableRow(moqTypeContainer);
                             }
 
-                            if (customExport && (moqType.SelectedMOQType == MOQType.SOW && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQSOWPrompts)
-                                || moqType.SelectedMOQType == MOQType.LOE && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQLOEPrompts)))
+                            string label = "Description of Hours required";
+                            if (moqType.SelectedMOQType == MOQType.SOW)
                             {
-                                this.RemoveElement(sowLoeContainer);
+                                label += " & location in SOW";
                             }
-                            else
-                            {
-                                string label = "Description of Hours required";
-                                if (moqType.SelectedMOQType == MOQType.SOW)
-                                {
-                                    label += " & location in SOW";
-                                }
 
-                                WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_HoursDescriptionLabel), label);
-                                WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_HoursDescription),
-                                    moqType.DescriptionHoursRequired, ref counters, true);
-                            }
+                            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_HoursDescriptionLabel), label);
+                            WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_HoursDescription),
+                                moqType.DescriptionHoursRequired, ref counters, true);                            
                             break;
                         case MOQType.SME:
                             if (customExport)
@@ -561,21 +527,14 @@ namespace GenBOE.ActionLogic.IO.Export
                                 this.RemoveMoqTableRow(moqTypeContainer);
                             }
 
-                            if (customExport && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQSMEJudgementPrompts))
-                            {
-                                this.RemoveElement(smeContainer);
-                            }
-                            else
-                            {
-                                WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEReasons),
-                                    moqType.SmeReason, ref counters, true);
-                                WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEHoursLogic),
-                                    moqType.SmeHoursLogic, ref counters, true);
-                                WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEDurationLogic),
-                                    moqType.SmeDurationLogic, ref counters, true);
-                                WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMETasks),
-                                    moqType.SmeTaskEstimates, ref counters, true);
-                            }
+                            WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEReasons),
+                                moqType.SmeReason, ref counters, true);
+                            WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEHoursLogic),
+                                moqType.SmeHoursLogic, ref counters, true);
+                            WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMEDurationLogic),
+                                moqType.SmeDurationLogic, ref counters, true);
+                            WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SMETasks),
+                                moqType.SmeTaskEstimates, ref counters, true);
                             break;
                         case MOQType.NonLabor:
                             if (customExport)
@@ -612,7 +571,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_Rationale);
                     }
 
-                    if (moqType.SelectedMOQType != MOQType.NonLabor && (!customExport || selectedComponents.Contains(BoeCustomReportComponent.TaskMOQSkillMixRationale)))
+                    if (moqType.SelectedMOQType != MOQType.NonLabor)
                     {
                         WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_SkillMix),
                             moqType.SkillMixRationale, ref counters, true);
@@ -693,8 +652,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="moqType">MOQ Type containing the table data</param>
         /// <param name="selectedComponents">selected components for the export</param>
         /// <param name="moqTypeTableTemplate">template element for the MOQ Type table</param>
-        /// <param name="customExport">if export is using the custom exporter</param>
-        private void PopulateMOQTableData(MoqTypeSelection moqType, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement moqTypeTableTemplate, bool customExport)
+        private void PopulateMOQTableData(MoqTypeSelection moqType, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement moqTypeTableTemplate)
         {
             if (moqTypeTableTemplate != null)
             {
@@ -721,7 +679,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_TotalRelevantHours), table.TotalRelevantHours.ToString());
                     
                     // populate/remove Additional Query filters based on selected components
-                    if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQAdditionalQueryFilters) || !customExport)
+                    if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQAdditionalQueryFilters))
                     {
                         WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_AdditionalQueryFilters), table.AdditionalQueryFilters);
                     }

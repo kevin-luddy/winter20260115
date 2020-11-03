@@ -384,7 +384,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             if (selectedComponents == null)
             {
-                selectedComponents = Enum.GetValues(typeof(BoeCustomReportComponent)) as BoeCustomReportComponent[];
+                selectedComponents = this.HandleComponentsByCompany(Enum.GetValues(typeof(BoeCustomReportComponent)) as BoeCustomReportComponent[]);
             }
 
             // Check the file for both the portrait and landscape special boe table elements
@@ -577,7 +577,17 @@ namespace GenBOE.ActionLogic.IO.Export
 
             #endregion
         }
-        
+
+        /// <summary>
+        /// Handles the default behavior of the Additional Query Filters component
+        /// </summary>
+        /// <param name="selectedComponents">Selected components for the export</param>
+        protected virtual ICollection<BoeCustomReportComponent> HandleComponentsByCompany(ICollection<BoeCustomReportComponent> selectedComponents)
+        {
+            // return with no changes - Additional Query Filters included by default for non-custom exports for RMS
+            return selectedComponents;
+        }
+
         /// <summary>
         /// Checks if given month is October, November, or December
         /// </summary>
@@ -2396,8 +2406,16 @@ namespace GenBOE.ActionLogic.IO.Export
                 WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeContainer);
                 WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQRationaleContainer);
 
-                SdtElement templateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Container_MOQSelection);
-                this.PopulateMOQTypeData(laborTaskElement, selectedComponents, document.MainDocumentPart, templateElement, true, ref counters);
+                if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQType))
+                {
+                    SdtElement templateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Container_MOQSelection);
+                    this.PopulateMOQTypeData(laborTaskElement, selectedComponents, document.MainDocumentPart, templateElement, true, ref counters);
+                }
+                else
+                {
+                    WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeSelectionTitle);
+                    WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.Container_MOQSelection);
+                }
             }
             else
             {
@@ -2427,11 +2445,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQSectionLabel);
             }
 
-            if (!selectedComponents.Contains(BoeCustomReportComponent.TaskMOQType) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQRationale)
-                && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQSkillMixRationale) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQHistoricalPrompts)
-                && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQComparativeAnalysisPrompts) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQCERsPrompts)
-                && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQARsPrompts) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQSOWPrompts)
-                && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQLOEPrompts) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQSMEJudgementPrompts))
+            if (!selectedComponents.Contains(BoeCustomReportComponent.TaskMOQType) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQRationale))
             {
                 WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeSelectionTitle);
             }
