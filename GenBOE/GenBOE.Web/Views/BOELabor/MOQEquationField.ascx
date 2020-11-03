@@ -278,6 +278,9 @@
             </div>           
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>">
+            <b>For the tasks below:</b>
+        </div>
+        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>">
             <div class="form-label">
                 <span>The logic and assumptions used to estimate hours is: *</span>
             </div>
