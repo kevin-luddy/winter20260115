@@ -363,6 +363,7 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string FieldName_AdditionalQueryFilters = "AdditionalQueryFilters";
         internal const string FieldName_TotalRelevantHours = "TotalRelevantHours";
         internal const string FieldName_ResourceMOQType = "ResourceMOQType";
+        internal const string FieldName_MOQTypeTableNote = "MOQTypeTableNote";
         internal const string Marker_AdditionalQueryFilters = "AdditionalQueryFiltersRowMarker";
         internal const string Table_MOQType = "MOQTypeTable";
 
