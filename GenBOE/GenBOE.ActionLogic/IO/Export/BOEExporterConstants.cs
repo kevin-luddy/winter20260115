@@ -100,6 +100,7 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string FieldName_MatSubIWTACostTotal = "MatSubIWTACostTotal";
         internal const string FieldName_May = "May";
         internal const string FieldName_MethodOfQuoting = "MethodOfQuoting";
+        internal const string FieldName_MethodOfQuotingLabel = "MOQRationaleLabel";
         internal const string FieldName_MethodOfQuoting_NoSpacing = "MethodOfQuoting-NoSpacing";
         internal const string FieldName_Mode = "Mode";
         internal const string FieldName_Months = "Months";

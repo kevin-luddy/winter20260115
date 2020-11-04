@@ -186,8 +186,6 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
                 modelViews.Add(modelView);
             }
 
-            exportInputs.ClearRteOverrides();
-
             return modelViews;
         }
 
