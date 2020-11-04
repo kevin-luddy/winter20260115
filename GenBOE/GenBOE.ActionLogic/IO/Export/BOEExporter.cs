@@ -4811,7 +4811,10 @@ namespace GenBOE.ActionLogic.IO.Export
                         if (exportInputs.Workspace.UsingTemplateBOE && !wsHasMoqRteTemplate)
                         {
                             // remove this for Workspaces using Template BOE if they have no MOQ RTE templates
+                            // call both remove row and element since it can be either depending on the template
+                            // both methods already handle there not being a row/element, so both can be run safely without affecting the other
                             WordUtilities.RemoveTableRowWithTaggedElement(taskContainer.TaskContainer, sdtTitle);
+                            WordUtilities.RemoveTaggedElement(taskContainer.TaskContainer, sdtTitle);
                         }
                         else
                         {
