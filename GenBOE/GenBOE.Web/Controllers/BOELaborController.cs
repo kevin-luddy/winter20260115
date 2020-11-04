@@ -34,6 +34,7 @@ namespace GenBOE.Web.Controllers
     using IES.Common;
     using IES.Common.Exceptions;
     using IES.Common.OfficeUtilities;
+    using MoreLinq;
 
     public class BOELaborController : GenBOEController
     {
@@ -561,16 +562,17 @@ namespace GenBOE.Web.Controllers
         /// Gets a partial view of a MOQ equation copied from a task element in another BOE.
         /// </summary>
         /// <param name="workspace">Current workspace.</param>
-        /// <param name="boeID">Current BOE Id.</param>
-        /// <param name="copyBoeId">BOE Id the MOQ equation is being copied from.</param>
-        /// <param name="taskElementId">The source MOQ equation task element Id.</param>
-        /// <param name="destinationTaskElementId">Task Element Id the MOQ equiation is being copied to.</param>
+        /// <param name="boeID">(Target Boe) Current BOE Id.</param>
+        /// <param name="copyBoeId">(Source Boe) BOE Id the MOQ equation is being copied from.</param>
+        /// <param name="taskElementId">(Source Task) The source MOQ equation task element Id.</param>
+        /// <param name="destinationTaskElementId">(Target Task) Task Element Id the MOQ equiation is being copied to.</param>
         /// <returns>Patial view containing a MOQ equation from another task element.</returns>
         public ViewResult CopyMoqEquation(string workspace, int boeID, int copyBoeId, int taskElementId, int destinationTaskElementId)
         {
             FullWorkspace fullWorkspace = this.Factory.CreateFullWorkspace(workspace);
 
             Stopwatch sw = InitializeAction(_log, "CopyMoqEquation", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, fullWorkspace, boeID);
+            FullBoe boe = this.Factory.CreateFullBoe(copyBoeId);
 
             BoeTaskElementDTO copyTaskElement = this.Factory.CreateTaskElement(taskElementId, fullWorkspace.DecimalPrecision, fullWorkspace.CostDecimalPrecision);
 
@@ -578,6 +580,26 @@ namespace GenBOE.Web.Controllers
             if (_BOECopier.CopyTaskElementMoqEquation(copyTaskElement, boeID))
             {
                 modelView = GetCopyMoqEquationModelView(fullWorkspace.Id, copyBoeId, copyTaskElement, destinationTaskElementId);
+            }
+
+            modelView.UsingTemplateBOE = fullWorkspace.UsingTemplateBOE;
+            modelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(fullWorkspace.CreationDate >= moqTemplateUsageStartDate, null);
+            if (fullWorkspace.UsingTemplateBOE)
+            {
+                modelView.MoqTypeTableDataLabels = this._BoeLaborControllerLogic.GetMoqTypeLabels();
+                modelView.SelectedMoqTypes = boe.MoqTypeSelections.Where(x => x.TaskId == taskElementId).ToList();
+
+                int i = 0;
+                modelView.SelectedMoqTypes.ForEach(x => 
+                {
+                    x.BoeId = boeID;
+                    x.TaskId = destinationTaskElementId;
+                    x.Id = --i;
+                    x.TableData.ForEach(z => 
+                    { 
+                        z.Id = --i; 
+                    });
+                });
             }
 
             SetMOQEquationViewData(fullWorkspace, boeID, copyTaskElement.MOQType);
