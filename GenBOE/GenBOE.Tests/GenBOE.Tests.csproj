@@ -256,6 +256,7 @@
     <Compile Include="Common\GenBOEUtilitiesTest.cs" />
     <Compile Include="Common\HtmlAgilityPackUtilitiesTest.cs" />
     <Compile Include="Common\LoggerTest.cs" />
+    <Compile Include="Common\MOQTypesTest.cs" />
     <Compile Include="Common\SecurityInformationTest.cs" />
     <Compile Include="Common\UtilitiesTest.cs" />
     <Compile Include="Common\WorkspaceStateMachineTest.cs" />
