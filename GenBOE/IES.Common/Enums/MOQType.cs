@@ -6,6 +6,7 @@
 
 namespace IES.Common
 {
+    using System;
     using System.ComponentModel;
 
     /// <summary>
@@ -105,63 +106,71 @@ namespace IES.Common
     public static class MoqExtensionMethods
     {
         /// <summary>
+        /// Starting date for MOQ Templates. WS created after this date will be using new MOQ Types.
+        /// </summary>
+        private static readonly DateTime moqTemplateUsageStartDate = DateTime.Parse(ConfigurationUtilities.GetAppSetting("MoqTemplateStartDate"));
+
+        /// <summary>
         /// Translates old MOQ Types to new ones, for MOQ Type Changes as of 2020.6
         /// </summary>
         /// <param name="originalValue">Original Value</param>
         /// <returns>New Value</returns>
-        public static MOQType MapToNew(this MOQType originalValue)
+        public static MOQType MapToNew(this MOQType originalValue, DateTime? wsCreationDate)
         {
-            MOQType result;
+            MOQType result = originalValue;
 
-            switch(originalValue)
+            if (wsCreationDate >= moqTemplateUsageStartDate)
             {
-                case MOQType.Historical:
-                case MOQType.MSTHistoricalPerformance:
-                case MOQType.SSCActual:
-                    result = MOQType.Historical;
-                    break;
-                case MOQType.Comparative:
-                case MOQType.MSTComparisonAnalogyMethod:
-                    result = MOQType.Comparative;
-                    break;
-                case MOQType.CostEstimatingRelationships:
-                case MOQType.MSTCostEstimatingRelationships:
-                case MOQType.SSCCostEstimatingRelationships:
-                case MOQType.SSCHistoricalExperienceFactor:
-                    result = MOQType.CostEstimatingRelationships;
-                    break;
-                case MOQType.ParametricEstimates:
-                case MOQType.MSTParametricCostModels:
-                case MOQType.MSTStandardTimeEstimating:
-                case MOQType.MSTFactorUnitMethod:
-                case MOQType.SSCDataDrivenCostModelsEquations:
-                case MOQType.SSCLaborStandardsAndRealizationPerformanceFactors:
-                    result = MOQType.ParametricEstimates;
-                    break;
-                case MOQType.AnalogousRelationships:
-                case MOQType.SSCAnalogySimilarTo:
-                    result = MOQType.AnalogousRelationships;
-                    break;
-                case MOQType.SOW:
-                    result = MOQType.SOW;
-                    break;
-                case MOQType.LOE:
-                case MOQType.MSTLevelOfEffortSupport:
-                case MOQType.SSCLevelOfEffortSupport:
-                    result = MOQType.LOE;
-                    break;
-                case MOQType.SME:
-                case MOQType.MSTEngineeringJudgmentalEstimates:
-                case MOQType.SSCBottomUp:
-                    result = MOQType.SME;
-                    break;
-                case MOQType.NonLabor:
-                case MOQType.SSCQuote:
-                    result = MOQType.NonLabor;
-                    break;
-                default:
-                    result = MOQType.None;
-                    break;
+                switch (originalValue)
+                {
+                    case MOQType.Historical:
+                    case MOQType.MSTHistoricalPerformance:
+                    case MOQType.SSCActual:
+                        result = MOQType.Historical;
+                        break;
+                    case MOQType.Comparative:
+                    case MOQType.MSTComparisonAnalogyMethod:
+                        result = MOQType.Comparative;
+                        break;
+                    case MOQType.CostEstimatingRelationships:
+                    case MOQType.MSTCostEstimatingRelationships:
+                    case MOQType.SSCCostEstimatingRelationships:
+                    case MOQType.SSCHistoricalExperienceFactor:
+                        result = MOQType.CostEstimatingRelationships;
+                        break;
+                    case MOQType.ParametricEstimates:
+                    case MOQType.MSTParametricCostModels:
+                    case MOQType.MSTStandardTimeEstimating:
+                    case MOQType.MSTFactorUnitMethod:
+                    case MOQType.SSCDataDrivenCostModelsEquations:
+                    case MOQType.SSCLaborStandardsAndRealizationPerformanceFactors:
+                        result = MOQType.ParametricEstimates;
+                        break;
+                    case MOQType.AnalogousRelationships:
+                    case MOQType.SSCAnalogySimilarTo:
+                        result = MOQType.AnalogousRelationships;
+                        break;
+                    case MOQType.SOW:
+                        result = MOQType.SOW;
+                        break;
+                    case MOQType.LOE:
+                    case MOQType.MSTLevelOfEffortSupport:
+                    case MOQType.SSCLevelOfEffortSupport:
+                        result = MOQType.LOE;
+                        break;
+                    case MOQType.SME:
+                    case MOQType.MSTEngineeringJudgmentalEstimates:
+                    case MOQType.SSCBottomUp:
+                        result = MOQType.SME;
+                        break;
+                    case MOQType.NonLabor:
+                    case MOQType.SSCQuote:
+                        result = MOQType.NonLabor;
+                        break;
+                    default:
+                        result = MOQType.None;
+                        break;
+                }
             }
 
             return result;
