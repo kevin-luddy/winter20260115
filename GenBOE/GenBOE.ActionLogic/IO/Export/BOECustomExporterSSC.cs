@@ -1372,6 +1372,17 @@ namespace GenBOE.ActionLogic.IO.Export
             }
         }
 
+        /// <summary>
+        /// Handles the default behavior of the Additional Query Filters component
+        /// </summary>
+        /// <param name="selectedComponents">Selected components for the export</param>
+        protected override ICollection<BoeCustomReportComponent> HandleComponentsByCompany(ICollection<BoeCustomReportComponent> selectedComponents)
+        {
+            _ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
+
+            return selectedComponents.Where(x => x != BoeCustomReportComponent.TaskMOQAdditionalQueryFilters).ToCollection();
+        }
+
         #endregion
     }
 }

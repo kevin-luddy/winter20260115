@@ -37,33 +37,15 @@
         TaskMOQType = 13,
         [Description("Task - Method of Quoting Equation")]
         TaskMOQEquation = 14,
-        [Description("Task - Method of Quoting Historical Prompts")]
-        TaskMOQHistoricalPrompts = 15,
-        [Description("Task - Method of Quoting Comparative Analysis Prompts")]
-        TaskMOQComparativeAnalysisPrompts = 16,
         [Description("Task - Method of Quoting Additional Query Filters")]
-        TaskMOQAdditionalQueryFilters = 17,
-        [Description("Task - Method of Quoting CERs Prompts")]
-        TaskMOQCERsPrompts = 18,
-        [Description("Task - Method of Quoting Parametric Estimates Prompts")]
-        TaskMOQParametricEstimatesPrompts = 19,
-        [Description("Task - Method of Quoting ARs Prompts")]
-        TaskMOQARsPrompts = 20,
-        [Description("Task - Method of Quoting SOW Prompts")]
-        TaskMOQSOWPrompts = 21,
-        [Description("Task - Method of Quoting LOE Prompts")]
-        TaskMOQLOEPrompts = 22,
-        [Description("Task - Method of Quoting SME Judgement Prompts")]
-        TaskMOQSMEJudgementPrompts = 23,
+        TaskMOQAdditionalQueryFilters = 15,
         [Description("Task - Method of Quoting Rationale")]
-        TaskMOQRationale = 24,
-        [Description("Task - Method of Quoting Skill Mix Rationale")]
-        TaskMOQSkillMixRationale = 25,
+        TaskMOQRationale = 16,
         [Description("Task - Resource Types Summary Table")]
-        TaskResourceTypesSummaryTable = 26,
+        TaskResourceTypesSummaryTable = 17,
         [Description("Task - Cost/Hours Spread Tables")]
-        TaskSpreadTables = 27,
+        TaskSpreadTables = 18,
         [Description("Resource - Information and Spread Tables")]
-        ResourceInfoAndSpreadTables = 28
+        ResourceInfoAndSpreadTables = 19
     }
 }
