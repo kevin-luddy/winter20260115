@@ -171,6 +171,7 @@ AS
 **		5/25/2018	ranzalon			BOEJ-3503 - Exclude Deleted Workspaces
 **		7/12/2018	twilson3			BOEJ-3685 - Fix exclusion of Deleted Workspaces
 **		9/9/2020	ranzalon			BOEJ-4770 - Only search WSs with same Template BOE value
+**		11/4/2020	Dusan				BOEJ-4889: Removing restriction to only search by the same Template BOE value
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -196,11 +197,6 @@ DECLARE @IsEP bit
 SET @IsEP = (SELECT IsUsingEquivalentPerson from dbo.Workspace where WorkspaceID = @WorkspaceID)
 DECLARE @IsMaterial bit
 SET @IsMaterial = (SELECT IsMaterial from dbo.BOE where BOEID = @BOEID)
-DECLARE @IsUsingTemplateBoe bit
-SET @IsUsingTemplateBoe = (SELECT w.TemplateBoe 
-							FROM dbo.Workspace w
-							JOIN dbo.BOE b on b.WorkspaceID = w.WorkspaceID
-							WHERE BOEID = @BOEID)
 
 DECLARE @Results TABLE
 	(
@@ -226,7 +222,6 @@ INSERT INTO @Results (BOEID, WorkspaceID)
 			LEFT OUTER JOIN dbo.CLIN C ON X.CLINID = C.CLINID
 		WHERE WS.IsUsingEquivalentPerson = @IsEP AND
 			  (WS.IsDeleted IS NULL OR WS.IsDeleted != 1) AND /* Exclude deleted workspaces */
-			  WS.TemplateBoe = @IsUsingTemplateBoe AND /* only search BOEs in Workspaces with same UsingTemplateBoe setting as specified BOE */
 		      B.IsMaterial = @IsMaterial AND	/* Only search BOE's with same IsMaterial setting as specified BOE */
 			  B.BOEID != @BOEID AND				/* Exclude specified BOE */
 			  (WS.ProjectMapTypeID = 1 OR WS.ProjectMapTypeID = 2) AND		/* Exclude BOEs in Project Map Workspaces */

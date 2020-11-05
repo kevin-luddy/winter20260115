@@ -143,19 +143,16 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// <param name="taskElementsToCopy">Task element ids to copy from the source BOE.</param>
         private void CopyBOE(FullBoe inSourceBOE, FullBoe inDestinationBOE, ICollection<int> taskElementsToCopy, ICollection<int> travelElementsToCopy)
         {
-            if (inSourceBOE == null)
-            {
-                throw new ArgumentNullException(nameof(inSourceBOE));
-            }
-            if (inDestinationBOE == null)
-            {
-                throw new ArgumentNullException(nameof(inDestinationBOE));
-            }
+            _ = inSourceBOE ?? throw new ArgumentNullException(nameof(inSourceBOE));
+            _ = inDestinationBOE ?? throw new ArgumentNullException(nameof(inDestinationBOE));
+            _ = taskElementsToCopy ?? throw new ArgumentNullException(nameof(taskElementsToCopy));
+            _ = travelElementsToCopy ?? throw new ArgumentNullException(nameof(travelElementsToCopy));
 
             FullWorkspace SourceWorkspace = inSourceBOE.Workspace;
             FullWorkspace DestinationWorkspace = inDestinationBOE.Workspace;
 
             bool copyWithinSameWorkspace = SourceWorkspace.Id == DestinationWorkspace.Id;
+            bool moveSingleMoqTypeToMultiple = !SourceWorkspace.UsingTemplateBOE && DestinationWorkspace.UsingTemplateBOE;
 
             this.CopyBOEHeader(inSourceBOE, inDestinationBOE, copyWithinSameWorkspace);
 
@@ -165,21 +162,14 @@ namespace GenBOE.ActionLogic.CopyBOE
             }
 
             Dictionary<int, Tuple<int, decimal?>> VariableIDMapping = this.MapWorkspaceVariables(inSourceBOE, inDestinationBOE);
+            Dictionary<int, int> ResourceIDMapping = this.MapResources(inSourceBOE, DestinationWorkspace.ResourceListID);
+            Dictionary<int, int> PerformingOrgIDMapping = this.MapPerformingOrganizations(inSourceBOE, DestinationWorkspace);
 
-            var ResourceIDMapping = this.MapResources(inSourceBOE, DestinationWorkspace.ResourceListID);
-
-            var PerformingOrgIDMapping = this.MapPerformingOrganizations(inSourceBOE, DestinationWorkspace);
-
-            this.CopyTasks(inSourceBOE, inDestinationBOE, DestinationWorkspace, VariableIDMapping, ResourceIDMapping, PerformingOrgIDMapping, taskElementsToCopy, copyWithinSameWorkspace);
+            this.CopyTasks(inSourceBOE, inDestinationBOE, DestinationWorkspace, VariableIDMapping, ResourceIDMapping, PerformingOrgIDMapping, taskElementsToCopy, copyWithinSameWorkspace, moveSingleMoqTypeToMultiple);
 
             if (!inDestinationBOE.IsMultiClinWbs || SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
             {
-                this.CopyTravelTasks(
-                    inSourceBOE,
-                    inDestinationBOE,
-                    PerformingOrgIDMapping,
-                    travelElementsToCopy,
-                    copyWithinSameWorkspace);
+                this.CopyTravelTasks(inSourceBOE, inDestinationBOE, PerformingOrgIDMapping, travelElementsToCopy, copyWithinSameWorkspace);
             }
         }
 
@@ -614,9 +604,9 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// <param name="inPerformingOrgIDMapping">Mapping of performing Org Ids.</param>
         /// <param name="taskElementsToCopy">Task element Ids to be copied.</param>
         /// <param name="copyWithinSameWorkspace">Are we copying within the same workspace</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
+        /// <param name="moveSingleMoqTypeToMultiple">Should we transform the single MOQ Type to Multiple (i.e. are we going from non template to template)</param>
         private void CopyTasks(FullBoe inSourceBOE, FullBoe inDestinationBOE, FullWorkspace inDestinationWorkspace, Dictionary<int, Tuple<int, decimal?>> inVariableIDMapping,
-            Dictionary<int, int> inResourceIDMapping, Dictionary<int, int> inPerformingOrgIDMapping, ICollection<int> taskElementsToCopy, bool copyWithinSameWorkspace)
+            Dictionary<int, int> inResourceIDMapping, Dictionary<int, int> inPerformingOrgIDMapping, ICollection<int> taskElementsToCopy, bool copyWithinSameWorkspace, bool moveSingleMoqTypeToMultiple)
         {
             // Only consider individual task elements to be copied.
             Collection<BoeTaskElementDTO> tasksToCopy = inSourceBOE.TaskElements.Where(id => taskElementsToCopy.Contains(id.Id)).ToCollection<BoeTaskElementDTO>();
@@ -633,9 +623,16 @@ namespace GenBOE.ActionLogic.CopyBOE
                     BoeTaskElementDTO taskElementCopy = taskElementOrig.DeepClone();
                     taskElementCopy.BoeID = inDestinationBOE.Id;
                     taskElementCopy.Updateable = UpdateType.Upsert;
-                    ICollection<int> inUseMetricIDs = this._boeCopierCompany.GetMetricsUsedByTaskElement(taskElementCopy.Id);
-                    ICollection<MoqTypeSelection> originalMoqTypes = inSourceBOE.MoqTypeSelections.Where(x => x.TaskId == taskElementOrig.Id).ToList();
 
+                    if (!inDestinationWorkspace.UsingTemplateBOE)
+                    {
+                        taskElementCopy.MOQType = taskElementCopy.MOQType.MapToNew(inDestinationWorkspace.CreationDate);
+                    }
+
+                    ICollection<MoqTypeSelection> moqTypesToCopy = this.GetMoqTypesToCopy(inSourceBOE, taskElementOrig, inDestinationWorkspace.CreationDate, moveSingleMoqTypeToMultiple);
+
+                    ICollection<int> inUseMetricIDs = this._boeCopierCompany.GetMetricsUsedByTaskElement(taskElementCopy.Id);
+                    
                     // Create new Task Element for Project Map if copying from another workspace
                     if (!inDestinationWorkspace.IsProjectMapWorkspace || !copyWithinSameWorkspace)
                     {
@@ -723,11 +720,11 @@ namespace GenBOE.ActionLogic.CopyBOE
 
                     this._IBoeTaskElementMediator.MediatedSaveTaskElements(new Collection<BoeTaskElementDTO> { taskElementCopy }, inDestinationWorkspace);
 
-                    if(taskElementCopy.Id > 0)
+                    if (taskElementCopy.Id > 0)
                     {
-                        if (originalMoqTypes.Any())
+                        if (moqTypesToCopy.Any())
                         {
-                            this.CopyMoqTypes(originalMoqTypes, taskElementCopy.Id, inDestinationBOE.Id);
+                            this.CopyMoqTypes(moqTypesToCopy, taskElementCopy.Id, inDestinationBOE.Id);
                         }
 
                         if (inUseMetricIDs.Any())
@@ -755,6 +752,46 @@ namespace GenBOE.ActionLogic.CopyBOE
         }
 
         /// <summary>
+        /// Gets MOQ Types that we will copy
+        /// </summary>
+        /// <param name="sourceBoe">Boe which contains tasks being copied (source BOE)</param>
+        /// <param name="taskBeingCopied">Task which is being copied</param>
+        /// <param name="wsCreationDate">Destination workspace creation date</param>
+        /// <param name="moveSingleMoqTypeToMultiple">Are we moving from Non-template to template BOE workspace</param>
+        /// <returns>Moq Types to copy</returns>
+        private ICollection<MoqTypeSelection> GetMoqTypesToCopy(FullBoe sourceBoe, BoeTaskElementDTO taskBeingCopied, DateTime? wsCreationDate, bool moveSingleMoqTypeToMultiple)
+        {
+            _ = sourceBoe ?? throw new ArgumentNullException(nameof(sourceBoe));
+            _ = taskBeingCopied ?? throw new ArgumentNullException(nameof(taskBeingCopied));
+
+            ICollection<MoqTypeSelection> moqTypesToCopy;
+            if (moveSingleMoqTypeToMultiple)
+            {
+                MoqTypeSelection newMoq = new MoqTypeSelection()
+                {
+                    SelectedMOQType = taskBeingCopied.MOQType.MapToNew(wsCreationDate)
+                };
+
+                if (newMoq.SelectedMOQType == MOQType.SME)
+                {
+                    newMoq.SmeReason = taskBeingCopied.MOQText;
+                }
+                else
+                {
+                    newMoq.Rationale = taskBeingCopied.MOQText;
+                }
+
+                moqTypesToCopy = new List<MoqTypeSelection>() { newMoq };
+            }
+            else
+            {
+                moqTypesToCopy = sourceBoe.MoqTypeSelections.Where(x => x.TaskId == taskBeingCopied.Id).ToList();
+            }
+
+            return moqTypesToCopy;
+        }
+
+        /// <summary>
         /// Copies MOQ Type Selections
         /// </summary>
         /// <param name="moqTypesToCopy">MOQ Types to copy</param>
@@ -767,7 +804,7 @@ namespace GenBOE.ActionLogic.CopyBOE
             List<MoqTypeSelection> moqTypesToSave = new List<MoqTypeSelection>();
 
             int i = 0;
-            moqTypesToCopy.ForEach(existingMoqType =>
+            moqTypesToCopy.Where(x => x.SelectedMOQType != MOQType.None).ForEach(existingMoqType =>
             {
                 MoqTypeSelection newMoqType = existingMoqType.DeepClone();
                 newMoqType.TableData = new List<MoqTableData>();
