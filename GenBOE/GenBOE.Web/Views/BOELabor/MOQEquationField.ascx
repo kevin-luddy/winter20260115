@@ -105,7 +105,8 @@
                 <ul class="uib-dropdown-menu dropdown-menu" role="menu" aria-labelledby="dropdown-magnifier">
                     <li><a id="InsertWorkspaceVariableLink" data-ng-click="InsertWorkspaceVariableClicked()">Insert Workspace Variable</a></li>
                     <li data-ng-if="model.ShowSearchMetricsLink"><a id="SearchEstimatingCatalogLink" data-ng-click="SearchEstimatingCatalogClicked()">Search Estimating Catalog</a></li>
-                    <li><a id="CopyMoqFromBoeLink" data-ng-click="CopyMoqFromBoeClicked()">Copy MOQ from BOE</a></li>
+                    <!-- Hiding for BOEJ-4829. Will have to be unhidden, or removed in the future (2020.6.x) -->
+                    <li data-ng-if="false"><a id="CopyMoqFromBoeLink" data-ng-click="CopyMoqFromBoeClicked()">Copy MOQ from BOE</a></li>
                 </ul>
             </div>
             <input type="text" id="MOQEquation" name="MOQEquation" value="<%: Model.MOQEquation %>" class="moq-equation-input" maxlength="250" />
