@@ -7,9 +7,11 @@
 namespace GenBOE.ActionLogic.IO.Export
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export.BOE;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.Reporting;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
@@ -147,7 +149,7 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             if (usingTemplateBoe)
             {
-                return new int?[] { null, null, 1, null, null, null, null, null, null, 1, 1 };
+                return new int?[] { null, null, 1, null, null, null, null, null, null, null, 1, 1 };
             }
             else
             {
@@ -193,6 +195,40 @@ namespace GenBOE.ActionLogic.IO.Export
                     x.NumOfPeople,
                     x.NumOfDays
                 }).Distinct().Count();
+        }
+
+        /// <summary>
+        /// Get the MOQ Table Data row data
+        /// </summary>
+        /// <param name="boe">BOE</param>
+        /// <param name="task">Task</param>
+        /// <param name="selectedMoqType">Selected MOQ Type</param>
+        /// <param name="table">MOQ Table</param>
+        /// <returns>MOQ Table Data row for the given data</returns>
+        protected override IList<string> GetMOQTableDataRow(BoeDTO boe, BoeTaskElementDTO task, string selectedMoqType, MoqTableData table)
+        {
+            _ = boe ?? throw new ArgumentNullException(nameof(boe));
+            _ = task ?? throw new ArgumentNullException(nameof(task));
+            _ = table ?? throw new ArgumentNullException(nameof(table));
+
+            return new List<string>()
+            {
+                boe.Id.ToString(),
+                boe.Title ?? this.sEmpty,
+                task.BOETaskID,
+                task.TaskTitle,
+                selectedMoqType,
+                table.TableName,
+                table.DateOfReport.ToShortDateString(),
+                table.HistoricalProgramName,
+                table.ContractNumber,
+                table.WbsElement,
+                table.PoPStart.ToShortDateString(),
+                table.PoPEnd.ToShortDateString(),
+                table.TotalWbsHours.ToString(),
+                table.AdditionalQueryFilters,
+                table.TotalRelevantHours.ToString()
+            };
         }
     }
 }

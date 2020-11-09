@@ -16,6 +16,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.Common.MOQ;
     using GenBOE.ActionLogic.IO.Export.BOE;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.Reporting;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
@@ -158,7 +159,7 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             if (usingTemplateBoe)
             {
-                return new int?[] { null, null, 1, null, null, null, null, null, null };
+                return new int?[] { null, null, 1, null, null, null, null, null, null, null };
             }
             else
             {
@@ -322,7 +323,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 if (exportInputs.Workspace.UsingTemplateBOE)
                 {
                     toReturn.Add(this.GetMOQbyBOEbyTaskData(exportInputs));
-                    // TODO - BOEJ-4910 - Add MOQ Table Data
+                    toReturn.Add(this.GetMOQTableData(exportInputs));
                     // TODO - BOEJ-4911 - Add MOQ Summary
                 }
 
@@ -1207,7 +1208,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         IList<string> row = new List<string>()
                         {
                             boe.Id.ToString(),
-                            boe.Title != null ? boe.Title : this.sEmpty,
+                            boe.Title ?? this.sEmpty,
                             task.BOETaskID,
                             task.TaskTitle,
                             this.GetMOQEquation(task, exportInputs),
@@ -1221,6 +1222,71 @@ namespace GenBOE.ActionLogic.IO.Export
             }
 
             return toReturn;
+        }
+
+        /// <summary>
+        /// Get the row data for the MOQ Table Data sheet
+        /// </summary>
+        /// <param name="exportInputs">Export Inputs</param>
+        /// <returns></returns>
+        private ExcelExportWorksheet GetMOQTableData(BOEExportInputs exportInputs)
+        {
+            ExcelExportWorksheet toReturn = new ExcelExportWorksheet("MOQ Table Data");
+
+            foreach (BoeDTO boe in exportInputs.Boes)
+            {
+                foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
+                {
+                    foreach (MoqTypeSelection moqType in exportInputs.MOQTypes.Where(x => x.TaskId == task.Id))
+                    {
+                        string selectedMoqType = moqType.SelectedMOQTypeText;
+                        
+                        foreach (MoqTableData table in moqType.TableData)
+                        {
+                            IList<string> row = GetMOQTableDataRow(boe, task, selectedMoqType, table);
+
+                            toReturn.Add(row);
+                        }
+                    }
+                }
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Get the MOQ Table Data row data
+        /// </summary>
+        /// <param name="boe">BOE</param>
+        /// <param name="task">Task</param>
+        /// <param name="selectedMoqType">Selected MOQ Type</param>
+        /// <param name="table">MOQ Table</param>
+        /// <returns>MOQ Table Data row for the given data</returns>
+        protected virtual IList<string> GetMOQTableDataRow(BoeDTO boe, BoeTaskElementDTO task, string selectedMoqType, MoqTableData table)
+        {
+            _ = boe ?? throw new ArgumentNullException(nameof(boe));
+            _ = task ?? throw new ArgumentNullException(nameof(task));
+            _ = table ?? throw new ArgumentNullException(nameof(table));
+
+            return new List<string>()
+            {
+                boe.Id.ToString(),
+                boe.Title ?? this.sEmpty,
+                task.BOETaskID,
+                task.TaskTitle,
+                selectedMoqType,
+                table.TableName,
+                table.RepositoryName,
+                table.QueryType,
+                table.DateOfReport.ToShortDateString(),
+                table.HistoricalProgramName,
+                table.WbsElement,
+                table.PoPStart.ToShortDateString(),
+                table.PoPEnd.ToShortDateString(),
+                table.TotalWbsHours.ToString(),
+                table.AdditionalQueryFilters,
+                table.TotalRelevantHours.ToString()
+            };
         }
 
         /// <summary>
