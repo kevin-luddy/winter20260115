@@ -1629,7 +1629,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
         {
             if (ws.UsingTemplateBOE)
             {
-                ICollection<string> taskErrors = ValidateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes);
+                ICollection<MOQType> moqTypesUsedByTasksResourceTypes = taskData.LaborTypesData.Where(x => x.SelectedMOQType.HasValue).Select(x => x.SelectedMOQType.Value).ToList();
+
+                ICollection<string> taskErrors = ValidateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, moqTypesUsedByTasksResourceTypes);
 
                 errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
 
