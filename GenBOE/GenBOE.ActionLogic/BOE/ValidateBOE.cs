@@ -697,17 +697,17 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                 }
 
                                 if (row.DateOfReport.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} is required."); }
-                                if (DateTime.Now < row.DateOfReport) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} must be in the past."); }
+                                if (row.DateOfReport >= DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} must be on or before today's date."); }
 
                                 ValidateRequiredField(moqType.SelectedMOQType, row.HistoricalProgramName, labels.HistoricalProgramName, errorMessages);
                                 ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, errorMessages);
 
                                 if (row.PoPStart.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
-                                if (DateTime.Now < row.PoPStart) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be in the past."); }
+                                if (row.PoPStart >= DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before today's date."); }
                                 if (row.PoPEnd.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
-                                if (DateTime.Now < row.PoPEnd) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be in the past."); }
+                                if (row.PoPEnd >= DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on or before today's date."); }
 
-                                if (row.PoPEnd < row.PoPStart) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be before {labels.PoPEnd}."); }
+                                if (row.PoPEnd <= row.PoPStart) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before {labels.PoPEnd}."); }
                                 if (row.TotalWbsHours <= 0) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalWbsHours} must be a number greater than 0."); }
 
                                 ValidateRequiredField(moqType.SelectedMOQType, row.AdditionalQueryFilters, labels.AdditionalQueryFilters, errorMessages);
