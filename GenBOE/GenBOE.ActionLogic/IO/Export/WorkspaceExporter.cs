@@ -399,7 +399,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 row.AddRange(
                     new string[]{
                         boe.Id.ToString(),
-                        boe.Title != null ? boe.Title : this.sEmpty,
+                        boe.Title ?? this.sEmpty,
                         boe.isMaterial ?  "Material BOE": "BOE",
                         boe_WBS != null ? boe_WBS.WbsNumber : this.sEmpty,
                         boe_WBS != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_WBS.WbsTitle : this.sEmpty,
@@ -444,10 +444,10 @@ namespace GenBOE.ActionLogic.IO.Export
                     row.AddRange(
                         new string[] {
                             boe.Id.ToString(),
+                            boe.Title ?? this.sEmpty,
                             (task.TaskElementType == TaskElementType.Labor) ? "Task" : this.sEmpty,
                             boe_WBS != null ? boe_WBS.WbsNumber : this.sEmpty,
                             boe_WBS != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_WBS.WbsTitle : this.sEmpty,
-                            boe.Title != null ? boe.Title : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinNumber : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinTitle : this.sEmpty,
                             boe_StartDate,
@@ -538,10 +538,10 @@ namespace GenBOE.ActionLogic.IO.Export
                         row.AddRange(
                             new string[] {
                                 boe.Id.ToString(),
+                                boe.Title ?? this.sEmpty,
                                 "Resource Type",
                                 wbsNumber,
                                 wbsTitle,
-                                boe.Title != null ? boe.Title : this.sEmpty,
                                 clinNumber,
                                 clinTitle,
                                 boe_StartDate,
@@ -629,10 +629,10 @@ namespace GenBOE.ActionLogic.IO.Export
                     row.AddRange(
                         new string[] {
                             boe.Id.ToString(),
+                            boe.Title ?? this.sEmpty,
                             "Task",
                             boe_WBS != null ? boe_WBS.WbsNumber : this.sEmpty,
                             boe_WBS != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_WBS.WbsTitle : this.sEmpty,
-                            boe.Title != null ? boe.Title : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinNumber : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinTitle : this.sEmpty,
                             boe_StartDate,
@@ -685,10 +685,10 @@ namespace GenBOE.ActionLogic.IO.Export
                     row.AddRange(
                         new string[] {
                             boe.Id.ToString(),
+                            boe.Title ?? this.sEmpty,
                             "Task",
                             boe_WBS != null ? boe_WBS.WbsNumber : this.sEmpty,
                             boe_WBS != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_WBS.WbsTitle : this.sEmpty,
-                            boe.Title != null ? boe.Title : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinNumber : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinTitle : this.sEmpty,
                             boe_StartDate,
@@ -739,10 +739,10 @@ namespace GenBOE.ActionLogic.IO.Export
                         row.AddRange(
                             new string[] {
                                 boe.Id.ToString(),
+                                boe.Title ?? this.sEmpty,
                                 "ODC",
                                 boe_WBS != null ? boe_WBS.WbsNumber : this.sEmpty,
                                 boe_WBS != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_WBS.WbsTitle : this.sEmpty,
-                                boe.Title != null ? boe.Title : this.sEmpty,
                                 boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinNumber : this.sEmpty,
                                 boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinTitle : this.sEmpty,
                                 boe_StartDate,
@@ -808,10 +808,10 @@ namespace GenBOE.ActionLogic.IO.Export
                     row.AddRange(
                         new string[] {
                             boe.Id.ToString(),
+                            boe.Title ?? this.sEmpty,
                             "Task",
                             boe_WBS != null ? boe_WBS.WbsNumber : this.sEmpty,
                             boe_WBS != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_WBS.WbsTitle : this.sEmpty,
-                            boe.Title != null ? boe.Title : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinNumber : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinTitle : this.sEmpty,
                             boe_StartDate,
@@ -871,10 +871,10 @@ namespace GenBOE.ActionLogic.IO.Export
                         row.AddRange(
                             new string[] {
                                 boe.Id.ToString(),
+                                boe.Title ?? this.sEmpty,
                                 "Travel",
                                 boe_WBS != null ? boe_WBS.WbsNumber : this.sEmpty,
                                 boe_WBS != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_WBS.WbsTitle : this.sEmpty,
-                                boe.Title != null ? boe.Title : this.sEmpty,
                                 boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinNumber : this.sEmpty,
                                 boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinTitle : this.sEmpty,
                                 boe_StartDate,
@@ -1238,7 +1238,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 row.AddRange(
                     new string[]{
                         boe.Id.ToString(),
-                        boe.Title != null ? boe.Title : this.sEmpty,
+                        boe.Title ?? this.sEmpty,
                         boe.isMaterial ?  "Material BOE": "BOE",
                         this.sEmpty, // Task ID
                         this.sEmpty, // Task Title
@@ -1296,7 +1296,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 row.AddRange(
                     new string[] {
                             boe.Id.ToString(),
-                            boe.Title != null ? boe.Title : this.sEmpty,
+                            boe.Title ?? this.sEmpty,
                             "Task"
                     });
 
@@ -1360,7 +1360,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     new string[]
                     {
                         boe.Id.ToString(),
-                        boe.Title != null ? boe.Title : this.sEmpty,
+                        boe.Title ?? this.sEmpty,
                         "Resource Type"
                     });
 
@@ -1432,7 +1432,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 new string[]
                 {
                         boe.Id.ToString(),
-                        boe.Title != null ? boe.Title : this.sEmpty,
+                        boe.Title ?? this.sEmpty,
                         "Resource Spread"
                 });
 
