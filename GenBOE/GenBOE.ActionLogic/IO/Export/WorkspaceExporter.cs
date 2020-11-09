@@ -115,10 +115,19 @@ namespace GenBOE.ActionLogic.IO.Export
 
             this.SetAutofilterRange(toReturn);
 
+            if (!exportInputs.Workspace.UsingTemplateBOE)
+            {
+                // Hide Template BOE sheets
+                using (SpreadsheetDocument document = SpreadsheetDocument.Open(toReturn, true))
+                {
+                    ExcelUtilities.HideWorksheets(document, new List<string>() { "MOQ by BOE by Task", "MOQ Table Data", "MOQ Summary" });
+                }
+            }
+
             ICollection<ExcelExportWorksheet> sheets = this.GatherWorkspaceExportData(exportInputs, metricNameTaskElementMappingDTO, contractTypes);
 
             // Pass the rows to the generic Excel exporter
-            toReturn = ExcelExporter.ExportToExcelFile(toReturn, false, sheets, this.GetStartRows(), FullObjectHelper.ShowEquivalentPersonsOption && exportInputs.Workspace.IsUsingEquivalentPerson);
+            toReturn = ExcelExporter.ExportToExcelFile(toReturn, false, sheets, this.GetStartRows(exportInputs.Workspace.UsingTemplateBOE), FullObjectHelper.ShowEquivalentPersonsOption && exportInputs.Workspace.IsUsingEquivalentPerson);
             
             if (!exportInputs.FullWorkspace.Travels.Any())
             {
@@ -144,9 +153,17 @@ namespace GenBOE.ActionLogic.IO.Export
         /// Gets the start rows for the sheets in the Workspace Data Export
         /// </summary>
         /// <returns>int array of start rows</returns>
-        protected virtual int?[] GetStartRows()
+        /// <param name="usingTemplateBoe">Whether WS uses Template BOE</param>
+        protected virtual int?[] GetStartRows(bool usingTemplateBoe)
         {
-            return new int?[] { null, null, 1, null, null, null, null, null };
+            if (usingTemplateBoe)
+            {
+                return new int?[] { null, null, 1, null, null, null, null, null, null };
+            }
+            else
+            {
+                return new int?[] { null, null, 1, null, null, null, null, null };
+            }
         }
 
         /// <summary>
@@ -301,6 +318,14 @@ namespace GenBOE.ActionLogic.IO.Export
                 toReturn.Add(this.GetBOESheetExportData(exportInputs, metricNameTaskElementMappingDTO));
                 toReturn.Add(this.GetBOEStatusSheetExportData(exportInputs));
                 toReturn.Add(this.GetResourceSpreadsSheetExportData(exportInputs));
+
+                if (exportInputs.Workspace.UsingTemplateBOE)
+                {
+                    toReturn.Add(this.GetMOQbyBOEbyTaskData(exportInputs));
+                    // TODO - BOEJ-4910 - Add MOQ Table Data
+                    // TODO - BOEJ-4911 - Add MOQ Summary
+                }
+
                 toReturn.Add(this.GetWBSSheetExportData(exportInputs));
                 toReturn.Add(this.GetCLINsSheetExportData(exportInputs, contractTypes));
                 toReturn.Add(this.GetUserPermissionsSheetExportData(exportInputs));
@@ -427,14 +452,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     row = new List<string>();
 
-                    decimal isDecimal;
-
-                    // Remove comma from a decimal value otherwise Excel will generate a Numbers stored as text error when opening.
-                    // Ex: 1,000 will be exported as 1000
-                    if (!string.IsNullOrEmpty(task.MOQHoursEquation) && decimal.TryParse(task.MOQHoursEquation, out isDecimal))
-                    {
-                        task.MOQHoursEquation = isDecimal.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
-                    }
+                    this.FormatMOQEquation(task, exportInputs);
 
                     // Get the task ID
                     string taskID = task.BOETaskID;
@@ -475,9 +493,7 @@ namespace GenBOE.ActionLogic.IO.Export
                             taskID,
                             task.TaskTitle,
                             taskDescription,
-                            (task.TaskElementType == TaskElementType.Labor)
-                                ? Parser.UntagVariables(task.MOQHoursEquation, exportInputs.WorkspaceVariables.ToList())
-                                : this.sEmpty,
+                            this.GetMOQEquation(task, exportInputs),
                             this.GetTaskMoqType(task, exportInputs)
                     }.Concat(exportInputs.Workspace.UsingTemplateBOE ? new string[0] : new string[] { taskMOQText }).ToArray()
                     .Concat(new string[]
@@ -1172,6 +1188,42 @@ namespace GenBOE.ActionLogic.IO.Export
         }
 
         /// <summary>
+        /// Gets the resource spreads sheet export data.
+        /// </summary>
+        /// <param name="exportInputs">The export inputs.</param>
+        /// <returns></returns>
+        private ExcelExportWorksheet GetMOQbyBOEbyTaskData(BOEExportInputs exportInputs)
+        {
+            ExcelExportWorksheet toReturn = new ExcelExportWorksheet("MOQ by BOE by Task");
+            
+            foreach (BoeDTO boe in exportInputs.Boes)
+            {
+                foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
+                {
+                    this.FormatMOQEquation(task, exportInputs);
+
+                    foreach (MOQType moqType in exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).Select(x => x.SelectedMOQType).Distinct())
+                    {
+                        IList<string> row = new List<string>()
+                        {
+                            boe.Id.ToString(),
+                            boe.Title != null ? boe.Title : this.sEmpty,
+                            task.BOETaskID,
+                            task.TaskTitle,
+                            this.GetMOQEquation(task, exportInputs),
+                            task.taskElementLabors.Where(x => x.MoqTypeSelectionId == (int)moqType).Sum(x => x.ValueSpread).ToString(),
+                            moqType.GetDescription()
+                        };
+
+                        toReturn.Add(row);
+                    }
+                }
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
         /// Gets the boe resource combo sheet export data.
         /// </summary>
         /// <param name="exportInputs">The export inputs.</param>
@@ -1830,23 +1882,14 @@ namespace GenBOE.ActionLogic.IO.Export
             string taskID = task.BOETaskID;
             string taskMOQText = RTEUtilities.TurnHTMLIntoPlainText(BOEExportConverter.GetRteOverride(task.BoeID, task.Id, task.MOQText, RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides));
 
-            decimal isDecimal;
-
-            // Remove comma from a decimal value otherwise Excel will generate a Numbers stored as text error when opening.
-            // Ex: 1,000 will be exported as 1000
-            if (!string.IsNullOrEmpty(task.MOQHoursEquation) && decimal.TryParse(task.MOQHoursEquation, out isDecimal))
-            {
-                task.MOQHoursEquation = isDecimal.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
-            }
+            this.FormatMOQEquation(task, exportInputs);
 
             return new string[]
             {
                 taskID,
                 task.TaskTitle,
-                (task.TaskElementType == TaskElementType.Labor)
-                    ? Parser.UntagVariables(task.MOQHoursEquation, exportInputs.WorkspaceVariables.ToList())
-                    : this.sEmpty,
-                GetTaskMoqType(task, exportInputs)
+                this.GetMOQEquation(task, exportInputs),
+                this.GetTaskMoqType(task, exportInputs)
             }.Concat(exportInputs.Workspace.UsingTemplateBOE ? new string[0] : new string[] { taskMOQText }).ToArray();
         }
 
@@ -1874,6 +1917,36 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 return task.MOQType.GetDescription();
             }
+        }
+
+        /// <summary>
+        /// Format MOQ Equation to remove commas
+        /// </summary>
+        /// <param name="task">Task DTO</param>
+        /// <param name="exportInputs">Export Inputs</param>
+        private void FormatMOQEquation(BoeTaskElementDTO task, BOEExportInputs exportInputs)
+        {
+            decimal isDecimal;
+
+            // Remove comma from a decimal value otherwise Excel will generate a Numbers stored as text error when opening.
+            // Ex: 1,000 will be exported as 1000
+            if (!string.IsNullOrEmpty(task.MOQHoursEquation) && decimal.TryParse(task.MOQHoursEquation, out isDecimal))
+            {
+                task.MOQHoursEquation = isDecimal.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
+            }
+        }
+
+        /// <summary>
+        /// Get the string for the MOQ Equation
+        /// </summary>
+        /// <param name="task">Task DTO</param>
+        /// <param name="exportInputs">Export Inputs</param>
+        /// <returns></returns>
+        private string GetMOQEquation(BoeTaskElementDTO task, BOEExportInputs exportInputs)
+        {
+            return (task.TaskElementType == TaskElementType.Labor)
+                    ? Parser.UntagVariables(task.MOQHoursEquation, exportInputs.WorkspaceVariables.ToList())
+                    : this.sEmpty;
         }
 
         /// <summary>
