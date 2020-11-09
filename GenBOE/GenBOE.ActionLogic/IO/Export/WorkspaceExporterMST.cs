@@ -142,9 +142,17 @@ namespace GenBOE.ActionLogic.IO.Export
         /// Gets the start rows for the sheets in the Workspace Data Export
         /// </summary>
         /// <returns>int array of start rows</returns>
-        protected override int?[] GetStartRows()
+        /// <param name="usingTemplateBoe">Whether WS uses Template BOE</param>
+        protected override int?[] GetStartRows(bool usingTemplateBoe)
         {
-            return new int?[] { null, null, 1, null, null, null, null, null, 1, 1 };
+            if (usingTemplateBoe)
+            {
+                return new int?[] { null, null, 1, null, null, null, null, null, null, 1, 1 };
+            }
+            else
+            {
+                return new int?[] { null, null, 1, null, null, null, null, null, 1, 1 };
+            }
         }
 
         /// <summary>

@@ -13,7 +13,6 @@ namespace GenBOE.ActionLogic.IO.Export
     using System.Linq;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Spreadsheet;
-    using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.Common.MOQ;
     using GenBOE.ActionLogic.IO.Export.BOE;
@@ -37,6 +36,7 @@ namespace GenBOE.ActionLogic.IO.Export
         protected string sYes { get { return "Yes"; } }
         protected string sNo { get { return "No"; } }
         protected string sEmpty { get { return string.Empty; } }
+        protected string sMultiple { get { return "Multiple"; } }
 
         private IPermissionsDTODataLoader permissionsDTOLoader;
         private IResourceDTODataLoader resourceDTODataLoader;
@@ -111,13 +111,23 @@ namespace GenBOE.ActionLogic.IO.Export
             string toReturn = ExcelUtilities.CopyExcelTemplateFile(inTemplateFileLocation);
             
             this.DuplicateCustomFieldColumns(toReturn, exportInputs);
+            this.HandleRationaleColumns(toReturn, exportInputs);
 
             this.SetAutofilterRange(toReturn);
+
+            if (!exportInputs.Workspace.UsingTemplateBOE)
+            {
+                // Hide Template BOE sheets
+                using (SpreadsheetDocument document = SpreadsheetDocument.Open(toReturn, true))
+                {
+                    ExcelUtilities.HideWorksheets(document, new List<string>() { "MOQ by BOE by Task", "MOQ Table Data", "MOQ Summary" });
+                }
+            }
 
             ICollection<ExcelExportWorksheet> sheets = this.GatherWorkspaceExportData(exportInputs, metricNameTaskElementMappingDTO, contractTypes);
 
             // Pass the rows to the generic Excel exporter
-            toReturn = ExcelExporter.ExportToExcelFile(toReturn, false, sheets, this.GetStartRows(), FullObjectHelper.ShowEquivalentPersonsOption && exportInputs.Workspace.IsUsingEquivalentPerson);
+            toReturn = ExcelExporter.ExportToExcelFile(toReturn, false, sheets, this.GetStartRows(exportInputs.Workspace.UsingTemplateBOE), FullObjectHelper.ShowEquivalentPersonsOption && exportInputs.Workspace.IsUsingEquivalentPerson);
             
             if (!exportInputs.FullWorkspace.Travels.Any())
             {
@@ -143,9 +153,17 @@ namespace GenBOE.ActionLogic.IO.Export
         /// Gets the start rows for the sheets in the Workspace Data Export
         /// </summary>
         /// <returns>int array of start rows</returns>
-        protected virtual int?[] GetStartRows()
+        /// <param name="usingTemplateBoe">Whether WS uses Template BOE</param>
+        protected virtual int?[] GetStartRows(bool usingTemplateBoe)
         {
-            return new int?[] { null, null, 1, null, null, null, null, null };
+            if (usingTemplateBoe)
+            {
+                return new int?[] { null, null, 1, null, null, null, null, null, null };
+            }
+            else
+            {
+                return new int?[] { null, null, 1, null, null, null, null, null };
+            }
         }
 
         /// <summary>
@@ -263,6 +281,23 @@ namespace GenBOE.ActionLogic.IO.Export
         }
 
         /// <summary>
+        /// Handle the MOQ Rationale columns - removed for Template BOE WSs
+        /// </summary>
+        /// <param name="templateFileLocation">The template file location.</param>
+        /// <param name="exportInputs">The export inputs.</param>
+        private void HandleRationaleColumns(string templateFileLocation, BOEExportInputs exportInputs)
+        {
+            using (SpreadsheetDocument document = SpreadsheetDocument.Open(templateFileLocation, true))
+            {
+                if (exportInputs.Workspace.UsingTemplateBOE)
+                {
+                    ExcelUtilities.RemoveColumn(document, "BOE & Resource Combo", "MOQ Rationale");
+                    ExcelUtilities.RemoveColumn(document, "BOEs", "MOQ Rationale");
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets all workspace data required for the export.
         /// </summary>
         /// <param name="exportInputs">The export inputs.</param>
@@ -283,6 +318,14 @@ namespace GenBOE.ActionLogic.IO.Export
                 toReturn.Add(this.GetBOESheetExportData(exportInputs, metricNameTaskElementMappingDTO));
                 toReturn.Add(this.GetBOEStatusSheetExportData(exportInputs));
                 toReturn.Add(this.GetResourceSpreadsSheetExportData(exportInputs));
+
+                if (exportInputs.Workspace.UsingTemplateBOE)
+                {
+                    toReturn.Add(this.GetMOQbyBOEbyTaskData(exportInputs));
+                    // TODO - BOEJ-4910 - Add MOQ Table Data
+                    // TODO - BOEJ-4911 - Add MOQ Summary
+                }
+
                 toReturn.Add(this.GetWBSSheetExportData(exportInputs));
                 toReturn.Add(this.GetCLINsSheetExportData(exportInputs, contractTypes));
                 toReturn.Add(this.GetUserPermissionsSheetExportData(exportInputs));
@@ -381,10 +424,10 @@ namespace GenBOE.ActionLogic.IO.Export
                 row.AddRange(
                     new string[]{
                         boe.Id.ToString(),
+                        boe.Title ?? this.sEmpty,
                         boe.isMaterial ?  "Material BOE": "BOE",
                         boe_WBS != null ? boe_WBS.WbsNumber : this.sEmpty,
                         boe_WBS != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_WBS.WbsTitle : this.sEmpty,
-                        boe.Title != null ? boe.Title : this.sEmpty,
                         boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinNumber : this.sEmpty,
                         boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinTitle : this.sEmpty,
                         boe_StartDate,
@@ -409,14 +452,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     row = new List<string>();
 
-                    decimal isDecimal;
-
-                    // Remove comma from a decimal value otherwise Excel will generate a Numbers stored as text error when opening.
-                    // Ex: 1,000 will be exported as 1000
-                    if (!string.IsNullOrEmpty(task.MOQHoursEquation) && decimal.TryParse(task.MOQHoursEquation, out isDecimal))
-                    {
-                        task.MOQHoursEquation = isDecimal.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
-                    }
+                    this.FormatMOQEquation(task, exportInputs);
 
                     // Get the task ID
                     string taskID = task.BOETaskID;
@@ -426,10 +462,10 @@ namespace GenBOE.ActionLogic.IO.Export
                     row.AddRange(
                         new string[] {
                             boe.Id.ToString(),
+                            boe.Title ?? this.sEmpty,
                             (task.TaskElementType == TaskElementType.Labor) ? "Task" : this.sEmpty,
                             boe_WBS != null ? boe_WBS.WbsNumber : this.sEmpty,
                             boe_WBS != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_WBS.WbsTitle : this.sEmpty,
-                            boe.Title != null ? boe.Title : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinNumber : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinTitle : this.sEmpty,
                             boe_StartDate,
@@ -457,15 +493,15 @@ namespace GenBOE.ActionLogic.IO.Export
                             taskID,
                             task.TaskTitle,
                             taskDescription,
-                            (task.TaskElementType == TaskElementType.Labor)
-                                ? Parser.UntagVariables(task.MOQHoursEquation, exportInputs.WorkspaceVariables.ToList())
-                                : this.sEmpty,
-                            task.MOQType.GetDescription(),
-                            taskMOQText,
-                            historicalMetricString,
-                            task.StartDate.HasValue ? task.StartDate.Value.ToString("MM/yyyy") : this.sEmpty,
-                            task.EndDate.HasValue ? task.EndDate.Value.ToString("MM/yyyy") : this.sEmpty
-                        };
+                            this.GetMOQEquation(task, exportInputs),
+                            this.GetTaskMoqType(task, exportInputs)
+                    }.Concat(exportInputs.Workspace.UsingTemplateBOE ? new string[0] : new string[] { taskMOQText }).ToArray()
+                    .Concat(new string[]
+                    {
+                        historicalMetricString,
+                        task.StartDate.HasValue ? task.StartDate.Value.ToString("MM/yyyy") : this.sEmpty,
+                        task.EndDate.HasValue ? task.EndDate.Value.ToString("MM/yyyy") : this.sEmpty
+                    }).ToArray();
 
                     row.AddRange(taskpart1);
 
@@ -487,6 +523,9 @@ namespace GenBOE.ActionLogic.IO.Export
 
                     HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(this.resourceDTODataLoader.GetByIds(task.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Distinct().ToList()));
                     HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(this.perfOrgLoader.GetByIds(task.taskElementLabors.Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
+
+                    // Get index of "Multiple" if it exists for tasks with multiple MOQ Types
+                    int multipleIndex = Array.IndexOf(taskpart1, this.sMultiple);
 
                     foreach (ResourceTypeDto resourceType in task.taskElementLabors)
                     {
@@ -515,10 +554,10 @@ namespace GenBOE.ActionLogic.IO.Export
                         row.AddRange(
                             new string[] {
                                 boe.Id.ToString(),
+                                boe.Title ?? this.sEmpty,
                                 "Resource Type",
                                 wbsNumber,
                                 wbsTitle,
-                                boe.Title != null ? boe.Title : this.sEmpty,
                                 clinNumber,
                                 clinTitle,
                                 boe_StartDate,
@@ -529,6 +568,12 @@ namespace GenBOE.ActionLogic.IO.Export
                         for (int i = 0; i < emptyCellsToAdd; i++)
                         {
                             row.Add(this.sEmpty);
+                        }
+
+                        // if task contains multiple MOQ Types, get the MOQ Type for this Resource Type
+                        if (multipleIndex > -1)
+                        {
+                            taskpart1[multipleIndex] = ((MOQType)(resourceType.MoqTypeSelectionId ?? 0)).GetDescription();
                         }
 
                         row.AddRange(taskpart1);
@@ -600,10 +645,10 @@ namespace GenBOE.ActionLogic.IO.Export
                     row.AddRange(
                         new string[] {
                             boe.Id.ToString(),
+                            boe.Title ?? this.sEmpty,
                             "Task",
                             boe_WBS != null ? boe_WBS.WbsNumber : this.sEmpty,
                             boe_WBS != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_WBS.WbsTitle : this.sEmpty,
-                            boe.Title != null ? boe.Title : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinNumber : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinTitle : this.sEmpty,
                             boe_StartDate,
@@ -656,10 +701,10 @@ namespace GenBOE.ActionLogic.IO.Export
                     row.AddRange(
                         new string[] {
                             boe.Id.ToString(),
+                            boe.Title ?? this.sEmpty,
                             "Task",
                             boe_WBS != null ? boe_WBS.WbsNumber : this.sEmpty,
                             boe_WBS != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_WBS.WbsTitle : this.sEmpty,
-                            boe.Title != null ? boe.Title : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinNumber : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinTitle : this.sEmpty,
                             boe_StartDate,
@@ -710,10 +755,10 @@ namespace GenBOE.ActionLogic.IO.Export
                         row.AddRange(
                             new string[] {
                                 boe.Id.ToString(),
+                                boe.Title ?? this.sEmpty,
                                 "ODC",
                                 boe_WBS != null ? boe_WBS.WbsNumber : this.sEmpty,
                                 boe_WBS != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_WBS.WbsTitle : this.sEmpty,
-                                boe.Title != null ? boe.Title : this.sEmpty,
                                 boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinNumber : this.sEmpty,
                                 boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinTitle : this.sEmpty,
                                 boe_StartDate,
@@ -779,10 +824,10 @@ namespace GenBOE.ActionLogic.IO.Export
                     row.AddRange(
                         new string[] {
                             boe.Id.ToString(),
+                            boe.Title ?? this.sEmpty,
                             "Task",
                             boe_WBS != null ? boe_WBS.WbsNumber : this.sEmpty,
                             boe_WBS != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_WBS.WbsTitle : this.sEmpty,
-                            boe.Title != null ? boe.Title : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinNumber : this.sEmpty,
                             boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinTitle : this.sEmpty,
                             boe_StartDate,
@@ -842,10 +887,10 @@ namespace GenBOE.ActionLogic.IO.Export
                         row.AddRange(
                             new string[] {
                                 boe.Id.ToString(),
+                                boe.Title ?? this.sEmpty,
                                 "Travel",
                                 boe_WBS != null ? boe_WBS.WbsNumber : this.sEmpty,
                                 boe_WBS != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_WBS.WbsTitle : this.sEmpty,
-                                boe.Title != null ? boe.Title : this.sEmpty,
                                 boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinNumber : this.sEmpty,
                                 boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinTitle : this.sEmpty,
                                 boe_StartDate,
@@ -1005,7 +1050,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                 {
                                     taskID,
                                     task.TaskTitle,
-                                    task.MOQType.ToString(),
+                                    this.GetTaskMoqType(task, exportInputs),
                                     wbsTitle,
                                     wbsNumber,
                                     clinNumber,
@@ -1143,6 +1188,42 @@ namespace GenBOE.ActionLogic.IO.Export
         }
 
         /// <summary>
+        /// Gets the resource spreads sheet export data.
+        /// </summary>
+        /// <param name="exportInputs">The export inputs.</param>
+        /// <returns></returns>
+        private ExcelExportWorksheet GetMOQbyBOEbyTaskData(BOEExportInputs exportInputs)
+        {
+            ExcelExportWorksheet toReturn = new ExcelExportWorksheet("MOQ by BOE by Task");
+            
+            foreach (BoeDTO boe in exportInputs.Boes)
+            {
+                foreach (BoeTaskElementDTO task in exportInputs.TaskElements.Where(x => x.BoeID == boe.Id))
+                {
+                    this.FormatMOQEquation(task, exportInputs);
+
+                    foreach (MOQType moqType in exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).Select(x => x.SelectedMOQType).Distinct())
+                    {
+                        IList<string> row = new List<string>()
+                        {
+                            boe.Id.ToString(),
+                            boe.Title != null ? boe.Title : this.sEmpty,
+                            task.BOETaskID,
+                            task.TaskTitle,
+                            this.GetMOQEquation(task, exportInputs),
+                            task.taskElementLabors.Where(x => x.MoqTypeSelectionId == (int)moqType).Sum(x => x.ValueSpread).ToString(),
+                            moqType.GetDescription()
+                        };
+
+                        toReturn.Add(row);
+                    }
+                }
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
         /// Gets the boe resource combo sheet export data.
         /// </summary>
         /// <param name="exportInputs">The export inputs.</param>
@@ -1209,6 +1290,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 row.AddRange(
                     new string[]{
                         boe.Id.ToString(),
+                        boe.Title ?? this.sEmpty,
                         boe.isMaterial ?  "Material BOE": "BOE",
                         this.sEmpty, // Task ID
                         this.sEmpty, // Task Title
@@ -1266,6 +1348,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 row.AddRange(
                     new string[] {
                             boe.Id.ToString(),
+                            boe.Title ?? this.sEmpty,
                             "Task"
                     });
 
@@ -1315,6 +1398,9 @@ namespace GenBOE.ActionLogic.IO.Export
         /// </returns>
         private ExcelExportWorksheet GetLaborResourceTypeDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, BoeDTO boe, BoeTaskElementDTO task, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins, IReadOnlyCollection<ResourceDTO> workspaceResources, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, IDictionary<int, SpreadCurveModelView> allSpreadCurves, HashSet<PerformingOrgDTO> perfOrgsFromDb, string[] taskFields1, string[] taskFields2)
         {
+            // Get index of "Multiple" if it exists for tasks with multiple MOQ Types
+            int multipleIndex = Array.IndexOf(taskFields1, this.sMultiple);
+
             foreach (ResourceTypeDto resourceType in task.taskElementLabors)
             {
                 List<string> row = new List<string>();
@@ -1326,8 +1412,15 @@ namespace GenBOE.ActionLogic.IO.Export
                     new string[]
                     {
                         boe.Id.ToString(),
+                        boe.Title ?? this.sEmpty,
                         "Resource Type"
                     });
+
+                // if task contains multiple MOQ Types, get the MOQ Type for this Resource Type
+                if (multipleIndex > -1)
+                {
+                    taskFields1[multipleIndex] = ((MOQType)(resourceType.MoqTypeSelectionId ?? 0)).GetDescription();
+                }
 
                 row.AddRange(taskFields1);
                 string[] resFields1 = this.GetResourceWbsClinAndBoeFields(resourceType, aResource, allWbs, allClins, boe);
@@ -1390,8 +1483,9 @@ namespace GenBOE.ActionLogic.IO.Export
                 row.AddRange(
                 new string[]
                 {
-                                    boe.Id.ToString(),
-                                    "Resource Spread"
+                        boe.Id.ToString(),
+                        boe.Title ?? this.sEmpty,
+                        "Resource Spread"
                 });
 
                 row.AddRange(taskFields1);
@@ -1735,7 +1829,6 @@ namespace GenBOE.ActionLogic.IO.Export
                         boe.IsMultiClinWbs ? this.sYes : this.sNo,
                         boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinNumber : this.sEmpty,
                         boe_CLIN != null ? CommonConstants.FORCE_AS_STRING_VALUE + boe_CLIN.ClinTitle : this.sEmpty,
-                        boe.Title != null ? boe.Title : this.sEmpty,
                         boe_StartDate,
                         boe_EndDate};
         }
@@ -1789,6 +1882,50 @@ namespace GenBOE.ActionLogic.IO.Export
             string taskID = task.BOETaskID;
             string taskMOQText = RTEUtilities.TurnHTMLIntoPlainText(BOEExportConverter.GetRteOverride(task.BoeID, task.Id, task.MOQText, RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides));
 
+            this.FormatMOQEquation(task, exportInputs);
+
+            return new string[]
+            {
+                taskID,
+                task.TaskTitle,
+                this.GetMOQEquation(task, exportInputs),
+                this.GetTaskMoqType(task, exportInputs)
+            }.Concat(exportInputs.Workspace.UsingTemplateBOE ? new string[0] : new string[] { taskMOQText }).ToArray();
+        }
+
+        /// <summary>
+        /// Get the Task-level text for the MOQ Type column
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="exportInputs"></param>
+        /// <returns></returns>
+        private string GetTaskMoqType(BoeTaskElementDTO task, BOEExportInputs exportInputs)
+        {
+            if (exportInputs.Workspace.UsingTemplateBOE)
+            {
+                List<MOQType> taskMoqTypes = exportInputs.MOQTypes.Where(x => x.TaskId == task.Id).Select(x => x.SelectedMOQType).Distinct().ToList();
+                if (taskMoqTypes.Count > 1)
+                {
+                    return this.sMultiple;
+                }
+                else
+                {
+                    return taskMoqTypes.Any() ? taskMoqTypes.First().GetDescription() : this.sEmpty;
+                }
+            }
+            else
+            {
+                return task.MOQType.GetDescription();
+            }
+        }
+
+        /// <summary>
+        /// Format MOQ Equation to remove commas
+        /// </summary>
+        /// <param name="task">Task DTO</param>
+        /// <param name="exportInputs">Export Inputs</param>
+        private void FormatMOQEquation(BoeTaskElementDTO task, BOEExportInputs exportInputs)
+        {
             decimal isDecimal;
 
             // Remove comma from a decimal value otherwise Excel will generate a Numbers stored as text error when opening.
@@ -1797,17 +1934,19 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 task.MOQHoursEquation = isDecimal.ToString(Utilities.PrecisionFormattingStringNoComma(exportInputs.Workspace.DecimalPrecision));
             }
+        }
 
-            return new string[]
-            {
-                taskID,
-                task.TaskTitle,
-                (task.TaskElementType == TaskElementType.Labor)
+        /// <summary>
+        /// Get the string for the MOQ Equation
+        /// </summary>
+        /// <param name="task">Task DTO</param>
+        /// <param name="exportInputs">Export Inputs</param>
+        /// <returns></returns>
+        private string GetMOQEquation(BoeTaskElementDTO task, BOEExportInputs exportInputs)
+        {
+            return (task.TaskElementType == TaskElementType.Labor)
                     ? Parser.UntagVariables(task.MOQHoursEquation, exportInputs.WorkspaceVariables.ToList())
-                    : this.sEmpty,
-                task.MOQType.GetDescription(),
-                taskMOQText
-            };
+                    : this.sEmpty;
         }
 
         /// <summary>
@@ -1928,7 +2067,6 @@ namespace GenBOE.ActionLogic.IO.Export
                                     boe.IsMultiClinWbs ? this.sYes : this.sNo,
                                     res_CLINNumber,
                                     res_CLINTitle,
-                                    boe.Title,
                                     boe_StartDate,
                                     boe_EndDate
                     };
