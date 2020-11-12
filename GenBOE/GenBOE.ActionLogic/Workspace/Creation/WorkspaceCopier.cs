@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
     using System.Collections.ObjectModel;
     using System.Linq;
     using GenBOE.ActionLogic.BLL;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
@@ -37,6 +38,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         private IBOEFormPBOEDTODataLoader pboeDataLoader;
         private RMSZoneTravelRatesFeesDataLoader zoneTravelRatesLoader;
         private IRteTemplateDataLoader rteTemplateDataLoader;
+        private IMoqTypeDataLoader moqTypeLoader;
 
         List<BoeTaskElementDTO> copiedFromTaskElements = new List<BoeTaskElementDTO>();
         List<TravelDTO> copiedFromTravelElements = new List<TravelDTO>();
@@ -58,7 +60,8 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             IBOEFormIBOEDTODataLoader iboeDataLoader,
             IBOEFormPBOEDTODataLoader pboeDataLoader,
             RMSZoneTravelRatesFeesDataLoader zoneTravelRatesLoader,
-            IRteTemplateDataLoader rteTemplateDataLoader)
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            IMoqTypeDataLoader moqTypeLoader)
         {
             this._WorkspaceVariableLoader = inWorkspaceVariableLoader;
             this._PermissionsLoader = inPermissionsLoader;
@@ -77,6 +80,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             this.pboeDataLoader = pboeDataLoader;
             this.zoneTravelRatesLoader = zoneTravelRatesLoader;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
+            this.moqTypeLoader = moqTypeLoader;
         }
 
         /// <summary>
@@ -109,7 +113,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
             this.CopyWorkspaceProperties(workspaceToCopy, newWorkspace);
             this.AddAuthorPermissionForCostLead(newWorkspace);
-            Dictionary<int, int> ClinIDMapping = this.CopyAllCLIN(workspaceToCopy, newWorkspace);
+            Dictionary<int, int> ClinIDMapping = this.CopyAllCLIN(workspaceToCopy, newWorkspace);       
 
             // Get copy of custom fields for use with CopyCustomFieldValues before any changes are made to them
             IReadOnlyCollection<CustomFieldDTO> customFieldsToCopy = workspaceToCopy.CustomFields.DeepClone();
@@ -138,7 +142,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
             if (copyTasks)
             {
-                finishedCorrectly = this.CopyTasks(BOEIDMapping, WBSIDMapping, ClinIDMapping, VariableIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, resourceMapping, performingOrgMapping) && finishedCorrectly;
+                finishedCorrectly = this.CopyTasks(BOEIDMapping, WBSIDMapping, ClinIDMapping, VariableIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, resourceMapping, performingOrgMapping, workspaceToCopy.MoqTypeSelections.ToList()) && finishedCorrectly;
                 finishedCorrectly = this.CopyTravelTasks(newWorkspace, BOEIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, ClinIDMapping, WBSIDMapping, performingOrgMapping, resourceMapping) && finishedCorrectly;
             }
 
@@ -1076,21 +1080,25 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         /// <param name="copyLaborSpreads">Copy Labor Spreads?</param>
         /// <param name="Resources">Resources</param>
         /// <param name="perfOrgs">Performing Orgs</param>
+        /// <param name="moqTypesToCopy">Selected Moq Types for the WS</param>
         /// <returns>Boolean indicating whether there was any bad data that the user should be notified about</returns>
-        private bool CopyTasks(Dictionary<int, int> boeIDMapping, Dictionary<int, int> wbsIDMapping, Dictionary<int, int> clinIDMapping,
-            Dictionary<int, int> variableIDMapping, Dictionary<int, int> customFieldIDMapping, Dictionary<int, int> customFieldValueIDMapping, bool copyLaborSpreads, Dictionary<int, int> Resources, Dictionary<int, int> perfOrgs)
+        private bool CopyTasks(Dictionary<int, int> boeIDMapping, Dictionary<int, int> wbsIDMapping, Dictionary<int, int> clinIDMapping, Dictionary<int, int> variableIDMapping, Dictionary<int, int> customFieldIDMapping, 
+            Dictionary<int, int> customFieldValueIDMapping, bool copyLaborSpreads, Dictionary<int, int> Resources, Dictionary<int, int> perfOrgs, ICollection<MoqTypeSelection> moqTypesToCopy)
         {
+            // Key: existing Id, value: negative Id
+            IDictionary<int, int> originalTaskIdMapping = new Dictionary<int, int>(); 
             bool finishedCorrectly = true;
 
             ICollection<BoeTaskElementDTO> taskElementsToSave = new Collection<BoeTaskElementDTO>();
 
             int newItemID = -1;
 
-            foreach (var taskElement in this.copiedFromTaskElements)
+            foreach (BoeTaskElementDTO taskElement in this.copiedFromTaskElements)
             {
                 BoeTaskElementDTO newTaskElement = new BoeTaskElementDTO();
 
                 int newBoeID = boeIDMapping[taskElement.BoeID];
+                originalTaskIdMapping.Add(taskElement.Id, newItemID);
 
                 taskElement.Id = newItemID--;
                 taskElement.BoeID = newBoeID;
@@ -1098,22 +1106,24 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
                 foreach (var ordinaryVariable in taskElement.OrdinaryVariables)
                 {
-                    OrdinaryVariableDto newOrdinaryVariable = new OrdinaryVariableDto();
-                    newOrdinaryVariable.Id = newItemID--;
-                    newOrdinaryVariable.BoeID = newBoeID;
-                    newOrdinaryVariable.IsPercentage = ordinaryVariable.IsPercentage;
-                    newOrdinaryVariable.OrdinaryVariableName = ordinaryVariable.OrdinaryVariableName;
-                    newOrdinaryVariable.SortBOEBy = ordinaryVariable.SortBOEBy;
-                    newOrdinaryVariable.SumVariableResourceTypeIDs = ordinaryVariable.SumVariableResourceTypeIDs;
-                    newOrdinaryVariable.UpdateDate = ordinaryVariable.UpdateDate;
-                    newOrdinaryVariable.ValueType = ordinaryVariable.ValueType;
-                    newOrdinaryVariable.OrdinaryVariableValue = ordinaryVariable.OrdinaryVariableValue;
-                    newOrdinaryVariable.DefaultSize = ordinaryVariable.DefaultSize;
+                    OrdinaryVariableDto newOrdinaryVariable = new OrdinaryVariableDto()
+                    {
+                        Id = newItemID--,
+                        BoeID = newBoeID,
+                        IsPercentage = ordinaryVariable.IsPercentage,
+                        OrdinaryVariableName = ordinaryVariable.OrdinaryVariableName,
+                        SortBOEBy = ordinaryVariable.SortBOEBy,
+                        SumVariableResourceTypeIDs = ordinaryVariable.SumVariableResourceTypeIDs,
+                        UpdateDate = ordinaryVariable.UpdateDate,
+                        ValueType = ordinaryVariable.ValueType,
+                        OrdinaryVariableValue = ordinaryVariable.OrdinaryVariableValue,
+                        DefaultSize = ordinaryVariable.DefaultSize,
+                        Updateable = UpdateType.Upsert
+                    };
 
                     // Remap Sum of BOEs IDs from old to new
                     if (ordinaryVariable.ValueType == VarValueType.SumOfBOEs)
                     {
-                        //boeSum = -1;
                         foreach (var sumOfBOEs in ordinaryVariable.SelectedBOEsToSum)
                         {
                             int idVal = -1;
@@ -1146,7 +1156,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                             }
                         }
                     }
-                    newOrdinaryVariable.Updateable = UpdateType.Upsert;
+
                     newTaskElement.OrdinaryVariables.Add(newOrdinaryVariable);
                 }
                 taskElement.OrdinaryVariables = newTaskElement.OrdinaryVariables;
@@ -1169,8 +1179,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
                     taskElement.WorkspaceVariableIDs = newVariableIDs;
                 }
-
-                // if there are custom cross refs, let's copy them
                 if (taskElement.CustomFieldValueContainers.Any())
                 {
                     foreach (CustomFieldValueContainer taskElementCustomFieldXRefToCopy in taskElement.CustomFieldValueContainers)
@@ -1182,7 +1190,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                         taskElementCustomFieldXRefToCopy.CustomFieldID = customFieldIDMapping[taskElementCustomFieldXRefToCopy.CustomFieldID];
                     }
                 }
-
                 if (copyLaborSpreads)
                 {
                     foreach (var laborType in taskElement.taskElementLabors)
@@ -1234,10 +1241,54 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
             if (taskElementsToSave.Any())
             {
-                this._BoeTaskElementLoader.BulkSave(taskElementsToSave);
+                // Key: negative Id, Value: New Id
+                IDictionary<int, int> postSaveTaskElementMapping = this._BoeTaskElementLoader.BulkSave(taskElementsToSave);
+
+                // Setup the final mapping to be Key: Existing Id, Value: New Id
+                IDictionary<int, int> postSaveMapping = new Dictionary<int, int>();
+                originalTaskIdMapping.ForEach(x => { postSaveMapping.Add(x.Key, postSaveTaskElementMapping[x.Value]); } );
+
+                this.CopyMoqTypes(moqTypesToCopy, postSaveMapping);
             }
 
             return finishedCorrectly;
+        }
+
+        /// <summary>
+        /// Copies MOQ Type Selections
+        /// </summary>
+        /// <param name="moqTypesToCopy">MOQ Types to copy</param>
+        /// <param name="newTaskId">New Task Id</param>
+        /// <param name="newBoeId">New Boe Id</param>
+        private void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, IDictionary<int, int> taskIdMapping)
+        {
+            _ = moqTypesToCopy ?? throw new ArgumentNullException(nameof(moqTypesToCopy));
+            _ = taskIdMapping ?? throw new ArgumentNullException(nameof(taskIdMapping));
+
+            List<MoqTypeSelection> moqTypesToSave = new List<MoqTypeSelection>();
+
+            int i = 0;
+            moqTypesToCopy.Where(x => x.SelectedMOQType != MOQType.None).ForEach(existingMoqType =>
+            {
+                MoqTypeSelection newMoqType = existingMoqType.DeepClone();
+                newMoqType.TableData = new List<MoqTableData>();
+
+                newMoqType.Id = --i;
+                newMoqType.Updateable = UpdateType.Upsert;
+                newMoqType.TaskId = taskIdMapping[existingMoqType.TaskId];
+
+                existingMoqType.TableData.ForEach(existingTable =>
+                {
+                    MoqTableData newTable = existingTable.DeepClone();
+                    newTable.Id = --i;
+
+                    newMoqType.TableData.Add(newTable);
+                });
+
+                moqTypesToSave.Add(newMoqType);
+            });
+
+            this.moqTypeLoader.Save(moqTypesToSave);
         }
 
         /// <summary>
