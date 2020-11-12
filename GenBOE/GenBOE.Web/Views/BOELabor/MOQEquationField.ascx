@@ -34,6 +34,7 @@
         WorkspaceVariables: workspaceVariables,
         MOQTypes: <%=serializer.Serialize(Model.MOQTypes.Select(x => new { SelectedMOQType = x.Value, SelectedMOQTypeText = x.Text }))%>,
         MoqTypeTableDataLabels:<%=serializer.Serialize(Model.MoqTypeTableDataLabels)%>,
+        MoqTypeHelpUrls:<%=serializer.Serialize(Model.MoqTypeHelpUrls)%>,
         SelectedMoqTypes:<%=Regex.Replace(serializer.Serialize(Model.SelectedMoqTypes), dateFixRegexSearch, dateFixRegexReplace)%>,
         IsRMS:'<%:Model.Company == CompanyConfiguration.MST%>'.isTrue()
     };
@@ -171,18 +172,18 @@
                 <div class="tableData">
                     <table>
                         <tr>
-                            <td class="form-label" data-ng-click="toggle(tableData)">
-                                <div class="moqTypeHeader" data-ng-class="{'collapsed': tableData.collapsed, 'expanded': !tableData.collapsed}"></div>
-                                {{model.MoqTypeTableDataLabels.TableName}} *
+                            <td class="form-label">
+                                <div class="moqTypeHeader" data-ng-class="{'collapsed': tableData.collapsed, 'expanded': !tableData.collapsed}" data-ng-click="toggle(tableData)"></div>
+                                {{model.MoqTypeTableDataLabels.TableName}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.TableNameSuffix);"></div>
                             </td>
                             <td><input type="text" required data-ng-model="tableData.TableName" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="!model.IsRMS">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.RepositoryName}} *</td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.RepositoryName}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.RepositoryNameSuffix);"></div></td>
                             <td><input type="text" required data-ng-model="tableData.RepositoryName" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="!model.IsRMS">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.QueryType}} *</td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.QueryType}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.QueryTypeSuffix);"></div></td>
                             <td>
                                 <select required data-ng-model="tableData.QueryType">
                                     <option value=""></option>
@@ -192,39 +193,39 @@
                             </td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.DateOfReport}} *</td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.DateOfReport}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.DateOfReportSuffix);"></div></td>
                             <td><input type="date" required data-ng-model="tableData.DateOfReport" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.HistoricalProgramName}} *</td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.HistoricalProgramName}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalProgramNameSuffix);"></div></td>
                             <td><input type="text" required data-ng-model="tableData.HistoricalProgramName" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.ContractNumber}} *</td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.ContractNumber}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.ContractNumberSuffix);"></div></td>
                             <td><input type="text" required data-ng-model="tableData.ContractNumber" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.WbsElement}} *</td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.WbsElement}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.WBSElementSuffix);"></div></td>
                             <td><textarea cols="20" required data-ng-model="tableData.WbsElement" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.PoPStart}} *</td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.PoPStart}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartSuffix);"></div></td>
                             <td><input type="date" required data-ng-model="tableData.PoPStart" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.PoPEnd}} *</td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.PoPEnd}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPEndSuffix);"></div></td>
                             <td><input type="date" required data-ng-model="tableData.PoPEnd" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.TotalWbsHours}} *</td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.TotalWbsHours}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalWBSHoursSuffix);"></div></td>
                             <td><input type="number" required min="0" data-ng-model="tableData.TotalWbsHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.AdditionalQueryFilters}} *</td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.AdditionalQueryFilters}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersSuffix);"></div></td>
                             <td><textarea cols="20" required data-ng-model="tableData.AdditionalQueryFilters" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.TotalRelevantHours}} *</td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.TotalRelevantHours}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalRelevantHoursSuffix);"></div></td>
                             <td><input type="number" required min="0" data-ng-model="tableData.TotalRelevantHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                    </table>
@@ -242,7 +243,10 @@
                 <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%>">CER</span>
                 <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.ParametricEstimates%>">Parametric model or tool</span>
                 <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>">Analogous relationship</span>
-                 name: *
+                 name: * 
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.CERNameSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.ParametricEstimates%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PENameSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ARNameSuffix);"></div>
             </div>
             <div class="form-element">
                 <input type="text" class="cerPmArTextBox" required data-ng-model="moqType.CerName" />
@@ -253,7 +257,10 @@
                 <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%>">CER</span>
                 <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.ParametricEstimates%>">Parametric model or tool</span>
                 <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>">Analogous relationship</span>
-                 location in the proposal: *
+                 location in the proposal: * 
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.CERLocationSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.ParametricEstimates%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PELocationSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ARLocationSuffix);"></div>
             </div>
             <div class="form-element">
                 <input type="text" class="cerPmArTextBox" required placeholder="{{MoqTypesPlaceholder('Location', moqType.SelectedMOQType)}}" data-ng-model="moqType.CerLocation" />
@@ -261,10 +268,10 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.LOE%> || moqType.SelectedMOQType == <%:(int)MOQType.SOW%>">
             <div class="form-label" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.LOE%>">
-                <span>Description of Hours required: *</span>
+                <span>Description of Hours required: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.LOEDescriptionSuffix);"></div>
             </div>
             <div class="form-label" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SOW%>">
-                <span>Description of Hours required & location in SOW: *</span>
+                <span>Description of Hours required & location in SOW: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.SOWDescriptionSuffix);"></div>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="DescriptionHoursRequired_{{moqType.SelectedMOQType}}" data-ng-model="moqType.DescriptionHoursRequired"></textarea>
@@ -272,7 +279,7 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>">
             <div class="form-label">
-                <span>The SME selected Expert judgement for this basis of estimate for the following reasons: *</span>
+                <span>The SME selected Expert judgement for this basis of estimate for the following reasons: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.SMEReasonsSuffix);"></div>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="SmeReason_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SmeReason"></textarea>
@@ -283,7 +290,7 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>">
             <div class="form-label">
-                <span>The logic and assumptions used to estimate hours is: *</span>
+                <span>The logic and assumptions used to estimate hours is: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.SMEHoursLogicSuffix);"></div>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="SmeHoursLogic_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SmeHoursLogic"></textarea>
@@ -291,7 +298,7 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>">
             <div class="form-label">
-                <span>The logic and assumptions used to estimate duration is: *</span>
+                <span>The logic and assumptions used to estimate duration is: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.SMEDurationLogicSuffix);"></div>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="SmeDurationLogic_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SmeDurationLogic"></textarea>
@@ -299,7 +306,7 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>">
             <div class="form-label">
-                <span>The following tasks are estimates in this BOE: *</span>
+                <span>The following tasks are estimates in this BOE: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.SMETasksSuffix);"></div>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="SmeTaskEstimates_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Rationale', moqType.SelectedMOQType)}}" data-ng-model="moqType.SmeTaskEstimates"></textarea>
@@ -308,6 +315,11 @@
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.SME%>">
             <div class="form-label">
                 <span>Rationale: *</span>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalRationaleSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ComparativeRationaleSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%> || moqType.SelectedMOQType == <%:(int)MOQType.ParametricEstimates%> || moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.CerPeArRationaleSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SOW%> || moqType.SelectedMOQType == <%:(int)MOQType.LOE%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.SowLoeRationaleSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.NonLabor%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.NonLaborRationaleSuffix);"></div>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="Rationale_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Rationale', moqType.SelectedMOQType)}}" data-ng-model="moqType.Rationale"></textarea>
@@ -315,7 +327,7 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.NonLabor%>">
             <div class="form-label">
-                <span>Skill Mix Rationale: *</span>
+                <span>Skill Mix Rationale: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.SkillMixSuffix);"></div>
             </div>
             <div class="form-element">
                 <textarea cols="20" name="SkillMixRationale_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SkillMixRationale"></textarea>

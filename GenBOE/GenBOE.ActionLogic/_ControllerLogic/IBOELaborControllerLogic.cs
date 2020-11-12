@@ -291,5 +291,11 @@ namespace GenBOE.ActionLogic
         /// </summary>
         /// <returns>Labels for MOQ Type Data Table Fields</returns>
         MoqTypeTableDataLabels GetMoqTypeLabels();
+
+        /// <summary>
+        /// Returns help URLs for MOQ Type fields
+        /// </summary>
+        /// <returns>help URLs for MOQ Type fields</returns>
+        MoqTypeHelpUrls GetMoqTypeHelpUrls();
     }
 }

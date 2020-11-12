@@ -343,5 +343,51 @@ namespace GenBOE.ActionLogic
 
             model.MetricsSearchDialogParameters.SearchMetricsDialogIdSuffix = CommonConstants.MSTMetricsDialogSuffix;
         }
+
+        /// <summary>
+        /// Returns help URLs for MOQ Type fields
+        /// </summary>
+        /// <returns>help URLs for MOQ Type fields</returns>
+        public override MoqTypeHelpUrls GetMoqTypeHelpUrls()
+        {
+            MoqTypeHelpUrls toReturn = new MoqTypeHelpUrls();
+
+            toReturn.TableNameSuffix = "AA-03982/598/";
+            toReturn.RepositoryNameSuffix = string.Empty;
+            toReturn.QueryTypeSuffix = string.Empty;
+            toReturn.DateOfReportSuffix = "AA-03984/598/";
+            toReturn.HistoricalProgramNameSuffix = "AA-03985/598/";
+            toReturn.ContractNumberSuffix = "AA-03986/598/";
+            toReturn.WBSElementSuffix = "AA-03987/598/";
+            toReturn.PoPStartSuffix = "AA-03988/598/";
+            toReturn.PoPEndSuffix = "AA-03989/598/";
+            toReturn.TotalWBSHoursSuffix = "AA-03992/598/";
+            toReturn.AdditionalQueryFiltersSuffix = "AA-03993/598/";
+            toReturn.TotalRelevantHoursSuffix = "AA-03994/598/";
+
+            toReturn.CERNameSuffix = "AA-03997/598/";
+            toReturn.CERLocationSuffix = "AA-03998/598/";
+            toReturn.PENameSuffix = "AA-03999/598/";
+            toReturn.PELocationSuffix = "AA-04000/598/";
+            toReturn.ARNameSuffix = "AA-04001/598/";
+            toReturn.ARLocationSuffix = "AA-04002/598/";
+
+            toReturn.SOWDescriptionSuffix = "AA-04003/598/";
+            toReturn.LOEDescriptionSuffix = "AA-04004/598/";
+
+            toReturn.SMEReasonsSuffix = "AA-04008/598/";
+            toReturn.SMEHoursLogicSuffix = "AA-04009/598/";
+            toReturn.SMEDurationLogicSuffix = "AA-04010/598/";
+            toReturn.SMETasksSuffix = "AA-04011/598/";
+
+            toReturn.HistoricalRationaleSuffix = "AA-04013/598/";
+            toReturn.ComparativeRationaleSuffix = "AA-04014/598/";
+            toReturn.CerPeArRationaleSuffix = "AA-04015/598/";
+            toReturn.SowLoeRationaleSuffix = "AA-04007/598/";
+            toReturn.NonLaborRationaleSuffix = "AA-04012/598/";
+            toReturn.SkillMixSuffix = "AA-03996/598/";
+
+            return toReturn;
+        }
     }
 }

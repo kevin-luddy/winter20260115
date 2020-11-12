@@ -3368,6 +3368,53 @@ namespace GenBOE.ActionLogic.ControllerLogic
         {
             return new MoqTypeTableDataLabels();
         }
+
+        /// <summary>
+        /// Returns help URLs for MOQ Type fields
+        /// </summary>
+        /// <returns>help URLs for MOQ Type fields</returns>
+        public virtual MoqTypeHelpUrls GetMoqTypeHelpUrls()
+        {
+            // TODO - populate with SSC URLs when we have them
+            MoqTypeHelpUrls toReturn = new MoqTypeHelpUrls();
+
+            toReturn.TableNameSuffix = string.Empty;
+            toReturn.RepositoryNameSuffix = string.Empty;
+            toReturn.QueryTypeSuffix = string.Empty;
+            toReturn.DateOfReportSuffix = string.Empty;
+            toReturn.HistoricalProgramNameSuffix = string.Empty;
+            toReturn.ContractNumberSuffix = string.Empty;
+            toReturn.WBSElementSuffix = string.Empty;
+            toReturn.PoPStartSuffix = string.Empty;
+            toReturn.PoPEndSuffix = string.Empty;
+            toReturn.TotalWBSHoursSuffix = string.Empty;
+            toReturn.AdditionalQueryFiltersSuffix = string.Empty;
+            toReturn.TotalRelevantHoursSuffix = string.Empty;
+
+            toReturn.CERNameSuffix = string.Empty;
+            toReturn.CERLocationSuffix = string.Empty;
+            toReturn.PENameSuffix = string.Empty;
+            toReturn.PELocationSuffix = string.Empty;
+            toReturn.ARNameSuffix = string.Empty;
+            toReturn.ARLocationSuffix = string.Empty;
+
+            toReturn.SOWDescriptionSuffix = string.Empty;
+            toReturn.LOEDescriptionSuffix = string.Empty;
+
+            toReturn.SMEReasonsSuffix = string.Empty;
+            toReturn.SMEHoursLogicSuffix = string.Empty;
+            toReturn.SMEDurationLogicSuffix = string.Empty;
+            toReturn.SMETasksSuffix = string.Empty;
+
+            toReturn.HistoricalRationaleSuffix = string.Empty;
+            toReturn.ComparativeRationaleSuffix = string.Empty;
+            toReturn.CerPeArRationaleSuffix = string.Empty;
+            toReturn.SowLoeRationaleSuffix = string.Empty;
+            toReturn.NonLaborRationaleSuffix = string.Empty;
+            toReturn.SkillMixSuffix = string.Empty;
+
+            return toReturn;
+        }
     }
 
     public enum ControllerCustomFieldType

@@ -195,6 +195,11 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Labels for the Data Table Fields
         /// </summary>
         public MoqTypeTableDataLabels MoqTypeTableDataLabels { get; set; }
+
+        /// <summary>
+        /// Help URLs for MOQ Type fields
+        /// </summary>
+        public MoqTypeHelpUrls MoqTypeHelpUrls { get; set; }
     }
 
     public enum MOQEquationType

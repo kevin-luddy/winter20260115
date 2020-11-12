@@ -2104,6 +2104,7 @@ namespace GenBOE.Web.Controllers
             {
                 theModelView.MoqTypeTableDataLabels = this._BoeLaborControllerLogic.GetMoqTypeLabels();
                 theModelView.SelectedMoqTypes = boe.MoqTypeSelections.Where(x => x.TaskId == taskElementID).ToList();
+                theModelView.MoqTypeHelpUrls = this._BoeLaborControllerLogic.GetMoqTypeHelpUrls();
             }
 
             return theModelView;
