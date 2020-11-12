@@ -39,9 +39,9 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
         protected IUserDTODataLoader _userDL = null;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
-        protected IResourceListDTODataLoader _resourceListDL= null;
+        protected IResourceListDTODataLoader _resourceListDL = null;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDegclareVisibleInstanceFields")]
-        protected IPerformingOrgListDTODataLoader _perfOrgListDL= null;
+        protected IPerformingOrgListDTODataLoader _perfOrgListDL = null;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
         protected IPerformingOrgDTODataLoader _perfOrgDL = null;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
@@ -66,7 +66,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         protected ITripDTODataLoader _tripDL = null;
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1051:DoNotDeclareVisibleInstanceFields")]
         protected ITravelDTODataLoader _travelDL = null;
-        
+
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         protected MOQLoaderObject() : base(false)
@@ -101,8 +101,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
             _perDiemDL = new PerDiemDTODataLoader();
             _locationDL = new LocationDTODataLoader();
             _tripDL = new TripDTODataLoader();
-            
-             _travelDL = new TravelDTODataLoader(_travelTripTaskElementCustomFieldValue.Object, _travelTripCustomFieldValue.Object);
+
+            _travelDL = new TravelDTODataLoader(_travelTripTaskElementCustomFieldValue.Object, _travelTripCustomFieldValue.Object);
 
             // clean up left over test data .. once
             ClassCleanup();
@@ -213,7 +213,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
                         Assert.IsNotNull(CostVolumeLead);
                         Console.WriteLine("user  took " + sw.ElapsedMilliseconds);
 
-                   
+
 
                         sw.Restart();
                         if (WorkspaceAdmin == null)
@@ -329,7 +329,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
                         Console.WriteLine("perdiem  took " + sw.ElapsedMilliseconds);
 
                         // system trip
-                         sw.Restart();
+                        sw.Restart();
                         if (SystemTrip == null)
                         {
                             SystemTrip = _CreateTrip(-1);
@@ -345,7 +345,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
                             string name = Guid.NewGuid().ToString().Substring(0, 10);
                             string longname = Guid.NewGuid().ToString().Substring(0, 18);
                             CommonDataLoader dataLoader = new CommonDataLoader();
-                            
+
                             Workspace = new WorkspaceDTO
                             {
                                 Id = -1,
@@ -525,18 +525,18 @@ namespace GenBOE.Tests.DAL.DataLoaders
                         #endregion Create Boe1, Boe2, Boe3, and MaterialBoe
 
                         // assign approvers to boe1
-                        _approverResponseDL.Save(new Collection<BoeApproverResponseDTO>{ 
+                        _approverResponseDL.Save(new Collection<BoeApproverResponseDTO>{
                 new BoeApproverResponseDTO{ Updateable= UpdateType.Upsert, BoeID = Boe1.Id, CurrentUserETIUserID = this.WorkspaceAdmin.UserID, ETIUserID = this.Approver1.UserID, Id = -1 },
                 new BoeApproverResponseDTO{ Updateable= UpdateType.Upsert, BoeID = Boe1.Id, CurrentUserETIUserID = this.WorkspaceAdmin.UserID, ETIUserID = this.Approver2.UserID, Id = -2 }});
-                        Assert.AreEqual(2, _permissionDL.GetBOEPermissions(new List<int>(){Boe1.Id}).Where(x => x.Role == Role.Approver).Count());
+                        Assert.AreEqual(2, _permissionDL.GetBOEPermissions(new List<int>() { Boe1.Id }).Where(x => x.Role == Role.Approver).Count());
                         Console.WriteLine("BOE1 approver took " + sw.ElapsedMilliseconds);
                         sw.Restart();
 
                         // assign approvers to boe2
-                        _approverResponseDL.Save(new Collection<BoeApproverResponseDTO>{ 
+                        _approverResponseDL.Save(new Collection<BoeApproverResponseDTO>{
                 new BoeApproverResponseDTO{ Updateable= UpdateType.Upsert, BoeID = Boe2.Id, CurrentUserETIUserID = this.WorkspaceAdmin.UserID, ETIUserID = this.Approver1.UserID, Id = -1 },
                 new BoeApproverResponseDTO{ Updateable= UpdateType.Upsert, BoeID = Boe2.Id, CurrentUserETIUserID = this.WorkspaceAdmin.UserID, ETIUserID = this.Approver2.UserID, Id = -2 }});
-                        Assert.AreEqual(2, _permissionDL.GetBOEPermissions(new List<int>(){Boe2.Id}).Where(x => x.Role == Role.Approver).Count());
+                        Assert.AreEqual(2, _permissionDL.GetBOEPermissions(new List<int>() { Boe2.Id }).Where(x => x.Role == Role.Approver).Count());
                         Console.WriteLine("BOE2 approver took " + sw.ElapsedMilliseconds);
                         sw.Restart();
 
@@ -743,14 +743,14 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 throw new ArgumentOutOfRangeException("either inClinId or inWbsId must be valued");
             }
 
-            BoeDTO toReturn = new BoeDTO 
+            BoeDTO toReturn = new BoeDTO
             {
                 Id = inId,
-                AuthorIDs = new Collection<int>{Author.UserID},
-                Description = "MOQ BOE " + Math.Abs(inId) + " Description", 
+                AuthorIDs = new Collection<int> { Author.UserID },
+                Description = "MOQ BOE " + Math.Abs(inId) + " Description",
                 WBSID = inWbsId,
                 CLINID = inClinId,
-                WorkspaceID = Workspace.Id, 
+                WorkspaceID = Workspace.Id,
                 Updateable = UpdateType.Upsert,
                 isMaterial = inCreateMaterial,
                 DataSource = "MOQ Data Source"
@@ -817,7 +817,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             {
                 Id = inId,
                 ClinNumber = "Moq" + MOQObject.randomNumberGenerator.Next().ToString(),
-                ClinTitle = "Clin"+Math.Abs(inId)+" MOQ Title",
+                ClinTitle = "Clin" + Math.Abs(inId) + " MOQ Title",
                 WorkspaceID = Workspace.Id,
                 StartDate = inStartDate,
                 EndDate = inEndDate,
@@ -4187,5 +4187,192 @@ namespace GenBOE.Tests.DAL.DataLoaders
             _LastNames = new Collection<string>(lnames);
         }
         #endregion init names
+    }
+
+    /// <summary>
+    /// Tests MapToNewMoqType DB function
+    /// </summary>
+    [TestClass]
+    public class MoqDbFunctionTests 
+    {
+        /// <summary>
+        /// SQL that will run the function
+        /// 
+        /// Params: @MoqValue INT, @wsCreationDate DATE
+        /// </summary>
+        private static string SQL_EXEC_FUNC = "SELECT dbo.MapToNewMoqType ({0}, {1})";
+
+        /// <summary>
+        /// Tests MapToNewMoqType DB function
+        /// </summary>
+        [TestMethod]
+        public void Test()
+        {
+            using (GenBoeEntities gbe = new GenBoeEntities())
+            {
+                #region WS CREATED SO EARLY THE CREATION DATE IS NULL
+
+                DateTime? wsCreationDate = null;
+
+                RunTest(gbe, MOQType.Comparison, MOQType.Comparison, wsCreationDate);
+                RunTest(gbe, MOQType.EstimatingRelationships, MOQType.EstimatingRelationships, wsCreationDate);
+                RunTest(gbe, MOQType.Factor, MOQType.Factor, wsCreationDate);
+                RunTest(gbe, MOQType.Judgment, MOQType.Judgment, wsCreationDate);
+                RunTest(gbe, MOQType.LevelOfEffort, MOQType.LevelOfEffort, wsCreationDate);
+                RunTest(gbe, MOQType.None, MOQType.None, wsCreationDate);
+                RunTest(gbe, MOQType.Probability, MOQType.Probability, wsCreationDate);
+                RunTest(gbe, MOQType.Standard, MOQType.Standard, wsCreationDate);
+                RunTest(gbe, MOQType.Unit, MOQType.Unit, wsCreationDate);
+                RunTest(gbe, MOQType.VendorQuote, MOQType.VendorQuote, wsCreationDate);
+
+                // RMS Types
+                RunTest(gbe, MOQType.MSTComparisonAnalogyMethod, MOQType.MSTComparisonAnalogyMethod, wsCreationDate);
+                RunTest(gbe, MOQType.MSTCostEstimatingRelationships, MOQType.MSTCostEstimatingRelationships, wsCreationDate);
+                RunTest(gbe, MOQType.MSTEngineeringJudgmentalEstimates, MOQType.MSTEngineeringJudgmentalEstimates, wsCreationDate);
+                RunTest(gbe, MOQType.MSTFactorUnitMethod, MOQType.MSTFactorUnitMethod, wsCreationDate);
+                RunTest(gbe, MOQType.MSTHistoricalPerformance, MOQType.MSTHistoricalPerformance, wsCreationDate);
+                RunTest(gbe, MOQType.MSTLevelOfEffortSupport, MOQType.MSTLevelOfEffortSupport, wsCreationDate);
+                RunTest(gbe, MOQType.MSTParametricCostModels, MOQType.MSTParametricCostModels, wsCreationDate);
+                RunTest(gbe, MOQType.MSTStandardTimeEstimating, MOQType.MSTStandardTimeEstimating, wsCreationDate);
+
+                // SSC Types
+                RunTest(gbe, MOQType.SSCActual, MOQType.SSCActual, wsCreationDate);
+                RunTest(gbe, MOQType.SSCAnalogySimilarTo, MOQType.SSCAnalogySimilarTo, wsCreationDate);
+                RunTest(gbe, MOQType.SSCBottomUp, MOQType.SSCBottomUp, wsCreationDate);
+                RunTest(gbe, MOQType.SSCCostEstimatingRelationships, MOQType.SSCCostEstimatingRelationships, wsCreationDate);
+                RunTest(gbe, MOQType.SSCDataDrivenCostModelsEquations, MOQType.SSCDataDrivenCostModelsEquations, wsCreationDate);
+                RunTest(gbe, MOQType.SSCHistoricalExperienceFactor, MOQType.SSCHistoricalExperienceFactor, wsCreationDate);
+                RunTest(gbe, MOQType.SSCLaborStandardsAndRealizationPerformanceFactors, MOQType.SSCLaborStandardsAndRealizationPerformanceFactors, wsCreationDate);
+                RunTest(gbe, MOQType.SSCLevelOfEffortSupport, MOQType.SSCLevelOfEffortSupport, wsCreationDate);
+                RunTest(gbe, MOQType.SSCQuote, MOQType.SSCQuote, wsCreationDate);
+
+                // New Types
+                RunTest(gbe, MOQType.AnalogousRelationships, MOQType.AnalogousRelationships, wsCreationDate);
+                RunTest(gbe, MOQType.Comparative, MOQType.Comparative, wsCreationDate);
+                RunTest(gbe, MOQType.CostEstimatingRelationships, MOQType.CostEstimatingRelationships, wsCreationDate);
+                RunTest(gbe, MOQType.Historical, MOQType.Historical, wsCreationDate);
+                RunTest(gbe, MOQType.LOE, MOQType.LOE, wsCreationDate);
+                RunTest(gbe, MOQType.NonLabor, MOQType.NonLabor, wsCreationDate);
+                RunTest(gbe, MOQType.ParametricEstimates, MOQType.ParametricEstimates, wsCreationDate);
+                RunTest(gbe, MOQType.SME, MOQType.SME, wsCreationDate);
+                RunTest(gbe, MOQType.SOW, MOQType.SOW, wsCreationDate);
+
+                #endregion
+
+                #region WS CREATED PRIOR TO MOQ TRANSLATIONS
+
+                wsCreationDate = new DateTime(2020, 10, 1);
+
+                // IS&GS.. we aren't translating -> None
+                RunTest(gbe, MOQType.Comparison, MOQType.Comparison, wsCreationDate);
+                RunTest(gbe, MOQType.EstimatingRelationships, MOQType.EstimatingRelationships, wsCreationDate);
+                RunTest(gbe, MOQType.Factor, MOQType.Factor, wsCreationDate);
+                RunTest(gbe, MOQType.Judgment, MOQType.Judgment, wsCreationDate);
+                RunTest(gbe, MOQType.LevelOfEffort, MOQType.LevelOfEffort, wsCreationDate);
+                RunTest(gbe, MOQType.None, MOQType.None, wsCreationDate);
+                RunTest(gbe, MOQType.Probability, MOQType.Probability, wsCreationDate);
+                RunTest(gbe, MOQType.Standard, MOQType.Standard, wsCreationDate);
+                RunTest(gbe, MOQType.Unit, MOQType.Unit, wsCreationDate);
+                RunTest(gbe, MOQType.VendorQuote, MOQType.VendorQuote, wsCreationDate);
+
+                // RMS Types
+                RunTest(gbe, MOQType.MSTComparisonAnalogyMethod, MOQType.MSTComparisonAnalogyMethod, wsCreationDate);
+                RunTest(gbe, MOQType.MSTCostEstimatingRelationships, MOQType.MSTCostEstimatingRelationships, wsCreationDate);
+                RunTest(gbe, MOQType.MSTEngineeringJudgmentalEstimates, MOQType.MSTEngineeringJudgmentalEstimates, wsCreationDate);
+                RunTest(gbe, MOQType.MSTFactorUnitMethod, MOQType.MSTFactorUnitMethod, wsCreationDate);
+                RunTest(gbe, MOQType.MSTHistoricalPerformance, MOQType.MSTHistoricalPerformance, wsCreationDate);
+                RunTest(gbe, MOQType.MSTLevelOfEffortSupport, MOQType.MSTLevelOfEffortSupport, wsCreationDate);
+                RunTest(gbe, MOQType.MSTParametricCostModels, MOQType.MSTParametricCostModels, wsCreationDate);
+                RunTest(gbe, MOQType.MSTStandardTimeEstimating, MOQType.MSTStandardTimeEstimating, wsCreationDate);
+
+                // SSC Types
+                RunTest(gbe, MOQType.SSCActual, MOQType.SSCActual, wsCreationDate);
+                RunTest(gbe, MOQType.SSCAnalogySimilarTo, MOQType.SSCAnalogySimilarTo, wsCreationDate);
+                RunTest(gbe, MOQType.SSCBottomUp, MOQType.SSCBottomUp, wsCreationDate);
+                RunTest(gbe, MOQType.SSCCostEstimatingRelationships, MOQType.SSCCostEstimatingRelationships, wsCreationDate);
+                RunTest(gbe, MOQType.SSCDataDrivenCostModelsEquations, MOQType.SSCDataDrivenCostModelsEquations, wsCreationDate);
+                RunTest(gbe, MOQType.SSCHistoricalExperienceFactor, MOQType.SSCHistoricalExperienceFactor, wsCreationDate);
+                RunTest(gbe, MOQType.SSCLaborStandardsAndRealizationPerformanceFactors, MOQType.SSCLaborStandardsAndRealizationPerformanceFactors, wsCreationDate);
+                RunTest(gbe, MOQType.SSCLevelOfEffortSupport, MOQType.SSCLevelOfEffortSupport, wsCreationDate);
+                RunTest(gbe, MOQType.SSCQuote, MOQType.SSCQuote, wsCreationDate);
+
+                // New Types
+                RunTest(gbe, MOQType.AnalogousRelationships, MOQType.AnalogousRelationships, wsCreationDate);
+                RunTest(gbe, MOQType.Comparative, MOQType.Comparative, wsCreationDate);
+                RunTest(gbe, MOQType.CostEstimatingRelationships, MOQType.CostEstimatingRelationships, wsCreationDate);
+                RunTest(gbe, MOQType.Historical, MOQType.Historical, wsCreationDate);
+                RunTest(gbe, MOQType.LOE, MOQType.LOE, wsCreationDate);
+                RunTest(gbe, MOQType.NonLabor, MOQType.NonLabor, wsCreationDate);
+                RunTest(gbe, MOQType.ParametricEstimates, MOQType.ParametricEstimates, wsCreationDate);
+                RunTest(gbe, MOQType.SME, MOQType.SME, wsCreationDate);
+                RunTest(gbe, MOQType.SOW, MOQType.SOW, wsCreationDate);
+
+                #endregion
+
+                #region WS CREATED AFTER MOQ TRANSLATIONS START
+
+                wsCreationDate = new DateTime(2021, 10, 1);
+
+                // IS&GS.. we aren't translating -> None
+                RunTest(gbe, MOQType.None, MOQType.Comparison, wsCreationDate);
+                RunTest(gbe, MOQType.None, MOQType.EstimatingRelationships, wsCreationDate);
+                RunTest(gbe, MOQType.None, MOQType.Factor, wsCreationDate);
+                RunTest(gbe, MOQType.None, MOQType.Judgment, wsCreationDate);
+                RunTest(gbe, MOQType.None, MOQType.LevelOfEffort, wsCreationDate);
+                RunTest(gbe, MOQType.None, MOQType.None, wsCreationDate);
+                RunTest(gbe, MOQType.None, MOQType.Probability, wsCreationDate);
+                RunTest(gbe, MOQType.None, MOQType.Standard, wsCreationDate);
+                RunTest(gbe, MOQType.None, MOQType.Unit, wsCreationDate);
+                RunTest(gbe, MOQType.None, MOQType.VendorQuote, wsCreationDate);
+
+                // RMS Types
+                RunTest(gbe, MOQType.Comparative, MOQType.MSTComparisonAnalogyMethod, wsCreationDate);
+                RunTest(gbe, MOQType.CostEstimatingRelationships, MOQType.MSTCostEstimatingRelationships, wsCreationDate);
+                RunTest(gbe, MOQType.SME, MOQType.MSTEngineeringJudgmentalEstimates, wsCreationDate);
+                RunTest(gbe, MOQType.ParametricEstimates, MOQType.MSTFactorUnitMethod, wsCreationDate);
+                RunTest(gbe, MOQType.Historical, MOQType.MSTHistoricalPerformance, wsCreationDate);
+                RunTest(gbe, MOQType.LOE, MOQType.MSTLevelOfEffortSupport, wsCreationDate);
+                RunTest(gbe, MOQType.ParametricEstimates, MOQType.MSTParametricCostModels, wsCreationDate);
+                RunTest(gbe, MOQType.ParametricEstimates, MOQType.MSTStandardTimeEstimating, wsCreationDate);
+
+                // SSC Types
+                RunTest(gbe, MOQType.Historical, MOQType.SSCActual, wsCreationDate);
+                RunTest(gbe, MOQType.AnalogousRelationships, MOQType.SSCAnalogySimilarTo, wsCreationDate);
+                RunTest(gbe, MOQType.SME, MOQType.SSCBottomUp, wsCreationDate);
+                RunTest(gbe, MOQType.CostEstimatingRelationships, MOQType.SSCCostEstimatingRelationships, wsCreationDate);
+                RunTest(gbe, MOQType.ParametricEstimates, MOQType.SSCDataDrivenCostModelsEquations, wsCreationDate);
+                RunTest(gbe, MOQType.CostEstimatingRelationships, MOQType.SSCHistoricalExperienceFactor, wsCreationDate);
+                RunTest(gbe, MOQType.ParametricEstimates, MOQType.SSCLaborStandardsAndRealizationPerformanceFactors, wsCreationDate);
+                RunTest(gbe, MOQType.LOE, MOQType.SSCLevelOfEffortSupport, wsCreationDate);
+                RunTest(gbe, MOQType.NonLabor, MOQType.SSCQuote, wsCreationDate);
+
+                // New Types
+                RunTest(gbe, MOQType.AnalogousRelationships, MOQType.AnalogousRelationships, wsCreationDate);
+                RunTest(gbe, MOQType.Comparative, MOQType.Comparative, wsCreationDate);
+                RunTest(gbe, MOQType.CostEstimatingRelationships, MOQType.CostEstimatingRelationships, wsCreationDate);
+                RunTest(gbe, MOQType.Historical, MOQType.Historical, wsCreationDate);
+                RunTest(gbe, MOQType.LOE, MOQType.LOE, wsCreationDate);
+                RunTest(gbe, MOQType.NonLabor, MOQType.NonLabor, wsCreationDate);
+                RunTest(gbe, MOQType.ParametricEstimates, MOQType.ParametricEstimates, wsCreationDate);
+                RunTest(gbe, MOQType.SME, MOQType.SME, wsCreationDate);
+                RunTest(gbe, MOQType.SOW, MOQType.SOW, wsCreationDate);
+
+                #endregion
+            }
+        }
+
+        /// <summary>
+        /// Runs a single text
+        /// </summary>
+        /// <param name="gbe">DB Context</param>
+        /// <param name="expectedResult">Expected result</param>
+        /// <param name="moqType">Current Moq Type</param>
+        /// <param name="WsCreationDate">WS Creation Date</param>
+        private static void RunTest(GenBoeEntities gbe, MOQType expectedResult, MOQType moqType, DateTime? WsCreationDate)
+        {
+            Object[] parameters = { (int)moqType, WsCreationDate };
+            int result = gbe.Database.SqlQuery<int>(SQL_EXEC_FUNC, parameters).FirstOrDefault();
+            Assert.AreEqual((int)expectedResult, result);
+        }
     }
 }

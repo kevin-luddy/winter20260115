@@ -48,6 +48,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Object Scripts\Functions\MapToNewMoqType.sql" />
     <Content Include="Object Scripts\Functions\SplitString.function.sql" />
     <Content Include="Object Scripts\Stored Procedures\archiveOutputFormatTemplate.sql" />
     <Content Include="Object Scripts\Stored Procedures\copyWorkspace.sql" />
