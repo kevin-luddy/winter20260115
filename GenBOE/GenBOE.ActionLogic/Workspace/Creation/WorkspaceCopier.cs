@@ -1018,7 +1018,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             if (BOEToCopy.Any())
             {
                 ICollection<BoeDTO> boesToSave = new Collection<BoeDTO>();
-                // IDictionary<int, int> oldToNewBOEIdMapping = new Dictionary<int, int>();
                 int newItemID = -1;
 
                 ICollection<FullBoe> fullBoeObjects = this.factory.CreateFullBoesWithRteData(BOEToCopy);
@@ -1044,8 +1043,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                         this.copiedFromTravelElements.AddRange(travelElements);
                     }
 
-                    // oldToNewBOEIdMapping.Add(boe.Id, newItemID);
-                                        
                     boe.Id = newItemID--;
                     boe.WCBID = newItemID--;
                     boe.Updateable = UpdateType.Upsert;
