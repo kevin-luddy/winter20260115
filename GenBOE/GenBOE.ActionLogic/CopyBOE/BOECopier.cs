@@ -208,7 +208,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                     {
                         if (originalMoqTypes.Any())
                         {
-                            this.CopyMoqTypes(originalMoqTypes, taskDuplicateId, boe.Id);
+                            this.CopyMoqTypes(originalMoqTypes, taskDuplicateId);
                         }
 
                         if (rteTemplateAnswers.Any())
@@ -724,7 +724,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                     {
                         if (moqTypesToCopy.Any())
                         {
-                            this.CopyMoqTypes(moqTypesToCopy, taskElementCopy.Id, inDestinationBOE.Id);
+                            this.CopyMoqTypes(moqTypesToCopy, taskElementCopy.Id);
                         }
 
                         if (inUseMetricIDs.Any())
@@ -796,8 +796,7 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// </summary>
         /// <param name="moqTypesToCopy">MOQ Types to copy</param>
         /// <param name="newTaskId">New Task Id</param>
-        /// <param name="newBoeId">New Boe Id</param>
-        private void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, int newTaskId, int newBoeId)
+        private void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, int newTaskId)
         {
             _ = moqTypesToCopy ?? throw new ArgumentNullException(nameof(moqTypesToCopy));
 
@@ -811,7 +810,6 @@ namespace GenBOE.ActionLogic.CopyBOE
 
                 newMoqType.Id = --i;
                 newMoqType.Updateable = UpdateType.Upsert;
-                newMoqType.BoeId = newBoeId;
                 newMoqType.TaskId = newTaskId;
 
                 existingMoqType.TableData.ForEach(existingTable => 

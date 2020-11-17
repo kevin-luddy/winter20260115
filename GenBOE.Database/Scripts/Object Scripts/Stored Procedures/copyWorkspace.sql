@@ -1530,7 +1530,7 @@ SELECT TE.[BOETaskElementID]
       ,TE.[MOQHoursEquation]
       ,TE.[MOQCostEquation]
       ,TE.[MOQText]
-      ,TE.[MOQTypeID]
+      ,dbo.MapToNewMoqType(TE.[MOQTypeID], GETDATE())
       ,B.NewBOEID--[BOEID]
       ,TE.[LaborTypeWarningFlag]
       ,TE.[IMS_ID]

@@ -10,6 +10,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Reflection;
     using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
@@ -2954,6 +2955,74 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             items = sut.FindAdjacentTasks(boeAObject, boeTaskElementD.Id);
             Assert.AreEqual(boeTaskElementC.Id, items.PreviousId);
             Assert.AreEqual(null, items.NextId);
+        }
+
+        /// <summary>
+        /// Test GetMoqTypeHelpUrls for SSC
+        /// </summary>
+        [TestMethod]
+        public void GetMoqTypeHelpUrls_Test_SSC()
+        {
+            BOELaborControllerLogic sut = CreateSystemSSC();
+
+            MoqTypeHelpUrls helpUrls = sut.GetMoqTypeHelpUrls();
+
+            Assert.IsNotNull(helpUrls);
+
+            // Assert base url matches web.config
+            Assert.AreEqual(ConfigurationUtilities.GetAppSetting("MOQHelpBaseUrl"), helpUrls.BaseUrl);
+
+            foreach (PropertyInfo property in helpUrls.GetType().GetProperties())
+            {
+                string value = property.GetValue(helpUrls).ToString();
+                Assert.IsNotNull(value);
+
+                if (property.Name == "ContractNumberSuffix")
+                {
+                    // This field isn't used in SSC
+                    Assert.IsTrue(string.IsNullOrEmpty(value));
+                }
+                else
+                {
+                    // TODO - enable this once we have SSC values
+                    // Make sure the rest have been populated
+                    // Assert.IsFalse(string.IsNullOrEmpty(value));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Test GetMoqTypeHelpUrls for RMS
+        /// </summary>
+        [TestMethod]
+        public void GetMoqTypeHelpUrls_Test_RMS()
+        {
+            BOELaborControllerLogic sut = CreateSystemMST();
+
+            MoqTypeHelpUrls helpUrls = sut.GetMoqTypeHelpUrls();
+
+            Assert.IsNotNull(helpUrls);
+
+            // Assert base url matches web.config
+            Assert.AreEqual(ConfigurationUtilities.GetAppSetting("MOQHelpBaseUrl"), helpUrls.BaseUrl);
+
+            // Assert all fields set
+            foreach (PropertyInfo property in helpUrls.GetType().GetProperties())
+            {
+                string value = property.GetValue(helpUrls).ToString();
+                Assert.IsNotNull(value);
+
+                if (property.Name == "RepositoryNameSuffix" || property.Name == "QueryTypeSuffix")
+                {
+                    // These fields aren't used in RMS
+                    Assert.IsTrue(string.IsNullOrEmpty(value));
+                }
+                else
+                {
+                    // Make sure the rest have been populated
+                    Assert.IsFalse(string.IsNullOrEmpty(value));
+                }
+            }
         }
     }
 }

@@ -159,7 +159,7 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             if (usingTemplateBoe)
             {
-                return new int?[] { null, null, 1, null, null, null, null, null, null, null };
+                return new int?[] { null, null, 1, null, null, null, null, null, null, null, null };
             }
             else
             {
@@ -324,7 +324,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     toReturn.Add(this.GetMOQbyBOEbyTaskData(exportInputs));
                     toReturn.Add(this.GetMOQTableData(exportInputs));
-                    // TODO - BOEJ-4911 - Add MOQ Summary
+                    toReturn.Add(this.GetMOQSummaryData(exportInputs));
                 }
 
                 toReturn.Add(this.GetWBSSheetExportData(exportInputs));
@@ -1287,6 +1287,59 @@ namespace GenBOE.ActionLogic.IO.Export
                 table.AdditionalQueryFilters,
                 table.TotalRelevantHours.ToString()
             };
+        }
+
+        /// <summary>
+        /// Get the row data for the MOQ Table Data sheet
+        /// </summary>
+        /// <param name="exportInputs">Export Inputs</param>
+        /// <returns></returns>
+        private ExcelExportWorksheet GetMOQSummaryData(BOEExportInputs exportInputs)
+        {
+            ExcelExportWorksheet toReturn = new ExcelExportWorksheet("MOQ Summary");
+
+            IDictionary<MOQType, decimal> hoursByMOQ = new Dictionary<MOQType, decimal>();
+
+            foreach (ResourceTypeDto resourceType in exportInputs.TaskElements.SelectMany(x => x.taskElementLabors))
+            {
+                if (resourceType.SpreadType == SpreadType.Hours && resourceType.ValueSpread.HasValue)
+                {
+                    MOQType selectedMoqType = (MOQType)resourceType.MoqTypeSelectionId;
+
+                    if (hoursByMOQ.ContainsKey(selectedMoqType))
+                    {
+                        hoursByMOQ[selectedMoqType] += resourceType.ValueSpread.Value;
+                    }
+                    else
+                    {
+                        hoursByMOQ.Add(selectedMoqType, resourceType.ValueSpread.Value);
+                    }
+                }
+            }
+
+            decimal totalHours = hoursByMOQ.Sum(x => x.Value);
+
+            foreach (KeyValuePair<MOQType, decimal> moqHours in hoursByMOQ.OrderBy(x => x.Key)) 
+            {
+                decimal percentage = moqHours.Value / totalHours;
+                IList<string> row = new List<string>()
+                {
+                    moqHours.Key.GetDescription(),
+                    moqHours.Value.ToString(),
+                    percentage.ToString()
+                };
+
+                toReturn.Add(row);
+            }
+
+            toReturn.Add(new List<string>()
+            {
+                "Grand Total",
+                totalHours.ToString(),
+                "1"
+            });
+
+            return toReturn;
         }
 
         /// <summary>

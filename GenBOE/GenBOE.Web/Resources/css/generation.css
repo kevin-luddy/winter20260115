@@ -8491,6 +8491,7 @@ div.moqTypeHeader {
     height: 16px;
     max-width: 20px;
     float: left;
+    cursor: pointer;
 }
 
 .moqTypeHeader.expanded {
@@ -8499,4 +8500,8 @@ div.moqTypeHeader {
 
 .moqTypeHeader.collapsed {
     background: url(/Resources/css/images/expand.png) no-repeat 0 center;
+}
+
+.tableData .help-icon {
+    margin-top: 1px;
 }

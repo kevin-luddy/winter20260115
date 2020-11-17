@@ -182,6 +182,11 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     $scope.toggle = function (item) {
         item.collapsed = !item.collapsed;
     }
+
+    $scope.openHelp = function (suffix) {
+        var url = $scope.model.MoqTypeHelpUrls.BaseUrl + suffix;
+        $window.open(url, '_blank');
+    };
 }]);
 
 // initialize MOQ Equation Widget.. moved here so that way this much script is not in the ascx page
