@@ -94,6 +94,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this.boePickListMapper.Object,
                 this.ptmPickListMapper.Object,
                 this.contractTypeLoader.Object,
+                null, 
                 null);
         }
 
@@ -123,6 +124,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this.boePickListMapper.Object, 
                 this.ptmPickListMapper.Object,
                 this.contractTypeLoader.Object,
+                null,
                 null);
         }
 
