@@ -1346,9 +1346,14 @@
                         }
                         $scope.isSaving = false;
                         $(document).trigger("HIDE_LOADING_BOX");
-                        $([document.documentElement, document.body]).animate({
-                            scrollTop: $("#mainErrorBox").offset().top
-                        }, 1000);
+
+                        // scroll to top of the task to display the error
+                        // timeout needed for first save attempt to allow mainErrorBox to render
+                        $timeout(function () {
+                            $([document.documentElement, document.body]).animate({
+                                scrollTop: $("#mainErrorBox").offset().top
+                            }, 1000);
+                        }, 1);
                 });
             }
         }
