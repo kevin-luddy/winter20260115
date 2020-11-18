@@ -701,7 +701,11 @@
                 $scope.data.SelectedContractTypes = response.data.ContractTypes;
                 $scope.data.ProposalSubmittalDate = response.data.AnticipatedDeliveryDate;
                 $scope.data.RevisedSubmittalDate = response.data.RevisedSubmittalDate;
-                $scope.data.UsingTemplateBoe = response.data.UsingTemplateBoe;
+
+                if (!$scope.data.IsAttemptingToImport) {
+                    $scope.data.UsingTemplateBoe = response.data.UsingTemplateBoe;
+                }
+
                 deferred.resolve();
             },
             function errorCallback(error) {
