@@ -52,7 +52,7 @@
             url: $scope.model.ProPricerUrl + 'poolinstance'
         }).then(function (response) {
             $scope.model.SendToProPricerData.Instances = response.data;
-            
+
             if (response.data[0].IsBackup) {
                 $('#backupPropricer').show();
             }
