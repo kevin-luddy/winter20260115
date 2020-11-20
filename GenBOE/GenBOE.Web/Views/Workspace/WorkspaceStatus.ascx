@@ -104,7 +104,9 @@
                 $(document).trigger('ReloadWSStatusPage');
 
             },
-            error: function () {
+            error: function (errorDetails) {
+                $('#statusErrorMessage').text($.parseJSON(errorDetails.responseText).Message).show();
+
                 refreshModule($('.workspace-status.module'));
                 $('#Save-WorkspaceStatus').removeClass('display-none');
                 $('#Loader-WorkspaceStatus').addClass('display-none');
@@ -156,7 +158,7 @@
         
 <% using (Html.BeginForm("", "", FormMethod.Post, new { id = "WorkspaceStatusForm" }))
    { %>
-           <ul class="validation-box"> </ul>
+           <ul id="statusErrorMessage" class="validation-box"> </ul>
            <%: Html.ValidationMessageFor(model => model.WorkspaceStatus)%>
         <div class="form-row">Change the status of the Workspace.</div>
         <div class="form-row">
