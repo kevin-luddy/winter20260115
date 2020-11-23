@@ -82,6 +82,11 @@
             $('#menu-options-box').addClass('display-none');
             event.stopPropagation();
         });
+
+        TaskElementDetailsWidget.registerForDelegateEvent('change', '.tableData input, .tableData textarea', function (event) {
+            MOQEquationFieldWidget.setDirty();
+        });
+
         TaskElementDetailsWidget.CheckToShowMetrics();
         TaskElementDetailsWidget.MOQText = CreateRteTemplate('<%:showMoqQuestions%>'.isTrue(), <%: numberMoqQuestions %>);
 

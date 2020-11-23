@@ -1472,13 +1472,18 @@
         $scope.checkIfNewRowNeeded(item);
     };
 
+    $scope.moqTypeSelected = function (item) {
+        $scope.setDirty();
+        $scope.checkIfNewRowNeeded(item);
+    };
+
     $scope.runAllTaskDateValidation = function () {
         $scope.laborTypeErrors = [];
 
         angular.forEach($scope.tableData, function (item, key) {
             $scope.validateDates(item, true);
         });
-    }
+    };
 
     $scope.validateDates = function (item, displayErrors) {
         var valid = false;

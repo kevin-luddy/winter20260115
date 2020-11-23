@@ -610,7 +610,7 @@
                                             </td>
                                             <% if (Model.UsingTemplateBOE) { %>
                                                 <td class="resourceMoqType">
-                                                    <select data-ng-options="option.SelectedMOQType as option.SelectedMOQTypeText for option in SelectedMoqTypes" data-ng-model="item.SelectedMOQType" data-ng-change="checkIfNewRowNeeded(item)"></select>
+                                                    <select data-ng-options="option.SelectedMOQType as option.SelectedMOQTypeText for option in SelectedMoqTypes" data-ng-model="item.SelectedMOQType" data-ng-change="moqTypeSelected(item)"></select>
                                                 </td>
                                             <% } %>
                                             <% if (Model.BOEIsMulti) { %>
