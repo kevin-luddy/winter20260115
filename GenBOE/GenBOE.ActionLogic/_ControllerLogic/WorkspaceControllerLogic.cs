@@ -1497,7 +1497,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
                 SelectedMOQType = taskElement.MOQType.MapToNew(ws.CreationDate),
                 SmeReason = taskElement.MOQType.MapToNew(ws.CreationDate) == MOQType.SME ? taskElement.MOQText : string.Empty,
-                Rationale = taskElement.MOQType.MapToNew(ws.CreationDate) != MOQType.SME ? string.Empty : taskElement.MOQText
+                Rationale = taskElement.MOQType.MapToNew(ws.CreationDate) == MOQType.SME ? string.Empty : taskElement.MOQText
             }).ToList();
         }
 
