@@ -65,6 +65,14 @@
 
             ExportToProPricerGridWidget.ExportCsvFiles(reportId, reportName, scope);
         });
+
+        $('#ExportToProPricerGrid tbody tr[pkid] td[name=Send]').click(function () {
+            var reportId = $(this).attr('formatID');
+            var reportName = $(this).attr('formatName');
+            var scope = $(this).attr('scope');
+
+            ExportToProPricerGridWidget.SendDirectly(reportId, reportName, scope);
+        })
     };
 
     ExportToProPricerGridWidget.ExportCsvFiles = function (reportId, reportName, scope) {
@@ -74,6 +82,19 @@
             $(document).trigger('EXPORT_PROPRICER_EXPORT_FORMAT', format);
         };
         DiscrepancyValidator.ValidateDiscrepancies(proceedWithExportFunction);
+    };
+
+    ExportToProPricerGridWidget.SendDirectly = function (reportId, reportName, scope) {
+        // Establish function to call SendToProPricerClicked in ProPricerController.js if there are no discrepancies or if the user elects to proceed
+        var angularScope = angular.element($('#ProPricerController')).scope();
+
+        var proceedWithSendFunction = function () {
+            angularScope.$apply(function () {
+                angularScope.SendToProPricerClicked(reportId, reportName, scope);
+            })
+        };
+
+        DiscrepancyValidator.ValidateDiscrepancies(proceedWithSendFunction);
     };
 
     // Trigger an event to tell the main UI which formats can be copied from
@@ -106,7 +127,7 @@
         CopyToSystemFormatAction: '<%= WebConstants.ACTION_COPY_FORMAT_TO_SYSTEM_LEVEL %>',
     });
 </script>
-<div data-ng-controller="ProPricerController">
+<div id="ProPricerController" data-ng-controller="ProPricerController">
     <gen-validation data-errors="errors"></gen-validation>
     <table id="ExportToProPricerGrid" class="export-to-propricer-grid readonly grid full-width">
         <thead>
@@ -159,7 +180,7 @@
                             <td name="Edit"><a><%: item.Name%></a></td>
                             <td><% if (isSystemAdmin && item.Scope == ProPricerScope.Workspace) { %><a data-ng-click="CopyToSystemLevel(<%: item.ID %>)" class='CopySystemLevel'>Copy To System Level</a><% } %></td>
                             <td name="Export" formatID="<%: item.ID %>" formatName="<%: item.Name%>" scope="<%: (int)item.Scope %>"><a>Export Files</a></td>
-                            <td name="Send" class="send" formatID="<%: item.ID %>"><div data-ng-show="showInstanceLoader" class="loader"></div><a data-ng-hide="showInstanceLoader" data-ng-click="SendToProPricerClicked(<%: item.ID %>, '<%: item.Name %>', '<%: (int)item.Scope %>')">Send Directly</a></td>
+                            <td name="Send" class="send" formatID="<%: item.ID %>" formatName="<%: item.Name%>" scope="<%: (int)item.Scope %>"><div data-ng-show="showInstanceLoader" class="loader"></div><a data-ng-hide="showInstanceLoader">Send Directly</a></td>
                     <% } %>                
                </tr>
             <% } %>
