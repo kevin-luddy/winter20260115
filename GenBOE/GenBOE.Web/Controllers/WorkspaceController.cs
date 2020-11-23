@@ -3360,7 +3360,7 @@ namespace GenBOE.Web.Controllers
                     if (!_WorkspaceStateMachine.PerformStateTransitionValidation(ws, originalState, workspaceStatusMV.WorkspaceStatus, out validationMessage))
                     {
                         // not valid ... communicate to user
-                        throw new GenValidationException(" Error: Unable to change state: " + validationMessage);
+                        throw new GenValidationException("Error: Unable to change state: " + validationMessage);
                     }
                 }
 
