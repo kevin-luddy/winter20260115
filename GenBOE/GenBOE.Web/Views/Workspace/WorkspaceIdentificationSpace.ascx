@@ -2,6 +2,11 @@
 <%@ Import namespace="System.Web.Optimization" %>
 <%@ Import namespace="IES.Common.PickList" %>
 <%: Scripts.Render("~/bundles/identification") %>
+<% object dropdownParams = new { onchange = @"WorkspaceIdentificationWidget.BoeTemplateChange()" };
+   if (Model.UsingTemplateBoe) { 
+        dropdownParams = new { onchange = @"WorkspaceIdentificationWidget.BoeTemplateChange()", @class = "disabled", @disabled = "disabled" }; 
+   } 
+%>
 
 <script type="text/javascript">
 
@@ -265,6 +270,17 @@
             // Keep the select value the same as it was without the proposal name being added
             $('#proposalSelect').val(originalTrackingNumber);
         }    
+    }
+
+    WorkspaceIdentificationWidget.BoeTemplateChange = function () {
+        GenSession.confirmDialog("Template BOE Change",
+            "Are you sure you want to change Template BOE to 'Yes'? This cannot be undone.",
+            function () { },
+            function () {
+                WorkspaceIdentificationWidget.cleanDirty();
+                window.location.reload(true);
+            }
+        );
     }
 
     $('#RteSizeLimit').keyup(function () {
@@ -647,7 +663,7 @@
                     {
                         new SelectListItem() { Text = "Yes", Value = "True" },
                         new SelectListItem() { Text = "No", Value = "False" }
-                    }, new { @class = "disabled", @disabled = "true" }) %>
+                    }, dropdownParams) %>
             </div>
         </div>
         <button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>

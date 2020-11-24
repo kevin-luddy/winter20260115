@@ -46,12 +46,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="inBOELaborControllerLogic">The in BOE labor controller logic.</param>
         /// <param name="fullWsRecalc">The full ws recalc.</param>
         /// <param name="inWorkspaceVariableLoader">The in workspace variable loader.</param>
-        /// <param name="inCustomFieldValueLoader">The in custom field value loader.</param>
+        /// <param name="inCustomFieldValueLoader">CF value loader</param>
+        /// <param name="customFieldLoader">The custom field loader.</permission>
+        /// <param name="offloadRatesDTOLoader">Offload Rates Loader</param>
         /// <param name="projectMapDataLoader">The project map data loader.</param>
-        /// <param name="boePickListMapper">The boe pick list mapper.</param>
-        /// <param name="ptmPickListMapper">The ptm pick list mapper.</param>
-        public WorkspaceControllerLogicSpaceSystems(
-            IWorkspaceDTODataLoader workspaceLoader,
+        /// <param name="boePickListMapper">The BOE pick list mapper.</param>
+        /// <param name="ptmPickListMapper">The PTM pick list mapper.</param>
+        /// <param name="contractTypeLoader">Contract Type Loader</param>
+        /// <param name="workspaceExporter">WS Exporter</param>
+        /// <param name="moqTypeLoader">Moq Type Loader</param>
+
+        public WorkspaceControllerLogicSpaceSystems(IWorkspaceDTODataLoader workspaceLoader,
             IUserDTODataLoader inuserLoader,
             IResourceDTODataLoader inResourceLoader,
             ITMResourceRateDTODataLoader inTmResourceRateDataLoader,
@@ -70,7 +75,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IPickListMapper boePickListMapper,
             IPickListMapper ptmPickListMapper,
             ContractTypeLoader contractTypeLoader,
-            WorkspaceExporter workspaceExporter)
+            WorkspaceExporter workspaceExporter,
+            IMoqTypeDataLoader moqTypeLoader)
             : base(
                 workspaceLoader,
                 inuserLoader,
@@ -91,7 +97,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 boePickListMapper,
                 ptmPickListMapper,
                 contractTypeLoader,
-                workspaceExporter
+                workspaceExporter,
+                moqTypeLoader
         )
         {
             // nothing to do here

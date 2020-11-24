@@ -305,5 +305,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// </summary>
         /// <param name="wsId">The workspace Id.</param>
         void CreateSikorskyCustomFields(int wsId);
+
+        /// <summary>
+        /// Gets MOQ Type data when WS is changing from not using BOE Templates to using BOE Templates. This data still needs to be saved later
+        /// </summary>
+        /// <param name="ws">Workspace which is being saved</param>
+        /// <returns>MOQ Type Data to save</returns>
+        ICollection<MoqTypeSelection> GetMoqTypesDataForBoeTemplateSettingChange(FullWorkspace ws);
+
+        /// <summary>
+        /// Save MOQ Types
+        /// </summary>
+        /// <param name="moqTypesToSave">Moq Types To Save</param>
+        void SaveMoqTypes(ICollection<MoqTypeSelection> moqTypesToSave);
     }
 }

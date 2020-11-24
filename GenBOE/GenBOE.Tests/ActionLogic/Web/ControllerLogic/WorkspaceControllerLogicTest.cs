@@ -20,6 +20,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.Workspace;
+    using GenBOE.ActionLogic.Validation;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.DataBridge.Reference;
@@ -94,6 +95,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this.boePickListMapper.Object,
                 this.ptmPickListMapper.Object,
                 this.contractTypeLoader.Object,
+                null, 
                 null);
         }
 
@@ -123,6 +125,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this.boePickListMapper.Object, 
                 this.ptmPickListMapper.Object,
                 this.contractTypeLoader.Object,
+                null,
                 null);
         }
 
@@ -179,6 +182,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), this.factory.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), this._commonDatamapper.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), this._permissionLoader.Object);
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(ValidationFactory), CreateValidationFactoryMock().Object);
 
             this.rteTemplateDataLoader = new Mock<IRteTemplateDataLoader>();
         }
@@ -294,14 +298,14 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void GetWorkspaceIdentificationTestSpaceSystems()
         {
-            var sut = this.CreateSystemSpaceSystems();
+            WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
             DoGetWorkspaceIdentificationTest(sut, CompanyConfiguration.SpaceSystems);
         }
 
         [TestMethod]
         public void GetWorkspaceIdentificationTestMST()
         {
-            var sut = this.CreateSystemMST();
+            WorkspaceControllerLogicMST sut = this.CreateSystemMST();
             DoGetWorkspaceIdentificationTest(sut, CompanyConfiguration.MST);
         }
 
@@ -309,7 +313,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void GetWorkspaceIdentificationTestExceptionSpaceSystems()
         {
-            var sut = this.CreateSystemSpaceSystems();
+            WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
             WorkspaceIdentificationSpaceModelView result = sut.GetWorkspaceIdentificationModelView(null) as WorkspaceIdentificationSpaceModelView;
             Assert.IsNull(result);
         }
@@ -318,7 +322,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void GetWorkspaceIdentificationTestExceptionMST()
         {
-            var sut = this.CreateSystemMST();
+            WorkspaceControllerLogicMST sut = this.CreateSystemMST();
             WorkspaceIdentificationMSTModelView result = sut.GetWorkspaceIdentificationModelView(null) as WorkspaceIdentificationMSTModelView;
             Assert.IsNull(result);
         }
@@ -328,7 +332,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void GetCreateWorkspaceModelViewSSC()
         {
-            var sut = CreateSystemSpaceSystems();
+            WorkspaceControllerLogicSpaceSystems sut = CreateSystemSpaceSystems();
             CreateWorkspaceSpaceModelView result = sut.GetCreateWorkspaceModelView() as CreateWorkspaceSpaceModelView;
 
             Assert.IsNotNull(result, "The model view is not the required type.");
@@ -337,7 +341,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void GetCreateWorkspaceModelViewMST()
         {
-            var sut = CreateSystemMST();
+            WorkspaceControllerLogicMST sut = CreateSystemMST();
             CreateWorkspaceMSTModelView result = sut.GetCreateWorkspaceModelView() as CreateWorkspaceMSTModelView;
 
             Assert.IsNotNull(result, "The model view is not the required type.");
@@ -347,7 +351,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void CanExportBoeForWorkofflineMST()
         {
-            var sut = this.CreateSystemMST();
+            WorkspaceControllerLogicMST sut = this.CreateSystemMST();
             bool result = sut.CanExportBoeForWorkoffline(true, true);
             Assert.AreEqual(true, result, "The result for the CanEportBoeForWorkofflineMST test should have been true.");
             result = sut.CanExportBoeForWorkoffline(false, true);
@@ -362,7 +366,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void CreateworkspaceResourceRateTMModelViewSSC()
         {
-            var sut = CreateSystemSpaceSystems();
+            WorkspaceControllerLogicSpaceSystems sut = CreateSystemSpaceSystems();
             WorkspaceResourceRateTMModelView result = sut.CreateWorkspaceResourceRateTMModelView();
             Assert.AreEqual(WebConstants.WORKSPACE_RESOURCE_RATE_TM_SPACE_HEADING_TEXT, result.WorkspaceResourceRateTMHeadingText, "The heading text is not correct.");
             Assert.AreEqual(WebConstants.WORKSPACE_RESOURCE_RATE_TM_SPACE_JUMP_DESCRIPTION_TEXT, result.WorkspaceResourceRateTMJumpDescription, "The jump description text is not correct.");
@@ -373,7 +377,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void CreateworkspaceResourceRateTMModelViewMST()
         {
-            var sut = CreateSystemMST();
+            WorkspaceControllerLogicMST sut = CreateSystemMST();
             WorkspaceResourceRateTMModelView result = sut.CreateWorkspaceResourceRateTMModelView();
             Assert.AreEqual(WebConstants.WORKSPACE_RESOURCE_RATE_TM_SPACE_HEADING_TEXT, result.WorkspaceResourceRateTMHeadingText, "The heading text is not correct.");
             Assert.AreEqual(WebConstants.WORKSPACE_RESOURCE_RATE_TM_SPACE_JUMP_DESCRIPTION_TEXT, result.WorkspaceResourceRateTMJumpDescription, "The jump description text is not correct.");
@@ -386,7 +390,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void GetDefaultReportTemplateSSC()
         {
-            var sut = CreateSystemSpaceSystems();
+            WorkspaceControllerLogicSpaceSystems sut = CreateSystemSpaceSystems();
             ExcelReportTemplateType result = sut.GetDefaultReportTemplateType();
             Assert.AreEqual(ExcelReportTemplateType.MASTER, result, "The type of ExcelReportTemplateType returned in incorrect.");
         }
@@ -394,7 +398,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void GetDefaultReportTemplateMST()
         {
-            var sut = CreateSystemMST();
+            WorkspaceControllerLogicMST sut = CreateSystemMST();
             ExcelReportTemplateType result = sut.GetDefaultReportTemplateType();
             Assert.AreEqual(ExcelReportTemplateType.MASTER, result, "The type of ExcelReportTemplateType returned in incorrect.");
         }
@@ -404,7 +408,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void GetPicklistReportTemplateTypesSSC()
         {
-            var sut = CreateSystemSpaceSystems();
+            WorkspaceControllerLogicSpaceSystems sut = CreateSystemSpaceSystems();
             ICollection<ExcelReportTemplateType> result = sut.GetPicklistReportTemplateTypes(new FullWorkspace());
             Assert.AreEqual(1, result.Count, "The number of objects returned in incorrect.");
             Assert.AreEqual(ExcelReportTemplateType.MASTER, result.ToCollection()[0]);
@@ -413,7 +417,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void GetPicklistReportTemplateTypesMST()
         {
-            var sut = CreateSystemMST();
+            WorkspaceControllerLogicMST sut = CreateSystemMST();
             ICollection<ExcelReportTemplateType> result = sut.GetPicklistReportTemplateTypes(new FullWorkspace());
             Assert.AreEqual(11, result.Count, "The number of objects returned in incorrect.");
             Assert.AreEqual(ExcelReportTemplateType.MASTER, result.ToCollection()[0]);
@@ -432,7 +436,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void GetPicklistReportTemplateTypesMST_ProjectMapWorkspace()
         {
-            var sut = CreateSystemMST();
+            WorkspaceControllerLogicMST sut = CreateSystemMST();
             ICollection<ExcelReportTemplateType> result = sut.GetPicklistReportTemplateTypes(new FullWorkspace() { ProjectMapType = ProjectMapType.TimePhasedProjectMap });
             Assert.AreEqual(2, result.Count, "The number of objects returned in incorrect.");
             Assert.AreEqual(ExcelReportTemplateType.RMS_SIKORSKY_PROJECT_MAP, result.ToCollection()[0]);
@@ -444,7 +448,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void GetCustomFieldsGridModelViewsTest()
         {
-            var sut = CreateSystemSpaceSystems();
+            WorkspaceControllerLogicSpaceSystems sut = CreateSystemSpaceSystems();
 
             CustomFieldDTO customFieldDTO = new CustomFieldDTO() { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldName = "test", CustomFieldRequired = false, IsOpenEnded = false, WorkspaceID = 1 };
             CustomFieldValueDTO customFieldValueDTO = new CustomFieldValueDTO() { Id = 1, CustomFieldID = customFieldDTO.Id, CustomFieldValueID = 1, CustomFieldValueName = "test name", CustomFieldValueDescription = "test desc", CustomFieldValueInUseFlag = true };
@@ -483,7 +487,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void GetCustomFieldsGridModelViewsTest_NullException()
         {
-            var sut = CreateSystemSpaceSystems();
+            WorkspaceControllerLogicSpaceSystems sut = CreateSystemSpaceSystems();
             sut.GetCustomFieldsGridModelViews(null, 0);
         }
         #endregion
@@ -492,7 +496,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void WorkspaceIdentificationViewNameSSC()
         {
-            var sut = CreateSystemSpaceSystems();
+            WorkspaceControllerLogicSpaceSystems sut = CreateSystemSpaceSystems();
             String result = sut.WorkspaceIdentificationViewName;
             Assert.AreEqual(WebConstants.VIEW_WORKSPACE_IDENTIFICATION_SPACE, result, "The Workspace Identification view name is incorrect.");
         }
@@ -500,7 +504,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void WorkspaceIdentificationViewNameMST()
         {
-            var sut = CreateSystemMST();
+            WorkspaceControllerLogicMST sut = CreateSystemMST();
             String result = sut.WorkspaceIdentificationViewName;
             Assert.AreEqual(WebConstants.VIEW_WORKSPACE_IDENTIFICATION_MST, result, "The Workspace Identification view name is incorrect.");
         }
@@ -510,7 +514,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void PopulateCompanySpecificPropertiesSSC()
         {
-            var sut = CreateSystemSpaceSystems();
+            WorkspaceControllerLogicSpaceSystems sut = CreateSystemSpaceSystems();
             WorkspaceSearchResultModelView result = new WorkspaceSearchResultModelView();
             sut.PopulateCompanySpecificProperties(result);
             Assert.AreEqual(CommonConstants.LABEL_TEXT_LEAD_PRICER_SSC, result.LabelLeadPricer, "The LabelLeadPricer property is incorrect.");
@@ -519,7 +523,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void PopulateCompanySpecificPropertiesMST()
         {
-            var sut = CreateSystemMST();
+            WorkspaceControllerLogicMST sut = CreateSystemMST();
             WorkspaceSearchResultModelView result = new WorkspaceSearchResultModelView();
             sut.PopulateCompanySpecificProperties(result);
             Assert.AreEqual(CommonConstants.LABEL_TEXT_LEAD_PRICER_SSC, result.LabelLeadPricer, "The LabelLeadPricer property is incorrect.");
@@ -529,7 +533,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void PopulateCompanySpecificPropertiesExceptionSSC()
         {
-            var sut = CreateSystemSpaceSystems();
+            WorkspaceControllerLogicSpaceSystems sut = CreateSystemSpaceSystems();
             sut.PopulateCompanySpecificProperties(null);
         }
 
@@ -537,7 +541,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void PopulateCompanySpecificPropertiesExceptionMST()
         {
-            var sut = CreateSystemMST();
+            WorkspaceControllerLogicMST sut = CreateSystemMST();
             sut.PopulateCompanySpecificProperties(null);
         }
         #endregion
@@ -550,7 +554,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void PopulateCompanySpecificWorkspacePropertiesSSC_WorkspaceIdentification()
         {
-            var sut = CreateSystemSpaceSystems();
+            WorkspaceControllerLogicSpaceSystems sut = CreateSystemSpaceSystems();
             WorkspaceIdentificationSpaceModelView theModel = new WorkspaceIdentificationSpaceModelView();
             WorkspaceDTO wsDto = new WorkspaceDTO();
             theModel.ProposalClassType = 3;
@@ -574,7 +578,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [TestMethod]
         public void PopulateCompanySpecificWorkspacePropertiesSSC_CreateWorkspace()
         {
-            var sut = CreateSystemSpaceSystems();
+            WorkspaceControllerLogicSpaceSystems sut = CreateSystemSpaceSystems();
             CreateWorkspaceSpaceModelView theModel = new CreateWorkspaceSpaceModelView();
             WorkspaceDTO wsDto = new WorkspaceDTO();
             theModel.ProposalClass = 3;
@@ -597,7 +601,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void PopulateCompanySpecificWorkspacePropertiesExceptionSSC_WorkspaceIdentification()
         {
-            var sut = CreateSystemSpaceSystems();
+            WorkspaceControllerLogicSpaceSystems sut = CreateSystemSpaceSystems();
             WorkspaceIdentificationSpaceModelView theModel = new WorkspaceIdentificationSpaceModelView();
             sut.PopulateCompanySpecificWorkspaceProperties(theModel, null);
         }
@@ -609,7 +613,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void PopulateCompanySpecificWorkspacePropertiesExceptionSSC_CreateWorkspace()
         {
-            var sut = CreateSystemSpaceSystems();
+            WorkspaceControllerLogicSpaceSystems sut = CreateSystemSpaceSystems();
             CreateWorkspaceSpaceModelView theModel = new CreateWorkspaceSpaceModelView();
             sut.PopulateCompanySpecificWorkspaceProperties(theModel, null);
         }
@@ -621,7 +625,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void PopulateCompanySpecificWorkspacePropertiesExceptionMST()
         {
-            var sut = CreateSystemMST();
+            WorkspaceControllerLogicMST sut = CreateSystemMST();
             WorkspaceIdentificationMSTModelView theModel = new WorkspaceIdentificationMSTModelView();
             sut.PopulateCompanySpecificWorkspaceProperties(theModel, null);
         }
@@ -633,7 +637,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         [ExpectedException(typeof(ArgumentNullException))]
         public void PopulateCompanySpecificWorkspacePropertiesException2MST()
         {
-            var sut = CreateSystemMST();
+            WorkspaceControllerLogicMST sut = CreateSystemMST();
             ICreateWorkspaceModelView theModel2 = new CreateWorkspaceMSTModelView();
             sut.PopulateCompanySpecificWorkspaceProperties(theModel2, null);
         }
@@ -831,10 +835,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             WorkspaceResourceRateGridTMModelView result = sut.GetWorkspaceResourceRateGridTMModelView(ws, null);
 
-            var result1 = result.WorkspaceResourceRateTMResults.Where(x => x.ResourceRateID == tmResourceRateDTOs[0].ResourceRateID).First();
-            var result2 = result.WorkspaceResourceRateTMResults.Where(x => x.ResourceRate.IsEquivalentTo(systemRateDTOs[0].ResourceRate.ToString())).First();
-            var result3 = result.WorkspaceResourceRateTMResults.Where(x => x.ResourceRate.IsEquivalentTo(systemRateDTOs[1].ResourceRate.ToString())).First();
-            var result4 = result.WorkspaceResourceRateTMResults.Where(x => x.ResourceRateID == tmResourceRateDTOs[2].ResourceRateID).First();
+            WorkspaceResourceRateTMModelView result1 = result.WorkspaceResourceRateTMResults.Where(x => x.ResourceRateID == tmResourceRateDTOs[0].ResourceRateID).First();
+            WorkspaceResourceRateTMModelView result2 = result.WorkspaceResourceRateTMResults.Where(x => x.ResourceRate.IsEquivalentTo(systemRateDTOs[0].ResourceRate.ToString())).First();
+            WorkspaceResourceRateTMModelView result3 = result.WorkspaceResourceRateTMResults.Where(x => x.ResourceRate.IsEquivalentTo(systemRateDTOs[1].ResourceRate.ToString())).First();
+            WorkspaceResourceRateTMModelView result4 = result.WorkspaceResourceRateTMResults.Where(x => x.ResourceRateID == tmResourceRateDTOs[2].ResourceRateID).First();
 
             Assert.AreEqual(5, result.WorkspaceResourceRateTMResults.Count);
 
@@ -872,7 +876,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             Assert.AreEqual(tmResourceRateDTOs[2].ResourceRate.ToString(), result4.ResourceRate);
 
             // test sorting and filtering
-            var modelView = new WorkspaceResourceRateGridTMModelView()
+            WorkspaceResourceRateGridTMModelView modelView = new WorkspaceResourceRateGridTMModelView()
             {
                 SearchFilter = workspaceResource2.ResourceName,
                 SortField = WorkspaceResourceRateTMModelView.SORT_ID_START_DATE,
@@ -2254,5 +2258,132 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         }
 
         #endregion
+
+        [TestMethod]
+        public void SaveWorkspaceIdentificationValidation_MoqChangeTestSSC()
+        {
+            WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
+
+            FullWorkspace ws = new FullWorkspace() { Id = 100 };
+            IWorkspaceIdentificationModelView wsDetails = new WorkspaceIdentificationSpaceModelView() { WorkspaceID = 100, WorkspaceName = DateTime.Now.Ticks.ToString(), CostVolumeLeadPricerNTID = "paliderd" };
+            this.retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new List<FullClin>());
+
+            // No -> No -- Valid
+            ws.UsingTemplateBOE = false;
+            wsDetails.UsingTemplateBoe = false;
+            Assert.IsFalse(sut.SaveWorkspaceIdentificationValidation(ws, wsDetails, false, false).Any());
+
+            // No -> Yes -- Valid
+            ws.UsingTemplateBOE = false;
+            wsDetails.UsingTemplateBoe = true;
+            Assert.IsFalse(sut.SaveWorkspaceIdentificationValidation(ws, wsDetails, false, false).Any());
+
+            // Yes -> Yes -- Valid
+            ws.UsingTemplateBOE = true;
+            wsDetails.UsingTemplateBoe = true;
+            Assert.IsFalse(sut.SaveWorkspaceIdentificationValidation(ws, wsDetails, false, false).Any());
+
+            // Yes -> No -- InValid
+            ws.UsingTemplateBOE = true;
+            wsDetails.UsingTemplateBoe = false;
+            Assert.IsTrue(sut.SaveWorkspaceIdentificationValidation(ws, wsDetails, false, false).Any());
+        }
+
+        [TestMethod]
+        public void SaveWorkspaceIdentificationValidation_MoqChangeTestRMS()
+        {
+            WorkspaceControllerLogicMST sut = this.CreateSystemMST();
+
+            FullWorkspace ws = new FullWorkspace() { Id = 100 };
+            IWorkspaceIdentificationModelView wsDetails = new WorkspaceIdentificationMSTModelView() { WorkspaceID = 100, WorkspaceName = DateTime.Now.Ticks.ToString(), ShortName = DateTime.Now.ToShortTimeString(), CostVolumeLeadPricerNTID = "paliderd" };
+            this.retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(new List<FullClin>());
+            
+            // No -> No -- Valid
+            ws.UsingTemplateBOE = false;
+            wsDetails.UsingTemplateBoe = false;
+            Assert.IsFalse(sut.SaveWorkspaceIdentificationValidation(ws, wsDetails, false, false).Any());
+
+            // No -> Yes -- Valid
+            ws.UsingTemplateBOE = false;
+            wsDetails.UsingTemplateBoe = true;
+            Assert.IsFalse(sut.SaveWorkspaceIdentificationValidation(ws, wsDetails, false, false).Any());
+
+            // Yes -> Yes -- Valid
+            ws.UsingTemplateBOE = true;
+            wsDetails.UsingTemplateBoe = true;
+            Assert.IsFalse(sut.SaveWorkspaceIdentificationValidation(ws, wsDetails, false, false).Any());
+
+            // Yes -> No -- InValid
+            ws.UsingTemplateBOE = true;
+            wsDetails.UsingTemplateBoe = false;
+            Assert.IsTrue(sut.SaveWorkspaceIdentificationValidation(ws, wsDetails, false, false).Any());
+        }
+
+        [TestMethod]
+        public void GetMoqTypesDataForBoeTemplateSettingChange_Test()
+        {
+            WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
+
+            FullWorkspace ws = new FullWorkspace() { Id = 100, CostDecimalPrecision = 0, ResourceDecimalPrecision = 0, CreationDate = DateTime.Now };
+
+            List<BoeTaskElementDTO> input = new List<BoeTaskElementDTO>()
+            {
+                new BoeTaskElementDTO()
+                {
+                    Id = 1,
+                    MOQType = MOQType.SSCActual,
+                    MOQText = "Text 1"
+                },
+                new BoeTaskElementDTO()
+                {
+                    Id = 2,
+                    MOQType = MOQType.SSCBottomUp,
+                    MOQText = "Text 2"
+                }
+            };
+
+            this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, false, ws.DecimalPrecision, ws.CostDecimalPrecision)).Returns(input);
+
+            ICollection<MoqTypeSelection> result = sut.GetMoqTypesDataForBoeTemplateSettingChange(ws);
+
+            Assert.AreEqual(input[0].Id, result.ElementAt(0).TaskId);
+            Assert.AreEqual(input[0].MOQType.MapToNew(ws.CreationDate), result.ElementAt(0).SelectedMOQType);
+            Assert.AreEqual(input[0].MOQText, result.ElementAt(0).Rationale);
+            Assert.AreEqual(UpdateType.Upsert, result.ElementAt(0).Updateable);
+
+            Assert.AreEqual(input[1].Id, result.ElementAt(1).TaskId);
+            Assert.AreEqual(input[1].MOQType.MapToNew(ws.CreationDate), result.ElementAt(1).SelectedMOQType);
+            Assert.AreEqual(input[1].MOQText, result.ElementAt(1).SmeReason);
+            Assert.AreEqual(UpdateType.Upsert, result.ElementAt(1).Updateable);
+        }
+
+        public Mock<ValidationFactory> CreateValidationFactoryMock()
+        {
+            Mock<Validator> validator = new Mock<Validator>();
+
+            validator.Setup(x => x.validation(It.IsAny<object>(), It.IsAny<Collection<Dictionary<string, string>>>())).Returns(new Collection<string>());
+
+            Mock<ValidationFactory> validationFactoryMock = new Mock<ValidationFactory>(validator.Object,
+                 validator.Object,
+                 validator.Object,
+                 validator.Object,
+                 validator.Object,
+                 validator.Object,
+                 validator.Object,
+                 validator.Object,
+                 validator.Object,
+                 validator.Object,
+                 validator.Object,
+                 validator.Object,
+                 validator.Object,
+                 validator.Object,
+                 validator.Object);
+
+            validationFactoryMock.Setup(x => x.getValidator(ValidationType.WorkspaceUniqueName)).Returns(validator.Object);
+            validationFactoryMock.Setup(x => x.getValidator(ValidationType.IsUserNotGroup)).Returns(validator.Object);
+            validationFactoryMock.Setup(x => x.getValidator(ValidationType.IsUserNotSubcontractor)).Returns(validator.Object);
+
+            return validationFactoryMock;
+        }
     }
 }
