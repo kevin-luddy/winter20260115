@@ -75,6 +75,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
                 this.RteSizeLimit = workspaceDTO.RteSizeLimit;
                 this.EnableTemplateBoeSelect = false;
                 this.UsingTemplateBoe = workspaceDTO.UsingTemplateBOE;
+                this.CreatedPriorToBoeTemplates = !workspaceDTO.CreationDate.HasValue || workspaceDTO.CreationDate < DateTime.Parse(ConfigurationUtilities.GetAppSetting("MoqTemplateStartDate"));
             }
             if (costVolumeLeadDTO != null)
             {
@@ -222,5 +223,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// </summary>
         [Required(ErrorMessage = "A selection for Template BOE is required.")]
         public bool UsingTemplateBoe { get; set; }
+
+        /// <summary>
+        /// Was WS created prior to Boe Templates being enabled
+        /// </summary>
+        public bool CreatedPriorToBoeTemplates { get; set; }
     }
 }

@@ -148,5 +148,10 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// Get/Set whether using Template BOE
         /// </summary>
         bool UsingTemplateBoe { get; set; }
+
+        /// <summary>
+        /// Was WS created prior to Boe Templates being enabled
+        /// </summary>
+        bool CreatedPriorToBoeTemplates { get; set; }
     }
 }

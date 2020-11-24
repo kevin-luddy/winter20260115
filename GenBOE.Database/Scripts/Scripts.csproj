@@ -50,6 +50,7 @@
   <ItemGroup>
     <Content Include="Object Scripts\Functions\MapToNewMoqType.sql" />
     <Content Include="Object Scripts\Functions\SplitString.function.sql" />
+    <Content Include="Object Scripts\Functions\WasWorkspaceCreatedAfterNewMoqTypes.sql" />
     <Content Include="Object Scripts\Stored Procedures\archiveOutputFormatTemplate.sql" />
     <Content Include="Object Scripts\Stored Procedures\copyWorkspace.sql" />
     <Content Include="Object Scripts\Stored Procedures\copyWorkspaceVersion.sql" />

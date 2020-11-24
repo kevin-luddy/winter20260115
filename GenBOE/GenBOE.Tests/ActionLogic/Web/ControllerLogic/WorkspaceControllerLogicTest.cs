@@ -2259,6 +2259,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
         #endregion
 
+        /// <summary>
+        /// Tests changing of MOQ Types in SSC
+        /// </summary>
         [TestMethod]
         public void SaveWorkspaceIdentificationValidation_MoqChangeTestSSC()
         {
@@ -2289,6 +2292,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             Assert.IsTrue(sut.SaveWorkspaceIdentificationValidation(ws, wsDetails, false, false).Any());
         }
 
+        /// <summary>
+        /// Tests changing of MOQ Types in RMS
+        /// </summary>
         [TestMethod]
         public void SaveWorkspaceIdentificationValidation_MoqChangeTestRMS()
         {
@@ -2319,6 +2325,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             Assert.IsTrue(sut.SaveWorkspaceIdentificationValidation(ws, wsDetails, false, false).Any());
         }
 
+        /// <summary>
+        /// Tests Transforming MOQ Data for save
+        /// </summary>
         [TestMethod]
         public void GetMoqTypesDataForBoeTemplateSettingChange_Test()
         {
@@ -2357,6 +2366,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             Assert.AreEqual(UpdateType.Upsert, result.ElementAt(1).Updateable);
         }
 
+        /// <summary>
+        /// Creates a mocked validation factory which returns all valid
+        /// </summary>
+        /// <returns>Mocked out validation factory</returns>
         public Mock<ValidationFactory> CreateValidationFactoryMock()
         {
             Mock<Validator> validator = new Mock<Validator>();
