@@ -848,6 +848,7 @@
             $scope.data.IsUsingTM = result.IsUsingTM;
             $scope.data.RteSizeLimit = result.RteSizeLimit;
             $scope.data.UsingTemplateBoe = result.UsingTemplateBoe;
+            $scope.data.InitialUsingTemplateBoe = result.UsingTemplateBoe;
                 
             if ($scope.data.WSExactCopy) {
                 $scope.data.ContainsOCI = result.ContainsOCI;
