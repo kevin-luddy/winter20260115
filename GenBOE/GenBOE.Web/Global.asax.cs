@@ -1085,7 +1085,8 @@ namespace GenBOE
             GenBOEUnityContainer.Container.RegisterType(typeof(LaborTypeAndSpreadImporter), typeof(LaborTypeAndSpreadImporter), GetLifetimeManager(), new InjectionConstructor(
                                                                                                                                         new ResolvedParameter(typeof(IResourceDTODataLoader)),
                                                                                                                                         new ResolvedParameter(typeof(IPerformingOrgDTODataLoader)),
-                                                                                                                                        new ResolvedParameter(typeof(ICommonDataMapper))));
+                                                                                                                                        new ResolvedParameter(typeof(ICommonDataMapper)),
+                                                                                                                                        new ResolvedParameter(typeof(IMoqTypeDataLoader))));
 
             GenBOEUnityContainer.Container.RegisterType(typeof(WbsImporter), typeof(WbsImporter), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(IFullObjectFactory)),
                                                                                                                                                  new ResolvedParameter(typeof(IWbsDTODataLoader)),

@@ -323,6 +323,36 @@ namespace GenBOE.Tests.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] LaborImportHoursMoqTypes {
+            get {
+                object obj = ResourceManager.GetObject("LaborImportHoursMoqTypes", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] LaborImportHoursMoqTypesInvalid {
+            get {
+                object obj = ResourceManager.GetObject("LaborImportHoursMoqTypesInvalid", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] LaborImportHoursMoqTypesMissing {
+            get {
+                object obj = ResourceManager.GetObject("LaborImportHoursMoqTypesMissing", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] LaborImportHoursPercentage {
             get {
                 object obj = ResourceManager.GetObject("LaborImportHoursPercentage", resourceCulture);

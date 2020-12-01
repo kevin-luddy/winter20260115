@@ -102,5 +102,10 @@ namespace GenBOE.Web.ModelView
         /// Gets or sets the custom field value containers.
         /// </summary>
         public Collection<CustomFieldImportModelView> CustomFieldValueContainers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the MOQ Type Selection ID
+        /// </summary>
+        public int? MoqTypeSelectionId { get; set; }
     }
 }
