@@ -15,14 +15,13 @@ CREATE FUNCTION dbo.MapToNewMoqType(@MoqValue INT, @wsCreationDate DATE) RETURNS
 **	Date:		Author:		Description:
 **	--------	--------	---------------------------------------------------
 **	2020-11-11	Dusan		Initial creation.
+**	2020-11-24	Dusan		Updated to use WasWorkspaceCreatedAfterNewMoqTypes
 **
 *******************************************************************************/
 
 BEGIN
-	DECLARE @moqStartDate DATE = '2020-10-15'; -- this may need to move / be updated?
-
 	DECLARE @result INT = @MoqValue;
-	IF(@wsCreationDate >= @moqStartDate)
+	IF((SELECT dbo.WasWorkspaceCreatedAfterNewMoqTypes(@wsCreationDate)) = 1)
 		BEGIN
 			SELECT @result = 
 				CASE 

@@ -2,9 +2,9 @@
 <%@ Import namespace="System.Web.Optimization" %>
 <%@ Import namespace="IES.Common.PickList" %>
 <%: Scripts.Render("~/bundles/identification") %>
-<% object dropdownParams = new { onchange = @"WorkspaceIdentificationWidget.BoeTemplateChange()" };
-   if (Model.UsingTemplateBoe) { 
-        dropdownParams = new { onchange = @"WorkspaceIdentificationWidget.BoeTemplateChange()", @class = "disabled", @disabled = "disabled" }; 
+<% object dropdownParamsForBoeTemplates = new { onchange = @"WorkspaceIdentificationWidget.BoeTemplateChange()" };
+   if (Model.UsingTemplateBoe || Model.CreatedPriorToBoeTemplates) { 
+        dropdownParamsForBoeTemplates = new { onchange = @"WorkspaceIdentificationWidget.BoeTemplateChange()", @class = "disabled", @disabled = "disabled" }; 
    } 
 %>
 
@@ -395,7 +395,7 @@
                     {
                         new SelectListItem() { Text = "Yes", Value = "True" },
                         new SelectListItem() { Text = "No", Value = "False" }
-                    }, dropdownParams) %>
+                    }, dropdownParamsForBoeTemplates) %>
             </div>
         </div>
         <button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>

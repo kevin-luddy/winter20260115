@@ -13,7 +13,6 @@ namespace GenBOE.Dtos
     /// <summary>
     /// BOE search DTO
     /// </summary>
-    [ExcludeFromCodeCoverage]
     public class BOESearchDTO
     {
         /// <summary>
