@@ -16,6 +16,7 @@ namespace GenBOE.Tests.ActionLogic.Import
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Import;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -35,6 +36,7 @@ namespace GenBOE.Tests.ActionLogic.Import
         private Mock<IRetriever> retriever = null;
         private Mock<IPerformingOrgDTODataLoader> perfOrgLoader = null;
         private Mock<ResourceDTODataLoader> resourceDTODataLoader = null;
+        private Mock<IMoqTypeDataLoader> moqTypeDataLoader = null;
         private Mock<ICommonDataMapper> commonDataMapper = null;
         private FullBoe BOEMultiFalse = null;
         private Mock<IFullObjectFactory> factory = null;
@@ -51,6 +53,7 @@ namespace GenBOE.Tests.ActionLogic.Import
             this.permissionsLoader = new Mock<IPermissionsDTODataLoader>();
             this.perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
             this.resourceDTODataLoader = new Mock<ResourceDTODataLoader>();
+            this.moqTypeDataLoader = new Mock<IMoqTypeDataLoader>();
             this.commonDataMapper = new Mock<ICommonDataMapper>();
             this.retriever = new Mock<IRetriever>();
             this.factory = new Mock<IFullObjectFactory>();
@@ -583,6 +586,31 @@ namespace GenBOE.Tests.ActionLogic.Import
             };
         }
 
+        /// <summary>
+        /// Create an existing hours Task Element with MOQ Types
+        /// </summary>
+        /// <returns></returns>
+        private BoeTaskElementDTO CreateExistingHoursTaskElementMOQTypes()
+        {
+            BoeTaskElementDTO taskElement = this.CreateExistingHoursTaskElement();
+
+            taskElement.taskElementLabors.First().MoqTypeSelectionId = (int)MOQType.Historical;
+
+            ICollection<MoqTypeSelection> moqTypes = new Collection<MoqTypeSelection>()
+            {
+                new MoqTypeSelection()
+                {
+                    Id = 1,
+                    BoeId = taskElement.BoeID,
+                    TaskId = taskElement.Id,
+                    SelectedMOQType = MOQType.Historical
+                }
+            };
+
+            this.moqTypeDataLoader.Setup(x => x.GetByBoeId(It.IsAny<int>())).Returns(moqTypes);
+
+            return taskElement;
+        }
 
         /// <summary>
         /// Creates the existing hours task element.
@@ -751,7 +779,8 @@ namespace GenBOE.Tests.ActionLogic.Import
                 Id = workspaceId,
                 ResourceListID = 5,
                 ResourceDecimalPrecision = 2,
-                CostDecimalPrecision = 2
+                CostDecimalPrecision = 2,
+                UsingTemplateBOE = false
             };
 
             return workspace;
@@ -848,19 +877,30 @@ namespace GenBOE.Tests.ActionLogic.Import
             TestTaskElement(this.CreateCombinedTaskElement());
         }
 
+        /// <summary>
+        /// Tests the Labor Export for a Task Element with MOQ Types
+        /// </summary>
+        [TestMethod]
+        public void LaborExport_HoursMOQTypes()
+        {
+            TestTaskElement(this.CreateExistingHoursTaskElementMOQTypes(), false, false, false, true);
+        }
+
         #endregion Tests
 
         /// <summary>
         /// Tests the task element.
         /// </summary>
         /// <param name="taskElementDTO">The task element dto.</param>
-        private void TestTaskElement(BoeTaskElementDTO taskElementDTO, bool isMulti = false, bool isTemplate = false, bool isEP = false)
+        private void TestTaskElement(BoeTaskElementDTO taskElementDTO, bool isMulti = false, bool isTemplate = false, bool isEP = false, bool usingTemplateBOE = false)
         {
             FullWorkspace workspace = this.CreateWorkspace(taskElementDTO.Id);
             workspace.IsUsingEquivalentPerson = isEP;
-            string excelFile = LaborTypeAndSpreadExporter.ExportToExcelFile(this.templatePath, this.resourceDTODataLoader.Object, this.commonDataMapper.Object, workspace, taskElementDTO, taskElementDTO.BoeID, isTemplate);
+            workspace.UsingTemplateBOE = usingTemplateBOE;
 
-            VerifyExcelDocument(excelFile, taskElementDTO, workspace, isMulti, isTemplate, isEP);
+            string excelFile = LaborTypeAndSpreadExporter.ExportToExcelFile(this.templatePath, this.resourceDTODataLoader.Object, this.moqTypeDataLoader.Object, this.commonDataMapper.Object, workspace, taskElementDTO, taskElementDTO.BoeID, isTemplate);
+
+            VerifyExcelDocument(excelFile, taskElementDTO, workspace, isMulti, isTemplate, isEP, usingTemplateBOE);
         }
 
         /// <summary>
@@ -868,7 +908,12 @@ namespace GenBOE.Tests.ActionLogic.Import
         /// </summary>
         /// <param name="excelFile">The excel file.</param>
         /// <param name="taskElementDTO">The task element dto.</param>
-        private void VerifyExcelDocument(string excelFile, BoeTaskElementDTO taskElementDTO, FullWorkspace workspace, bool isMulti, bool isTemplate, bool isEp = false)
+        /// <param name="workspace">the workspace</param>
+        /// <param name="isMulti">boe is multi-wbs/clin</param>
+        /// <param name="isTemplate">export is template</param>
+        /// <param name="isEp">ws is using EP</param>
+        /// <param name="usingTemplateBOE">Whether WS is using Template BOE</param>
+        private void VerifyExcelDocument(string excelFile, BoeTaskElementDTO taskElementDTO, FullWorkspace workspace, bool isMulti, bool isTemplate, bool isEp, bool usingTemplateBOE)
         {
             Assert.IsTrue(File.Exists(excelFile));
 
@@ -891,11 +936,11 @@ namespace GenBOE.Tests.ActionLogic.Import
                     }
                 }
             }
+
             if(isMulti)
             {
                 requiredColumns.Add(LaborTypeAndSpreadImporter.RESOURCE_WBS_HEADER);
                 requiredColumns.Add(LaborTypeAndSpreadImporter.RESOURCE_CLIN_HEADER);
-
             }
 
             requiredColumns.AddRange(new List<string>() { ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, ImportExportConstants.SPREAD_CURVE_COLUMN_HEADER, LaborTypeAndSpreadImporter.PERCENT_SPREAD_COL, LaborTypeAndSpreadImporter.COST_COL });
@@ -907,6 +952,11 @@ namespace GenBOE.Tests.ActionLogic.Import
             else
             {
                 requiredColumns.Add(LaborTypeAndSpreadImporter.HOURS_SPREAD_COL);
+            }
+
+            if (usingTemplateBOE)
+            {
+                requiredColumns.Add(LaborTypeAndSpreadImporter.MOQ_TYPE_HEADER);
             }
 
             requiredColumns.AddRange(spreadColumns);
@@ -1006,6 +1056,12 @@ namespace GenBOE.Tests.ActionLogic.Import
                         {
                             Assert.IsFalse(row.ContainsKey(LaborTypeAndSpreadImporter.RESOURCE_WBS_HEADER));
                             Assert.IsFalse(row.ContainsKey(LaborTypeAndSpreadImporter.RESOURCE_CLIN_HEADER));
+                        }
+
+                        if (usingTemplateBOE)
+                        {
+                            Assert.IsTrue(row.ContainsKey(LaborTypeAndSpreadImporter.MOQ_TYPE_HEADER));
+                            Assert.AreEqual(((MOQType)laborResource.MoqTypeSelectionId).GetDescription(), row[LaborTypeAndSpreadImporter.MOQ_TYPE_HEADER]);
                         }
 
                         // Assert the spread values

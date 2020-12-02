@@ -27,7 +27,7 @@ function InitializeImportLaborTypeWidget(boeId, workspace, completeImportUrl, sp
         $("#ImportLaborTypeDialog-Project-Form").submit();
     };
 
-    ImportLaborType.createPreviewOutput = function (lt) {
+    ImportLaborType.createPreviewOutput = function (lt, usingTemplateBoe = 'False') {
 
         var toReturn =
             '<li>' +
@@ -35,19 +35,23 @@ function InitializeImportLaborTypeWidget(boeId, workspace, completeImportUrl, sp
                 ' Performing Org:' + lt.PerformingOrg +
                 ' Date Range:' + lt.StartDateFormatted +
                 '-' + lt.EndDateFormatted +
-                ' Curve:' + lt.Curve;
+            ' Curve:' + lt.Curve;
 
-        if (lt.SpreadType == spreadTypeHours) {
-            if (lt.ValueSpread != undefined) {
+        if (usingTemplateBoe === 'True') {
+            toReturn += ' MOQ Type:' + lt.MoqTypeText;
+        }
+
+        if (lt.SpreadType === spreadTypeHours) {
+            if (lt.ValueSpread !== undefined) {
                 toReturn += ' Hours Spread:' + lt.ValueSpread;
             }
 
-            if (lt.PercentSpread != undefined) {
+            if (lt.PercentSpread !== undefined) {
                 toReturn += ' Percent Spread:' + lt.PercentSpread;
             }
         }
-        else if (lt.SpreadType == spreadTypeCost) {
-            if (lt.ValueSpread != undefined) {
+        else if (lt.SpreadType === spreadTypeCost) {
+            if (lt.ValueSpread !== undefined) {
                 toReturn += ' Cost:$' + lt.ValueSpread;
             }
         }

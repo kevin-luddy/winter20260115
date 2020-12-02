@@ -13,6 +13,7 @@ namespace GenBOE.Tests.ActionLogic.Import
     using System.IO;
     using System.Linq;
     using GenBOE.ActionLogic.IO.Import;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -35,6 +36,7 @@ namespace GenBOE.Tests.ActionLogic.Import
         private PerformingOrgDTO perfOrg = null;
         private FullBoe BOEMultiFalse = null;
         private Mock<IResourceDTODataLoader> resourceDTODataLoader = null;
+        private Mock<IMoqTypeDataLoader> moqTypeDataLoader = null;
         private Mock<ICommonDataMapper> commonDataMapper = null;
         private LaborTypeAndSpreadImporter laborImporter;
 
@@ -47,6 +49,7 @@ namespace GenBOE.Tests.ActionLogic.Import
             this.permissionsLoader = new Mock<IPermissionsDTODataLoader>();
             this.perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
             this.resourceDTODataLoader = new Mock<IResourceDTODataLoader>();
+            this.moqTypeDataLoader = new Mock<IMoqTypeDataLoader>();
             this.commonDataMapper = new Mock<ICommonDataMapper>();
             this.retriever = new Mock<IRetriever>();
             this.factory = new Mock<IFullObjectFactory>();
@@ -93,9 +96,7 @@ namespace GenBOE.Tests.ActionLogic.Import
                 this.resourceDTODataLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
             }
 
-
-            laborImporter = new LaborTypeAndSpreadImporter(this.resourceDTODataLoader.Object, this.perfOrgLoader.Object, this.commonDataMapper.Object);
-
+            laborImporter = new LaborTypeAndSpreadImporter(this.resourceDTODataLoader.Object, this.perfOrgLoader.Object, this.commonDataMapper.Object, this.moqTypeDataLoader.Object);
         }
 
         private void SetupSpreadCurves()
@@ -381,6 +382,39 @@ namespace GenBOE.Tests.ActionLogic.Import
                     }
                 }
             };
+        }
+
+        /// <summary>
+        /// Create an existing hours Task Element with MOQ Types
+        /// </summary>
+        /// <returns></returns>
+        private BoeTaskElementDTO CreateExistingHoursTaskElementWithMOQTypes()
+        {
+            BoeTaskElementDTO taskElement = this.CreateExistingHoursTaskElement();
+
+            taskElement.taskElementLabors.First().MoqTypeSelectionId = (int)MOQType.Historical;
+
+            ICollection<MoqTypeSelection> moqTypes = new Collection<MoqTypeSelection>()
+            {
+                new MoqTypeSelection()
+                {
+                    Id = 1,
+                    BoeId = taskElement.BoeID,
+                    TaskId = taskElement.Id,
+                    SelectedMOQType = MOQType.Historical
+                },
+                new MoqTypeSelection()
+                {
+                    Id = 2,
+                    BoeId = taskElement.BoeID,
+                    TaskId = taskElement.Id,
+                    SelectedMOQType = MOQType.AnalogousRelationships
+                }
+            };
+
+            this.moqTypeDataLoader.Setup(x => x.GetByBoeId(It.IsAny<int>())).Returns(moqTypes);
+
+            return taskElement;
         }
 
         /// <summary>
@@ -850,15 +884,17 @@ namespace GenBOE.Tests.ActionLogic.Import
         /// Creates a Full Workspace.
         /// </summary>
         /// <param name="isEp">Is the workspace using EP.</param>
+        /// <param name="usingTemplateBOE">Is the Workspace using Template BOE</param>
         /// <returns>A Full Workspace</returns>
-        private FullWorkspace CreateWorkspace(bool isEp = false)
+        private FullWorkspace CreateWorkspace(bool isEp = false, bool usingTemplateBOE = false)
         {
             return new FullWorkspace() {
                 Id = 1,
                 ResourceListID = 5,
                 ResourceDecimalPrecision = 0,
                 CostDecimalPrecision = 2,
-                IsUsingEquivalentPerson = isEp
+                IsUsingEquivalentPerson = isEp,
+                UsingTemplateBOE = usingTemplateBOE
             };
         }
 
@@ -948,6 +984,72 @@ namespace GenBOE.Tests.ActionLogic.Import
             Assert.AreEqual(6, firstRowContainers.First(c => c.Updateable != UpdateType.None).CustomFieldValueID);
             Assert.AreEqual(2, firstRowContainers.First(c => c.Updateable != UpdateType.None).ContainerID);
         }
+
+        /// <summary>
+        /// Test Labor Import for labor with MOQ Types
+        /// </summary>
+        [TestMethod]
+        public void LaborImport_MOQTypes()
+        {
+            ICollection<ImportedLaborType> result;
+            using (MemoryStream file = new MemoryStream(Properties.Resources.LaborImportHoursMoqTypes))
+            {
+                FullWorkspace workspace = this.CreateWorkspace(false, true);
+                workspace.Id = 4;
+
+                BoeTaskElementDTO taskElement = this.CreateExistingHoursTaskElementWithMOQTypes();
+
+                result = this.laborImporter.ImportLaborTypeFromExcelFile(file, taskElement, workspace, false);
+            }
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Any(lt => lt.ImportTypes.Any(it => it == LaborTypeImportResult.AddLaborType)));
+            Assert.IsTrue(result.Any(lt => lt.ImportTypes.Any(it => it == LaborTypeImportResult.UpdateLaborType)));
+            Assert.IsFalse(result.Any(lt => lt.ImportTypes.Any(it => it != LaborTypeImportResult.AddLaborType && it != LaborTypeImportResult.UpdateLaborType)));
+        }
+
+        /// <summary>
+        /// Test Labor Import for labor with MOQ Types
+        /// </summary>
+        [TestMethod]
+        public void LaborImport_MOQTypes_Missing()
+        {
+            ICollection<ImportedLaborType> result;
+            using (MemoryStream file = new MemoryStream(Properties.Resources.LaborImportHoursMoqTypesMissing))
+            {
+                FullWorkspace workspace = this.CreateWorkspace(false, true);
+                workspace.Id = 4;
+
+                BoeTaskElementDTO taskElement = this.CreateExistingHoursTaskElementWithMOQTypes();
+
+                result = this.laborImporter.ImportLaborTypeFromExcelFile(file, taskElement, workspace, false);
+            }
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Any(lt => lt.ImportTypes.Any(it => it == LaborTypeImportResult.MoqTypeMissingOrInvalid)));
+        }
+
+        /// <summary>
+        /// Test Labor Import for labor with MOQ Types
+        /// </summary>
+        [TestMethod]
+        public void LaborImport_MOQTypes_Invalid()
+        {
+            ICollection<ImportedLaborType> result;
+            using (MemoryStream file = new MemoryStream(Properties.Resources.LaborImportHoursMoqTypesInvalid))
+            {
+                FullWorkspace workspace = this.CreateWorkspace(false, true);
+                workspace.Id = 4;
+
+                BoeTaskElementDTO taskElement = this.CreateExistingHoursTaskElementWithMOQTypes();
+
+                result = this.laborImporter.ImportLaborTypeFromExcelFile(file, taskElement, workspace, false);
+            }
+
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result.Any(lt => lt.ImportTypes.Any(it => it == LaborTypeImportResult.MoqTypeMissingOrInvalid)));
+        }
+
         /// <summary>
         /// Tests Labor import with Multi enabled, WBS
         /// </summary>

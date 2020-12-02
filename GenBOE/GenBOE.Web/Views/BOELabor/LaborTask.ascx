@@ -88,6 +88,7 @@
                 }
                 else {
                     var missingDataRows = 0;
+                    var missingMOQTypeRows = 0;
 
                     for (var ltresultNdx = 0; ltresultNdx < ImportLaborType.ImportedData.length; ltresultNdx++) {
                         var importedSpreads = ImportLaborType.ImportedData[ltresultNdx].ImportedLaborSpreads;
@@ -105,50 +106,51 @@
 
                         for (var ltresultTypeNdx = 0; ltresultTypeNdx < ImportLaborType.ImportedData[ltresultNdx].ImportTypes.length; ltresultTypeNdx++) {
                             var ImportType = ImportLaborType.ImportedData[ltresultNdx].ImportTypes[ltresultTypeNdx].toString();
+                            var usingTemplateBoe = '<%: Model.UsingTemplateBOE %>';
 
                             switch (ImportType) {
                                 case '<%: (int)LaborTypeImportResult.MissingData %>':
                                 case '<%: (int)LaborTypeImportResult.ResourceMultiValuesInvalid %>':
                                 case '<%: (int)LaborTypeImportResult.InvalidData %>':
-                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx], usingTemplateBoe);
                                     $('#ImportLaborTypeResults #ImportResult-MissingData').removeClass('display-none');
                                     $('#ImportLaborTypeResults #ImportResult-MissingData ul.resultsList').append(listItemToAppend);
                                     missingDataRows++;
                                     break;
                                 case '<%: (int)LaborTypeImportResult.AddLaborType%>':
-                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx], usingTemplateBoe);
                                     $('#ImportLaborTypeResults #ImportResult-Added').removeClass('display-none');
                                     $('#ImportLaborTypeResults #ImportResult-Added ul.resultsList').append(listItemToAppend);
                                     $('#ManageLaborType-CompleteImportButton').removeClass('display-none');
                                     break;
                                 case '<%: (int)LaborTypeImportResult.UpdateLaborType%>':
-                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx], usingTemplateBoe);
                                     $('#ImportLaborTypeResults #ImportResult-Updated').removeClass('display-none');
                                     $('#ImportLaborTypeResults #ImportResult-Updated ul.resultsList').append(listItemToAppend);
                                     $('#ManageLaborType-CompleteImportButton').removeClass('display-none');
                                     break;
                                 case '<%: (int)LaborTypeImportResult.LaborTypeDateOutsideOfPOPDateRange%>':
-                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx], usingTemplateBoe);
                                     $('#ImportLaborTypeResults #ImportResult-Dates').removeClass('display-none');
                                     $('#ImportLaborTypeResults #ImportResult-Dates ul.resultsList').append(listItemToAppend);
                                     break;
                                 case '<%: (int)LaborTypeImportResult.RateTypeSpreadTypeAgreement%>':
-                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx], usingTemplateBoe);
                                     $('#ImportLaborTypeResults #ImportResult-RateTypeSpreadTypeAgreement').removeClass('display-none');
                                     $('#ImportLaborTypeResults #ImportResult-RateTypeSpreadTypeAgreement ul.resultsList').append(listItemToAppend);
                                     break;
                                 case '<%: (int)LaborTypeImportResult.ResourceTypeIDMissingOrInvalid%>':
-                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx], usingTemplateBoe);
                                     $('#ImportLaborTypeResults #ImportResult-ResourceTypeIDMissingOrInvalid').removeClass('display-none');
                                     break;
                                 case '<%: (int)LaborTypeImportResult.HoursSpreadInvalid%>':
-                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx], usingTemplateBoe);
                                     $('#ImportLaborTypeResults #ImportResult-HoursSpreadInvalid').removeClass('display-none');
                                     $('#ImportLaborTypeResults #ImportResult-HoursSpreadInvalid ul.resultsList').append(listItemToAppend);
                                     break;
                                 case '<%: (int)LaborTypeImportResult.CostDecimalPrecisionViolation%>':
                                 case '<%: (int)LaborTypeImportResult.CostSpreadRangeInvalid%>':
-                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx]);
+                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx], usingTemplateBoe);
                                     $('#ImportLaborTypeResults #ImportResult-CostInvalid').removeClass('display-none');
                                     $('#ImportLaborTypeResults #ImportResult-CostInvalid ul.resultsList').append(listItemToAppend);
                                     break;
@@ -157,6 +159,12 @@
                                     break;
                                 case '<%: (int)LaborTypeImportResult.SpreadMonthValueOutsideDateRange%>':
                                     $('#ImportLaborTypeResults #ImportResult-SpreadMonthValueOutsideDateRange').removeClass('display-none');
+                                    break;
+                                case '<%: (int)LaborTypeImportResult.MoqTypeMissingOrInvalid%>':
+                                    var listItemToAppend = ImportLaborType.createPreviewOutput(ImportLaborType.ImportedData[ltresultNdx], usingTemplateBoe);
+                                    $('#ImportLaborTypeResults #ImportResult-MoqTypeMissing').removeClass('display-none');
+                                    $('#ImportLaborTypeResults #ImportResult-MoqTypeMissing ul.resultsList').append(listItemToAppend);
+                                    missingMOQTypeRows++;
                                     break;
                                 default:
                                     break;
@@ -243,6 +251,7 @@
                 });
 
                 $('#ImportLaborTypeResults #ImportResult-MissingData .resultCount').text(missingDataRows);
+                $('#ImportLaborTypeResults #ImportResult-MoqTypeMissing .resultCount').text(missingMOQTypeRows);
                 $('#ImportLaborTypeResults #ImportResult-Added .resultCount').text($('#ImportLaborTypeResults #ImportResult-Added .resultsList li').length);
                 $('#ImportLaborTypeResults #ImportResult-Updated .resultCount').text($('#ImportLaborTypeResults #ImportResult-Updated .resultsList li').length);
                 $('#ImportLaborTypeResults #ImportResult-Dates .resultCount').text($('#ImportLaborTypeResults #ImportResult-Dates .resultsList li').length);
@@ -1048,7 +1057,7 @@
                 <div class="title">Step 2: Export the existing Resource Type file</div>
                 <div>Start by exporting the existing Resource Types. This file has the correct column headings and Resource Type IDs genBOE needs to import new Resource Types and updates.</div>
                 <div class="important">IMPORTANT: Unsaved Resource Types will not be included in this export.</div>
-                <div><a id="LTExportFromImportDialog">Export existing Resource Types</a></div>
+                <div><a id="LTExportFromImportDialog" onclick="angular.element(document.getElementById('TaskElementsComposite')).scope().tryExport()">Export existing Resource Types</a></div>
             </div>
             <div class="step three display-none" path="Existing">
                 <div class="title">Step 3: Enter/Update Resource Types in the file</div>
@@ -1173,6 +1182,13 @@
                     Resource Types will not be added/updated because one or more spread month values are outside the spread date range.<br />
                     Please check the import file and clear any spread month values that are outside the resource spread date range.              
                 </div>
+            </div>
+            <div class="import-result-type display-none" id="ImportResult-MoqTypeMissing">
+                <div class="title">
+                    <span class="resultCount"></span>
+                    Resource Types will not be added/uploaded because a MOQ Type is missing or invalid:           
+                </div>
+                <ul class="resultsList"></ul>
             </div>
             <div class="title import-result-type display-none" id="ImportResult-NoChanges">No Changes Detected</div>
         
