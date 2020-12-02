@@ -1380,7 +1380,7 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             _ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
 
-            return selectedComponents.Where(x => x != BoeCustomReportComponent.TaskMOQAdditionalQueryFilters).ToCollection();
+            return selectedComponents.Where(x => x != BoeCustomReportComponent.TaskMOQEmployeeIDFilters && x != BoeCustomReportComponent.TaskMOQAdditionalQueryFilters).ToCollection();
         }
 
         #endregion

@@ -680,7 +680,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_TotalRelevantHours), table.TotalRelevantHours.ToString("G29"));
                     
                     // populate/remove Additional Query filters based on selected components
-                    if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQAdditionalQueryFilters))
+                    if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQAdditionalQueryFilters) || selectedComponents.Contains(BoeCustomReportComponent.TaskMOQEmployeeIDFilters))
                     {
                         WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_AdditionalQueryFilters), table.AdditionalQueryFilters);
                     }
