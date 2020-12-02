@@ -251,6 +251,11 @@ namespace GenBOE.DataBridge.DTO
             foreach (MoqTypeSelection selection in moqTypeSelections)
             {
                 selection.TableData.AddRange(allTableData.Where(x => x.MOQTypeSelectionId == selection.Id));
+
+                if((selection.SelectedMOQType == MOQType.Historical || selection.SelectedMOQType == MOQType.Comparative) && selection.TableData.None())
+                {
+                    selection.TableData.Add(new MoqTableData());
+                }
             }
         }
     }
