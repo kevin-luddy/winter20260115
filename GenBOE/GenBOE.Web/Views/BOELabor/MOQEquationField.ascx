@@ -221,7 +221,7 @@
                             <td class="form-label">{{model.MoqTypeTableDataLabels.PoPEnd}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPEndSuffix);"></div></td>
                             <td><input type="date" required data-ng-model="tableData.PoPEnd" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
-                        <tr data-ng-show="!tableData.collapsed">
+                        <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.TotalWbsHours}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalWBSHoursSuffix);"></div></td>
                             <td><input type="number" required min="0" data-ng-model="tableData.TotalWbsHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>

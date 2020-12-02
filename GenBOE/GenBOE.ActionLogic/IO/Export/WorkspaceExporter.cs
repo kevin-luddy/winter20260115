@@ -1283,7 +1283,6 @@ namespace GenBOE.ActionLogic.IO.Export
                 table.WbsElement,
                 table.PoPStart.ToShortDateString(),
                 table.PoPEnd.ToShortDateString(),
-                table.TotalWbsHours.ToString(),
                 table.AdditionalQueryFilters,
                 table.TotalRelevantHours.ToString()
             };
