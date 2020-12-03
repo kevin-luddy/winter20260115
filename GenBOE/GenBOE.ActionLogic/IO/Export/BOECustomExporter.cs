@@ -2419,7 +2419,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     if (wsHasMoqRteTemplate)
                     {
                         // Update label
-                        laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_MethodOfQuotingLabel, "Additional MOQ Types Information: ");
+                        laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_MethodOfQuotingLabel, "Additional MOQ Rationale: ");
 
                         // populate RTE MOQ text
                         if (WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_MethodOfQuoting) != null)
