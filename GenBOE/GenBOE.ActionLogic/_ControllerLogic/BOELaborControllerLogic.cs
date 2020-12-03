@@ -1631,7 +1631,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 ICollection<MOQType> moqTypesUsedByTasksResourceTypes = taskData.LaborTypesData.Where(x => x.SelectedMOQType.HasValue).Select(x => x.SelectedMOQType.Value).ToList();
 
-                ICollection<string> taskErrors = ValidateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, moqTypesUsedByTasksResourceTypes);
+                ICollection<string> taskErrors = ValidateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, moqTypesUsedByTasksResourceTypes, ws.RteSizeLimit);
 
                 errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
 
