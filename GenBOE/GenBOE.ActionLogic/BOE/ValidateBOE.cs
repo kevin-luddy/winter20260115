@@ -694,6 +694,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                 else
                                 {
                                     ValidateRequiredField(moqType.SelectedMOQType, row.ContractNumber, labels.ContractNumber, errorMessages);
+                                    if (row.TotalWbsHours <= 0) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalWbsHours} must be a number greater than 0."); }
                                 }
 
                                 if (row.DateOfReport.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} is required."); }
@@ -708,7 +709,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                 if (row.PoPEnd > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on or before today's date."); }
 
                                 if (row.PoPEnd < row.PoPStart) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before {labels.PoPEnd}."); }
-                                if (row.TotalWbsHours <= 0) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalWbsHours} must be a number greater than 0."); }
                                 if (string.IsNullOrEmpty(row.AdditionalQueryFilters)) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.AdditionalQueryFilters} is required, otherwise indicate N/A."); }
 
                                 if (row.TotalRelevantHours <= 0) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalRelevantHours} must be a number greater than 0."); }
