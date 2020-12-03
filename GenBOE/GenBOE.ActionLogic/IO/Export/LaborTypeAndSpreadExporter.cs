@@ -15,7 +15,6 @@ namespace GenBOE.ActionLogic.IO.Export
     using DocumentFormat.OpenXml.Spreadsheet;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.IO.Import;
-    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -41,7 +40,6 @@ namespace GenBOE.ActionLogic.IO.Export
         /// </summary>
         /// <param name="templateFileLocation">The template file location.</param>
         /// <param name="inResourceLoader">The resource loader.</param>
-        /// <param name="moqTypeDataLoader">The MOQ Type loader</param>
         /// <param name="inCommonMapper">The common mapper.</param>
         /// <param name="inWorkspace">The workspace.</param>
         /// <param name="inTaskElement">The task element.</param>
@@ -52,32 +50,43 @@ namespace GenBOE.ActionLogic.IO.Export
         /// inResourceLoader or inCommonMapper or inWorkspace or inTaskElement</exception>
         public static string ExportToExcelFile(string templateFileLocation,
             ResourceDTODataLoader inResourceLoader,
-            IMoqTypeDataLoader moqTypeDataLoader,
             ICommonDataMapper inCommonMapper,
             FullWorkspace inWorkspace, 
             BoeTaskElementDTO inTaskElement,
             int boeId,
             bool isTemplate)
         {
-            _ = inResourceLoader ?? throw new ArgumentNullException(nameof(inResourceLoader));
-            _ = moqTypeDataLoader ?? throw new ArgumentNullException(nameof(moqTypeDataLoader));
-            _ = inCommonMapper ?? throw new ArgumentNullException(nameof(inCommonMapper));
-            _ = inWorkspace ?? throw new ArgumentNullException(nameof(inWorkspace));
-            _ = inTaskElement ?? throw new ArgumentNullException(nameof(inTaskElement));
+            if (inResourceLoader == null)
+            {
+                throw new ArgumentNullException(nameof(inResourceLoader));
+            }
+
+            if (inCommonMapper == null)
+            {
+                throw new ArgumentNullException(nameof(inCommonMapper));
+            }
+
+            if (inWorkspace == null)
+            {
+                throw new ArgumentNullException(nameof(inWorkspace));
+            }
+
+            if (inTaskElement == null)
+            {
+                throw new ArgumentNullException(nameof(inTaskElement));
+            }
 
             List<CustomFieldDTO> workspaceCustomFields = inWorkspace.CustomFields.Where(cf => cf.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay).ToList();
             ICollection<int> customFieldIds = workspaceCustomFields.Select(cf => cf.Id).ToList();
             ICollection<CustomFieldValueDTO> workspaceCustomFieldValues = inWorkspace.CustomFieldValues.Where(cfv => customFieldIds.Contains(cfv.CustomFieldID)).ToList();
             bool isMulti = inWorkspace.Boes.First(b => b.Id == boeId).IsMultiClinWbs;
             bool isOffload = inWorkspace.ProjectMapType == ProjectMapType.StandardWithOffload;
-            bool isUsingTemplateBOE = inWorkspace.UsingTemplateBOE;
 
             IReadOnlyCollection<PerformingOrgDTO> allPerformingOrgs = inWorkspace.PerformingOrgsForWsList;
              Collection<SpreadCurveModelView> allCurves = inCommonMapper.getSpreadCurve();
             ICollection<ResourceDTO> allResourceTypes = inResourceLoader.GetByListIdAndElementOfCost(
                 inWorkspace.ResourceListID,
                 new Collection<ElementOfCostType>() { ElementOfCostType.LMLabor, ElementOfCostType.IWTA, ElementOfCostType.Sub, ElementOfCostType.ODC, ElementOfCostType.Travel, ElementOfCostType.Materials });
-            ICollection<MoqTypeSelection> allTaskMOQTypes = isUsingTemplateBOE ? moqTypeDataLoader.GetByBoeId(boeId).Where(x => x.TaskId == inTaskElement.Id).ToCollection() : new Collection<MoqTypeSelection>();
             
             // Create a new random file name in the specified directory
             string toReturn = ExcelUtilities.CopyExcelTemplateFile(templateFileLocation);
@@ -91,14 +100,11 @@ namespace GenBOE.ActionLogic.IO.Export
             // remove Offload column if not needed
             RemoveOffloadColumn(toReturn, isOffload);
 
-            // Remove MOQ Type column if not needed
-            RemoveMoqTypeColumn(toReturn, isUsingTemplateBOE);
-
             // Create the document object in memory
             using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(toReturn, true))
             {
-                PopulateOptionsList(spreadsheet, allPerformingOrgs, allCurves, allResourceTypes, workspaceCustomFields, workspaceCustomFieldValues, inWorkspace.WbsElementsNoMultiWbs, inWorkspace.ClinsNoMultiClin, allTaskMOQTypes, isUsingTemplateBOE, inWorkspace);
-                PopulateLaborTypeAndSpread(spreadsheet, inWorkspace, inTaskElement, allPerformingOrgs, allCurves, allResourceTypes, workspaceCustomFields, workspaceCustomFieldValues, allTaskMOQTypes, isUsingTemplateBOE, isMulti, isTemplate, isOffload);
+                PopulateOptionsList(spreadsheet, allPerformingOrgs, allCurves, allResourceTypes, workspaceCustomFields, workspaceCustomFieldValues, inWorkspace.WbsElementsNoMultiWbs, inWorkspace.ClinsNoMultiClin, inWorkspace);
+                PopulateLaborTypeAndSpread(spreadsheet, inWorkspace, inTaskElement, allPerformingOrgs, allCurves, allResourceTypes, workspaceCustomFields, workspaceCustomFieldValues, isMulti, isTemplate, isOffload);
             }
 
             FormatLaborExport(toReturn);
@@ -186,24 +192,9 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(inTemplateFileLocation, true))
                 {
+
                     ExcelUtilities.RemoveColumn(spreadsheet, LaborTypeAndSpreadImporter.IMPORT_TAB, LaborTypeAndSpreadImporter.RESOURCE_CLIN_HEADER);
                     ExcelUtilities.RemoveColumn(spreadsheet, LaborTypeAndSpreadImporter.IMPORT_TAB, LaborTypeAndSpreadImporter.RESOURCE_WBS_HEADER);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Removes the MOQ Type Column if the Workspaces is not using Template BOE
-        /// </summary>
-        /// <param name="inTemplateFileLocation">The document</param>
-        /// <param name="isUsingTemplateBOE">Whether Workspaces is using Template BOE</param>
-        private static void RemoveMoqTypeColumn(string inTemplateFileLocation, bool isUsingTemplateBOE)
-        {
-            if (!isUsingTemplateBOE)
-            {
-                using (SpreadsheetDocument spreadsheet = SpreadsheetDocument.Open(inTemplateFileLocation, true))
-                {
-                    ExcelUtilities.RemoveColumn(spreadsheet, LaborTypeAndSpreadImporter.IMPORT_TAB, LaborTypeAndSpreadImporter.MOQ_TYPE_HEADER);
                 }
             }
         }
@@ -219,14 +210,12 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="allResourceTypes">All resource types.</param>
         /// <param name="workspaceCustomFields">The workspace custom fields.</param>
         /// <param name="workspaceCustomFieldValues">The workspace custom field values.</param>
-        /// <param name="allTaskMOQTypes">All MOQ Types for the Task</param>
-        /// <param name="isUsingTemplateBOE">If Worksapce is using Template BOE</param>
         /// <param name="isMulti">Whether the BOE is a Multi-Clin/WBS BOE or not.</param>
         /// <param name="isTemplate">Whether the export is for just the template or includes the data.</param>
         /// <param name="isOffload">True if we should show the Offload column; otherwise false.</param>
         private static void PopulateLaborTypeAndSpread(SpreadsheetDocument spreadsheet, FullWorkspace inWorkspace, BoeTaskElementDTO inTaskElement, IReadOnlyCollection<PerformingOrgDTO> allPerformingOrgs, 
             ICollection<SpreadCurveModelView> allCurves, ICollection<ResourceDTO> allResourceTypes, ICollection<CustomFieldDTO> workspaceCustomFields,
-            ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, ICollection<MoqTypeSelection> allTaskMOQTypes, bool isUsingTemplateBOE, bool isMulti, bool isTemplate, bool isOffload)
+            ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, bool isMulti, bool isTemplate, bool isOffload)
         {
             // determination complete range of spread dates across all resources (i.e. the total number of spread month columns needed)
             DateTime spreadStartDate = inTaskElement.StartDate.Value;
@@ -267,10 +256,9 @@ namespace GenBOE.ActionLogic.IO.Export
             }
 
             int offloadColumnCount = isOffload ? 1 : 0;
-            int moqTypeColumnCount = isUsingTemplateBOE ? 1 : 0;
 
             // Populate Header data
-            List<string> headerRow = CreateHeaderRow(workspaceCustomFields, spreadMonthColumnHeaders, isMulti, FullObjectHelper.ShowEquivalentPersonsOption && inWorkspace.IsUsingEquivalentPerson, isOffload, isUsingTemplateBOE);
+            List<string> headerRow = CreateHeaderRow(workspaceCustomFields, spreadMonthColumnHeaders, isMulti, FullObjectHelper.ShowEquivalentPersonsOption && inWorkspace.IsUsingEquivalentPerson, isOffload);
             laborTypeWorksheet.Add(headerRow);
 
             if (laborResources.Any())
@@ -279,7 +267,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 foreach (ResourceTypeDto laborType in laborResources)
                 {
                     List<string> row = CreateLaborRow(inWorkspace, inTaskElement, allPerformingOrgs, allCurves, allResourceTypes, spreadDateColumnIndices, laborTypeCustomFieldValueIdMappings,
-                        allTaskResourcesCustomFields, laborType, workspaceCustomFields, allTaskMOQTypes, isUsingTemplateBOE, isMulti, isOffload);
+                        allTaskResourcesCustomFields, laborType, workspaceCustomFields, isMulti, isOffload);
 
                     laborTypeWorksheet.Add(row);
                 }
@@ -295,9 +283,9 @@ namespace GenBOE.ActionLogic.IO.Export
             WorksheetPart worksheetPart = ExcelUtilities.GetSpecifiedWorksheetPart(spreadsheet, LaborTypeAndSpreadImporter.IMPORT_TAB);
             ExcelExporter.PopulateDataRows(spreadsheet, worksheetPart, laborTypeWorksheet, 1);
 
-            AddDataValidation(worksheetPart, workspaceCustomFields, laborResources.Count, isMulti, isOffload, isUsingTemplateBOE);
+            AddDataValidation(worksheetPart, workspaceCustomFields, laborResources.Count, isMulti, isOffload);
 
-            string sheetRange = ExcelUtilities.RedefineSheetDimensions(worksheetPart, ((uint)laborResources.Count) + 1U, workspaceCustomFields.Count + multiColumnsCount + offloadColumnCount + spreadDateColumnIndices.Count + moqTypeColumnCount - 1);
+            string sheetRange = ExcelUtilities.RedefineSheetDimensions(worksheetPart, ((uint)laborResources.Count) + 1U, workspaceCustomFields.Count + multiColumnsCount + offloadColumnCount + spreadDateColumnIndices.Count - 1);
             ExcelUtilities.SetIgnoredErrors(worksheetPart.Worksheet, sheetRange);
 
             // save the worksheet
@@ -312,8 +300,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="laborResourcesCount">The labor resources count.</param>
         /// <param name="isMulti">Bool to note if the BOE is a Multi Clin/WBS BOE</param>
         /// <param name="isOffload">True if we should show the Offload column; otherwise false.</param>
-        /// <param name="isUsingTemplateBOE">If Workspace is using Template BOE</param>
-        private static void AddDataValidation(WorksheetPart worksheetPart, ICollection<CustomFieldDTO> workspaceCustomFields, int laborResourcesCount, bool isMulti, bool isOffload, bool isUsingTemplateBOE)
+        private static void AddDataValidation(WorksheetPart worksheetPart, ICollection<CustomFieldDTO> workspaceCustomFields, int laborResourcesCount, bool isMulti, bool isOffload)
         {
             // Create the data validation dropdowns for custom fields
             uint startDataRowIndex = 2;
@@ -322,14 +309,6 @@ namespace GenBOE.ActionLogic.IO.Export
             //adjust the spreadoffset by the customfields and multi columns 
             int spreadOffset = workspaceCustomFields.Count;
             Dictionary<string, string> dataValidationReferences = new Dictionary<string, string>();
-            
-            if (isUsingTemplateBOE)
-            {
-                ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.MOQ_TYPES, ImportExportConstants.RESOURCETYPE_PERFORG_CELL_COLUMN_OFFSET + customFieldOffset, startDataRowIndex, endDataRowIndex);
-                customFieldOffset++;
-                spreadOffset++;
-            }
-
             foreach (CustomFieldDTO customFieldForLabel in workspaceCustomFields)
             {
                 // add data validation for the custom field value cell if not open ended
@@ -341,7 +320,6 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 customFieldOffset++;
             }
-
             if (isMulti)
             {
                 ExcelExporter.AddCellReferenceToDataValidationDictionary(dataValidationReferences, ImportExportConstants.WBSS, ImportExportConstants.RESOURCETYPE_PERFORG_CELL_COLUMN_OFFSET + customFieldOffset, startDataRowIndex, endDataRowIndex);
@@ -377,18 +355,12 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="isMulti">if set to <c>true</c> [is multi].</param>
         /// <param name="isUsingEquivalentPerson">True if we should be using EP instead of Hours.</param>
         /// <param name="isOffload">True if we are showing offload column.</param>
-        /// <param name="isUsingTemplateBOE">If Workspace is using Template BOE</param>
         /// <returns>
         /// List of strings representing cells in the header row.
         /// </returns>
-        private static List<string> CreateHeaderRow(ICollection<CustomFieldDTO> workspaceCustomFields, List<string> spreadMonthColumnHeaders, bool isMulti, bool isUsingEquivalentPerson, bool isOffload, bool isUsingTemplateBOE)
+        private static List<string> CreateHeaderRow(ICollection<CustomFieldDTO> workspaceCustomFields, List<string> spreadMonthColumnHeaders, bool isMulti, bool isUsingEquivalentPerson, bool isOffload)
         {
             List<string> headerRow = new List<string>() { LaborTypeAndSpreadImporter.LABOR_TYPE_ID_COL, ImportExportConstants.RESOURCE_COLUMN_HEADER, LaborTypeAndSpreadImporter.PERFORMING_ORG_COL };
-
-            if (isUsingTemplateBOE)
-            {
-                headerRow.Add(LaborTypeAndSpreadImporter.MOQ_TYPE_HEADER);
-            }
 
             foreach (CustomFieldDTO customField in workspaceCustomFields)
             {
@@ -438,22 +410,19 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="customFieldDictionary">The custom field value dictionary.</param>
         /// <param name="laborType">The labor type resource.</param>
         /// <param name="workspaceCustomFields">The workspace custom fields.</param>
-        /// <param name="allTaskMOQTypes">All MOQ Types for the Task</param>
-        /// <param name="isUsingTemplateBOE">If Workspace is using Template BOE</param>
         /// <param name="isMulti">if set to <c>true</c> [is multi].</param>
         /// <param name="isOffload">True if we should show the Offload column; otherwise false.</param>
         /// <returns></returns>
         private static List<string> CreateLaborRow(FullWorkspace inWorkspace, BoeTaskElementDTO inTaskElement, IReadOnlyCollection<PerformingOrgDTO> allPerformingOrgs,
             ICollection<SpreadCurveModelView> allCurves, ICollection<ResourceDTO> allResourceTypes, Dictionary<DateTime, int> spreadDateColumnIndices,
             Dictionary<int, ICollection<KeyValuePair<int, int>>> laborTypeCustomFieldValueIdMappings, IDictionary<CustomFieldValueDTO, CustomFieldDTO> customFieldDictionary,
-            ResourceTypeDto laborType, ICollection<CustomFieldDTO> workspaceCustomFields, ICollection<MoqTypeSelection> allTaskMOQTypes, bool isUsingTemplateBOE, bool isMulti, bool isOffload)
+            ResourceTypeDto laborType, ICollection<CustomFieldDTO> workspaceCustomFields, bool isMulti, bool isOffload)
         {
             ResourceDTO thisResource = (from resources in allResourceTypes where laborType.ResourceID.HasValue && resources.Id == laborType.ResourceID select resources).FirstOrDefault();
             PerformingOrgDTO thisPerfOrg = (from perOrgs in allPerformingOrgs where laborType.PerformingOrgID.HasValue && perOrgs.Id == laborType.PerformingOrgID select perOrgs).FirstOrDefault();
             SpreadCurveModelView thisSpread = (from curves in allCurves where curves.SpreadCurveID == laborType.SpreadCurveID select curves).FirstOrDefault();
             FullWbs thisWBS = inWorkspace.WbsElementsNoMultiWbs.FirstOrDefault(w => w.Id == laborType.WBSID);
             ClinDTO thisClin = inWorkspace.ClinsNoMultiClin.FirstOrDefault(c => c.Id == laborType.CLINID);
-            MoqTypeSelection thisMoqType = laborType.MoqTypeSelectionId != null ? allTaskMOQTypes.FirstOrDefault(x => x.SelectedMOQType == (MOQType)laborType.MoqTypeSelectionId) : null;
             List<string> row = new List<string>();
 
             switch (inTaskElement.TaskElementType)
@@ -466,11 +435,6 @@ namespace GenBOE.ActionLogic.IO.Export
                                 thisResource != null ? thisResource.ResourceDesc : string.Empty,
                                 thisPerfOrg != null ? thisPerfOrg.PerformingOrgName + " - " + thisPerfOrg.PerformingOrgDesc : string.Empty
                             });
-
-                    if (isUsingTemplateBOE)
-                    {
-                        row.Add(thisMoqType != null ? thisMoqType.SelectedMOQTypeText : string.Empty);
-                    }
 
                     ICollection<string> customFieldValues = CreateCustomFieldRowValues(laborType, customFieldDictionary, laborTypeCustomFieldValueIdMappings, workspaceCustomFields);
                     row.AddRange(customFieldValues);
@@ -683,12 +647,9 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="workspaceCustomFieldValues">The workspace custom field values.</param>
         /// <param name="workspaceWBSs">The workspace WBSs.</param>
         /// <param name="workspaceClins">The workspace CLINs.</param>
-        /// <param name="allTaskMOQTypes">MOQ Types used in the Task</param>
-        /// <param name="isUsingTemplateBOE">If Workspace is using Template BOEs</param>
         /// <param name="inWorkspace">The workspace.</param>
         private static void PopulateOptionsList(SpreadsheetDocument spreadsheet, IReadOnlyCollection<PerformingOrgDTO> allPerformingOrgs, ICollection<SpreadCurveModelView> allCurves, ICollection<ResourceDTO> allResourceTypes, 
-            ICollection<CustomFieldDTO> workspaceCustomFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, IReadOnlyCollection<FullWbs> workspaceWBSs, IReadOnlyCollection<FullClin> workspaceClins,
-            ICollection<MoqTypeSelection> allTaskMOQTypes, bool isUsingTemplateBOE, FullWorkspace inWorkspace)
+            ICollection<CustomFieldDTO> workspaceCustomFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, IReadOnlyCollection<FullWbs> workspaceWBSs, IReadOnlyCollection<FullClin> workspaceClins, FullWorkspace inWorkspace)
         {
             // Create collections of strings for each row in the export file
             ExcelExportWorksheet optionsListWorksheet = new ExcelExportWorksheet(ImportExportConstants.OPTIONS_LISTS);
@@ -703,12 +664,6 @@ namespace GenBOE.ActionLogic.IO.Export
                 ImportExportConstants.CLIN_COLUMN_HEADER,
                 ImportExportConstants.OFFLOAD_COLUMN_HEADER
             };
-
-            if (isUsingTemplateBOE)
-            {
-                headerValues.Add(ImportExportConstants.MOQ_TYPE_COLUMN_HEADER);
-            }
-
             string[] offloadOptions = new string[] { "TRUE", "FALSE" };
 
             int maxRows = Math.Max(allCurves.Count, Math.Max(allPerformingOrgs.Count, Math.Max(workspaceWBSs.Count, Math.Max(workspaceClins.Count, allResourceTypes.Count))));
@@ -763,11 +718,6 @@ namespace GenBOE.ActionLogic.IO.Export
                 optionValues.Add(workspaceWBSs.Count > i ? workspaceWBSs.ElementAt(i).WbsString : string.Empty);
                 optionValues.Add(workspaceClins.Count > i ? workspaceClins.ElementAt(i).ClinString : string.Empty);
                 optionValues.Add(offloadOptions.Length > i ? offloadOptions.ElementAt(i) : string.Empty);
-
-                if (isUsingTemplateBOE)
-                {
-                    optionValues.Add(allTaskMOQTypes.Count > i ? allTaskMOQTypes.ElementAt(i).SelectedMOQTypeText : string.Empty);
-                }
                 
                 // include custom field values
                 foreach (List<string> valueList in customFieldValueTable)
@@ -790,8 +740,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 { ImportExportConstants.SPREAD_CURVES, allCurves.Count },
                 { ImportExportConstants.WBSS, workspaceWBSs.Count },
                 { ImportExportConstants.CLINS, workspaceClins.Count },
-                { ImportExportConstants.OFFLOAD, offloadOptions.Length },
-                { ImportExportConstants.MOQ_TYPES, allTaskMOQTypes.Count }
+                { ImportExportConstants.OFFLOAD, offloadOptions.Length }
             };
             ExcelExporter.AdjustDefinedNames(spreadsheet, lengths);
             // Add Defined Names for each custom field

@@ -274,15 +274,6 @@
   <data name="laborimportmulticustomfields" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\laborimportmulticustomfields.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="LaborImportHoursMoqTypes" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\ActionLogic\Import\Labor\LaborImportHoursMoqTypes.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="LaborImportHoursMoqTypesMissing" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\ActionLogic\Import\Labor\LaborImportHoursMoqTypesMissing.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="LaborImportHoursMoqTypesInvalid" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\ActionLogic\Import\Labor\LaborImportHoursMoqTypesInvalid.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="WbsBoeReport" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\WbsBoeReport.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

@@ -55,7 +55,6 @@ namespace GenBOE.Web.Controllers
         private const string SYSTEM_OFFLOAD_RATES_EXPORT_TEMPLATE = "~/Templates/Export/OffloadRatesRMS.xlsx";
         private readonly IOffloadRatesDTOLoader offloadRatesLoader;
         private readonly IRteTemplateDataLoader rteTemplateDataLoader;
-        private readonly IMoqTypeDataLoader moqTypeDataLoader;
 
         /// <summary>
         /// Starting date for MOQ Templates. WS created after this date will be using new MOQ Types.
@@ -91,8 +90,7 @@ namespace GenBOE.Web.Controllers
             TaskElementValidation taskElementValidation,
             IMSTMetricLoader inMSTMetricsLoader,
             IOffloadRatesDTOLoader offloadRatesDTOLoader,
-            IRteTemplateDataLoader rteTemplateDataLoader,
-            IMoqTypeDataLoader moqTypeDataLoader)
+            IRteTemplateDataLoader rteTemplateDataLoader)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserLoader, inPermissionsLoader, inControllerLogic)
         {
             this._CommonDataMapper = inCommonDataMapper;
@@ -110,7 +108,6 @@ namespace GenBOE.Web.Controllers
             this._MSTMetricsLoader = inMSTMetricsLoader;
             this.offloadRatesLoader = offloadRatesDTOLoader;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
-            this.moqTypeDataLoader = moqTypeDataLoader;
         }
 
         #region Display
@@ -1181,7 +1178,7 @@ namespace GenBOE.Web.Controllers
 
             string templateName = "~/Templates/Export/LaborTypesAndSpread.xlsx";
 
-            string fileName = LaborTypeAndSpreadExporter.ExportToExcelFile(Server.MapPath(templateName), _ResourceDTODataLoader, moqTypeDataLoader, _CommonDataMapper, ws, thisTaskElement, boeID, isTemplate);
+            string fileName = LaborTypeAndSpreadExporter.ExportToExcelFile(Server.MapPath(templateName), _ResourceDTODataLoader, _CommonDataMapper, ws, thisTaskElement, boeID, isTemplate);
 
             ExportFileDownloadResult toReturn = new ExportFileDownloadResult(fileName, ws.WorkspaceName + "_BOE-" + boeID + "_Task-" + taskElementID + "_ResourceTypes.xlsx");
 
@@ -1527,7 +1524,6 @@ namespace GenBOE.Web.Controllers
                     thisLT.WBSID = laborTypeToUpdate.WbsID;
                     thisLT.CanOffload = laborTypeToUpdate.CanOffload;
                     thisLT.TieredPercentage = laborTypeToUpdate.TieredPercentage;
-                    thisLT.MoqTypeSelectionId = laborTypeToUpdate.MoqTypeSelectionId;
                     // Discrete spreads will not require any value or percent spread changed.
                     if (thisLT.SpreadCurveID != SpreadCurves.DiscreteHours && thisLT.SpreadCurveID != SpreadCurves.DiscreteCost)
                     {
@@ -1594,7 +1590,6 @@ namespace GenBOE.Web.Controllers
                     newLT.CanOffload = laborTypeToAdd.CanOffload;
                     newLT.TieredPercentage = laborTypeToAdd.TieredPercentage;
                     newLT.CustomFieldValueContainers = laborTypeToAdd.CustomFieldValueContainers.ToContainers();
-                    newLT.MoqTypeSelectionId = laborTypeToAdd.MoqTypeSelectionId;
 
                     // Determine the spread type based on the rate type of the resource.
                     ResourceDTO resourceForLabor = workspace.ResourcesForWsResourceListId.FirstOrDefault(r => r.Id == laborTypeToAdd.ResourceID);
