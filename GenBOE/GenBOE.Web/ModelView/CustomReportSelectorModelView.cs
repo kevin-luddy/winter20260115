@@ -32,7 +32,7 @@
             this.WorkspaceName = workspaceName;
 
             this.AutoOpen = false;
-
+            
             if (allBoeData == null)
             {
                 allBoeData = new List<BoeCustomReportBoeData>(0);
@@ -90,9 +90,11 @@
 
             this.ComponentsUnselected = new List<SelectListItem>();
             ICollection<BoeCustomReportComponent> reportComponentValues = Enum.GetValues(typeof(BoeCustomReportComponent)).Cast<BoeCustomReportComponent>().ToList();
+            CompanyConfiguration companyConfig = SystemConfiguration.Instance().CompanyMode;
+
             foreach (BoeCustomReportComponent reportComponentVal in reportComponentValues)
             {
-                if (DisplayComponent(reportComponentVal, usingTemplateBoe))
+                if (DisplayComponent(reportComponentVal, usingTemplateBoe, companyConfig))
                 {
                     this.ComponentsUnselected.Add(new SelectListItem
                     {
@@ -117,10 +119,11 @@
         /// <param name="reportComponentVal">component</param>
         /// <param name="usingTemplateBOE">if WS is using Template BOE</param>
         /// <returns>True if component should be displayed, false if not</returns>
-        private bool DisplayComponent(BoeCustomReportComponent reportComponentVal, bool usingTemplateBOE)
+        private bool DisplayComponent(BoeCustomReportComponent reportComponentVal, bool usingTemplateBOE, CompanyConfiguration companyConfig)
         {
             if (reportComponentVal == BoeCustomReportComponent.TaskMOQRationale && usingTemplateBOE
-                || reportComponentVal == BoeCustomReportComponent.TaskMOQAdditionalQueryFilters && !usingTemplateBOE)
+                || reportComponentVal == BoeCustomReportComponent.TaskMOQAdditionalQueryFilters && (!usingTemplateBOE || companyConfig == CompanyConfiguration.SpaceSystems)
+                || reportComponentVal == BoeCustomReportComponent.TaskMOQEmployeeIDFilters && (!usingTemplateBOE || companyConfig == CompanyConfiguration.MST))
             {
                 return false;
             }
@@ -320,10 +323,10 @@
 
                     this.AutoOpen = false;
 
-                    // Additional Query Filters excluded by default in SSC, only if Template BOE and there are Historical/Comparative MOQ Types
+                    // Additional Query Filters excluded by default in SSC, only if Template BOE
                     if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && usingTemplateBoe)
                     {
-                        selections.ComponentsSelected.Add(BoeCustomReportComponent.TaskMOQAdditionalQueryFilters);
+                        selections.ComponentsSelected.Add(BoeCustomReportComponent.TaskMOQEmployeeIDFilters);
                     }
                 }
                 else

@@ -4,6 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using IES.Common;
+using IES.Common.classes;
+
 namespace GenBOE.ActionLogic.ModelView
 {
     /// <summary>
@@ -26,8 +29,16 @@ namespace GenBOE.ActionLogic.ModelView
             this.PoPStart = "Period of Performance (PoP): Start Date";
             this.PoPEnd = "Period of Performance (PoP): End Date";
             this.TotalWbsHours = "Total WBS/WBS Element Hours";
-            this.AdditionalQueryFilters = "Additional Query Filters";
-            this.TotalRelevantHours = "Total Relevant Hours After Additional Query Filters Applied";
+            if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+            {
+                this.AdditionalQueryFilters = "Employee ID Filters";
+                this.TotalRelevantHours = "Total Relevant Hours After Employee ID Filters Applied";
+            }
+            else
+            {
+                this.AdditionalQueryFilters = "Additional Query Filters";
+                this.TotalRelevantHours = "Total Relevant Hours After Additional Query Filters Applied";
+            }
         }
 
         /// <summary>

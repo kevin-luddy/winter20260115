@@ -39,13 +39,15 @@
         TaskMOQEquation = 14,
         [Description("Task - Method of Quoting Additional Query Filters")]
         TaskMOQAdditionalQueryFilters = 15,
+        [Description("Task - Method of Quoting Employee ID Filters")]
+        TaskMOQEmployeeIDFilters = 16,
         [Description("Task - Method of Quoting Rationale")]
-        TaskMOQRationale = 16,
+        TaskMOQRationale = 17,
         [Description("Task - Resource Types Summary Table")]
-        TaskResourceTypesSummaryTable = 17,
+        TaskResourceTypesSummaryTable = 18,
         [Description("Task - Cost/Hours Spread Tables")]
-        TaskSpreadTables = 18,
+        TaskSpreadTables = 19,
         [Description("Resource - Information and Spread Tables")]
-        ResourceInfoAndSpreadTables = 19
+        ResourceInfoAndSpreadTables = 20
     }
 }
