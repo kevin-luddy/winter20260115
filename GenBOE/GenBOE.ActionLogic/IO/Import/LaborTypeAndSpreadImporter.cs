@@ -15,7 +15,6 @@ namespace GenBOE.ActionLogic.IO.Import
     using System.Linq;
     using DocumentFormat.OpenXml.Packaging;
     using GenBOE.ActionLogic.Common;
-    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -31,7 +30,6 @@ namespace GenBOE.ActionLogic.IO.Import
         private IResourceDTODataLoader resourceDTODataLoader;
         private IPerformingOrgDTODataLoader perfOrgLoader;
         private ICommonDataMapper commonDataMapper;
-        private IMoqTypeDataLoader moqTypeDataLoader;
         
         #region Constants
         // Individual column names
@@ -44,7 +42,6 @@ namespace GenBOE.ActionLogic.IO.Import
         internal const string RESOURCE_CLIN_HEADER = "CLIN";
         internal const string RESOURCE_WBS_HEADER = "WBS";
         internal const string IMPORT_TAB = "Labor Types";
-        internal const string MOQ_TYPE_HEADER = "MOQ Type";
 
         // Array of the columns that must be contained in the imported file
         private readonly string[] REQUIRED_COLUMNS = new string[] { LABOR_TYPE_ID_COL, ImportExportConstants.RESOURCE_COLUMN_HEADER, PERFORMING_ORG_COL, ImportExportConstants.START_DATE_COLUMN_HEADER, ImportExportConstants.END_DATE_COLUMN_HEADER, ImportExportConstants.SPREAD_CURVE_COLUMN_HEADER, PERCENT_SPREAD_COL, COST_COL };
@@ -59,27 +56,16 @@ namespace GenBOE.ActionLogic.IO.Import
         /// <param name="inIResourceDTODataLoader">The resource dto data loader.</param>
         /// <param name="perfOrgLoader">The perf org loader.</param>
         /// <param name="inICommonDataMapper">The common data mapper.</param>
-        /// <param name="moqTypeDataLoader">MOQ Type data loader</param>
         public LaborTypeAndSpreadImporter(
             IResourceDTODataLoader inIResourceDTODataLoader,
             IPerformingOrgDTODataLoader perfOrgLoader,
-            ICommonDataMapper inICommonDataMapper,
-            IMoqTypeDataLoader moqTypeDataLoader)
+            ICommonDataMapper inICommonDataMapper)
         {
             this.resourceDTODataLoader = inIResourceDTODataLoader;
             this.perfOrgLoader = perfOrgLoader;
             this.commonDataMapper = inICommonDataMapper;
-            this.moqTypeDataLoader = moqTypeDataLoader;
         }
 
-        /// <summary>
-        /// Import Labor Types from an Excel file
-        /// </summary>
-        /// <param name="inExcelFileStream">Excel File Stream</param>
-        /// <param name="inTaskElement">Task Element containing the Labor Types</param>
-        /// <param name="inWorkspace">the Workspace</param>
-        /// <param name="newOnly">True if importing only new labor types, False if also updating existing</param>
-        /// <returns>Imported Labor Types</returns>
         public Collection<ImportedLaborType> ImportLaborTypeFromExcelFile(Stream inExcelFileStream, BoeTaskElementDTO inTaskElement, FullWorkspace inWorkspace, Boolean newOnly)
         {
 
@@ -100,8 +86,6 @@ namespace GenBOE.ActionLogic.IO.Import
 
             bool isMulti = inWorkspace.Boes.First(b => b.Id == inTaskElement.BoeID).IsMultiClinWbs;
             bool isOffload = inWorkspace.ProjectMapType == ProjectMapType.StandardWithOffload;
-            bool isUsingTemplateBOE = inWorkspace.UsingTemplateBOE;
-
             try
             {
                 Collection<ImportedLaborType> importResults;
@@ -118,12 +102,6 @@ namespace GenBOE.ActionLogic.IO.Import
                     }
 
                     List<string> requiredColumns = new List<string>(this.REQUIRED_COLUMNS);
-
-                    if(isUsingTemplateBOE)
-                    {
-                        columnsToRetrieve.Add(ImportExportConstants.MOQ_TYPE_COLUMN_HEADER);
-                        requiredColumns.Add(ImportExportConstants.MOQ_TYPE_COLUMN_HEADER);
-                    }
 
                     if (isOffload)
                     {
@@ -170,10 +148,10 @@ namespace GenBOE.ActionLogic.IO.Import
                     }
                     else
                     {
-                        ICollection<Dictionary<string, string>> allRows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(document, IMPORT_TAB, requiredColumns.ToArray(), allColumns);
+                        var allRows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(document, IMPORT_TAB, requiredColumns.ToArray(), allColumns);
 
                         // Turn each row into a DTO object and return the collection
-                        importResults = this.CreateImportedLaborTypes(allRows, inTaskElement, inWorkspace, newOnly, workspaceCustomFields, isMulti, isOffload, isUsingTemplateBOE);
+                        importResults = this.CreateImportedLaborTypes(allRows, inTaskElement, inWorkspace, newOnly, workspaceCustomFields, isMulti, isOffload);
                     }
                 }
 
@@ -250,7 +228,6 @@ namespace GenBOE.ActionLogic.IO.Import
         /// <param name="workspaceCustomFields">The workspace custom fields.</param>
         /// <param name="isMulti">Whether the BOE is a Multi-Clin/WBS BOE or not.</param>
         /// <param name="isOffload">True if we should show the Offload column; otherwise false.</param>
-        /// <param name="isUsingTemplateBOE">Whether Workspace is using Template BOE</param>
         /// <returns>List of imported Labor Types.</returns>
         private Collection<ImportedLaborType> CreateImportedLaborTypes(
             ICollection<Dictionary<string, string>> allRows,
@@ -258,7 +235,7 @@ namespace GenBOE.ActionLogic.IO.Import
             FullWorkspace workspace,
             Boolean newOnly,
             ICollection<CustomFieldDTO> workspaceCustomFields, Boolean isMulti,
-            bool isOffload, bool isUsingTemplateBOE)
+            bool isOffload)
         {
             if (allRows == null)
             {
@@ -270,10 +247,6 @@ namespace GenBOE.ActionLogic.IO.Import
             //Workspace Clins and WBS
             Collection<FullWbs> wsWBS = new Collection<FullWbs>(workspace.WbsElementsNoMultiWbs.ToCollection());
             Collection<ClinDTO> wsClins = new Collection<ClinDTO>(workspace.ClinsNoMultiClin.ToCollection<ClinDTO>());
-
-            ICollection<MoqTypeSelection> moqTypes = isUsingTemplateBOE ?
-                moqTypeDataLoader.GetByBoeId(taskElement.BoeID).Where(x => x.TaskId == taskElement.Id).ToCollection() : new Collection<MoqTypeSelection>();
-
             if (allRows.Any())
             {
                 // Get all Labor Types currently in the workspace and convert 
@@ -336,12 +309,12 @@ namespace GenBOE.ActionLogic.IO.Import
 
                         toAdd = this.update(toAdd,
                             this.ConstructImportfromFile(row, taskElement, workspace, existingLT, workspaceCustomFields,
-                                wsWBS, wsClins, moqTypes, isMulti, isOffload, isUsingTemplateBOE, ref newCustomFieldIndex), workspaceCustomFields.Any());
+                                wsWBS, wsClins, isMulti, isOffload, ref newCustomFieldIndex), workspaceCustomFields.Any());
                     }
                     else
                     {
                         toAdd = this.ConstructImportfromFile(row, taskElement, workspace, existingLT,
-                            workspaceCustomFields, wsWBS, wsClins, moqTypes, isMulti, isOffload, isUsingTemplateBOE, ref newCustomFieldIndex);
+                            workspaceCustomFields, wsWBS, wsClins, isMulti, isOffload, ref newCustomFieldIndex);
                         toAdd.ImportTypes.Add(LaborTypeImportResult.AddLaborType);
                     }
 
@@ -491,15 +464,32 @@ namespace GenBOE.ActionLogic.IO.Import
         /// <returns><c>True</c> if Labor Type data integrity is all right; otherwise, <c>False</c>.</returns>
         private void ConfirmTypeIntegrity(ImportedLaborType toConfirm)
         {
+            bool remove = false;
+
             if (toConfirm.ImportTypes.Contains(LaborTypeImportResult.LaborTypeDateOutsideOfPOPDateRange) ||
                 toConfirm.ImportTypes.Contains(LaborTypeImportResult.MissingData) ||
                 toConfirm.ImportTypes.Contains(LaborTypeImportResult.InvalidData) ||
                 toConfirm.ImportTypes.Contains(LaborTypeImportResult.SpreadMonthColumnInvalid) ||
-                toConfirm.ImportTypes.Contains(LaborTypeImportResult.SpreadMonthValueOutsideDateRange) ||
-                toConfirm.ImportTypes.Contains(LaborTypeImportResult.MoqTypeMissingOrInvalid) ||
-                toConfirm.ImportTypes.Contains(LaborTypeImportResult.HoursSpreadInvalid) ||
-                toConfirm.ImportTypes.Contains(LaborTypeImportResult.RateTypeSpreadTypeAgreement) ||
-                toConfirm.ImportTypes.Contains(LaborTypeImportResult.ResourceMultiValuesInvalid))
+                toConfirm.ImportTypes.Contains(LaborTypeImportResult.SpreadMonthValueOutsideDateRange))
+            {
+                remove = true;
+            }
+
+            if (toConfirm.ImportTypes.Contains(LaborTypeImportResult.HoursSpreadInvalid))
+            {
+                remove = true;
+            }
+
+            if (toConfirm.ImportTypes.Contains(LaborTypeImportResult.RateTypeSpreadTypeAgreement))
+            {
+                remove = true;
+            }
+            if (toConfirm.ImportTypes.Contains(LaborTypeImportResult.ResourceMultiValuesInvalid))
+            {
+                remove = true;
+            }
+
+            if (remove)
             {
                 toConfirm.ImportTypes.Remove(LaborTypeImportResult.AddLaborType);
                 toConfirm.ImportTypes.Remove(LaborTypeImportResult.UpdateLaborType);
@@ -561,12 +551,6 @@ namespace GenBOE.ActionLogic.IO.Import
 
                 updatedLT.PerformingOrgID = inImportedBOELaborType.PerformingOrgID.Value;
                 updatedLT.PerformingOrg = inImportedBOELaborType.PerformingOrg;
-                different = true;
-            }
-
-            if (inExistingBOELaborType.MoqTypeSelectionId != inImportedBOELaborType.MoqTypeSelectionId)
-            {
-                updatedLT.MoqTypeSelectionId = inImportedBOELaborType.MoqTypeSelectionId;
                 different = true;
             }
 
@@ -679,27 +663,11 @@ namespace GenBOE.ActionLogic.IO.Import
             return updatedLT;
         }
 
-        /// <summary>
-        /// Construct the Imported Labor Type from the file
-        /// </summary>
-        /// <param name="importfromfile">file import dictionary</param>
-        /// <param name="inTaskElement">Task element</param>
-        /// <param name="inWorkspace">Workspace</param>
-        /// <param name="existingResource">the existing Resource Type</param>
-        /// <param name="workspaceCustomFields">Workspace Custom Fields</param>
-        /// <param name="wsWbs">WBSs for the Workspace</param>
-        /// <param name="wsClins">Clins for the Workspace</param>
-        /// <param name="moqTypes">MOQ Types for the Task</param>
-        /// <param name="isMulti">Whether BOE is Multi-Clin/WBS</param>
-        /// <param name="isOffload">Whether WS is offload</param>
-        /// <param name="isUsingTemplateBOE">Whether WS is using Template BOE</param>
-        /// <param name="newCustomFieldIndex">new Custom Field index</param>
-        /// <returns></returns>
         [SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
         [SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         private ImportedLaborType ConstructImportfromFile(Dictionary<string, string> importfromfile, BoeTaskElementDTO inTaskElement, 
             FullWorkspace inWorkspace, ResourceTypeDto existingResource, ICollection<CustomFieldDTO> workspaceCustomFields, Collection<FullWbs> wsWbs, Collection<ClinDTO> wsClins,
-            ICollection<MoqTypeSelection> moqTypes, bool isMulti, bool isOffload, bool isUsingTemplateBOE, ref int newCustomFieldIndex)
+            bool isMulti, bool isOffload, ref int newCustomFieldIndex)
         {
             ImportedLaborType toReturn = new ImportedLaborType();
 
@@ -921,29 +889,6 @@ namespace GenBOE.ActionLogic.IO.Import
                 {
                     toReturn.PercentSpreadLocked = false;
                     toReturn.HourSpreadLocked = true;
-                }
-            }
-
-            if (isUsingTemplateBOE)
-            {
-                if(!importfromfile.ContainsKey(MOQ_TYPE_HEADER))
-                {
-                    toReturn.ImportTypes.Add(LaborTypeImportResult.MoqTypeMissingOrInvalid);
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty(importfromfile[MOQ_TYPE_HEADER]))
-                    {
-                        MoqTypeSelection moqType = moqTypes.FirstOrDefault(x => x.SelectedMOQTypeText == importfromfile[MOQ_TYPE_HEADER]);
-                        if (moqType == null)
-                        {
-                            toReturn.ImportTypes.Add(LaborTypeImportResult.MoqTypeMissingOrInvalid);
-                        }
-                        else
-                        {
-                            toReturn.MoqTypeSelectionId = (int)moqType.SelectedMOQType;
-                        }
-                    }
                 }
             }
 
@@ -1400,8 +1345,7 @@ namespace GenBOE.ActionLogic.IO.Import
         ResourceMultiValuesInvalid = 23,
         MissingRequiredResourceCustomField = 24,
         SpreadMonthColumnInvalid = 25,
-        SpreadMonthValueOutsideDateRange = 26,
-        MoqTypeMissingOrInvalid = 27
+        SpreadMonthValueOutsideDateRange = 26
     }
 
     [ExcludeFromCodeCoverage]
@@ -1581,10 +1525,5 @@ namespace GenBOE.ActionLogic.IO.Import
         public string Clin { get; set; }
         public string PerformingOrg { get; set; }
         public string Curve { get; set; }
-
-        /// <summary>
-        /// Get the MOQ Type text
-        /// </summary>
-        public string MoqTypeText { get { return this.MoqTypeSelectionId != null ? ((MOQType)this.MoqTypeSelectionId).GetDescription() : "null"; } }
     }
 }

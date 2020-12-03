@@ -304,8 +304,6 @@
       <SubType>Designer</SubType>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="ActionLogic\Import\Labor\LaborImportHoursMoqTypesInvalid.xlsx" />
-    <None Include="ActionLogic\Import\Labor\LaborImportHoursMoqTypesMissing.xlsx" />
     <None Include="ActionLogic\Import\Labor\LaborImportSpreadDataInvalidStartMonth.xlsx" />
     <None Include="ActionLogic\Import\Labor\LaborImportSpreadDataInvalidStartMonth0.xlsx" />
     <None Include="ActionLogic\Import\Labor\LaborImportSpreadDataValidStartMonth.xlsx" />
@@ -367,9 +365,8 @@
     <None Include="Resources\LaborImportHoursCustomFields.xlsx" />
     <None Include="Resources\LaborImportHoursCustomFieldsNoChange.xlsx" />
     <None Include="Resources\LaborImportHoursCustomFieldsNoSelection.xlsx" />
-    <None Include="ActionLogic\Import\Labor\LaborImportHoursMoqTypes.xlsx" />
     <None Include="Resources\laborimportmulticustomfields.xlsx" />
-    <Content Include="Resources\LaborTypesAndSpread.xlsx" />
+    <None Include="Resources\LaborTypesAndSpread.xlsx" />
     <None Include="Resources\ProjectMap.xlsx" />
     <EmbeddedResource Include="Resources\TINATraining.xlsx" />
     <None Include="Resources\WbsBoeReport.xlsx" />
