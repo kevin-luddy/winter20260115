@@ -4840,7 +4840,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                 {
                                     // replace the label for RTE Templates in MOQ Types
                                     SdtElement moqLabelElement = WordUtilities.GetTaggedChildElement(taskContainer.TaskContainer, FieldName_MethodOfQuotingLabel);
-                                    WordUtilities.SetElementText(moqLabelElement, "Additional MOQ Types Information: ");
+                                    WordUtilities.SetElementText(moqLabelElement, "Additional MOQ Rationale: ");
                                 }
                             }
 
