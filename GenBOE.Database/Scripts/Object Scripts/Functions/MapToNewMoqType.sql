@@ -16,7 +16,7 @@ CREATE FUNCTION dbo.MapToNewMoqType(@MoqValue INT, @wsCreationDate DATE) RETURNS
 **	--------	--------	---------------------------------------------------
 **	2020-11-11	Dusan		Initial creation.
 **	2020-11-24	Dusan		Updated to use WasWorkspaceCreatedAfterNewMoqTypes
-**
+**  2020-12-3	Dusan		BOEJ-4954: Fixed an issue w/ NULL input
 *******************************************************************************/
 
 BEGIN
@@ -34,7 +34,7 @@ BEGIN
 					WHEN @MoqValue IN (5007, 2007, 1006) THEN 5007
 					WHEN @MoqValue IN (5008, 2008, 1002) THEN 5008
 					WHEN @MoqValue IN (5009, 1009) THEN 5009
-					ELSE 0
+					ELSE NULL
 				END
 		END
 
