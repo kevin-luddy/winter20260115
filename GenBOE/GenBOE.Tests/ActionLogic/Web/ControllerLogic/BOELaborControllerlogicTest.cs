@@ -232,8 +232,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 PercentSpreadLocked = false,
                 CustomFieldValues = new Collection<CustomFieldSelectionModelView> { laborCustomFieldSelection },
                 Spreads = new Collection<LaborSpreadDataModelView>() { spread },
-                LaborTypeOrder = 1,
-                SelectedMOQType = MOQType.Comparative
+                LaborTypeOrder = 1
             };
 
             toReturn.LaborTypesData = new Collection<LaborTypeDataModelView> { labor };
@@ -765,7 +764,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.LaborTypesData.First().StartDate = null;
-            task.LaborTypesData.First().SelectedMOQType = MOQType.CostEstimatingRelationships;
 
             ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
             Assert.AreEqual(2, validations.Count());
@@ -979,7 +977,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 BOETaskID = "2",
                 StartDate = boe.StartDate,
                 EndDate = boe.EndDate,
-                taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto() { StartDateValue = boe.StartDate.AddMonths(-1), EndDateValue = boe.EndDate, MoqTypeSelectionId = 5005 } }
+                taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto() { StartDateValue = boe.StartDate.AddMonths(-1), EndDateValue = boe.EndDate} }
             };
 
             factory.Setup(x => x.CreateTaskElement(boeTask.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTask);
@@ -1011,7 +1009,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 BOETaskID = "2",
                 StartDate = boe.StartDate,
                 EndDate = boe.EndDate,
-                taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto() { StartDateValue = boe.StartDate, EndDateValue = boe.EndDate.AddMonths(1), MoqTypeSelectionId = 5005 } }
+                taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto() { StartDateValue = boe.StartDate, EndDateValue = boe.EndDate.AddMonths(1) } }
             };
 
             factory.Setup(x => x.CreateTaskElement(boeTask.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTask);
@@ -1087,7 +1085,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 BOETaskID = "2",
                 StartDate = boe.StartDate,
                 EndDate = boe.EndDate,
-                taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto() { StartDateValue = boe.StartDate, EndDateValue = boe.EndDate, MoqTypeSelectionId = 5005 } }
+                taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto() { StartDateValue = boe.StartDate, EndDateValue = boe.EndDate } }
             };
 
             factory.Setup(x => x.CreateTaskElement(boeTask.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTask);
@@ -1682,7 +1680,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                     Assert.AreEqual(expectedLabor.StartDate, resultLabor.StartDate.Value.ToString("MM/yyyy"));
                     Assert.AreEqual(expectedLabor.EndDate, resultLabor.EndDate.Value.ToString("MM/yyyy"));
                     Assert.AreEqual(expectedLabor.LaborTypeOrder, resultLabor.LaborTypeOrder);
-                    Assert.AreEqual(expectedLabor.SelectedMOQType, (MOQType?)resultLabor.MoqTypeSelectionId);
 
                     // Assert Labor Custom Fields
                     Assert.IsTrue(resultLabor.CustomFieldValueContainers.Any());
@@ -1971,7 +1968,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 TaskId = task.Id,
                 SelectedMOQType = MOQType.Comparative,
                 CerName = "test name",
-                CerLocation = "test location",
                 DescriptionHoursRequired = "test desc",
                 SmeReason = "test reason",
                 SmeHoursLogic = "test hours logic",
@@ -2794,7 +2790,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             Assert.AreEqual(testLabor.SpreadType, result.LaborTypesData.First().RateType == RateType.Hours ? SpreadType.Hours : SpreadType.Cost);
             Assert.AreEqual(testLabor.WBSID, result.LaborTypesData.First().WBSID);
             Assert.AreEqual(testLabor.CLINID, result.LaborTypesData.First().CLINID);
-            Assert.AreEqual(testLabor.MoqTypeSelectionId, (int?)result.LaborTypesData.First().SelectedMOQType);
 
             // Assert Labor Types Custom Fields
             Assert.IsTrue(result.LaborTypesData.First().CustomFieldValues.Any());

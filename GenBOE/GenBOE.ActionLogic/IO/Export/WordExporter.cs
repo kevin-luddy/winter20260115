@@ -485,8 +485,6 @@ namespace GenBOE.ActionLogic.IO.Export
 
                             WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArNameLabel), labelPrefix + " name");
                             WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArName), moqType.CerName);
-                            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArLocationLabel), labelPrefix + " location in the proposal");
-                            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArLocation), moqType.CerLocation);
                             break;
                         case MOQType.SOW:
                         case MOQType.LOE:
@@ -717,7 +715,6 @@ namespace GenBOE.ActionLogic.IO.Export
         private void RemoveCerPrArRows(SdtElement moqTypeContainer)
         {
             WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArName);
-            WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArLocation);
         }
 
         /// <summary>

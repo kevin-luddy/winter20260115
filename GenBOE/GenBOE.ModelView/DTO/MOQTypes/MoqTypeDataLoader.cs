@@ -50,7 +50,6 @@ namespace GenBOE.DataBridge.DTO
                                     UpdateDate = m.UpdateDT,
                                     Order = m.Order,
                                     CerName = m.CERName,
-                                    CerLocation = m.CERLocation,
                                     DescriptionHoursRequired = m.HoursDescription,
                                     SmeReason = m.SubjectMatterExpert,
                                     SmeHoursLogic = m.HoursLogicAndAssumptions,
@@ -93,7 +92,6 @@ namespace GenBOE.DataBridge.DTO
                                     UpdateDate = m.UpdateDT,
                                     Order = m.Order,
                                     CerName = m.CERName,
-                                    CerLocation = m.CERLocation,
                                     DescriptionHoursRequired = m.HoursDescription,
                                     SmeReason = m.SubjectMatterExpert,
                                     SmeHoursLogic = m.HoursLogicAndAssumptions,
@@ -135,7 +133,6 @@ namespace GenBOE.DataBridge.DTO
                                     UpdateDate = m.UpdateDT,
                                     Order = m.Order,
                                     CerName = m.CERName,
-                                    CerLocation = m.CERLocation,
                                     DescriptionHoursRequired = m.HoursDescription,
                                     SmeReason = m.SubjectMatterExpert,
                                     SmeHoursLogic = m.HoursLogicAndAssumptions,
@@ -202,7 +199,7 @@ namespace GenBOE.DataBridge.DTO
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
                     toReturn = gbe.upsertMOQTypeSelection(dtoToUpsert.Id, dtoToUpsert.TaskId, (int)dtoToUpsert.SelectedMOQType, dtoToUpsert.UpdateDate, 
-                        dtoToUpsert.Order, dtoToUpsert.CerName, dtoToUpsert.CerLocation, dtoToUpsert.DescriptionHoursRequired, dtoToUpsert.SmeReason, 
+                        dtoToUpsert.Order, dtoToUpsert.CerName, dtoToUpsert.DescriptionHoursRequired, dtoToUpsert.SmeReason, 
                         dtoToUpsert.SmeHoursLogic, dtoToUpsert.SmeDurationLogic, dtoToUpsert.SmeTaskEstimates, dtoToUpsert.Rationale, dtoToUpsert.SkillMixRationale).FirstOrDefault();
 
                     foreach(MoqTableData table in dtoToUpsert.TableData)

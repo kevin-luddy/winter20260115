@@ -1337,7 +1337,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.ValidateLaborTypeDates(laborTaskData, inValidationErrors);
             this.ValidateLaborTypeCustomFields(laborTaskData, ws, taskElement, inValidationErrors);
             this.ValidateTaskCustomFields(laborTaskData, ws, inValidationErrors);
-            this.ValidateMoqTypes(ws, laborTaskData, inValidationErrors);
         }
 
         /// <summary>
@@ -1616,33 +1615,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 {
                     inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldMetaData.FieldName)));
                 }
-            }
-        }
-
-        /// <summary>
-        /// Validates MOQ Types for UI, only fully required fields
-        /// </summary>
-        /// <param name="ws">Full WS</param>
-        /// <param name="taskData">Task Data</param>
-        /// <param name="errors">Validation Errors</param>
-        private void ValidateMoqTypes(WorkspaceDTO ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors)
-        {
-            if (ws.UsingTemplateBOE)
-            {
-                ICollection<MOQType> moqTypesUsedByTasksResourceTypes = taskData.LaborTypesData.Where(x => x.SelectedMOQType.HasValue).Select(x => x.SelectedMOQType.Value).ToList();
-
-                ICollection<string> taskErrors = ValidateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, moqTypesUsedByTasksResourceTypes);
-
-                errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
-
-                taskData.LaborTypesData.Where(x => !x.SelectedMOQType.HasValue).ForEach(resourceType =>
-                {
-                    string resourceValue = resourceType.CostSpread.HasValue && resourceType.CostSpread > 0 ?
-                                    "$" + Utilities.AdjustPrecision(resourceType.CostSpread.Value, 2).ToString()
-                                        : Utilities.AdjustPrecision(resourceType.HourSpread.Value, ws.DecimalPrecision).ToString();
-
-                    errors.Add(new ValidationMessage(string.Format(Constants.MOQ_TYPE_REQUIRED_FOR_RESOURCE_TYPE, resourceType.StartDate, resourceType.EndDate, resourceValue)));
-                });
             }
         }
 
@@ -2211,7 +2183,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     resourceToAdd.WBSID = labor.WBSID > (int?)0 ? labor.WBSID : null;
                     resourceToAdd.CLINID = labor.CLINID > (int?)0 ? labor.CLINID : null;
                     resourceToAdd.LaborTypeOrder = labor.LaborTypeOrder;
-                    resourceToAdd.MoqTypeSelectionId = (int?)labor.SelectedMOQType;
                     resourceToAdd.Updateable = UpdateType.Upsert;
 
                     // Convert start/end date
@@ -3392,11 +3363,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             toReturn.TotalRelevantHoursSuffix = string.Empty;
 
             toReturn.CERNameSuffix = string.Empty;
-            toReturn.CERLocationSuffix = string.Empty;
             toReturn.PENameSuffix = string.Empty;
-            toReturn.PELocationSuffix = string.Empty;
             toReturn.ARNameSuffix = string.Empty;
-            toReturn.ARLocationSuffix = string.Empty;
 
             toReturn.SOWDescriptionSuffix = string.Empty;
             toReturn.LOEDescriptionSuffix = string.Empty;

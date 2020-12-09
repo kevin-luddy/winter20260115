@@ -1265,8 +1265,7 @@ namespace GenBOE.DataBridge.DTO
                                                                     UpdateDate = cf.UpdateDT,
                                                                     IsOpenEnded = cf.CustomFieldValue.CustomField.IsOpenEnded,
                                                                     OpenEndedValue = cf.CustomFieldValue.CustomFieldValueDescription
-                                                                }),
-                                                            MoqTypeSelectionId = lT.MOQTypeSelectionId
+                                                                })
                                                         }).ToList();
 
             ResourceTypeLoader.LoadSikorskyFields(gbe, toReturn);

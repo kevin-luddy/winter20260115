@@ -361,7 +361,6 @@ namespace GenBOE.Tests.ActionLogic.Validation
                         StartDateValue = DateTime.Parse("02/2014"),
                         EndDateValue = DateTime.Parse("04/2014"),
                         ValueSpread = 30,
-                        MoqTypeSelectionId = 5001,
                         LaborSpreads = new Collection<ResourceSpreadDto>()
                         {
                             new ResourceSpreadDto() { LaborSpreadDate = new DateTime(2014, 2, 1), LaborSpreadValue = 10 },
@@ -376,7 +375,6 @@ namespace GenBOE.Tests.ActionLogic.Validation
                         StartDateValue = DateTime.Parse("01/2014"),
                         EndDateValue = DateTime.Parse("04/2014"),
                         ValueSpread = 40,
-                        MoqTypeSelectionId = 5001,
                         LaborSpreads = new Collection<ResourceSpreadDto>()
                         {
                             new ResourceSpreadDto() { LaborSpreadDate = new DateTime(2014, 1, 1), LaborSpreadValue = 10 },
@@ -392,7 +390,6 @@ namespace GenBOE.Tests.ActionLogic.Validation
                         StartDateValue = DateTime.Parse("04/2014"),
                         EndDateValue = DateTime.Parse("04/2014"),
                         ValueSpread = 10,
-                        MoqTypeSelectionId = 5001,
                         LaborSpreads = new Collection<ResourceSpreadDto>()
                         {
                             new ResourceSpreadDto() { LaborSpreadDate = new DateTime(2014, 4, 1), LaborSpreadValue = 10 }
@@ -608,7 +605,6 @@ namespace GenBOE.Tests.ActionLogic.Validation
                         StartDateValue = DateTime.Parse("02/2014"),
                         EndDateValue = DateTime.Parse("03/2014"),
                         ValueSpread = 20,
-                        MoqTypeSelectionId = 5001,
                         LaborSpreads = new Collection<ResourceSpreadDto>()
                         {
                             new ResourceSpreadDto() { LaborTypeId = 20, LaborSpreadDate = new DateTime(2014, 2, 1), LaborSpreadValue = 10 },
@@ -623,7 +619,6 @@ namespace GenBOE.Tests.ActionLogic.Validation
                         StartDateValue = DateTime.Parse("02/2014"),
                         EndDateValue = DateTime.Parse("04/2014"),
                         ValueSpread = 33,
-                        MoqTypeSelectionId = 5001,
                         LaborSpreads = new Collection<ResourceSpreadDto>()
                         {
                             new ResourceSpreadDto() { LaborTypeId = 30, LaborSpreadDate = new DateTime(2014, 1, 1), LaborSpreadValue = 0 }, // start date is outside of PoP, but 0 value
@@ -639,7 +634,6 @@ namespace GenBOE.Tests.ActionLogic.Validation
                         StartDateValue = DateTime.Parse("04/2014"),
                         EndDateValue = DateTime.Parse("04/2014"),
                         ValueSpread = 3,
-                        MoqTypeSelectionId = 5001,
                         LaborSpreads = new Collection<ResourceSpreadDto>()
                         {
                             new ResourceSpreadDto() { LaborSpreadDate = new DateTime(2014, 4, 1), LaborSpreadValue = 3 }

@@ -17,7 +17,6 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public MOQTypeSelection()
         {
-            this.BOELaborTypes = new HashSet<BOELaborType>();
             this.MOQTypeSelectionTableDatas = new HashSet<MOQTypeSelectionTableData>();
         }
     
@@ -26,8 +25,6 @@ namespace GenBOE.Models
         public int MOQTypeSelection1 { get; set; }
         public System.DateTime UpdateDT { get; set; }
         public int Order { get; set; }
-        public string CERName { get; set; }
-        public string CERLocation { get; set; }
         public string HoursDescription { get; set; }
         public string SubjectMatterExpert { get; set; }
         public string HoursLogicAndAssumptions { get; set; }
@@ -35,9 +32,8 @@ namespace GenBOE.Models
         public string EstimateTasks { get; set; }
         public string Rationale { get; set; }
         public string SkillMix { get; set; }
+        public string CERName { get; set; }
     
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BOELaborType> BOELaborTypes { get; set; }
         public virtual BOETaskElement BOETaskElement { get; set; }
         public virtual MOQTypeLU MOQTypeLU { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

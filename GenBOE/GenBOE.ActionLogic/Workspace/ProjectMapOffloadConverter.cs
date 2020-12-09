@@ -180,17 +180,14 @@ namespace GenBOE.ActionLogic.Workspace
                     if (moqType.SelectedMOQType == MOQType.CostEstimatingRelationships)
                     {
                         sb.AppendLine($"CER name: {RTEUtilities.TurnHTMLIntoPlainText(moqType.CerName)}");
-                        sb.AppendLine($"CER location in the proposal: {RTEUtilities.TurnHTMLIntoPlainText(moqType.CerLocation)}");
                     } 
                     else if (moqType.SelectedMOQType == MOQType.ParametricEstimates)
                     {
                         sb.AppendLine($"Parametric model or tool name: {RTEUtilities.TurnHTMLIntoPlainText(moqType.CerName)}");
-                        sb.AppendLine($"Parametric model or tool location in the proposal: {RTEUtilities.TurnHTMLIntoPlainText(moqType.CerLocation)}");
                     }
                     else if (moqType.SelectedMOQType == MOQType.AnalogousRelationships)
                     {
                         sb.AppendLine($"Analogous relationship name: {RTEUtilities.TurnHTMLIntoPlainText(moqType.CerName)}");
-                        sb.AppendLine($"Analogous relationship location in the proposal: {RTEUtilities.TurnHTMLIntoPlainText(moqType.CerLocation)}");
                     }
 
                     if (moqType.SelectedMOQType == MOQType.LOE)

@@ -1128,7 +1128,6 @@ INSERT INTO [version].[MOQTypeSelection]
 [UpdateDT],
 [Order],
 [CERName],
-[CERLocation],
 [HoursDescription],
 [SubjectMatterExpert],
 [HoursLogicAndAssumptions],
@@ -1144,7 +1143,6 @@ M.[MOQTypeSelection],
 M.[UpdateDT],
 M.[Order],
 M.[CERName],
-M.[CERLocation],
 M.[HoursDescription],
 M.[SubjectMatterExpert],
 M.[HoursLogicAndAssumptions],
@@ -1222,7 +1220,6 @@ INSERT INTO [version].[BOELaborType]
 ,[CLINID]
 ,[CanOffload]
 ,[LaborSortId]
-,[MOQTypeSelectionId]
 )
 SELECT BLT.[BOELaborTypeID]
 ,BLT.[ResourceID]
@@ -1242,7 +1239,6 @@ SELECT BLT.[BOELaborTypeID]
 ,BLT.CLINID
 ,BLT.[CanOffload]
 ,BLT.[LaborSortId]
-,BLT.[MOQTypeSelectionId]
 FROM [dbo].[BOELaborType] BLT
 INNER JOIN [dbo].[BOETaskElement] BTE ON BLT.BOETaskElementID = BTE.BOETaskElementID
 INNER JOIN dbo.BOE B ON BTE.BOEID  = B.BOEID

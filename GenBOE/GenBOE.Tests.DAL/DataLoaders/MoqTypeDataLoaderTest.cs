@@ -144,7 +144,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 TaskId = GlobalTestCaseSetup.GlobalTaskElementID,
                 SelectedMOQType = MOQType.AnalogousRelationships,
                 CerName = "test name",
-                CerLocation = "test location",
                 DescriptionHoursRequired = "test desc",
                 SmeReason = "test reason",
                 SmeHoursLogic = "test hours logic",
@@ -209,7 +208,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(expectedMoqTypeSelection.SelectedMOQType, resultMoqTypeSelection.SelectedMOQType);
             Assert.AreEqual(expectedMoqTypeSelection.Order, resultMoqTypeSelection.Order);
             Assert.AreEqual(expectedMoqTypeSelection.CerName, resultMoqTypeSelection.CerName);
-            Assert.AreEqual(expectedMoqTypeSelection.CerLocation, resultMoqTypeSelection.CerLocation);
             Assert.AreEqual(expectedMoqTypeSelection.DescriptionHoursRequired, resultMoqTypeSelection.DescriptionHoursRequired);
             Assert.AreEqual(expectedMoqTypeSelection.SmeReason, resultMoqTypeSelection.SmeReason);
             Assert.AreEqual(expectedMoqTypeSelection.SmeHoursLogic, resultMoqTypeSelection.SmeHoursLogic);

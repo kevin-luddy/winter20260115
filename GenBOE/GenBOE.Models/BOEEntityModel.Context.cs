@@ -169,10 +169,10 @@ namespace GenBOE.Models
         public virtual DbSet<RteTemplateQuestion> RteTemplateQuestions { get; set; }
         public virtual DbSet<RteTemplateAnswer> RteTemplateAnswers { get; set; }
         public virtual DbSet<RteTemplateSource> RteTemplateSources { get; set; }
-        public virtual DbSet<BOELaborType> BOELaborTypes { get; set; }
         public virtual DbSet<ProjectMap> ProjectMaps { get; set; }
-        public virtual DbSet<MOQTypeSelection> MOQTypeSelections { get; set; }
         public virtual DbSet<MOQTypeSelectionTableData> MOQTypeSelectionTableDatas { get; set; }
+        public virtual DbSet<BOELaborType> BOELaborTypes { get; set; }
+        public virtual DbSet<MOQTypeSelection> MOQTypeSelections { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]
         public virtual IQueryable<SplitString_Result> SplitString(string list, string delimiter, string emptyListItem)
@@ -190,28 +190,6 @@ namespace GenBOE.Models
                 new ObjectParameter("EmptyListItem", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<SplitString_Result>("[GenBoeEntities].[SplitString](@List, @Delimiter, @EmptyListItem)", listParameter, delimiterParameter, emptyListItemParameter);
-        }
-    
-        public virtual ObjectResult<Nullable<int>> copyWorkspace(Nullable<int> workspaceID, string workspaceName, string workspaceShortName, Nullable<int> CostVolumeLeadPricerUserID)
-        {
-            var workspaceIDParameter = workspaceID.HasValue ?
-                new ObjectParameter("WorkspaceID", workspaceID) :
-                new ObjectParameter("WorkspaceID", typeof(int));
-    
-            var workspaceNameParameter = workspaceName != null ?
-                new ObjectParameter("WorkspaceName", workspaceName) :
-                new ObjectParameter("WorkspaceName", typeof(string));
-    
-            var workspaceShortNameParameter = workspaceShortName != null ?
-                new ObjectParameter("WorkspaceShortName", workspaceShortName) :
-                new ObjectParameter("WorkspaceShortName", typeof(string));
-
-            var CostVolumeLeadPricerUserIDParameter = CostVolumeLeadPricerUserID.HasValue ?
-                new ObjectParameter("CostVolumeLeadPricerUserID", CostVolumeLeadPricerUserID) :
-                new ObjectParameter("CostVolumeLeadPricerUserID", typeof(int));
-            
-
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("copyWorkspace", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, CostVolumeLeadPricerUserIDParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> createWorkspaceVersion(string versionName, Nullable<int> createdByETIUserID, Nullable<int> workspaceStateID, Nullable<int> workspaceID)
@@ -2713,7 +2691,7 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertBOELaborSpread", bOELaborSpreadIDParameter, bOELaborTypeIDParameter, laborSpreadDateParameter, laborSpreadValueParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertBOELaborType(Nullable<int> bOELaborTypeID, Nullable<int> resourceID, Nullable<int> performingOrganizationID, Nullable<System.DateTime> bOELaborTypeStartDate, Nullable<System.DateTime> bOELaborTypeEndDate, Nullable<int> spreadCurveID, Nullable<decimal> percentSpread, Nullable<decimal> valueSpread, Nullable<int> bOETaskElementID, Nullable<int> spreadTypeID, Nullable<System.DateTime> updateDT, Nullable<bool> percentSpreadLocked, Nullable<bool> hourSpreadLocked, Nullable<int> wBSID, Nullable<int> cLINID, Nullable<bool> canOffload, Nullable<int> laborSortID, Nullable<int> mOQTypeSelectionId)
+        public virtual ObjectResult<Nullable<int>> upsertBOELaborType(Nullable<int> bOELaborTypeID, Nullable<int> resourceID, Nullable<int> performingOrganizationID, Nullable<System.DateTime> bOELaborTypeStartDate, Nullable<System.DateTime> bOELaborTypeEndDate, Nullable<int> spreadCurveID, Nullable<decimal> percentSpread, Nullable<decimal> valueSpread, Nullable<int> bOETaskElementID, Nullable<int> spreadTypeID, Nullable<System.DateTime> updateDT, Nullable<bool> percentSpreadLocked, Nullable<bool> hourSpreadLocked, Nullable<int> wBSID, Nullable<int> cLINID, Nullable<bool> canOffload, Nullable<int> laborSortID)
         {
             var bOELaborTypeIDParameter = bOELaborTypeID.HasValue ?
                 new ObjectParameter("BOELaborTypeID", bOELaborTypeID) :
@@ -2783,11 +2761,7 @@ namespace GenBOE.Models
                 new ObjectParameter("LaborSortID", laborSortID) :
                 new ObjectParameter("LaborSortID", typeof(int));
     
-            var mOQTypeSelectionIdParameter = mOQTypeSelectionId.HasValue ?
-                new ObjectParameter("MOQTypeSelectionId", mOQTypeSelectionId) :
-                new ObjectParameter("MOQTypeSelectionId", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertBOELaborType", bOELaborTypeIDParameter, resourceIDParameter, performingOrganizationIDParameter, bOELaborTypeStartDateParameter, bOELaborTypeEndDateParameter, spreadCurveIDParameter, percentSpreadParameter, valueSpreadParameter, bOETaskElementIDParameter, spreadTypeIDParameter, updateDTParameter, percentSpreadLockedParameter, hourSpreadLockedParameter, wBSIDParameter, cLINIDParameter, canOffloadParameter, laborSortIDParameter, mOQTypeSelectionIdParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertBOELaborType", bOELaborTypeIDParameter, resourceIDParameter, performingOrganizationIDParameter, bOELaborTypeStartDateParameter, bOELaborTypeEndDateParameter, spreadCurveIDParameter, percentSpreadParameter, valueSpreadParameter, bOETaskElementIDParameter, spreadTypeIDParameter, updateDTParameter, percentSpreadLockedParameter, hourSpreadLockedParameter, wBSIDParameter, cLINIDParameter, canOffloadParameter, laborSortIDParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> upsertBOELaborTypeCustomFieldValue(Nullable<int> bLTCFVID, Nullable<int> bOELaborTypeID, Nullable<int> customFieldID, Nullable<int> customFieldValueID, string customFieldValue, Nullable<System.DateTime> updateDT, Nullable<bool> isOpenEnded)
@@ -5292,7 +5266,7 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteMOQTypeSelectionTableData", mOQTypeSelectionTableDataIdParameter, updateDTParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertMOQTypeSelection(Nullable<int> mOQTypeSelectionId, Nullable<int> taskId, Nullable<int> mOQTypeSelection, Nullable<System.DateTime> updateDT, Nullable<int> order, string cERName, string cERLocation, string hoursDescription, string subjectMatterExpert, string hoursLogicAndAssumptions, string durationLogicAndAssumptions, string estimateTasks, string rationale, string skillMix)
+        public virtual ObjectResult<Nullable<int>> upsertMOQTypeSelection(Nullable<int> mOQTypeSelectionId, Nullable<int> taskId, Nullable<int> mOQTypeSelection, Nullable<System.DateTime> updateDT, Nullable<int> order, string cERName, string hoursDescription, string subjectMatterExpert, string hoursLogicAndAssumptions, string durationLogicAndAssumptions, string estimateTasks, string rationale, string skillMix)
         {
             var mOQTypeSelectionIdParameter = mOQTypeSelectionId.HasValue ?
                 new ObjectParameter("MOQTypeSelectionId", mOQTypeSelectionId) :
@@ -5317,10 +5291,6 @@ namespace GenBOE.Models
             var cERNameParameter = cERName != null ?
                 new ObjectParameter("CERName", cERName) :
                 new ObjectParameter("CERName", typeof(string));
-    
-            var cERLocationParameter = cERLocation != null ?
-                new ObjectParameter("CERLocation", cERLocation) :
-                new ObjectParameter("CERLocation", typeof(string));
     
             var hoursDescriptionParameter = hoursDescription != null ?
                 new ObjectParameter("HoursDescription", hoursDescription) :
@@ -5350,7 +5320,7 @@ namespace GenBOE.Models
                 new ObjectParameter("SkillMix", skillMix) :
                 new ObjectParameter("SkillMix", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertMOQTypeSelection", mOQTypeSelectionIdParameter, taskIdParameter, mOQTypeSelectionParameter, updateDTParameter, orderParameter, cERNameParameter, cERLocationParameter, hoursDescriptionParameter, subjectMatterExpertParameter, hoursLogicAndAssumptionsParameter, durationLogicAndAssumptionsParameter, estimateTasksParameter, rationaleParameter, skillMixParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertMOQTypeSelection", mOQTypeSelectionIdParameter, taskIdParameter, mOQTypeSelectionParameter, updateDTParameter, orderParameter, cERNameParameter, hoursDescriptionParameter, subjectMatterExpertParameter, hoursLogicAndAssumptionsParameter, durationLogicAndAssumptionsParameter, estimateTasksParameter, rationaleParameter, skillMixParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> upsertMOQTypeSelectionTableData(Nullable<int> mOQTypeSelectionTableDataId, Nullable<int> mOQTypeSelectionId, Nullable<System.DateTime> updateDT, Nullable<int> order, string tableName, string repositoryName, string queryType, Nullable<System.DateTime> dateOfReport, string historicalProgramName, string contractNumber, string wbsElement, Nullable<System.DateTime> periodOfPerformanceStartDate, Nullable<System.DateTime> periodOfPerformanceEndDate, Nullable<decimal> totalWbsHours, string additionalQueryFilters, Nullable<decimal> totalRelevantHoursAfterQueryFilters)
@@ -5420,6 +5390,27 @@ namespace GenBOE.Models
                 new ObjectParameter("TotalRelevantHoursAfterQueryFilters", typeof(decimal));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertMOQTypeSelectionTableData", mOQTypeSelectionTableDataIdParameter, mOQTypeSelectionIdParameter, updateDTParameter, orderParameter, tableNameParameter, repositoryNameParameter, queryTypeParameter, dateOfReportParameter, historicalProgramNameParameter, contractNumberParameter, wbsElementParameter, periodOfPerformanceStartDateParameter, periodOfPerformanceEndDateParameter, totalWbsHoursParameter, additionalQueryFiltersParameter, totalRelevantHoursAfterQueryFiltersParameter);
+        }
+    
+        public virtual int copyWorkspace(Nullable<int> workspaceID, string workspaceName, string workspaceShortName, Nullable<int> costVolumeLeadPricerUserID)
+        {
+            var workspaceIDParameter = workspaceID.HasValue ?
+                new ObjectParameter("WorkspaceID", workspaceID) :
+                new ObjectParameter("WorkspaceID", typeof(int));
+    
+            var workspaceNameParameter = workspaceName != null ?
+                new ObjectParameter("WorkspaceName", workspaceName) :
+                new ObjectParameter("WorkspaceName", typeof(string));
+    
+            var workspaceShortNameParameter = workspaceShortName != null ?
+                new ObjectParameter("WorkspaceShortName", workspaceShortName) :
+                new ObjectParameter("WorkspaceShortName", typeof(string));
+    
+            var costVolumeLeadPricerUserIDParameter = costVolumeLeadPricerUserID.HasValue ?
+                new ObjectParameter("CostVolumeLeadPricerUserID", costVolumeLeadPricerUserID) :
+                new ObjectParameter("CostVolumeLeadPricerUserID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("copyWorkspace", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, costVolumeLeadPricerUserIDParameter);
         }
     }
 }

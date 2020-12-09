@@ -16,7 +16,6 @@ CREATE PROCEDURE [dbo].[upsertMOQTypeSelection]
 	@UpdateDT datetime2,
 	@Order int,
 	@CERName varchar(255),
-	@CERLocation varchar(255),
 	@HoursDescription varchar(max),
 	@SubjectMatterExpert varchar(max),
 	@HoursLogicAndAssumptions varchar(max),
@@ -40,7 +39,7 @@ AS
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			-------------------------------------------
-**		
+**		12/8/2020	ranzalon			BOEJ-4972 - remove CER location field
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -56,7 +55,6 @@ IF @MOQTypeSelectionId  < 0  /*Insert Record*/
 				[UpdateDT],
 				[Order],
 				[CERName],
-				[CERLocation],
 				[HoursDescription],
 				[SubjectMatterExpert],
 				[HoursLogicAndAssumptions],
@@ -73,7 +71,6 @@ IF @MOQTypeSelectionId  < 0  /*Insert Record*/
 				@UpdateDT,
 				@Order,
 				@CERName,
-				@CERLocation,
 				@HoursDescription,
 				@SubjectMatterExpert,
 				@HoursLogicAndAssumptions,
@@ -100,7 +97,6 @@ ELSE
 					[UpdateDT] = @UpdateDT,
 					[Order] = @Order,
 					[CERName] = @CERName,
-					[CERLocation] = @CERLocation,
 					[HoursDescription] = @HoursDescription,
 					[SubjectMatterExpert] = @SubjectMatterExpert,
 					[HoursLogicAndAssumptions] = @HoursLogicAndAssumptions,

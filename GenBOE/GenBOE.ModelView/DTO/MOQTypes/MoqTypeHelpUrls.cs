@@ -120,32 +120,17 @@ namespace GenBOE.ActionLogic.ModelView
         /// URL Suffix for CER Name
         /// </summary>
         public string CERNameSuffix { get; set; }
-
-        /// <summary>
-        /// URL Suffix for CER Location
-        /// </summary>
-        public string CERLocationSuffix { get; set; }
-
+        
         /// <summary>
         /// URL Suffix for PE Name
         /// </summary>
         public string PENameSuffix { get; set; }
-
-        /// <summary>
-        /// URL Suffix for PE Location
-        /// </summary>
-        public string PELocationSuffix { get; set; }
-
+        
         /// <summary>
         /// URL Suffix for AR Name
         /// </summary>
         public string ARNameSuffix { get; set; }
-
-        /// <summary>
-        /// URL Suffix for AR Location
-        /// </summary>
-        public string ARLocationSuffix { get; set; }
-
+        
         /// <summary>
         /// URL Suffix for SOW Description
         /// </summary>

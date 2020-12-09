@@ -329,7 +329,6 @@ warning 6002: The table/view 'GenBOESpace.dbo.BOEFormPBOEResourcesXREF' does not
           <Property Name="CLINID" Type="int" />
           <Property Name="CanOffload" Type="bit" />
           <Property Name="LaborSortId" Type="int" Nullable="false" />
-          <Property Name="MOQTypeSelectionId" Type="int" />
         </EntityType>
         <EntityType Name="BOELaborTypeCustomFieldValueXREF">
           <Key>
@@ -654,8 +653,6 @@ warning 6002: The table/view 'GenBOESpace.dbo.BOEFormPBOEResourcesXREF' does not
           <Property Name="MOQTypeSelection" Type="int" Nullable="false" />
           <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="Order" Type="int" Nullable="false" />
-          <Property Name="CERName" Type="varchar" MaxLength="255" />
-          <Property Name="CERLocation" Type="varchar" MaxLength="255" />
           <Property Name="HoursDescription" Type="varchar(max)" />
           <Property Name="SubjectMatterExpert" Type="varchar(max)" />
           <Property Name="HoursLogicAndAssumptions" Type="varchar(max)" />
@@ -663,6 +660,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.BOEFormPBOEResourcesXREF' does not
           <Property Name="EstimateTasks" Type="varchar(max)" />
           <Property Name="Rationale" Type="varchar(max)" />
           <Property Name="SkillMix" Type="varchar(max)" />
+          <Property Name="CERName" Type="varchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="MOQTypeSelectionTableData">
           <Key>
@@ -1752,18 +1750,6 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <Property Name="VersionID" Type="int" Nullable="false" />
           <Property Name="WorkspaceDTCElementID" Type="int" />
         </EntityType>
-        <Association Name="FK__BOELaborT__MOQTy__4C865AC6">
-          <End Role="MOQTypeSelection" Type="Self.MOQTypeSelection" Multiplicity="0..1" />
-          <End Role="BOELaborType" Type="Self.BOELaborType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="MOQTypeSelection">
-              <PropertyRef Name="MOQTypeSelectionId" />
-            </Principal>
-            <Dependent Role="BOELaborType">
-              <PropertyRef Name="MOQTypeSelectionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK__MOQTypeSe__MOQTy__32C688C3">
           <End Role="MOQTypeLU" Type="Self.MOQTypeLU" Multiplicity="1" />
           <End Role="MOQTypeSelection" Type="Self.MOQTypeSelection" Multiplicity="*" />
@@ -5079,7 +5065,6 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <Parameter Name="CLINID" Type="int" Mode="In" />
           <Parameter Name="CanOffload" Type="bit" Mode="In" />
           <Parameter Name="LaborSortID" Type="int" Mode="In" />
-          <Parameter Name="MOQTypeSelectionId" Type="int" Mode="In" />
         </Function>
         <Function Name="upsertBOELaborTypeCustomFieldValue" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BLTCFVID" Type="int" Mode="In" />
@@ -5180,7 +5165,6 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
           <Parameter Name="Order" Type="int" Mode="In" />
           <Parameter Name="CERName" Type="varchar" Mode="In" />
-          <Parameter Name="CERLocation" Type="varchar" Mode="In" />
           <Parameter Name="HoursDescription" Type="varchar(max)" Mode="In" />
           <Parameter Name="SubjectMatterExpert" Type="varchar(max)" Mode="In" />
           <Parameter Name="HoursLogicAndAssumptions" Type="varchar(max)" Mode="In" />
@@ -5890,10 +5874,6 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
     [WorkBreakdownStructure1].[WorkspaceDTCElementID] AS [WorkspaceDTCElementID]
     FROM [version].[WorkBreakdownStructure] AS [WorkBreakdownStructure1]</DefiningQuery>
           </EntitySet>
-          <AssociationSet Name="FK__BOELaborT__MOQTy__4C865AC6" Association="Self.FK__BOELaborT__MOQTy__4C865AC6">
-            <End Role="MOQTypeSelection" EntitySet="MOQTypeSelection" />
-            <End Role="BOELaborType" EntitySet="BOELaborType" />
-          </AssociationSet>
           <AssociationSet Name="FK__MOQTypeSe__MOQTy__32C688C3" Association="Self.FK__MOQTypeSe__MOQTy__32C688C3">
             <End Role="MOQTypeLU" EntitySet="MOQTypeLU" />
             <End Role="MOQTypeSelection" EntitySet="MOQTypeSelection" />
@@ -10568,12 +10548,6 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             <Parameter Name="Delimiter" Mode="In" Type="String" />
             <Parameter Name="EmptyListItem" Mode="In" Type="String" />
           </FunctionImport>
-          <FunctionImport Name="copyWorkspace" ReturnType="Collection(Int32)">
-            <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
-            <Parameter Name="WorkspaceName" Mode="In" Type="String" />
-            <Parameter Name="WorkspaceShortName" Mode="In" Type="String" />
-            <Parameter Name="CostVolumeLeadPricerUserID" Mode="In" Type="Int32" />
-          </FunctionImport>
           <FunctionImport Name="createWorkspaceVersion" ReturnType="Collection(Int32)">
             <Parameter Name="VersionName" Mode="In" Type="String" />
             <Parameter Name="CreatedByETIUserID" Mode="In" Type="Int32" />
@@ -11302,7 +11276,6 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             <Parameter Name="CLINID" Mode="In" Type="Int32" />
             <Parameter Name="CanOffload" Mode="In" Type="Boolean" />
             <Parameter Name="LaborSortID" Mode="In" Type="Int32" />
-            <Parameter Name="MOQTypeSelectionId" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="upsertBOELaborTypeCustomFieldValue" ReturnType="Collection(Int32)">
             <Parameter Name="BLTCFVID" Mode="In" Type="Int32" />
@@ -12240,8 +12213,58 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             <Parameter Name="VersionID" Mode="In" Type="Int32" />
             <Parameter Name="BoeList" Mode="In" Type="String" />
           </FunctionImport>
-          <EntitySet Name="BOELaborTypes" EntityType="GenBOE.Models.BOELaborType" />
           <EntitySet Name="ProjectMaps" EntityType="GenBOE.Models.ProjectMap" />
+          <AssociationSet Name="FK__ProjectMa__Legac__3AD8B324" Association="GenBOE.Models.FK__ProjectMa__Legac__3AD8B324">
+            <End Role="SikorskyLegacyResource" EntitySet="SikorskyLegacyResources" />
+            <End Role="ProjectMap" EntitySet="ProjectMaps" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ProjectMa__Proje__6AB11821" Association="GenBOE.Models.FK__ProjectMa__Proje__6AB11821">
+            <End Role="ProjectMap" EntitySet="ProjectMaps" />
+            <End Role="ProjectMapSpread" EntitySet="ProjectMapSpreads" />
+          </AssociationSet>
+          <FunctionImport Name="deleteMOQTypeSelection">
+            <Parameter Name="MOQTypeSelectionId" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="deleteMOQTypeSelectionTableData">
+            <Parameter Name="MOQTypeSelectionTableDataId" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="upsertMOQTypeSelection" ReturnType="Collection(Int32)">
+            <Parameter Name="MOQTypeSelectionId" Mode="In" Type="Int32" />
+            <Parameter Name="TaskId" Mode="In" Type="Int32" />
+            <Parameter Name="MOQTypeSelection" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+            <Parameter Name="Order" Mode="In" Type="Int32" />
+            <Parameter Name="CERName" Mode="In" Type="String" />
+            <Parameter Name="HoursDescription" Mode="In" Type="String" />
+            <Parameter Name="SubjectMatterExpert" Mode="In" Type="String" />
+            <Parameter Name="HoursLogicAndAssumptions" Mode="In" Type="String" />
+            <Parameter Name="DurationLogicAndAssumptions" Mode="In" Type="String" />
+            <Parameter Name="EstimateTasks" Mode="In" Type="String" />
+            <Parameter Name="Rationale" Mode="In" Type="String" />
+            <Parameter Name="SkillMix" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="upsertMOQTypeSelectionTableData" ReturnType="Collection(Int32)">
+            <Parameter Name="MOQTypeSelectionTableDataId" Mode="In" Type="Int32" />
+            <Parameter Name="MOQTypeSelectionId" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+            <Parameter Name="Order" Mode="In" Type="Int32" />
+            <Parameter Name="TableName" Mode="In" Type="String" />
+            <Parameter Name="RepositoryName" Mode="In" Type="String" />
+            <Parameter Name="QueryType" Mode="In" Type="String" />
+            <Parameter Name="DateOfReport" Mode="In" Type="DateTime" />
+            <Parameter Name="HistoricalProgramName" Mode="In" Type="String" />
+            <Parameter Name="ContractNumber" Mode="In" Type="String" />
+            <Parameter Name="WbsElement" Mode="In" Type="String" />
+            <Parameter Name="PeriodOfPerformanceStartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="PeriodOfPerformanceEndDate" Mode="In" Type="DateTime" />
+            <Parameter Name="TotalWbsHours" Mode="In" Type="Decimal" />
+            <Parameter Name="AdditionalQueryFilters" Mode="In" Type="String" />
+            <Parameter Name="TotalRelevantHoursAfterQueryFilters" Mode="In" Type="Decimal" />
+          </FunctionImport>
+          <EntitySet Name="MOQTypeSelectionTableDatas" EntityType="GenBOE.Models.MOQTypeSelectionTableData" />
+          <EntitySet Name="BOELaborTypes" EntityType="GenBOE.Models.BOELaborType" />
           <AssociationSet Name="FK_BOELaborSpread_BOELaborType" Association="GenBOE.Models.FK_BOELaborSpread_BOELaborType">
             <End Role="BOELaborType" EntitySet="BOELaborTypes" />
             <End Role="BOELaborSpread" EntitySet="BOELaborSpreads" />
@@ -12278,62 +12301,7 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             <End Role="BOELaborType" EntitySet="BOELaborTypes" />
             <End Role="BOELaborTypeCustomFieldValueXREF" EntitySet="BOELaborTypeCustomFieldValueXREFs" />
           </AssociationSet>
-          <AssociationSet Name="FK__ProjectMa__Legac__3AD8B324" Association="GenBOE.Models.FK__ProjectMa__Legac__3AD8B324">
-            <End Role="SikorskyLegacyResource" EntitySet="SikorskyLegacyResources" />
-            <End Role="ProjectMap" EntitySet="ProjectMaps" />
-          </AssociationSet>
-          <AssociationSet Name="FK__ProjectMa__Proje__6AB11821" Association="GenBOE.Models.FK__ProjectMa__Proje__6AB11821">
-            <End Role="ProjectMap" EntitySet="ProjectMaps" />
-            <End Role="ProjectMapSpread" EntitySet="ProjectMapSpreads" />
-          </AssociationSet>
-          <FunctionImport Name="deleteMOQTypeSelection">
-            <Parameter Name="MOQTypeSelectionId" Mode="In" Type="Int32" />
-            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
-          </FunctionImport>
-          <FunctionImport Name="deleteMOQTypeSelectionTableData">
-            <Parameter Name="MOQTypeSelectionTableDataId" Mode="In" Type="Int32" />
-            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
-          </FunctionImport>
-          <FunctionImport Name="upsertMOQTypeSelection" ReturnType="Collection(Int32)">
-            <Parameter Name="MOQTypeSelectionId" Mode="In" Type="Int32" />
-            <Parameter Name="TaskId" Mode="In" Type="Int32" />
-            <Parameter Name="MOQTypeSelection" Mode="In" Type="Int32" />
-            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
-            <Parameter Name="Order" Mode="In" Type="Int32" />
-            <Parameter Name="CERName" Mode="In" Type="String" />
-            <Parameter Name="CERLocation" Mode="In" Type="String" />
-            <Parameter Name="HoursDescription" Mode="In" Type="String" />
-            <Parameter Name="SubjectMatterExpert" Mode="In" Type="String" />
-            <Parameter Name="HoursLogicAndAssumptions" Mode="In" Type="String" />
-            <Parameter Name="DurationLogicAndAssumptions" Mode="In" Type="String" />
-            <Parameter Name="EstimateTasks" Mode="In" Type="String" />
-            <Parameter Name="Rationale" Mode="In" Type="String" />
-            <Parameter Name="SkillMix" Mode="In" Type="String" />
-          </FunctionImport>
-          <FunctionImport Name="upsertMOQTypeSelectionTableData" ReturnType="Collection(Int32)">
-            <Parameter Name="MOQTypeSelectionTableDataId" Mode="In" Type="Int32" />
-            <Parameter Name="MOQTypeSelectionId" Mode="In" Type="Int32" />
-            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
-            <Parameter Name="Order" Mode="In" Type="Int32" />
-            <Parameter Name="TableName" Mode="In" Type="String" />
-            <Parameter Name="RepositoryName" Mode="In" Type="String" />
-            <Parameter Name="QueryType" Mode="In" Type="String" />
-            <Parameter Name="DateOfReport" Mode="In" Type="DateTime" />
-            <Parameter Name="HistoricalProgramName" Mode="In" Type="String" />
-            <Parameter Name="ContractNumber" Mode="In" Type="String" />
-            <Parameter Name="WbsElement" Mode="In" Type="String" />
-            <Parameter Name="PeriodOfPerformanceStartDate" Mode="In" Type="DateTime" />
-            <Parameter Name="PeriodOfPerformanceEndDate" Mode="In" Type="DateTime" />
-            <Parameter Name="TotalWbsHours" Mode="In" Type="Decimal" />
-            <Parameter Name="AdditionalQueryFilters" Mode="In" Type="String" />
-            <Parameter Name="TotalRelevantHoursAfterQueryFilters" Mode="In" Type="Decimal" />
-          </FunctionImport>
           <EntitySet Name="MOQTypeSelections" EntityType="GenBOE.Models.MOQTypeSelection" />
-          <EntitySet Name="MOQTypeSelectionTableDatas" EntityType="GenBOE.Models.MOQTypeSelectionTableData" />
-          <AssociationSet Name="FK__BOELaborT__MOQTy__4C865AC6" Association="GenBOE.Models.FK__BOELaborT__MOQTy__4C865AC6">
-            <End Role="MOQTypeSelection" EntitySet="MOQTypeSelections" />
-            <End Role="BOELaborType" EntitySet="BOELaborTypes" />
-          </AssociationSet>
           <AssociationSet Name="FK__MOQTypeSe__TaskI__31D2648A" Association="GenBOE.Models.FK__MOQTypeSe__TaskI__31D2648A">
             <End Role="BOETaskElement" EntitySet="BOETaskElements" />
             <End Role="MOQTypeSelection" EntitySet="MOQTypeSelections" />
@@ -12346,6 +12314,12 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             <End Role="MOQTypeSelection" EntitySet="MOQTypeSelections" />
             <End Role="MOQTypeSelectionTableData" EntitySet="MOQTypeSelectionTableDatas" />
           </AssociationSet>
+          <FunctionImport Name="copyWorkspace">
+            <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
+            <Parameter Name="WorkspaceName" Mode="In" Type="String" />
+            <Parameter Name="WorkspaceShortName" Mode="In" Type="String" />
+            <Parameter Name="CostVolumeLeadPricerUserID" Mode="In" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="getBOEForFindReplace_Result">
           <Property Type="Int32" Name="BOEID" Nullable="true" />
@@ -13509,39 +13483,6 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <End Type="GenBOE.Models.RteTemplateSource" Role="RteTemplateSource" Multiplicity="*" />
           <End Type="GenBOE.Models.RteTemplate" Role="RteTemplate" Multiplicity="*" />
         </Association>
-        <EntityType Name="BOELaborType">
-          <Key>
-            <PropertyRef Name="BOELaborTypeID" />
-          </Key>
-          <Property Name="BOELaborTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="ResourceID" Type="Int32" />
-          <Property Name="PerformingOrganizationID" Type="Int32" />
-          <Property Name="BOELaborTypeStartDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="BOELaborTypeEndDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="SpreadCurveID" Type="Int32" Nullable="false" />
-          <Property Name="PercentSpread" Type="Decimal" Precision="38" Scale="6" />
-          <Property Name="ValueSpread" Type="Decimal" Precision="18" Scale="6" />
-          <Property Name="BOETaskElementID" Type="Int32" Nullable="false" />
-          <Property Name="SpreadTypeID" Type="Int32" />
-          <Property Name="PercentSpreadLocked" Type="Boolean" Nullable="false" />
-          <Property Name="HourSpreadLocked" Type="Boolean" Nullable="false" />
-          <Property Name="WBSID" Type="Int32" />
-          <Property Name="CLINID" Type="Int32" />
-          <Property Name="CanOffload" Type="Boolean" />
-          <Property Name="LaborSortId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="BOELaborSpreads" Relationship="GenBOE.Models.FK_BOELaborSpread_BOELaborType" FromRole="BOELaborType" ToRole="BOELaborSpread" />
-          <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_BOELaborType_BOETaskElement" FromRole="BOELaborType" ToRole="BOETaskElement" />
-          <NavigationProperty Name="CLIN" Relationship="GenBOE.Models.FK_BOELaborType_CLIN" FromRole="BOELaborType" ToRole="CLIN" />
-          <NavigationProperty Name="PerformingOrganization" Relationship="GenBOE.Models.FK_BOELaborType_PerformingOrganization" FromRole="BOELaborType" ToRole="PerformingOrganization" />
-          <NavigationProperty Name="Resource" Relationship="GenBOE.Models.FK_BOELaborType_Resource" FromRole="BOELaborType" ToRole="Resource" />
-          <NavigationProperty Name="SpreadCurveLU" Relationship="GenBOE.Models.FK_BOELaborType_SpreadCurveLU" FromRole="BOELaborType" ToRole="SpreadCurveLU" />
-          <NavigationProperty Name="SpreadTypeLU" Relationship="GenBOE.Models.FK_BOELaborType_SpreadTypeLU" FromRole="BOELaborType" ToRole="SpreadTypeLU" />
-          <NavigationProperty Name="WorkBreakdownStructure" Relationship="GenBOE.Models.FK_BOELaborType_WorkBreakdownStructure" FromRole="BOELaborType" ToRole="WorkBreakdownStructure" />
-          <NavigationProperty Name="BOELaborTypeCustomFieldValueXREFs" Relationship="GenBOE.Models.FK_BOELaborTypeCustomFieldValueXREF_BOELaborType" FromRole="BOELaborType" ToRole="BOELaborTypeCustomFieldValueXREF" />
-          <Property Name="MOQTypeSelectionId" Type="Int32" />
-          <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK__BOELaborT__MOQTy__4C865AC6" FromRole="BOELaborType" ToRole="MOQTypeSelection" />
-        </EntityType>
         <EntityType Name="ProjectMap">
           <Key>
             <PropertyRef Name="ID" />
@@ -13573,6 +13514,83 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <Property Name="LegacyResourceID" Type="Int32" />
           <NavigationProperty Name="SikorskyLegacyResource" Relationship="GenBOE.Models.FK__ProjectMa__Legac__3AD8B324" FromRole="ProjectMap" ToRole="SikorskyLegacyResource" />
           <NavigationProperty Name="ProjectMapSpreads" Relationship="GenBOE.Models.FK__ProjectMa__Proje__6AB11821" FromRole="ProjectMap" ToRole="ProjectMapSpread" />
+        </EntityType>
+        <Association Name="FK__ProjectMa__Legac__3AD8B324">
+          <End Type="GenBOE.Models.SikorskyLegacyResource" Role="SikorskyLegacyResource" Multiplicity="0..1" />
+          <End Type="GenBOE.Models.ProjectMap" Role="ProjectMap" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SikorskyLegacyResource">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProjectMap">
+              <PropertyRef Name="LegacyResourceID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ProjectMa__Proje__6AB11821">
+          <End Type="GenBOE.Models.ProjectMap" Role="ProjectMap" Multiplicity="1" />
+          <End Type="GenBOE.Models.ProjectMapSpread" Role="ProjectMapSpread" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProjectMap">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProjectMapSpread">
+              <PropertyRef Name="ProjectMapId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="MOQTypeSelectionTableData">
+          <Key>
+            <PropertyRef Name="MOQTypeSelectionTableDataId" />
+          </Key>
+          <Property Name="MOQTypeSelectionTableDataId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MOQTypeSelectionId" Type="Int32" Nullable="false" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="Order" Type="Int32" Nullable="false" />
+          <Property Name="TableName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="RepositoryName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="QueryType" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="DateOfReport" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="HistoricalProgramName" Type="String" Nullable="false" MaxLength="125" FixedLength="false" Unicode="false" />
+          <Property Name="ContractNumber" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="WbsElement" Type="String" Nullable="false" MaxLength="2500" FixedLength="false" Unicode="false" />
+          <Property Name="PeriodOfPerformanceStartDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="PeriodOfPerformanceEndDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="TotalWbsHours" Type="Decimal" Nullable="false" Precision="10" Scale="2" />
+          <Property Name="AdditionalQueryFilters" Type="String" Nullable="false" MaxLength="2500" FixedLength="false" Unicode="false" />
+          <Property Name="TotalRelevantHoursAfterQueryFilters" Type="Decimal" Nullable="false" Precision="10" Scale="2" />
+          <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__378B3DE0" FromRole="MOQTypeSelectionTableData" ToRole="MOQTypeSelection" />
+        </EntityType>
+        <EntityType Name="BOELaborType">
+          <Key>
+            <PropertyRef Name="BOELaborTypeID" />
+          </Key>
+          <Property Name="BOELaborTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="ResourceID" Type="Int32" />
+          <Property Name="PerformingOrganizationID" Type="Int32" />
+          <Property Name="BOELaborTypeStartDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="BOELaborTypeEndDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="SpreadCurveID" Type="Int32" Nullable="false" />
+          <Property Name="PercentSpread" Type="Decimal" Precision="38" Scale="6" />
+          <Property Name="ValueSpread" Type="Decimal" Precision="18" Scale="6" />
+          <Property Name="BOETaskElementID" Type="Int32" Nullable="false" />
+          <Property Name="SpreadTypeID" Type="Int32" />
+          <Property Name="PercentSpreadLocked" Type="Boolean" Nullable="false" />
+          <Property Name="HourSpreadLocked" Type="Boolean" Nullable="false" />
+          <Property Name="WBSID" Type="Int32" />
+          <Property Name="CLINID" Type="Int32" />
+          <Property Name="CanOffload" Type="Boolean" />
+          <Property Name="LaborSortId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="BOELaborSpreads" Relationship="GenBOE.Models.FK_BOELaborSpread_BOELaborType" FromRole="BOELaborType" ToRole="BOELaborSpread" />
+          <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK_BOELaborType_BOETaskElement" FromRole="BOELaborType" ToRole="BOETaskElement" />
+          <NavigationProperty Name="CLIN" Relationship="GenBOE.Models.FK_BOELaborType_CLIN" FromRole="BOELaborType" ToRole="CLIN" />
+          <NavigationProperty Name="PerformingOrganization" Relationship="GenBOE.Models.FK_BOELaborType_PerformingOrganization" FromRole="BOELaborType" ToRole="PerformingOrganization" />
+          <NavigationProperty Name="Resource" Relationship="GenBOE.Models.FK_BOELaborType_Resource" FromRole="BOELaborType" ToRole="Resource" />
+          <NavigationProperty Name="SpreadCurveLU" Relationship="GenBOE.Models.FK_BOELaborType_SpreadCurveLU" FromRole="BOELaborType" ToRole="SpreadCurveLU" />
+          <NavigationProperty Name="SpreadTypeLU" Relationship="GenBOE.Models.FK_BOELaborType_SpreadTypeLU" FromRole="BOELaborType" ToRole="SpreadTypeLU" />
+          <NavigationProperty Name="WorkBreakdownStructure" Relationship="GenBOE.Models.FK_BOELaborType_WorkBreakdownStructure" FromRole="BOELaborType" ToRole="WorkBreakdownStructure" />
+          <NavigationProperty Name="BOELaborTypeCustomFieldValueXREFs" Relationship="GenBOE.Models.FK_BOELaborTypeCustomFieldValueXREF_BOELaborType" FromRole="BOELaborType" ToRole="BOELaborTypeCustomFieldValueXREF" />
         </EntityType>
         <Association Name="FK_BOELaborSpread_BOELaborType">
           <End Type="GenBOE.Models.BOELaborType" Role="BOELaborType" Multiplicity="1" />
@@ -13682,30 +13700,6 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__ProjectMa__Legac__3AD8B324">
-          <End Type="GenBOE.Models.SikorskyLegacyResource" Role="SikorskyLegacyResource" Multiplicity="0..1" />
-          <End Type="GenBOE.Models.ProjectMap" Role="ProjectMap" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="SikorskyLegacyResource">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="ProjectMap">
-              <PropertyRef Name="LegacyResourceID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__ProjectMa__Proje__6AB11821">
-          <End Type="GenBOE.Models.ProjectMap" Role="ProjectMap" Multiplicity="1" />
-          <End Type="GenBOE.Models.ProjectMapSpread" Role="ProjectMapSpread" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ProjectMap">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="ProjectMapSpread">
-              <PropertyRef Name="ProjectMapId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="MOQTypeSelection">
           <Key>
             <PropertyRef Name="MOQTypeSelectionId" />
@@ -13715,8 +13709,6 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <Property Name="MOQTypeSelection1" Type="Int32" Nullable="false" />
           <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="Order" Type="Int32" Nullable="false" />
-          <Property Name="CERName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="CERLocation" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <Property Name="HoursDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="SubjectMatterExpert" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="HoursLogicAndAssumptions" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
@@ -13724,45 +13716,11 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <Property Name="EstimateTasks" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Rationale" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="SkillMix" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="BOELaborTypes" Relationship="GenBOE.Models.FK__BOELaborT__MOQTy__4C865AC6" FromRole="MOQTypeSelection" ToRole="BOELaborType" />
+          <Property Name="CERName" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="BOETaskElement" Relationship="GenBOE.Models.FK__MOQTypeSe__TaskI__31D2648A" FromRole="MOQTypeSelection" ToRole="BOETaskElement" />
           <NavigationProperty Name="MOQTypeLU" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__32C688C3" FromRole="MOQTypeSelection" ToRole="MOQTypeLU" />
           <NavigationProperty Name="MOQTypeSelectionTableDatas" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__378B3DE0" FromRole="MOQTypeSelection" ToRole="MOQTypeSelectionTableData" />
         </EntityType>
-        <EntityType Name="MOQTypeSelectionTableData">
-          <Key>
-            <PropertyRef Name="MOQTypeSelectionTableDataId" />
-          </Key>
-          <Property Name="MOQTypeSelectionTableDataId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="MOQTypeSelectionId" Type="Int32" Nullable="false" />
-          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="Order" Type="Int32" Nullable="false" />
-          <Property Name="TableName" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="RepositoryName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="QueryType" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
-          <Property Name="DateOfReport" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="HistoricalProgramName" Type="String" Nullable="false" MaxLength="125" FixedLength="false" Unicode="false" />
-          <Property Name="ContractNumber" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="WbsElement" Type="String" Nullable="false" MaxLength="2500" FixedLength="false" Unicode="false" />
-          <Property Name="PeriodOfPerformanceStartDate" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="PeriodOfPerformanceEndDate" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="TotalWbsHours" Type="Decimal" Nullable="false" Precision="10" Scale="2" />
-          <Property Name="AdditionalQueryFilters" Type="String" Nullable="false" MaxLength="2500" FixedLength="false" Unicode="false" />
-          <Property Name="TotalRelevantHoursAfterQueryFilters" Type="Decimal" Nullable="false" Precision="10" Scale="2" />
-          <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__378B3DE0" FromRole="MOQTypeSelectionTableData" ToRole="MOQTypeSelection" />
-        </EntityType>
-        <Association Name="FK__BOELaborT__MOQTy__4C865AC6">
-          <End Type="GenBOE.Models.MOQTypeSelection" Role="MOQTypeSelection" Multiplicity="0..1" />
-          <End Type="GenBOE.Models.BOELaborType" Role="BOELaborType" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="MOQTypeSelection">
-              <PropertyRef Name="MOQTypeSelectionId" />
-            </Principal>
-            <Dependent Role="BOELaborType">
-              <PropertyRef Name="MOQTypeSelectionId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK__MOQTypeSe__TaskI__31D2648A">
           <End Type="GenBOE.Models.BOETaskElement" Role="BOETaskElement" Multiplicity="1" />
           <End Type="GenBOE.Models.MOQTypeSelection" Role="MOQTypeSelection" Multiplicity="*" />
@@ -15224,7 +15182,6 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-          <FunctionImportMapping FunctionImportName="copyWorkspace" FunctionName="GenBOE.Models.Store.copyWorkspace" />
           <FunctionImportMapping FunctionImportName="createWorkspaceVersion" FunctionName="GenBOE.Models.Store.createWorkspaceVersion" />
           <FunctionImportMapping FunctionImportName="deleteBOE" FunctionName="GenBOE.Models.Store.deleteBOE" />
           <FunctionImportMapping FunctionImportName="deleteBOEApprover" FunctionName="GenBOE.Models.Store.deleteBOEApprover" />
@@ -15903,30 +15860,6 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             </EndProperty>
           </AssociationSetMapping>
           <FunctionImportMapping FunctionImportName="copyWorkspaceVersion" FunctionName="GenBOE.Models.Store.copyWorkspaceVersion" />
-          <EntitySetMapping Name="BOELaborTypes">
-            <EntityTypeMapping TypeName="GenBOE.Models.BOELaborType">
-              <MappingFragment StoreEntitySet="BOELaborType">
-                <ScalarProperty Name="MOQTypeSelectionId" ColumnName="MOQTypeSelectionId" />
-                <ScalarProperty Name="LaborSortId" ColumnName="LaborSortId" />
-                <ScalarProperty Name="CanOffload" ColumnName="CanOffload" />
-                <ScalarProperty Name="CLINID" ColumnName="CLINID" />
-                <ScalarProperty Name="WBSID" ColumnName="WBSID" />
-                <ScalarProperty Name="HourSpreadLocked" ColumnName="HourSpreadLocked" />
-                <ScalarProperty Name="PercentSpreadLocked" ColumnName="PercentSpreadLocked" />
-                <ScalarProperty Name="SpreadTypeID" ColumnName="SpreadTypeID" />
-                <ScalarProperty Name="BOETaskElementID" ColumnName="BOETaskElementID" />
-                <ScalarProperty Name="ValueSpread" ColumnName="ValueSpread" />
-                <ScalarProperty Name="PercentSpread" ColumnName="PercentSpread" />
-                <ScalarProperty Name="SpreadCurveID" ColumnName="SpreadCurveID" />
-                <ScalarProperty Name="BOELaborTypeEndDate" ColumnName="BOELaborTypeEndDate" />
-                <ScalarProperty Name="BOELaborTypeStartDate" ColumnName="BOELaborTypeStartDate" />
-                <ScalarProperty Name="PerformingOrganizationID" ColumnName="PerformingOrganizationID" />
-                <ScalarProperty Name="ResourceID" ColumnName="ResourceID" />
-                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
-                <ScalarProperty Name="BOELaborTypeID" ColumnName="BOELaborTypeID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="ProjectMaps">
             <EntityTypeMapping TypeName="GenBOE.Models.ProjectMap">
               <MappingFragment StoreEntitySet="ProjectMap">
@@ -15962,26 +15895,6 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <FunctionImportMapping FunctionImportName="deleteMOQTypeSelectionTableData" FunctionName="GenBOE.Models.Store.deleteMOQTypeSelectionTableData" />
           <FunctionImportMapping FunctionImportName="upsertMOQTypeSelection" FunctionName="GenBOE.Models.Store.upsertMOQTypeSelection" />
           <FunctionImportMapping FunctionImportName="upsertMOQTypeSelectionTableData" FunctionName="GenBOE.Models.Store.upsertMOQTypeSelectionTableData" />
-          <EntitySetMapping Name="MOQTypeSelections">
-            <EntityTypeMapping TypeName="GenBOE.Models.MOQTypeSelection">
-              <MappingFragment StoreEntitySet="MOQTypeSelection">
-                <ScalarProperty Name="SkillMix" ColumnName="SkillMix" />
-                <ScalarProperty Name="Rationale" ColumnName="Rationale" />
-                <ScalarProperty Name="EstimateTasks" ColumnName="EstimateTasks" />
-                <ScalarProperty Name="DurationLogicAndAssumptions" ColumnName="DurationLogicAndAssumptions" />
-                <ScalarProperty Name="HoursLogicAndAssumptions" ColumnName="HoursLogicAndAssumptions" />
-                <ScalarProperty Name="SubjectMatterExpert" ColumnName="SubjectMatterExpert" />
-                <ScalarProperty Name="HoursDescription" ColumnName="HoursDescription" />
-                <ScalarProperty Name="CERLocation" ColumnName="CERLocation" />
-                <ScalarProperty Name="CERName" ColumnName="CERName" />
-                <ScalarProperty Name="Order" ColumnName="Order" />
-                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
-                <ScalarProperty Name="MOQTypeSelection1" ColumnName="MOQTypeSelection" />
-                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
-                <ScalarProperty Name="MOQTypeSelectionId" ColumnName="MOQTypeSelectionId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="MOQTypeSelectionTableDatas">
             <EntityTypeMapping TypeName="GenBOE.Models.MOQTypeSelectionTableData">
               <MappingFragment StoreEntitySet="MOQTypeSelectionTableData">
@@ -16004,6 +15917,49 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="BOELaborTypes">
+            <EntityTypeMapping TypeName="GenBOE.Models.BOELaborType">
+              <MappingFragment StoreEntitySet="BOELaborType">
+                <ScalarProperty Name="LaborSortId" ColumnName="LaborSortId" />
+                <ScalarProperty Name="CanOffload" ColumnName="CanOffload" />
+                <ScalarProperty Name="CLINID" ColumnName="CLINID" />
+                <ScalarProperty Name="WBSID" ColumnName="WBSID" />
+                <ScalarProperty Name="HourSpreadLocked" ColumnName="HourSpreadLocked" />
+                <ScalarProperty Name="PercentSpreadLocked" ColumnName="PercentSpreadLocked" />
+                <ScalarProperty Name="SpreadTypeID" ColumnName="SpreadTypeID" />
+                <ScalarProperty Name="BOETaskElementID" ColumnName="BOETaskElementID" />
+                <ScalarProperty Name="ValueSpread" ColumnName="ValueSpread" />
+                <ScalarProperty Name="PercentSpread" ColumnName="PercentSpread" />
+                <ScalarProperty Name="SpreadCurveID" ColumnName="SpreadCurveID" />
+                <ScalarProperty Name="BOELaborTypeEndDate" ColumnName="BOELaborTypeEndDate" />
+                <ScalarProperty Name="BOELaborTypeStartDate" ColumnName="BOELaborTypeStartDate" />
+                <ScalarProperty Name="PerformingOrganizationID" ColumnName="PerformingOrganizationID" />
+                <ScalarProperty Name="ResourceID" ColumnName="ResourceID" />
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="BOELaborTypeID" ColumnName="BOELaborTypeID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MOQTypeSelections">
+            <EntityTypeMapping TypeName="GenBOE.Models.MOQTypeSelection">
+              <MappingFragment StoreEntitySet="MOQTypeSelection">
+                <ScalarProperty Name="CERName" ColumnName="CERName" />
+                <ScalarProperty Name="SkillMix" ColumnName="SkillMix" />
+                <ScalarProperty Name="Rationale" ColumnName="Rationale" />
+                <ScalarProperty Name="EstimateTasks" ColumnName="EstimateTasks" />
+                <ScalarProperty Name="DurationLogicAndAssumptions" ColumnName="DurationLogicAndAssumptions" />
+                <ScalarProperty Name="HoursLogicAndAssumptions" ColumnName="HoursLogicAndAssumptions" />
+                <ScalarProperty Name="SubjectMatterExpert" ColumnName="SubjectMatterExpert" />
+                <ScalarProperty Name="HoursDescription" ColumnName="HoursDescription" />
+                <ScalarProperty Name="Order" ColumnName="Order" />
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="MOQTypeSelection1" ColumnName="MOQTypeSelection" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="MOQTypeSelectionId" ColumnName="MOQTypeSelectionId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="copyWorkspace" FunctionName="GenBOE.Models.Store.copyWorkspace" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

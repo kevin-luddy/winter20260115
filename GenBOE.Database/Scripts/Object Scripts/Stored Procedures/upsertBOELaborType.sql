@@ -26,8 +26,7 @@ CREATE PROCEDURE [dbo].[upsertBOELaborType]
 @WBSID int,
 @CLINID int,
 @CanOffload bit,
-@LaborSortID int,
-@MOQTypeSelectionId int
+@LaborSortID int
 )
 AS
 /******************************************************************************
@@ -86,6 +85,7 @@ AS
 **		10/2/2017	twilson3			BOEJ-2520 Cleanup DB, remove old ProjectMap columns
 **		12/2/19		ranzalon			BOEJ-4464 - Added LaborSortId
 **		9/15/2020	ranzalon			BOEJ-4825 - Added MOQTypeSelectionId
+**		12/8/2020	ranzalon			BOEJ-4972 - Removed MOQTypeSelectionId
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -117,7 +117,6 @@ IF @BOELaborTypeID < 0  /*Insert Record*/
 		   ,[CLINID]
            ,[CanOffload]
 		   ,[LaborSortId]
-		   ,[MOQTypeSelectionId]
 		   )
      OUTPUT inserted.BOELaborTypeID INTO @InsertedBOELaborType
      VALUES
@@ -137,8 +136,7 @@ IF @BOELaborTypeID < 0  /*Insert Record*/
 		   @WBSID,
 		   @CLINID,
            @CanOffload,
-		   @LaborSortID,
-		   @MOQTypeSelectionId
+		   @LaborSortID
 		   )
            
            
@@ -184,8 +182,7 @@ ELSE
 					[WBSID] = @WBSID,
 					[CLINID] = @CLINID,
 					[CanOffload] = @CanOffload,
-					[LaborSortId] = @LaborSortID,
-					[MOQTypeSelectionId] = @MOQTypeSelectionId
+					[LaborSortId] = @LaborSortID
 			WHERE 
 				BOELaborTypeID = @BOELaborTypeID
 				

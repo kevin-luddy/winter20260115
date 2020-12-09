@@ -67,11 +67,6 @@ namespace GenBOE.ActionLogic.ModelView
         public string CerName { get; set; }
 
         /// <summary>
-        /// CER, Parametric model or tool name, or Analogous relationship location in the proposal
-        /// </summary>
-        public string CerLocation { get; set; }
-
-        /// <summary>
         /// Description of Hours required
         /// </summary>
         public string DescriptionHoursRequired { get; set; }

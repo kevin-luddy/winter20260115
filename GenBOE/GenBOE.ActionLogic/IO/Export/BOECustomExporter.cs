@@ -1653,16 +1653,6 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     WordUtilities.removeColumnFromTable(referenceBlock);
                 }
-
-                // Delete MOQ Type if WS not using Template BOE 
-                if(!exportInputs.Workspace.UsingTemplateBOE)
-                {
-                    SdtElement moqTypeColumn = WordUtilities.GetTaggedChildElement(resourceTypesTableElement, BOEExporterConstants.FieldName_ResourceMOQType);
-                    if (moqTypeColumn != null)
-                    {
-                        WordUtilities.removeColumnFromTable(moqTypeColumn);
-                    }
-                }
             }
         }
 
@@ -4090,7 +4080,6 @@ namespace GenBOE.ActionLogic.IO.Export
             WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceWBS), rowData.WbsString);
             WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceCLIN), rowData.ClinString);
             WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_SummaryReference), rowData.SummaryReference);
-            WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceMOQType), rowData.MoqType);
         }
 
         private void PopulateResourceTypesTable(SdtElement tableContainerElement, ODCResourceTypesTableData data)
@@ -4767,11 +4756,6 @@ namespace GenBOE.ActionLogic.IO.Export
                     else
                     {
                         boeExportLabor.ExportFields[BOEExporterConstants.FieldName_TaskTypeSkillMix] = String.Empty;
-                    }
-
-                    if (laborType.MoqTypeSelectionId != null)
-                    {
-                        boeExportLabor.ExportFields[BOEExporterConstants.FieldName_ResourceMOQType] = ((MOQType)laborType.MoqTypeSelectionId).GetDescription();
                     }
 
                     BoeExportLabors.Add(boeExportLabor);

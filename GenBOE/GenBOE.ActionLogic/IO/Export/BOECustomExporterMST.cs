@@ -460,7 +460,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     {
                         SdtElement laborResourceContainerElement = this.CloneContainerTemplate(laborResourceContainerTemplateElement);
 
-                        this.ProcessResourceHeader(laborResourceContainerElement, resourceElement, exportInputs.Workspace.UsingTemplateBOE);
+                        this.ProcessResourceHeader(laborResourceContainerElement, resourceElement);
                         this.ProcessResourceCustomFields(laborResourceContainerElement, resourceElement, exportInputs.CustomFields, exportInputs);
                         this.ProcessResourceHoursRollupTable(laborResourceContainerElement, resourceElement, allLaborTaskElements, laborTaskElement);
                         this.ProcessResourceCostRollupTable(laborResourceContainerElement, resourceElement, allLaborTaskElements, laborTaskElement);
@@ -573,7 +573,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                         SdtElement odcResourceContainerElement = this.CloneContainerTemplate(odcResourceContainerTemplateElement);
 
-                        this.ProcessResourceHeader(odcResourceContainerElement, boeExportLabor, false);
+                        this.ProcessResourceHeader(odcResourceContainerElement, boeExportLabor);
                         this.ProcessODCResourceCostRollupTable(odcResourceContainerElement, odcTaskElement, odcType);
                         
                         currentInsertionPoint.InsertAfterSelf(odcResourceContainerElement);
@@ -924,8 +924,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// </summary>
         /// <param name="containerElement">Container element for the resource</param>
         /// <param name="ResourceElement">Resource with data to populate the header</param>
-        /// <param name="templateBOE">If Workspace is using Template BOE</param>
-        private void ProcessResourceHeader(SdtElement containerElement, BOEExportTaskElementLabor ResourceElement, bool templateBOE)
+        private void ProcessResourceHeader(SdtElement containerElement, BOEExportTaskElementLabor ResourceElement)
         {
             IDictionary<string, string> resourceHeaderDataValueMappings = new Dictionary<string, string>
             {
@@ -949,22 +948,6 @@ namespace GenBOE.ActionLogic.IO.Export
             else
             {
                 resourceHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_ResourceDescription, "NO PERF ORG");
-            }
-
-            if (templateBOE)
-            {
-                if (ResourceElement.ExportFields.ContainsKey(BOEExporterConstants.FieldName_ResourceMOQType))
-                {
-                    resourceHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_ResourceMOQType, ResourceElement.ExportFields[BOEExporterConstants.FieldName_ResourceMOQType]);
-                }
-                else
-                {
-                    resourceHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_ResourceMOQType, "NO MOQ TYPE");
-                }
-            }
-            else
-            {
-                this.RemoveElementRow(WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_ResourceMOQType));
             }
 
             foreach (KeyValuePair<string, string> entry in resourceHeaderDataValueMappings)
