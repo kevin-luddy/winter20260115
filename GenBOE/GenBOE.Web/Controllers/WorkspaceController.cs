@@ -3119,7 +3119,7 @@ namespace GenBOE.Web.Controllers
 
                 // Get the user who is saving the BOE(s)
                 int currentUserID = ws.CurrentActiveUser.UserID;
-                bool templateBoeUsageChanged = ws.UsingTemplateBOE == workspaceDetails.UsingTemplateBoe;
+                bool templateBoeUsageChanged = ws.UsingTemplateBOE != workspaceDetails.UsingTemplateBoe;
 
                 // Create DTO and populate the common properties
                 ws.ContainsOCI = workspaceDetails.ContainsOCI;
