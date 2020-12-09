@@ -4314,16 +4314,16 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 wsCreationDate = new DateTime(2021, 10, 1);
 
                 // IS&GS.. we aren't translating -> None
-                RunTest(gbe, MOQType.None, MOQType.Comparison, wsCreationDate);
-                RunTest(gbe, MOQType.None, MOQType.EstimatingRelationships, wsCreationDate);
-                RunTest(gbe, MOQType.None, MOQType.Factor, wsCreationDate);
-                RunTest(gbe, MOQType.None, MOQType.Judgment, wsCreationDate);
-                RunTest(gbe, MOQType.None, MOQType.LevelOfEffort, wsCreationDate);
-                RunTest(gbe, MOQType.None, MOQType.None, wsCreationDate);
-                RunTest(gbe, MOQType.None, MOQType.Probability, wsCreationDate);
-                RunTest(gbe, MOQType.None, MOQType.Standard, wsCreationDate);
-                RunTest(gbe, MOQType.None, MOQType.Unit, wsCreationDate);
-                RunTest(gbe, MOQType.None, MOQType.VendorQuote, wsCreationDate);
+                RunTest(gbe, null, MOQType.Comparison, wsCreationDate);
+                RunTest(gbe, null, MOQType.EstimatingRelationships, wsCreationDate);
+                RunTest(gbe, null, MOQType.Factor, wsCreationDate);
+                RunTest(gbe, null, MOQType.Judgment, wsCreationDate);
+                RunTest(gbe, null, MOQType.LevelOfEffort, wsCreationDate);
+                RunTest(gbe, null, MOQType.None, wsCreationDate);
+                RunTest(gbe, null, MOQType.Probability, wsCreationDate);
+                RunTest(gbe, null, MOQType.Standard, wsCreationDate);
+                RunTest(gbe, null, MOQType.Unit, wsCreationDate);
+                RunTest(gbe, null, MOQType.VendorQuote, wsCreationDate);
 
                 // RMS Types
                 RunTest(gbe, MOQType.Comparative, MOQType.MSTComparisonAnalogyMethod, wsCreationDate);
@@ -4368,11 +4368,11 @@ namespace GenBOE.Tests.DAL.DataLoaders
         /// <param name="expectedResult">Expected result</param>
         /// <param name="moqType">Current Moq Type</param>
         /// <param name="WsCreationDate">WS Creation Date</param>
-        private static void RunTest(GenBoeEntities gbe, MOQType expectedResult, MOQType moqType, DateTime? WsCreationDate)
+        private static void RunTest(GenBoeEntities gbe, MOQType? expectedResult, MOQType moqType, DateTime? WsCreationDate)
         {
             Object[] parameters = { (int)moqType, WsCreationDate };
-            int result = gbe.Database.SqlQuery<int>(SQL_EXEC_FUNC, parameters).FirstOrDefault();
-            Assert.AreEqual((int)expectedResult, result);
+            int? result = gbe.Database.SqlQuery<int?>(SQL_EXEC_FUNC, parameters).FirstOrDefault();
+            Assert.AreEqual((int?)expectedResult, result);
         }
     }
 }

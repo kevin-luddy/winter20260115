@@ -356,7 +356,7 @@
 
     <div class="form-row">
         <div data-ng-if="!model.UsingTemplateBOE" class="form-label"><%: Model.MOQTextLabel %> **</div>
-        <div data-ng-if="model.UsingTemplateBOE && '<%:Model.MoqTemplateAnswers.Any()%>'.isTrue()" class="form-label">Additional MOQ Types <br />Information</div>
+        <div data-ng-if="model.UsingTemplateBOE && '<%:Model.MoqTemplateAnswers.Any()%>'.isTrue()" class="form-label">Additional MOQ Rationale</div>
 
         <div data-ng-if="!model.UsingTemplateBOE || '<%:Model.MoqTemplateAnswers.Any()%>'.isTrue()" class="form-element moq-text-area"><% Html.RenderPartial(WebConstants.VIEW_RTE_TEMPLATE, new GenBOE.Web.ModelView.RteTemplateModelView(Model.MoqTemplateAnswers, "MOQText", Model.MOQText));  %></div>
     </div>
