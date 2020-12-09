@@ -648,7 +648,7 @@ namespace GenBOE.DataBridge.DTO
                         gbe.Database.CommandTimeout = 300;  // give the SP enough time to execute
 
                         // Save the workspace identification and output format template
-                        outNewWorkspaceID = gbe.copyWorkspace(inWorkspaceIDtoCopy, newWorkspaceName, newShortName/*, costVolumeLeadPricerId*/).FirstOrDefault().GetValueOrDefault();
+                        outNewWorkspaceID = gbe.copyWorkspace(inWorkspaceIDtoCopy, newWorkspaceName, newShortName, costVolumeLeadPricerId);
                     }
                 }
             } catch (SqlException ex)
