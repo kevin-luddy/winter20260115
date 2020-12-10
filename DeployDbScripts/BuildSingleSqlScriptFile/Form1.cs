@@ -40,7 +40,7 @@
             // Dusan - doing this for myself only, w/ my laptop's location, so I don't have to keep typing it in.. because I'm lazy :|
             if (WindowsIdentity.GetCurrent().Name.ToLower().Equals(@"acct04\paliderd"))
             {
-                this.txtFromFolder.Text = @"C:\Projects\dev\GenBOE.Database\Scripts";
+                this.txtFromFolder.Text = @"C:\Projects\gitBoe\GenBOE.Database\Scripts";
                 this.txtToFolder.Text = @"C:\Users\paliderd\Desktop";
 
                 this.txtFromFolder_TextChanged(null, null);
@@ -62,6 +62,7 @@
 
         private void txtFromFolder_TextChanged(object sender, EventArgs e)
         {
+            lbVersions.Items.Clear();
             if (this.ValidateSqlFolder())
             {
                 this.PopulateAvailableReleases();
@@ -211,6 +212,7 @@
 
         private string SelectFolder()
         {
+            this.folderBrowser.RootFolder = Environment.SpecialFolder.MyComputer;
             this.folderBrowser.ShowDialog();
             string path = this.folderBrowser.SelectedPath;
 
@@ -223,6 +225,7 @@
             DirectoryInfo releaseParentFolder = fromFolder.GetDirectories().First(x => x.FullName.Contains(RELEASE_PARENT_FOLDER));
 
             lbVersions.Items.Clear();
+            this.lblValidation.Text = string.Empty;
 
             foreach (DirectoryInfo dir in releaseParentFolder.GetDirectories().Reverse())
             {
