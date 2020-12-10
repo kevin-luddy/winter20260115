@@ -46,6 +46,7 @@ AS
 **		12/17/19	twilson3			BOEJ-4434 Fix Assigned
 **		8/27/20		ranzalon			BOEJ-4760 - Template Boe
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
+**		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 

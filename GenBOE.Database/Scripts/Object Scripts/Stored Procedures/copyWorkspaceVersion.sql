@@ -37,6 +37,7 @@ AS
 **		8/27/20		ranzalon			BOEJ-4760 - Template Boe
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
 **		10/29/20	Dusan				BOEJ-4925: Fixed MOQTypeSelectionId not copying
+**		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
 *******************************************************************************/
 SET NOCOUNT ON 
 
