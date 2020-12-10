@@ -12314,7 +12314,7 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             <End Role="MOQTypeSelection" EntitySet="MOQTypeSelections" />
             <End Role="MOQTypeSelectionTableData" EntitySet="MOQTypeSelectionTableDatas" />
           </AssociationSet>
-          <FunctionImport Name="copyWorkspace">
+          <FunctionImport Name="copyWorkspace" ReturnType="Collection(Int32)">
             <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
             <Parameter Name="WorkspaceName" Mode="In" Type="String" />
             <Parameter Name="WorkspaceShortName" Mode="In" Type="String" />

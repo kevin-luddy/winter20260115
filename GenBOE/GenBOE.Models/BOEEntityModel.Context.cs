@@ -5392,7 +5392,7 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertMOQTypeSelectionTableData", mOQTypeSelectionTableDataIdParameter, mOQTypeSelectionIdParameter, updateDTParameter, orderParameter, tableNameParameter, repositoryNameParameter, queryTypeParameter, dateOfReportParameter, historicalProgramNameParameter, contractNumberParameter, wbsElementParameter, periodOfPerformanceStartDateParameter, periodOfPerformanceEndDateParameter, totalWbsHoursParameter, additionalQueryFiltersParameter, totalRelevantHoursAfterQueryFiltersParameter);
         }
     
-        public virtual int copyWorkspace(Nullable<int> workspaceID, string workspaceName, string workspaceShortName, Nullable<int> costVolumeLeadPricerUserID)
+        public virtual ObjectResult<Nullable<int>> copyWorkspace(Nullable<int> workspaceID, string workspaceName, string workspaceShortName, Nullable<int> costVolumeLeadPricerUserID)
         {
             var workspaceIDParameter = workspaceID.HasValue ?
                 new ObjectParameter("WorkspaceID", workspaceID) :
@@ -5410,7 +5410,7 @@ namespace GenBOE.Models
                 new ObjectParameter("CostVolumeLeadPricerUserID", costVolumeLeadPricerUserID) :
                 new ObjectParameter("CostVolumeLeadPricerUserID", typeof(int));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("copyWorkspace", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, costVolumeLeadPricerUserIDParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("copyWorkspace", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, costVolumeLeadPricerUserIDParameter);
         }
     }
 }
