@@ -46,6 +46,7 @@ AS
 **		12/17/19	twilson3			BOEJ-4434 Fix Assigned
 **		8/27/20		ranzalon			BOEJ-4760 - Template Boe
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
+**		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 
@@ -1128,7 +1129,6 @@ INSERT INTO [version].[MOQTypeSelection]
 [UpdateDT],
 [Order],
 [CERName],
-[CERLocation],
 [HoursDescription],
 [SubjectMatterExpert],
 [HoursLogicAndAssumptions],
@@ -1144,7 +1144,6 @@ M.[MOQTypeSelection],
 M.[UpdateDT],
 M.[Order],
 M.[CERName],
-M.[CERLocation],
 M.[HoursDescription],
 M.[SubjectMatterExpert],
 M.[HoursLogicAndAssumptions],
@@ -1222,7 +1221,6 @@ INSERT INTO [version].[BOELaborType]
 ,[CLINID]
 ,[CanOffload]
 ,[LaborSortId]
-,[MOQTypeSelectionId]
 )
 SELECT BLT.[BOELaborTypeID]
 ,BLT.[ResourceID]
@@ -1242,7 +1240,6 @@ SELECT BLT.[BOELaborTypeID]
 ,BLT.CLINID
 ,BLT.[CanOffload]
 ,BLT.[LaborSortId]
-,BLT.[MOQTypeSelectionId]
 FROM [dbo].[BOELaborType] BLT
 INNER JOIN [dbo].[BOETaskElement] BTE ON BLT.BOETaskElementID = BTE.BOETaskElementID
 INNER JOIN dbo.BOE B ON BTE.BOEID  = B.BOEID

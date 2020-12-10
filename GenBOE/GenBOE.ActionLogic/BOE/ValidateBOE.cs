@@ -630,10 +630,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                 foreach (BoeTaskElementDTO task in boe.TaskElements)
                 {
-                    ICollection<MOQType> moqTypesUsedByTasksResourceTypes = task.taskElementLabors.Where(x => x.MoqTypeSelectionId.HasValue).Select(x => (MOQType)x.MoqTypeSelectionId).ToList();
-
-                    errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList(), moqTypesUsedByTasksResourceTypes, ws.RteSizeLimit);
-                    errorMessages.AddRange(ValidateTemplateMoqForLaborType(task, ws.DecimalPrecision));
+                    errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList(), ws.RteSizeLimit);
 
                     if (errorMessages.Any())
                     {
@@ -654,10 +651,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// Validate MOQ Template data on a Task Level. Does NOT validate Labor Type level selection
         /// </summary>
         /// <param name="moqTypesForTask">MOQ Types that belong to the task</param>
-        /// <param name="moqTypesSelectedInResourceTypes">MOQ Types in resource types</param>
         /// <param name="rteSizeLimit">RTE Size Limit</param>
         /// <returns>Errors, if any</returns>
-        public static Collection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, ICollection<MOQType> moqTypesSelectedInResourceTypes, int? rteSizeLimit)
+        public static Collection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, int? rteSizeLimit)
         {
             _ = moqTypesForTask ?? throw new ArgumentNullException(nameof(moqTypesForTask));
 
@@ -677,7 +673,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
                     {
                         case (MOQType.AnalogousRelationships):
                             ValidateRequiredRteField(moqType.SelectedMOQType, moqType.CerName, "Analogous relationship name", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.CerLocation, "Analogous relationship location in the proposal", rteSizeLimit, errorMessages);
                             ValidateRequiredRteField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
                             ValidateRequiredRteField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
                             break;
@@ -725,7 +720,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
                             break;
                         case (MOQType.CostEstimatingRelationships):
                             ValidateRequiredRteField(moqType.SelectedMOQType, moqType.CerName, "CER tool name", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.CerLocation, "CER tool location in the proposal", rteSizeLimit, errorMessages);
                             ValidateRequiredRteField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
                             ValidateRequiredRteField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
                             break;
@@ -739,7 +733,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
                             break;
                         case (MOQType.ParametricEstimates):
                             ValidateRequiredRteField(moqType.SelectedMOQType, moqType.CerName, "Parametric model name", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.CerLocation, "Parametric model location in the proposal", rteSizeLimit, errorMessages);
                             ValidateRequiredRteField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
                             ValidateRequiredRteField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
                             break;
@@ -759,11 +752,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
                             errorMessages.Add("Invalid MOQ Type selected");
                             break;
                     };
-
-                    if (!moqTypesSelectedInResourceTypes.Contains(moqType.SelectedMOQType))
-                    {
-                        errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: All MOQ Types must be selected by at least one Resource Type.");
-                    }
                 });
             }
 
@@ -771,29 +759,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
         }
 
         /// <summary>
-        /// Validates Moq Selection for a Labor Type
-        /// </summary>
-        /// <param name="task">Task to validate</param>
-        /// <param name="decimalPrecision">WS Decimal Precision</param>
-        /// <returns>Errors, if any</returns>
-        private static Collection<string> ValidateTemplateMoqForLaborType(BoeTaskElementDTO task, int decimalPrecision)
-        {
-            Collection<string> errorMessages = new Collection<string>();
-
-            task.taskElementLabors.Where(x => !x.MoqTypeSelectionId.HasValue).ForEach(resourceType =>
-            {
-                string resourceValue = resourceType.SpreadType == SpreadType.Cost ?
-                            "$" + Utilities.AdjustPrecision(resourceType.ValueSpread.Value, 2).ToString()
-                                : Utilities.AdjustPrecision(resourceType.ValueSpread.Value, decimalPrecision).ToString();
-
-                errorMessages.Add(string.Format(Constants.MOQ_TYPE_REQUIRED_FOR_RESOURCE_TYPE, resourceType.StartDate, resourceType.EndDate, resourceValue));
-            });
-
-            return errorMessages;
-        }
-
-        /// <summary>
-        /// Validates a required RTE field
+        /// Validates a required field
         /// </summary>
         /// <param name="moqType">Moq Type</param>
         /// <param name="field">Property to check</param>

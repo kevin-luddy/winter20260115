@@ -336,8 +336,6 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string FieldName_MOQTypeDescription = "MOQTypeDescription";
         internal const string FieldName_CerPmArNameLabel = "CER/PM/ARNameLabel";
         internal const string FieldName_CerPmArName = "CER/PM/ARName";
-        internal const string FieldName_CerPmArLocationLabel = "CER/PM/ARLocationLabel";
-        internal const string FieldName_CerPmArLocation = "CER/PM/ARLocation";
         internal const string FieldName_HoursDescriptionLabel = "HoursDescriptionLabel";
         internal const string FieldName_HoursDescription = "HoursDescription";
         internal const string FieldName_SMEReasonsLabel = "SMEReasonsLabel";
@@ -363,7 +361,6 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string FieldName_TotalWBSHours = "TotalWBSHours";
         internal const string FieldName_AdditionalQueryFilters = "AdditionalQueryFilters";
         internal const string FieldName_TotalRelevantHours = "TotalRelevantHours";
-        internal const string FieldName_ResourceMOQType = "ResourceMOQType";
         internal const string FieldName_MOQTypeTableNote = "MOQTypeTableNote";
         internal const string Marker_AdditionalQueryFilters = "AdditionalQueryFiltersRowMarker";
         internal const string Table_MOQType = "MOQTypeTable";

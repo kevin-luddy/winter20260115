@@ -575,9 +575,6 @@
                                             <th class="element-of-cost">Element of Cost</th>
                                             <th class="resource">Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>)*</th>
                                             <th class="performing-org">Performing Org (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_PERF_ORGS%>'); return false;">View</a>)*</th>
-                                            <% if (Model.UsingTemplateBOE) { %>
-                                                <th class="resourceMoqType">MOQ Type *</th>
-                                            <% } %>
                                             <% if (Model.BOEIsMulti) { %>
                                                 <th class="resource-wbs">WBS</th>
                                                 <th class="resource-clin">CLIN</th>
@@ -608,11 +605,6 @@
                                                      <input data-ng-if="!showDropdowns" tabindex ="{{tabindex + 2}}" type="text" data-ng-model="item.PerfOrgInput" placeholder="Add Performing Org" uib-typeahead="perfOrg as perfOrg.PerformingOrgName for perfOrg in PerfOrgModels | filter:{Label:$viewValue}" typeahead-template-url="customPerfOrgTemplate.html" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" typeahead-min-length="perfOrgTypeaheadLength" data-ng-change="perfOrgUpdated(item)" typeahead-on-select="perfOrgSelected($item, item)">
                                                 </div>
                                             </td>
-                                            <% if (Model.UsingTemplateBOE) { %>
-                                                <td class="resourceMoqType">
-                                                    <select data-ng-options="option.SelectedMOQType as option.SelectedMOQTypeText for option in SelectedMoqTypes" data-ng-model="item.SelectedMOQType" data-ng-change="moqTypeSelected(item)"></select>
-                                                </td>
-                                            <% } %>
                                             <% if (Model.BOEIsMulti) { %>
                                                 <td class="resource-wbs">
                                                     <select tabindex ="{{tabindex + 3}}" class="wbs" data-ng-model="item.WBSID" data-ng-change="setDirty()" name="WBSID">

@@ -30,6 +30,7 @@ AS
 **		8/19/20		Dusan				BOEJ-4728 Add Lead Pricer / Estimator change to the copy
 **		8/27/20		ranzalon			BOEJ-4760 - Template Boe
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
+**		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -1727,7 +1728,6 @@ DECLARE @MOQTypeSelection TABLE
 	[UpdateDT] [datetime2](7) NOT NULL,
 	[Order] [int] NOT NULL,
 	[CERName] [varchar](255) NULL,
-	[CERLocation] [varchar](255) NULL,
 	[HoursDescription] [varchar](max) NULL,
 	[SubjectMatterExpert] [varchar](max) NULL,
 	[HoursLogicAndAssumptions] [varchar](max) NULL,
@@ -1747,7 +1747,6 @@ SELECT
 	M.[UpdateDT],
 	M.[Order],
 	M.[CERName],
-	M.[CERLocation],
 	M.[HoursDescription],
 	M.[SubjectMatterExpert],
 	M.[HoursLogicAndAssumptions],
@@ -1771,7 +1770,6 @@ INSERT INTO [dbo].[MOQTypeSelection]
 			[UpdateDT],
 			[Order],
 			[CERName],
-			[CERLocation],
 			[HoursDescription],
 			[SubjectMatterExpert],
 			[HoursLogicAndAssumptions],
@@ -1785,7 +1783,6 @@ SELECT NewTaskId,
 	[UpdateDT],
 	[Order],
 	[CERName],
-	[CERLocation],
 	[HoursDescription],
 	[SubjectMatterExpert],
 	[HoursLogicAndAssumptions],
@@ -1916,15 +1913,13 @@ DECLARE @BOELaborType TABLE
 	[CLINID] [int] NULL,
 	[CanOffload] bit default 0,
 	[LaborSortId] [int] NOT NULL,
-	[MOQTypeSelectionId] [int] NULL,
 	Processed bit,
 	[NewBOELaborTypeID] [int],
 	[NewResourceID] [int],
 	[NewPerformingOrganizationID] [int],
 	[NewBOETaskElementID] [int],
 	[NewWBSID] [int] NULL,
-	[NewCLINID] [int] NULL,
-	[NewMOQTypeSelectionId] [int] NULL
+	[NewCLINID] [int] NULL
 )	
 INSERT INTO @BOELaborType
 SELECT LT.[BOELaborTypeID]
@@ -1944,7 +1939,6 @@ SELECT LT.[BOELaborTypeID]
 	  ,LT.[CLINID]
       ,LT.[CanOffload]
 	  ,LT.[LaborSortId]
-	  ,M.[MOQTypeSelectionId] 
 	  ,0/*PROCESSED*/
       ,NULL
       ,CASE
@@ -1964,14 +1958,12 @@ SELECT LT.[BOELaborTypeID]
 		WHEN C.NewCLINID IS NOT NULL THEN C.NewCLINID
 		ELSE LT.[CLINID]
 		END AS CLINID
-	  ,M.[NewMOQTypeSelectionId]
   FROM [dbo].[BOELaborType] LT
 INNER JOIN @BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
 LEFT OUTER JOIN @Resource R ON LT.ResourceID = R.ResourceID
 LEFT OUTER JOIN @PerformingOrganization PO ON LT.PerformingOrganizationID = PO.PerformingOrganizationID
 LEFT OUTER JOIN @WorkBreakdownStructure W on LT.WBSID = W.WBSID
 LEFT OUTER JOIN @CLIN C on LT.CLINID = C.CLINID
-LEFT OUTER JOIN @MOQTypeSelection M ON LT.MOQTypeSelectionId = M.MOQTypeSelectionId
 	
 DECLARE @BOELaborTypeID int
 WHILE EXISTS (SELECT 1 FROM @BOELaborType WHERE Processed = 0)
@@ -1994,8 +1986,7 @@ INSERT INTO [dbo].[BOELaborType]
 		   ,[WBSID]
 		   ,[CLINID]
 		   ,[CanOffload]
-		   ,[LaborSortId]
-		   ,[MOQTypeSelectionId])
+		   ,[LaborSortId])
 SELECT [UpdateDT]
       ,CASE 
       WHEN NewResourceID IS NOT NULL THEN NewResourceID
@@ -2025,7 +2016,6 @@ SELECT [UpdateDT]
 		END AS CLINID
 		,[CanOffload]
 		,[LaborSortId]
-		,[NewMOQTypeSelectionId]
   FROM @BOELaborType
 WHERE  [BOELaborTypeID] = @BOELaborTypeID
       

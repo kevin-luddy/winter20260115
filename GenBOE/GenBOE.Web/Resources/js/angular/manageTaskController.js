@@ -1472,11 +1472,6 @@
         $scope.checkIfNewRowNeeded(item);
     };
 
-    $scope.moqTypeSelected = function (item) {
-        $scope.setDirty();
-        $scope.checkIfNewRowNeeded(item);
-    };
-
     $scope.runAllTaskDateValidation = function () {
         $scope.laborTypeErrors = [];
 

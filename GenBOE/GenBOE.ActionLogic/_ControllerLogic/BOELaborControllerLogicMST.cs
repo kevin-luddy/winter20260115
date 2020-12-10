@@ -366,11 +366,8 @@ namespace GenBOE.ActionLogic
             toReturn.TotalRelevantHoursSuffix = "AA-03994/598/";
 
             toReturn.CERNameSuffix = "AA-03997/598/";
-            toReturn.CERLocationSuffix = "AA-03998/598/";
             toReturn.PENameSuffix = "AA-03999/598/";
-            toReturn.PELocationSuffix = "AA-04000/598/";
             toReturn.ARNameSuffix = "AA-04001/598/";
-            toReturn.ARLocationSuffix = "AA-04002/598/";
 
             toReturn.SOWDescriptionSuffix = "AA-04003/598/";
             toReturn.LOEDescriptionSuffix = "AA-04004/598/";

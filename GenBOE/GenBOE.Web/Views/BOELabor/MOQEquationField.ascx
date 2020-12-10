@@ -257,20 +257,6 @@
                 <input type="text" class="cerPmArTextBox" required data-ng-model="moqType.CerName" />
             </div>
         </div>
-        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%> || moqType.SelectedMOQType == <%:(int)MOQType.ParametricEstimates%> || moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>">
-            <div class="form-label">
-                <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%>">CER</span>
-                <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.ParametricEstimates%>">Parametric model or tool</span>
-                <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>">Analogous relationship</span>
-                 location in the proposal: * 
-                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.CERLocationSuffix);"></div>
-                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.ParametricEstimates%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PELocationSuffix);"></div>
-                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ARLocationSuffix);"></div>
-            </div>
-            <div class="form-element">
-                <input type="text" class="cerPmArTextBox" required placeholder="{{MoqTypesPlaceholder('Location', moqType.SelectedMOQType)}}" data-ng-model="moqType.CerLocation" />
-            </div>
-        </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.LOE%> || moqType.SelectedMOQType == <%:(int)MOQType.SOW%>">
             <div class="form-label" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.LOE%>">
                 <span>Description of Hours required: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.LOEDescriptionSuffix);"></div>

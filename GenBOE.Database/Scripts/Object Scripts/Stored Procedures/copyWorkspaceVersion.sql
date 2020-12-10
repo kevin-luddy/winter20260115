@@ -37,6 +37,7 @@ AS
 **		8/27/20		ranzalon			BOEJ-4760 - Template Boe
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
 **		10/29/20	Dusan				BOEJ-4925: Fixed MOQTypeSelectionId not copying
+**		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -1776,7 +1777,6 @@ BEGIN TRY
 		[UpdateDT] [datetime2](7) NOT NULL,
 		[Order] [int] NOT NULL,
 		[CERName] [varchar](255) NULL,
-		[CERLocation] [varchar](255) NULL,
 		[HoursDescription] [varchar](max) NULL,
 		[SubjectMatterExpert] [varchar](max) NULL,
 		[HoursLogicAndAssumptions] [varchar](max) NULL,
@@ -1796,7 +1796,6 @@ BEGIN TRY
 		M.[UpdateDT],
 		M.[Order],
 		M.[CERName],
-		M.[CERLocation],
 		M.[HoursDescription],
 		M.[SubjectMatterExpert],
 		M.[HoursLogicAndAssumptions],
@@ -1821,7 +1820,6 @@ BEGIN TRY
 				[UpdateDT],
 				[Order],
 				[CERName],
-				[CERLocation],
 				[HoursDescription],
 				[SubjectMatterExpert],
 				[HoursLogicAndAssumptions],
@@ -1835,7 +1833,6 @@ BEGIN TRY
 		[UpdateDT],
 		[Order],
 		[CERName],
-		[CERLocation],
 		[HoursDescription],
 		[SubjectMatterExpert],
 		[HoursLogicAndAssumptions],
@@ -1967,7 +1964,6 @@ BEGIN TRY
 		[CLINID] [int] NULL,
 		[CanOffload] bit default 0,
 		[LaborSortId] [int] NOT NULL,
-		[MOQTypeSelectionId] [int] NULL,
 		Processed bit,
 		[NewBOELaborTypeID] [int],
 		[NewResourceID] [int],
@@ -1994,7 +1990,6 @@ BEGIN TRY
 		  ,LT.[CLINID]
 		  ,LT.[CanOffload]
 		  ,LT.[LaborSortId]
-		  ,LT.[MOQTypeSelectionId] 
 		  ,0/*PROCESSED*/
 		  ,NULL
 		  ,CASE
@@ -2043,8 +2038,7 @@ BEGIN TRY
 			   ,[WBSID]
 			   ,[CLINID]
 			   ,[CanOffload]
-			   ,[LaborSortId]
-			   ,[MOQTypeSelectionId])
+			   ,[LaborSortId])
 	SELECT [UpdateDT]
 		  ,CASE 
 		  WHEN NewResourceID IS NOT NULL THEN NewResourceID
@@ -2073,7 +2067,6 @@ BEGIN TRY
 			END AS CLINID
 			,[CanOffload]
 			,[LaborSortId]
-			,[MOQTypeSelectionId]
 	  FROM @BOELaborType
 	WHERE  [BOELaborTypeID] = @BOELaborTypeID
       

@@ -185,7 +185,6 @@ namespace GenBOE.ActionLogic.IO.Export
         public string WbsString { get; set; }
         public string ClinString { get; set; }
         public string SummaryReference { get; set; }
-        public string MoqType { get; set; }
     }
 
     /// <summary>
@@ -886,8 +885,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         SpreadCurve = GetStringValue(resource.ExportFields, BOEExporterConstants.FieldName_SpreadCurve),
                         WbsString = GetStringValue(resource.ExportFields, BOEExporterConstants.FieldName_WBSString),
                         ClinString = GetStringValue(resource.ExportFields, BOEExporterConstants.FieldName_CLINString),
-                        SummaryReference = GetStringValue(resource.ExportFields, BOEExporterConstants.FieldName_SummaryReference),
-                        MoqType = GetStringValue(resource.ExportFields, BOEExporterConstants.FieldName_ResourceMOQType)
+                        SummaryReference = GetStringValue(resource.ExportFields, BOEExporterConstants.FieldName_SummaryReference)
                     });
                 }
             }

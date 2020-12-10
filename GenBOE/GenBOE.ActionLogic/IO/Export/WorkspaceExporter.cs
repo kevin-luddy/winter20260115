@@ -159,11 +159,11 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             if (usingTemplateBoe)
             {
-                return new int?[] { null, null, 1, null, null, null, null, null, null, null, null };
+                return new int?[] { null, null, 1, null, null, null, null, null, null, null };
             }
             else
             {
-                return new int?[] { null, null, 1, null, null, null, null, null };
+                return new int?[] { null, null, 1, null, null, null, null };
             }
         }
 
@@ -324,7 +324,6 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     toReturn.Add(this.GetMOQbyBOEbyTaskData(exportInputs));
                     toReturn.Add(this.GetMOQTableData(exportInputs));
-                    toReturn.Add(this.GetMOQSummaryData(exportInputs));
                 }
 
                 toReturn.Add(this.GetWBSSheetExportData(exportInputs));
@@ -524,10 +523,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                     HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(this.resourceDTODataLoader.GetByIds(task.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Distinct().ToList()));
                     HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(this.perfOrgLoader.GetByIds(task.taskElementLabors.Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
-
-                    // Get index of "Multiple" if it exists for tasks with multiple MOQ Types
-                    int multipleIndex = Array.IndexOf(taskpart1, this.sMultiple);
-
+                    
                     foreach (ResourceTypeDto resourceType in task.taskElementLabors)
                     {
                         row = new List<string>();
@@ -570,13 +566,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         {
                             row.Add(this.sEmpty);
                         }
-
-                        // if task contains multiple MOQ Types, get the MOQ Type for this Resource Type
-                        if (multipleIndex > -1)
-                        {
-                            taskpart1[multipleIndex] = ((MOQType)(resourceType.MoqTypeSelectionId ?? 0)).GetDescription();
-                        }
-
+                        
                         row.AddRange(taskpart1);
 
                         emptyCellsToAdd = workspace_customFields.Count(c => c.CustomFieldDisplayID == CustomFieldType.TaskDisplay);
@@ -1212,7 +1202,6 @@ namespace GenBOE.ActionLogic.IO.Export
                             task.BOETaskID,
                             task.TaskTitle,
                             this.GetMOQEquation(task, exportInputs),
-                            task.taskElementLabors.Where(x => x.MoqTypeSelectionId == (int)moqType).Sum(x => x.ValueSpread).ToString(),
                             moqType.GetDescription()
                         };
 
@@ -1286,59 +1275,6 @@ namespace GenBOE.ActionLogic.IO.Export
                 table.AdditionalQueryFilters,
                 table.TotalRelevantHours.ToString()
             };
-        }
-
-        /// <summary>
-        /// Get the row data for the MOQ Table Data sheet
-        /// </summary>
-        /// <param name="exportInputs">Export Inputs</param>
-        /// <returns></returns>
-        private ExcelExportWorksheet GetMOQSummaryData(BOEExportInputs exportInputs)
-        {
-            ExcelExportWorksheet toReturn = new ExcelExportWorksheet("MOQ Summary");
-
-            IDictionary<MOQType, decimal> hoursByMOQ = new Dictionary<MOQType, decimal>();
-
-            foreach (ResourceTypeDto resourceType in exportInputs.TaskElements.SelectMany(x => x.taskElementLabors))
-            {
-                if (resourceType.SpreadType == SpreadType.Hours && resourceType.ValueSpread.HasValue)
-                {
-                    MOQType selectedMoqType = (MOQType)resourceType.MoqTypeSelectionId;
-
-                    if (hoursByMOQ.ContainsKey(selectedMoqType))
-                    {
-                        hoursByMOQ[selectedMoqType] += resourceType.ValueSpread.Value;
-                    }
-                    else
-                    {
-                        hoursByMOQ.Add(selectedMoqType, resourceType.ValueSpread.Value);
-                    }
-                }
-            }
-
-            decimal totalHours = hoursByMOQ.Sum(x => x.Value);
-
-            foreach (KeyValuePair<MOQType, decimal> moqHours in hoursByMOQ.OrderBy(x => x.Key)) 
-            {
-                decimal percentage = moqHours.Value / totalHours;
-                IList<string> row = new List<string>()
-                {
-                    moqHours.Key.GetDescription(),
-                    moqHours.Value.ToString(),
-                    percentage.ToString()
-                };
-
-                toReturn.Add(row);
-            }
-
-            toReturn.Add(new List<string>()
-            {
-                "Grand Total",
-                totalHours.ToString(),
-                "1"
-            });
-
-            return toReturn;
         }
 
         /// <summary>
@@ -1516,9 +1452,6 @@ namespace GenBOE.ActionLogic.IO.Export
         /// </returns>
         private ExcelExportWorksheet GetLaborResourceTypeDataforBOEResourceCombo(BOEExportInputs exportInputs, ExcelExportWorksheet toReturn, BoeDTO boe, BoeTaskElementDTO task, HashSet<WbsDTO> allWbs, HashSet<ClinDTO> allClins, IReadOnlyCollection<ResourceDTO> workspaceResources, IReadOnlyCollection<CustomFieldDTO> workspace_customFields, ICollection<CustomFieldValueDTO> workspaceCustomFieldValues, IDictionary<int, SpreadCurveModelView> allSpreadCurves, HashSet<PerformingOrgDTO> perfOrgsFromDb, string[] taskFields1, string[] taskFields2)
         {
-            // Get index of "Multiple" if it exists for tasks with multiple MOQ Types
-            int multipleIndex = Array.IndexOf(taskFields1, this.sMultiple);
-
             foreach (ResourceTypeDto resourceType in task.taskElementLabors)
             {
                 List<string> row = new List<string>();
@@ -1533,12 +1466,6 @@ namespace GenBOE.ActionLogic.IO.Export
                         boe.Title ?? this.sEmpty,
                         "Resource Type"
                     });
-
-                // if task contains multiple MOQ Types, get the MOQ Type for this Resource Type
-                if (multipleIndex > -1)
-                {
-                    taskFields1[multipleIndex] = ((MOQType)(resourceType.MoqTypeSelectionId ?? 0)).GetDescription();
-                }
 
                 row.AddRange(taskFields1);
                 string[] resFields1 = this.GetResourceWbsClinAndBoeFields(resourceType, aResource, allWbs, allClins, boe);
