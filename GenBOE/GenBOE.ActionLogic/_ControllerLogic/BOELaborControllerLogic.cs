@@ -1337,6 +1337,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.ValidateLaborTypeDates(laborTaskData, inValidationErrors);
             this.ValidateLaborTypeCustomFields(laborTaskData, ws, taskElement, inValidationErrors);
             this.ValidateTaskCustomFields(laborTaskData, ws, inValidationErrors);
+            this.ValidateMoqTypes(ws, laborTaskData, inValidationErrors);
         }
 
         /// <summary>
@@ -1615,6 +1616,21 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 {
                     inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldMetaData.FieldName)));
                 }
+            }
+        }
+
+        /// <summary>
+        /// Validates MOQ Types for UI, only fully required fields
+        /// </summary>
+        /// <param name="ws">Full WS</param>
+        /// <param name="taskData">Task Data</param>
+        /// <param name="errors">Validation Errors</param>
+        private void ValidateMoqTypes(WorkspaceDTO ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors)
+        {
+            if (ws.UsingTemplateBOE)
+            {
+                ICollection<string> taskErrors = ValidateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws.RteSizeLimit);
+                errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
             }
         }
 
