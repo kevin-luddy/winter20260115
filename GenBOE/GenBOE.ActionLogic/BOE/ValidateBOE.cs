@@ -183,8 +183,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 ValidationBOE.BOEHeaderMsgs.Add(BoeDTO.DATA_SOURCE_REQUIRED);
             }
 
-            ValidateRTEFieldLength(ws.RteSizeLimit, inBOE.Description, "BOE Description", ValidationBOE.BOEHeaderMsgs);
-            ValidateRTEFieldLength(ws.RteSizeLimit, inBOE.DataSource, "BOE Data Source", ValidationBOE.BOEHeaderMsgs);
+            ValidateFieldLength(ws.RteSizeLimit, inBOE.Description, "BOE Description", ValidationBOE.BOEHeaderMsgs);
+            ValidateFieldLength(ws.RteSizeLimit, inBOE.DataSource, "BOE Data Source", ValidationBOE.BOEHeaderMsgs);
 
             // validate any BOE Custom Fields
             Collection<string> boeCustomFieldMsgs = this.ValidateBOECustomFields(ws, inBOE);
@@ -566,8 +566,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 }
 
                 // validate RTE field length
-                ValidateRTEFieldLength(workspace.RteSizeLimit, boeTask.Description, "Task Description", TaskElementMessages);
-                ValidateRTEFieldLength(workspace.RteSizeLimit, boeTask.MOQText, "MOQ Rationale", TaskElementMessages);
+                ValidateFieldLength(workspace.RteSizeLimit, boeTask.Description, "Task Description", TaskElementMessages);
+                ValidateFieldLength(workspace.RteSizeLimit, boeTask.MOQText, "MOQ Rationale", TaskElementMessages);
 
                 List<ResourceDTO> resourcesFromTask = workspace.ResourcesForWsResourceListId.Where(x => (boeTask.taskElementLabors.Where(y => y.ResourceID.HasValue).Select(z => z.ResourceID.Value)).Contains(x.Id)).ToList();
                 TotalLaborSpreadValue = ValidateResourceLabors(workspace, inBOE, boeTasks, LaborTypeMessages, offloadRatesDtos, boeTask, resourcesFromTask);
@@ -672,33 +672,34 @@ namespace GenBOE.ActionLogic.WBS.BOE
                     switch (moqType.SelectedMOQType)
                     {
                         case (MOQType.AnalogousRelationships):
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.CerName, "Analogous relationship name", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "Analogous relationship name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
                             break;
                         case (MOQType.Comparative):
                         case (MOQType.Historical):
                             if (moqType.TableData.None()) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: Table data is required."); }
                             moqType.TableData.ForEach(row =>
                             {
-                                ValidateRequiredRteField(moqType.SelectedMOQType, row.TableName, labels.TableName, rteSizeLimit, errorMessages);
+                                ValidateRequiredField(moqType.SelectedMOQType, row.TableName, labels.TableName, Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
 
                                 if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                                 {
-                                    ValidateRequiredRteField(moqType.SelectedMOQType, row.RepositoryName, labels.RepositoryName, rteSizeLimit, errorMessages);
-                                    ValidateRequiredRteField(moqType.SelectedMOQType, row.QueryType, labels.QueryType, rteSizeLimit, errorMessages);
+                                    ValidateRequiredField(moqType.SelectedMOQType, row.RepositoryName, labels.RepositoryName, Constants.MOQ_REPOSITORY_NAME_FIELD_LENGTH, errorMessages);
+                                    ValidateRequiredField(moqType.SelectedMOQType, row.QueryType, labels.QueryType, Constants.MOQ_QUERY_TYPE_FIELD_LENGTH, errorMessages);
                                 }
                                 else
                                 {
-                                    ValidateRequiredRteField(moqType.SelectedMOQType, row.ContractNumber, labels.ContractNumber, rteSizeLimit, errorMessages);
+                                    ValidateRequiredField(moqType.SelectedMOQType, row.ContractNumber, labels.ContractNumber, Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
                                     if (row.TotalWbsHours <= 0) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalWbsHours} must be a number greater than 0."); }
                                 }
 
                                 if (row.DateOfReport.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} is required."); }
                                 if (row.DateOfReport > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} must be on or before today's date."); }
 
-                                ValidateRequiredRteField(moqType.SelectedMOQType, row.HistoricalProgramName, labels.HistoricalProgramName, rteSizeLimit, errorMessages);
-                                ValidateRequiredRteField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, rteSizeLimit, errorMessages);
+                                ValidateRequiredField(moqType.SelectedMOQType, row.HistoricalProgramName, labels.HistoricalProgramName, Constants.MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH, errorMessages);
+                                ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, 
+                                    SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ? Constants.MOQ_WBS_ELEMENT_RMS_FIELD_LENGTH : Constants.MOQ_WBS_ELEMENT_SSC_FIELD_LENGTH, errorMessages);
 
                                 if (row.PoPStart.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
                                 if (row.PoPStart > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before today's date."); }
@@ -709,44 +710,39 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                 if (string.IsNullOrEmpty(row.AdditionalQueryFilters)) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.AdditionalQueryFilters} is required, otherwise indicate N/A."); }
 
                                 if (row.TotalRelevantHours <= 0) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalRelevantHours} must be a number greater than 0."); }
-
-                                if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST && row.WbsElement.Length > 12)
-                                {
-                                    errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.WbsElement} must be 12 characters or less.");
-                                }
                             });
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
                             break;
                         case (MOQType.CostEstimatingRelationships):
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.CerName, "CER tool name", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "CER tool name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
                             break;
                         case (MOQType.LOE):
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
                             break;
                         case (MOQType.NonLabor):
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
                             break;
                         case (MOQType.ParametricEstimates):
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.CerName, "Parametric model name", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "Parametric model name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
                             break;
                         case (MOQType.SME):
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.SmeReason, "The SME selected Expert judgement reasons", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.SmeHoursLogic, "The logic and assumptions used to estimate hours", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.SmeDurationLogic, "The logic and assumptions used to estimate duration", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.SmeTaskEstimates, "The SME tasks estimated in this BOE", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeReason, "The SME selected Expert judgement reasons", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeHoursLogic, "The logic and assumptions used to estimate hours", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeDurationLogic, "The logic and assumptions used to estimate duration", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeTaskEstimates, "The SME tasks estimated in this BOE", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
                             break;
                         case (MOQType.SOW):
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required & location in SOW", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
-                            ValidateRequiredRteField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required & location in SOW", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
                             break;
                         default:
                             errorMessages.Add("Invalid MOQ Type selected");
@@ -764,16 +760,16 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// <param name="moqType">Moq Type</param>
         /// <param name="field">Property to check</param>
         /// <param name="label">Label for the field</param>
-        /// <param name="rteSizeLimit">RTE Size Limit</param>
+        /// <param name="maxFieldLength">RTE Size Limit</param>
         /// <param name="errorMessages">Error Messages</param>
-        private static void ValidateRequiredRteField(MOQType moqType, string field, string label, int? rteSizeLimit, Collection<string> errorMessages)
+        private static void ValidateRequiredField(MOQType moqType, string field, string label, int? maxFieldLength, Collection<string> errorMessages)
         {
             if (string.IsNullOrEmpty(field)) 
             { 
                 errorMessages.Add($"{moqType.GetDescription()}: {label} is required."); 
             }
 
-            ValidateRTEFieldLength(rteSizeLimit, field, label, errorMessages);
+            ValidateFieldLength(maxFieldLength, field, label, errorMessages);
         }
 
         /// <summary>
@@ -1539,15 +1535,15 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// <summary>
         /// Validates RTE Field length
         /// </summary>
-        /// <param name="rteSizeLimit">Workspace RTE Size Limit</param>
+        /// <param name="maxFieldLength">Workspace RTE Size Limit</param>
         /// <param name="fieldValue">Field value to check</param>
         /// <param name="fieldName">Field name for error message</param>
         /// <param name="errors">Errors to which we'll add errors</param>
-        private static void ValidateRTEFieldLength(int? rteSizeLimit, string fieldValue, string fieldName, ICollection<string> errors)
+        private static void ValidateFieldLength(int? maxFieldLength, string fieldValue, string fieldName, ICollection<string> errors)
         {
-            if (rteSizeLimit.HasValue && rteSizeLimit < GenBOEUtilities.ConvertHtmlToText(fieldValue ?? string.Empty).Length)
+            if (maxFieldLength.HasValue && maxFieldLength < GenBOEUtilities.ConvertHtmlToText(fieldValue ?? string.Empty).Length)
             {
-                errors.Add($"The maximum length of {fieldName} is {rteSizeLimit.Value} characters.");
+                errors.Add($"The maximum length of {fieldName} is {maxFieldLength.Value} characters.");
             }
         }
     }

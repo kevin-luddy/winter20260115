@@ -377,6 +377,40 @@ namespace IES.Common
 
         public const string SHARED_BOE_WRITING_COURSE = "076896WPL00";
 
+        #region MOQ Type Text Field Lengths
+
+        /// <summary>
+        /// Standard length for MOQ Type Text fields (matches db length)
+        /// </summary>
+        public const int MOQ_TYPE_TEXT_FIELD_LENGTH = 255;
+
+        /// <summary>
+        /// Length for MOQ Type Repository Name field (matches db length)
+        /// </summary>
+        public const int MOQ_REPOSITORY_NAME_FIELD_LENGTH = 50;
+
+        /// <summary>
+        /// Length for MOQ Type Query Type field (matches db length)
+        /// </summary>
+        public const int MOQ_QUERY_TYPE_FIELD_LENGTH = 40;
+
+        /// <summary>
+        /// Length for MOQ Type Historical Program Name field (matches db length)
+        /// </summary>
+        public const int MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH = 125;
+
+        /// <summary>
+        /// Length for MOQ Type WBS Element field for RMS (matches db length)
+        /// </summary>
+        public const int MOQ_WBS_ELEMENT_RMS_FIELD_LENGTH = 8;
+
+        /// <summary>
+        /// Length for MOQ Type WBS Element field for SSC (matches db length)
+        /// </summary>
+        public const int MOQ_WBS_ELEMENT_SSC_FIELD_LENGTH = 2500;
+
+        #endregion
+
         #region PickList
 
         /// <summary>
