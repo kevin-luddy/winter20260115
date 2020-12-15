@@ -155,7 +155,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
             if (copyTasks)
             {
-                finishedCorrectly = this.CopyTasks(BOEIDMapping, WBSIDMapping, ClinIDMapping, VariableIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, resourceMapping, performingOrgMapping, workspaceToCopy.Id, templateIdMapping, questionIdMapping, workspaceToCopy.MoqTypeSelections.ToList()) && finishedCorrectly;
+                finishedCorrectly = this.CopyTasks(BOEIDMapping, WBSIDMapping, ClinIDMapping, VariableIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, resourceMapping, performingOrgMapping, workspaceToCopy.Id, templateIdMapping, questionIdMapping, workspaceToCopy.MoqTypeSelections.Where(x => BOEToCopy.Contains(x.BoeId)).ToList()) && finishedCorrectly;
                 finishedCorrectly = this.CopyTravelTasks(newWorkspace, BOEIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, ClinIDMapping, WBSIDMapping, performingOrgMapping, resourceMapping) && finishedCorrectly;
             }
 
