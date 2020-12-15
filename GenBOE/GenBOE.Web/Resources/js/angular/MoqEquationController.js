@@ -83,15 +83,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     $scope.InitializeRteFields = function (id) {
         // setTimeout is needed to allow for the objects to be added into the DOM, before we can transform them into RTE
         setTimeout(function () {
-            if ($scope.model.IsReadOnly) {
-                HandleRTEDataForReadOnly('DescriptionHoursRequired_' + id, '.replacedWidgetText');
-                HandleRTEDataForReadOnly('SmeReason_' + id, '.replacedWidgetText');
-                HandleRTEDataForReadOnly('SmeHoursLogic_' + id, '.replacedWidgetText');
-                HandleRTEDataForReadOnly('SmeDurationLogic_' + id, '.replacedWidgetText');
-                HandleRTEDataForReadOnly('SmeTaskEstimates_' + id, '.replacedWidgetText');
-                HandleRTEDataForReadOnly('Rationale_' + id, '.replacedWidgetText');
-                HandleRTEDataForReadOnly('SkillMixRationale_' + id, '.replacedWidgetText');
-            } else {
+            if (!$scope.model.IsReadOnly) {
                 InitializeRTE('DescriptionHoursRequired_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
                 InitializeRTE('SmeReason_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
                 InitializeRTE('SmeHoursLogic_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);

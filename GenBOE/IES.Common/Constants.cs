@@ -402,7 +402,7 @@ namespace IES.Common
         /// <summary>
         /// Length for MOQ Type WBS Element field for RMS (matches db length)
         /// </summary>
-        public const int MOQ_WBS_ELEMENT_RMS_FIELD_LENGTH = 8;
+        public const int MOQ_WBS_ELEMENT_RMS_FIELD_LENGTH = 12;
 
         /// <summary>
         /// Length for MOQ Type WBS Element field for SSC (matches db length)
