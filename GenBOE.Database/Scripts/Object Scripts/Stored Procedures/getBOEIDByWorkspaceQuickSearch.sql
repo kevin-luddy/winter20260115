@@ -29,6 +29,7 @@ AS
 **		9/9/2020	ranzalon			BOEJ-4770 - Only search WSs with same Template BOE value
 **		11/4/2020	Dusan				BOEJ-4889 - Removing restriction to only search by the same Template BOE value
 **		11/24/2020	Dusan				BOEJ-4949 - Add restrictions based on Template BOE value; did some code cleanup as well
+**		12/15/2020	Dusan				BOEJ-4953 - Fixing logic w/ MOQ Type restrictions
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -59,8 +60,8 @@ DECLARE @IsEP bit = (SELECT IsUsingEquivalentPerson from dbo.Workspace where Wor
 DECLARE @IsMaterial bit = (SELECT IsMaterial from dbo.BOE where BOEID = @BOEID)
 /* if you are starting from an Old workspace (PreNewMoq) ==> you can only copy BOEs from another Old workspace */
 DECLARE @restrictToPreNewMoq BIT = CASE WHEN dbo.WasWorkspaceCreatedAfterNewMoqTypes((SELECT WorkspaceCreationDate FROM Workspace WHERE WorkspaceId = @WorkspaceID)) = 0 THEN 1 ELSE 0 END 
-/* if you are starting from a New (PostNewMoq) / Yes (Using Boe Template) ==> you can only copy from New / Yes */
-DECLARE @restrictToPostNewMoqAndUsingBoeTemplate BIT = CASE WHEN @restrictToPreNewMoq = 0  AND (SELECT TemplateBoe FROM Workspace WHERE WorkspaceId = @WorkspaceID) = 1 THEN 1 ELSE 0 END 
+/* if you are starting from a * / No (Not using Boe Template) ==> you can only copy from * / No */
+DECLARE @restrictToNotUsingBoeTemplate BIT = CASE WHEN (SELECT TemplateBoe FROM Workspace WHERE WorkspaceId = @WorkspaceID) = 0 THEN 1 ELSE 0 END 
 
 INSERT INTO @BOESearch(BOEID)
 	SELECT DISTINCT (B.BOEID)
@@ -84,8 +85,8 @@ INSERT INTO @BOESearch(BOEID)
 			/* START new MOQ Types filtering */
 			AND /* not restricted or (restricted and not new) => !a || (a && !b) = !a || !b */
 				(@restrictToPreNewMoq = 0 OR dbo.WasWorkspaceCreatedAfterNewMoqTypes(WS.WorkspaceCreationDate) = 0) 
-			AND /* not restricted or (restricted and new and yes) => !a || (a && b && c) = !a || (b && c) */
-				(@restrictToPostNewMoqAndUsingBoeTemplate = 0 OR (dbo.WasWorkspaceCreatedAfterNewMoqTypes(WS.WorkspaceCreationDate) = 1 AND WS.TemplateBoe = 1))
+			AND /* not restricted or (restricted and not using template) => !a || (a && !b) = !a || !b */
+				(@restrictToNotUsingBoeTemplate = 0 OR WS.TemplateBoe = 0)
 			/* END new MOQ Types filtering */
 
 WHILE EXISTS (SELECT 1 FROM @WordSearch WHERE Processed = 0)

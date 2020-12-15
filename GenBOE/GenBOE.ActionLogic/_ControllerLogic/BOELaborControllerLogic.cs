@@ -1630,7 +1630,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             if (ws.UsingTemplateBOE)
             {
                 ICollection<string> taskErrors = ValidateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws.RteSizeLimit);
-
                 errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
             }
         }
