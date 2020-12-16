@@ -3366,40 +3366,66 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <returns>help URLs for MOQ Type fields</returns>
         public virtual MoqTypeHelpUrls GetMoqTypeHelpUrls()
         {
-            // TODO - populate with SSC URLs when we have them
             MoqTypeHelpUrls toReturn = new MoqTypeHelpUrls();
 
-            toReturn.TableNameSuffix = string.Empty;
-            toReturn.RepositoryNameSuffix = string.Empty;
-            toReturn.QueryTypeSuffix = string.Empty;
-            toReturn.DateOfReportSuffix = string.Empty;
-            toReturn.HistoricalProgramNameSuffix = string.Empty;
-            toReturn.ContractNumberSuffix = string.Empty;
-            toReturn.WBSElementSuffix = string.Empty;
-            toReturn.PoPStartSuffix = string.Empty;
-            toReturn.PoPEndSuffix = string.Empty;
-            toReturn.TotalWBSHoursSuffix = string.Empty;
-            toReturn.AdditionalQueryFiltersSuffix = string.Empty;
-            toReturn.TotalRelevantHoursSuffix = string.Empty;
+            // Historical
+            toReturn.TableNameHistoricalSuffix = "Table Name - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.RepositoryNameHistoricalSuffix = "Repository Name - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.QueryTypeHistoricalSuffix = "Query Type - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.DateOfReportHistoricalSuffix = "Date of Report - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.HistoricalProgramNameHistoricalSuffix = "Historical Program Name - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.WBSElementHistoricalSuffix = "WBS-WBS Element - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.PoPStartHistoricalSuffix = "Period of Performance - Start Date - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.PoPEndHistoricalSuffix = "Period of Performance - End Date - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.AdditionalQueryFiltersHistoricalSuffix = "Employee ID Filter - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.TotalRelevantHoursHistoricalSuffix = "Total Relevant Hours - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.HistoricalRationaleSuffix = "Rationale - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.HistoricalSkillMixSuffix = "Skill Mix Rationale - Actual Program or Task Cost Data (Historical).docx";
 
-            toReturn.CERNameSuffix = string.Empty;
-            toReturn.PENameSuffix = string.Empty;
-            toReturn.ARNameSuffix = string.Empty;
+            // Comparative
+            toReturn.TableNameComparativeSuffix = "Table Name - Comparative Analysis.docx";
+            toReturn.RepositoryNameComparativeSuffix = "Repository Name - Comparative Analysis.docx";
+            toReturn.QueryTypeComparativeSuffix = "Query Type - Comparative Analysis.docx";
+            toReturn.DateOfReportComparativeSuffix = "Date of Report - Comparative Analysis.docx";
+            toReturn.HistoricalProgramNameComparativeSuffix = "Historical Program Name - Comparative Analysis.docx";
+            toReturn.WBSElementComparativeSuffix = "WBS-WBS Element - Comparative Analysis.docx";
+            toReturn.PoPStartComparativeSuffix = "Period of Performance - Start Date - Comparative Analysis.docx";
+            toReturn.PoPEndComparativeSuffix = "Period of Performance - End Date - Comparative Analysis.docx";
+            toReturn.AdditionalQueryFiltersComparativeSuffix = "Employee ID Filter - Comparative Analysis.docx";
+            toReturn.TotalRelevantHoursComparativeSuffix = "Total Relevant Hours - Comparative Analysis.docx";
+            toReturn.ComparativeRationaleSuffix = "Rationale - Comparative Analysis.docx";
+            toReturn.ComparativeSkillMixSuffix = "Skill Mix Rationale - Comparative Analysis.docx";
 
-            toReturn.SOWDescriptionSuffix = string.Empty;
-            toReturn.LOEDescriptionSuffix = string.Empty;
+            // CER/PE/AR
+            toReturn.CERNameSuffix = "CER Name.docx";
+            toReturn.PENameSuffix = "Parametric Model or Tool Name.docx";
+            toReturn.ARNameSuffix = "Analogous Relationship Name.docx";
+            toReturn.CerRationaleSuffix = "Rationale - Cost Estimating Relationships (CERs) R2.docx";
+            toReturn.PeRationaleSuffix = "Rationale - Parametric Estimates.docx";
+            toReturn.ArRationaleSuffix = "Rationale - Analogous Relatonships.docx";
+            toReturn.CerSkillMixSuffix = "Skill Mix Rationale - Cost Estimating relationships (CERs) R2.docx";
+            toReturn.ArSkillMixSuffix = "Skill Mix Rationale - Analogous Relationship.docx";
+            toReturn.PeSkillMixSuffix = "Skill Mix Rationale - Parametric Estimates.docx";
 
-            toReturn.SMEReasonsSuffix = string.Empty;
-            toReturn.SMEHoursLogicSuffix = string.Empty;
-            toReturn.SMEDurationLogicSuffix = string.Empty;
-            toReturn.SMETasksSuffix = string.Empty;
+            // SOW/LOE
+            toReturn.SOWDescriptionSuffix = toReturn.LOEDescriptionSuffix = "Description of Hours Required - Statement of Work - Level of Effort.docx";
+            toReturn.SowRationaleSuffix = "Rationale - Statement of Work.docx";
+            toReturn.LoeRationaleSuffix = "Rationale - Level of Effort.docx";
+            toReturn.SowSkillMixSuffix = "Skill Mix Rationale - Statement of Work.docx";
+            toReturn.LoeSkillMixSuffix = "Skill Mix Rationale - Level of Effort.docx";
 
-            toReturn.HistoricalRationaleSuffix = string.Empty;
-            toReturn.ComparativeRationaleSuffix = string.Empty;
-            toReturn.CerPeArRationaleSuffix = string.Empty;
-            toReturn.SowLoeRationaleSuffix = string.Empty;
-            toReturn.NonLaborRationaleSuffix = string.Empty;
-            toReturn.SkillMixSuffix = string.Empty;
+            // SME
+            toReturn.SMEReasonsSuffix = "Reason for Selecting Expert Judgement - Subjetc Matter Expert (SME) Judgement.docx";
+            toReturn.SMEHoursLogicSuffix = "Logic and Assumptions Used to Estimate Hours - Subject Matter Expert (SME) Judgement.docx";
+            toReturn.SMEDurationLogicSuffix = "Logic and Assumptions Used to Estimate Duration - Subject Matter Expert (SME) Judgement.docx";
+            toReturn.SMETasksSuffix = "Following Tasks are Estimates in this BOE - Subjetc Matter Expert (SME) Judgement.docx";
+            toReturn.SmeSkillMixSuffix = "Skill Mix Rationale - Subject Matter Expert.docx";
+
+            // Non-Labor
+            toReturn.NonLaborRationaleSuffix = "Rationale - Non-Labor.docx";
+
+            // Unused
+            toReturn.ContractNumberSuffix = toReturn.TotalWBSHoursSuffix = string.Empty;
 
             return toReturn;
         }

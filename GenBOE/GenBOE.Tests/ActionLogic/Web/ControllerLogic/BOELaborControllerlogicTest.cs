@@ -2972,16 +2972,15 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 string value = property.GetValue(helpUrls).ToString();
                 Assert.IsNotNull(value);
 
-                if (property.Name == "ContractNumberSuffix")
+                if (property.Name == "ContractNumberSuffix" || property.Name == "TotalWBSHoursSuffix")
                 {
                     // This field isn't used in SSC
                     Assert.IsTrue(string.IsNullOrEmpty(value));
                 }
                 else
                 {
-                    // TODO - enable this once we have SSC values
                     // Make sure the rest have been populated
-                    // Assert.IsFalse(string.IsNullOrEmpty(value));
+                    Assert.IsFalse(string.IsNullOrEmpty(value));
                 }
             }
         }
@@ -3007,7 +3006,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 string value = property.GetValue(helpUrls).ToString();
                 Assert.IsNotNull(value);
 
-                if (property.Name == "RepositoryNameSuffix" || property.Name == "QueryTypeSuffix")
+                if (property.Name == "RepositoryNameHistoricalSuffix" || property.Name == "RepositoryNameComparativeSuffix" || property.Name == "QueryTypeHistoricalSuffix" || property.Name == "QueryTypeComparativeSuffix")
                 {
                     // These fields aren't used in RMS
                     Assert.IsTrue(string.IsNullOrEmpty(value));

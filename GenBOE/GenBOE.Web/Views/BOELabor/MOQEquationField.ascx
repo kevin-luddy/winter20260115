@@ -179,16 +179,23 @@
                         <tr>
                             <td class="form-label">
                                 <div class="moqTypeHeader" data-ng-class="{'collapsed': tableData.collapsed, 'expanded': !tableData.collapsed}" data-ng-click="toggle(tableData)"></div>
-                                {{model.MoqTypeTableDataLabels.TableName}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.TableNameSuffix);"></div>
+                                {{model.MoqTypeTableDataLabels.TableName}} * 
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TableNameHistoricalSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TableNameComparativeSuffix);"></div>
                             </td>
                             <td><input type="text" required data-ng-model="tableData.TableName" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="!model.IsRMS">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.RepositoryName}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.RepositoryNameSuffix);"></div></td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.RepositoryName}} * 
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.RepositoryNameHistoricalSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.RepositoryNameComparativeSuffix);"></div>
+                            </td>
                             <td><input type="text" required data-ng-model="tableData.RepositoryName" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="!model.IsRMS">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.QueryType}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.QueryTypeSuffix);"></div></td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.QueryType}} * 
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.QueryTypeHistoricalSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.QueryTypeComparativeSuffix);"></div>
                             <td>
                                 <select required data-ng-model="tableData.QueryType">
                                     <option value=""></option>
@@ -198,11 +205,17 @@
                             </td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.DateOfReport}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.DateOfReportSuffix);"></div></td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.DateOfReport}} * 
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.DateOfReportHistoricalSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.DateOfReportComparativeSuffix);"></div>
+                            </td>
                             <td><input type="date" required data-ng-model="tableData.DateOfReport" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.HistoricalProgramName}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalProgramNameSuffix);"></div></td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.HistoricalProgramName}} * 
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalProgramNameHistoricalSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalProgramNameComparativeSuffix);"></div>
+                            </td>
                             <td><input type="text" required data-ng-model="tableData.HistoricalProgramName" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
@@ -210,15 +223,24 @@
                             <td><input type="text" required data-ng-model="tableData.ContractNumber" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.WbsElement}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.WBSElementSuffix);"></div></td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.WbsElement}} * 
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.WBSElementHistoricalSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.WBSElementComparativeSuffix);"></div>
+                            </td>
                             <td><textarea cols="20" required data-ng-model="tableData.WbsElement" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.PoPStart}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartSuffix);"></div></td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.PoPStart}} * 
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartHistoricalSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartComparativeSuffix);"></div>
+                            </td>
                             <td><input type="date" required data-ng-model="tableData.PoPStart" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.PoPEnd}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPEndSuffix);"></div></td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.PoPEnd}} *                                
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPEndHistoricalSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPEndComparativeSuffix);"></div>
+                            </td>
                             <td><input type="date" required data-ng-model="tableData.PoPEnd" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
@@ -226,11 +248,16 @@
                             <td><input type="number" required min="0" data-ng-model="tableData.TotalWbsHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.AdditionalQueryFilters}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersSuffix);"></div></td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.AdditionalQueryFilters}} * 
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersHistoricalSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersComparativeSuffix);"></div>
+                            </td>
                             <td><textarea cols="20" required data-ng-model="tableData.AdditionalQueryFilters" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
-                            <td class="form-label">{{model.MoqTypeTableDataLabels.TotalRelevantHours}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalRelevantHoursSuffix);"></div></td>
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.TotalRelevantHours}} * 
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalRelevantHoursHistoricalSuffix);"></div>
+                                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalRelevantHoursComparativeSuffix);"></div></td>
                             <td><input type="number" required min="0" data-ng-model="tableData.TotalRelevantHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                    </table>
@@ -313,8 +340,11 @@
                 <span>Rationale: *</span>
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalRationaleSuffix);"></div>
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ComparativeRationaleSuffix);"></div>
-                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%> || moqType.SelectedMOQType == <%:(int)MOQType.ParametricEstimates%> || moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.CerPeArRationaleSuffix);"></div>
-                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SOW%> || moqType.SelectedMOQType == <%:(int)MOQType.LOE%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.SowLoeRationaleSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.CerRationaleSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.ParametricEstimates%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PeRationaleSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ArRationaleSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SOW%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.SowRationaleSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.LOE%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.LoeRationaleSuffix);"></div>
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.NonLabor%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.NonLaborRationaleSuffix);"></div>
             </div>
             <div class="form-element">
@@ -324,7 +354,15 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType != <%:(int)MOQType.NonLabor%>">
             <div class="form-label">
-                <span>Skill Mix Rationale: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.SkillMixSuffix);"></div>
+                <span>Skill Mix Rationale: *</span>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.HistoricalSkillMixSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ComparativeSkillMixSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.CerSkillMixSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.ParametricEstimates%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PeSkillMixSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.ArSkillMixSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SOW%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.SowSkillMixSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.LOE%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.LoeSkillMixSuffix);"></div>
+                <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.SmeSkillMixSuffix);"></div>
             </div>
             <div class="form-element">
                 <textarea data-ng-if="!model.IsReadOnly" cols="20" name="SkillMixRationale_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SkillMixRationale"></textarea>

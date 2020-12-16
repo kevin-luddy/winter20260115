@@ -25,31 +25,56 @@ namespace GenBOE.ActionLogic.ModelView
         /// Base URL from web.config
         /// </summary>
         public string BaseUrl { get; set; }
-        
-        /// <summary>
-        /// URL Suffix for Table Name
-        /// </summary>
-        public string TableNameSuffix { get; set; }
 
         /// <summary>
-        /// URL Suffix for Repository Name
+        /// URL Suffix for Table Name for Historical
         /// </summary>
-        public string RepositoryNameSuffix { get; set; }
+        public string TableNameHistoricalSuffix { get; set; }
 
         /// <summary>
-        /// URL Suffix for Query Type
+        /// URL Suffix for Table Name for Comparative
         /// </summary>
-        public string QueryTypeSuffix { get; set; }
+        public string TableNameComparativeSuffix { get; set; }
 
         /// <summary>
-        /// URL Suffix for Date of Report
+        /// URL Suffix for Repository Name for Historical
         /// </summary>
-        public string DateOfReportSuffix { get; set; }
+        public string RepositoryNameHistoricalSuffix { get; set; }
 
         /// <summary>
-        /// URL Suffix for Historical Program Name
+        /// URL Suffix for Repository Name for Comparative
         /// </summary>
-        public string HistoricalProgramNameSuffix { get; set; }
+        public string RepositoryNameComparativeSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for Query Type for Historical
+        /// </summary>
+        public string QueryTypeHistoricalSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for Query Type for Comparative
+        /// </summary>
+        public string QueryTypeComparativeSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for Date of Report for Historical
+        /// </summary>
+        public string DateOfReportHistoricalSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for Date of Report for Comparative
+        /// </summary>
+        public string DateOfReportComparativeSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for Historical Program Name for Historical
+        /// </summary>
+        public string HistoricalProgramNameHistoricalSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for Historical Program Name for Comparative
+        /// </summary>
+        public string HistoricalProgramNameComparativeSuffix { get; set; }
 
         /// <summary>
         /// URL Suffix for Contract Number
@@ -57,34 +82,59 @@ namespace GenBOE.ActionLogic.ModelView
         public string ContractNumberSuffix { get; set; }
 
         /// <summary>
-        /// URL Suffix for WBS/WBS Element
+        /// URL Suffix for WBS/WBS Element for Historical
         /// </summary>
-        public string WBSElementSuffix { get; set; }
+        public string WBSElementHistoricalSuffix { get; set; }
 
         /// <summary>
-        /// URL Suffix for PoP Start Date
+        /// URL Suffix for WBS/WBS Element for Comparative
         /// </summary>
-        public string PoPStartSuffix { get; set; }
+        public string WBSElementComparativeSuffix { get; set; }
 
         /// <summary>
-        /// URL Suffix for PoP End Date
+        /// URL Suffix for PoP Start Date for Historical
         /// </summary>
-        public string PoPEndSuffix { get; set; }
+        public string PoPStartHistoricalSuffix { get; set; }
 
         /// <summary>
-        /// URL Suffix for Total WBS hours
+        /// URL Suffix for PoP Start Date for Comparative
+        /// </summary>
+        public string PoPStartComparativeSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for PoP End Date for Historical
+        /// </summary>
+        public string PoPEndHistoricalSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for PoP End Date for Comparative
+        /// </summary>
+        public string PoPEndComparativeSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for Total WBS hours for Historical
         /// </summary>
         public string TotalWBSHoursSuffix { get; set; }
 
         /// <summary>
-        /// URL Suffix for Additional Query Filters
+        /// URL Suffix for Additional Query Filters for Historical
         /// </summary>
-        public string AdditionalQueryFiltersSuffix { get; set; }
+        public string AdditionalQueryFiltersHistoricalSuffix { get; set; }
 
         /// <summary>
-        /// URL Suffix for Total Relevant Hours
+        /// URL Suffix for Additional Query Filters for Comparative
         /// </summary>
-        public string TotalRelevantHoursSuffix { get; set; }
+        public string AdditionalQueryFiltersComparativeSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for Total Relevant Hours for Historical
+        /// </summary>
+        public string TotalRelevantHoursHistoricalSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for Total Relevant Hours for Comparative
+        /// </summary>
+        public string TotalRelevantHoursComparativeSuffix { get; set; }
 
         /// <summary>
         /// URL Suffix for Historical Rationale
@@ -97,14 +147,29 @@ namespace GenBOE.ActionLogic.ModelView
         public string ComparativeRationaleSuffix { get; set; }
 
         /// <summary>
-        /// URL Suffix for CER/PE/AR Rationale
+        /// URL Suffix for CER Rationale
         /// </summary>
-        public string CerPeArRationaleSuffix { get; set; }
+        public string CerRationaleSuffix { get; set; }
 
         /// <summary>
-        /// URL Suffix for SOW/LOE Rationale
+        /// URL Suffix for PE Rationale
         /// </summary>
-        public string SowLoeRationaleSuffix { get; set; }
+        public string PeRationaleSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for AR Rationale
+        /// </summary>
+        public string ArRationaleSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for SOW Rationale
+        /// </summary>
+        public string SowRationaleSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for LOE Rationale
+        /// </summary>
+        public string LoeRationaleSuffix { get; set; }
 
         /// <summary>
         /// URL Suffix for Non-Labor Rationale
@@ -112,9 +177,44 @@ namespace GenBOE.ActionLogic.ModelView
         public string NonLaborRationaleSuffix { get; set; }
 
         /// <summary>
-        /// URL Suffix for Skill Mix Rationale
+        /// URL Suffix for Historical Skill Mix Rationale
         /// </summary>
-        public string SkillMixSuffix { get; set; }
+        public string HistoricalSkillMixSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for Comparative Skill Mix Rationale
+        /// </summary>
+        public string ComparativeSkillMixSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for CER Skill Mix Rationale
+        /// </summary>
+        public string CerSkillMixSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for PE Skill Mix Rationale
+        /// </summary>
+        public string PeSkillMixSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for AR Skill Mix Rationale
+        /// </summary>
+        public string ArSkillMixSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for SOW Skill Mix Rationale
+        /// </summary>
+        public string SowSkillMixSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for LOE Skill Mix Rationale
+        /// </summary>
+        public string LoeSkillMixSuffix { get; set; }
+
+        /// <summary>
+        /// URL Suffix for SME Skill Mix Rationale
+        /// </summary>
+        public string SmeSkillMixSuffix { get; set; }
 
         /// <summary>
         /// URL Suffix for CER Name
@@ -132,7 +232,7 @@ namespace GenBOE.ActionLogic.ModelView
         public string ARNameSuffix { get; set; }
         
         /// <summary>
-        /// URL Suffix for SOW Description
+        /// URL Suffix for SOW/LOE Description
         /// </summary>
         public string SOWDescriptionSuffix { get; set; }
 
