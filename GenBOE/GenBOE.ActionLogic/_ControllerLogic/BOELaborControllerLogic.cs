@@ -904,6 +904,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         {
                             table.Id = i--;
                             table.Updateable = UpdateType.Upsert;
+
+                            table.DateOfReport = table.DateOfReport.Normalize(DateTimePrecision.Day);
+                            table.PoPStart = table.PoPStart.Normalize(DateTimePrecision.Day);
+                            table.PoPEnd = table.PoPEnd.Normalize(DateTimePrecision.Day);
                         }
                     }
 
