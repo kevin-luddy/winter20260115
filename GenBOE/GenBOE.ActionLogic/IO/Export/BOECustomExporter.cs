@@ -1655,6 +1655,22 @@ namespace GenBOE.ActionLogic.IO.Export
                 }
             }
         }
+               
+        /// <summary>
+        /// Remove MOQ related containers only used when Template BOE is set to "No"
+        /// For SSC, the MOQ Type container is always removed and the MOQ Rationale container is only removed if there are no MOQ RTE Templates
+        /// </summary>
+        /// <param name="wsHasMoqRteTemplate">Whether Worksace has RTE Templates for MOQ Rationale</param>
+        /// <param name="containerElement">The container template</param>
+        protected virtual void RemoveNonTemplateBoeContainers(bool wsHasMoqRteTemplate, SdtElement containerElement)
+        {
+            WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeContainer);
+
+            if (!wsHasMoqRteTemplate)
+            {
+                WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQRationaleContainer);
+            }
+        }
 
         #endregion
 
@@ -2393,12 +2409,8 @@ namespace GenBOE.ActionLogic.IO.Export
             if (exportInputs.Workspace.UsingTemplateBOE)
             {
                 bool wsHasMoqRteTemplate = exportInputs.RTETemplatesOverrides.Any(x => x.SourceId == (int)RteTemplateSource.TaskMOQ);
-                if (!wsHasMoqRteTemplate)
-                {
-                    // Remove the non-Template BOE MOQ Rationale
-                    WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeContainer);
-                    WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQRationaleContainer);
-                }
+
+                this.RemoveNonTemplateBoeContainers(wsHasMoqRteTemplate, containerElement);
 
                 if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQType))
                 {
