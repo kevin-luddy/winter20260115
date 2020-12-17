@@ -83,7 +83,7 @@
             event.stopPropagation();
         });
 
-        TaskElementDetailsWidget.registerForDelegateEvent('change', '.tableData input, .tableData textarea', function (event) {
+        TaskElementDetailsWidget.registerForDelegateEvent('change', '.moqRteFieldContainer input, .tableData textarea', function (event) {
             MOQEquationFieldWidget.setDirty();
         });
 
