@@ -75,7 +75,7 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = GetMasterView(WebConstants.VIEW_MANAGE_RTE_TEMPLATES, workspace);
             ViewData["ContainsOCI"] = ws.ContainsOCI;
             ViewData["WorkspaceId"] = ws.Id;
-            ViewData["TemplateSources"] = this.controllerLogic.GetSources();
+            ViewData["TemplateSources"] = this.controllerLogic.GetSources(ws.UsingTemplateBOE);
 
             FinalizeAction(this.logger, WebConstants.ACTION_DISPLAY_MANAGE_RTE_TEMPLATES, sw);
             return toReturn;

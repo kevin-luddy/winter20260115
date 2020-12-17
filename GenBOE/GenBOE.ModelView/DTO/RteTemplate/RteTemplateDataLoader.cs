@@ -32,11 +32,13 @@ namespace GenBOE.DataBridge.DTO
         /// <summary>
         /// Gets all of the sources from lookup table.
         /// </summary>
+        /// <param name="usingTemplateBOE">Is workspace using template BOEs</param>
         /// <returns>All of the sources from lookup table.</returns>
         [DbQuery]
-        public ICollection<RteCustomTemplateSourceModelView> GetSources()
+        public ICollection<RteCustomTemplateSourceModelView> GetSources(bool usingTemplateBOE)
         {
             ICollection<RteCustomTemplateSourceModelView> toReturn = new Collection<RteCustomTemplateSourceModelView>();
+
             using (StopwatchTimer sw = new StopwatchTimer(this.Log))
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
@@ -45,7 +47,7 @@ namespace GenBOE.DataBridge.DTO
                                 select new RteCustomTemplateSourceModelView
                                 {
                                     SourceId = t.RteTemplateSourceId,
-                                    Description = t.Description,
+                                    Description = (usingTemplateBOE && t.RteTemplateSourceId == (int)RteTemplateSource.TaskMOQ ? "Additional " : string.Empty) + t.Description,
                                     TaskOnly = t.TaskOnly
                                 }).ToCollection<RteCustomTemplateSourceModelView>();
                 }

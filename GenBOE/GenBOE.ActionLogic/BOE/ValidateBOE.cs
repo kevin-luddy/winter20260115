@@ -1541,7 +1541,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// <param name="errors">Errors to which we'll add errors</param>
         private static void ValidateFieldLength(int? maxFieldLength, string fieldValue, string fieldName, ICollection<string> errors)
         {
-            if (maxFieldLength.HasValue && maxFieldLength < GenBOEUtilities.ConvertHtmlToText(fieldValue ?? string.Empty).Length)
+            maxFieldLength = maxFieldLength ?? Constants.MAX_RTE_LENGTH;
+
+            if (maxFieldLength < GenBOEUtilities.ConvertHtmlToText(fieldValue ?? string.Empty).Length)
             {
                 errors.Add($"The maximum length of {fieldName} is {maxFieldLength.Value} characters.");
             }
