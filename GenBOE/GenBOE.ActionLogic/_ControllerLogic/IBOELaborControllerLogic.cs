@@ -226,7 +226,7 @@ namespace GenBOE.ActionLogic
         /// <param name="ws">Workspace</param>
         /// <param name="modelView">Labor Task modelview</param>
         /// <returns>Any Validation errors</returns>
-        ICollection<ValidationMessage> ValidateLaborTaskData(FullWorkspace ws, LaborTaskDataModelView modelView);
+        ICollection<ValidationMessage> ValidateLaborTaskDataWithDataModification(FullWorkspace ws, LaborTaskDataModelView modelView);
 
         /// <summary>
         /// Validate a labor task for saving in a locked Workspace
