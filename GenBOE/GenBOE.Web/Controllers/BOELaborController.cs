@@ -678,29 +678,15 @@ namespace GenBOE.Web.Controllers
         /// <returns></returns>
         public ActionResult SaveTaskDataModel(string workspace, LaborTaskDataModelView modelView, bool isLocked = false)
         {
-            if (modelView == null)
-            {
-                throw new ArgumentNullException(nameof(modelView));
-            }
-
-            if (modelView.TaskElementData == null)
-            {
-                throw new ArgumentNullException("modelView", "TaskElementData is null inside modelView");
-            }
+            _ = modelView ?? throw new ArgumentNullException(nameof(modelView));
+            _ = modelView.TaskElementData ?? throw new ArgumentNullException("modelView", "TaskElementData is null inside modelView");
 
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-            // Initialize Action
             Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_TASK_DATA_MODEL, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, modelView.TaskElementData.BOEID);
 
-            ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
-            // Validate
-            if (!isLocked)
-            {
-                validationErrors = this._BoeLaborControllerLogic.ValidateLaborTaskDataWithDataModification(ws, modelView);
-            }
+            ICollection<ValidationMessage> validationErrors = isLocked ? new Collection<ValidationMessage>() : this._BoeLaborControllerLogic.ValidateLaborTaskDataWithDataModification(ws, modelView);
 
-            // could not move the following logic to the BOELaborControllerLogic because ValidationFactory is static which can't be mocked
-            // test for task id uniqueness across all task elements
+            // could not move the following logic to the BOELaborControllerLogic because ValidationFactory is static which can't be mocked, test for task id uniqueness across all task elements
             Collection<Dictionary<string, string>> boetaskDict = new Collection<Dictionary<string, string>>();
             boetaskDict.Add(new Dictionary<string, string>());
             boetaskDict.First<Dictionary<string, string>>().Add("BOEID", modelView.TaskElementData.BOEID.ToString());
@@ -771,7 +757,7 @@ namespace GenBOE.Web.Controllers
                 validationErrors.AddRange(richTextValidationErrors);
             }
 
-            ICollection<RteCustomTemplateSourceModelView> sources = this.rteTemplateDataLoader.GetSources();
+            ICollection<RteCustomTemplateSourceModelView> sources = this.rteTemplateDataLoader.GetSources(ws.UsingTemplateBOE);
             ICollection<ValidationMessage> rteValidationErrors = this.ValidateRteAnswers(modelView.TaskElementData.RteTemplateAnswers, sources, ws.RteSizeLimit);
             if (rteValidationErrors.Any())
             {

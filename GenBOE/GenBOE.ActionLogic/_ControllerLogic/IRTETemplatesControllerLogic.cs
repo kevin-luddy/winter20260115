@@ -23,8 +23,9 @@ namespace GenBOE.ActionLogic
         /// <summary>
         /// Gets all of the sources from lookup table.
         /// </summary>
+        /// <param name="usingTemplateBOE">Is the WS using Template BOEs</param>
         /// <returns>All of the sources from lookup table.</returns>
-        ICollection<RteCustomTemplateSourceModelView> GetSources();
+        ICollection<RteCustomTemplateSourceModelView> GetSources(bool usingTemplateBOE);
 
         /// <summary>
         /// Validates RTE templates
