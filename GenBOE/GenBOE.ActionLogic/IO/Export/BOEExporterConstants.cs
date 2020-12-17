@@ -423,6 +423,11 @@ namespace GenBOE.ActionLogic.IO.Export
         /// </summary>
         public const string SUMMARIZE_BY_NONE = "None";
 
+        /// <summary>
+        /// Text to display for SSC when Employee ID Filters are excluded from the custom export
+        /// </summary>
+        public const string EMPLOYEE_ID_FILTERS_EXCLUSION_TEXT = "Employee IDs are considered “Personal Information,” and when utilized to filter relevant hours, have been omitted from this table. Lockheed Martin Space will provide this information upon request from the DCAA/DCMA.";
+
         #endregion
 
         #endregion
