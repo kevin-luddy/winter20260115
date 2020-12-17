@@ -682,6 +682,10 @@ namespace GenBOE.ActionLogic.IO.Export
                     {
                         WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_AdditionalQueryFilters), table.AdditionalQueryFilters);
                     }
+                    else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+                    {
+                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_AdditionalQueryFilters), BOEExporterConstants.EMPLOYEE_ID_FILTERS_EXCLUSION_TEXT);
+                    }
                     else
                     {
                         WordUtilities.RemoveTableRowWithTaggedElement(moqTypeTableContainer, BOEExporterConstants.FieldName_AdditionalQueryFilters);
