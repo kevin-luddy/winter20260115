@@ -335,47 +335,31 @@ namespace GenBOE.ActionLogic.ControllerLogic
         }
 
         /// <summary>
-        /// Validate the Labor Task data prior to saving
+        /// Validate the Labor Task data prior to saving, doing some data cleanup prior to validation
         /// </summary>
         /// <param name="ws">Workspace</param>
         /// <param name="modelView">Labor Task modelview</param>
         /// <returns>Any Validation errors</returns>
-        public ICollection<ValidationMessage> ValidateLaborTaskData(FullWorkspace ws, LaborTaskDataModelView modelView)
+        public ICollection<ValidationMessage> ValidateLaborTaskDataWithDataModification(FullWorkspace ws, LaborTaskDataModelView modelView)
         {
-            if (ws == null)
-            {
-                throw new ArgumentNullException(nameof(ws));
-            }
-            
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
+
             ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 
             if (modelView != null)
             {
                 FullBoe boe = factory.CreateFullBoe((int)modelView.TaskElementData.BOEID);
 
-                // Validation - Phase I - Ignore deleted rows
-                validationErrors = ValidateLaborTaskDataLabor(ws, boe, modelView);
+                // Validate Task Data, ignoring deleted rows
+                validationErrors = this.ValidateLaborTaskDataLabor(ws, boe, modelView);
 
-                #region Remove rows that were added then deleted
+                this.CleanupLaborTaskData(ws, modelView);
 
-                ICollection<LaborTypeDataModelView> addedThenDeletedResourceTypes = modelView.LaborTypesData.Where(r => r.Deleted && r.BOELaborTypeID.HasValue && r.BOELaborTypeID.Value < 0).ToCollection();
-                if (addedThenDeletedResourceTypes.Any())
-                {
-                    foreach (LaborTypeDataModelView resourceType in addedThenDeletedResourceTypes)
-                    {
-                        modelView.LaborTypesData.Remove(resourceType);
-                    }
-                }
-
-                #endregion
-
-                #region Validation - Phase II
-
-                // validate task details composite
+                // Validate Task Details Composite
                 this.ValidateTaskDetails(boe, modelView, validationErrors, ws);
 
+                // Validate Task Variables
                 bool addNullValidationError = true;
-
                 if (modelView.TaskElementData.TaskOrdinaryVariables.Any())
                 {
                     foreach (BoeTaskOrdinaryVariableModelView variable in modelView.TaskElementData.TaskOrdinaryVariables)
@@ -388,109 +372,41 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     }
                 }
 
-                // validate moq equation
-                string result = this.ValidateMOQEquation(boe.Id, modelView, validationErrors, ws);
+                // Validate Numbers
+                this.ValidateMoqEquationAndValues(ws, boe, modelView, validationErrors);
 
-                #region Validate that MOQ Equation Value = Labor Hour Spreads = Resource Hours Spreads
-
-                    decimal? moqResult = 0;
-
-                    decimal tempMoqResult;
-
-                    if (!string.IsNullOrEmpty(result))
-                    {
-                        if (decimal.TryParse(result, out tempMoqResult))
-                        {
-                            moqResult = Utilities.AdjustPrecision(tempMoqResult, ws.DecimalPrecision);
-                        }
-                    }
-
-                    // Need to find any missing labors stored in DB that are not handled by UI
-                    if (modelView.TaskElementData.TaskElementDetailID > 0)
-                    {
-                        BoeTaskElementDTO element = ws.TaskElements.FirstOrDefault(a => a.Id == modelView.TaskElementData.TaskElementDetailID);
-                        if (element != null)
-                        {
-                            List<int> idsOfLaborsBeingEdited = modelView.LaborTypesData.Where(a => a.BOELaborTypeID.HasValue).Select(a => a.BOELaborTypeID.Value).ToList();
-
-                            // Find missing labors stored in the DB that are not being saved by the UI
-                            ICollection<ResourceTypeDto> missingLabors = element.taskElementLabors.Where(a => !idsOfLaborsBeingEdited.Contains(a.Id)).ToList();
-
-                            // these missing labors need to be removed
-                            foreach (ResourceTypeDto missing in missingLabors)
-                            {
-                                this.logger.Error("During Save of Task Element, there was a missing task element labor found in the DB that will be deleted with id " + missing.Id);
-                                LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new PerformingOrgDTO());
-                                toDelete.Deleted = true;
-                                modelView.LaborTypesData.Add(toDelete);
-                            }
-                        }
-                    }
-
-                    if (modelView.LaborTypesData.Any())
-                    {
-                        Collection<LaborTypeDataModelView> laborTypes = (from lt in modelView.LaborTypesData
-                                                                         where lt.Deleted == false && lt.RateType == RateType.Hours
-                                                                         select lt).ToCollection();
-
-                        // should only validate if there are any labor types
-                        if (laborTypes.Any())
-                        {
-                            decimal? laborTypesHours = laborTypes.Sum(a => a.HourSpread ?? 0);
-
-                            // only consider spreads for which spread type = Hours
-                            decimal? spreadsHours = laborTypes.Sum(a => a.Spreads.Sum(b => b.LaborSpreadValue));
-
-                            if (moqResult != laborTypesHours || laborTypesHours != spreadsHours)
-                            {
-                                string hoursLabel = FullObjectHelper.HoursLabel(ws);
-                                string errorMsg = "The total Resource Type <b>" + hoursLabel + " Spread</b> must equal the Total Resource Spread which must also equal the total " + hoursLabel + " computed by the <b>" + this.GetMOQEquationLabel() + "</b>."
-                                                + "<br />    · If the <b>Total</b> Resource Spread is incorrect for a resource: change the <b>Spread Curve</b> so it recalculates. Then change it back to the original <b>Spread Curve</b>. "
-                                            + "<br />    · Verify the " + this.GetMOQEquationLabel() + " Total = Total Resource " + hoursLabel + " = Total Resource Spread and the Delta = 0.";
-
-                                validationErrors.Add(new ValidationMessage("MOQ-Labor", errorMsg));
-                            }
-                        }
-                    }
-
-                    #endregion
-
-                #endregion
-
-            }
-                
-            #region Validate Precision
-
-            if (modelView.LaborTypesData.Any())
-            {
-                foreach(LaborTypeDataModelView labor in modelView.LaborTypesData)
+                // Validate Precision
+                if (modelView.LaborTypesData.Any())
                 {
-                    if (labor.RateType == RateType.Cost)
+                    foreach (LaborTypeDataModelView labor in modelView.LaborTypesData)
                     {
-                        CheckPrecision(labor.CostSpread, ws.CostDecimalPrecision, "Resource Types Row - Cost");
-                        // only checking discrete since non-discrete is not saved in Database
-                        if (labor.SpreadCurveID.HasValue && labor.SpreadCurveID == SpreadCurves.DiscreteCost)
+                        if (labor.RateType == RateType.Cost)
                         {
-                            if (labor.Spreads.Any())
+                            CheckPrecision(labor.CostSpread, ws.CostDecimalPrecision, "Resource Types Row - Cost");
+                            // only checking discrete since non-discrete is not saved in Database
+                            if (labor.SpreadCurveID.HasValue && labor.SpreadCurveID == SpreadCurves.DiscreteCost)
                             {
-                                foreach(LaborSpreadDataModelView spread in labor.Spreads)
+                                if (labor.Spreads.Any())
                                 {
-                                    CheckPrecision(spread.LaborSpreadValue, ws.CostDecimalPrecision, "Resource Spreads");
+                                    foreach (LaborSpreadDataModelView spread in labor.Spreads)
+                                    {
+                                        CheckPrecision(spread.LaborSpreadValue, ws.CostDecimalPrecision, "Resource Spreads");
+                                    }
                                 }
                             }
                         }
-                    } 
-                    else
-                    {
-                        CheckPrecision(labor.HourSpread, ws.DecimalPrecision, "Resource Types Row - Hours Spread");
-                        // only checking discrete since non-discrete is not saved in Database
-                        if (labor.SpreadCurveID.HasValue && labor.SpreadCurveID == SpreadCurves.DiscreteHours)
+                        else
                         {
-                            if (labor.Spreads.Any())
+                            CheckPrecision(labor.HourSpread, ws.DecimalPrecision, "Resource Types Row - Hours Spread");
+                            // only checking discrete since non-discrete is not saved in Database
+                            if (labor.SpreadCurveID.HasValue && labor.SpreadCurveID == SpreadCurves.DiscreteHours)
                             {
-                                foreach (LaborSpreadDataModelView spread in labor.Spreads)
+                                if (labor.Spreads.Any())
                                 {
-                                    CheckPrecision(spread.LaborSpreadValue, ws.DecimalPrecision, "Resource Spreads");
+                                    foreach (LaborSpreadDataModelView spread in labor.Spreads)
+                                    {
+                                        CheckPrecision(spread.LaborSpreadValue, ws.DecimalPrecision, "Resource Spreads");
+                                    }
                                 }
                             }
                         }
@@ -498,9 +414,113 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 }
             }
 
-            #endregion Validate Precision
-
             return validationErrors;
+        }
+
+        /// <summary>
+        /// Validate MOQ Equation and spreads / labor types / moq equation numbers
+        /// </summary>
+        /// <param name="ws">Full WS</param>
+        /// <param name="boe">Full BOE</param>
+        /// <param name="modelView">Model to validate</param>
+        /// <param name="validationErrors">Validation Errors</param>
+        private void ValidateMoqEquationAndValues(FullWorkspace ws, FullBoe boe, LaborTaskDataModelView modelView, ICollection<ValidationMessage> validationErrors)
+        {
+            decimal? moqResult = 0;
+            decimal tempMoqResult;
+
+            string result = this.ValidateMOQEquation(boe.Id, modelView, validationErrors, ws);
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                if (decimal.TryParse(result, out tempMoqResult))
+                {
+                    moqResult = Utilities.AdjustPrecision(tempMoqResult, ws.DecimalPrecision);
+                }
+            }
+
+            // Need to find any missing labors stored in DB that are not handled by UI
+            if (modelView.TaskElementData.TaskElementDetailID > 0)
+            {
+                BoeTaskElementDTO element = ws.TaskElements.FirstOrDefault(a => a.Id == modelView.TaskElementData.TaskElementDetailID);
+                if (element != null)
+                {
+                    List<int> idsOfLaborsBeingEdited = modelView.LaborTypesData.Where(a => a.BOELaborTypeID.HasValue).Select(a => a.BOELaborTypeID.Value).ToList();
+
+                    // Find missing labors stored in the DB that are not being saved by the UI
+                    ICollection<ResourceTypeDto> missingLabors = element.taskElementLabors.Where(a => !idsOfLaborsBeingEdited.Contains(a.Id)).ToList();
+
+                    // these missing labors need to be removed
+                    foreach (ResourceTypeDto missing in missingLabors)
+                    {
+                        this.logger.Error("During Save of Task Element, there was a missing task element labor found in the DB that will be deleted with id " + missing.Id);
+                        LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new PerformingOrgDTO());
+                        toDelete.Deleted = true;
+                        modelView.LaborTypesData.Add(toDelete);
+                    }
+                }
+            }
+
+            if (modelView.LaborTypesData.Any())
+            {
+                Collection<LaborTypeDataModelView> laborTypes = (from lt in modelView.LaborTypesData
+                                                                 where lt.Deleted == false && lt.RateType == RateType.Hours
+                                                                 select lt).ToCollection();
+
+                // should only validate if there are any labor types
+                if (laborTypes.Any())
+                {
+                    decimal? laborTypesHours = laborTypes.Sum(a => a.HourSpread ?? 0);
+
+                    // only consider spreads for which spread type = Hours
+                    decimal? spreadsHours = laborTypes.Sum(a => a.Spreads.Sum(b => b.LaborSpreadValue));
+
+                    if (moqResult != laborTypesHours || laborTypesHours != spreadsHours)
+                    {
+                        string hoursLabel = FullObjectHelper.HoursLabel(ws);
+                        string errorMsg = "The total Resource Type <b>" + hoursLabel + " Spread</b> must equal the Total Resource Spread which must also equal the total " + hoursLabel + " computed by the <b>" + this.GetMOQEquationLabel() + "</b>."
+                                        + "<br />    · If the <b>Total</b> Resource Spread is incorrect for a resource: change the <b>Spread Curve</b> so it recalculates. Then change it back to the original <b>Spread Curve</b>. "
+                                    + "<br />    · Verify the " + this.GetMOQEquationLabel() + " Total = Total Resource " + hoursLabel + " = Total Resource Spread and the Delta = 0.";
+
+                        validationErrors.Add(new ValidationMessage("MOQ-Labor", errorMsg));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Cleanup Labor Task Data
+        /// </summary>
+        /// <param name="ws">Full WS</param>
+        /// <param name="modelView">Model to clean up</param>
+        private void CleanupLaborTaskData(FullWorkspace ws, LaborTaskDataModelView modelView)
+        {
+            #region Remove rows that were added then deleted
+
+            ICollection<LaborTypeDataModelView> addedThenDeletedResourceTypes = modelView.LaborTypesData.Where(r => r.Deleted && r.BOELaborTypeID.HasValue && r.BOELaborTypeID.Value < 0).ToCollection();
+            if (addedThenDeletedResourceTypes.Any())
+            {
+                foreach (LaborTypeDataModelView resourceType in addedThenDeletedResourceTypes)
+                {
+                    modelView.LaborTypesData.Remove(resourceType);
+                }
+            }
+
+            #endregion
+
+            #region Clean up MOQ Type Table Dates
+
+            if (ws.UsingTemplateBOE)
+            {
+                modelView.MOQTypes.SelectMany(x => x.TableData).ForEach(table =>
+                {
+                    table.DateOfReport = table.DateOfReport.Normalize(DateTimePrecision.Day);
+                    table.PoPStart = table.PoPStart.Normalize(DateTimePrecision.Day);
+                    table.PoPEnd = table.PoPEnd.Normalize(DateTimePrecision.Day);
+                });
+            }
+
+            #endregion
         }
 
         /// <summary>
@@ -904,10 +924,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         {
                             table.Id = i--;
                             table.Updateable = UpdateType.Upsert;
-
-                            table.DateOfReport = table.DateOfReport.Normalize(DateTimePrecision.Day);
-                            table.PoPStart = table.PoPStart.Normalize(DateTimePrecision.Day);
-                            table.PoPEnd = table.PoPEnd.Normalize(DateTimePrecision.Day);
                         }
                     }
 

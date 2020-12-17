@@ -696,7 +696,7 @@ namespace GenBOE.Web.Controllers
             // Validate
             if (!isLocked)
             {
-                validationErrors = this._BoeLaborControllerLogic.ValidateLaborTaskData(ws, modelView);
+                validationErrors = this._BoeLaborControllerLogic.ValidateLaborTaskDataWithDataModification(ws, modelView);
             }
 
             // could not move the following logic to the BOELaborControllerLogic because ValidationFactory is static which can't be mocked

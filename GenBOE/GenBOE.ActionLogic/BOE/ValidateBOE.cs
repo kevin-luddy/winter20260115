@@ -695,18 +695,18 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                 }
 
                                 if (row.DateOfReport.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} is required."); }
-                                if (row.DateOfReport > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} must be on or before today's date."); }
+                                if (row.DateOfReport.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} must be on or before today's date."); }
 
                                 ValidateRequiredField(moqType.SelectedMOQType, row.HistoricalProgramName, labels.HistoricalProgramName, Constants.MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH, errorMessages);
                                 ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, 
                                     SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ? Constants.MOQ_WBS_ELEMENT_RMS_FIELD_LENGTH : Constants.MOQ_WBS_ELEMENT_SSC_FIELD_LENGTH, errorMessages);
 
                                 if (row.PoPStart.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
-                                if (row.PoPStart > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before today's date."); }
+                                if (row.PoPStart.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before today's date."); }
                                 if (row.PoPEnd.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
-                                if (row.PoPEnd > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on or before today's date."); }
+                                if (row.PoPEnd.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPEnd} must be on or before today's date."); }
 
-                                if (row.PoPEnd < row.PoPStart) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before {labels.PoPEnd}."); }
+                                if (row.PoPEnd.Date < row.PoPStart.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before {labels.PoPEnd}."); }
                                 if (string.IsNullOrEmpty(row.AdditionalQueryFilters)) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.AdditionalQueryFilters} is required, otherwise indicate N/A."); }
 
                                 if (row.TotalRelevantHours <= 0) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalRelevantHours} must be a number greater than 0."); }
