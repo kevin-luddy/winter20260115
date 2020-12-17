@@ -352,37 +352,47 @@ namespace GenBOE.ActionLogic
         {
             MoqTypeHelpUrls toReturn = new MoqTypeHelpUrls();
 
-            toReturn.TableNameSuffix = "AA-03982/598/";
-            toReturn.RepositoryNameSuffix = string.Empty;
-            toReturn.QueryTypeSuffix = string.Empty;
-            toReturn.DateOfReportSuffix = "AA-03984/598/";
-            toReturn.HistoricalProgramNameSuffix = "AA-03985/598/";
+            // Historical/Comparative
+            toReturn.TableNameHistoricalSuffix = toReturn.TableNameComparativeSuffix = "AA-03982/598/";
+            toReturn.DateOfReportHistoricalSuffix = toReturn.DateOfReportComparativeSuffix = "AA-03984/598/";
+            toReturn.HistoricalProgramNameHistoricalSuffix = toReturn.HistoricalProgramNameComparativeSuffix = "AA-03985/598/";
             toReturn.ContractNumberSuffix = "AA-03986/598/";
-            toReturn.WBSElementSuffix = "AA-03987/598/";
-            toReturn.PoPStartSuffix = "AA-03988/598/";
-            toReturn.PoPEndSuffix = "AA-03989/598/";
+            toReturn.WBSElementHistoricalSuffix = toReturn.WBSElementComparativeSuffix = "AA-03987/598/";
+            toReturn.PoPStartHistoricalSuffix = toReturn.PoPStartComparativeSuffix = "AA-03988/598/";
+            toReturn.PoPEndHistoricalSuffix = toReturn.PoPEndComparativeSuffix = "AA-03989/598/";
             toReturn.TotalWBSHoursSuffix = "AA-03992/598/";
-            toReturn.AdditionalQueryFiltersSuffix = "AA-03993/598/";
-            toReturn.TotalRelevantHoursSuffix = "AA-03994/598/";
+            toReturn.AdditionalQueryFiltersHistoricalSuffix = toReturn.AdditionalQueryFiltersComparativeSuffix = "AA-03993/598/";
+            toReturn.TotalRelevantHoursHistoricalSuffix = toReturn.TotalRelevantHoursComparativeSuffix = "AA-03994/598/";
 
+            // CER/PE/AR
             toReturn.CERNameSuffix = "AA-03997/598/";
             toReturn.PENameSuffix = "AA-03999/598/";
             toReturn.ARNameSuffix = "AA-04001/598/";
 
+            // SOW/LOE
             toReturn.SOWDescriptionSuffix = "AA-04003/598/";
             toReturn.LOEDescriptionSuffix = "AA-04004/598/";
 
+            // SME
             toReturn.SMEReasonsSuffix = "AA-04008/598/";
             toReturn.SMEHoursLogicSuffix = "AA-04009/598/";
             toReturn.SMEDurationLogicSuffix = "AA-04010/598/";
             toReturn.SMETasksSuffix = "AA-04011/598/";
 
+            // Rationales
             toReturn.HistoricalRationaleSuffix = "AA-04013/598/";
             toReturn.ComparativeRationaleSuffix = "AA-04014/598/";
-            toReturn.CerPeArRationaleSuffix = "AA-04015/598/";
-            toReturn.SowLoeRationaleSuffix = "AA-04007/598/";
+            toReturn.CerRationaleSuffix = toReturn.PeRationaleSuffix = toReturn.ArRationaleSuffix = "AA-04015/598/";
+            toReturn.LoeRationaleSuffix = toReturn.SowRationaleSuffix = "AA-04007/598/";
             toReturn.NonLaborRationaleSuffix = "AA-04012/598/";
-            toReturn.SkillMixSuffix = "AA-03996/598/";
+
+            // Skill Mix
+            toReturn.HistoricalSkillMixSuffix = toReturn.ComparativeSkillMixSuffix = toReturn.CerSkillMixSuffix = toReturn.ArSkillMixSuffix = toReturn.PeSkillMixSuffix
+                = toReturn.SowSkillMixSuffix = toReturn.LoeSkillMixSuffix = toReturn.SmeSkillMixSuffix = "AA-03996/598/";
+
+            // Unused 
+            toReturn.RepositoryNameHistoricalSuffix = toReturn.RepositoryNameComparativeSuffix 
+                = toReturn.QueryTypeHistoricalSuffix = toReturn.QueryTypeComparativeSuffix = string.Empty;
 
             return toReturn;
         }

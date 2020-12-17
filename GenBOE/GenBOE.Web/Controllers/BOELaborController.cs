@@ -684,7 +684,7 @@ namespace GenBOE.Web.Controllers
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             Stopwatch sw = this.InitializeAction(this._log, WebConstants.ACTION_SAVE_TASK_DATA_MODEL, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, modelView.TaskElementData.BOEID);
 
-            ICollection<ValidationMessage> validationErrors = isLocked ? new Collection<ValidationMessage>() : this._BoeLaborControllerLogic.ValidateLaborTaskData(ws, modelView);
+            ICollection<ValidationMessage> validationErrors = isLocked ? new Collection<ValidationMessage>() : this._BoeLaborControllerLogic.ValidateLaborTaskDataWithDataModification(ws, modelView);
 
             // could not move the following logic to the BOELaborControllerLogic because ValidationFactory is static which can't be mocked, test for task id uniqueness across all task elements
             Collection<Dictionary<string, string>> boetaskDict = new Collection<Dictionary<string, string>>();

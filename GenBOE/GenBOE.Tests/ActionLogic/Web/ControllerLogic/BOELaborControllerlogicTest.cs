@@ -656,7 +656,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                         
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.IsFalse(validations.Any(), "There were validation errors");
         }
 
@@ -674,7 +674,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             task.LaborTypesData.First().ResourceID = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -691,7 +691,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             task.LaborTypesData.First().PerformingOrgID = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -708,13 +708,13 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.LaborTypesData.First().SpreadCurveID = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
 
             // Also test for it being set to none
             task.LaborTypesData.First().SpreadCurveID = SpreadCurves.None;
 
-            validations = sut.ValidateLaborTaskData(ws, task);
+            validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -731,7 +731,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             task.LaborTypesData.First().PercentSpread = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -748,7 +748,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             task.LaborTypesData.First().HourSpread = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(2, validations.Count());
         }
 
@@ -765,7 +765,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.LaborTypesData.First().StartDate = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(2, validations.Count());
         }
 
@@ -782,7 +782,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             task.LaborTypesData.First().EndDate = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -800,7 +800,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.LaborTypesData.First().WBSID = null;
             task.LaborTypesData.First().CLINID = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -808,7 +808,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         public void Test_ValidateLaborTaskData_ArgumentNull()
         {
             BOELaborControllerLogic sut = CreateSystem();
-            sut.ValidateLaborTaskData(null, null);
+            sut.ValidateLaborTaskDataWithDataModification(null, null);
         }
 
         [TestMethod]
@@ -1213,7 +1213,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.TaskElementData.TaskOrdinaryVariables.First().OrdinaryVariableValue = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(3, validations.Count());
         }
 
@@ -1230,7 +1230,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.LaborTypesData.First().PerformingOrgID = -1;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -1247,7 +1247,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.LaborTypesData.First().ResourceID = -1;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -1266,7 +1266,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.TaskElementData.MOQHoursEquation = (task.LaborTypesData.First().HourSpread - 1).ToString();
             task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -1284,7 +1284,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.LaborTypesData.First().Spreads.First().LaborSpreadValue -= 1;
             task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -2972,16 +2972,15 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 string value = property.GetValue(helpUrls).ToString();
                 Assert.IsNotNull(value);
 
-                if (property.Name == "ContractNumberSuffix")
+                if (property.Name == "ContractNumberSuffix" || property.Name == "TotalWBSHoursSuffix")
                 {
                     // This field isn't used in SSC
                     Assert.IsTrue(string.IsNullOrEmpty(value));
                 }
                 else
                 {
-                    // TODO - enable this once we have SSC values
                     // Make sure the rest have been populated
-                    // Assert.IsFalse(string.IsNullOrEmpty(value));
+                    Assert.IsFalse(string.IsNullOrEmpty(value));
                 }
             }
         }
@@ -3007,7 +3006,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 string value = property.GetValue(helpUrls).ToString();
                 Assert.IsNotNull(value);
 
-                if (property.Name == "RepositoryNameSuffix" || property.Name == "QueryTypeSuffix")
+                if (property.Name == "RepositoryNameHistoricalSuffix" || property.Name == "RepositoryNameComparativeSuffix" || property.Name == "QueryTypeHistoricalSuffix" || property.Name == "QueryTypeComparativeSuffix")
                 {
                     // These fields aren't used in RMS
                     Assert.IsTrue(string.IsNullOrEmpty(value));

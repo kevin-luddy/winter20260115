@@ -864,6 +864,20 @@ namespace GenBOE.ActionLogic.IO.Export
             #endregion
         }
 
+        /// <summary>
+        /// Remove MOQ related containers only used when Template BOE is set to "No"
+        /// For RMS, this is the MOQ Type Container, but only if there are no MOQ RTE Templates
+        /// </summary>
+        /// <param name="wsHasMoqRteTemplate">Whether Worksace has RTE Templates for MOQ Rationale</param>
+        /// <param name="containerElement">The container template</param>
+        protected override void RemoveNonTemplateBoeContainers(bool wsHasMoqRteTemplate, SdtElement containerElement)
+        {
+            if (!wsHasMoqRteTemplate)
+            {
+                WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeContainer);
+            }
+        }
+
         #endregion
 
         #region Private Methods
