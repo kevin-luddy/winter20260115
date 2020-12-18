@@ -2210,7 +2210,7 @@ function InitializeRTE(elementName, options, widget) {
 			// BOEJ-2849 - clear the title (tooltip) attribute for the tinymce editor iframe.
 			mceContainer.find('iframe').attr('title', '');
 
-			updateRTECharacterCount(this, options, function (mce) { widget.cleanDirty(); });
+			updateRTECharacterCount(this, options);
 		}
 	});
 }
