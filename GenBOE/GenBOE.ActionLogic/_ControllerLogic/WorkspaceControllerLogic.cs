@@ -1489,9 +1489,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
         {
             _ = ws ?? throw new ArgumentNullException(nameof(ws));
 
+            int i = -1;
             return ws.TaskElements.Select(taskElement => new MoqTypeSelection()
             {
-                Id = -1,
+                Id = i--,
                 Updateable = UpdateType.Upsert,
                 TaskId = taskElement.Id,
 
