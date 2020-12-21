@@ -60,7 +60,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     $scope.AddMoqType = function () {
         var selectedItem = $scope.model.selectedMOQType;
         $scope.model.SelectedMoqTypes.push(selectedItem);
-        $scope.InitializeRteFields(selectedItem.SelectedMOQType);
+        $scope.InitializeRteFields(selectedItem.SelectedMOQType, true);
         selectedItem.TableData = [];
         $scope.CreateNewTable(selectedItem.TableData);
         $scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
@@ -80,17 +80,17 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     }
 
     // Initializes RTE fields for the selected MOQ Type option
-    $scope.InitializeRteFields = function (id) {
+    $scope.InitializeRteFields = function (id, skipInitialClean) {
         // setTimeout is needed to allow for the objects to be added into the DOM, before we can transform them into RTE
         setTimeout(function () {
             if (!$scope.model.IsReadOnly) {
-                InitializeRTE('DescriptionHoursRequired_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-                InitializeRTE('SmeReason_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-                InitializeRTE('SmeHoursLogic_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-                InitializeRTE('SmeDurationLogic_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-                InitializeRTE('SmeTaskEstimates_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-                InitializeRTE('Rationale_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
-                InitializeRTE('SkillMixRationale_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget);
+                InitializeRTE('DescriptionHoursRequired_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, skipInitialClean);
+                InitializeRTE('SmeReason_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, skipInitialClean);
+                InitializeRTE('SmeHoursLogic_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, skipInitialClean);
+                InitializeRTE('SmeDurationLogic_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, skipInitialClean);
+                InitializeRTE('SmeTaskEstimates_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, skipInitialClean);
+                InitializeRTE('Rationale_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, skipInitialClean);
+                InitializeRTE('SkillMixRationale_' + id, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, skipInitialClean);
             }
         }, 1);
     }

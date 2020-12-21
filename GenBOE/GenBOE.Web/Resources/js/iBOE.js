@@ -2064,7 +2064,7 @@ function updateRTECharacterCount(mce, options, callbackFunction) {
 //        - enableCharCounting: [boolean] Whether to display/track text-only character count
 // @param widget: the widget containing the editor (Note: Works with iBOE.js's Widget and generation.js's GenWidget
 //
-function InitializeRTE(elementName, options, widget) {
+function InitializeRTE(elementName, options, widget, skipInitialClean) {
 	var maxlen = options.maxlen;
 	var enableCharCounting = options.enableCharCounting || false;
 
@@ -2154,7 +2154,7 @@ function InitializeRTE(elementName, options, widget) {
 		],
 		visual: false, // turns off visual aid that draws dotted lines around tables with no borders.  With this on pasted in tables from Excel don't display an outer border
 		setup: function (ed) {
-			ed.on('Change Redo Undo SetContent', function (evt) {
+			ed.on('Change Redo Undo', function (evt) {
 				updateRTECharacterCount(this, options, function (mce) {
 					var form = $(mce.getElement()).closest('form');
 					widget.setDirty(form.attr('id'));
@@ -2210,7 +2210,7 @@ function InitializeRTE(elementName, options, widget) {
 			// BOEJ-2849 - clear the title (tooltip) attribute for the tinymce editor iframe.
 			mceContainer.find('iframe').attr('title', '');
 
-			updateRTECharacterCount(this, options);
+			updateRTECharacterCount(this, options, function () { if (!skipInitialClean) { widget.cleanDirty(); }});
 		}
 	});
 }

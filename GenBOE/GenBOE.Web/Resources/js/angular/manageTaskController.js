@@ -103,10 +103,8 @@
         // load the main data
         loadData(function () {
             // this is needed because ui-tinymce does things on its own schedule
-            $timeout(function () {
-                TaskElementDetailsWidget.cleanAllDirty();
-                $scope.isDirty = false;
-            }, 300);
+            TaskElementDetailsWidget.cleanAllDirty();
+            $scope.isDirty = false;
         });
     };
 
