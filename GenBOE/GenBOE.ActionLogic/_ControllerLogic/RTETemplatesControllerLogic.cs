@@ -517,7 +517,9 @@ namespace GenBOE.ActionLogic
 
                                 if (ws.UsingTemplateBOE)
                                 {
-                                    MoqTypeSelection tasksFirstMoqType = ws.MoqTypeSelections.OrderBy(x => x.Order).First(x => x.TaskId == task.Id);
+                                    MoqTypeSelection tasksFirstMoqType = ws.MoqTypeSelections.OrderBy(x => x.Order).FirstOrDefault(x => x.TaskId == task.Id) ??  throw new GenValidationException("Operation cannot be completed as requested. " +
+                                        "This is likely due to incomplete or invalid data. Please verify that all BOEs and Tasks are complete and valid. If the issue persists, please contact the administrator.");
+
                                     tasksFirstMoqType.Updateable = UpdateType.Upsert;
 
                                     if (tasksFirstMoqType.SelectedMOQType == MOQType.SME)
