@@ -2135,8 +2135,8 @@ function CreateRteTemplate(useQuestions, numberQuestions) {
 
 function InitializeRteTemplate(template, templateName, rteFieldSize) {
     // capture original values as well as initialize
+    template.OriginalAnswers = [];
     for (var i = 0; i < template.NumberQuestions; i++) {
-        template.OriginalAnswers = [];
         template.OriginalAnswers.push($('#' + templateName + '_' + i.toString()).val());
         InitializeRTE(templateName + '_' + i.toString(), { maxlen: rteFieldSize, enableCharCounting: true }, BoeHeaderWidget);
     }
