@@ -168,7 +168,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    foreach(MoqTableData table in dtoToDelete.TableData)
+                    foreach(MoqTableData table in dtoToDelete.TableData.Where(x => x.Id > 0))
                     {
                         gbe.deleteMOQTypeSelectionTableData(table.Id, table.UpdateDate);
                     }
