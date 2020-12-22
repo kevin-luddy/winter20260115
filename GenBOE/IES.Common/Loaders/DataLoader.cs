@@ -132,7 +132,7 @@ namespace IES.Common
                 // Temporarily commenting out the exception and logging so genBOE Production does not have breaking changes.
                 // We will comb the logs and find these to fix in future sprints
                 // throw new GeneralAppException("A transaction was not supplied with the save, please create a bug report");
-                this.Log.Error("A transaction was not supplied with the save, please create a bug report." + Environment.NewLine + Environment.StackTrace);
+                this.Log.Warn("A transaction was not supplied with the save, please create a bug report." + Environment.NewLine + Environment.StackTrace);
             }
         }
 
