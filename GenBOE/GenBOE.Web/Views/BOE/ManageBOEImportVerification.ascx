@@ -233,7 +233,14 @@
             </ul>
         </div>
     </div>
-    <% } else  { %>
-    <div class="import-results"><div class="title">There are no changes to import.</div></div>
+    <% } else { %>
+        <div class="import-results">
+            <div class="title">
+                There are no changes to import.
+                <%if(errorsOccurred) { %>
+                    <div class="error">The file contains invalid data. Please review the file. If you cannot identify the issue, please contact the administrator.</div>
+                <%} %>
+            </div>
+        </div>
     <% } %>
 </div>

@@ -238,7 +238,7 @@ namespace IES.Common
                     {
                         // there are no valid recipients for the email ... this is a problem.  log an error message and abort
                         // the send since it's not going to anyone right now
-                        this.log.Error(string.Format(
+                        this.log.Warn(string.Format(
                             "Unable to send email as there are no recipients, recipients are [{0}]. Email subject is {1}.  Email body is {2}.{3}",
                             inRecipient, message.Subject, originalBody, extraLoggingInfo));
                         // returning true if there was originally a recipient
