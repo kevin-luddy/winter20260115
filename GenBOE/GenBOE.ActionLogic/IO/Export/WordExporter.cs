@@ -70,7 +70,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             string tempFilename = Path.GetTempFileName();
             new FileInfo(tempFilename).Attributes |= FileAttributes.Temporary;
-            using (Stream documentStream = new FileStream(tempFilename, FileMode.Create, FileAccess.ReadWrite, FileShare.Read, 4096, FileOptions.DeleteOnClose))
+            using (Stream documentStream = new FileStream(tempFilename, FileMode.Create, FileAccess.ReadWrite, FileShare.Read|FileShare.Delete, 4096, FileOptions.DeleteOnClose))
             {
                 documentStream.Write(byteArray, 0, byteArray.Length);
 
