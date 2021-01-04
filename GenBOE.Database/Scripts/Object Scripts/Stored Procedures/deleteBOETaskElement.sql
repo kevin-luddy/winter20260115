@@ -34,6 +34,7 @@ AS
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
 **		12/13/19	twilson3			BOEJ-4434 - RTE Template Answers
 **		10/29/20	Dusan				BOEJ-4924 - MOQ Type Selection data
+**		1/4/2020	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -149,6 +150,12 @@ SET NOCOUNT ON
 			WHERE TE.BOETaskElementID = @BOETaskElementID
 
 			-- MOQ Type Selection data
+			DELETE FROM dbo.[MoqTypeTableCustomFieldValueXREF]
+					FROM dbo.[MoqTypeTableCustomFieldValueXREF] x
+						INNER JOIN MoqTypeSelectionTableData t ON t.MoqTypeSelectionTableDataId = x.MoqTypeTableDataId 
+						INNER JOIN MoqTypeSelection mS ON mS.MoqTypeSelectionId = t.MoqTypeSelectionId 
+					WHERE mS.TaskId = @BOETaskElementID
+
 			DELETE FROM dbo.MOQTypeSelectionTableData
 				FROM dbo.MOQTypeSelectionTableData t
 				INNER JOIN dbo.MOQTypeSelection s ON s.MOQTypeSelectionId = t.MOQTypeSelectionId

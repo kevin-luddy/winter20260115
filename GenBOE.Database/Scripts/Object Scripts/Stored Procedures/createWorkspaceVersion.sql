@@ -47,6 +47,7 @@ AS
 **		8/27/20		ranzalon			BOEJ-4760 - Template Boe
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
 **		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
+**		1/4/2020	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 *******************************************************************************/
 SET NOCOUNT ON 
 --BEGIN TRANSACTION 
@@ -1310,6 +1311,13 @@ FROM [dbo].[BOECustomFieldValueXREF] X
 INNER JOIN dbo.BOE B ON X.BOEID  = B.BOEID
 INNER JOIN dbo.Workspace WS ON B.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID
+
+INSERT INTO [version].[MoqTypeTableCustomFieldValueXREF] ([Id], [UpdateDT], [MoqTypeTableDataId], [CustomFieldValueId], [VersionID])
+    SELECT x.[Id], x.[UpdateDT], x.[MoqTypeTableDataId], x.[CustomFieldValueId], @VersionID
+        FROM [dbo].[MoqTypeTableCustomFieldValueXREF] x, MoqTypeSelectionTableData t, MoqTypeSelection mS, BoeTaskElement tE, dbo.BOE B
+        WHERE 
+            t.MoqTypeSelectionTableDataId = x.MoqTypeTableDataId AND mS.MoqTypeSelectionId = t.MoqTypeSelectionId 
+            AND tE.BoeTaskElementId = mS.TaskId AND tE.BOEID = B.BOEID AND B.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[SumOfBOE_OrdinaryVariableXREF]
 ([OVSumID]

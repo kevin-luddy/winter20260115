@@ -25,6 +25,19 @@ BEGIN
 END
 GO
 
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[version].[MoqTypeTableCustomFieldValueXREF]') AND type in (N'U'))
+BEGIN
+	CREATE TABLE version.MoqTypeTableCustomFieldValueXREF
+	(
+		Id					INT,
+		UpdateDT			DATETIME2(7)	NOT NULL,
+		MoqTypeTableDataId	INT				NOT NULL,	
+		CustomFieldValueId	INT				NOT NULL,		
+		VersionId			INT
+	);
+END
+GO
+
 /*
 	12/8/2020 [Dusan] - BOEJ-4894: DB work for an extra CF type
 

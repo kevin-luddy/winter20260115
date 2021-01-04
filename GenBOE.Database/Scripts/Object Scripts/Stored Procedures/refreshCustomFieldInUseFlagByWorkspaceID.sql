@@ -28,6 +28,7 @@ AS
 **		--------	--------			---------------------------------------
 **		4/3/18		ranzalon			Updated for RMS Zone Travel Trips
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+**		1/4/2020	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -47,6 +48,7 @@ UPDATE dbo.CustomFieldValue
             LEFT OUTER JOIN [dbo].[BOELaborTypeCustomFieldValueXREF] blX ON CFV.[CustomFieldValueID] = blX.[CustomFieldValueID]
             LEFT OUTER JOIN [dbo].[BOETaskElementCustomFieldValueXREF] btX ON CFV.[CustomFieldValueID] = btX.[CustomFieldValueID]
 			LEFT OUTER JOIN [dbo].[MSTTravelTripCustomFieldValueXREF] mttX ON CFV.[CustomFieldValueID] = mttX.[MSTCustomFieldValueID]
+			LEFT OUTER JOIN [dbo].[MoqTypeTableCustomFieldValueXREF] moqX ON CFV.[CustomFieldValueID] = moqX.CustomFieldValueId
 		WHERE 
 			CF.WorkspaceID = @WorkspaceID
 

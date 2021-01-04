@@ -39,6 +39,7 @@ AS
 **		10/25/2018	twilson3			BOEJ-3878 Added missing Tables, moved deletes around to mimic deleteFullWorkspace.sql for easier Compare in future
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
 **		12/17/19	twilson3			BOEJ-4434 - RTE Templates
+**		1/4/2020	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 *******************************************************************************/
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 
@@ -210,6 +211,19 @@ FROM dbo.WorkspaceVersion WV
 				INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
 				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
 
+			DELETE FROM dbo.[MoqTypeTableCustomFieldValueXREF]
+				FROM dbo.[MoqTypeTableCustomFieldValueXREF] x
+					INNER JOIN MoqTypeSelectionTableData t ON t.MoqTypeSelectionTableDataId = x.MoqTypeTableDataId 
+					INNER JOIN MoqTypeSelection mS ON mS.MoqTypeSelectionId = t.MoqTypeSelectionId 
+					INNER JOIN BoeTaskElement tE ON tE.BoeTaskElementId = mS.TaskId 
+					INNER JOIN dbo.BOE B ON tE.BOEID = B.BOEID
+					INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
+			DELETE FROM dbo.MOQTypeSelectionTableData
+				FROM dbo.MOQTypeSelectionTableData TD
+					INNER JOIN dbo.MOQTypeSelection M on TD.MOQTypeSelectionId = M.MOQTypeSelectionId
+					INNER JOIN dbo.BOETaskElement T ON M.TaskId = T.BOETaskElementID
+					INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
+					INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
 
 			DELETE FROM dbo.BOEApprovalHistory 
 				FROM dbo.BOEApprovalHistory BAH 

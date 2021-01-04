@@ -29,6 +29,7 @@ AS
 **		8/18/11		dcanuso				Adding Custom Field Tables for Cost Elements
 **		4/4/18		ranzalon			BOEJ-3299 - Update for zone travel trip CFs
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+**		1/4/2020	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 ******************************************************************************/
 SET NOCOUNT ON 
 
@@ -50,6 +51,11 @@ WHERE CustomFieldID = @CustomFieldID
 	
 			/*DELETE XREF REFENCES*/
 			
+			DELETE FROM dbo.[MoqTypeTableCustomFieldValueXREF]
+					FROM dbo.[MoqTypeTableCustomFieldValueXREF] x
+						INNER JOIN dbo.CustomFieldValue CFV ON x.CustomFieldValueId = CFV.CustomFieldValueID
+					WHERE CFV.CustomFieldID = @CustomFieldID
+
 			DELETE FROM dbo.BOECustomFieldValueXREF 
 			FROM dbo.BOECustomFieldValueXREF X
 				INNER JOIN dbo.CustomFieldValue CFV ON X.CustomFieldValueID = CFV.CustomFieldValueID
