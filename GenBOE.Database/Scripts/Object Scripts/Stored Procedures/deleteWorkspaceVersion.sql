@@ -40,7 +40,7 @@ CREATE  PROCEDURE [dbo].[deleteWorkspaceVersion]
 **		12/13/19	twilson3			BOEJ-4434 - RTE Template Answers
 **		12/17/19	twilson3			BOEJ-4434 Fix Assigned
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
-**		1/4/2020	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF; additional cleanup
+**		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF; additional cleanup
 *******************************************************************************/
 AS
 SET NOCOUNT ON

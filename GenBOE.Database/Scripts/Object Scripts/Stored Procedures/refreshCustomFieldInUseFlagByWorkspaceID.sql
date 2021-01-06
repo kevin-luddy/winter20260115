@@ -28,7 +28,7 @@ AS
 **		--------	--------			---------------------------------------
 **		4/3/18		ranzalon			Updated for RMS Zone Travel Trips
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
-**		1/4/2020	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
+**		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 *******************************************************************************/
 SET NOCOUNT ON 
 

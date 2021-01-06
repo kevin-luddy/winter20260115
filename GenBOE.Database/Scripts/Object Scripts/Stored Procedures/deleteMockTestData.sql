@@ -39,7 +39,7 @@ AS
 **		10/25/2018	twilson3			BOEJ-3878 Added missing Tables, moved deletes around to mimic deleteFullWorkspace.sql for easier Compare in future
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
 **		12/17/19	twilson3			BOEJ-4434 - RTE Templates
-**		1/4/2020	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
+**		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 *******************************************************************************/
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 

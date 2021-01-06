@@ -1,5 +1,5 @@
 ﻿IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[upsertMoqTypeTableCustomFieldValue]') AND type in (N'P', N'PC'))
-	DROP PROCEDURE [dbo].[upsertBOELaborTypeCustomFieldValue];
+	DROP PROCEDURE [dbo].[upsertMoqTypeTableCustomFieldValue];
 
 GO
 
@@ -63,7 +63,7 @@ IF @Id < 0  /*Insert Record*/
 							(CONVERT(VARCHAR(10), @CustomFieldID) + '-' + CONVERT(VARCHAR(10), @MoqTypeTableDataId) --Name only used when performing copy, so it needs to be unique for mapping
 							, @CustomFieldValue, @CustomFieldID, 1, @UpdateDT)
 
-						SELECT @CustomFieldValueId = CustomFieldValueId FROM @InsertedCustomFieldValue
+						SELECT @Id = CustomFieldValueId FROM @InsertedCustomFieldValue
 					END
 				ELSE --If the value is already there, make sure the in use flag is set
 					BEGIN

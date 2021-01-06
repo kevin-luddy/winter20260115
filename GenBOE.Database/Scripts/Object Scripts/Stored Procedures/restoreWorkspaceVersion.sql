@@ -47,7 +47,7 @@ AS
 **		8/27/20		ranzalon			BOEJ-4760 - Template Boe
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
 **		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
-**		1/4/2020	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF; additional cleanup
+**		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF; additional cleanup
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -2529,7 +2529,7 @@ BEGIN
 			INSERT INTO [dbo].[MoqTypeTableCustomFieldValueXREF] ([Id], [UpdateDT], [MoqTypeTableDataId], [CustomFieldValueId])
 				SELECT x.[Id], x.[UpdateDT], x.[MoqTypeTableDataId], x.[CustomFieldValueId]
 					FROM [version].[MoqTypeTableCustomFieldValueXREF] x
-					INNER JOIN [version].MoqTypeSelectionTableData t ON x.MoqTypeSelectionTableDataId = t.MoqTypeTableDataId AND t.VersionId = @VersionID
+					INNER JOIN [version].MoqTypeSelectionTableData t ON t.MoqTypeSelectionTableDataId = x.MoqTypeTableDataId AND t.VersionId = @VersionID
 					INNER JOIN [version].MoqTypeSelection mS ON mS.MoqTypeSelectionId = t.MoqTypeSelectionId AND mS.VersionId = @VersionID
 					INNER JOIN [version].BoeTaskElement tE ON tE.BoeTaskElementId = mS.TaskId AND tE.VersionId = @VersionID
 					INNER JOIN [version].BOE b ON tE.BOEID = b.BOEID AND b.VersionId = @VersionID

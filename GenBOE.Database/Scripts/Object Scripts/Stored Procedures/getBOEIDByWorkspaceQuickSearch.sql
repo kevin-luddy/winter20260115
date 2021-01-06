@@ -27,7 +27,7 @@ AS
 **		5/25/2018	ranzalon			BOEJ-3503 - Exclude Deleted Workspaces
 **		7/12/2018	twilson3			BOEJ-3685 - Fix exclusion of Deleted Workspaces
 **		9/9/2020	ranzalon			BOEJ-4770 - Only search WSs with same Template BOE value
-**		11/4/2020	Dusan				BOEJ-4889 - Removing restriction to only search by the same Template BOE value
+**		11/4/2021	Dusan				BOEJ-4889 - Removing restriction to only search by the same Template BOE value
 **		11/24/2020	Dusan				BOEJ-4949 - Add restrictions based on Template BOE value; did some code cleanup as well
 **		12/15/2020	Dusan				BOEJ-4953 - Fixing logic w/ MOQ Type restrictions
 *******************************************************************************/
