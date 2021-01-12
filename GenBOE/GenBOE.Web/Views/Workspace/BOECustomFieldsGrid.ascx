@@ -40,6 +40,10 @@
             $('#Add-SikorskyCustomFields').attr('disabled', 'disabled').off('click');
         }
 
+        if ('<%: ViewData["UsingTemplateBoe"] %>' == 'False') {
+            $('.moq-type-table').addClass('display-none');
+        }
+
         BOECustomFieldsGridWidget.Module = $('#BOECustomFieldsGrid');
         BOECustomFieldsGridWidget.ContentDiv = BOECustomFieldsGridWidget.Module.parent();
 
@@ -165,6 +169,7 @@
                 <th class="field-name">Field Name</th>
                 <th class="boe">BOE</th>
                 <th class="task">Task</th>
+                <th class="moq-type-table">MOQ Table</th>
                 <th class="labor-type">Resource Types</th>
                 <th class="required">Required</th>
                 <th class="open-ended">Open Ended</th>
@@ -176,6 +181,7 @@
                     <td><a id="ResourceLink" href="#Resources">Resource</a></td>
                     <td></td>
                     <td></td>
+                    <td class="moq-type-table"></td>
                     <td><div class="checkmark"></div></td>
                     <td><div class="checkmark"></div></td>
                     <td></td>
@@ -186,6 +192,7 @@
                     <td><a id="PerformingOrgLink" href="#PerformingOrgs">Performing Organization</a></td>
                     <td></td>
                     <td></td>
+                    <td class="moq-type-table"></td>
                     <td><div class="checkmark"></div></td>
                     <td><div class="checkmark"></div></td>
                     <td></td>
@@ -193,69 +200,77 @@
                     <td></td>
                 </tr>
                 <% foreach (BOECustomFieldsGridModelView item in Model) {
-                       Response.Write("<tr pkid=\"" + item.CustomFieldID + "\" inUse=\"" + item.inUse + "\" fieldName=\"" + item.FieldName + "\" updateDateLong=\"" + item.UpdateDateLong + "\">");
-                       Response.Write("<td><a>" + item.FieldName + "</a></td>");
-                       if (item.CustomFieldDisplayID == CustomFieldType.BoeDisplay)
-                       {
-                           Response.Write("<td><div class=\"checkmark\"></div></td>");
-                       }
-                       else
-                       {
-                           Response.Write("<td></td>");
-                       }
-                       if (item.CustomFieldDisplayID == CustomFieldType.TaskDisplay)
-                       {
-                           Response.Write("<td><div class=\"checkmark\"></div></td>");
-                       }
-                       else
-                       {
-                           Response.Write("<td></td>");
-                       }
-                       if (item.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay)
-                       {
-                           Response.Write("<td><div class=\"checkmark\"></div></td>");
-                       }
-                       else
-                       {
-                           Response.Write("<td></td>");
-                       }
-                       if (item.isRequired)
-                       {
-                           Response.Write("<td><div class=\"checkmark\"></div></td>");
-                       }
-                       else
-                       {
-                           Response.Write("<td></td>");
-                       }
-                       if (item.isOpenEnded)
-                       {
-                           Response.Write("<td><div class=\"checkmark\"></div></td>");
-                       }
-                       else
-                       {
-                           Response.Write("<td></td>");
-                       }
-                       if (item.inUse)
-                       {
-                           Response.Write("<td><div class=\"checkmark\"></div></td>");
-                       }
-                       else
-                       {
-                           Response.Write("<td></td>");
-                       }
+                        Response.Write("<tr pkid=\"" + item.CustomFieldID + "\" inUse=\"" + item.inUse + "\" fieldName=\"" + item.FieldName + "\" updateDateLong=\"" + item.UpdateDateLong + "\">");
+                        Response.Write("<td><a>" + item.FieldName + "</a></td>");
+                        if (item.CustomFieldDisplayID == CustomFieldType.BoeDisplay)
+                        {
+                            Response.Write("<td><div class=\"checkmark\"></div></td>");
+                        }
+                        else
+                        {
+                            Response.Write("<td></td>");
+                        }
+                        if (item.CustomFieldDisplayID == CustomFieldType.TaskDisplay)
+                        {
+                            Response.Write("<td><div class=\"checkmark\"></div></td>");
+                        }
+                        else
+                        {
+                            Response.Write("<td></td>");
+                        }
+                        if(item.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay)
+                        {
+                            Response.Write("<td class=\"moq-type-table\"><div class=\"checkmark\"></div></td>");
+                        }
+                        else
+                        {
+                            Response.Write("<td class=\"moq-type-table\"></td>");
+                        }
+                        if (item.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay)
+                        {
+                            Response.Write("<td><div class=\"checkmark\"></div></td>");
+                        }
+                        else
+                        {
+                            Response.Write("<td></td>");
+                        }
+                        if (item.isRequired)
+                        {
+                            Response.Write("<td><div class=\"checkmark\"></div></td>");
+                        }
+                        else
+                        {
+                            Response.Write("<td></td>");
+                        }
+                        if (item.isOpenEnded)
+                        {
+                            Response.Write("<td><div class=\"checkmark\"></div></td>");
+                        }
+                        else
+                        {
+                            Response.Write("<td></td>");
+                        }
+                        if (item.inUse)
+                        {
+                            Response.Write("<td><div class=\"checkmark\"></div></td>");
+                        }
+                        else
+                        {
+                            Response.Write("<td></td>");
+                        }
 
-                       // if readOnly do not show delete buttons
-                       if (readOnly)
-                       {
-                           Response.Write("<td></td>");
-                       }
-                       else
-                       {
-                           Response.Write("<td class=\"delete\"><div class=\"delete\"></div></td>");
-                       }
+                        // if readOnly do not show delete buttons
+                        if (readOnly)
+                        {
+                            Response.Write("<td></td>");
+                        }
+                        else
+                        {
+                            Response.Write("<td class=\"delete\"><div class=\"delete\"></div></td>");
+                        }
 
-                       Response.Write("</tr>");
-                } %>
+                        Response.Write("</tr>");
+                    } %>
             </tbody>
         </table>
         <button id="Back-BOECustomFieldsGrid" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>

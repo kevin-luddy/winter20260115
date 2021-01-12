@@ -516,6 +516,22 @@
             $(this).children('.default-text').addClass('display-none');
     });
 
+    $('input[type=radio][name="CustomFieldMetaData.CustomFieldDisplayID"]').change(function () {
+        if (this.value == "<%:(int)CustomFieldType.MoqTypeTableDataDisplay%>") {
+            // set to open ended if not already
+            if (!$('#CustomFieldMetaData_isOpenEnded').prop('checked')) {
+                $('#CustomFieldMetaData_isOpenEnded').click();
+            }
+
+            // disable the checkbox so it can't be changed from open ended
+            $('#CustomFieldMetaData_isOpenEnded').addClass('disabled');
+            $('#CustomFieldMetaData_isOpenEnded').prop('disabled', true);
+        } else {
+            $('#CustomFieldMetaData_isOpenEnded').removeClass('disabled');
+            $('#CustomFieldMetaData_isOpenEnded').prop('disabled', false);
+        }
+    });
+
         $('#ImportButton').click(BOECustomFieldsWidget.ShowImportDialog);
         $('#ExportButton').click(BOECustomFieldsWidget.ExportButtonClick);
         
@@ -574,10 +590,15 @@
             var valuesHeight = $("#values").height();
             var center = $(this).closest('.module-content-center');
             center.height(center.height() + valuesHeight);
-        }
-
+            }
         refreshModule($(BOECustomFieldsWidget.Module));
         });
+
+        // Disable open ended button if MOQ Table CF
+        if ($('input[type=radio][name="CustomFieldMetaData.CustomFieldDisplayID"]:checked').val() == "<%:(int)CustomFieldType.MoqTypeTableDataDisplay%>") {
+                    $('#CustomFieldMetaData_isOpenEnded').addClass('disabled');
+                    $('#CustomFieldMetaData_isOpenEnded').prop('disabled', true);
+        };
 
        function applyReadOnlyStyle() { 
             // call default applyReadOnly
@@ -638,7 +659,12 @@
                 <!-- This comment is needed for the jquery animation to work in IE8... -->
                 <div id="FieldLevel-HelpDialog" class="help-dialog" style="width: 200px;">
 				    <div class="help-dialog-close"></div>
-                    <div class="help-dialog-text">Specify if users should enter a value for this field for each BOE, Task or Labor Spread.</div>
+                    <% if (Model.UsingTemplateBoe)
+                        { %>
+                    <div id="template-boe-help" class="help-dialog-text">Specify if users should enter a value for this field for each BOE, Task, MOQ Table or Labor Spread.</div>
+                    <% } else { %>
+                    <div id="non-template-boe-help" class="help-dialog-text">Specify if users should enter a value for this field for each BOE, Task or Labor Spread.</div>
+                    <% } %>
                 </div>
             </div>
             <div class="form-element">
@@ -646,6 +672,10 @@
                 <label for="CustomFieldMetaData.CustomFieldDisplayID.BOE">BOE</label>
                 <input type="radio" id="CustomFieldMetaData.CustomFieldDisplayID.Task" name="CustomFieldMetaData.CustomFieldDisplayID" value="<%:(int)CustomFieldType.TaskDisplay%>" />
                 <label for="CustomFieldMetaData.CustomFieldDisplayID.Task">Task</label>
+                <% if (Model.UsingTemplateBoe) { %>
+                <input type="radio" id="CustomFieldMetaData.CustomFieldDisplayID.MoqTable" name="CustomFieldMetaData.CustomFieldDisplayID" value="<%:(int)CustomFieldType.MoqTypeTableDataDisplay%>" />
+                <label for="CustomFieldMetaData.CustomFieldDisplayID.MoqTable">MOQ Table</label>
+                <% } %>
                 <input type="radio" id="CustomFieldMetaData.CustomFieldDisplayID.Labor" name="CustomFieldMetaData.CustomFieldDisplayID" value="<%:(int)CustomFieldType.LaborTypeDisplay%>" />
                 <label for="CustomFieldMetaData.CustomFieldDisplayID.Labor">Resource Types</label>
             </div>
