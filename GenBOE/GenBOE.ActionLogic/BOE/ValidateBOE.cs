@@ -345,7 +345,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                     travelTaskElementMessages.Add(string.Format(TravelDTO.TRAVEL_TASK_END_DATE_INVALID, inBOE.EndDate.ToString("MM/yyyy")));
                 }
 
-                Collection<string> travelTaskCustomFieldMessages = this._ValidateTravelTaskCustomFields(ws, travelTask);
+                Collection<string> travelTaskCustomFieldMessages = this.ValidateCustomFields(ws, CustomFieldType.TaskDisplay, ws.TravelElementsMappingWithCustomFieldsValuesAndContainerIds, travelTask.Id);
                 if (travelTaskCustomFieldMessages.Any())
                 {
                     foreach (string message in travelTaskCustomFieldMessages)
@@ -379,7 +379,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                         TravelTypeMessages.Add(string.Format(TravelDTO.TRAVEL_TASK_PERFORG_INVALID));
                     }
 
-                    Collection<string> CustomFieldMessages = this._ValidateTravelTripCustomFields(ws, travel);
+                    Collection<string> CustomFieldMessages = this.ValidateCustomFields(ws, CustomFieldType.LaborTypeDisplay, ws.TravelTripsMappingWithCustomFieldsValuesAndContainerIds, travel.Id); 
                     if (CustomFieldMessages.Any())
                     {
                         foreach (string message in CustomFieldMessages)
@@ -527,7 +527,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 switch (boeTask.TaskElementType)
                 {
                     case TaskElementType.Labor:
-                        ReturnMsgs = this._ValidateTaskCustomFields(workspace, boeTask);
+                        ReturnMsgs = this.ValidateCustomFields(workspace, CustomFieldType.TaskDisplay, workspace.TaskElementsMappingWithCustomFieldsValuesAndContainerIds, boeTask.Id);
                         foreach (string msg in ReturnMsgs)
                         {
                             TaskElementMessages.Add(msg);
@@ -630,7 +630,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                 foreach (BoeTaskElementDTO task in boe.TaskElements)
                 {
-                    errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList(), ws.RteSizeLimit);
+                    errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList(), ws);
 
                     if (errorMessages.Any())
                     {
@@ -653,7 +653,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// <param name="moqTypesForTask">MOQ Types that belong to the task</param>
         /// <param name="rteSizeLimit">RTE Size Limit</param>
         /// <returns>Errors, if any</returns>
-        public static Collection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, int? rteSizeLimit)
+        public ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws)
         {
             _ = moqTypesForTask ?? throw new ArgumentNullException(nameof(moqTypesForTask));
 
@@ -673,8 +673,8 @@ namespace GenBOE.ActionLogic.WBS.BOE
                     {
                         case (MOQType.AnalogousRelationships):
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "Analogous relationship name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
                             break;
                         case (MOQType.Comparative):
                         case (MOQType.Historical):
@@ -710,39 +710,41 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                 if (string.IsNullOrEmpty(row.AdditionalQueryFilters)) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.AdditionalQueryFilters} is required, otherwise indicate N/A."); }
 
                                 if (row.TotalRelevantHours <= 0) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalRelevantHours} must be a number greater than 0."); }
+
+                                errorMessages.AddRange(this.ValidateCustomFields(ws, CustomFieldType.MoqTypeTableDataDisplay, ws.MoqTypeTableMappingWithCustomFieldsValuesAndContainerIds, row.Id)); 
                             });
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
                             break;
                         case (MOQType.CostEstimatingRelationships):
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "CER tool name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
                             break;
                         case (MOQType.LOE):
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required", rteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required", ws.RteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
                             break;
                         case (MOQType.NonLabor):
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
                             break;
                         case (MOQType.ParametricEstimates):
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.CerName, "Parametric model name", Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
                             break;
                         case (MOQType.SME):
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeReason, "The SME selected Expert judgement reasons", rteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeHoursLogic, "The logic and assumptions used to estimate hours", rteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeDurationLogic, "The logic and assumptions used to estimate duration", rteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeTaskEstimates, "The SME tasks estimated in this BOE", rteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeReason, "The SME selected Expert judgement reasons", ws.RteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeHoursLogic, "The logic and assumptions used to estimate hours", ws.RteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeDurationLogic, "The logic and assumptions used to estimate duration", ws.RteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeTaskEstimates, "The SME tasks estimated in this BOE", ws.RteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
                             break;
                         case (MOQType.SOW):
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required & location in SOW", rteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", rteSizeLimit, errorMessages);
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", rteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.DescriptionHoursRequired, "Description of Hours required & location in SOW", ws.RteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
                             break;
                         default:
                             errorMessages.Add("Invalid MOQ Type selected");
@@ -828,7 +830,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                 switch (boeTask.TaskElementType)
                 {
                     case TaskElementType.Labor:
-                        ReturnMsgs = this._ValidateLaborTypeCustomFields(workspace, labor);
+                        ReturnMsgs = this.ValidateCustomFields(workspace, CustomFieldType.LaborTypeDisplay, workspace.LaborTypesMappingWithCustomFieldsValuesAndContainerIds, labor.Id); 
                         foreach (string msg in ReturnMsgs)
                         {
                             LaborTypeMessages.Add(msg);
@@ -1279,149 +1281,36 @@ namespace GenBOE.ActionLogic.WBS.BOE
         }
 
         /// <summary>
-        /// This function will validate the BOE Task Element Custom Fields
+        /// Validate Custom Fields for the given type
         /// </summary>
         /// <param name="workspace">Workspace</param>
-        /// <param name="inBoeTaskElement">the BOE Task Element</param>
-        /// <returns>Custom field validation errors.</returns>
-        private Collection<string> _ValidateTaskCustomFields(FullWorkspace workspace, BoeTaskElementDTO inBoeTaskElement)
-        {
-            Collection<string> TaskCustomFieldMsgs = new Collection<string>();
-
-            // need to find out if the boe task element has any custom fields
-            // if it does, then need to determine if the custom field is required
-            // and if it is required, then need to make sure the custom field has a value
-            foreach (CustomFieldDTO customField in workspace.CustomFields)
-            {
-                // if it's a task custom field and required, check to see if the task element has a value
-                if (customField.CustomFieldRequired && customField.CustomFieldDisplayID == CustomFieldType.TaskDisplay)
-                {
-                    // gets all the custom field options
-                    List<int> customFieldOptions = workspace.CustomFieldValues.Where(x => x.CustomFieldID == customField.Id).Select(x => x.CustomFieldValueID).ToList();
-
-                    // gets all the selected options for an element 
-                    List<int> selectedCustomFieldOptions =
-                    (from mappedValues in workspace.TaskElementsMappingWithCustomFieldsValuesAndContainerIds
-                        where mappedValues.Key == inBoeTaskElement.Id
-                        select mappedValues.Value).SelectMany(y => y).Select(c => c.Value).ToList();
-                    // if the options contains one of the selected values then its assigned else it needs to be.
-                    if (!customFieldOptions.Intersect(selectedCustomFieldOptions).Any())
-                    {
-                        TaskCustomFieldMsgs.Add(string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldName));
-                    }
-                }
-            }
-
-            return TaskCustomFieldMsgs;
-        }
-
-        /// <summary>
-        /// This function will validate the BOE Labor Type Custom Fields
-        /// </summary>
-        /// <param name="workspace">Full Workspace.</param>
-        /// <param name="inBoeLaborType">the BOE Labor Type</param>
+        /// <param name="customFieldType">Custom Field Type</param>
+        /// <param name="mappingWithCustomFieldsValuesAndContainerIds">Mapping of custom field values and container IDs for the custom field type</param>
+        /// <param name="elementId">ID of the element containing the custom fields</param>
         /// <returns></returns>
-        private Collection<string> _ValidateLaborTypeCustomFields(FullWorkspace workspace, ResourceTypeDto inBoeLaborType)
+        private Collection<string> ValidateCustomFields(FullWorkspace workspace, CustomFieldType customFieldType, Dictionary<int, ICollection<KeyValuePair<int, int>>> mappingWithCustomFieldsValuesAndContainerIds, int elementId)
         {
-            Collection<string> LTCustomFieldMsgs = new Collection<string>();
+            Collection<string> customFieldMsgs = new Collection<string>();
 
-            // need to find out if the boe labor type has any custom fields
-            // if it does, then need to determine if the custom field is required
-            // and if it is required, then need to make sure the custom field has a value
             foreach (CustomFieldDTO customField in workspace.CustomFields)
             {
-                // if it's a labor type custom field and required, check to see if the labor type has a value
-                if (customField.CustomFieldRequired && customField.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay)
+                if (customField.CustomFieldRequired && customField.CustomFieldDisplayID == customFieldType)
                 {
-                    // gets all the custom field options
                     List<int> customFieldOptions = workspace.CustomFieldValues.Where(x => x.CustomFieldID == customField.Id).Select(x => x.CustomFieldValueID).ToList();
 
-                    // gets all the selected options for an element 
                     List<int> selectedCustomFieldOptions =
-                    (from mappedValues in workspace.LaborTypesMappingWithCustomFieldsValuesAndContainerIds
-                        where mappedValues.Key == inBoeLaborType.Id
-                        select mappedValues.Value).SelectMany(y => y).Select(c => c.Value).ToList();
-                    // if the options contains one of the selected values then its assigned else it needs to be.
+                    (from mappedValues in mappingWithCustomFieldsValuesAndContainerIds
+                     where mappedValues.Key == elementId
+                     select mappedValues.Value).SelectMany(y => y).Select(c => c.Value).ToList();
+
                     if (!customFieldOptions.Intersect(selectedCustomFieldOptions).Any())
                     {
-                        LTCustomFieldMsgs.Add(string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldName));
+                        customFieldMsgs.Add(string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldName));
                     }
                 }
             }
 
-            return LTCustomFieldMsgs;
-        }
-
-        /// <summary>
-        /// This function will validate the Travel Task Element Custom Fields
-        /// </summary>
-        /// <param name="workspace">Workspace</param>
-        /// <param name="inTravelTaskElement">the Travel Task Element</param>
-        /// <returns>Custom field validation errors.</returns>
-        private Collection<string> _ValidateTravelTaskCustomFields(FullWorkspace workspace, TravelDTO inTravelTaskElement)
-        {
-            Collection<string> TravelTaskCustomFieldMsgs = new Collection<string>();
-            
-            // need to find out if the travel task element has any custom fields
-            // if it does, then need to determine if the custom field is required
-            // and if it is required, then need to make sure the custom field has a value
-            foreach (CustomFieldDTO customField in workspace.CustomFields)
-            {
-                // if it's a task custom field and required, check to see if the task element has a value
-                if (customField.CustomFieldRequired && customField.CustomFieldDisplayID == CustomFieldType.TaskDisplay)
-                {
-                    // gets all the custom field options
-                    List<int> customFieldOptions = workspace.CustomFieldValues.Where(x => x.CustomFieldID == customField.Id).Select(x=>x.CustomFieldValueID).ToList();
-                 
-                    // gets all the selected options for an element 
-                   List<int> selectedCustomFieldOptions = (from mappedValues in workspace.TravelElementsMappingWithCustomFieldsValuesAndContainerIds
-                                      where mappedValues.Key == inTravelTaskElement.Id
-                                      select mappedValues.Value).SelectMany(y => y).Select(c => c.Value).ToList();
-                    // if the options contains one of the selected values then its assigned else it needs to be.
-                    if (!customFieldOptions.Intersect(selectedCustomFieldOptions).Any())
-                    {
-                        TravelTaskCustomFieldMsgs.Add(string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldName));
-                    }
-                }
-            }
-
-            return TravelTaskCustomFieldMsgs;
-        }
-
-        /// <summary>
-        /// This function will validate the Travel Trip Custom Fields
-        /// </summary>
-        /// <param name="workspace">Full Workspace.</param>
-        /// <param name="inTravelTrip">the Travel Trip</param>
-        /// <returns></returns>
-        private Collection<string> _ValidateTravelTripCustomFields(FullWorkspace workspace, TravelTripType inTravelTrip)
-        {
-            Collection<string> TravelTripCustomFieldMsgs = new Collection<string>();
-            
-            // need to find out if the boe TravelTrip has any custom fields
-            // if it does, then need to determine if the custom field is required
-            // and if it is required, then need to make sure the custom field has a value
-            foreach (CustomFieldDTO customField in workspace.CustomFields)
-            {
-                // if it's a travel trip custom field and required, check to see if it has a value
-                if (customField.CustomFieldRequired && customField.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay)
-                {
-                    // gets all the custom field options
-                    List<int> customFieldOptions = workspace.CustomFieldValues.Where(x => x.CustomFieldID == customField.Id).Select(x => x.CustomFieldValueID).ToList();
-
-                    // gets all the selected options for an element 
-                    List<int> selectedCustomFieldOptions = (from mappedValues in workspace.TravelTripsMappingWithCustomFieldsValuesAndContainerIds
-                                                            where mappedValues.Key == inTravelTrip.Id
-                                                            select mappedValues.Value).SelectMany(y => y).Select(c => c.Value).ToList();
-                    // if the options contains one of the selected values then its assigned else it needs to be.
-                    if (!customFieldOptions.Intersect(selectedCustomFieldOptions).Any())
-                    {
-                        TravelTripCustomFieldMsgs.Add(string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldName));
-                    }
-                }
-            }
-
-            return TravelTripCustomFieldMsgs;
+            return customFieldMsgs;
         }
 
         /// <summary>

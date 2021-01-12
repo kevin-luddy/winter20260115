@@ -7,6 +7,9 @@
 namespace GenBOE.ActionLogic.ModelView
 {
     using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using GenBOE.Dtos;
     using IES.Common;
 
     /// <summary>
@@ -22,6 +25,7 @@ namespace GenBOE.ActionLogic.ModelView
         {
             Id = -1;
             Order = 2000;
+            CustomFieldValueContainers = new Collection<CustomFieldValueContainer>();
         }
 
         /// <summary>
@@ -93,5 +97,15 @@ namespace GenBOE.ActionLogic.ModelView
         /// ID of the MOQ Type Selection this table data belongs to
         /// </summary>
         public int MOQTypeSelectionId { get; set; }
+
+        /// <summary>
+        /// These are used for data load.. During the load the data is stored here temporarily, then it's placed into the public property and cleared out
+        /// </summary>
+        internal IEnumerable<CustomFieldValueContainer> CustomFieldValueContainersIEnum { get; set; }
+
+        /// <summary>
+        /// Custom Field Value Containers for the MOQ Table
+        /// </summary>
+        public ICollection<CustomFieldValueContainer> CustomFieldValueContainers { get; set; }
     }
 }

@@ -11,6 +11,7 @@ namespace GenBOE.DataBridge.DTO
     using System.Collections.ObjectModel;
     using System.Linq;
     using GenBOE.ActionLogic.ModelView;
+    using GenBOE.Dtos;
     using GenBOE.Models;
     using IES.Common;
 
@@ -20,11 +21,18 @@ namespace GenBOE.DataBridge.DTO
     public class MoqTypeDataLoader : DataLoader<MoqTypeSelection>, IMoqTypeDataLoader
     {
         /// <summary>
-        /// Default constructor
+        /// MOQ Type Table Custom Field Value XREF Loader
         /// </summary>
-        public MoqTypeDataLoader()
+        private IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueXREFLoader;
+
+        /// <summary>
+        /// constructor
+        /// </summary>
+        /// <param name="moqTypeTableCustomFieldValueXREFLoader">MOQ Type Table Custom Field Value XREF Loader</param>
+        public MoqTypeDataLoader(IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueXREFLoader)
         {
             this.Log = new Logger(typeof(MoqTypeDataLoader));
+            this.moqTypeTableCustomFieldValueXREFLoader = moqTypeTableCustomFieldValueXREFLoader;
         }
 
         /// <summary>
@@ -62,6 +70,8 @@ namespace GenBOE.DataBridge.DTO
 
                     this.GetTableDataForMoqTypes(toReturn, gbe);
                 }
+
+                this.DoPostProcessing(toReturn);
             }
 
             return toReturn;
@@ -104,6 +114,8 @@ namespace GenBOE.DataBridge.DTO
 
                     this.GetTableDataForMoqTypes(toReturn, gbe);
                 }
+
+                this.DoPostProcessing(toReturn);
             }
 
             return toReturn;
@@ -145,6 +157,8 @@ namespace GenBOE.DataBridge.DTO
 
                     this.GetTableDataForMoqTypes(toReturn, gbe);
                 }
+
+                this.DoPostProcessing(toReturn);
             }
 
             return toReturn;
@@ -204,9 +218,15 @@ namespace GenBOE.DataBridge.DTO
 
                     foreach(MoqTableData table in dtoToUpsert.TableData.Where(x => x.DateOfReport != DateTime.MinValue && x.PoPStart != DateTime.MinValue && x.PoPEnd != DateTime.MinValue))
                     {
-                        gbe.upsertMOQTypeSelectionTableData(table.Id, toReturn, table.UpdateDate, table.Order, table.TableName, table.RepositoryName, table.QueryType,
+                        int? tableId = gbe.upsertMOQTypeSelectionTableData(table.Id, toReturn, table.UpdateDate, table.Order, table.TableName, table.RepositoryName, table.QueryType,
                             table.DateOfReport, table.HistoricalProgramName, table.ContractNumber, table.WbsElement, table.PoPStart, table.PoPEnd, table.TotalWbsHours,
-                            table.AdditionalQueryFilters, table.TotalRelevantHours);
+                            table.AdditionalQueryFilters, table.TotalRelevantHours).FirstOrDefault();
+                        
+                        // Save custom fields
+                        if (tableId.HasValue)
+                        {
+                            this.moqTypeTableCustomFieldValueXREFLoader.SaveMoqTypeTableCustomFieldValueContainers(table.CustomFieldValueContainers, tableId.Value);
+                        }
                     }
                 }
             }
@@ -242,7 +262,17 @@ namespace GenBOE.DataBridge.DTO
                                        PoPEnd = td.PeriodOfPerformanceEndDate,
                                        TotalWbsHours = td.TotalWbsHours,
                                        AdditionalQueryFilters = td.AdditionalQueryFilters,
-                                       TotalRelevantHours = td.TotalRelevantHoursAfterQueryFilters
+                                       TotalRelevantHours = td.TotalRelevantHoursAfterQueryFilters,
+                                       CustomFieldValueContainersIEnum = td.MoqTypeTableCustomFieldValueXREFs
+                                            .Select(cf => new CustomFieldValueContainer
+                                            {
+                                                ContainerID = cf.Id,
+                                                CustomFieldValueID = cf.CustomFieldValueId,
+                                                CustomFieldID = cf.CustomFieldValue.CustomFieldID,
+                                                UpdateDate = cf.UpdateDT,
+                                                IsOpenEnded = cf.CustomFieldValue.CustomField.IsOpenEnded,
+                                                OpenEndedValue = cf.CustomFieldValue.CustomFieldValueDescription
+                                            })
                                    }).OrderBy(x => x.Order).ToCollection<MoqTableData>();
 
             foreach (MoqTypeSelection selection in moqTypeSelections)
@@ -252,6 +282,23 @@ namespace GenBOE.DataBridge.DTO
                 if((selection.SelectedMOQType == MOQType.Historical || selection.SelectedMOQType == MOQType.Comparative) && selection.TableData.None())
                 {
                     selection.TableData.Add(new MoqTableData());
+                }
+            }
+        }
+
+        /// <summary>
+        /// Do post processing after saving MOQ Type Selections
+        /// </summary>
+        /// <param name="moqTypeSelections"></param>
+        private void DoPostProcessing(ICollection<MoqTypeSelection> moqTypeSelections)
+        {
+            // Handle custom field enums
+            foreach (MoqTypeSelection selection in moqTypeSelections.Where(x => x.TableData.Any()))
+            {
+                foreach (MoqTableData table in selection.TableData)
+                {
+                    table.CustomFieldValueContainers = table.CustomFieldValueContainersIEnum.ToCollection();
+                    table.CustomFieldValueContainersIEnum = null;
                 }
             }
         }

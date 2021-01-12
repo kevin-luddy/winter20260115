@@ -12,6 +12,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
     using System.Data.SqlClient;
     using System.Linq;
     using System.Transactions;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Models;
@@ -112,6 +113,9 @@ namespace GenBOE.Tests.DAL.DataLoaders
         private static int _GlobalPerDiemID = 0;
         private static int _GlobalDestLocationID = 0;
         private static int _GlobalDepartureLocationID = 0;
+
+        private static int _GlobalMoqTypeSelectionId = 0;
+        private static int _GlobalMoqTypeTableId = 0;
 
         #region Get Global IDs
 
@@ -340,6 +344,26 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 CreateGlobalBOELaborTypeID();
 
                 return _GlobalBOELaborTypeID;
+            }
+        }
+
+        public static int GlobalMoqTypeSelectionId
+        {
+            get
+            {
+                CreateGlobalMoqTypeSelectionId();
+
+                return _GlobalMoqTypeSelectionId;
+            }
+        }
+
+        public static int GlobalMoqTypeTableId
+        {
+            get
+            {
+                CreateGlobalMoqTypeTableId();
+
+                return _GlobalMoqTypeTableId;
             }
         }
         
@@ -625,6 +649,22 @@ namespace GenBOE.Tests.DAL.DataLoaders
             if (_GlobalBOELaborTypeID == 0)
             {
                 _GlobalBOELaborTypeID = _CreateBOELaborType();
+            }
+        }
+
+        public static void CreateGlobalMoqTypeSelectionId()
+        {
+            if (_GlobalMoqTypeSelectionId == 0)
+            {
+                _GlobalMoqTypeSelectionId = _CreateMoqTypeSelection();
+            }
+        }
+
+        public static void CreateGlobalMoqTypeTableId()
+        {
+            if (_GlobalMoqTypeTableId == 0)
+            {
+                _GlobalMoqTypeTableId = _CreateMoqTypeTable();
             }
         }
 
@@ -1461,6 +1501,76 @@ namespace GenBOE.Tests.DAL.DataLoaders
             return BOELaborTypeID;
         }
 
+        private static int _CreateMoqTypeSelection()
+        {
+            IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueLoader = new MoqTypeTableCustomFieldValueXREFLoader();
+            MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader);
+
+            MoqTypeSelection moqTypeSelection = new MoqTypeSelection()
+            {
+                Id = -1,
+                TaskId = GlobalTestCaseSetup.GlobalTaskElementID,
+                SelectedMOQType = MOQType.Historical,
+                CerName = "test name",
+                DescriptionHoursRequired = "test desc",
+                SmeReason = "test reason",
+                SmeHoursLogic = "test hours logic",
+                SmeDurationLogic = "test duration logic",
+                SmeTaskEstimates = "test task estimates",
+                Rationale = "test rationale",
+                SkillMixRationale = "test skill mix",
+                BoeId = GlobalTestCaseSetup.GlobalBOEID,
+                Updateable = UpdateType.Upsert
+            };
+
+            MoqTableData moqTableData = new MoqTableData()
+            {
+                Id = -1,
+                TableName = "test table",
+                RepositoryName = "test repo",
+                QueryType = "query type",
+                DateOfReport = DateTime.Now,
+                HistoricalProgramName = "test name",
+                ContractNumber = "test contract",
+                WbsElement = "test wbs",
+                PoPStart = DateTime.Now.AddDays(-3),
+                PoPEnd = DateTime.Now.AddDays(3),
+                TotalWbsHours = 200,
+                AdditionalQueryFilters = "test filters",
+                TotalRelevantHours = 150,
+                Updateable = UpdateType.Upsert
+            };
+
+            moqTypeSelection.TableData.Add(moqTableData);
+
+            int? moqTypeSelectionId;
+            using (TransactionScope scope = new TransactionScope())
+            {
+                moqTypeSelectionId = moqTypeDataLoader.Save(moqTypeSelection);
+                _GlobalMoqTypeSelectionId = moqTypeSelectionId ?? 0;
+                scope.Complete();
+            }
+
+            return moqTypeSelectionId ?? 0;
+        }
+
+        private static int _CreateMoqTypeTable()
+        {
+            // table created with MOQ Type Selection, so make sure one is made
+            CreateGlobalMoqTypeSelectionId();
+            
+            IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueLoader = new MoqTypeTableCustomFieldValueXREFLoader();
+            MoqTypeDataLoader moqTypeDataLoader = new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader);
+
+            // Get MOQ Type Selection and get ID from there
+            MoqTypeSelection moqTypeSelection = moqTypeDataLoader.GetById(GlobalTestCaseSetup.GlobalMoqTypeSelectionId);
+
+            int tableId = moqTypeSelection.TableData.First().Id;
+
+            _GlobalMoqTypeTableId = tableId;
+
+            return tableId;
+        }
         
         /// <summary>
         /// This function will create one workspace variable
@@ -1823,6 +1933,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
             return newTaskElementCustomFieldValueXrefValue;
         }
+
+        // create moq type cf xref
 
         private static int _CreatePerDiem()
         {

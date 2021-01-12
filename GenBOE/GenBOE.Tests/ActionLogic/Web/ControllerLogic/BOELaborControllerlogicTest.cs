@@ -20,6 +20,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.Validation;
+    using GenBOE.ActionLogic.WBS.BOE;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -56,6 +57,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<ICommonDataMapper> commonDataMapper = null;
         private Mock<IRteTemplateDataLoader> rteTemplateDataLoader = null;
         private Mock<IMoqTypeDataLoader> moqTypeDataLoader = null;
+        private Mock<IValidateBOE> validateBOE = null;
 
         #region Private members
         private BOELaborControllerLogic CreateSystem()
@@ -63,25 +65,26 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             this.CreateCommonSystem();
 
             return new BOELaborControllerLogic(
-                   _BoeTaskElementRecalculation.Object, 
+                   _BoeTaskElementRecalculation.Object,
                    _boeStateMachine.Object,
-                   _BoeMediator.Object, 
-                   _BoeTaskElementMediator.Object, 
+                   _BoeMediator.Object,
+                   _BoeTaskElementMediator.Object,
                    _VariableSelectBoeToSum.Object,
-                   _ResourceLoader.Object, 
-                   this.factory.Object, 
+                   _ResourceLoader.Object,
+                   this.factory.Object,
                    _WorkspaceVarLoader.Object,
                    _BoeLoader.Object,
                    _TaskElementDataLoader.Object,
                    _UserLoader.Object,
-                   _PermissionDataLoader.Object, 
+                   _PermissionDataLoader.Object,
                    perfOrgLoader.Object,
                    _TaskVariableLoader.Object,
                    _TaskElementValidation.Object,
                    circularReferenceChecker.Object,
-                   commonDataMapper.Object, 
+                   commonDataMapper.Object,
                    this.rteTemplateDataLoader.Object,
-                   this.moqTypeDataLoader.Object
+                   this.moqTypeDataLoader.Object,
+                   this.validateBOE.Object
             );
         }
 
@@ -108,7 +111,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                    circularReferenceChecker.Object,
                    commonDataMapper.Object, 
                    rteTemplateDataLoader.Object,
-                   this.moqTypeDataLoader.Object
+                   this.moqTypeDataLoader.Object,
+                   this.validateBOE.Object
             );
         }
 
@@ -136,7 +140,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                    circularReferenceChecker.Object,
                    commonDataMapper.Object, 
                    rteTemplateDataLoader.Object,
-                   this.moqTypeDataLoader.Object
+                   this.moqTypeDataLoader.Object,
+                   this.validateBOE.Object
             );
         }
 
@@ -167,6 +172,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             circularReferenceChecker = new Mock<IVariableCircularReferenceChecker>();
             commonDataMapper = new Mock<ICommonDataMapper>();
             this.moqTypeDataLoader = new Mock<IMoqTypeDataLoader>();
+            this.validateBOE = new Mock<IValidateBOE>();
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
@@ -237,6 +243,49 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             toReturn.LaborTypesData = new Collection<LaborTypeDataModelView> { labor };
 
+            toReturn.MOQTypes = new List<MoqTypeSelection>() {
+                new MoqTypeSelection() {
+                    Id = 1,
+                    BoeId = 1,
+                    TaskId = 1,
+                    SelectedMOQType = MOQType.Historical,
+                    Rationale = "test",
+                    SkillMixRationale = "test",
+                    TableData = new Collection<MoqTableData>()
+                    {
+                        new MoqTableData()
+                        {
+                            Id = 1,
+                            MOQTypeSelectionId = 1,
+                            TableName = "test",
+                            ContractNumber = "test",
+                            HistoricalProgramName = "test",
+                            RepositoryName = "test",
+                            DateOfReport = DateTime.Today,
+                            PoPStart = DateTime.Today,
+                            PoPEnd = DateTime.Today.AddDays(-1),
+                            QueryType = "test",
+                            WbsElement = "test",
+                            TotalWbsHours = 10,
+                            AdditionalQueryFilters = "test",
+                            TotalRelevantHours = 1,
+                            CustomFieldValueContainers = new Collection<CustomFieldValueContainer>()
+                            {
+                                new CustomFieldValueContainer()
+                                {
+                                    Id = 1,
+                                    ContainerID = 1,
+                                    OwnerID = 1,
+                                    CustomFieldID = 1,
+                                    CustomFieldValueID = 1,
+                                    OpenEndedValue = "test",
+                                    IsOpenEnded = true
+                                }
+                            }
+                        }
+                    }
+                }
+            };
 
             _WorkspaceVarLoader.Setup(x => x.GetByWorkspaceID(ws.Id)).Returns(new Collection<WorkspaceVariableDTO> { workspaceVar });
             _VariableSelectBoeToSum.Setup(x => x.GetTaskVarLabelTotal(It.IsAny<OrdinaryVariableDto>(), It.IsAny<DataClassForSumOfBOEsCalculation>())).Returns(decimal.Parse(taskVar.OrdinaryVariableValue));
@@ -655,7 +704,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             FullWorkspace ws = new FullWorkspace(workspace);
                         
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.IsFalse(validations.Any(), "There were validation errors");
         }
@@ -705,7 +753,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.LaborTypesData.First().SpreadCurveID = null;
 
             ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
@@ -762,7 +809,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.LaborTypesData.First().StartDate = null;
 
             ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
@@ -821,7 +867,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
@@ -839,7 +884,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             task.TaskElementData.TaskDescription = "This is a long sentence that goes over the rte size limit of 50 characters";
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
@@ -857,7 +901,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             task.TaskElementData.MOQText = "This is a long sentence that goes over the rte size limit of 50 characters";
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
@@ -876,7 +919,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             task.TaskElementData.StartDate = boe.StartDate.AddMonths(-1).ToMonthString();
             task.TaskElementData.TaskElementDetailID = -1;
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
@@ -895,7 +937,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             task.TaskElementData.EndDate = boe.EndDate.AddMonths(1).ToMonthString();
             task.TaskElementData.TaskElementDetailID = -1;
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
@@ -915,7 +956,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.TaskElementData.StartDate = Convert.ToDateTime(task.TaskElementData.EndDate).AddMonths(1).ToMonthString();
             task.TaskElementData.TaskElementDetailID = -1;
             task.LaborTypesData = new Collection<LaborTypeDataModelView>(); // Clear to avoid issues with resource type dates
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
@@ -1057,7 +1097,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             task.LaborTypesData.First().CustomFieldValues = new Collection<CustomFieldSelectionModelView>();
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
 
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
@@ -1076,7 +1115,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             task.LaborTypesData = new Collection<LaborTypeDataModelView>();
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
 
             BoeTaskElementDTO boeTask = new BoeTaskElementDTO
             {
@@ -1125,7 +1163,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
 
             CustomFieldDTO taskCustomField = new CustomFieldDTO { Id = 2, CustomFieldName = "TaskColor", WorkspaceID = ws.Id, CustomFieldDisplayID = CustomFieldType.TaskDisplay, CustomFieldRequired = true, IsOpenEnded = true };
             Collection<CustomFieldValueDTO> colorOptions = new Collection<CustomFieldValueDTO>();
@@ -1133,6 +1170,39 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(new Collection<int> { taskCustomField.Id }, It.IsAny<int>())).Returns(colorOptions);
 
             task.TaskElementData.CustomFieldValues.Add(new CustomFieldSelectionModelView() { IsOpenEnded = true, CustomFieldID = taskCustomField.Id, OpenEndedValue = string.Empty });
+
+            ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
+
+            sut.ValidateTaskDetails(boe, task, results, ws);
+            Assert.AreEqual(1, results.Count());
+        }
+
+        /// <summary>
+        /// Test ValidateTaskDetails for a missing required MOQ Type Table Custom Field
+        /// </summary>
+        [TestMethod]
+        public void TestValidateTaskDetails_MissingRequiredMoqTypeTableCF()
+        {
+            BOELaborControllerLogic sut = CreateSystem();
+
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
+            FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
+            FullWorkspace ws = new FullWorkspace(workspace);
+
+            LaborTaskDataModelView task = CreateModelView(boe, ws);
+
+            CustomFieldDTO moqTypeTableCustomField = new CustomFieldDTO { Id = 2, CustomFieldName = "MoqColor", WorkspaceID = ws.Id, CustomFieldDisplayID = CustomFieldType.MoqTypeTableDataDisplay, CustomFieldRequired = true, IsOpenEnded = true };
+            Collection<CustomFieldValueDTO> colorOptions = new Collection<CustomFieldValueDTO>();
+            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<CustomFieldDTO> { moqTypeTableCustomField });
+            retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(new Collection<int> { moqTypeTableCustomField.Id }, It.IsAny<int>())).Returns(colorOptions);
+
+            task.MOQTypes.First().TableData.First().CustomFieldValueContainers.Add(new CustomFieldValueContainer()
+            {
+                Id = 1,
+                CustomFieldID = moqTypeTableCustomField.Id,
+                IsOpenEnded = true,
+                OpenEndedValue = string.Empty
+            });
 
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
@@ -1210,7 +1280,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.TaskElementData.TaskOrdinaryVariables.First().OrdinaryVariableValue = null;
 
             ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
@@ -1227,7 +1296,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.LaborTypesData.First().PerformingOrgID = -1;
 
             ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
@@ -1244,7 +1312,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.LaborTypesData.First().ResourceID = -1;
 
             ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
@@ -1264,7 +1331,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             // Make MOQ not equal Labor Spread
             task.TaskElementData.MOQHoursEquation = (task.LaborTypesData.First().HourSpread - 1).ToString();
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
 
             ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
@@ -1282,7 +1348,6 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             LaborTaskDataModelView task = CreateModelView(boe, ws);
 
             task.LaborTypesData.First().Spreads.First().LaborSpreadValue -= 1;
-            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
 
             ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
@@ -1992,7 +2057,20 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 PoPEnd = DateTime.Now.AddDays(1),
                 TotalWbsHours = 100,
                 AdditionalQueryFilters = "test filters 1",
-                TotalRelevantHours = 50
+                TotalRelevantHours = 50,
+                CustomFieldValueContainers = new Collection<CustomFieldValueContainer>()
+                {
+                    new CustomFieldValueContainer()
+                    {
+                        Id = 1,
+                        OpenEndedValue = "test 1"
+                    },
+                    new CustomFieldValueContainer()
+                    {
+                        Id = 2,
+                        OpenEndedValue = "test 2"
+                    }
+                }
             };
 
             MoqTableData moqTableData2 = new MoqTableData()
@@ -2009,11 +2087,25 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 PoPEnd = DateTime.Now.AddDays(3),
                 TotalWbsHours = 200,
                 AdditionalQueryFilters = "test filters 2",
-                TotalRelevantHours = 150
+                TotalRelevantHours = 150,
+                CustomFieldValueContainers = new Collection<CustomFieldValueContainer>()
+                {
+                    new CustomFieldValueContainer()
+                    {
+                        Id = 3,
+                        OpenEndedValue = "test 3"
+                    },
+                    new CustomFieldValueContainer()
+                    {
+                        Id = 4,
+                        OpenEndedValue = "test 4"
+                    }
+                }
             };
 
             moqTypeSelectionToSave.TableData.Add(moqTableData1);
             moqTypeSelectionToSave.TableData.Add(moqTableData2);
+            taskMV.MOQTypes = new Collection<MoqTypeSelection>();
             taskMV.MOQTypes.Add(moqTypeSelectionToSave);
 
             // Get By BOE Id should return the existing MOQ Type plus one not included in the save to be deleted
@@ -2059,6 +2151,33 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             Assert.IsTrue(result[1].CustomFieldMetaData.isOpenEnded);
             Assert.AreEqual(1, result[1].CustomFieldOptions.Count);
             Assert.AreEqual("Test", result[1].CustomFieldOptions[0].Description);
+        }
+
+        /// <summary>
+        /// Test GetCustomFieldOptionModelViews for MOQ Type Table level custom fields
+        /// </summary>
+        [TestMethod]
+        public void Test_GetCustomFieldOptionModelViews_MoqTypeTableLevel()
+        {
+            BOELaborControllerLogic sut = CreateSystem();
+
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2 };
+            FullWorkspace ws = new FullWorkspace(workspace);
+            CustomFieldDTO moqTypeTableCustomField = new CustomFieldDTO { Id = 1, CustomFieldName = "Color", WorkspaceID = workspace.Id, CustomFieldDisplayID = CustomFieldType.MoqTypeTableDataDisplay, CustomFieldRequired = true, IsOpenEnded = true };
+            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO> { moqTypeTableCustomField });
+
+            CustomFieldValueDTO openEndedCustomFieldValue = new CustomFieldValueDTO { CustomFieldID = moqTypeTableCustomField.Id, CustomFieldValueID = 4, CustomFieldValueDescription = "Test", CustomFieldValueInUseFlag = true };
+            ICollection<CustomFieldValueDTO> customFieldOptions = new Collection<CustomFieldValueDTO> { openEndedCustomFieldValue };
+            List<int> customFieldIds = new List<int> { moqTypeTableCustomField.Id };
+            retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(customFieldIds, It.IsAny<int>())).Returns(customFieldOptions);
+
+            Collection<BOECustomFieldModelView> result = sut.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.MoqTypeTable);
+            retriever.Verify(x => x.GetCustomFieldsByWorkspaceId(workspace.Id), Times.Once());
+            retriever.Verify(x => x.GetCustomFieldValuesByFieldIds(customFieldIds, It.IsAny<int>()), Times.Once());
+
+            Assert.IsTrue(result[0].CustomFieldMetaData.isOpenEnded);
+            Assert.AreEqual(1, result[0].CustomFieldOptions.Count);
+            Assert.AreEqual("Test", result[0].CustomFieldOptions[0].Description);
         }
 
         [TestMethod]

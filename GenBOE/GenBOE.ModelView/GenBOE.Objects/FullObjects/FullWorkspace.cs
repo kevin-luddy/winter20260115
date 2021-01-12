@@ -75,6 +75,7 @@ namespace GenBOE.Objects
         private UserDTO currentActiveUser;
         private ReadOnlyCollection<LocationDTO> locationsInWs;
         private Dictionary<int, ICollection<KeyValuePair<int, int>>> taskElementsMappingWithCustomFieldsValuesAndContainerIds;
+        private Dictionary<int, ICollection<KeyValuePair<int, int>>> moqTypeTableMappingWithCustomFieldsValuesAndContainerIds;
         private Dictionary<int, ICollection<KeyValuePair<int, int>>> travelElementsMappingWithCustomFieldsValuesAndContainerIds;
         private Dictionary<int, ICollection<KeyValuePair<int, int>>> travelTripMappingWithCustomFieldsValuesAndContainerIds;
         private Dictionary<int, ICollection<KeyValuePair<int, int>>> laborResourcesMappingWithCustomFieldsValuesAndContainerIds;
@@ -772,6 +773,23 @@ namespace GenBOE.Objects
                 }
 
                 return this.taskElementsMappingWithCustomFieldsValuesAndContainerIds;
+            }
+        }
+
+        /// <summary>
+        /// MOQ Type Table Mapping with Custom Field Values and Container IDs
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        public Dictionary<int, ICollection<KeyValuePair<int, int>>> MoqTypeTableMappingWithCustomFieldsValuesAndContainerIds
+        {
+            get
+            {
+                if (this.moqTypeTableMappingWithCustomFieldsValuesAndContainerIds == null)
+                {
+                    this.moqTypeTableMappingWithCustomFieldsValuesAndContainerIds = this.retriever.GetCustomFieldValueIDsContainerIdsByMoqTypeTableIds(this.MoqTypeSelections.SelectMany(x => x.TableData).Select(x => x.Id).ToCollection());
+                }
+
+                return this.moqTypeTableMappingWithCustomFieldsValuesAndContainerIds;
             }
         }
 
