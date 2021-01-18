@@ -63,7 +63,7 @@ IF @Id < 0  /*Insert Record*/
 							(CONVERT(VARCHAR(10), @CustomFieldID) + '-' + CONVERT(VARCHAR(10), @MoqTypeTableDataId) --Name only used when performing copy, so it needs to be unique for mapping
 							, @CustomFieldValue, @CustomFieldID, 1, @UpdateDT)
 
-						SELECT @Id = CustomFieldValueId FROM @InsertedCustomFieldValue
+						SELECT @CustomFieldValueId = CustomFieldValueId FROM @InsertedCustomFieldValue
 					END
 				ELSE --If the value is already there, make sure the in use flag is set
 					BEGIN
@@ -71,7 +71,10 @@ IF @Id < 0  /*Insert Record*/
 					END
 
 				INSERT INTO [dbo].[MoqTypeTableCustomFieldValueXREF]
+					OUTPUT inserted.Id INTO @InsertedCustomFieldValueXref
 					VALUES (@UpdateDT, @MoqTypeTableDataId, @CustomFieldValueId)
+
+				SELECT @Id = Id FROM @InsertedCustomFieldValueXref
 			END
 	END
 ELSE
