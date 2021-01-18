@@ -1490,16 +1490,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
             _ = ws ?? throw new ArgumentNullException(nameof(ws));
 
             int i = -1;
-            return ws.TaskElements.Select(taskElement => new MoqTypeSelection()
+            return ws.TaskElements.Where(x => x.MOQType.MapToNew(ws.CreationDate) != MOQType.None || !string.IsNullOrEmpty(x.MOQText)).Select(taskElement => new MoqTypeSelection()
             {
                 Id = i--,
                 Updateable = UpdateType.Upsert,
                 TaskId = taskElement.Id,
 
-                SelectedMOQType = taskElement.MOQType.MapToNew(ws.CreationDate),
-                SmeReason = taskElement.MOQType.MapToNew(ws.CreationDate) == MOQType.SME ? taskElement.MOQText : string.Empty,
-                Rationale = taskElement.MOQType.MapToNew(ws.CreationDate) == MOQType.SME ? string.Empty : taskElement.MOQText
-            }).Where(x => x.SelectedMOQType != MOQType.None).ToList();
+                SelectedMOQType = taskElement.MOQType.MapToNew(ws.CreationDate, MOQType.Historical),
+                SmeReason = taskElement.MOQType.MapToNew(ws.CreationDate, MOQType.Historical) == MOQType.SME ? taskElement.MOQText : string.Empty,
+                Rationale = taskElement.MOQType.MapToNew(ws.CreationDate, MOQType.Historical) == MOQType.SME ? string.Empty : taskElement.MOQText
+            }).ToList();
         }
 
         /// <summary>
