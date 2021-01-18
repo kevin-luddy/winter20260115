@@ -114,8 +114,10 @@ namespace IES.Common
         /// Translates old MOQ Types to new ones, for MOQ Type Changes as of 2020.6
         /// </summary>
         /// <param name="originalValue">Original Value</param>
+        /// <param name="wsCreationDate">WS Creation Date</param>
+        /// <param name="defaultValue">Default value to set the MOQ Type to</param>
         /// <returns>New Value</returns>
-        public static MOQType MapToNew(this MOQType originalValue, DateTime? wsCreationDate)
+        public static MOQType MapToNew(this MOQType originalValue, DateTime? wsCreationDate, MOQType defaultValue = MOQType.None)
         {
             MOQType result = originalValue;
 
@@ -168,7 +170,7 @@ namespace IES.Common
                         result = MOQType.NonLabor;
                         break;
                     default:
-                        result = MOQType.None;
+                        result = defaultValue;
                         break;
                 }
             }
