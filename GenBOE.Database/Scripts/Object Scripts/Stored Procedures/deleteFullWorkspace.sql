@@ -37,6 +37,7 @@ AS
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
 **		5/22/20		Dusan				BOEJ-4616 Cleanning up the method, as it was neglegted
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
+**		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 *******************************************************************************/
 SET NOCOUNT ON 
 	IF @WorkspaceID IS NULL
@@ -138,6 +139,14 @@ SET NOCOUNT ON
 			FROM dbo.MOQTypeSelection M
 				INNER JOIN dbo.BOETaskElement T ON M.TaskId = T.BOETaskElementID
 				INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
+				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
+				
+		DELETE FROM dbo.[MoqTypeTableCustomFieldValueXREF]
+			FROM dbo.[MoqTypeTableCustomFieldValueXREF] x
+				INNER JOIN MoqTypeSelectionTableData t ON t.MoqTypeSelectionTableDataId = x.MoqTypeTableDataId 
+				INNER JOIN MoqTypeSelection mS ON mS.MoqTypeSelectionId = t.MoqTypeSelectionId 
+				INNER JOIN BoeTaskElement tE ON tE.BoeTaskElementId = mS.TaskId 
+				INNER JOIN dbo.BOE B ON tE.BOEID = B.BOEID
 				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
 		DELETE FROM dbo.MOQTypeSelectionTableData
 			FROM dbo.MOQTypeSelectionTableData TD
