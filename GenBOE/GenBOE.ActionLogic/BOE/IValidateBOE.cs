@@ -36,8 +36,9 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// Validate MOQ Template data on a Task Level. Does NOT validate Labor Type level selection
         /// </summary>
         /// <param name="moqTypesForTask">MOQ Types that belong to the task</param>
-        /// <param name="rteSizeLimit">RTE Size Limit</param>
+        /// <param name="ws">the workspace</param>
+        /// <param name="onButtonPress">True if this validation is being performed as part of the Validate BOE button</param>
         /// <returns>Errors, if any</returns>
-        ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws);
+        ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws, bool onButtonPress);
     }
 }
