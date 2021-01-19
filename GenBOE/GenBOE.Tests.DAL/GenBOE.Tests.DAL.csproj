@@ -131,6 +131,7 @@
     <Compile Include="DataLoaders\CommonDataLoaderTest.cs" />
     <Compile Include="DataLoaders\BOEFormDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\MoqTypeDataLoaderTest.cs" />
+    <Compile Include="DataLoaders\MoqTypeTableCustomFieldValueXREFLoaderTest.cs" />
     <Compile Include="DataLoaders\ProjectMapDataLoaderTest.cs" />
     <Compile Include="DataLoaders\RteTemplateDataLoaderTest.cs" />
     <Compile Include="DataLoaders\SystemSettingDTODataLoaderTest.cs" />

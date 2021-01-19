@@ -103,6 +103,14 @@ namespace GenBOE.Objects
         Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIdsByTaskElementIds(Collection<int> taskElementIds);
 
         /// <summary>
+        /// Gets a mapping of MOQ Type Table ids and custom field ids/container ids
+        /// </summary>
+        /// <param name="moqTypeTableIds">MOQ Type Table IDs</param>
+        /// <returns>Data</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIdsByMoqTypeTableIds(Collection<int> moqTypeTableIds);
+
+        /// <summary>
         /// Gets a mapping of travel element ids and custom field ids/container ids
         /// </summary>
         /// <param name="taskElementIds">Travel Elements</param>

@@ -24,6 +24,7 @@ namespace GenBOE.ActionLogic
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
+    using GenBOE.ActionLogic.WBS.BOE;
 
     public class BOELaborControllerLogicMST : BOELaborControllerLogic
     {
@@ -73,7 +74,8 @@ namespace GenBOE.ActionLogic
             IVariableCircularReferenceChecker circularReferenceChecker,
             ICommonDataMapper commonDataMapper,
             IRteTemplateDataLoader rteTemplateDataLoader,
-            IMoqTypeDataLoader moqTypeDataLoader
+            IMoqTypeDataLoader moqTypeDataLoader,
+            IValidateBOE validateBOE
             )
             : base(inBoeTaskElementRecalc,
                 inBoeStateMachine,
@@ -93,7 +95,8 @@ namespace GenBOE.ActionLogic
                 circularReferenceChecker,
                 commonDataMapper,
                 rteTemplateDataLoader,
-                moqTypeDataLoader)
+                moqTypeDataLoader,
+                validateBOE)
         {
             this._mstMetricsLoader = inMSTMetricLoader;
             this.rteTemplateDataLoader = rteTemplateDataLoader;

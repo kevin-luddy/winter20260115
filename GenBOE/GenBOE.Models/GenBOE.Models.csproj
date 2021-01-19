@@ -284,6 +284,9 @@
     <Compile Include="MOQTypeSelectionTableData.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="MoqTypeTableCustomFieldValueXREF.cs">
+      <DependentUpon>BOEEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="MSTTravelModeLU.cs">
       <DependentUpon>BOEEntityModel.tt</DependentUpon>
     </Compile>

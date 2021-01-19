@@ -21,6 +21,7 @@ namespace GenBOE.ActionLogic
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
+    using GenBOE.ActionLogic.WBS.BOE;
 
     public class BOELaborControllerLogicSpace : BOELaborControllerLogic
     {
@@ -60,7 +61,8 @@ namespace GenBOE.ActionLogic
             IVariableCircularReferenceChecker circularReferenceChecker,
             ICommonDataMapper commonDataMapper,
             IRteTemplateDataLoader rteTemplateDataLoader,
-            IMoqTypeDataLoader moqTypeDataLoader
+            IMoqTypeDataLoader moqTypeDataLoader,
+            IValidateBOE validateBOE
             ) :base(inBoeTaskElementRecalc, 
                 inBoeStateMachine, 
                 inBoeMediator, 
@@ -79,7 +81,8 @@ namespace GenBOE.ActionLogic
                 circularReferenceChecker,
                 commonDataMapper,
                 rteTemplateDataLoader,
-                moqTypeDataLoader)
+                moqTypeDataLoader,
+                validateBOE)
         {
         }
 
