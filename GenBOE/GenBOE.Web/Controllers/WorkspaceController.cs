@@ -1714,6 +1714,7 @@ namespace GenBOE.Web.Controllers
                 ICollection<BOECustomFieldsGridModelView> theModelViews = _ControllerLogic.GetCustomFieldsGridModelViews(customFields, ws.Id);
 
                 ViewData["IsProjectMapWorkspace"] = ws.IsProjectMapWorkspace;
+                ViewData["UsingTemplateBoe"] = ws.UsingTemplateBOE;
 
                 toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELDS_GRID, theModelViews);
             }
@@ -1773,7 +1774,7 @@ namespace GenBOE.Web.Controllers
             }
 
             //BOECustomField
-            BOECustomFieldModelView theModelView = new BOECustomFieldModelView() { CustomFieldMetaData = metaData, CustomFieldOptions = options };
+            BOECustomFieldModelView theModelView = new BOECustomFieldModelView() { CustomFieldMetaData = metaData, CustomFieldOptions = options, UsingTemplateBoe = ws.UsingTemplateBOE };
 
             ViewResult toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELD, theModelView);
 
