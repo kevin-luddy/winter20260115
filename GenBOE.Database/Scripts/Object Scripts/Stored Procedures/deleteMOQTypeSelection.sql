@@ -23,14 +23,28 @@ AS
 	*******************************************************************************
 	**		Date:		Author:				Description:
 	**		--------	--------			-------------------------------------------
-	**		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
+	**		1/19/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 	*******************************************************************************/
 	SET NOCOUNT ON 
 
 	IF (SELECT UpdateDT FROM [dbo].[MOQTypeSelection] WHERE [MOQTypeSelectionId] = @MOQTypeSelectionId) = @UpdateDT
 		BEGIN
+			DECLARE @xrefs TABLE (CustomFieldValueId int)
+			INSERT INTO @xrefs 
+				SELECT x.CustomFieldValueId FROM [dbo].[MoqTypeTableCustomFieldValueXREF] x INNER JOIN MoqTypeSelectionTableData t ON t.MoqTypeSelectionTableDataId = x.MoqTypeTableDataId AND t.MOQTypeSelectionId = @MOQTypeSelectionId
+
 			DELETE FROM [dbo].[MoqTypeTableCustomFieldValueXREF] 
 				FROM [dbo].[MoqTypeTableCustomFieldValueXREF] x INNER JOIN MoqTypeSelectionTableData t ON t.MoqTypeSelectionTableDataId = x.MoqTypeTableDataId AND t.MOQTypeSelectionId = @MOQTypeSelectionId
+
+			--Delete Custom Field Values for deleted Open Ended Custom Fields
+			DELETE FROM dbo.CustomFieldValue WHERE CustomFieldValueID in
+				(
+					SELECT x.CustomFieldValueId
+						FROM @xrefs x 
+							INNER JOIN dbo.CustomFieldValue v on x.CustomFieldValueId = v.CustomFieldValueId 
+							INNER JOIN dbo.CustomField c on v.CustomFieldId = c.CustomFieldID
+						WHERE c.IsOpenEnded = 1
+				)
 
 			DELETE FROM [dbo].[MOQTypeSelectionTableData] WHERE [MOQTypeSelectionId] = @MOQTypeSelectionId
 			DELETE FROM [dbo].[MOQTypeSelection] WHERE [MOQTypeSelectionId] = @MOQTypeSelectionId
