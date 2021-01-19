@@ -47,10 +47,10 @@ namespace GenBOE.Tests.DAL.DataLoaders
         }
 
         /// <summary>
-        /// Main test method to test upserting, deleting, and retrieving data
+        /// Main test method to test inserting new MOQ Table Custom Field Value XREF, also tests retrieving and deleting data
         /// </summary>
         [TestMethod]
-        public void UpsertDeleteGetByIdsTest()
+        public void InsertMoqTableCustomFieldXrefTest()
         {
             MoqTypeTableCustomFieldValueXREFLoader sut = this.CreateSut();
 
@@ -59,7 +59,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             {
                 ContainerID = -1,
                 CustomFieldID = GlobalTestCaseSetup.GlobalCustomFieldID,
-                CustomFieldValueID = -1, //GlobalTestCaseSetup.GlobalCustomFieldValueID,
+                CustomFieldValueID = -1,
                 OwnerID = GlobalTestCaseSetup.GlobalMoqTypeTableId,
                 IsOpenEnded = true,
                 OpenEndedValue = "test",
@@ -79,9 +79,55 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.IsNotNull(resultCFValueContainers.FirstOrDefault());
 
             CustomFieldValueContainer resultCFVC = resultCFValueContainers.First();
-            Assert.AreEqual(cfValueContainer.CustomFieldID, resultCFVC.CustomFieldID);
+            Assert.IsTrue(resultCFVC.ContainerID > 0);
+            Assert.AreEqual(cfValueContainer.OwnerID, resultCFVC.OwnerID);
+            Assert.IsTrue(resultCFVC.CustomFieldValueID > 0);
+
+            // Test Delete
+            resultCFVC.Updateable = UpdateType.Deleted;
+            sut.SaveMoqTypeTableCustomFieldValueContainer(resultCFVC, GlobalTestCaseSetup.GlobalMoqTypeTableId);
+
+            resultCFValueContainers = sut.GetByIds(resultIds.Select(x => x.Value).ToCollection());
+
+            Assert.IsFalse(resultCFValueContainers.Any());
+        }
+
+        /// <summary>
+        /// Main test method to test updating new MOQ Table Custom Field Value XREF, also tests retrieving and deleting data
+        /// </summary>
+        [TestMethod]
+        public void UpdateMoqTableCustomFieldXrefTest()
+        {
+            MoqTypeTableCustomFieldValueXREFLoader sut = this.CreateSut();
+
+            // Test Upsert
+            CustomFieldValueContainer cfValueContainer = new CustomFieldValueContainer()
+            {
+                ContainerID = -1,
+                CustomFieldID = GlobalTestCaseSetup.GlobalCustomFieldID,
+                CustomFieldValueID = GlobalTestCaseSetup.GlobalCustomFieldValueID,
+                OwnerID = GlobalTestCaseSetup.GlobalMoqTypeTableId,
+                IsOpenEnded = true,
+                OpenEndedValue = "test",
+                Updateable = UpdateType.Upsert
+            };
+
+            ICollection<int?> resultIds = sut.SaveMoqTypeTableCustomFieldValueContainers(new Collection<CustomFieldValueContainer>() { cfValueContainer }, GlobalTestCaseSetup.GlobalMoqTypeTableId);
+
+            Assert.AreEqual(1, resultIds.Count);
+            Assert.IsNotNull(resultIds.FirstOrDefault());
+            Assert.IsTrue(resultIds.First() > 0);
+
+            // Test GetByIds
+            ICollection<CustomFieldValueContainer> resultCFValueContainers = sut.GetByIds(resultIds.Select(x => x.Value).ToCollection());
+
+            Assert.AreEqual(1, resultCFValueContainers.Count);
+            Assert.IsNotNull(resultCFValueContainers.FirstOrDefault());
+
+            CustomFieldValueContainer resultCFVC = resultCFValueContainers.First();
+            Assert.IsTrue(resultCFVC.ContainerID > 0);
+            Assert.AreEqual(cfValueContainer.OwnerID, resultCFVC.OwnerID);
             Assert.AreEqual(cfValueContainer.CustomFieldValueID, resultCFVC.CustomFieldValueID);
-            // TODO other asserts?
 
             // Test Delete
             resultCFVC.Updateable = UpdateType.Deleted;
