@@ -661,7 +661,7 @@
 				    <div class="help-dialog-close"></div>
                     <% if (Model.UsingTemplateBoe)
                         { %>
-                    <div id="template-boe-help" class="help-dialog-text">Specify if users should enter a value for this field for each BOE, Task, MOQ Table or Labor Spread.</div>
+                    <div id="template-boe-help" class="help-dialog-text">Specify if users should enter a value for this field for each BOE, Task, Labor Spread or MOQ Table.</div>
                     <% } else { %>
                     <div id="non-template-boe-help" class="help-dialog-text">Specify if users should enter a value for this field for each BOE, Task or Labor Spread.</div>
                     <% } %>
@@ -672,12 +672,12 @@
                 <label for="CustomFieldMetaData.CustomFieldDisplayID.BOE">BOE</label>
                 <input type="radio" id="CustomFieldMetaData.CustomFieldDisplayID.Task" name="CustomFieldMetaData.CustomFieldDisplayID" value="<%:(int)CustomFieldType.TaskDisplay%>" />
                 <label for="CustomFieldMetaData.CustomFieldDisplayID.Task">Task</label>
+                <input type="radio" id="CustomFieldMetaData.CustomFieldDisplayID.Labor" name="CustomFieldMetaData.CustomFieldDisplayID" value="<%:(int)CustomFieldType.LaborTypeDisplay%>" />
+                <label for="CustomFieldMetaData.CustomFieldDisplayID.Labor">Resource Types</label>
                 <% if (Model.UsingTemplateBoe) { %>
                 <input type="radio" id="CustomFieldMetaData.CustomFieldDisplayID.MoqTable" name="CustomFieldMetaData.CustomFieldDisplayID" value="<%:(int)CustomFieldType.MoqTypeTableDataDisplay%>" />
                 <label for="CustomFieldMetaData.CustomFieldDisplayID.MoqTable">MOQ Table</label>
                 <% } %>
-                <input type="radio" id="CustomFieldMetaData.CustomFieldDisplayID.Labor" name="CustomFieldMetaData.CustomFieldDisplayID" value="<%:(int)CustomFieldType.LaborTypeDisplay%>" />
-                <label for="CustomFieldMetaData.CustomFieldDisplayID.Labor">Resource Types</label>
             </div>
         </div>
          <div class="form-row">

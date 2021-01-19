@@ -169,8 +169,8 @@
                 <th class="field-name">Field Name</th>
                 <th class="boe">BOE</th>
                 <th class="task">Task</th>
-                <th class="moq-type-table">MOQ Table</th>
                 <th class="labor-type">Resource Types</th>
+                <th class="moq-type-table">MOQ Table</th>
                 <th class="required">Required</th>
                 <th class="open-ended">Open Ended</th>
                 <th class="in-use-column">In Use</th>
@@ -181,8 +181,8 @@
                     <td><a id="ResourceLink" href="#Resources">Resource</a></td>
                     <td></td>
                     <td></td>
-                    <td class="moq-type-table"></td>
                     <td><div class="checkmark"></div></td>
+                    <td class="moq-type-table"></td>
                     <td><div class="checkmark"></div></td>
                     <td></td>
                     <td></td>
@@ -192,8 +192,8 @@
                     <td><a id="PerformingOrgLink" href="#PerformingOrgs">Performing Organization</a></td>
                     <td></td>
                     <td></td>
-                    <td class="moq-type-table"></td>
                     <td><div class="checkmark"></div></td>
+                    <td class="moq-type-table"></td>
                     <td><div class="checkmark"></div></td>
                     <td></td>
                     <td></td>
@@ -218,14 +218,6 @@
                         {
                             Response.Write("<td></td>");
                         }
-                        if(item.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay)
-                        {
-                            Response.Write("<td class=\"moq-type-table\"><div class=\"checkmark\"></div></td>");
-                        }
-                        else
-                        {
-                            Response.Write("<td class=\"moq-type-table\"></td>");
-                        }
                         if (item.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay)
                         {
                             Response.Write("<td><div class=\"checkmark\"></div></td>");
@@ -233,6 +225,14 @@
                         else
                         {
                             Response.Write("<td></td>");
+                        }
+                        if(item.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay)
+                        {
+                            Response.Write("<td class=\"moq-type-table\"><div class=\"checkmark\"></div></td>");
+                        }
+                        else
+                        {
+                            Response.Write("<td class=\"moq-type-table\"></td>");
                         }
                         if (item.isRequired)
                         {
