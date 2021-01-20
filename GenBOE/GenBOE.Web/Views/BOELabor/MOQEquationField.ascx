@@ -69,36 +69,7 @@
         MOQEquationFieldWidget = InitializeMOQEquationFieldWidget(MOQEquationFieldWidget_ReadOnly, workspaceVariables, ordinaryVariables, newOrdinaryVariableID, sumOfBoes, discrete,
             validationUrl, shouldMoqReadOnlyBeReversed, calculateMOQResultUrl, openSumOfBoesByWbsUrl, openSumOfBoesByClinUrl, isNotSubContractor, sortBOEByWBS, sortBOEByClin);
 
-        TaskElementDetailsWidget.ChildWidgets.push(MOQEquationFieldWidget);
-        TaskElementDetailsWidget.registerForDelegateEvent('click', '.menu-icon', function (event) {
-            if ($('#menu-options-box').hasClass("display-none")) {
-                $('#menu-options-box').removeClass('display-none');
-            }
-            else {
-                $('#menu-options-box').addClass('display-none');
-            }
-        });
-        TaskElementDetailsWidget.registerForDelegateEvent('click', '#menu-options-box', function (event) {
-            $('#menu-options-box').addClass('display-none');
-            event.stopPropagation();
-        });
-
-        TaskElementDetailsWidget.registerForDelegateEvent('change', '.moqRteFieldContainer input, .tableData textarea', function (event) {
-            MOQEquationFieldWidget.setDirty();
-        });
-
-        TaskElementDetailsWidget.CheckToShowMetrics();
-        TaskElementDetailsWidget.MOQText = CreateRteTemplate('<%:showMoqQuestions%>'.isTrue(), <%: numberMoqQuestions %>);
-
-        if (!MOQEquationFieldWidget.isReadOnly() || shouldMoqReadOnlyBeReversed || !TaskElementDetailsWidget.isReadOnly()) {
-            InitializeRteTemplate(TaskElementDetailsWidget.MOQText, 'MOQText', rteFieldSize);
-        }
-        else {
-            HandleRTETemplateDataForReadOnly(TaskElementDetailsWidget.MOQText, 'MOQText');
-        }
-
-        $(document).trigger('MOQWidgetLoaded', "MOQEquationField");
-        $(document).trigger('WidgetLoaded', "MOQEquationField");
+        MOQEquationFieldWidget.AfterDomLoad(TaskElementDetailsWidget, '<%:showMoqQuestions%>'.isTrue(), <%:numberMoqQuestions%>);
     }
 </script>
 
@@ -151,7 +122,7 @@
             Please add MOQ Type(s).
         </div>
     </div>
-    <div id="moqTypes" data-ng-if="model.UsingTemplateBOE" class="form-element moqRteFieldContainer" data-ng-repeat="moqType in model.SelectedMoqTypes">
+    <div data-ng-if="model.UsingTemplateBOE" class="form-element moqRteFieldContainer" data-ng-repeat="moqType in model.SelectedMoqTypes | orderBy: 'Order'">
         <div class="form-row" data-ng-class="{'collapsedBorder': moqType.collapsed}">
             <div class="form-label">
                 <a data-nodrag="" data-ng-click="toggle(moqType)">
@@ -382,9 +353,9 @@
             <span>Add New MOQ Type</span>
         </div>
         <div class="form-element">
-            <select data-ng-model="model.selectedMOQType" data-ng-options="moqType.SelectedMOQTypeText for moqType in model.MOQTypes | moqTypesFilter:model.SelectedMoqTypes" class="moqTypes">
-            </select>
+            <select data-ng-model="model.selectedMOQType" data-ng-options="moqType.SelectedMOQTypeText for moqType in model.MOQTypes | moqTypesFilter:model.SelectedMoqTypes" class="moqTypes"></select>
             <button data-ng-click="AddMoqType()" data-ng-disabled="!model.selectedMOQType" class="moqTypesButton ies-action" type="button">Add MOQ Type</button>
+            <button data-ng-disabled="model.SelectedMoqTypes.length <= 1" onclick="MOQEquationFieldWidget.DisplayReOrderMoqTypesDialog()" class="moqTypesButton ies-blue" type="button">Sort MOQ Types</button>
         </div>
     </div>
 
@@ -473,6 +444,30 @@
                     <% }%>
                 </tbody>
             </table>
+        </div>
+    </div>
+    <div id="ReOrderMoqTypesDialog" class="reorder-moq-types-dialog" style="display: none;">
+        <div class="container">
+            <div class="form-row">
+                <div class="form-element">Sort Moq Types using the move buttons.  Close when finished.  The defined order will be maintained when exporting data to MS Word.</div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    <select size="7" data-ng-model="model.SortingMoqTypes" data-ng-options="moqType as moqType.SelectedMOQTypeText for moqType in model.SelectedMoqTypes | orderBy: 'Order'"></select>
+
+                    <div class="buttons inline-block centered">
+                        <button data-ng-disabled="!model.SortingMoqTypes || model.SortingMoqTypes.length === 0" id="MoqTypesMoveItemsUp" style="margin-left: 7px;" class="ies move-button" data-ng-click="MoveUpMoqType()" type="button">Move Up</button>
+                        <br /><br />
+                        <button data-ng-disabled="!model.SortingMoqTypes || model.SortingMoqTypes.length === 0" id="MoqTypesMoveItemsDown" style="margin-left: 7px;" class="ies move-button" data-ng-click="MoveDownMoqType()"type="button">Move Down</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-element">Note: Must not contain any OCI, classified, export controlled or third party proprietary information.</div>
+            </div>
+            <div class="buttons">
+                <button id="ReOrderMoqTypesDialog-Close" class="ies" onclick="MOQEquationFieldWidget.CloseReOrderMoqTypes()" name="cancel-button" type="button">Close</button>
+            </div>
         </div>
     </div>
 </div>

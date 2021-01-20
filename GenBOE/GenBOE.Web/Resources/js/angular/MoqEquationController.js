@@ -1,5 +1,6 @@
-﻿// The controller for the MOQ equation section.
-moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uibModal', '$window', 'ManageTaskModel', function ($scope, $document, $uibModal, $window, ManageTaskModel) {
+﻿/// <reference path="directives.js" />
+// The controller for the MOQ equation section.
+moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uibModal', '$window', 'ManageTaskModel', '$timeout', function ($scope, $document, $uibModal, $window, ManageTaskModel, $timeout) {
     $scope.init = function () {
         $scope.model = $window.MOQEquationFieldModel;
         $scope.model.IsCostEquation = ($scope.model.MoqEquationType == 'Cost');
@@ -14,7 +15,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
             angular.forEach($scope.model.SelectedMoqTypes.map(e => e.SelectedMOQType.toString()), function (id) {
                 $scope.InitializeRteFields(id);
             });
-        }, 10);
+        }, 10);        
     }
 
     // Called when the Insert Workspace Variable dropdown item is clicked.
@@ -61,6 +62,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     // Adds MOQ Type to Selected MOQ Types (and removes it from the dropdown of available types)
     $scope.AddMoqType = function () {
         var selectedItem = $scope.model.selectedMOQType;
+        selectedItem.Order = 2000;
+
         $scope.model.SelectedMoqTypes.push(selectedItem);
         $scope.InitializeRteFields(selectedItem.SelectedMOQType, true);
         selectedItem.TableData = [];
@@ -79,6 +82,72 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
                 MOQEquationFieldWidget.setDirty();
             });
         });
+    }
+
+    // Returns an Ordered Selected Moq Types array
+    $scope.OrderedSelectedMoqTypes = function () {
+        return $scope.model.SelectedMoqTypes.sort((a, b) => (a.Order < b.Order) ? -1 : 1);
+    }
+
+    // Move MOQ Type up
+    $scope.MoveUpMoqType = function () {
+        var newOrderArray = [];
+        var pos = 0;
+        $scope.OrderedSelectedMoqTypes().forEach(function (item) {
+            if (item.SelectedMOQType === $scope.model.SortingMoqTypes.SelectedMOQType) {
+                var previous = newOrderArray.pop();
+                item.Order = pos - 1;
+                newOrderArray.push(item);
+
+                if (previous) {
+                    previous.Order = pos++;
+                    newOrderArray.push(previous);
+                }
+            }
+            else {
+                item.Order = pos++;
+                newOrderArray.push(item);
+            }
+        });
+
+        $scope.UpdateOrderingMoqTypes(newOrderArray);
+    }
+
+    // Move MOQ Type down
+    $scope.MoveDownMoqType = function () {
+        var newOrderArray = [];
+        var pos = 0;
+        var nextOffset = 0;
+        $scope.OrderedSelectedMoqTypes().forEach(function (item) {
+            if (item.SelectedMOQType === $scope.model.SortingMoqTypes.SelectedMOQType) {
+                item.Order = 1 + pos++;
+
+                nextOffset = -1;
+            }
+            else {
+                item.Order = nextOffset + pos++;
+
+                nextOffset = 0;
+            }
+
+            newOrderArray.push(item);
+        });
+
+        $scope.UpdateOrderingMoqTypes(newOrderArray);
+    }
+
+    // Applies the new order of MOQ Types to the underlying model.
+    $scope.UpdateOrderingMoqTypes = function (newOrderArray) {
+        $timeout(function () {
+            $scope.$apply(function () {
+                $scope.model.SelectedMoqTypes.forEach(function (item) {
+                    var matchingItem = newOrderArray.find(({ SelectedMOQType }) => SelectedMOQType === item.SelectedMOQType);
+                    item.Order = matchingItem.Order;
+
+                    $scope.InitializeRteFields(item.SelectedMOQType, true);
+                });
+            });
+        }, 0);
     }
 
     // Initializes RTE fields for the selected MOQ Type option
@@ -853,6 +922,56 @@ InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, wo
         }
     };
 
+
+    MOQEquationFieldWidget.AfterDomLoad = function (taskElementDetailsWidget, showMoqQuestions, numberOfMoqQuestions) {
+        taskElementDetailsWidget.ChildWidgets.push(MOQEquationFieldWidget);
+        taskElementDetailsWidget.registerForDelegateEvent('click', '.menu-icon', function (event) {
+            if ($('#menu-options-box').hasClass("display-none")) {
+                $('#menu-options-box').removeClass('display-none');
+            }
+            else {
+                $('#menu-options-box').addClass('display-none');
+            }
+        });
+        taskElementDetailsWidget.registerForDelegateEvent('click', '#menu-options-box', function (event) {
+            $('#menu-options-box').addClass('display-none');
+            event.stopPropagation();
+        });
+
+        taskElementDetailsWidget.registerForDelegateEvent('change', '.moqRteFieldContainer input, .tableData textarea', function (event) {
+            MOQEquationFieldWidget.setDirty();
+        });
+
+        taskElementDetailsWidget.CheckToShowMetrics();
+        taskElementDetailsWidget.MOQText = CreateRteTemplate(showMoqQuestions, numberOfMoqQuestions);
+
+        if (!MOQEquationFieldWidget.isReadOnly() || shouldMoqReadOnlyBeReversed || !taskElementDetailsWidget.isReadOnly()) {
+            InitializeRteTemplate(taskElementDetailsWidget.MOQText, 'MOQText', rteFieldSize);
+        }
+        else {
+            HandleRTETemplateDataForReadOnly(taskElementDetailsWidget.MOQText, 'MOQText');
+        }
+
+        MOQEquationFieldWidget.InitializeDialog(MOQEquationFieldWidget.ReOrderMoqTypesDialog);
+        // Dusan.. Uncomment
+        // MOQEquationFieldWidget.InitializeDialog(MOQEquationFieldWidget.ReOrderMoqTablesDialog);
+
+        $(document).trigger('MOQWidgetLoaded', "MOQEquationField");
+        $(document).trigger('WidgetLoaded', "MOQEquationField");
+    }
+
+    /// Reordering MOQ Types
+    MOQEquationFieldWidget.ReOrderMoqTypesDialog = {};
+    MOQEquationFieldWidget.ReOrderMoqTypesDialog.Element = $("#ReOrderMoqTypesDialog");
+    MOQEquationFieldWidget.ReOrderMoqTypesDialog.Params = { width: 600, height: 270, modal: true, resizable: false, draggable: true, title: 'Sort Moq Types' };
+    MOQEquationFieldWidget.DisplayReOrderMoqTypesDialog = function () {
+        MOQEquationFieldWidget.OpenDialogAfterInitialize(MOQEquationFieldWidget.ReOrderMoqTypesDialog);
+    };
+    MOQEquationFieldWidget.CloseReOrderMoqTypes = function () {
+        MOQEquationFieldWidget.CloseDialog(MOQEquationFieldWidget.ReOrderMoqTypesDialog);
+        MOQEquationFieldWidget.setDirty();
+    }
+    /// END Reordering MOQ Types
 
     $("#MOQEquationField #MOQEquation").change(function () {
         $(document).trigger('ValidateMOQEquation');

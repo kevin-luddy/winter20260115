@@ -89,6 +89,7 @@
     <Content Include="Object Scripts\Stored Procedures\deleteMockTestData.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteMOQTypeSelection.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteMOQTypeSelectionTableData.sql" />
+    <Content Include="Object Scripts\Stored Procedures\deleteMoqTypeTableCustomFieldValue.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteMSTTravelTrip.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteMSTTravelTripCustomFieldValue.sql" />
     <Content Include="Object Scripts\Stored Procedures\deleteMSTTravelTripTaskelement.sql" />
@@ -228,6 +229,7 @@
     <Content Include="Object Scripts\Stored Procedures\upsertLOB.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertMOQTypeSelection.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertMOQTypeSelectionTableData.sql" />
+    <Content Include="Object Scripts\Stored Procedures\upsertMoqTypeTableCustomFieldValue.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertMSTTravelTrip.sql" />
     <Content Include="Object Scripts\Stored Procedures\upsertMSTTravelTripCustomFieldValue.sql" />
     <Content Include="Object Scripts\Stored Procedures\UpsertMSTZoneTravelOrigin.sql" />
@@ -272,6 +274,7 @@
     <Content Include="Object Scripts\Table Based Processing\LaborSpreadViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\LaborTypeCustomFieldViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\LaborTypeViaTable.sql" />
+    <Content Include="Object Scripts\Table Based Processing\MoqTypeTableCustomFieldViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\OrdinaryVariableViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\OrdinaryVarSumVarViaTable.sql" />
     <Content Include="Object Scripts\Table Based Processing\ProjectMapSpreadViaTable.sql" />
@@ -319,6 +322,7 @@
     <Content Include="Release Scripts\Release 2020.2\Release 2020.2.sql" />
     <Content Include="Release Scripts\Release 2020.3\Release 2020.3.sql" />
     <Content Include="Release Scripts\Release 2020.5\Release 2020.5.sql" />
+    <Content Include="Release Scripts\Release 2021.1.1\Release 2021.1.1.sql" />
     <Content Include="Release Scripts\Release 2021.1\Release 2021.1.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2020.3 Generated On 7_21_2020.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2020.2 Generated On 6_9_2020.sql" />
