@@ -478,6 +478,46 @@
         return selectedItem;
     };
 
+    $scope.findMoqTableCustomFieldValue = function (customField, item) {
+        var selectedItem = {
+            selectedID: '-1',
+            selectedOptionID: '-1',
+            updateDateLong: '0',
+            openEndedId: '-1',
+            openEndedValue: '',
+            selectedOptionText: ''
+        };
+
+        if (item && item.CustomFieldValueContainers) {
+            customField.CustomFieldOptions.some(function (option) {
+                var cfv = item.CustomFieldValueContainers.find(function (item) {
+                    return item.CustomFieldValueID == option.CustomFieldOptionID;
+                });
+                var found = false;
+
+                if (cfv !== undefined) {
+                    item.CustomFieldValueContainers.some(function (cfv) {
+                        if (cfv.CustomFieldValueID == option.CustomFieldOptionID) {
+                            selectedItem.selectedID = cfv.SelectionID;
+                            selectedItem.selectedOptionID = option.CustomFieldOptionID;
+                            selectedItem.updateDateLong = cfv.UpdateDateLong;
+                            selectedItem.openEndedId = cfv.CustomFieldValueID;
+                            selectedItem.openEndedValue = cfv.OpenEndedValue;
+                            selectedItem.selectedOptionText = cfv.OpenEndedValue;
+
+                            found = true;
+                            return found;
+                        }
+                    });
+                }
+
+                return found;
+            });
+        }
+
+        return selectedItem;
+    };
+
     $scope.recalculateTotals = function () {
         var cost = new BigNumber(0.0);
         var hours = new BigNumber(0.0);
@@ -915,6 +955,7 @@
         $(document).trigger("SHOW_LOADING_BOX");
         $scope.isLoading = true;
         $scope.TaskCustomFields = [];
+        $scope.MoqTableCustomFields = [];
         $scope.LaborCustomFields = [];
         $scope.model = {};
         $scope.model.AdjacentItems = {};
@@ -940,10 +981,12 @@
             }
 
             $scope.TaskCustomFields = $scope.model.TaskCustomFields;
+            $scope.MoqTableCustomFields = $scope.model.MOQTypeTableCustomFields;
             $scope.LaborCustomFields = $scope.model.LaborCustomFields;
 
             delete $scope.model.TaskCustomFields;
             delete $scope.model.LaborCustomFields;
+            delete $scope.model.MOQTypeTableCustomFields;
 
             var index = 0;
             if ($scope.model.TaskElementData.DescriptionTemplateAnswers) {
@@ -1146,6 +1189,53 @@
                     }
 
                     postedData.MOQTypes = MOQEquationFieldModel.SelectedMoqTypes;
+
+                    // MOQ Table Custom Fields
+                    var moqTablecustomFieldDictionary = [];
+
+                    angular.forEach(angular.element("#moqTypes table[pkid]"), function (value) {
+                        var currentTable = angular.element(value);
+                        var pkid = currentTable.attr('pkid');
+
+                        var currentMoqTableDictionaryEntry = { pkid: pkid };
+                        var currentMoqTableItems = [];
+
+                        angular.forEach(angular.element('td.custom-field input', currentTable), function (currInput) {
+                            var currentInput = angular.element(currInput);
+                            var value = currentInput.val();
+                            var selectionid = currentInput.attr("selectionid");
+                            var customfieldid = currentInput.attr("customfieldid");
+                            var updateDateLong = currentInput.attr("updatedatelong");
+                            var customfieldvalueid = currentInput.attr("customfieldvalueid");
+
+                            currentMoqTableItems.push({
+                                SelectionID: selectionid,
+                                CustomFieldID: customfieldid,
+                                CustomFieldValueID: customfieldvalueid,
+                                UpdateDateLong: updateDateLong,
+                                IsOpenEnded: true,
+                                OpenEndedValue: value
+                            });
+                        });
+
+                        currentMoqTableDictionaryEntry.CustomFieldValues = currentMoqTableItems;
+                        moqTablecustomFieldDictionary[pkid] = currentMoqTableDictionaryEntry;
+                    });
+
+                    for (var mt in postedData.MOQTypes) {
+                        var postedMoqType = postedData.MOQTypes[mt];
+
+                        for (var table in postedMoqType.TableData) {
+                            var postedTable = postedMoqType.TableData[table];
+                            delete postedTable.UpdateDate;
+
+                            if (moqTablecustomFieldDictionary[postedTable.Id] !== undefined) {
+                                postedTable.CustomFieldValueContainers = moqTablecustomFieldDictionary[postedTable.Id].CustomFieldValues;
+                            } else {
+                                postedTable.CustomFieldValueContainers = [];
+                            }
+                        }
+                    }
                 }
 
                 postedData.TaskElementData.MOQType = $('#MOQType').val();

@@ -6,6 +6,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         $scope.model.IsCostEquation = ($scope.model.MoqEquationType == 'Cost');
         $scope.model.insertWorkspaceModalOpen = false;
 
+        $scope.newTableId = -1;
+
         // This is needed to allow for some other processing to finish, otherwise we get errors from angular.js
         setTimeout(function () { 
             initializeWidget();
@@ -167,6 +169,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     // Create New Table Data for the MOQ Type
     $scope.CreateNewTable = function (tableDataArray) {
         var newTable = {};
+        newTable.Id = $scope.newTableId--;
         tableDataArray.push(newTable);
         MOQEquationFieldWidget.setDirty();
     }

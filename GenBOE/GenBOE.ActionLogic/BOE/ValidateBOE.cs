@@ -630,7 +630,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                 foreach (BoeTaskElementDTO task in boe.TaskElements)
                 {
-                    errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList(), ws);
+                    errorMessages = ValidateTemplateMoqForTask(boe.MoqTypeSelections.Where(x => x.TaskId == task.Id).ToList(), ws, true);
 
                     if (errorMessages.Any())
                     {
@@ -651,9 +651,10 @@ namespace GenBOE.ActionLogic.WBS.BOE
         /// Validate MOQ Template data on a Task Level. Does NOT validate Labor Type level selection
         /// </summary>
         /// <param name="moqTypesForTask">MOQ Types that belong to the task</param>
-        /// <param name="rteSizeLimit">RTE Size Limit</param>
+        /// <param name="ws">the workspace</param>
+        /// <param name="onButtonPress">True if this validation is being performed as part of the Validate BOE button</param>
         /// <returns>Errors, if any</returns>
-        public ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws)
+        public ICollection<string> ValidateTemplateMoqForTask(ICollection<MoqTypeSelection> moqTypesForTask, FullWorkspace ws, bool onButtonPress)
         {
             _ = moqTypesForTask ?? throw new ArgumentNullException(nameof(moqTypesForTask));
 
@@ -711,7 +712,11 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                                 if (row.TotalRelevantHours <= 0) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalRelevantHours} must be a number greater than 0."); }
 
-                                errorMessages.AddRange(this.ValidateCustomFields(ws, CustomFieldType.MoqTypeTableDataDisplay, ws.MoqTypeTableMappingWithCustomFieldsValuesAndContainerIds, row.Id)); 
+                                if (onButtonPress)
+                                {
+                                    // only run this as part of the Validate BOE button validation as it relies on using already saved data - save validation of custom fields is handled elsewhere
+                                    errorMessages.AddRange(this.ValidateCustomFields(ws, CustomFieldType.MoqTypeTableDataDisplay, ws.MoqTypeTableMappingWithCustomFieldsValuesAndContainerIds, row.Id));
+                                }
                             });
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.Rationale, "Rationale", ws.RteSizeLimit, errorMessages);
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);

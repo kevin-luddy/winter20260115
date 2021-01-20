@@ -146,7 +146,7 @@
         <div data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>">
             <div class="tableDataParent" data-ng-repeat="tableData in moqType.TableData">
                 <div class="tableData">
-                    <table>
+                    <table pkid="{{tableData.Id}}">
                         <tr>
                             <td class="form-label">
                                 <div class="moqTypeHeader" data-ng-class="{'collapsed': tableData.collapsed, 'expanded': !tableData.collapsed}" data-ng-click="toggle(tableData)"></div>
@@ -230,6 +230,12 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalRelevantHoursHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalRelevantHoursComparativeSuffix);"></div></td>
                             <td><input type="number" required min="0" data-ng-model="tableData.TotalRelevantHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
+                        </tr>
+                        <tr data-ng-repeat="customField in MoqTableCustomFields" data-ng-show="!tableData.collapsed">
+                            <td class="form-label">{{customField.CustomFieldMetaData.FieldName}}{{(customField.CustomFieldMetaData.isRequired) ? ' *' : ''}}</td>
+                            <td class="custom-field">{{ selectedItem = findMoqTableCustomFieldValue(customField, tableData); "" }}
+                                <input type="text" onchange="MOQEquationFieldWidget.setDirty(); validateMoqTableCustomField(this);" data-ng-required="customField.CustomFieldMetaData.isRequired" data-ng-class="{'ng-invalid': customField.CustomFieldMetaData.isRequired && selectedItem.openEndedValue.length==0}" data-ng-value="selectedItem.openEndedValue" customfieldid="{{customField.CustomFieldMetaData.CustomFieldID}}" customfieldvalueid="{{selectedItem.openEndedId}}" selectionid="{{selectedItem.selectedID}}" updatedatelong="{{selectedItem.updateDateLong}}" openended="true" />
+                            </td>
                         </tr>
                    </table>
                 </div>

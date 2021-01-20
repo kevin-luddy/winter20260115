@@ -659,12 +659,7 @@
                 <!-- This comment is needed for the jquery animation to work in IE8... -->
                 <div id="FieldLevel-HelpDialog" class="help-dialog" style="width: 200px;">
 				    <div class="help-dialog-close"></div>
-                    <% if (Model.UsingTemplateBoe)
-                        { %>
-                    <div id="template-boe-help" class="help-dialog-text">Specify if users should enter a value for this field for each BOE, Task, Labor Spread or MOQ Table.</div>
-                    <% } else { %>
-                    <div id="non-template-boe-help" class="help-dialog-text">Specify if users should enter a value for this field for each BOE, Task or Labor Spread.</div>
-                    <% } %>
+                    <div id="template-boe-help" class="help-dialog-text">Specify if users should enter a value for this field for each BOE, Task<%: Model.UsingTemplateBoe ? ", Resource Type or MOQ Table." : " or Resource Type." %></div>
                 </div>
             </div>
             <div class="form-element">

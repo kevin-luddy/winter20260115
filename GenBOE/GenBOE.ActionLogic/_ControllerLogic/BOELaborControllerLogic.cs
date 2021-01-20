@@ -931,6 +931,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                             foreach(CustomFieldValueContainer customFieldValueContainer in table.CustomFieldValueContainers)
                             {
                                 customFieldValueContainer.Id = i--;
+                                customFieldValueContainer.CustomFieldValueID = i--;
                                 customFieldValueContainer.Updateable = UpdateType.Upsert;
                             }
                         }
@@ -1683,7 +1684,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         {
             if (ws.UsingTemplateBOE)
             {
-                ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws);
+                ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false);
                 errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
             }
         }
