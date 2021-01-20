@@ -23,6 +23,10 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESHomeUrl']/@value">
     </parameterentry>
   </parameter>
+  <parameter name="EstimatingDataGroupDL" description="doesn't matter" defaultvalue="__EstimatingDataGroupDL__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EstimatingDataGroupDL']/@value">
+    </parameterentry>
+  </parameter>
   <parameter name="PiwikId" description="doesn't matter" defaultvalue="__PiwikId__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='PiwikId']/@value">
     </parameterentry>
