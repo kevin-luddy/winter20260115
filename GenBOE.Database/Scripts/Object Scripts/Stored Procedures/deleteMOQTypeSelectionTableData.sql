@@ -23,12 +23,26 @@ AS
 	*******************************************************************************
 	**		Date:		Author:				Description:
 	**		--------	--------			-------------------------------------------
-	**		1/13/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
+	**		1/19/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 	*******************************************************************************/
 	SET NOCOUNT ON 
 	IF (SELECT UpdateDT FROM [dbo].[MOQTypeSelectionTableData] WHERE [MOQTypeSelectionTableDataId] = @MOQTypeSelectionTableDataId) = @UpdateDT
 		BEGIN
+			DECLARE @xrefs TABLE (CustomFieldValueId int)
+			INSERT INTO @xrefs SELECT CustomFieldValueId FROM [dbo].[MoqTypeTableCustomFieldValueXREF] X WHERE MoqTypeTableDataId = @MOQTypeSelectionTableDataId
+
 			DELETE FROM [dbo].[MoqTypeTableCustomFieldValueXREF] WHERE MoqTypeTableDataId = @MOQTypeSelectionTableDataId
+
+			--Delete Custom Field Values for deleted Open Ended Custom Fields
+			DELETE FROM dbo.CustomFieldValue WHERE CustomFieldValueID in
+				(
+					SELECT x.CustomFieldValueId
+						FROM @xrefs x 
+							INNER JOIN dbo.CustomFieldValue v on x.CustomFieldValueId = v.CustomFieldValueId 
+							INNER JOIN dbo.CustomField c on v.CustomFieldId = c.CustomFieldID
+						WHERE c.IsOpenEnded = 1
+				)
+
 			DELETE FROM [dbo].[MOQTypeSelectionTableData] WHERE [MOQTypeSelectionTableDataId] = @MOQTypeSelectionTableDataId
 		END
 	ELSE
