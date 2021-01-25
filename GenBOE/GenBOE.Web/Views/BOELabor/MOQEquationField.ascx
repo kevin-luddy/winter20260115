@@ -450,7 +450,7 @@
     <div id="ReOrderMoqTypesDialog" class="reorder-moq-types-dialog" style="display: none;">
         <div class="container">
             <div class="form-row">
-                <div class="form-element">Sort Moq Types using the move buttons.  Close when finished.  The defined order will be maintained when exporting data to MS Word.</div>
+                <div class="form-element">Sort MOQ Types using the move buttons.  Close when finished.  The defined order will be maintained when exporting data to MS Word.</div>
             </div>
             <div class="form-row">
                 <div class="form-label">
@@ -472,7 +472,7 @@
         <div id="ReOrderMoqTablesDialog" class="reorder-moq-tables-dialog" style="display: none;">
         <div class="container">
             <div class="form-row">
-                <div class="form-element">Sort Moq Tables using the move buttons.  Close when finished.  The defined order will be maintained when exporting data to MS Word.</div>
+                <div class="form-element">Sort MOQ Tables using the move buttons.  Close when finished.  The defined order will be maintained when exporting data to MS Word.</div>
             </div>
             <div class="form-row">
                 <div class="form-label">

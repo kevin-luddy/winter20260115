@@ -308,26 +308,36 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         $window.open(url, '_blank');
     };
 
+    //#region MOQ Type Ordering
+
+    // Display Reorder MOQ Types Dialog
     $scope.displayReOrderMoqTypesDialog = function () {
         $scope.model.SortingMoqType = $scope.model.SelectedMoqTypes[0];
         MOQEquationFieldWidget.OpenDialogAfterInitialize(MOQEquationFieldWidget.ReOrderMoqTypesDialog);
     };
+
+    // Close Reorder MOQ Types Dialog
     $scope.closeReOrderMoqTypes = function () {
         MOQEquationFieldWidget.CloseDialog(MOQEquationFieldWidget.ReOrderMoqTypesDialog);
         MOQEquationFieldWidget.setDirty();
     }
 
+    // Display Reorder MOQ Tables Dialog
     $scope.displayReOrderMoqTablesDialog = function (moqType) {
         $scope.model.SortingMoqTablesMoqTypeParent = moqType;
         $scope.model.SortingMoqTable = moqType.TableData[0];
 
         MOQEquationFieldWidget.OpenDialogAfterInitialize(MOQEquationFieldWidget.ReOrderMoqTablesDialog);
     };
+
+    // Close Reorder MOQ Tables Dialog
     $scope.closeReOrderMoqTables = function () {
         MOQEquationFieldWidget.CloseDialog(MOQEquationFieldWidget.ReOrderMoqTablesDialog);
         $scope.model.SortingMoqTables = [];
         MOQEquationFieldWidget.setDirty();
     }
+
+    //#endregion
 }]);
 
 // initialize MOQ Equation Widget.. moved here so that way this much script is not in the ascx page
