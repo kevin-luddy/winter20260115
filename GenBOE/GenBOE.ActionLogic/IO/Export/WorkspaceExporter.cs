@@ -121,7 +121,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 // Hide Template BOE sheets
                 using (SpreadsheetDocument document = SpreadsheetDocument.Open(toReturn, true))
                 {
-                    ExcelUtilities.HideWorksheets(document, new List<string>() { "MOQ by BOE by Task", "MOQ Table Data", "MOQ Summary" });
+                    ExcelUtilities.HideWorksheets(document, new List<string>() { "MOQ by BOE by Task", "MOQ Table Data" });
                 }
             }
 
@@ -163,7 +163,7 @@ namespace GenBOE.ActionLogic.IO.Export
             }
             else
             {
-                return new int?[] { null, null, 1, null, null, null, null };
+                return new int?[] { null, null, 1, null, null, null, null, null };
             }
         }
 
