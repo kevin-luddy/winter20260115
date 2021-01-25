@@ -153,7 +153,7 @@ namespace GenBOE.ActionLogic.IO.Export
             }
             else
             {
-                return new int?[] { null, null, 1, null, null, null, null, 1, 1 };
+                return new int?[] { null, null, 1, null, null, null, null, null, 1, 1 };
             }
         }
 
