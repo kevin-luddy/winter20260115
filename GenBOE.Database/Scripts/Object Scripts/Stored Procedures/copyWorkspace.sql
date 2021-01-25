@@ -28,6 +28,9 @@ AS
 **		1/22/20		ranzalon			Fixed bug with missing RteTemplateSourceId
 **		6/11/20		Dusan				BOEJ-4655 Exact copy should copy WS email settings
 **		8/19/20		Dusan				BOEJ-4728 Add Lead Pricer / Estimator change to the copy
+**		8/27/20		ranzalon			BOEJ-4760 - Template Boe
+**		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
+**		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -106,6 +109,7 @@ INSERT INTO [dbo].[Workspace]
 		   ,[LastProPricerProposal]
 		   ,[RteSizeLimit]
 		   ,[RevisedSubmittalDate]
+		   ,[TemplateBoe]
            )
 SELECT [UpdateDT]
       ,@WorkspaceName
@@ -150,6 +154,7 @@ SELECT [UpdateDT]
 	  ,null --LastProPricerProposal
 	  ,[RteSizeLimit]
 	  ,[RevisedSubmittalDate]
+	  ,[TemplateBoe]
   FROM [dbo].[Workspace]
 WHERE WorkspaceID = @WorkspaceID
 
@@ -1526,7 +1531,7 @@ SELECT TE.[BOETaskElementID]
       ,TE.[MOQHoursEquation]
       ,TE.[MOQCostEquation]
       ,TE.[MOQText]
-      ,TE.[MOQTypeID]
+      ,dbo.MapToNewMoqType(TE.[MOQTypeID], GETDATE())
       ,B.NewBOEID--[BOEID]
       ,TE.[LaborTypeWarningFlag]
       ,TE.[IMS_ID]
@@ -1714,6 +1719,181 @@ SELECT H.[UpdateDT]
   FROM [dbo].[BOEApprovalHistory] H
 INNER JOIN @BOE B ON H.BOEID = B.BOEID
 
+/** [dbo].[MOQTypeSelection] **/
+DECLARE @MOQTypeSelection TABLE
+(
+	[MOQTypeSelectionId] [int] NOT NULL,
+	[TaskId] [int] NOT NULL,
+	[MOQTypeSelection] [int] NOT NULL,
+	[UpdateDT] [datetime2](7) NOT NULL,
+	[Order] [int] NOT NULL,
+	[CERName] [varchar](255) NULL,
+	[HoursDescription] [varchar](max) NULL,
+	[SubjectMatterExpert] [varchar](max) NULL,
+	[HoursLogicAndAssumptions] [varchar](max) NULL,
+	[DurationLogicAndAssumptions] [varchar](max) NULL,
+	[EstimateTasks] [varchar](max) NULL,
+	[Rationale] [varchar](max) NULL,
+	[SkillMix] [varchar](max) NULL,
+	Processed bit,
+	NewMOQTypeSelectionId int,
+	NewTaskId int
+)
+INSERT INTO @MOQTypeSelection
+SELECT
+	M.[MOQTypeSelectionId],
+	M.[TaskId],
+	M.[MOQTypeSelection],
+	M.[UpdateDT],
+	M.[Order],
+	M.[CERName],
+	M.[HoursDescription],
+	M.[SubjectMatterExpert],
+	M.[HoursLogicAndAssumptions],
+	M.[DurationLogicAndAssumptions],
+	M.[EstimateTasks],
+	M.[Rationale],
+	M.[SkillMix],
+	0,
+	NULL,
+	T.NewBOETaskElementID
+FROM [dbo].[MOQTypeSelection] M
+INNER JOIN @BOETaskElement T ON M.TaskId = T.BOETaskElementID
+
+DECLARE @MOQTypeSelectionId int
+WHILE EXISTS (SELECT 1 FROM @MOQTypeSelection WHERE Processed = 0)
+BEGIN
+SELECT TOP 1 @MOQTypeSelectionId = MOQTypeSelectionId FROM @MOQTypeSelection WHERE Processed = 0
+INSERT INTO [dbo].[MOQTypeSelection]
+			([TaskId],
+			[MOQTypeSelection],
+			[UpdateDT],
+			[Order],
+			[CERName],
+			[HoursDescription],
+			[SubjectMatterExpert],
+			[HoursLogicAndAssumptions],
+			[DurationLogicAndAssumptions],
+			[EstimateTasks],
+			[Rationale],
+			[SkillMix]
+			)
+SELECT NewTaskId,
+	[MOQTypeSelection],
+	[UpdateDT],
+	[Order],
+	[CERName],
+	[HoursDescription],
+	[SubjectMatterExpert],
+	[HoursLogicAndAssumptions],
+	[DurationLogicAndAssumptions],
+	[EstimateTasks],
+	[Rationale],
+	[SkillMix]
+FROM @MOQTypeSelection
+WHERE MOQTypeSelectionId = @MOQTypeSelectionId
+
+UPDATE @MOQTypeSelection
+SET NewMOQTypeSelectionId = SCOPE_IDENTITY(),
+	Processed = 1
+WHERE MOQTypeSelectionId = @MOQTypeSelectionId
+
+END
+
+/** [dbo].[MOQTypeSelectionTableData] **/
+DECLARE @MOQTypeSelectionTableData TABLE
+(
+	[MOQTypeSelectionTableDataId] [int] NOT NULL,
+	[MOQTypeSelectionId] [int] NOT NULL,
+	[UpdateDT] [datetime2](7) NOT NULL,
+	[Order] [int] NOT NULL,
+	[TableName] [varchar](255) NOT NULL,
+	[RepositoryName] [varchar](50) NULL,
+	[QueryType] [varchar](40) NULL,
+	[DateOfReport] [datetime2](7) NOT NULL,
+	[HistoricalProgramName] [varchar](125) NOT NULL,
+	[ContractNumber] [varchar](255) NULL,
+	[WbsElement] [varchar](2500) NOT NULL,
+	[PeriodOfPerformanceStartDate] [datetime2](7) NOT NULL,
+	[PeriodOfPerformanceEndDate] [datetime2](7) NOT NULL,
+	[TotalWbsHours] [decimal](10,2) NOT NULL,
+	[AdditionalQueryFilters] [varchar](2500) NOT NULL,
+	[TotalRelevantHoursAfterQueryFilters] [decimal](10,2) NOT NULL,
+	Processed bit,
+	NewMOQTypeSelectionTableDataId int,
+	NewMOQTypeSelectionId int
+)
+INSERT INTO @MOQTypeSelectionTableData
+SELECT
+	TD.[MOQTypeSelectionTableDataId],
+	TD.[MOQTypeSelectionId],
+	TD.[UpdateDT],
+	TD.[Order],
+	TD.[TableName],
+	TD.[RepositoryName],
+	TD.[QueryType],
+	TD.[DateOfReport],
+	TD.[HistoricalProgramName],
+	TD.[ContractNumber],
+	TD.[WbsElement],
+	TD.[PeriodOfPerformanceStartDate],
+	TD.[PeriodOfPerformanceEndDate],
+	TD.[TotalWbsHours],
+	TD.[AdditionalQueryFilters],
+	TD.[TotalRelevantHoursAfterQueryFilters],
+	0,
+	NULL,
+	S.NewMOQTypeSelectionId
+FROM [dbo].[MOQTypeSelectionTableData] TD
+INNER JOIN @MOQTypeSelection S ON TD.MOQTypeSelectionId = S.MOQTypeSelectionId
+
+DECLARE @MOQTypeSelectionTableDataId int
+WHILE EXISTS (SELECT 1 FROM @MOQTypeSelectionTableData WHERE Processed = 0)
+BEGIN
+SELECT TOP 1 @MOQTypeSelectionTableDataId = MOQTypeSelectionTableDataId FROM @MOQTypeSelectionTableData WHERE Processed = 0
+INSERT INTO [dbo].[MOQTypeSelectionTableData]
+			([MOQTypeSelectionId],
+			[UpdateDT],
+			[Order],
+			[TableName],
+			[RepositoryName],
+			[QueryType],
+			[DateOfReport],
+			[HistoricalProgramName],
+			[ContractNumber],
+			[WbsElement],
+			[PeriodOfPerformanceStartDate],
+			[PeriodOfPerformanceEndDate],
+			[TotalWbsHours],
+			[AdditionalQueryFilters],
+			[TotalRelevantHoursAfterQueryFilters]
+			)
+SELECT NewMOQTypeSelectionId,
+	[UpdateDT],
+	[Order],
+	[TableName],
+	[RepositoryName],
+	[QueryType],
+	[DateOfReport],
+	[HistoricalProgramName],
+	[ContractNumber],
+	[WbsElement],
+	[PeriodOfPerformanceStartDate],
+	[PeriodOfPerformanceEndDate],
+	[TotalWbsHours],
+	[AdditionalQueryFilters],
+	[TotalRelevantHoursAfterQueryFilters]
+FROM @MOQTypeSelectionTableData
+WHERE MOQTypeSelectionTableDataId = @MOQTypeSelectionTableDataId
+
+UPDATE @MOQTypeSelectionTableData
+SET NewMOQTypeSelectionTableDataId = SCOPE_IDENTITY(),
+	Processed = 1
+WHERE MOQTypeSelectionTableDataId = @MOQTypeSelectionTableDataId
+
+END
+
+/****** Object:  Table [dbo].[BOELaborType]    Script Date: 05/17/2012 10:50:02 ******/
 DECLARE @BOELaborType TABLE 
 (
 	[BOELaborTypeID] [int] NOT NULL,
@@ -1759,7 +1939,7 @@ SELECT LT.[BOELaborTypeID]
 	  ,LT.[CLINID]
       ,LT.[CanOffload]
 	  ,LT.[LaborSortId]
-	  ,0 /*PROCESSED*/
+	  ,0/*PROCESSED*/
       ,NULL
       ,CASE
 		WHEN R.NewResourceID IS NOT NULL THEN R.NewResourceID

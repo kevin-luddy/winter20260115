@@ -380,7 +380,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 Assert.AreEqual(workspace.RecalculationStartedDate ?? DateTime.Today, result.DateRecalculationStarted ?? DateTime.Today);
                 Assert.AreEqual(workspace.CostPrecision, result.CostDecimalPrecision);
                 Assert.AreEqual(workspace.CustomSorting, (int)result.CustomFieldSorting);
-                Assert.AreEqual(workspace.ResourceSorting, (int)result.ResourceSorting);// 40
+                Assert.AreEqual(workspace.ResourceSorting, (int)result.ResourceSorting);
+                // 40
                 // UpdateDateLong is not checked
                 // Updateable is not checked
                 Assert.AreEqual(workspace.IsUsingEquivalentPerson, result.IsUsingEquivalentPerson);
@@ -391,11 +392,12 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 Assert.AreEqual(workspace.LastProPricerProposal, result.LastProPricerProposal);
                 Assert.AreEqual(workspace.RteSizeLimit, result.RteSizeLimit);
                 Assert.AreEqual(workspace.RevisedSubmittalDate, result.RevisedSubmittalDate);
-                // 49
+                Assert.AreEqual(workspace.TemplateBoe, result.UsingTemplateBOE);  
+                // 50
             }
             Type dtoType = typeof(WorkspaceDTO);
             int numProperties = dtoType.GetProperties().Count();
-            Assert.AreEqual(49, numProperties, "Untested properties exist in the Workspace DTO");
+            Assert.AreEqual(50, numProperties, "Untested properties exist in the Workspace DTO");
         }
 
         [TestMethod]
@@ -821,6 +823,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             }
             Assert.AreEqual(dto1.IsUsingTM, dto2.IsUsingTM);
             Assert.AreEqual(dto1.ProjectMapType, dto2.ProjectMapType);
+            Assert.AreEqual(dto1.UsingTemplateBOE, dto2.UsingTemplateBOE);
         }
 
         [TestMethod]
@@ -870,7 +873,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             RteTemplateDataLoader rteLoader = new RteTemplateDataLoader();
             ProPricerDTODataLoader ppLoader = new ProPricerDTODataLoader();
             BoeTaskElementDTODataLoader taskLoader = new BoeTaskElementDTODataLoader(new ResourceTypeLoader(), new ResourceSpreadLoader(), new OrdinaryVariableLoader(), new BoeTaskElementCustomFieldValueXREFLoader(), new LaborTypeCustomFieldValueXREFLoader());
-            IRetriever retriever = new Retriever(null, null, wsLoader, null, null, null, null, null, null, taskLoader, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+            IRetriever retriever = new Retriever(null, null, wsLoader, null, null, null, null, null, null, taskLoader, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
             FullObjectFactory fullObjectFactory = new FullObjectFactory(null, null, null, null, null, null, null, null, null, null, null, null);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), fullObjectFactory);

@@ -1,12 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using IES.Common;
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace GenBOE.Dtos
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using GenBOE.ActionLogic.ModelView;
+    using GenBOE.Models;
+    using IES.Common;
+
     [ExcludeFromCodeCoverage]
     //// This class is used within BOEExportModelView to keep track of the different
     // task elements for a BOE 
@@ -31,6 +39,7 @@ namespace GenBOE.Dtos
             taskElementLabors = new Collection<BOEExportTaskElementLabor>();
             IMS_ID = string.Empty;
             ExportFields = new Dictionary<string, string>();
+            this.MOQTypes = new Collection<MoqTypeSelection>();
         }
 
         public void SetTaskElementType(TaskElementType taskElementType)
@@ -59,6 +68,7 @@ namespace GenBOE.Dtos
 
         public string TaskTitle { get; set; }
         public string MOQText { get; set; }
+        public ICollection<MoqTypeSelection> MOQTypes { get; set; }
         public string SourceOfData { get; set; }
         public Collection<BOEExportTaskElementLabor> taskElementLabors { get; set; }
         public string MOQEquation { get; set; }

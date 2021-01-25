@@ -18,147 +18,21 @@ CREATE PROCEDURE [dbo].[getBOEIDByWorkspaceQuickSearch]
 )
 AS
 /******************************************************************************
-**		 
 **		Name: [getBOEIDByWorkspaceQuickSearch]
 **		Desc: Returns BOEID using Quick Search criteria
-**			
-**		
-**
-**		Auth: Don Canuso
-**		Date: 1/19/2011
 *******************************************************************************
 **		Change History
 *******************************************************************************
 **		Date:		Author:				Description:
-**		2/1/11		dcanuso				Based on discussions with the SEs, the way
-**										that this stored procedure should work is,
-**										all words that are sent in need
-**										to be found somewhere
-**										So, as long as every word is found
-**										in one of the searched fields, then it should
-**										be returned.
-**										So, need to look through each word.
-**		2/15/11		dcanuso				Quick Search User Searches are now on Display Name
-**										Initial Parameter changed
-**		2/17/11		dcanuso				Added Search Category:
-**										1: BOE
-**										2: BOE Content Template
-**										3: All
-**		2/18/11		dcanuso				Rethinking Ordering
-**		3/3/11		dcanuso				WBS Number is being padded for ordering
-**		3/8/11		dcanuso				WBS_CLIN_BOE_XREF is back so needs to be added to SP
-**										Developer will be padding words with
-**										"" and separating word phrases with
-**										commas (,).
-**		3/21/11		dcanuso				Ability to search within your own Workspace
-**										So, re-organization of Search Category Table
-**										(1, N'BOEs in other Workspaces')
-**										(2, N'BOE Content Template')
-**										(3, N'BOEs in this Workspaces')
-**										(4, N'All')
-**										Thus, need to redo SP.
-**										Since searching within a Workspace, 
-**										Added WorkspaceID
-**										For searching, since we are working on
-**										incomplete workspaces when searching for
-**										BOEs with your Workspace, updates from 
-**										INNER to LEFT OUTER
-**		5/9/11		dcanuso				Errors on strings - updated SP - changing Word limit
-**										Added comments and elimated unneeded code
-**		5/9/11		dcanuso				Because, in theory, a user can enter 
-**										100 characters and because
-**										the SQL code needs to have spaces, 
-**										commas, and double quotes, I 
-**										discussed with Developer and will
-**										be updating parameters to allow 
-**										more charcters - easiest to just double
-**										Front end code will limit the input that
-**										user will be able to enter
-**										Good example is, the following 3-10 character
-**										strings turns into 41 characters when you 
-**										add commas, spaces, and double quotes
-**										('"A123456789", "B123456789", "C123456789",')
-**										@QuickSearch nvarchar (100) to 200
-**		5/15/11		dcanuso				Issues came up with using , as delimiter
-**										for Display Name, so updated SP
-**										to process DisplayName differently
-**										and change the delimiter to ~
-**		5/17/11		dcanuso				Making an update to space processing
-**		5/25/11		dcanuso				Added case for sending in *
-**		6/2/11		dcanuso				Updating WorkspaceID Logic and corrected spelling error
-**		8/29/11		dcanuso				WI4788 - DB - update BOE quick and advanced search SPs - These 
-**										should never return any BOEs that are of type DTS.
-**		10/31/11	dcanuso				WI 5773: BOE DTS check should be 0 not 1 - Updated
-**										BOEs in this Workspace – this is a new option available 
-**										to all users who has access to the Workspace 
-**										(this is the only search option available to foreign users). 
-**										If this option is selected, then the current Workspace 
-**										in which the Author is working is searched. 
-**										In this case, the Workspace does not have to be 
-**										marked Searchable, can contain OCI data and can be in any state.
-**										BOEs in Unassigned state should not be searched since
-**										they will have no data in them.
-**										b. BOEs in Draft, Awaiting Approval and 
-**										Approved states must be searchable.
-**		12/19/11	dcanuso				WI 6504: Only need to ignore DTS BOEs if the 
-**										workspace dts autocalculate is set to InSummaryBOEs.
-**										Any BOEs from workspaces marked as "In Each BOE" 
-**										and marked as DTS will need to be searched
-**										Additional Clarification:
-**										Interested in all cases where BOE.AutoCalculateDTS is "false" and 
-**										all cases where Workspace.DTSAutoCalculateID is "In Each BOE". 
-**										The only case you want to skip is the case 
-**										where BOE.AutoCalculateDTS is true AND 
-**										Workspace.DTSAutoCalculateID is "In Summary BOEs
-**										If the DTSAutoCalculateID is "No" 
-**										then it would look to the BOE.AutoCalculateDTS setting
-**		8/3/12		dcanuso				WI 10412
-**										As per SE:
-**										I believe ContainsTemplate should not be in the 
-**										search criteria when searching for BOEs in Other Workspaces. 
-**										Reason: It should return BOEs regardless of whether it contains
-**										a BOE Content Templates or not. 
-**										The workspace should return BOEs in Other Workspaces 
-**										for BOEs ContainsTemplate = 0 && ContainsTemplate = 1
-**		11/12/12	dcanuso				Example
-**		DECLARE @RC int
-**		DECLARE @QuickSearch nvarchar(200) = '"Word~Word~Word~Word"'
-**		DECLARE @SearchCategory int = 3
-**		DECLARE @WorkspaceID int =78
-**		
-**		EXECUTE @RC = [GenBOE_main].[dbo].[getBOEIDByWorkspaceQuickSearch] 
-**		   @QuickSearch
-**		  ,@SearchCategory
-**		  ,@WorkspaceID
-**
-**		11/27/12	dcanuso				WI 13214 Added:
-**										@DisplayedCLINNumber varchar(200)
-**										@CLINTitle varchar(200)
-**										@DisplayedWBSNumber varchar(200)
-**										@WBSTitle varchar(200)
-**		12/5/12		dcanuso				SP now timing out - Rewrote SP
-**		4/5/13		dcanuso				WI 17282 BOE Title added
-**		11/11/13	dcanuso				WI 24174 Subcontractor Author
-**		1/9/14		dcanuso				Received an email request from developer/SE
-**										that Frank wants WS.WorkspaceStateID = 4 
-**										removed from the criteria and this should be
-**										dine directly on production
-**      6/9/2015    dpalider            [BOEJ-124] Fixed how DTS was being filtered out. It was checking 2 values against WS setting instead of
-**									    checking 1 against WS and the other one against BOE. I also added () into combo of OR/ADD and 
-**										lined things up to make it easier to follow
-**      9/16/2016   twilson3			BOEJ-1244 Added filtering of IsUsingEquivalentPerson, all BOE workspaces must match this on the workspace passed in
-**		1/19/2017	brunworg			BOEJ-1369 - Filter results by !isSummaryBOE, matching isMaterial, and exclude specified BOEID. 
-**										Also limit results returned to TOP @SearchResultsThreshold.
-**		3/3/2017	twilson3			BOEJ-1861 Remove DTS
-**		4/28/2017	brunworg			BOEJ-2129 - Add IsUsingTM Column to Workspace
-**		5/23/2017	ranzalon			BOEJ-2143 - Exclude Project Map from search
-**		6/1/2017    ranzalon			BOEJ-2143 - Fix for new Project Map LU values
-**		7/19/2017	Dusan				BOEJ-2410 - Allow copying between TM and non-TM workspaces
-**		12/7/17		twilson3			BOEJ-1994 - Remove Summary BOE
 **		5/25/2018	ranzalon			BOEJ-3503 - Exclude Deleted Workspaces
 **		7/12/2018	twilson3			BOEJ-3685 - Fix exclusion of Deleted Workspaces
+**		9/9/2020	ranzalon			BOEJ-4770 - Only search WSs with same Template BOE value
+**		11/4/2020	Dusan				BOEJ-4889 - Removing restriction to only search by the same Template BOE value
+**		11/24/2020	Dusan				BOEJ-4949 - Add restrictions based on Template BOE value; did some code cleanup as well
+**		12/15/2020	Dusan				BOEJ-4953 - Fixing logic w/ MOQ Type restrictions
 *******************************************************************************/
 SET NOCOUNT ON 
+
 
 IF LEN(@QuickSearch) = 0
 	BEGIN
@@ -166,16 +40,13 @@ IF LEN(@QuickSearch) = 0
 		RETURN
 	END
 
+DECLARE @WordSearch TABLE ( Word varchar(200), Processed bit DEFAULT 0 )
+DECLARE @BOESearch TABLE( BOEID int PRIMARY KEY, Found int DEFAULT 0 )
+DECLARE @Found TABLE (BOEID int, WorkspaceID int)
+DECLARE @CurrentWord varchar (200)
+
 IF RIGHT(@QuickSearch,1) <> '~' SET @QuickSearch = @QuickSearch + '~'
 
-/*Create table to hold parsed words*/
-DECLARE @WordSearch TABLE
-(
-	Word varchar(200),
-	Processed bit DEFAULT 0
-)
-
-/*Split words*/
 WHILE (SELECT CHARINDEX('~', @QuickSearch)) > 0
 	BEGIN
 		INSERT INTO @WordSearch (Word) 
@@ -183,81 +54,40 @@ WHILE (SELECT CHARINDEX('~', @QuickSearch)) > 0
 
 		SET @QuickSearch = RIGHT(@QuickSearch, LEN(@QuickSearch)- CHARINDEX('~', @QuickSearch))
 	END
-	
-/*Variable to hold how many words are passed in*/
-DECLARE @WordSearchCount int
-SELECT @WordSearchCount = COUNT (Word) FROM @WordSearch
-DECLARE @IsEP bit
-SET @IsEP = (SELECT IsUsingEquivalentPerson from dbo.Workspace where WorkspaceID = @WorkspaceID)
-DECLARE @IsMaterial bit
-SET @IsMaterial = (SELECT IsMaterial from dbo.BOE where BOEID = @BOEID)
-DECLARE @BOESearch TABLE
-(
-	BOEID int PRIMARY KEY,
-	Found int DEFAULT 0
-)
 
+DECLARE @WordSearchCount int = (SELECT COUNT (1) FROM @WordSearch)
+DECLARE @IsEP bit = (SELECT IsUsingEquivalentPerson from dbo.Workspace where WorkspaceID = @WorkspaceID)
+DECLARE @IsMaterial bit = (SELECT IsMaterial from dbo.BOE where BOEID = @BOEID)
+/* if you are starting from an Old workspace (PreNewMoq) ==> you can only copy BOEs from another Old workspace */
+DECLARE @restrictToPreNewMoq BIT = CASE WHEN dbo.WasWorkspaceCreatedAfterNewMoqTypes((SELECT WorkspaceCreationDate FROM Workspace WHERE WorkspaceId = @WorkspaceID)) = 0 THEN 1 ELSE 0 END 
+/* if you are starting from a * / No (Not using Boe Template) ==> you can only copy from * / No */
+DECLARE @restrictToNotUsingBoeTemplate BIT = CASE WHEN (SELECT TemplateBoe FROM Workspace WHERE WorkspaceId = @WorkspaceID) = 0 THEN 1 ELSE 0 END 
 
-/*Load Table with available BOEs*/
 INSERT INTO @BOESearch(BOEID)
 	SELECT DISTINCT (B.BOEID)
 		FROM dbo.Workspace WS
 			INNER JOIN dbo.BOE B ON WS.WorkspaceID = B.WorkspaceID
-		WHERE WS.IsUsingEquivalentPerson = @IsEP AND
-			  (WS.IsDeleted IS NULL OR WS.IsDeleted != 1) AND /* Exclude deleted workspaces */
-		      B.IsMaterial = @IsMaterial AND	/* Only search BOE's with same IsMaterial setting as specified BOE */
-			  B.BOEID != @BOEID AND				/* Exclude specified BOE */
-			  (WS.ProjectMapTypeID = 1 OR WS.ProjectMapTypeID = 2) AND		/* Exclude BOEs in Project Map Workspaces */
-		(
-			(
-				@SearchCategory = 1 /*BOEs in other Workspaces*/
-				AND 
-				(
-					WS.ContainsOCI = 0 /*Does Not Contain OCI*/
-					AND WS.AllowSearch = 1 /*BOE is in searchable state*/
-					AND WS.WorkspaceID <> @WorkspaceID /*If I am searching Other Workspaces I should not be returning data from my WS*/
-				)
-			) OR (
-				@SearchCategory = 2 /*BOE Content Template*/
-				AND 
-				(
-					WS.ContainsOCI = 0 /*Does Not Contain OCI*/
-					AND WS.AllowSearch = 1 /*BOE is in searchable state*/
-					AND WS.ContainsTemplate = 1
-				)
-			) OR (
-				@SearchCategory = 3 /*BOEs in this Workspaces*/
-				AND
-				(
-					WS.WorkspaceID = @WorkspaceID 
-					AND B.BOEStateID <> 1   /*BOEs in Unassigned state should not be searched since they will have no data in them.*/
-				)
-			) OR (
-				@SearchCategory = 4 	/*All*/
-				AND	
-				(
-					(
-						WS.ContainsOCI = 0 /*Does Not Contain OCI*/ 
-						AND WS.AllowSearch = 1 ) /*BOE is in searchable state*/ 
-					OR
-					(	
-						@WorkspaceID IS NOT NULL AND 
-						WS.WorkspaceID = @WorkspaceID  AND
-						B.BOEStateID <> 1  /*BOEs in Unassigned state should not be searched since they will have no data in them.*/ 
+		WHERE WS.IsUsingEquivalentPerson = @IsEP 
+			AND (WS.IsDeleted IS NULL OR WS.IsDeleted != 1) /* Exclude deleted workspaces */
+		    AND B.IsMaterial = @IsMaterial /* Only search BOE's with same IsMaterial setting as specified BOE */
+			AND B.BOEID != @BOEID /* Exclude specified BOE */
+			AND (WS.ProjectMapTypeID = 1 OR WS.ProjectMapTypeID = 2) /* Exclude BOEs in Project Map Workspaces */
+			AND	(
+			   (@SearchCategory = 1 /* BOEs in other Workspaces */ AND ( WS.WorkspaceID <> @WorkspaceID AND WS.ContainsOCI = 0 AND WS.AllowSearch = 1)) /* Does Not Contain OCI, BOE is in searchable state */
+				OR (@SearchCategory = 2 /*BOE Content Template*/ AND ( WS.ContainsTemplate = 1 AND WS.ContainsOCI = 0 AND WS.AllowSearch = 1)) /* Does Not Contain OCI, BOE is in searchable state */
+				OR (@SearchCategory = 3 /*BOEs in this Workspaces*/ AND ( WS.WorkspaceID = @WorkspaceID AND B.BOEStateID <> 1))   /*BOEs in Unassigned state should not be searched since they will have no data in them.*/
+				OR (@SearchCategory = 4 /*All*/
+						AND	((WS.ContainsOCI = 0 AND WS.AllowSearch = 1 /* Does Not Contain OCI, BOE is in searchable state */ )
+							OR (@WorkspaceID IS NOT NULL AND  WS.WorkspaceID = @WorkspaceID AND B.BOEStateID <> 1)  /*BOEs in Unassigned state should not be searched since they will have no data in them.*/ 
+						)
 					)
 				)
-			)
-		)
-
-/*
-	Variable to hold current Word
-	Since the limit of the parameter is 100
-	It is possible that 1 word is the full 100 
-	character limit, so changing from 30 to 100
-*/
-DECLARE @CurrentWord varchar (200)
-
-DECLARE @Found TABLE (BOEID int, WorkspaceID int)
+			/* START new MOQ Types filtering */
+			AND /* not restricted or (restricted and not new) => !a || (a && !b) = !a || !b */
+				(@restrictToPreNewMoq = 0 OR dbo.WasWorkspaceCreatedAfterNewMoqTypes(WS.WorkspaceCreationDate) = 0) 
+			AND /* not restricted or (restricted and not using template) => !a || (a && !b) = !a || !b */
+				(@restrictToNotUsingBoeTemplate = 0 OR WS.TemplateBoe = 0)
+			/* END new MOQ Types filtering */
 
 WHILE EXISTS (SELECT 1 FROM @WordSearch WHERE Processed = 0)
 	BEGIN
@@ -347,7 +177,6 @@ WHILE EXISTS (SELECT 1 FROM @WordSearch WHERE Processed = 0)
 			WHERE
 				Word = @CurrentWord /*Since Word has double quotes already, do not need to add REPLACE(@CurrentWord, '"', '')*/
 	END						
-
 SELECT TOP(@SearchResultsThreshold)	B.BOEID AS BOEID, WS.WorkspaceId AS WorkspaceId
 	FROM dbo.Workspace WS
 		INNER JOIN dbo.BOE B ON WS.WorkspaceID = B.WorkspaceID

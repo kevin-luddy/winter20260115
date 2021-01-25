@@ -19,8 +19,9 @@ namespace GenBOE.DataBridge.DTO
         /// <summary>
         /// Gets all of the sources from lookup table.
         /// </summary>
+        /// <param name="usingTemplateBOE">Is workspace using template BOEs</param>
         /// <returns>All of the sources from lookup table.</returns>
-        ICollection<RteCustomTemplateSourceModelView> GetSources();
+        ICollection<RteCustomTemplateSourceModelView> GetSources(bool usingTemplateBOE);
 
         /// <summary>
         /// Gets all templates for a workspace

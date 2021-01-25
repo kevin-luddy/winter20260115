@@ -17,12 +17,13 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public BOETaskElement()
         {
-            this.BOELaborTypes = new HashSet<BOELaborType>();
             this.BOETaskElementCustomFieldValueXREFs = new HashSet<BOETaskElementCustomFieldValueXREF>();
             this.BOETaskElementMetricDetailXREFs = new HashSet<BOETaskElementMetricDetailXREF>();
             this.BOETaskElementWorkspaceVariableXREFs = new HashSet<BOETaskElementWorkspaceVariableXREF>();
             this.OrdinaryVariables = new HashSet<OrdinaryVariable>();
             this.RteTemplateAnswers = new HashSet<RteTemplateAnswer>();
+            this.BOELaborTypes = new HashSet<BOELaborType>();
+            this.MOQTypeSelections = new HashSet<MOQTypeSelection>();
         }
     
         public int BOETaskElementID { get; set; }
@@ -43,8 +44,6 @@ namespace GenBOE.Models
         public int SortOrderID { get; set; }
     
         public virtual BOE BOE { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BOELaborType> BOELaborTypes { get; set; }
         public virtual MOQTypeLU MOQTypeLU { get; set; }
         public virtual TaskElementTypeLU TaskElementTypeLU { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -57,5 +56,9 @@ namespace GenBOE.Models
         public virtual ICollection<OrdinaryVariable> OrdinaryVariables { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RteTemplateAnswer> RteTemplateAnswers { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BOELaborType> BOELaborTypes { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MOQTypeSelection> MOQTypeSelections { get; set; }
     }
 }

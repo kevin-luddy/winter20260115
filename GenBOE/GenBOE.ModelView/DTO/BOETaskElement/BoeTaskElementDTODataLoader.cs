@@ -1227,7 +1227,7 @@ namespace GenBOE.DataBridge.DTO
         private static List<ResourceTypeDto> GetTaskLabors(ICollection<int> ids, GenBoeEntities gbe)
         {
             List<ResourceTypeDto> toReturn = gbe.BOELaborTypes.Where(lT => ids.Contains(lT.BOETaskElementID))
-                                                        .OrderBy(lT => lT.LaborSortID)
+                                                        .OrderBy(lT => lT.LaborSortId)
                                                         .ThenBy(lT => lT.BOELaborTypeID)
                                                         .Select(lT => new ResourceTypeDto
                                                         {
@@ -1247,7 +1247,7 @@ namespace GenBOE.DataBridge.DTO
                                                             CLINID = lT.CLINID,
                                                             SpreadType = lT.SpreadTypeID.HasValue ? (SpreadType)lT.SpreadTypeID.Value : SpreadType.NotSet,
                                                             CanOffload = lT.CanOffload ?? false,
-                                                            LaborTypeOrder = lT.LaborSortID,
+                                                            LaborTypeOrder = lT.LaborSortId,
                                                             LaborSpreadsIEnum = lT.BOELaborSpreads
                                                                 .Select(lS => new ResourceSpreadDto
                                                                 {

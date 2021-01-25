@@ -26,6 +26,8 @@ namespace GenBOE.Models
         public string WbsElementTitle { get; set; }
         public string ActivityID { get; set; }
         public string ActivityName { get; set; }
+        public string Resource { get; set; }
+        public string CostCenter { get; set; }
         public System.DateTime StartDate { get; set; }
         public System.DateTime EndDate { get; set; }
         public string CLIN { get; set; }
@@ -38,16 +40,14 @@ namespace GenBOE.Models
         public Nullable<decimal> Hours { get; set; }
         public Nullable<decimal> Dollars { get; set; }
         public bool CanOffload { get; set; }
-        public string ClassOfCost { get; set; }
         public string AddOrDelete { get; set; }
-        public string Resource { get; set; }
-        public string CostCenter { get; set; }
-        public Nullable<int> OrderID { get; set; }
+        public string ClassOfCost { get; set; }
+        public int OrderID { get; set; }
         public Nullable<decimal> TieredPercentage { get; set; }
         public Nullable<int> LegacyResourceID { get; set; }
     
+        public virtual SikorskyLegacyResource SikorskyLegacyResource { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProjectMapSpread> ProjectMapSpreads { get; set; }
-        public virtual SikorskyLegacyResource SikorskyLegacyResource { get; set; }
     }
 }

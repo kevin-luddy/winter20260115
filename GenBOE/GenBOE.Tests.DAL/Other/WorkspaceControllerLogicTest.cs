@@ -88,7 +88,7 @@ namespace GenBOE.Tests.DAL.Other
 
             retriever = new Retriever(new ClinDTODataLoader(), new WbsDTODataLoader(), new WorkspaceDTODataLoader(), new BoeDTODataLoader(), null, null, null, null,
                 new ResourceTypeLoader(), boeTaskElementDTODataLoader, null, resourceLoader.Object, null, null, null, null, null, null,
-                perfLoader.Object, perfListLoader.Object, null, null, null, null, userLoader.Object, null, null, null, null, new ProjectMapDataLoader(new ProjectMapSpreadLoader()), null);
+                perfLoader.Object, perfListLoader.Object, null, null, null, null, userLoader.Object, null, null, null, null, new ProjectMapDataLoader(new ProjectMapSpreadLoader()), null, null);
 
             permissionsLoader.Setup(x => x.GetBOEPermissions(It.IsAny<ICollection<int>>())).Returns(new Collection<PermissionsDTO>());
 
@@ -117,7 +117,7 @@ namespace GenBOE.Tests.DAL.Other
                 null, null, null, new ProjectMapDataLoader(new ProjectMapSpreadLoader()), new BoePickListMapper(new LineOfBusinessDataLoader(), new ProposalClassLoader(), 
                 new ContractTypeLoader()), new GenTRAC.DataBridge.DTO.PtmPickListMapper(new GenTRAC.DataBridge.DTO.ProposalTypeLULoader(), new GenTRAC.DataBridge.DTO.ProposalClassLULoader(), 
                 new GenTRAC.DataBridge.DTO.TypeOfRequestLULoader(),new GenTRAC.DataBridge.DTO.LineOfBusinessDataLoader(), new GenTRAC.DataBridge.DTO.ProgramAreaDataLoader(), 
-                new GenTRAC.DataBridge.DTO.ContractTypeLULoader(), new GenTRAC.DataBridge.DTO.ContractTypeGroupLULoader()), null, null);
+                new GenTRAC.DataBridge.DTO.ContractTypeLULoader(), new GenTRAC.DataBridge.DTO.ContractTypeGroupLULoader()), null, null, null);
         }
 
 

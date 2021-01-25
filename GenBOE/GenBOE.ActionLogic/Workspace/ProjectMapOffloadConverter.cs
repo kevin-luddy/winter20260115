@@ -10,15 +10,18 @@ namespace GenBOE.ActionLogic.Workspace
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Text;
     using DataBridge.DTO;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.IO.Export.BOE;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
     using IES.Common.OfficeUtilities;
     using Microsoft.Practices.Unity;
+    using MoreLinq;
 
     /// <summary>
     /// Converts a set of Project Map ModelViews from a Workspace.
@@ -71,6 +74,9 @@ namespace GenBOE.ActionLogic.Workspace
                         string activityId = workspace.IsProjectMapWorkspace ? boe.Title : task.BOETaskID;
                         string activityName = workspace.IsProjectMapWorkspace ? boe.Description : task.TaskTitle;
 
+                        string rationale = BuildRationaleFromNewMoqTypes(workspace, task.Id)
+                            + RTEUtilities.TurnHTMLIntoPlainText(BOEExportConverter.GetRteOverride(task.BoeID, task.Id, task.MOQText, RteTemplateSource.TaskMOQ, rteOverrides));
+
                         ProjectMapModelView dto = new ProjectMapModelView()
                         {
                             ActivityID = activityId,
@@ -86,7 +92,7 @@ namespace GenBOE.ActionLogic.Workspace
                             Hours = laborResource.SpreadType == SpreadType.Hours ? laborResource.ValueSpread : null,
                             InitialResource = resource?.ResourceName ?? string.Empty,
                             LegacyID = laborResource.LegacyID,
-                            Rationale = RTEUtilities.TurnHTMLIntoPlainText(BOEExportConverter.GetRteOverride(task.BoeID, task.Id, task.MOQText, RteTemplateSource.TaskMOQ, rteOverrides)),
+                            Rationale = rationale,
                             SowNumber = boe.SOW ?? task.SOW,
                             SowTitle = boe.SOWTitle ?? task.SOWTitle,
                             StartDate = laborResource.StartDate,
@@ -132,6 +138,93 @@ namespace GenBOE.ActionLogic.Workspace
             }
 
             return projectMapData.ToList().AsReadOnly();
+        }
+
+        /// <summary>
+        /// Builds a string for the Rationale field. This is needed for Excel Export
+        /// </summary>
+        /// <param name="workspace">Ws</param>
+        /// <param name="taskId">Task Id</param>
+        /// <returns>Rationale String</returns>
+        private static string BuildRationaleFromNewMoqTypes(FullWorkspace workspace, int taskId)
+        {
+            _ = workspace ?? throw new ArgumentNullException(nameof(workspace));
+
+            string result = string.Empty;
+
+            if (workspace.UsingTemplateBOE)
+            {
+                MoqTypeTableDataLabels labels = new MoqTypeTableDataLabels();
+                StringBuilder sb = new StringBuilder();
+
+                workspace.MoqTypeSelections.Where(x => x.TaskId == taskId).OrderBy(x => x.Order).ForEach(moqType =>
+                {
+                    sb.AppendLine($"{moqType.SelectedMOQType.GetDescription()}:");
+
+                    moqType.TableData.ForEach(table => 
+                    {
+                        sb.AppendLine($"{labels.TableName}: {table.TableName}");
+                        sb.AppendLine($"{labels.DateOfReport}: {table.DateOfReport.ToShortDateString()}");
+                        sb.AppendLine($"{labels.HistoricalProgramName}: {table.HistoricalProgramName}");
+                        sb.AppendLine($"{labels.ContractNumber}: {table.ContractNumber}");
+                        sb.AppendLine($"{labels.WbsElement}: {table.WbsElement}");
+                        sb.AppendLine($"{labels.PoPStart}: {table.PoPStart.ToShortDateString()}");
+                        sb.AppendLine($"{labels.PoPEnd}: {table.PoPEnd.ToShortDateString()}");
+                        sb.AppendLine($"{labels.TotalWbsHours}: {table.TotalWbsHours.ToString(Constants.DECIMAL_FORMATTING)}");
+                        sb.AppendLine($"{labels.AdditionalQueryFilters}: {table.AdditionalQueryFilters}");
+                        sb.AppendLine($"{labels.TotalRelevantHours}: {table.TotalRelevantHours.ToString(Constants.DECIMAL_FORMATTING)}");
+                        sb.AppendLine();
+                    });
+
+                    #region RTE fields
+                    if (moqType.SelectedMOQType == MOQType.CostEstimatingRelationships)
+                    {
+                        sb.AppendLine($"CER name: {RTEUtilities.TurnHTMLIntoPlainText(moqType.CerName)}");
+                    } 
+                    else if (moqType.SelectedMOQType == MOQType.ParametricEstimates)
+                    {
+                        sb.AppendLine($"Parametric model or tool name: {RTEUtilities.TurnHTMLIntoPlainText(moqType.CerName)}");
+                    }
+                    else if (moqType.SelectedMOQType == MOQType.AnalogousRelationships)
+                    {
+                        sb.AppendLine($"Analogous relationship name: {RTEUtilities.TurnHTMLIntoPlainText(moqType.CerName)}");
+                    }
+
+                    if (moqType.SelectedMOQType == MOQType.LOE)
+                    {
+                        sb.AppendLine($"Description of Hours required: {RTEUtilities.TurnHTMLIntoPlainText(moqType.DescriptionHoursRequired)}");
+                    }
+                    else if (moqType.SelectedMOQType == MOQType.SOW)
+                    {
+                        sb.AppendLine($"Description of Hours required & location in SOW: {RTEUtilities.TurnHTMLIntoPlainText(moqType.DescriptionHoursRequired)}");
+                    }
+
+                    if (moqType.SelectedMOQType == MOQType.SME)
+                    {
+                        sb.AppendLine($"The SME selected Expert judgement for this basis of estimate for the following reasons: {RTEUtilities.TurnHTMLIntoPlainText(moqType.SmeReason)}");
+                        sb.AppendLine($"The logic and assumptions used to estimate hours is: {RTEUtilities.TurnHTMLIntoPlainText(moqType.SmeHoursLogic)}");
+                        sb.AppendLine($"The logic and assumptions used to estimate duration is: {RTEUtilities.TurnHTMLIntoPlainText(moqType.SmeDurationLogic)}");
+                        sb.AppendLine($"The following tasks are estimates in this BOE: {RTEUtilities.TurnHTMLIntoPlainText(moqType.SmeTaskEstimates)}");
+                    }
+
+                    if (moqType.SelectedMOQType != MOQType.SME)
+                    {
+                        sb.AppendLine($"Rationale: {RTEUtilities.TurnHTMLIntoPlainText(moqType.Rationale)}");
+                    }
+
+                    if (moqType.SelectedMOQType != MOQType.NonLabor)
+                    {
+                        sb.AppendLine($"Skill Mix Rationale: {RTEUtilities.TurnHTMLIntoPlainText(moqType.SkillMixRationale)}");
+                    }
+                    #endregion
+
+                    sb.AppendLine();
+                });
+
+                result = sb.ToString();
+            }
+
+            return result;
         }
 
         /// <summary>

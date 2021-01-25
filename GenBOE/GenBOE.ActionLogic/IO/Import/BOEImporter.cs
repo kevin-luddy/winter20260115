@@ -517,7 +517,7 @@ namespace GenBOE.ActionLogic.IO.Import
                         {
                             try
                             {
-                                FullBoe boeObject = fullBoes.First(x => x.Id == Convert.ToInt32(row[boeIDColumn]));
+                                FullBoe boeObject = fullBoes.FirstOrDefault(x => x.Id == Convert.ToInt32(row[boeIDColumn])) ?? throw new GenValidationException("Invalid BOE Id found");
 
                                 boeResult = new ImportedBoe(boeObject);
                                 boeResult.WbsString = row.ContainsKey(wbsStringColumn) ? row[wbsStringColumn] : string.Empty;

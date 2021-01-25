@@ -318,8 +318,8 @@
                                                 <div title="{{item.PerformingOrgName}}">{{item.PerformingOrgName}}</div>
                                             </td>
                                             <% if (Model.BOEIsMulti) {%>
-                                            <td class="resource-wbs">{{ getWbsText(item.WBSID) }}                                            </td>
-                                            <td class="resource-clin">{{ getClinText(item.CLINID) }}</td>
+                                                <td class="resource-wbs">{{ getWbsText(item.WBSID) }}</td>
+                                                <td class="resource-clin">{{ getClinText(item.CLINID) }}</td>
                                             <%  }%>
                                         </tr>
                                     </tbody>

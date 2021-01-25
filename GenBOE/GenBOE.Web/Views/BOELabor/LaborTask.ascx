@@ -430,7 +430,7 @@
                     <% using (Html.BeginForm("", "", FormMethod.Post, new { id = "TaskElementDetailsForm" }))
                         { %>
 
-                    <gen-validation data-errors="errors"></gen-validation>
+                    <gen-validation id="mainErrorBox" data-errors="errors"></gen-validation>
                     <div style="margin-bottom:10px; display:none;" id="recalculateTaskElementButton">
                         <button type="button" onclick="TaskElementDetailsWidget.RecalculateAndRefreshPage()" class="ies-danger">Recalculate Task Element</button>
                     </div>
@@ -575,10 +575,9 @@
                                             <th class="element-of-cost">Element of Cost</th>
                                             <th class="resource">Resource (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_RESOURCES%>'); return false;">View</a>)*</th>
                                             <th class="performing-org">Performing Org (<a href="#" onclick="TaskElementDetailsWidget.openWindow(currentWorkspace, boeLaborController,'<%:WebConstants.ACTION_DISPLAY_LABOR_PERF_ORGS%>'); return false;">View</a>)*</th>
-                                            <% if (Model.BOEIsMulti)
-                                               {%>
-                                            <th class="resource-wbs">WBS</th>
-                                            <th class="resource-clin">CLIN</th>
+                                            <% if (Model.BOEIsMulti) { %>
+                                                <th class="resource-wbs">WBS</th>
+                                                <th class="resource-clin">CLIN</th>
                                             <% } %>
                                         </tr>
                                     </thead>
@@ -606,19 +605,20 @@
                                                      <input data-ng-if="!showDropdowns" tabindex ="{{tabindex + 2}}" type="text" data-ng-model="item.PerfOrgInput" placeholder="Add Performing Org" uib-typeahead="perfOrg as perfOrg.PerformingOrgName for perfOrg in PerfOrgModels | filter:{Label:$viewValue}" typeahead-template-url="customPerfOrgTemplate.html" class="form-control resize" typeahead-select-on-exact="true" typeahead-show-hint="false" typeahead-min-length="perfOrgTypeaheadLength" data-ng-change="perfOrgUpdated(item)" typeahead-on-select="perfOrgSelected($item, item)">
                                                 </div>
                                             </td>
-                                            <% if (Model.BOEIsMulti) {%>
-                                            <td class="resource-wbs">
-                                                <select tabindex ="{{tabindex + 3}}" class="wbs" data-ng-model="item.WBSID" data-ng-change="setDirty()" name="WBSID">
-                                                    <!-- keep option tag on one line to avoid insertion of line breaks (br) -->
-                                                    <option data-ng-repeat="option in ManageTaskModel.WBSElements" data-ng-value="option.Value">{{option.Text}}</option>
-                                                </select>                                          </td>
-                                            <td class="resource-clin">
-                                                <select tabindex ="{{tabindex + 4}}" class="wbs" data-ng-model="item.CLINID" data-ng-change="setDirty()" name="CLINID">
-                                                    <!-- keep option tag on one line to avoid insertion of line breaks (br) -->
-                                                    <option data-ng-repeat="option in ManageTaskModel.CLINElements" data-ng-value="option.Value">{{option.Text}}</option>
-                                                </select>
-                                            </td>
-                                            <%  }%>
+                                            <% if (Model.BOEIsMulti) { %>
+                                                <td class="resource-wbs">
+                                                    <select tabindex ="{{tabindex + 3}}" class="wbs" data-ng-model="item.WBSID" data-ng-change="setDirty()" name="WBSID">
+                                                        <!-- keep option tag on one line to avoid insertion of line breaks (br) -->
+                                                        <option data-ng-repeat="option in ManageTaskModel.WBSElements" data-ng-value="option.Value">{{option.Text}}</option>
+                                                    </select>
+                                                </td>
+                                                <td class="resource-clin">
+                                                    <select tabindex ="{{tabindex + 4}}" class="wbs" data-ng-model="item.CLINID" data-ng-change="setDirty()" name="CLINID">
+                                                        <!-- keep option tag on one line to avoid insertion of line breaks (br) -->
+                                                        <option data-ng-repeat="option in ManageTaskModel.CLINElements" data-ng-value="option.Value">{{option.Text}}</option>
+                                                    </select>
+                                                </td>
+                                            <% } %>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -831,7 +831,6 @@
     </div>
 
     <div class="buttons-left" data-ng-hide="isLoading"></div>
-
     <div class="buttons" data-ng-hide="isLoading">  
          <div class="required-note">
             <div>* required for saving as draft.</div>
@@ -904,7 +903,6 @@
 
         </div>
     </div>
-
     <div id="MOQEquation-SearchEstimatingCatalogDialogMST">
         <div>
             <form id="SearchEstimatingCatalogDialogFormMST">
@@ -1077,7 +1075,6 @@
             </div>
         </div>
     </div>
-
     <div id="LaborTypeImportErrors" style="display: none;" title="Errors During Import of Resource Types">
         Errors occurred during import of the Resource Types. No changes were made to the Workspace.
         <br /><br />
@@ -1086,7 +1083,6 @@
         <br />
         <button class="ies" name="ok-button" type="button">OK</button>
     </div>
-
     <div id="ImportLaborTypeResults" class="import-verification dialog form" style="display: none;">
         <span>The import file will make the following updates. To continue with the import,
             click <i>Complete Import</i>, otherwise click <i>Back</i> to import a different
@@ -1219,8 +1215,7 @@
             <button id="ManageLaborType-CompleteImportButton" class="ies-action" name="complete-import-button" type="button">Complete import</button>
             <div id="ManageLaborType-CompleteImportLoader" class="loader display-none"></div>
         </div>
-    </div>
-        
+    </div>        
     <div id="ReOrderLaborTypesDialog" class="reorder-labor-types-dialog" style="display: none;">
         <div class="container">
             <% using (Html.BeginForm("", "", FormMethod.Post, new { id = "ReOrderLaborTypesForm" }))
@@ -1251,7 +1246,6 @@
          <% } %>
         </div>
     </div>
-
     <div id="DuplicateLaborTypesDialog" class="duplicate-labor-types-dialog" style="display: none;">
         <% using (Html.BeginForm("", "", FormMethod.Post, new { id = "DuplicateLaborTypesForm" }))
        { %>

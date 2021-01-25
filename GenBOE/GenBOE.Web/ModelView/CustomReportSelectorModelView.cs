@@ -5,6 +5,7 @@
     using System.Linq;
     using System.Web.Mvc;
     using IES.Common;
+    using IES.Common.classes;
 
     public class CustomReportSelectorModelView
     {
@@ -25,12 +26,13 @@
         /// <param name="allBoeData">Data on all BOEs in the WS needed for custom export</param>
         /// <param name="sortBy">Primary sort by field</param>
         /// <param name="secondarySortBy">Secondary sort by field</param>
-        public CustomReportSelectorModelView(string workspaceName, ICollection<BoeCustomReportBoeData> allBoeData, BoeCustomReportSortBy sortBy, BoeCustomReportSortBy secondarySortBy)
+        /// <param name="usingTemplateBoe">Whether Workspace is using Template BOE</param>
+        public CustomReportSelectorModelView(string workspaceName, ICollection<BoeCustomReportBoeData> allBoeData, BoeCustomReportSortBy sortBy, BoeCustomReportSortBy secondarySortBy, bool usingTemplateBoe)
         {
             this.WorkspaceName = workspaceName;
 
             this.AutoOpen = false;
-
+            
             if (allBoeData == null)
             {
                 allBoeData = new List<BoeCustomReportBoeData>(0);
@@ -86,17 +88,21 @@
             this.BoeSortValues = boeSortValues;
             this.BoeSecondarySortValues = boeSortValues;
 
-            List<SelectListItem> reportComponentsList = new List<SelectListItem>();
+            this.ComponentsUnselected = new List<SelectListItem>();
             ICollection<BoeCustomReportComponent> reportComponentValues = Enum.GetValues(typeof(BoeCustomReportComponent)).Cast<BoeCustomReportComponent>().ToList();
+            CompanyConfiguration companyConfig = SystemConfiguration.Instance().CompanyMode;
+
             foreach (BoeCustomReportComponent reportComponentVal in reportComponentValues)
             {
-                reportComponentsList.Add(new SelectListItem
+                if (DisplayComponent(reportComponentVal, usingTemplateBoe, companyConfig))
                 {
-                    Text = reportComponentVal.ToDescription(),
-                    Value = reportComponentVal.ToString()
-                });
+                    this.ComponentsUnselected.Add(new SelectListItem
+                    {
+                        Text = reportComponentVal.ToDescription(),
+                        Value = reportComponentVal.ToString()
+                    });
+                }
             }
-            this.ComponentsUnselected = reportComponentsList;
 
             // initialize sort-values list
             this.PopulateSortValuesList(allBoeData, sortBy, secondarySortBy);
@@ -105,6 +111,26 @@
             this.BoesUnselected = new List<SelectListItem>();
             this.BoesSelected = new List<SelectListItem>();
             this.ComponentsSelected = new List<SelectListItem>();
+        }
+
+        /// <summary>
+        /// Determine if component should be displayed
+        /// </summary>
+        /// <param name="reportComponentVal">component</param>
+        /// <param name="usingTemplateBOE">if WS is using Template BOE</param>
+        /// <returns>True if component should be displayed, false if not</returns>
+        private bool DisplayComponent(BoeCustomReportComponent reportComponentVal, bool usingTemplateBOE, CompanyConfiguration companyConfig)
+        {
+            if (reportComponentVal == BoeCustomReportComponent.TaskMOQRationale && usingTemplateBOE
+                || reportComponentVal == BoeCustomReportComponent.TaskMOQAdditionalQueryFilters && (!usingTemplateBOE || companyConfig == CompanyConfiguration.SpaceSystems)
+                || reportComponentVal == BoeCustomReportComponent.TaskMOQEmployeeIDFilters && (!usingTemplateBOE || companyConfig == CompanyConfiguration.MST))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
 
         /// <summary>
@@ -273,8 +299,9 @@
         /// <param name="sortBy">Primary sort by field</param>
         /// <param name="secondarySortBy">Secondary sort by field</param>
         /// <param name="selections">Selections made for the custom export</param>
-        public CustomReportSelectorModelView(string workspaceName, ICollection<BoeCustomReportBoeData> allBoeData, BoeCustomReportSortBy sortBy, BoeCustomReportSortBy secondarySortBy, BoeCustomReportSelections selections)
-            : this(workspaceName, allBoeData, sortBy, secondarySortBy)
+        /// <param name="usingTemplateBoe">Whether workspace is using Template BOE</param>
+        public CustomReportSelectorModelView(string workspaceName, ICollection<BoeCustomReportBoeData> allBoeData, BoeCustomReportSortBy sortBy, BoeCustomReportSortBy secondarySortBy, BoeCustomReportSelections selections, bool usingTemplateBoe)
+            : this(workspaceName, allBoeData, sortBy, secondarySortBy, usingTemplateBoe)
         {
             if (selections != null)
             {
@@ -295,6 +322,12 @@
                     // initial load
 
                     this.AutoOpen = false;
+
+                    // Additional Query Filters excluded by default in SSC, only if Template BOE
+                    if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && usingTemplateBoe)
+                    {
+                        selections.ComponentsSelected.Add(BoeCustomReportComponent.TaskMOQEmployeeIDFilters);
+                    }
                 }
                 else
                 {

@@ -1,48 +1,127 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace GenBOE.Tests.DAL.DataLoaders
 {
+    using System;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using System.Text.RegularExpressions;
+    using GenBOE.DataBridge.DTO;
+    using GenBOE.Dtos;
+    using GenBOE.Models;
+    using IES.Common;
+    using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
+    using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+    /// <summary>
+    /// Tests Search Loader
+    /// </summary>
     [TestClass]
     public class BOESearchDTODataLoaderTest
     {
-        [ClassInitialize]
-        static public void Initialize(TestContext testContext)
+        /// <summary>
+        /// Cutoff date from the app.config
+        /// </summary>
+        static readonly DateTime cutOffDate = DateTime.Parse(ConfigurationUtilities.GetAppSetting("MoqTemplateStartDate"));
+
+        /// <summary>
+        /// Runs a number of tests for quick / basic search for new moq type options
+        /// </summary>
+        [TestMethod]
+        public void TestSearchWithNewMoqTypes()
         {
-            // Creates a searchable workspace
-            // searchableWorkspaceID = GlobalTestCaseSetup.CreateWorkspace();
+            RunBasicSearchTest(false, true, SearchCategory.All);
+            RunBasicSearchTest(false, true, SearchCategory.BOEsInThisWorkspace);
+            RunBasicSearchTest(false, true, SearchCategory.BOEsInOtherWorkspaces);
 
-            // Set workspace as searchable
-            // Set OCI to false
+            RunBasicSearchTest(true,  false, SearchCategory.All);
+            // RunBasicSearchTest(true,  false, SearchCategory.BOEsInThisWorkspace); // no currently matching data exists, don't feel it matters enough to set it up.
+            RunBasicSearchTest(true,  false, SearchCategory.BOEsInOtherWorkspaces);
 
-            // Create CLINs
-            // Create WBSs and associate to...
-            // Create BOEs for searching
-            // Assign the BOEs to a user
+            RunAdvancedSearchTest(false, true, SearchCategory.All);
+            RunAdvancedSearchTest(false, true, SearchCategory.BOEsInThisWorkspace);
+            RunAdvancedSearchTest(false, true, SearchCategory.BOEsInOtherWorkspaces);
 
-            // Set workspace state to Working
+            RunAdvancedSearchTest(true, false, SearchCategory.All);
+            // RunAdvancedSearchTest(true,  false, SearchCategory.BOEsInThisWorkspace); // no currently matching data exists, don't feel it matters enough to set it up.
+            RunAdvancedSearchTest(true, false, SearchCategory.BOEsInOtherWorkspaces);
 
-            // Submit BOEs for approval
-            // Approve BOEs
-
-            // Set workspace state to Complete
         }
 
-        //[TestMethod]
-        //public void L_GetQuickSearchResults()
-        //{
-        //    var sut = new BOESearchDTODataLoader();
-
-        //    // search on the word "note" in the boe template, it will return results
-        //    BOESearchDTO searchQ = new BOESearchDTO { WorkspaceID = GlobalTestCaseSetup.GlobalWorkspaceID, SelectedCategory = SearchCategory.BOEContentTemplates, QuickSearchText = "note" };
-
-        //    Collection<int> returnedIDs = sut.GetQuickSearchResults(searchQ);
-        //    Assert.IsTrue(returnedIDs.Any(), "No returned results");
-        //}
-
-        [TestMethod]
-        public void GetAdvancedSearchResults()
+        /// <summary>
+        /// Executes a test & verifies it
+        /// </summary>
+        private void RunBasicSearchTest(bool usingBoeTemplates, bool testingOldWs, SearchCategory searchType)
         {
+            BOESearchDTODataLoader sut = new BOESearchDTODataLoader();
 
-        }        
+            int wsId, boeId = -1;
+            string searchString = null;
+
+            using (GenBoeEntities gbe = new GenBoeEntities())
+            {
+                Workspace ws = gbe.Workspaces.First(x => !string.IsNullOrEmpty(x.WorkspaceDescription) && x.TemplateBoe == usingBoeTemplates
+                                                        && ((testingOldWs && x.WorkspaceCreationDate < cutOffDate) || (!testingOldWs && x.WorkspaceCreationDate >= cutOffDate))
+                                                        && !x.ContainsOCI && x.AllowSearch && x.IsDeleted != true 
+                                                        && x.BOEs.Any(z => !string.IsNullOrEmpty(z.BOEDescription)));
+
+                wsId = ws.WorkspaceID;
+                foreach (var (boe, x) in ws.BOEs.Where(z => !string.IsNullOrEmpty(z.BOEDescription)).SelectMany(boe => boe.BOEDescription.Split(' ').Select(x => (boe, x))))
+                {                    
+                    searchString = Regex.Replace(x, @"</?\w+>", string.Empty).Trim();
+                    boeId = boe.BOEID;
+                    break;
+                };
+            }
+
+            int foundWsId = sut.GetQuickSearchResults(new BOESearchDTO { WorkspaceID = wsId, SelectedCategory = searchType, QuickSearchText = searchString, BOEID = boeId, SearchResultsThreshold = 10 }).First().WorkspaceID;
+
+            using (GenBoeEntities gbe = new GenBoeEntities())
+            {
+                Workspace ws = gbe.Workspaces.First(x => x.WorkspaceID == foundWsId);
+                Assert.AreEqual(usingBoeTemplates, ws.TemplateBoe);
+                Assert.AreEqual(testingOldWs, (ws.WorkspaceCreationDate ?? DateTime.MinValue) < cutOffDate);
+            }
+        }
+
+        /// <summary>
+        /// Executes a test & verifies it
+        /// </summary>
+        private void RunAdvancedSearchTest(bool usingBoeTemplates, bool testingOldWs, SearchCategory searchType)
+        {
+            BOESearchDTODataLoader sut = new BOESearchDTODataLoader();
+
+            int wsId, boeId = -1;
+            string searchString = null;
+
+            using (GenBoeEntities gbe = new GenBoeEntities())
+            {
+                Workspace ws = gbe.Workspaces.First(x => !string.IsNullOrEmpty(x.WorkspaceDescription) && x.TemplateBoe == usingBoeTemplates
+                                                        && ((testingOldWs && x.WorkspaceCreationDate < cutOffDate) || (!testingOldWs && x.WorkspaceCreationDate >= cutOffDate))
+                                                        && !x.ContainsOCI && x.AllowSearch && x.IsDeleted != true
+                                                        && x.BOEs.Any(z => !string.IsNullOrEmpty(z.BOEDescription)));
+
+                wsId = ws.WorkspaceID;
+                foreach (var (boe, x) in ws.BOEs.Where(z => !string.IsNullOrEmpty(z.BOEDescription)).SelectMany(boe => boe.BOEDescription.Split(' ').Select(x => (boe, x))))
+                {
+                    searchString = Regex.Replace(x, @"</?\w+>", string.Empty).Trim();
+                    boeId = boe.BOEID;
+                    break;
+                };
+            }
+
+            int foundWsId = sut.GetAdvancedSearchResults(new BOESearchDTO { WorkspaceID = wsId, SelectedCategory = searchType, QuickSearchText = searchString, BOEID = boeId, SearchResultsThreshold = 10 }).First().WorkspaceID;
+
+            using (GenBoeEntities gbe = new GenBoeEntities())
+            {
+                Workspace ws = gbe.Workspaces.First(x => x.WorkspaceID == foundWsId);
+                Assert.AreEqual(usingBoeTemplates, ws.TemplateBoe);
+                Assert.AreEqual(testingOldWs, (ws.WorkspaceCreationDate ?? DateTime.MinValue) < cutOffDate);
+            }
+        }
     }
 }

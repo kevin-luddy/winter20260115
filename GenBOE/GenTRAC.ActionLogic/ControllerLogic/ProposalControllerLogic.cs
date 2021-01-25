@@ -2423,7 +2423,6 @@ namespace GenTRAC.ActionLogic
 
             return result;
         }
-
         #endregion
 
         #region Certification Timeline Validate / Save

@@ -112,5 +112,11 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// RMS Only, always None for SSC
         /// </summary>
         public ProjectMapType ProjectMapType { get; set; }
+
+        /// <summary>
+        /// Get/Set whether using Template BOE
+        /// </summary>
+        [Required(ErrorMessage = "Template BOE selection is required.")]
+        public bool UsingTemplateBoe { get; set; }
     }
 }

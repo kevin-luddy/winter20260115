@@ -3078,21 +3078,18 @@ namespace GenBOE.Web.Controllers
 
         /// <summary>
         /// Saves workspace settings
+        /// 
+        /// This method has been changed to minimize the amount of work that is done inside of a transaction
+        ///     If the decimal precision was changed, a long recalculation will run before the data is saved in the transaction
+        ///     While this is happening, a different user could change underlying data that would make the recalculation out of date
+        ///     This case will be caught during the transaction, which will throw an exception, and so no harm will be done
         /// </summary>
         /// <param name="workspace">workspace shortname</param>
         /// <param name="workspaceDetails">Workspace Identification Model View</param>
         /// <returns>JSON true/false</returns>
         public ActionResult SaveWorkspaceIdentification(string workspace, [WorkspaceIdentificationBinder] IWorkspaceIdentificationModelView workspaceDetails)
         {
-            // This method has been changed to minimize the amount of work that is done inside of a transaction
-            // If the decimal precision was changed, a long recalculation will run before the data is saved in the transaction
-            // While this is happening, a different user could change underlying data that would make the recalculation out of date
-            //      This case will be caught during the transaction, which will throw an exception, and so no harm will be done
-
-            if (workspaceDetails == null)
-            {
-                throw new ArgumentNullException(nameof(workspaceDetails));
-            }
+            _ = workspaceDetails ?? throw new ArgumentNullException(nameof(workspaceDetails));
 
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace, true);
             Stopwatch sw = InitializeAction(_log, "SaveWorkspaceIdentification", SecurityPage.WorkspaceSettings, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
@@ -3106,14 +3103,14 @@ namespace GenBOE.Web.Controllers
                 bool isAdmin = permissions.Any(p => p.AuthorizedRole == Role.SystemAdmin);
 
                 bool ptmTrackingNumberNotRequired = string.IsNullOrEmpty(ConfigurationUtilities.GetAppSetting("CanCreateWorkspaceWithoutPtmTrackingNumber")) ?
-                false :
-                _securityInformation.IsMemberOfADGroupInAppSettingsList(this._securityInformation.ActiveUserNTID, "CanCreateWorkspaceWithoutPtmTrackingNumber");
+                                    false : _securityInformation.IsMemberOfADGroupInAppSettingsList(this._securityInformation.ActiveUserNTID, "CanCreateWorkspaceWithoutPtmTrackingNumber");
 
                 ICollection<ValidationMessage> ValidationErrors = _ControllerLogic.SaveWorkspaceIdentificationValidation(ws, workspaceDetails, isAdmin, ptmTrackingNumberNotRequired);
                 if (ValidationErrors.Any())
                 {
                     throw new GenValidationException(ValidationErrors);
                 }
+
                 #region Setup all the data needed for the save, to minimize the time inside of a transaction
 
                 // Workspace Identification
@@ -3122,6 +3119,7 @@ namespace GenBOE.Web.Controllers
 
                 // Get the user who is saving the BOE(s)
                 int currentUserID = ws.CurrentActiveUser.UserID;
+                bool templateBoeUsageChanged = ws.UsingTemplateBOE != workspaceDetails.UsingTemplateBoe;
 
                 // Create DTO and populate the common properties
                 ws.ContainsOCI = workspaceDetails.ContainsOCI;
@@ -3139,6 +3137,7 @@ namespace GenBOE.Web.Controllers
                 ws.ResourceSorting = workspaceDetails.ResourceSorting;
                 ws.PerfOrgSorting = workspaceDetails.PerfOrgSorting;
                 ws.RteSizeLimit = workspaceDetails.RteSizeLimit;
+                ws.UsingTemplateBOE = workspaceDetails.UsingTemplateBoe;
 
                 // Populate the company specific properties
                 _ControllerLogic.PopulateCompanySpecificWorkspaceProperties(workspaceDetails, ws);
@@ -3187,6 +3186,8 @@ namespace GenBOE.Web.Controllers
 
                     #region Save data in the DB, in a transaction
 
+                    ICollection<MoqTypeSelection> moqTypes = templateBoeUsageChanged ? this._ControllerLogic.GetMoqTypesDataForBoeTemplateSettingChange(ws) : new List<MoqTypeSelection>();
+
                     using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = timeout }))
                     {
                         // Give CostVolumeLead Workspace Admin permissions
@@ -3210,26 +3211,37 @@ namespace GenBOE.Web.Controllers
                         // Save the workspace
                         this.workspaceLoader.SaveWorkspaceSettings(currentUserID, ws);
 
+                        this._ControllerLogic.SaveMoqTypes(moqTypes);
+
                         if (!ws.IsProjectMapWorkspace)
                         {
                             if (decimalPrecisionChanged || costDecimalPrecisionChanged) // need to save the recalculations that we ran earlier
                             {
                                 this.FullWsRecalc.SaveDataEffectedByRecalculation(ws, tasksToSave, workspaceVariablesToSave, boesToTransition);
                             }
-                        }
 
-                        #region If needed, send out emails, and do other cleanup, for Boes changed by recalculation
-
-                        // If we recalculated, we need to carry out the actions based on the state transition of Boes
-                        if (!ws.IsProjectMapWorkspace)
-                        {
+                            // If we recalculated, we need to carry out the actions based on the state transition of Boes
                             if (decimalPrecisionChanged)
                             {
                                 this.FullWsRecalc.PerformStateTransitionActionsForBoesEffectedByRecalculation(ws, boesToTransition, originalWsBoes);
                             }
 
+                            // If Template Boe usage changed, we need to reset all BOEs back to draft
+                            if (templateBoeUsageChanged)
+                            {
+                                ws.RefreshBoes();
+
+                                foreach (FullBoe boe in ws.Boes)
+                                {
+                                    // apply the actual state-value update
+                                    boe.State = BOEState.Draft;
+                                    boe.Updateable = UpdateType.Upsert;
+
+                                    _BoeMediator.MediatedSave(ws, boe);
+                                    _BOEStateMachine.PerformStateTransitionAction(boe, ws, boe.State, BOEState.Draft);
+                                }
+                            }
                         }
-                        #endregion
 
                         scope.Complete();
                     }
@@ -3265,7 +3277,6 @@ namespace GenBOE.Web.Controllers
 
             // this causes the cache to fully blow out
             this.Factory.ClearWorkspaceCache(workspace);
-
 
             // This will check to see if any items are failing the new RTE length
             if (ws.RteSizeLimit.HasValue)
@@ -3359,7 +3370,7 @@ namespace GenBOE.Web.Controllers
                     if (!_WorkspaceStateMachine.PerformStateTransitionValidation(ws, originalState, workspaceStatusMV.WorkspaceStatus, out validationMessage))
                     {
                         // not valid ... communicate to user
-                        throw new GenValidationException(" Error: Unable to change state: " + validationMessage);
+                        throw new GenValidationException("Error: Unable to change state: " + validationMessage);
                     }
                 }
 
@@ -4784,6 +4795,7 @@ namespace GenBOE.Web.Controllers
             int proposalClassId = -1;
             string anticipatedDeliveryDate = string.Empty;
             string revisedSubmittalDate = string.Empty;
+            bool usingTemplateBoe = false;
 
             // see if this is a valid PTM Tracking Number
             int proposalId = this.proposalLoader.GetIdByTrackingNumber(trackingNumber);
@@ -4817,6 +4829,9 @@ namespace GenBOE.Web.Controllers
                 revisedSubmittalDate = proposal.RevisedSubmittalDate.HasValue
                     ? proposal.RevisedSubmittalDate.Value.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR)
                     : string.Empty;
+
+                // Default Template BOE switch to Yes if CCoPD is set to true
+                usingTemplateBoe = proposal.IsCCPDRequired.HasValue ? proposal.IsCCPDRequired.Value : false;
             }
             else
             {
@@ -4824,7 +4839,8 @@ namespace GenBOE.Web.Controllers
             }
 
             return Json(new { TrackingNumberRevision = nextRevision, LOBId = lobId, RFPNumber = rfpNumber, ContractTypes = selectedContractTypes,
-                Title = title, ProposalClassId = proposalClassId, AnticipatedDeliveryDate = anticipatedDeliveryDate, RevisedSubmittalDate = revisedSubmittalDate
+                Title = title, ProposalClassId = proposalClassId, AnticipatedDeliveryDate = anticipatedDeliveryDate, RevisedSubmittalDate = revisedSubmittalDate,
+                UsingTemplateBoe = usingTemplateBoe
             });
         }
 
@@ -5100,6 +5116,7 @@ namespace GenBOE.Web.Controllers
                     newWorkspaceDTO.IsUsingEquivalentPerson = newWorkspace.IsUsingEquivalentPerson;
                     newWorkspaceDTO.IsUsingTM = newWorkspace.IsUsingTM;
                     newWorkspaceDTO.RteSizeLimit = newWorkspace.RteSizeLimit;
+                    newWorkspaceDTO.UsingTemplateBOE = newWorkspace.UsingTemplateBoe;
                     
                     if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                     {
@@ -5555,7 +5572,8 @@ namespace GenBOE.Web.Controllers
                     ProjectMapType = (int)workspace.ProjectMapType,
                     AllowGridEdit = workspace.AllowGridEdit,
                     LineOfBusinessID = workspace.LineOfBusiness.Id,
-                    RteSizeLimit = workspace.RteSizeLimit
+                    RteSizeLimit = workspace.RteSizeLimit,
+                    UsingTemplateBoe = workspace.UsingTemplateBOE
                 };
 
                 toReturn = Json(modelView);

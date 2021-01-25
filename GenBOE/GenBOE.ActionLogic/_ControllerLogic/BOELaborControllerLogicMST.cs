@@ -10,12 +10,12 @@ namespace GenBOE.ActionLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.DataBridge.Common;
@@ -72,7 +72,8 @@ namespace GenBOE.ActionLogic
             TaskElementValidation taskElementValidation,
             IVariableCircularReferenceChecker circularReferenceChecker,
             ICommonDataMapper commonDataMapper,
-            IRteTemplateDataLoader rteTemplateDataLoader
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            IMoqTypeDataLoader moqTypeDataLoader
             )
             : base(inBoeTaskElementRecalc,
                 inBoeStateMachine,
@@ -91,19 +92,22 @@ namespace GenBOE.ActionLogic
                 taskElementValidation,
                 circularReferenceChecker,
                 commonDataMapper,
-                rteTemplateDataLoader)
+                rteTemplateDataLoader,
+                moqTypeDataLoader)
         {
             this._mstMetricsLoader = inMSTMetricLoader;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
         }
 
         /// <summary>
+        /// THESE ARE LEGACY MOQ TYPES AS OF 10/2020
+        /// 
         /// Gets the valid <see cref="MOQType" />'s for the MST configuration
         /// </summary>
         /// <returns>
         /// valid <see cref="MOQType" />'s for this company configuration
         /// </returns>
-        public override ICollection<MOQType> GetMOQTypes()
+        internal override ICollection<MOQType> GetMOQTypes()
         {
             return new MOQType[]
             {
@@ -259,7 +263,6 @@ namespace GenBOE.ActionLogic
             this._mstMetricsLoader.Save(taskElementID, metricIDs);
         }
 
-
         /// <summary>
         /// Returns a <see cref="bool"/> indicating if the read only flag should be overridden
         /// </summary>
@@ -339,6 +342,59 @@ namespace GenBOE.ActionLogic
             }
 
             model.MetricsSearchDialogParameters.SearchMetricsDialogIdSuffix = CommonConstants.MSTMetricsDialogSuffix;
+        }
+
+        /// <summary>
+        /// Returns help URLs for MOQ Type fields
+        /// </summary>
+        /// <returns>help URLs for MOQ Type fields</returns>
+        public override MoqTypeHelpUrls GetMoqTypeHelpUrls()
+        {
+            MoqTypeHelpUrls toReturn = new MoqTypeHelpUrls();
+
+            // Historical/Comparative
+            toReturn.TableNameHistoricalSuffix = toReturn.TableNameComparativeSuffix = "AA-03982/598/";
+            toReturn.DateOfReportHistoricalSuffix = toReturn.DateOfReportComparativeSuffix = "AA-03984/598/";
+            toReturn.HistoricalProgramNameHistoricalSuffix = toReturn.HistoricalProgramNameComparativeSuffix = "AA-03985/598/";
+            toReturn.ContractNumberSuffix = "AA-03986/598/";
+            toReturn.WBSElementHistoricalSuffix = toReturn.WBSElementComparativeSuffix = "AA-03987/598/";
+            toReturn.PoPStartHistoricalSuffix = toReturn.PoPStartComparativeSuffix = "AA-03988/598/";
+            toReturn.PoPEndHistoricalSuffix = toReturn.PoPEndComparativeSuffix = "AA-03989/598/";
+            toReturn.TotalWBSHoursSuffix = "AA-03992/598/";
+            toReturn.AdditionalQueryFiltersHistoricalSuffix = toReturn.AdditionalQueryFiltersComparativeSuffix = "AA-03993/598/";
+            toReturn.TotalRelevantHoursHistoricalSuffix = toReturn.TotalRelevantHoursComparativeSuffix = "AA-03994/598/";
+
+            // CER/PE/AR
+            toReturn.CERNameSuffix = "AA-03997/598/";
+            toReturn.PENameSuffix = "AA-03999/598/";
+            toReturn.ARNameSuffix = "AA-04001/598/";
+
+            // SOW/LOE
+            toReturn.SOWDescriptionSuffix = "AA-04003/598/";
+            toReturn.LOEDescriptionSuffix = "AA-04004/598/";
+
+            // SME
+            toReturn.SMEReasonsSuffix = "AA-04008/598/";
+            toReturn.SMEHoursLogicSuffix = "AA-04009/598/";
+            toReturn.SMEDurationLogicSuffix = "AA-04010/598/";
+            toReturn.SMETasksSuffix = "AA-04011/598/";
+
+            // Rationales
+            toReturn.HistoricalRationaleSuffix = "AA-04013/598/";
+            toReturn.ComparativeRationaleSuffix = "AA-04014/598/";
+            toReturn.CerRationaleSuffix = toReturn.PeRationaleSuffix = toReturn.ArRationaleSuffix = "AA-04015/598/";
+            toReturn.LoeRationaleSuffix = toReturn.SowRationaleSuffix = "AA-04007/598/";
+            toReturn.NonLaborRationaleSuffix = "AA-04012/598/";
+
+            // Skill Mix
+            toReturn.HistoricalSkillMixSuffix = toReturn.ComparativeSkillMixSuffix = toReturn.CerSkillMixSuffix = toReturn.ArSkillMixSuffix = toReturn.PeSkillMixSuffix
+                = toReturn.SowSkillMixSuffix = toReturn.LoeSkillMixSuffix = toReturn.SmeSkillMixSuffix = "AA-03996/598/";
+
+            // Unused 
+            toReturn.RepositoryNameHistoricalSuffix = toReturn.RepositoryNameComparativeSuffix 
+                = toReturn.QueryTypeHistoricalSuffix = toReturn.QueryTypeComparativeSuffix = string.Empty;
+
+            return toReturn;
         }
     }
 }

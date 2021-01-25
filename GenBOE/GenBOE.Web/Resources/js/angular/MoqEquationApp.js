@@ -1,5 +1,5 @@
 ﻿// The MOQ equation module.
-var moqEquationApp = angular.module('MoqEquationApp', ['ui.bootstrap']);
+var moqEquationApp = angular.module('MoqEquationApp', ['ui.bootstrap', 'ngSanitize']);
 
 // Handles interaction with templates stored in the template cache.
 moqEquationApp.factory('TemplateService', ['$templateCache', function ($templateCache) {

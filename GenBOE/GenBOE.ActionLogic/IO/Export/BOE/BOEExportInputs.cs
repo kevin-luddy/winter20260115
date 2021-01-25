@@ -9,6 +9,7 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
@@ -34,7 +35,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// <param name="boe">The boe.</param>
         /// <param name="workspace">The workspace.</param>
         /// <exception cref="System.ArgumentNullException">workspace</exception>
-        public BOEExportInputs(FullBoe boe, FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null)
+        public BOEExportInputs(FullBoe boe, FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null, 
+            ICollection<MoqTypeSelection> moqTypes = null)
         {
             if (ReferenceEquals(workspace, null))
             {
@@ -42,7 +44,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             }
 
             this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - begin");
-            SetRteTemplateOverrides(rteTemplatesOverrides);
+            this.SetRteTemplateOverrides(rteTemplatesOverrides);
+            this.SetMoqTypes(moqTypes);
             IRetriever retriever = GenBOEUnityContainer.Container.Resolve(typeof(IRetriever)) as IRetriever;
             this.Boes = new List<BoeDTO> { boe }.AsReadOnly();
             this.TaskElements = workspace.TaskElements;
@@ -66,8 +69,8 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         /// <param name="taskElements">The task elements for entire workspace.</param>
         /// <param name="workspace">The workspace.</param>
         /// <exception cref="ArgumentNullException">workspace</exception>
-        public BOEExportInputs(ICollection<FullBoe> boesToExport, ICollection<FullBoe> allWorkspaceBoes, ICollection<BoeTaskElementDTO> taskElements, 
-            FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null)
+        public BOEExportInputs(ICollection<FullBoe> boesToExport, ICollection<FullBoe> allWorkspaceBoes, ICollection<BoeTaskElementDTO> taskElements,
+            FullWorkspace workspace, ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesOverrides = null, ICollection<MoqTypeSelection> moqTypes = null)
         {
             if (ReferenceEquals(workspace, null))
             {
@@ -76,11 +79,12 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
 
             this.logger.Debug("Exporting - BOEExportInputs - Intitializing Inputs - begin");
             IRetriever retriever = GenBOEUnityContainer.Container.Resolve(typeof(IRetriever)) as IRetriever;
-            SetRteTemplateOverrides(rteTemplatesOverrides);
+            this.SetRteTemplateOverrides(rteTemplatesOverrides);
+            this.SetMoqTypes(moqTypes);
             this.Boes = boesToExport.ToList<BoeDTO>().AsReadOnly();
             this.TaskElements = taskElements.ToList().AsReadOnly();
             this.Workspace = workspace;
-            
+
             // since the resources used may not contain offloaded resources, need to manually get this
             ICollection<int> resourceIds = taskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value)
                         .Union(workspace.TaskElements.SelectMany(x => x.taskElementLabors).Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value))
@@ -273,6 +277,11 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
         public ICollection<PickListDto> ContractTypes { get; set; }
 
         /// <summary>
+        /// Gets the MOQ Types
+        /// </summary>
+        public IReadOnlyCollection<MoqTypeSelection> MOQTypes { get; private set; }
+
+        /// <summary>
         /// Sets the RTE Template Overrides, providing a null check.
         /// </summary>
         /// <param name="rteTemplatesOverrides">The rte template overrides.</param>
@@ -301,6 +310,23 @@ namespace GenBOE.ActionLogic.IO.Export.BOE
             }
 
             this.RTETemplatesOverrides = new List<RTECustomTemplateQuestionAnswerModelView>().AsReadOnly();
+        }
+
+        /// <summary>
+        /// Sets the MOQ Types
+        /// Empty collection if null
+        /// </summary>
+        /// <param name="moqTypes">MOQ Types</param>
+        private void SetMoqTypes(ICollection<MoqTypeSelection> moqTypes)
+        {
+            if (moqTypes == null)
+            {
+                this.MOQTypes = new List<MoqTypeSelection>().AsReadOnly();
+            }
+            else
+            {
+                this.MOQTypes = new List<MoqTypeSelection>(moqTypes).AsReadOnly();
+            }
         }
     }
 }

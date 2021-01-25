@@ -261,6 +261,8 @@ AS
 **		8/17/2017	Dusan				BOEJ-2469 Add Old Resource (2.16.1)
 **		10/2/2017	twilson3			BOEJ-2520 Cleanup DB, remove old ProjectMap columns
 **		12/2/19		ranzalon			BOEJ-4464 - Added LaborSortId
+**		9/15/20		ranzalon			BOEJ-4825 - Added MOQTypeSelectionId
+**		12/8/2020	ranzalon			BOEJ-4972 - Removed MOQTypeSelectionId
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -320,6 +322,8 @@ AS
 **		10/2/2017	twilson3			BOEJ-2520 Cleanup DB, remove old ProjectMap columns
 **		6/5/2017	twilson3			BOEJ-3510 Updated insert order to match the input
 **		12/2/19		ranzalon			BOEJ-4464 - Added LaborSortId
+**		9/15/20		ranzalon			BOEJ-4825 - Added MOQTypeSelectionId
+**		12/8/2020	ranzalon			BOEJ-4972 - Removed MOQTypeSelectionId
 *******************************************************************************/
 	SET NOCOUNT ON 
 

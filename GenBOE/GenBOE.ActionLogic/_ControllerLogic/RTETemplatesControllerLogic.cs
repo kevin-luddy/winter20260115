@@ -15,6 +15,7 @@ namespace GenBOE.ActionLogic
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common.Email;
     using GenBOE.ActionLogic.ControllerLogic;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
@@ -69,6 +70,11 @@ namespace GenBOE.ActionLogic
         /// </summary>
         private readonly IBOEStateMachine boeStateMachine;
 
+        /// <summary>
+        /// MOQ Type Loader
+        /// </summary>
+        private readonly IMoqTypeDataLoader moqTypeLoader;
+
         #endregion
 
         /// <summary>
@@ -83,7 +89,7 @@ namespace GenBOE.ActionLogic
         /// <param name="emailer">BOE Emailer</param>
         public RTETemplatesControllerLogic(IRteTemplateDataLoader rteTemplateDataLoader, IWorkspaceVersionMetaDataDTODataLoader versionLoader, 
             IBoeDTODataLoader boeDtoDataLoader, IBoeMediator boeMediator, IBoeTaskElementDTODataLoader taskElementDtoDataLoader, IBoeTaskElementMediator taskElementMediator,
-            IBoeEmailer emailer, IBOEStateMachine boeStateMachine)
+            IBoeEmailer emailer, IBOEStateMachine boeStateMachine, IMoqTypeDataLoader moqTypeLoader)
         {
             this.rteTemplateDataLoader = rteTemplateDataLoader;
             this.versionLoader = versionLoader;
@@ -93,6 +99,7 @@ namespace GenBOE.ActionLogic
             this.taskElementMediator = taskElementMediator;
             this.emailer = emailer;
             this.boeStateMachine = boeStateMachine;
+            this.moqTypeLoader = moqTypeLoader;
         }
 
         /// <summary>
@@ -120,10 +127,11 @@ namespace GenBOE.ActionLogic
         /// <summary>
         /// Gets all of the sources from lookup table.
         /// </summary>
+        /// <param name="usingTemplateBOE">Is the WS using Template BOEs</param>
         /// <returns>All of the sources from lookup table.</returns>
-        public ICollection<RteCustomTemplateSourceModelView> GetSources()
+        public ICollection<RteCustomTemplateSourceModelView> GetSources(bool usingTemplateBOE)
         {
-            return this.rteTemplateDataLoader.GetSources();
+            return this.rteTemplateDataLoader.GetSources(usingTemplateBOE);
         }
 
         /// <summary>
@@ -447,6 +455,7 @@ namespace GenBOE.ActionLogic
         {
             bool saveBoes = false;
             bool saveTasks = false;
+            ICollection<MoqTypeSelection> moqTypesToSave = new List<MoqTypeSelection>();
 
             foreach (RteCustomTemplateModelView template in templatesBeingUnassigned)
             {
@@ -506,11 +515,32 @@ namespace GenBOE.ActionLogic
                             {
                                 ICollection<RTECustomTemplateQuestionAnswerModelView> taskDescQuestionsAndAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(ws.Id, task.BoeID, task.Id).Where(x => x.SourceId == (int)RteTemplateSource.TaskMOQ).ToCollection();
 
-                                task.MOQText = this.ConvertQandAsToText(taskDescQuestionsAndAnswers, (int)RteTemplateSource.TaskMOQ);
-                                task.Updateable = UpdateType.Upsert;
+                                if (ws.UsingTemplateBOE)
+                                {
+                                    MoqTypeSelection tasksFirstMoqType = ws.MoqTypeSelections.OrderBy(x => x.Order).FirstOrDefault(x => x.TaskId == task.Id) ??  throw new GenValidationException("Operation cannot be completed as requested. " +
+                                        "This is likely due to incomplete or invalid data. Please verify that all BOEs and Tasks are complete and valid. If the issue persists, please contact the administrator.");
+
+                                    tasksFirstMoqType.Updateable = UpdateType.Upsert;
+
+                                    if (tasksFirstMoqType.SelectedMOQType == MOQType.SME)
+                                    {
+                                        tasksFirstMoqType.SmeReason += this.ConvertQandAsToText(taskDescQuestionsAndAnswers, (int)RteTemplateSource.TaskMOQ);
+                                    }
+                                    else
+                                    {
+                                        tasksFirstMoqType.Rationale += this.ConvertQandAsToText(taskDescQuestionsAndAnswers, (int)RteTemplateSource.TaskMOQ);
+                                    }
+
+                                    moqTypesToSave.Add(tasksFirstMoqType);
+                                }
+                                else
+                                {
+                                    task.MOQText = this.ConvertQandAsToText(taskDescQuestionsAndAnswers, (int)RteTemplateSource.TaskMOQ);
+                                    task.Updateable = UpdateType.Upsert;
+                                }
                             }
 
-                            saveTasks = true;
+                            saveTasks = saveTasks || !ws.UsingTemplateBOE;
                             break;
                         default:
                             break;
@@ -529,6 +559,11 @@ namespace GenBOE.ActionLogic
             if (saveTasks)
             {
                 this.taskElementMediator.MediatedBulkSaveTaskElements(tasks, ws);
+            }
+
+            if (moqTypesToSave.Any())
+            {
+                this.moqTypeLoader.Save(moqTypesToSave);
             }
         }
 

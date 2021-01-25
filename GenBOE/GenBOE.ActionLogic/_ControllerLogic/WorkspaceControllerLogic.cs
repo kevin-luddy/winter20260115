@@ -27,11 +27,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.DataBridge.DTO;
     using GenBOE.DataBridge.Reference;
     using GenBOE.Dtos;
+    using GenBOE.Models;
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
     using IES.Common.Exceptions;
     using IES.Common.PickList;
+    using MoreLinq;
     using static IES.Common.Constants;
 
     public abstract class WorkspaceControllerLogic : IWorkspaceControllerLogic
@@ -51,6 +53,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private ICustomFieldDTODataLoader customFieldLoader = null;
         private IPickListMapper boePickListMapper;
         private IPickListMapper ptmPickListMapper;
+        private IMoqTypeDataLoader moqTypeLoader;
 
         private IPermissionsDTODataLoader PermissionLoader { get; }
 
@@ -117,10 +120,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="fullWsRecalc">The full ws recalc.</param>
         /// <param name="inWorkspaceVariableLoader">The workspace variable loader.</param>
         /// <param name="inCustomFieldValueLoader">The custom field value loader.</param>
-        /// <permission cref="customFieldLoader">The custom field loader.</permission>
+        /// <param name="customFieldLoader">The custom field loader.</permission>
         /// <param name="projectMapDataLoader">The project map data loader.</param>
         /// <param name="boePickListMapper">The BOE pick list mapper.</param>
         /// <param name="ptmPickListMapper">The PTM pick list mapper.</param>
+        /// <param name="contractTypeLoader">Contract Type Loader</param>
+        /// <param name="workspaceExporter">WS Exporter</param>
+        /// <param name="moqTypeLoader">Moq Type Loader</param>
         protected WorkspaceControllerLogic(
             IWorkspaceDTODataLoader workspaceLoader,
             IUserDTODataLoader inuserLoader,
@@ -138,7 +144,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IPickListMapper boePickListMapper,
             IPickListMapper ptmPickListMapper,
             ContractTypeLoader contractTypeLoader,
-            WorkspaceExporter workspaceExporter)
+            WorkspaceExporter workspaceExporter,
+            IMoqTypeDataLoader moqTypeLoader)
         {
             this.WorkspaceLoader = workspaceLoader;
             this.UserLoader = inuserLoader;
@@ -160,6 +167,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.ptmPickListMapper = ptmPickListMapper;
             this.contractTypeLoader = contractTypeLoader;
             this.workspaceExporter = workspaceExporter;
+            this.moqTypeLoader = moqTypeLoader;
         }
 
         #endregion
@@ -1155,7 +1163,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 rteTemplateOverrides = boes.SelectMany(x => x.TemplateQuestionsAndAnswers).ToList();
             }
             
-            BOEExportInputs exportInputs = new BOEExportInputs(boes, ws.Boes.ToList(), tasks, ws, rteTemplateOverrides);
+            BOEExportInputs exportInputs = new BOEExportInputs(boes, ws.Boes.ToList(), tasks, ws, rteTemplateOverrides, ws.MoqTypeSelections.ToList());
             // Need picklist values for contract type for Workspace Identification sheet
             exportInputs.ContractTypes = this.contractTypeLoader.GetPickListValues();
             ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
@@ -1446,15 +1454,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <returns>Collection of Validation Messages.</returns>
         public virtual ICollection<ValidationMessage> SaveWorkspaceIdentificationValidation(FullWorkspace ws, IWorkspaceIdentificationModelView workspaceDetails, bool isAdmin, bool ptmTrackingNumberNotRequired = false)
         {
-            if (ws == null)
-            {
-                throw new ArgumentNullException(nameof(ws));
-            }
-
-            if (workspaceDetails == null)
-            {
-                throw new ArgumentNullException(nameof(workspaceDetails));
-            }
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
+            _ = workspaceDetails ?? throw new ArgumentNullException(nameof(workspaceDetails));
 
             List<ValidationMessage> validationErrors = new List<ValidationMessage>();
 
@@ -1470,7 +1471,49 @@ namespace GenBOE.ActionLogic.ControllerLogic
             // Perform Cost Volume Lead/Pricer validation - Must be an individual (not a group), and not a subcontractor.
             validationErrors.AddRange(this.CostVolumeLeadPricerValidation(workspaceDetails.CostVolumeLeadPricerNTID));
 
+            // Boe Template (MOQ Type) change validation
+            if (ws.UsingTemplateBOE && !workspaceDetails.UsingTemplateBoe)
+            {
+                validationErrors.Add(new ValidationMessage("Using Template BOEs cannot be changed from 'Yes' to 'No'. The only allowed changed to this field is from 'No' to 'Yes'."));
+            }
+
             return validationErrors;
+        }
+
+        /// <summary>
+        /// Gets MOQ Type data when WS is changing from not using BOE Templates to using BOE Templates. This data still needs to be saved later
+        /// </summary>
+        /// <param name="ws">Workspace which is being saved</param>
+        /// <returns>MOQ Type Data to save</returns>
+        public ICollection<MoqTypeSelection> GetMoqTypesDataForBoeTemplateSettingChange(FullWorkspace ws)
+        {
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
+
+            int i = -1;
+            return ws.TaskElements.Where(x => x.MOQType.MapToNew(ws.CreationDate) != MOQType.None || !string.IsNullOrEmpty(x.MOQText)).Select(taskElement => new MoqTypeSelection()
+            {
+                Id = i--,
+                Updateable = UpdateType.Upsert,
+                TaskId = taskElement.Id,
+
+                SelectedMOQType = taskElement.MOQType.MapToNew(ws.CreationDate, MOQType.Historical),
+                SmeReason = taskElement.MOQType.MapToNew(ws.CreationDate, MOQType.Historical) == MOQType.SME ? taskElement.MOQText : string.Empty,
+                Rationale = taskElement.MOQType.MapToNew(ws.CreationDate, MOQType.Historical) == MOQType.SME ? string.Empty : taskElement.MOQText
+            }).ToList();
+        }
+
+        /// <summary>
+        /// Save MOQ Types
+        /// </summary>
+        /// <param name="moqTypesToSave">Moq Types To Save</param>
+        public void SaveMoqTypes(ICollection<MoqTypeSelection> moqTypesToSave)
+        {
+            _ = moqTypesToSave ?? throw new ArgumentNullException(nameof(moqTypesToSave));
+
+            if (moqTypesToSave.Any())
+            {
+                this.moqTypeLoader.Save(moqTypesToSave);
+            }
         }
 
         /// <summary>

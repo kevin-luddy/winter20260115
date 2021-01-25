@@ -10,8 +10,9 @@ namespace GenBOE.ActionLogic.ModelView.BOE
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.ComponentModel.DataAnnotations;
-    using GenBOE.ActionLogic.Common.Calculations;
+    using System.Web.Mvc;
     using GenBOE.ActionLogic.ModelView;
+    using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
@@ -33,7 +34,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.TaskOrdinaryVariables = new Collection<BoeTaskOrdinaryVariableModelView>();
             this.WorkspaceVariableIDs = new Collection<int>();
             this.TypeOfMoqEquation = MOQEquationType.Hours;
-            this.MoqEquationName = string.Empty;
             this.TaskElementId = 0;
             this.MOQType = MOQType.None;
             this.MOQText = string.Empty;
@@ -121,11 +121,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         public MOQEquationType TypeOfMoqEquation { get; set; }
 
         /// <summary>
-        /// This is for naming the specific moq equation on a page where multiple equations exist.
-        /// </summary>
-        public string MoqEquationName { get; set; }
-
-        /// <summary>
         /// Task element containing the MOQ equation.
         /// </summary>
         public int TaskElementId { get; set; }
@@ -180,7 +175,31 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Gets or sets the RTE Custom Template Answers at Task level.
         /// </summary>
         public ICollection<RTECustomTemplateQuestionAnswerModelView> MoqTemplateAnswers { get; set; }
-        
+
+        /// <summary>
+        /// This drives MOQ Type usage. Yes -> new, more complex types. No -> legacy / original code.
+        /// </summary>
+        public bool UsingTemplateBOE { get; set; }
+
+        /// <summary>
+        /// MOQ Types for DropDown
+        /// </summary>
+        public ICollection<SelectListItem> MOQTypes { get; set; }
+
+        /// <summary>
+        /// Selected MOQ Types and their underlying data
+        /// </summary>
+        public ICollection<MoqTypeSelection> SelectedMoqTypes { get; set; } = new List<MoqTypeSelection>();
+
+        /// <summary>
+        /// Labels for the Data Table Fields
+        /// </summary>
+        public MoqTypeTableDataLabels MoqTypeTableDataLabels { get; set; }
+
+        /// <summary>
+        /// Help URLs for MOQ Type fields
+        /// </summary>
+        public MoqTypeHelpUrls MoqTypeHelpUrls { get; set; }
     }
 
     public enum MOQEquationType

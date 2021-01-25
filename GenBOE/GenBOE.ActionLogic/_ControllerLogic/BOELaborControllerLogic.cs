@@ -12,6 +12,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Linq;
     using System.Transactions;
     using System.Web.Configuration;
+    using System.Web.Mvc;
     using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
@@ -21,6 +22,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.Validation;
+    using GenBOE.ActionLogic.WBS.BOE;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -48,6 +50,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IPerformingOrgDTODataLoader PerfOrgLoader;
         private readonly IOrdinaryVariableLoader _taskVariableLoader;
         private readonly IRteTemplateDataLoader rteTemplateDataLoader;
+        private readonly IMoqTypeDataLoader moqTypeDataLoader;
 
         /// <summary>
         /// Task Element Validation Class
@@ -75,7 +78,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             TaskElementValidation taskElementValidation,
             IVariableCircularReferenceChecker circularReferenceChecker,
             ICommonDataMapper commonDataMapper,
-            IRteTemplateDataLoader rteTemplateDataLoader)
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            IMoqTypeDataLoader moqTypeDataLoader)
         {
             this._BoeTaskElementRecalculation = inBoeTaskElementRecalc;
             this._boeStateMachine = inBoeStateMachine;
@@ -95,6 +99,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.circularReferenceChecker = circularReferenceChecker;
             this.CommonDataMapper = commonDataMapper;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
+            this.moqTypeDataLoader = moqTypeDataLoader;
         }
 
         #region Public Members
@@ -308,7 +313,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
 
             // Convert to ModelView
-            LaborTaskDataModelView toReturn = this.ConvertDtoToModelView(ws, taskElementDto);
+            LaborTaskDataModelView toReturn = this.ConvertDtoToModelView(ws, boe, taskElementDto);
             toReturn.AdjacentItems = this.FindAdjacentTasks(boe, taskElementId);
             toReturn.ValidationErrors = this.taskElementValidation.ValidateTaskElementsWithErrorMessages(ws, new List<BoeTaskElementDTO>() { taskElementDto }).Select(e => e.ErrorMessage).ToList();
             
@@ -330,47 +335,31 @@ namespace GenBOE.ActionLogic.ControllerLogic
         }
 
         /// <summary>
-        /// Validate the Labor Task data prior to saving
+        /// Validate the Labor Task data prior to saving, doing some data cleanup prior to validation
         /// </summary>
         /// <param name="ws">Workspace</param>
         /// <param name="modelView">Labor Task modelview</param>
         /// <returns>Any Validation errors</returns>
-        public ICollection<ValidationMessage> ValidateLaborTaskData(FullWorkspace ws, LaborTaskDataModelView modelView)
+        public ICollection<ValidationMessage> ValidateLaborTaskDataWithDataModification(FullWorkspace ws, LaborTaskDataModelView modelView)
         {
-            if (ws == null)
-            {
-                throw new ArgumentNullException(nameof(ws));
-            }
-            
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
+
             ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
 
             if (modelView != null)
             {
                 FullBoe boe = factory.CreateFullBoe((int)modelView.TaskElementData.BOEID);
 
-                // Validation - Phase I - Ignore deleted rows
-                validationErrors = ValidateLaborTaskDataLabor(ws, boe, modelView);
+                // Validate Task Data, ignoring deleted rows
+                validationErrors = this.ValidateLaborTaskDataLabor(ws, boe, modelView);
 
-                #region Remove rows that were added then deleted
+                this.CleanupLaborTaskData(ws, modelView);
 
-                ICollection<LaborTypeDataModelView> addedThenDeletedResourceTypes = modelView.LaborTypesData.Where(r => r.Deleted && r.BOELaborTypeID.HasValue && r.BOELaborTypeID.Value < 0).ToCollection();
-                if (addedThenDeletedResourceTypes.Any())
-                {
-                    foreach (LaborTypeDataModelView resourceType in addedThenDeletedResourceTypes)
-                    {
-                        modelView.LaborTypesData.Remove(resourceType);
-                    }
-                }
-
-                #endregion
-
-                #region Validation - Phase II
-
-                // validate task details composite
+                // Validate Task Details Composite
                 this.ValidateTaskDetails(boe, modelView, validationErrors, ws);
 
+                // Validate Task Variables
                 bool addNullValidationError = true;
-
                 if (modelView.TaskElementData.TaskOrdinaryVariables.Any())
                 {
                     foreach (BoeTaskOrdinaryVariableModelView variable in modelView.TaskElementData.TaskOrdinaryVariables)
@@ -383,109 +372,41 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     }
                 }
 
-                // validate moq equation
-                string result = this.ValidateMOQEquation(boe.Id, modelView, validationErrors, ws);
+                // Validate Numbers
+                this.ValidateMoqEquationAndValues(ws, boe, modelView, validationErrors);
 
-                #region Validate that MOQ Equation Value = Labor Hour Spreads = Resource Hours Spreads
-
-                    decimal? moqResult = 0;
-
-                    decimal tempMoqResult;
-
-                    if (!string.IsNullOrEmpty(result))
-                    {
-                        if (decimal.TryParse(result, out tempMoqResult))
-                        {
-                            moqResult = Utilities.AdjustPrecision(tempMoqResult, ws.DecimalPrecision);
-                        }
-                    }
-
-                    // Need to find any missing labors stored in DB that are not handled by UI
-                    if (modelView.TaskElementData.TaskElementDetailID > 0)
-                    {
-                        BoeTaskElementDTO element = ws.TaskElements.FirstOrDefault(a => a.Id == modelView.TaskElementData.TaskElementDetailID);
-                        if (element != null)
-                        {
-                            List<int> idsOfLaborsBeingEdited = modelView.LaborTypesData.Where(a => a.BOELaborTypeID.HasValue).Select(a => a.BOELaborTypeID.Value).ToList();
-
-                            // Find missing labors stored in the DB that are not being saved by the UI
-                            ICollection<ResourceTypeDto> missingLabors = element.taskElementLabors.Where(a => !idsOfLaborsBeingEdited.Contains(a.Id)).ToList();
-
-                            // these missing labors need to be removed
-                            foreach (ResourceTypeDto missing in missingLabors)
-                            {
-                                this.logger.Error("During Save of Task Element, there was a missing task element labor found in the DB that will be deleted with id " + missing.Id);
-                                LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new PerformingOrgDTO());
-                                toDelete.Deleted = true;
-                                modelView.LaborTypesData.Add(toDelete);
-                            }
-                        }
-                    }
-
-                    if (modelView.LaborTypesData.Any())
-                    {
-                        Collection<LaborTypeDataModelView> laborTypes = (from lt in modelView.LaborTypesData
-                                                                         where lt.Deleted == false && lt.RateType == RateType.Hours
-                                                                         select lt).ToCollection();
-
-                        // should only validate if there are any labor types
-                        if (laborTypes.Any())
-                        {
-                            decimal? laborTypesHours = laborTypes.Sum(a => a.HourSpread ?? 0);
-
-                            // only consider spreads for which spread type = Hours
-                            decimal? spreadsHours = laborTypes.Sum(a => a.Spreads.Sum(b => b.LaborSpreadValue));
-
-                            if (moqResult != laborTypesHours || laborTypesHours != spreadsHours)
-                            {
-                                string hoursLabel = FullObjectHelper.HoursLabel(ws);
-                                string errorMsg = "The total Resource Type <b>" + hoursLabel + " Spread</b> must equal the Total Resource Spread which must also equal the total " + hoursLabel + " computed by the <b>" + this.GetMOQEquationLabel() + "</b>."
-                                                + "<br />    · If the <b>Total</b> Resource Spread is incorrect for a resource: change the <b>Spread Curve</b> so it recalculates. Then change it back to the original <b>Spread Curve</b>. "
-                                            + "<br />    · Verify the " + this.GetMOQEquationLabel() + " Total = Total Resource " + hoursLabel + " = Total Resource Spread and the Delta = 0.";
-
-                                validationErrors.Add(new ValidationMessage("MOQ-Labor", errorMsg));
-                            }
-                        }
-                    }
-
-                    #endregion
-
-                #endregion
-
-            }
-                
-            #region Validate Precision
-
-            if (modelView.LaborTypesData.Any())
-            {
-                foreach(LaborTypeDataModelView labor in modelView.LaborTypesData)
+                // Validate Precision
+                if (modelView.LaborTypesData.Any())
                 {
-                    if (labor.RateType == RateType.Cost)
+                    foreach (LaborTypeDataModelView labor in modelView.LaborTypesData)
                     {
-                        CheckPrecision(labor.CostSpread, ws.CostDecimalPrecision, "Resource Types Row - Cost");
-                        // only checking discrete since non-discrete is not saved in Database
-                        if (labor.SpreadCurveID.HasValue && labor.SpreadCurveID == SpreadCurves.DiscreteCost)
+                        if (labor.RateType == RateType.Cost)
                         {
-                            if (labor.Spreads.Any())
+                            CheckPrecision(labor.CostSpread, ws.CostDecimalPrecision, "Resource Types Row - Cost");
+                            // only checking discrete since non-discrete is not saved in Database
+                            if (labor.SpreadCurveID.HasValue && labor.SpreadCurveID == SpreadCurves.DiscreteCost)
                             {
-                                foreach(LaborSpreadDataModelView spread in labor.Spreads)
+                                if (labor.Spreads.Any())
                                 {
-                                    CheckPrecision(spread.LaborSpreadValue, ws.CostDecimalPrecision, "Resource Spreads");
+                                    foreach (LaborSpreadDataModelView spread in labor.Spreads)
+                                    {
+                                        CheckPrecision(spread.LaborSpreadValue, ws.CostDecimalPrecision, "Resource Spreads");
+                                    }
                                 }
                             }
                         }
-                    } 
-                    else
-                    {
-                        CheckPrecision(labor.HourSpread, ws.DecimalPrecision, "Resource Types Row - Hours Spread");
-                        // only checking discrete since non-discrete is not saved in Database
-                        if (labor.SpreadCurveID.HasValue && labor.SpreadCurveID == SpreadCurves.DiscreteHours)
+                        else
                         {
-                            if (labor.Spreads.Any())
+                            CheckPrecision(labor.HourSpread, ws.DecimalPrecision, "Resource Types Row - Hours Spread");
+                            // only checking discrete since non-discrete is not saved in Database
+                            if (labor.SpreadCurveID.HasValue && labor.SpreadCurveID == SpreadCurves.DiscreteHours)
                             {
-                                foreach (LaborSpreadDataModelView spread in labor.Spreads)
+                                if (labor.Spreads.Any())
                                 {
-                                    CheckPrecision(spread.LaborSpreadValue, ws.DecimalPrecision, "Resource Spreads");
+                                    foreach (LaborSpreadDataModelView spread in labor.Spreads)
+                                    {
+                                        CheckPrecision(spread.LaborSpreadValue, ws.DecimalPrecision, "Resource Spreads");
+                                    }
                                 }
                             }
                         }
@@ -493,9 +414,113 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 }
             }
 
-            #endregion Validate Precision
-
             return validationErrors;
+        }
+
+        /// <summary>
+        /// Validate MOQ Equation and spreads / labor types / moq equation numbers
+        /// </summary>
+        /// <param name="ws">Full WS</param>
+        /// <param name="boe">Full BOE</param>
+        /// <param name="modelView">Model to validate</param>
+        /// <param name="validationErrors">Validation Errors</param>
+        private void ValidateMoqEquationAndValues(FullWorkspace ws, FullBoe boe, LaborTaskDataModelView modelView, ICollection<ValidationMessage> validationErrors)
+        {
+            decimal? moqResult = 0;
+            decimal tempMoqResult;
+
+            string result = this.ValidateMOQEquation(boe.Id, modelView, validationErrors, ws);
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                if (decimal.TryParse(result, out tempMoqResult))
+                {
+                    moqResult = Utilities.AdjustPrecision(tempMoqResult, ws.DecimalPrecision);
+                }
+            }
+
+            // Need to find any missing labors stored in DB that are not handled by UI
+            if (modelView.TaskElementData.TaskElementDetailID > 0)
+            {
+                BoeTaskElementDTO element = ws.TaskElements.FirstOrDefault(a => a.Id == modelView.TaskElementData.TaskElementDetailID);
+                if (element != null)
+                {
+                    List<int> idsOfLaborsBeingEdited = modelView.LaborTypesData.Where(a => a.BOELaborTypeID.HasValue).Select(a => a.BOELaborTypeID.Value).ToList();
+
+                    // Find missing labors stored in the DB that are not being saved by the UI
+                    ICollection<ResourceTypeDto> missingLabors = element.taskElementLabors.Where(a => !idsOfLaborsBeingEdited.Contains(a.Id)).ToList();
+
+                    // these missing labors need to be removed
+                    foreach (ResourceTypeDto missing in missingLabors)
+                    {
+                        this.logger.Error("During Save of Task Element, there was a missing task element labor found in the DB that will be deleted with id " + missing.Id);
+                        LaborTypeDataModelView toDelete = new LaborTypeDataModelView(missing, new ResourceDTO(), new PerformingOrgDTO());
+                        toDelete.Deleted = true;
+                        modelView.LaborTypesData.Add(toDelete);
+                    }
+                }
+            }
+
+            if (modelView.LaborTypesData.Any())
+            {
+                Collection<LaborTypeDataModelView> laborTypes = (from lt in modelView.LaborTypesData
+                                                                 where lt.Deleted == false && lt.RateType == RateType.Hours
+                                                                 select lt).ToCollection();
+
+                // should only validate if there are any labor types
+                if (laborTypes.Any())
+                {
+                    decimal? laborTypesHours = laborTypes.Sum(a => a.HourSpread ?? 0);
+
+                    // only consider spreads for which spread type = Hours
+                    decimal? spreadsHours = laborTypes.Sum(a => a.Spreads.Sum(b => b.LaborSpreadValue));
+
+                    if (moqResult != laborTypesHours || laborTypesHours != spreadsHours)
+                    {
+                        string hoursLabel = FullObjectHelper.HoursLabel(ws);
+                        string errorMsg = "The total Resource Type <b>" + hoursLabel + " Spread</b> must equal the Total Resource Spread which must also equal the total " + hoursLabel + " computed by the <b>" + this.GetMOQEquationLabel() + "</b>."
+                                        + "<br />    · If the <b>Total</b> Resource Spread is incorrect for a resource: change the <b>Spread Curve</b> so it recalculates. Then change it back to the original <b>Spread Curve</b>. "
+                                    + "<br />    · Verify the " + this.GetMOQEquationLabel() + " Total = Total Resource " + hoursLabel + " = Total Resource Spread and the Delta = 0.";
+
+                        validationErrors.Add(new ValidationMessage("MOQ-Labor", errorMsg));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Cleanup Labor Task Data
+        /// </summary>
+        /// <param name="ws">Full WS</param>
+        /// <param name="modelView">Model to clean up</param>
+        private void CleanupLaborTaskData(FullWorkspace ws, LaborTaskDataModelView modelView)
+        {
+            #region Remove rows that were added then deleted
+
+            ICollection<LaborTypeDataModelView> addedThenDeletedResourceTypes = modelView.LaborTypesData.Where(r => r.Deleted && r.BOELaborTypeID.HasValue && r.BOELaborTypeID.Value < 0).ToCollection();
+            if (addedThenDeletedResourceTypes.Any())
+            {
+                foreach (LaborTypeDataModelView resourceType in addedThenDeletedResourceTypes)
+                {
+                    modelView.LaborTypesData.Remove(resourceType);
+                }
+            }
+
+            #endregion
+
+            #region Clean up MOQ Type Table Dates
+
+            if (ws.UsingTemplateBOE)
+            {
+                modelView.MOQTypes.SelectMany(x => x.TableData).ForEach(table =>
+                {
+                    table.DateOfReport = table.DateOfReport.Normalize(DateTimePrecision.Day);
+                    table.PoPStart = table.PoPStart.Normalize(DateTimePrecision.Day);
+                    table.PoPEnd = table.PoPEnd.Normalize(DateTimePrecision.Day);
+                });
+            }
+
+            #endregion
         }
 
         /// <summary>
@@ -684,15 +709,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="taskElement">task element</param>
         public ICollection<ValidationMessage> ValidateTaskElementDto(FullWorkspace ws, BoeTaskElementDTO taskElement)
         {
-            if (ws == null)
-            {
-                throw new ArgumentNullException(nameof(ws));
-            }
-
-            if (taskElement == null)
-            {
-                throw new ArgumentNullException(nameof(taskElement));
-            }
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
+            _ = taskElement ?? throw new ArgumentNullException(nameof(taskElement));
             
             ICollection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
             FullBoe boe = factory.CreateFullBoe(taskElement.BoeID);
@@ -704,7 +722,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             ICollection<WorkspaceVariableDTO> invalidWorkspaceVariables = circularReferenceChecker.WorkspaceVariablesCreateCircularReference(circularReferenceCache, taskElement.BoeID, inUseWorkspaceVariables, ws);
             ICollection<string> allInvalidVariableNames = invalidWorkspaceVariables.Select(w => w.WorkspaceVariableName).Union(invalidOrdinaryVariables.Select(o => o.OrdinaryVariableName)).ToCollection();
 
-            if (allInvalidVariableNames.Count() > 0)
+            if (allInvalidVariableNames.Any())
             {
                 validationErrors.Add(new ValidationMessage("TaskVariable", "Some variables included in the MOQ Equation will cause circular references to occur. The following variables must be removed before saving: " + String.Join(", ", allInvalidVariableNames)));
             }
@@ -802,12 +820,20 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// Save the Labor Task data
         /// </summary>
         /// <param name="ws">Workspace</param>
-        /// <param name="modelView">Labor Task dto</param>
-        public void SaveLaborTaskData(FullWorkspace ws, BoeTaskElementDTO dtoToSave, ICollection<int> metricIds, ICollection<RTECustomTemplateQuestionAnswerModelView> answers)
+        /// <param name="dtoToSave">Task DTO</param>
+        /// <param name="metricIds">Metric IDs</param>
+        /// <param name="answers">RTE Template Answers</param>
+        /// <param name="moqTypes">MOQ Types for the task</param>
+        public void SaveLaborTaskData(FullWorkspace ws, BoeTaskElementDTO dtoToSave, ICollection<int> metricIds, ICollection<RTECustomTemplateQuestionAnswerModelView> answers, ICollection<MoqTypeSelection> moqTypes)
         {
             if (ws == null)
             {
                 throw new ArgumentNullException(nameof(ws));
+            }
+
+            if (moqTypes == null)
+            {
+                throw new ArgumentNullException(nameof(moqTypes));
             }
 
             #region Identify workspace variables for update and if Other BOE Recalcuations needed
@@ -872,7 +898,38 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     answers.ForEach(x => { x.TaskId = newTaskId; });
                     this.rteTemplateDataLoader.SaveAnswers(answers);
                 }
-                
+
+                if (ws.UsingTemplateBOE)
+                {
+                    // Update MOQ Types via kill and fill
+                    // Get existing MOQ Types and table data, set them all to deleted, and save
+                    ICollection<MoqTypeSelection> existingMoqTypes = this.moqTypeDataLoader.GetByBoeId(dtoToSave.BoeID).Where(x => x.TaskId == dtoToSave.Id).ToCollection();
+                    foreach(var moqType in existingMoqTypes)
+                    {
+                        moqType.Updateable = UpdateType.Deleted;
+                    }
+
+                    this.moqTypeDataLoader.Save(existingMoqTypes);
+
+                    // Set all incoming MOQ Types as Upsert and set ids to -1 for insert
+                    int i = -1;
+                    foreach (MoqTypeSelection moqType in moqTypes)
+                    {
+                        moqType.Id = i--;
+                        moqType.Updateable = UpdateType.Upsert;
+
+                        moqType.TaskId = newTaskId;
+
+                        foreach(MoqTableData table in moqType.TableData)
+                        {
+                            table.Id = i--;
+                            table.Updateable = UpdateType.Upsert;
+                        }
+                    }
+
+                    this.moqTypeDataLoader.Save(moqTypes);
+                }
+
                 ws.RefreshBoes();
 
                 // Save historical metrics for BOE Task Element
@@ -1171,19 +1228,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
         public string ValidateMOQEquation(int inBoeID, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace inWorkspaceDTO)
         {
             string result = string.Empty;
-
-            if (laborTaskData == null)
-            {
-                throw new ArgumentNullException(nameof(laborTaskData));
-            }
-            if (inValidationErrors == null)
-            {
-                throw new ArgumentNullException(nameof(inValidationErrors));
-            }
-            if (inWorkspaceDTO == null)
-            {
-                throw new ArgumentNullException(nameof(inWorkspaceDTO));
-            }
+            _ = laborTaskData ?? throw new ArgumentNullException(nameof(laborTaskData));
+            _ = inValidationErrors ?? throw new ArgumentNullException(nameof(inValidationErrors));
+            _ = inWorkspaceDTO ?? throw new ArgumentNullException(nameof(inWorkspaceDTO));
 
             //  Ensure the MOQ Equation is valid. if not, display a validation error to the user, don't allow the save
             try
@@ -1220,7 +1267,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     result = Parser.Calculate(laborTaskData.TaskElementData.MOQHoursEquation, boeTaskVars2, workspaceVars, this.VariableSelectBOEtoSumCalculation, data, inWorkspaceDTO);
                 }
             }
-
             catch (GeneralMOQParsingException)
             {
                 inValidationErrors.Add(new ValidationMessage("Invalid MOQ Equation ", "An invalid MOQ equation was entered."));
@@ -1292,66 +1338,46 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="boeDTO">boe</param>
         /// <param name="laborTaskData">task modelview includes task details, labors, and spreads</param>
         /// <param name="inValidationErrors">validation errors</param>
-        /// <param name="inWorkspaceDTO">workspace</param>
-        public void ValidateTaskDetails(FullBoe boeDTO, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace inWorkspaceDTO)
+        /// <param name="ws">workspace</param>
+        public void ValidateTaskDetails(FullBoe boeDTO, LaborTaskDataModelView laborTaskData, ICollection<ValidationMessage> inValidationErrors, FullWorkspace ws)
         {
-            if (boeDTO == null)
-            {
-                throw new ArgumentNullException(nameof(boeDTO));
-            }
-            if (laborTaskData == null)
-            {
-                throw new ArgumentNullException(nameof(laborTaskData));
-            }
-            if (inValidationErrors == null)
-            {
-                throw new ArgumentNullException(nameof(inValidationErrors));
-            }
-            if (inWorkspaceDTO == null)
-            {
-                throw new ArgumentNullException(nameof(inWorkspaceDTO));
-            }
-
-            if (laborTaskData.TaskElementData == null)
-            {
-                throw new ArgumentException("Property inTaskData.TaskDetails cannot be null", nameof(laborTaskData));
-            }
-
-            BoeTaskElementDTO taskElement;
+            _ = boeDTO ?? throw new ArgumentNullException(nameof(boeDTO));
+            _ = inValidationErrors ?? throw new ArgumentNullException(nameof(inValidationErrors));
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
+            _ = laborTaskData ?? throw new ArgumentNullException(nameof(laborTaskData));
+            _ = laborTaskData.TaskElementData ?? throw new ArgumentNullException(nameof(laborTaskData), "TaskElementData cannot be null");
 
             // validate RTE field length
-            if(inWorkspaceDTO.RteSizeLimit.HasValue)
+            if(ws.RteSizeLimit.HasValue)
             {
-                this.ValidateTaskElementRteSizeLimit(laborTaskData, inWorkspaceDTO, inValidationErrors);
+                this.ValidateTaskElementRteSizeLimit(laborTaskData, ws, inValidationErrors);
             }
 
-            this.ValidateTaskElementDates(laborTaskData, inWorkspaceDTO, boeDTO, inValidationErrors, out taskElement);
-
+            this.ValidateTaskElementDates(laborTaskData, ws, boeDTO, inValidationErrors, out BoeTaskElementDTO taskElement);
             this.ValidateLaborTypeDates(laborTaskData, inValidationErrors);
-
-            this.ValidateLaborTypeCustomFields(laborTaskData, inWorkspaceDTO, taskElement, inValidationErrors);
-
-            this.ValidateTaskCustomFields(laborTaskData, inWorkspaceDTO, inValidationErrors);
+            this.ValidateLaborTypeCustomFields(laborTaskData, ws, taskElement, inValidationErrors);
+            this.ValidateTaskCustomFields(laborTaskData, ws, inValidationErrors);
+            this.ValidateMoqTypes(ws, laborTaskData, inValidationErrors);
         }
 
         /// <summary>
         /// Validate the RTE Size Limit in the Task Element
         /// </summary>
         /// <param name="laborTaskData">Task Composite MV</param>
-        /// <param name="inWorkspaceDTO">Workspace</param>
+        /// <param name="ws">Workspace</param>
         /// <param name="inValidationErrors">Validation Errors collection</param>
-        private void ValidateTaskElementRteSizeLimit(LaborTaskDataModelView laborTaskData, FullWorkspace inWorkspaceDTO, ICollection<ValidationMessage> inValidationErrors)
+        private void ValidateTaskElementRteSizeLimit(LaborTaskDataModelView laborTaskData, WorkspaceDTO ws, ICollection<ValidationMessage> inValidationErrors)
         {
-            if (!string.IsNullOrEmpty(laborTaskData.TaskElementData.TaskDescription) && inWorkspaceDTO.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.TaskDescription).Length)
+            if (!string.IsNullOrEmpty(laborTaskData.TaskElementData.TaskDescription) && ws.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.TaskDescription).Length)
             {
                 inValidationErrors.Add(new ValidationMessage("TaskDescription",
-                    string.Format("The maximum length of Task Description is {0} characters.", inWorkspaceDTO.RteSizeLimit.Value)));
+                    string.Format("The maximum length of Task Description is {0} characters.", ws.RteSizeLimit.Value)));
             }
 
-            if (!string.IsNullOrEmpty(laborTaskData.TaskElementData.MOQText) && inWorkspaceDTO.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.MOQText).Length)
+            if (!string.IsNullOrEmpty(laborTaskData.TaskElementData.MOQText) && ws.RteSizeLimit < GenBOEUtilities.ConvertHtmlToText(laborTaskData.TaskElementData.MOQText).Length)
             {
                 inValidationErrors.Add(new ValidationMessage("MOQText",
-                    string.Format("The maximum length of MOQ Rationale is {0} characters.", inWorkspaceDTO.RteSizeLimit.Value)));
+                    string.Format("The maximum length of MOQ Rationale is {0} characters.", ws.RteSizeLimit.Value)));
             }
         }
 
@@ -1359,11 +1385,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// Validate Task Element dates
         /// </summary>
         /// <param name="laborTaskData">Task Composite MV</param>
-        /// <param name="inWorkspaceDTO">Workspace</param>
+        /// <param name="ws">Workspace</param>
         /// <param name="boeDTO">BOE</param>
         /// <param name="inValidationErrors">Validation Errors collection</param>
         /// <param name="taskElement">Task Element</param>
-        private void ValidateTaskElementDates(LaborTaskDataModelView laborTaskData, FullWorkspace inWorkspaceDTO, FullBoe boeDTO, ICollection<ValidationMessage> inValidationErrors, out BoeTaskElementDTO taskElement)
+        private void ValidateTaskElementDates(LaborTaskDataModelView laborTaskData, WorkspaceDTO ws, FullBoe boeDTO, ICollection<ValidationMessage> inValidationErrors, out BoeTaskElementDTO taskElement)
         {
             if (!laborTaskData.TaskElementData.TaskElementDetailID.HasValue || laborTaskData.TaskElementData.TaskElementDetailID.Value < 0)
             {
@@ -1390,7 +1416,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
             else
             {
-                taskElement = this.factory.CreateTaskElement(laborTaskData.TaskElementData.TaskElementDetailID.Value, inWorkspaceDTO.DecimalPrecision, inWorkspaceDTO.CostDecimalPrecision);
+                taskElement = this.factory.CreateTaskElement(laborTaskData.TaskElementData.TaskElementDetailID.Value, ws.DecimalPrecision, ws.CostDecimalPrecision);
                 laborTaskData.TaskElementData.StartDate = taskElement.StartDate.Value.ToMonthString();
                 laborTaskData.TaskElementData.EndDate = taskElement.EndDate.Value.ToMonthString();
             }
@@ -1438,13 +1464,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// Validate the Labor Type Custom Fields
         /// </summary>
         /// <param name="laborTaskData">Task Composite MV</param>
-        /// <param name="inWorkspaceDTO">Workspace</param>
+        /// <param name="ws">Workspace</param>
         /// <param name="taskElement">Task Element</param>
         /// <param name="inValidationErrors">Validation Errors collection</param>
-        private void ValidateLaborTypeCustomFields(LaborTaskDataModelView laborTaskData, FullWorkspace inWorkspaceDTO, BoeTaskElementDTO taskElement, ICollection<ValidationMessage> inValidationErrors)
+        private void ValidateLaborTypeCustomFields(LaborTaskDataModelView laborTaskData, FullWorkspace ws, BoeTaskElementDTO taskElement, ICollection<ValidationMessage> inValidationErrors)
         {
             //list of all customfields so we can check requiredness for LT. 
-            Collection<BOECustomFieldModelView> LTCustomFields = this.GetCustomFieldOptionModelViews(inWorkspaceDTO, ControllerCustomFieldType.LaborTypes);
+            Collection<BOECustomFieldModelView> LTCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.LaborTypes);
 
             foreach (BOECustomFieldModelView LTCF in LTCustomFields)
             {
@@ -1565,12 +1591,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// Validate the Task Custom Fields
         /// </summary>
         /// <param name="laborTaskData">Task Composite MV</param>
-        /// <param name="inWorkspaceDTO">Workspace</param>
+        /// <param name="ws">Workspace</param>
         /// <param name="inValidationErrors">Validation Errors collection</param>
-        private void ValidateTaskCustomFields(LaborTaskDataModelView laborTaskData, FullWorkspace inWorkspaceDTO, ICollection<ValidationMessage> inValidationErrors)
+        private void ValidateTaskCustomFields(LaborTaskDataModelView laborTaskData, FullWorkspace ws, ICollection<ValidationMessage> inValidationErrors)
         {
             //list of all customfields so we can check requiredness for task details. 
-            Collection<BOECustomFieldModelView> TaskCustomFields = this.GetCustomFieldOptionModelViews(inWorkspaceDTO, ControllerCustomFieldType.Task);
+            Collection<BOECustomFieldModelView> TaskCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.Task);
 
             ICollection<BOECustomFieldModelView> StandardTaskCustomFields = TaskCustomFields.Where(x => !x.CustomFieldMetaData.isOpenEnded && x.CustomFieldMetaData.isRequired).ToCollection();
 
@@ -1614,25 +1640,40 @@ namespace GenBOE.ActionLogic.ControllerLogic
         }
 
         /// <summary>
+        /// Validates MOQ Types for UI, only fully required fields
+        /// </summary>
+        /// <param name="ws">Full WS</param>
+        /// <param name="taskData">Task Data</param>
+        /// <param name="errors">Validation Errors</param>
+        private void ValidateMoqTypes(WorkspaceDTO ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors)
+        {
+            if (ws.UsingTemplateBOE)
+            {
+                ICollection<string> taskErrors = ValidateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws.RteSizeLimit);
+                errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
+            }
+        }
+
+        /// <summary>
         /// Get custom field option model views
         /// </summary>
-        /// <param name="workspace">workspace</param>
+        /// <param name="ws">workspace</param>
         /// <param name="inTypeToGet">level of custom field to retrieve</param>
         /// <returns></returns>
-        public Collection<BOECustomFieldModelView> GetCustomFieldOptionModelViews(FullWorkspace workspace, ControllerCustomFieldType inTypeToGet)
+        public Collection<BOECustomFieldModelView> GetCustomFieldOptionModelViews(FullWorkspace ws, ControllerCustomFieldType inTypeToGet)
         {
-            if (workspace == null)
+            if (ws == null)
             {
-                throw new ArgumentNullException(nameof(workspace));
+                throw new ArgumentNullException(nameof(ws));
             }
 
-            IReadOnlyCollection<CustomFieldDTO> customFields = workspace.CustomFields;
+            IReadOnlyCollection<CustomFieldDTO> customFields = ws.CustomFields;
 
             Collection<BOECustomFieldModelView> customFieldModelViews = new Collection<BOECustomFieldModelView>();
 
             if (customFields != null)
             {
-                IReadOnlyCollection<CustomFieldValueDTO> allCustomFieldValues = workspace.CustomFieldValues;
+                IReadOnlyCollection<CustomFieldValueDTO> allCustomFieldValues = ws.CustomFieldValues;
                 foreach (CustomFieldDTO customField in customFields)
                 {
                     BOECustomFieldsGridModelView metadata = new BOECustomFieldsGridModelView(customField);
@@ -1689,10 +1730,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <summary>
         /// Root-level method for recalculation of the spreads.
         /// </summary>
-        /// <param name="workspaceData">Workspace</param>
+        /// <param name="ws">Workspace</param>
         /// <param name="laborTabData">Contents of the labor tab page that are needed for the recalculation</param>
         /// <returns>Set of changes that need to be applied to the UI as a result of the recalculation</returns>
-        public ICollection<SpreadValueTableChanges> RecalculateSpreads(FullWorkspace workspaceData, LaborTabDataModelView laborTabData)
+        public ICollection<SpreadValueTableChanges> RecalculateSpreads(FullWorkspace ws, LaborTabDataModelView laborTabData)
         {
             if (laborTabData == null)
             {
@@ -1701,7 +1742,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             ICollection<SpreadValueTableChanges> changes = new List<SpreadValueTableChanges>();
 
-            this.RecalculateAfterMOQEquationChange(workspaceData, laborTabData, changes);            
+            this.RecalculateAfterMOQEquationChange(ws, laborTabData, changes);            
 
             return changes;
         }
@@ -1743,10 +1784,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
         }
 
         /// <summary>
+        /// THESE ARE LEGACY MOQ TYPES AS OF 10/2020
+        /// 
         /// Gets the valid <see cref="MOQType"/>'s for this company configuration
         /// </summary>
         /// <returns>valid <see cref="MOQType"/>'s for this company configuration</returns>
-        public virtual ICollection<MOQType> GetMOQTypes()
+        internal virtual ICollection<MOQType> GetMOQTypes()
         {
             return new MOQType[]
             {
@@ -1952,28 +1995,24 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// Converts Boe Task Element Dto to Labor Task Data Model View
         /// </summary>
         /// <param name="ws">The Workspace.</param>
+        /// <param name="boe">The Boe</param>
         /// <param name="dto">Task Element DTO</param>
         /// <returns>Converted MV</returns>
-        private LaborTaskDataModelView ConvertDtoToModelView(FullWorkspace ws, BoeTaskElementDTO dto)
+        private LaborTaskDataModelView ConvertDtoToModelView(FullWorkspace ws, FullBoe boe, BoeTaskElementDTO dto)
         {
-            LaborTaskDataModelView toReturn = new LaborTaskDataModelView();
-
-            // Get Task Element Data
-            toReturn.TaskElementData = new TaskElementDetailModelView(dto);
-
-            //Load the customFields
-            toReturn.TaskCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.Task);
-            toReturn.LaborCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.LaborTypes);
-
-
-            Collection<CustomFieldSelectionModelView> taskCustomFieldSelection = new Collection<CustomFieldSelectionModelView>();
-            Collection<CustomFieldValueContainer> taskCustomFieldValues = dto.CustomFieldValueContainers;
-
-            if (taskCustomFieldValues != null)
+            LaborTaskDataModelView toReturn = new LaborTaskDataModelView()
             {
-                foreach (CustomFieldValueContainer value in taskCustomFieldValues)
+                TaskElementData = new TaskElementDetailModelView(dto),
+                TaskCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.Task),
+                LaborCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.LaborTypes),
+                MOQTypes = boe.MoqTypeSelections.Where(x => x.TaskId == dto.Id).ToList()
+            };
+
+            if (dto.CustomFieldValueContainers != null)
+            {
+                foreach (CustomFieldValueContainer value in dto.CustomFieldValueContainers)
                 {
-                    taskCustomFieldSelection.Add(new CustomFieldSelectionModelView() {
+                    toReturn.TaskElementData.CustomFieldValues.Add(new CustomFieldSelectionModelView() {
                         CustomFieldValueID = value.CustomFieldValueID,
                         SelectionID = value.ContainerID,
                         UpdateDate = value.UpdateDate,
@@ -1982,14 +2021,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         OpenEndedValue = value.OpenEndedValue
                     });
                 }
-                toReturn.TaskElementData.CustomFieldValues = taskCustomFieldSelection;
             }
-
-            toReturn.LaborTypesData = new Collection<LaborTypeDataModelView>();
 
             HashSet<ResourceDTO> resourcesFromDb = new HashSet<ResourceDTO>(this._ResourceLoader.GetByIds(dto.taskElementLabors.Where(x => x.ResourceID.HasValue).Select(x => x.ResourceID.Value).Distinct().ToList()));
             HashSet<PerformingOrgDTO> performingOrgsFromDb = new HashSet<PerformingOrgDTO>(this.PerfOrgLoader.GetByIds(dto.taskElementLabors.Where(x => x.PerformingOrgID.HasValue).Select(x => x.PerformingOrgID.Value).Distinct().ToList()));
-
 
             foreach (ResourceTypeDto labor in dto.taskElementLabors)
             {
@@ -2031,7 +2066,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
             
             toReturn.ContainsDiscrete = toReturn.LaborTypesData.Select(x => x.SpreadCurveID).Any(x => x.Value == SpreadCurves.DiscreteCost || x.Value == SpreadCurves.DiscreteHours);
-                        
+
             return toReturn;
         }
 
@@ -3308,6 +3343,107 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     throw new GenValidationException("Too much decimal precision in " + fieldName);
                 }
             }
+        }
+
+        /// <summary>
+        /// Get a list of MOQ Types for dropdown
+        /// </summary>
+        /// <param name="useNewMoqTypes">Are we be using new MOQ Types (after 10/2020)</param>
+        /// <param name="moqType">Selected MOQ Type</param>
+        /// <returns>MOQ Types</returns>
+        public ICollection<SelectListItem> GetMOQTypeSelectList(bool useNewMoqTypes, MOQType? moqType)
+        {
+            ICollection<MOQType> templateBoeMoqTypes = useNewMoqTypes 
+                ? new List<MOQType>() { MOQType.Historical, MOQType.Comparative, MOQType.CostEstimatingRelationships, MOQType.ParametricEstimates, MOQType.AnalogousRelationships, MOQType.SOW, MOQType.LOE, MOQType.SME, MOQType.NonLabor } 
+                : this.GetMOQTypes();
+
+            List<SelectListItem> results = templateBoeMoqTypes.Select(t => new SelectListItem
+            {
+                Text = t.GetDescription(),
+                Value = ((int)t).ToString(),
+                Selected = t == moqType
+            }).ToList();
+
+            return results;
+        }
+
+        /// <summary>
+        /// Returns a list of labels to be used in the MOQ Types page.
+        /// </summary>
+        /// <returns>Labels for MOQ Type Data Table Fields</returns>
+        public virtual MoqTypeTableDataLabels GetMoqTypeLabels()
+        {
+            return new MoqTypeTableDataLabels();
+        }
+
+        /// <summary>
+        /// Returns help URLs for MOQ Type fields
+        /// </summary>
+        /// <returns>help URLs for MOQ Type fields</returns>
+        public virtual MoqTypeHelpUrls GetMoqTypeHelpUrls()
+        {
+            MoqTypeHelpUrls toReturn = new MoqTypeHelpUrls();
+
+            // Historical
+            toReturn.TableNameHistoricalSuffix = "Table Name - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.RepositoryNameHistoricalSuffix = "Repository Name - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.QueryTypeHistoricalSuffix = "Query Type - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.DateOfReportHistoricalSuffix = "Date of Report - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.HistoricalProgramNameHistoricalSuffix = "Historical Program Name - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.WBSElementHistoricalSuffix = "WBS-WBS Element - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.PoPStartHistoricalSuffix = "Period of Performance - Start Date - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.PoPEndHistoricalSuffix = "Period of Performance - End Date - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.AdditionalQueryFiltersHistoricalSuffix = "Employee ID Filter - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.TotalRelevantHoursHistoricalSuffix = "Total Relevant Hours - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.HistoricalRationaleSuffix = "Rationale - Actual Program or Task Cost Data (Historical).docx";
+            toReturn.HistoricalSkillMixSuffix = "Skill Mix Rationale - Actual Program or Task Cost Data (Historical).docx";
+
+            // Comparative
+            toReturn.TableNameComparativeSuffix = "Table Name - Comparative Analysis.docx";
+            toReturn.RepositoryNameComparativeSuffix = "Repository Name - Comparative Analysis.docx";
+            toReturn.QueryTypeComparativeSuffix = "Query Type - Comparative Analysis.docx";
+            toReturn.DateOfReportComparativeSuffix = "Date of Report - Comparative Analysis.docx";
+            toReturn.HistoricalProgramNameComparativeSuffix = "Historical Program Name - Comparative Analysis.docx";
+            toReturn.WBSElementComparativeSuffix = "WBS-WBS Element - Comparative Analysis.docx";
+            toReturn.PoPStartComparativeSuffix = "Period of Performance - Start Date - Comparative Analysis.docx";
+            toReturn.PoPEndComparativeSuffix = "Period of Performance - End Date - Comparative Analysis.docx";
+            toReturn.AdditionalQueryFiltersComparativeSuffix = "Employee ID Filter - Comparative Analysis.docx";
+            toReturn.TotalRelevantHoursComparativeSuffix = "Total Relevant Hours - Comparative Analysis.docx";
+            toReturn.ComparativeRationaleSuffix = "Rationale - Comparative Analysis.docx";
+            toReturn.ComparativeSkillMixSuffix = "Skill Mix Rationale - Comparative Analysis.docx";
+
+            // CER/PE/AR
+            toReturn.CERNameSuffix = "CER Name.docx";
+            toReturn.PENameSuffix = "Parametric Model or Tool Name.docx";
+            toReturn.ARNameSuffix = "Analogous Relationship Name.docx";
+            toReturn.CerRationaleSuffix = "Rationale - Cost Estimating Relationships (CERs) R2.docx";
+            toReturn.PeRationaleSuffix = "Rationale - Parametric Estimates.docx";
+            toReturn.ArRationaleSuffix = "Rationale - Analogous Relatonships.docx";
+            toReturn.CerSkillMixSuffix = "Skill Mix Rationale - Cost Estimating relationships (CERs) R2.docx";
+            toReturn.ArSkillMixSuffix = "Skill Mix Rationale - Analogous Relationship.docx";
+            toReturn.PeSkillMixSuffix = "Skill Mix Rationale - Parametric Estimates.docx";
+
+            // SOW/LOE
+            toReturn.SOWDescriptionSuffix = toReturn.LOEDescriptionSuffix = "Description of Hours Required - Statement of Work - Level of Effort.docx";
+            toReturn.SowRationaleSuffix = "Rationale - Statement of Work.docx";
+            toReturn.LoeRationaleSuffix = "Rationale - Level of Effort.docx";
+            toReturn.SowSkillMixSuffix = "Skill Mix Rationale - Statement of Work.docx";
+            toReturn.LoeSkillMixSuffix = "Skill Mix Rationale - Level of Effort.docx";
+
+            // SME
+            toReturn.SMEReasonsSuffix = "Reason for Selecting Expert Judgement - Subjetc Matter Expert (SME) Judgement.docx";
+            toReturn.SMEHoursLogicSuffix = "Logic and Assumptions Used to Estimate Hours - Subject Matter Expert (SME) Judgement.docx";
+            toReturn.SMEDurationLogicSuffix = "Logic and Assumptions Used to Estimate Duration - Subject Matter Expert (SME) Judgement.docx";
+            toReturn.SMETasksSuffix = "Following Tasks are Estimates in this BOE - Subjetc Matter Expert (SME) Judgement.docx";
+            toReturn.SmeSkillMixSuffix = "Skill Mix Rationale - Subject Matter Expert.docx";
+
+            // Non-Labor
+            toReturn.NonLaborRationaleSuffix = "Rationale - Non-Labor.docx";
+
+            // Unused
+            toReturn.ContractNumberSuffix = toReturn.TotalWBSHoursSuffix = string.Empty;
+
+            return toReturn;
         }
     }
 

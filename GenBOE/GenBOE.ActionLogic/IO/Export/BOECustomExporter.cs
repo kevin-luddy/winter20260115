@@ -21,6 +21,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using DocumentFormat.OpenXml.Wordprocessing;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export.BOE;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -273,12 +274,12 @@ namespace GenBOE.ActionLogic.IO.Export
                 PaddedClinName = (clinDTO != null) ? clinDTO.ClinPaddedNumber : string.Empty,
                 ProposalSubmittalDate = exportInputs.Workspace.ProposalSubmittalDate,
                 ContainsOCI = exportInputs.Workspace.ContainsOCI,
-                DataSource = BOEExportConverter.GetRteOverride(boe.Id, null, boe.DataSource, RteTemplateSource.BoeSources, exportInputs.RTETemplatesOverrides),
+                DataSource = BOEExportConverter.GetRteOverride(boe.Id, null, boe.DataSource, IES.Common.RteTemplateSource.BoeSources, exportInputs.RTETemplatesOverrides),
                 IsMaterial = boe.isMaterial,
                 IsMultiClinWbs = boe.IsMultiClinWbs,
                 StartDate = boe.StartDate,
                 EndDate = boe.EndDate,
-                BOEDescription = BOEExportConverter.GetRteOverride(boe.Id, null, boe.Description, RteTemplateSource.BoeDescription, exportInputs.RTETemplatesOverrides),
+                BOEDescription = BOEExportConverter.GetRteOverride(boe.Id, null, boe.Description, IES.Common.RteTemplateSource.BoeDescription, exportInputs.RTETemplatesOverrides),
                 ExportFormat = exportFormatDTO.ExportFormat,
                 SubmittedDate = boe.SubmitForApprovalDate.Year == DateTime.MinValue.Year ? string.Empty : boe.SubmitForApprovalDate.ToShortDateString(),
                 BOETitle = boe.Title
@@ -383,7 +384,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             if (selectedComponents == null)
             {
-                selectedComponents = Enum.GetValues(typeof(BoeCustomReportComponent)) as BoeCustomReportComponent[];
+                selectedComponents = this.HandleComponentsByCompany(Enum.GetValues(typeof(BoeCustomReportComponent)) as BoeCustomReportComponent[]);
             }
 
             // Check the file for both the portrait and landscape special boe table elements
@@ -576,7 +577,17 @@ namespace GenBOE.ActionLogic.IO.Export
 
             #endregion
         }
-        
+
+        /// <summary>
+        /// Handles the default behavior of the Additional Query Filters component
+        /// </summary>
+        /// <param name="selectedComponents">Selected components for the export</param>
+        protected virtual ICollection<BoeCustomReportComponent> HandleComponentsByCompany(ICollection<BoeCustomReportComponent> selectedComponents)
+        {
+            // return with no changes - Additional Query Filters included by default for non-custom exports for RMS
+            return selectedComponents;
+        }
+
         /// <summary>
         /// Checks if given month is October, November, or December
         /// </summary>
@@ -1644,6 +1655,22 @@ namespace GenBOE.ActionLogic.IO.Export
                 }
             }
         }
+               
+        /// <summary>
+        /// Remove MOQ related containers only used when Template BOE is set to "No"
+        /// For SSC, the MOQ Type container is always removed and the MOQ Rationale container is only removed if there are no MOQ RTE Templates
+        /// </summary>
+        /// <param name="wsHasMoqRteTemplate">Whether Worksace has RTE Templates for MOQ Rationale</param>
+        /// <param name="containerElement">The container template</param>
+        protected virtual void RemoveNonTemplateBoeContainers(bool wsHasMoqRteTemplate, SdtElement containerElement)
+        {
+            WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeContainer);
+
+            if (!wsHasMoqRteTemplate)
+            {
+                WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQRationaleContainer);
+            }
+        }
 
         #endregion
 
@@ -2379,26 +2406,71 @@ namespace GenBOE.ActionLogic.IO.Export
                 WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQEquationContainer);
             }
 
-            if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQRationale))
+            if (exportInputs.Workspace.UsingTemplateBOE)
             {
-                if (WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_MethodOfQuoting) != null)
+                bool wsHasMoqRteTemplate = exportInputs.RTETemplatesOverrides.Any(x => x.SourceId == (int)RteTemplateSource.TaskMOQ);
+
+                this.RemoveNonTemplateBoeContainers(wsHasMoqRteTemplate, containerElement);
+
+                if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQType))
                 {
-                    laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_MethodOfQuoting, laborTaskElement.MOQText);
+                    SdtElement templateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Container_MOQSelection);
+                    this.PopulateMOQTypeData(laborTaskElement, selectedComponents, document.MainDocumentPart, templateElement, true, ref counters);
+
+                    // if using RTE Template for MOQ Types, populate the fields
+                    if (wsHasMoqRteTemplate)
+                    {
+                        // Update label
+                        laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_MethodOfQuotingLabel, "Additional MOQ Rationale: ");
+
+                        // populate RTE MOQ text
+                        if (WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_MethodOfQuoting) != null)
+                        {
+                            laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_MethodOfQuoting, laborTaskElement.MOQText);
+                        }
+                        else if (WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_MethodOfQuoting_NoSpacing) != null)
+                        {
+                            laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_MethodOfQuoting_NoSpacing, laborTaskElement.MOQText);
+                        }
+                    }
                 }
-                else if (WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_MethodOfQuoting_NoSpacing) != null)
+                else
                 {
-                    laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_MethodOfQuoting_NoSpacing, laborTaskElement.MOQText);
+                    WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeSelectionTitle);
+                    WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.Container_MOQSelection);
                 }
             }
             else
             {
-                WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQRationaleContainer);
+                WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeSelectionTitle);
+                WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.Container_MOQSelection);
+
+                if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQRationale))
+                {
+                    if (WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_MethodOfQuoting) != null)
+                    {
+                        laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_MethodOfQuoting, laborTaskElement.MOQText);
+                    }
+                    else if (WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.FieldName_MethodOfQuoting_NoSpacing) != null)
+                    {
+                        laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_MethodOfQuoting_NoSpacing, laborTaskElement.MOQText);
+                    }
+                }
+                else
+                {
+                    WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQRationaleContainer);
+                }
             }
 
             //Remove "Method of Quoting" Section heading if there are no MOQ selections made
             if (!selectedComponents.Contains(BoeCustomReportComponent.TaskMOQType) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQEquation) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQRationale))
             {
                 WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQSectionLabel);
+            }
+
+            if (!selectedComponents.Contains(BoeCustomReportComponent.TaskMOQType) && !selectedComponents.Contains(BoeCustomReportComponent.TaskMOQRationale))
+            {
+                WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeSelectionTitle);
             }
 
             if (laborTaskElement.ExportFields.ContainsKey(BOEExporterConstants.FieldName_TaskHoursTotal))
@@ -4020,7 +4092,6 @@ namespace GenBOE.ActionLogic.IO.Export
             WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceWBS), rowData.WbsString);
             WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_ResourceCLIN), rowData.ClinString);
             WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_SummaryReference), rowData.SummaryReference);
-
         }
 
         private void PopulateResourceTypesTable(SdtElement tableContainerElement, ODCResourceTypesTableData data)
@@ -4485,18 +4556,23 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 BOEExportTaskElement boeExportTaskElement = new BOEExportTaskElement();
                 boeExportTaskElement.BoeID = boeTaskElement.BoeID;
-                boeExportTaskElement.BOETaskDesc = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.Description, RteTemplateSource.TaskDescription, exportInputs.RTETemplatesOverrides);
+                boeExportTaskElement.BOETaskDesc = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.Description, IES.Common.RteTemplateSource.TaskDescription, exportInputs.RTETemplatesOverrides);
                 boeExportTaskElement.BOETaskElementID = boeTaskElement.Id;
                 boeExportTaskElement.BOETaskID = boeTaskElement.BOETaskID;
                 boeExportTaskElement.EndDate = boeTaskElement.EndDate;
                 boeExportTaskElement.MOQEquation = boeTaskElement.MOQHoursEquation;
-                boeExportTaskElement.MOQText = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.MOQText, RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides);
+                boeExportTaskElement.MOQText = BOEExportConverter.GetRteOverride(boeTaskElement.BoeID, boeTaskElement.Id, boeTaskElement.MOQText, IES.Common.RteTemplateSource.TaskMOQ, exportInputs.RTETemplatesOverrides);
                 boeExportTaskElement.MOQType = boeTaskElement.MOQType.GetDescription();
                 boeExportTaskElement.OrdinaryVariables = boeTaskElement.OrdinaryVariables;
                 boeExportTaskElement.StartDate = boeTaskElement.StartDate;
                 boeExportTaskElement.TaskTitle = boeTaskElement.TaskTitle;
                 boeExportTaskElement.IMS_ID = boeTaskElement.IMS_ID;
                 boeExportTaskElement.BOETaskElementOrder = boeTaskElement.BOETaskElementOrder;
+
+                if (exportInputs.Workspace.UsingTemplateBOE)
+                {
+                    boeExportTaskElement.MOQTypes = exportInputs.MOQTypes.Where(x => x.TaskId == boeTaskElement.Id).ToCollection();
+                }
 
                 boeExportTaskElement.SetTaskElementType(boeTaskElement.TaskElementType);
 

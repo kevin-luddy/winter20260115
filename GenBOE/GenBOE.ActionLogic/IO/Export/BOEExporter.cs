@@ -20,6 +20,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using DocumentFormat.OpenXml.Wordprocessing;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export.BOE;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -252,6 +253,7 @@ namespace GenBOE.ActionLogic.IO.Export
         public const string FieldName_UID = "BOE:UID";
         public const string FieldName_MOQEquationResult = "BOE:MOQEquationResult";
         public const string FieldName_MethodOfQuoting = "BOE:MethodOfQuoting";
+        public const string FieldName_MethodOfQuotingLabel = "BOE:MethodOfQuotingLabel";
         public const string FieldName_BOETable = "BOE:BOETable";
         public const string FieldName_Summary = "BOE:Summary";
         public const string FieldName_ResourceContainer = "BOE:ResourceContainer";
@@ -535,6 +537,10 @@ namespace GenBOE.ActionLogic.IO.Export
                     this.Logger.Info("Exporting - BOEExporter - ExportBOEToWordFile - Process BOE's begin");
                 }
 
+                // Check for MOQ RTE Templates for use later and clear the overrides to free up memory
+                bool wsHasMoqRteTemplate = exportInputs.RTETemplatesOverrides.Any(x => x.SourceId == (int)RteTemplateSource.TaskMOQ);
+                exportInputs.ClearRteOverrides();
+
                 for (var ndx = 0; ndx < boeExportModelViews.Count; ndx++)
                 {
                     Dictionary<BOEExportTaskElementType, BOEExportTaskContainer> taskContainers = new Dictionary<BOEExportTaskElementType, BOEExportTaskContainer>();
@@ -558,7 +564,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         string useHeaderFontSizeDflt24 = this.GetHeaderFontSize(24, boeExportModelView.ExportFormat.TemplateType);
                         string useHeaderFontSizeDflt19 = this.GetHeaderFontSize(19, boeExportModelView.ExportFormat.TemplateType);
                         string useFont = this.GetFont("Times New Roman", boeExportModelView.ExportFormat.TemplateType);
-
+                        
                         #region Populate the BOE hour summary table
 
                         if (boeExportModelView.IsMaterial)
@@ -763,7 +769,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                 if (taskContainer != null)
                                 {
                                     // Populate the task-specific items in the template
-                                    this.PopulateTaskElementContent(exportInputs, taskContainer, taskElement, document.MainDocumentPart, ref counters);
+                                    this.PopulateTaskElementContent(exportInputs, taskContainer, taskElement, document.MainDocumentPart, wsHasMoqRteTemplate, ref counters);
 
                                     switch (taskElement.ElementType)
                                     {
@@ -4627,18 +4633,19 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="taskContainer">The task container.</param>
         /// <param name="taskElement">The task element whose data will populate the template</param>
         /// <param name="mainPart">Main Document Part</param>
+        /// <param name="wsHasMoqRteTemplate">Whether there are any MOQ RTE Templates</param>
         /// <param name="counters">The counters.</param>
         private void PopulateTaskElementContent(BOEExportInputs exportInputs, BOEExportTaskContainer taskContainer, BOEExportTaskElement taskElement,
-            MainDocumentPart mainPart, ref ChunkCounter counters)
+            MainDocumentPart mainPart, bool wsHasMoqRteTemplate, ref ChunkCounter counters)
         {
             // Iterate over all SdtElements in the document
-            foreach (var alias in taskContainer.TaskContainer.Descendants<SdtAlias>().ToList())
+            foreach (SdtAlias alias in taskContainer.TaskContainer.Descendants<SdtAlias>().ToList())
             {
                 // Get the title of this Alias
                 string sdtTitle = alias.Val.Value;
 
                 // Get the Element that encapsulates the current alias
-                var element = alias.Ancestors<SdtElement>().FirstOrDefault();
+                SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
 
                 // If the current element is not null, populate it with the appropriate data from the BOEExportModelView
                 if (element != null && element != taskContainer.TaskContainer)
@@ -4801,26 +4808,56 @@ namespace GenBOE.ActionLogic.IO.Export
                     }
                     else if (sdtTitle == FieldName_MethodOfQuoting || sdtTitle == FieldName_Rationale)
                     {
-                        OpenXmlCompositeElement item;
-                        if ((item = element.ChildElements.OfType<SdtContentBlock>().FirstOrDefault()) != null ||
-                            (item = element.ChildElements.OfType<SdtContentRun>().FirstOrDefault()) != null)
+                        if (exportInputs.Workspace.UsingTemplateBOE && !wsHasMoqRteTemplate)
                         {
-                            if (taskElement.MOQText == null)
-                            {
-                                taskElement.MOQText = "<p><br></p>"; // filler text that allows removal of place-holder text, otherwise "Method of Quoting" remains
-                            }
-
-                            if (exportInputs.Workspace.IsProjectMapWorkspace)
-                            {
-                                SetElementText(item, taskElement.MOQText);
-                            }
-                            else
-                            {
-                                WordUtilities.SetElementTextWithHTML(mainPart, item, taskElement.MOQText, ref counters);
-                            }
+                            // remove this for Workspaces using Template BOE if they have no MOQ RTE templates
+                            // call both remove row and element since it can be either depending on the template
+                            // both methods already handle there not being a row/element, so both can be run safely without affecting the other
+                            WordUtilities.RemoveTableRowWithTaggedElement(taskContainer.TaskContainer, sdtTitle);
+                            WordUtilities.RemoveTaggedElement(taskContainer.TaskContainer, sdtTitle);
                         }
+                        else
+                        {
+                            OpenXmlCompositeElement item;
+                            if ((item = element.ChildElements.OfType<SdtContentBlock>().FirstOrDefault()) != null ||
+                                (item = element.ChildElements.OfType<SdtContentRun>().FirstOrDefault()) != null)
+                            {
+                                if (taskElement.MOQText == null)
+                                {
+                                    taskElement.MOQText = "<p><br></p>"; // filler text that allows removal of place-holder text, otherwise "Method of Quoting" remains
+                                }
 
-                        alias.RemoveIt();
+                                if (exportInputs.Workspace.IsProjectMapWorkspace)
+                                {
+                                    SetElementText(item, taskElement.MOQText);
+                                }
+                                else
+                                {
+                                    WordUtilities.SetElementTextWithHTML(mainPart, item, taskElement.MOQText, ref counters);
+                                }
+
+                                if (wsHasMoqRteTemplate && exportInputs.Workspace.UsingTemplateBOE)
+                                {
+                                    // replace the label for RTE Templates in MOQ Types
+                                    SdtElement moqLabelElement = WordUtilities.GetTaggedChildElement(taskContainer.TaskContainer, FieldName_MethodOfQuotingLabel);
+                                    WordUtilities.SetElementText(moqLabelElement, "Additional MOQ Rationale: ");
+                                }
+                            }
+
+                            alias.RemoveIt();
+                        }
+                    }
+                    else if (sdtTitle == BOEExporterConstants.Container_MOQSelection)
+                    {
+                        if (exportInputs.Workspace.UsingTemplateBOE)
+                        {
+                            this.PopulateMOQTypeData(taskElement, new Collection<BoeCustomReportComponent>(), mainPart, element, false, ref counters);
+                        }
+                        else
+                        {
+                            // remove this for Workspaces not using Template BOE
+                            element.Parent.RemoveIt();
+                        }
                     }
                     else if (sdtTitle == FieldName_MOQSSDS)
                     {
@@ -4859,6 +4896,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             taskContainer.TaskTypeRow.RemoveIt();
         }
+
 
         /// <summary>
         /// Populates content of the resource container

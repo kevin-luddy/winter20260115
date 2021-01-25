@@ -54,11 +54,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="systemEscalationRatesLoader">The system escalation rates loader.</param>
         /// <param name="systemFeesLoader">The system fees loader.</param>
         /// <param name="workspaceVariableLoader">The workspace variable loader.</param>
-        /// <param name="customFieldValueLoader">The custom field value loader.</param>
-        /// <param name="offloadRatesDTOLoader">The offload rates dto loader.</param>
+        /// <param name="customFieldValueLoader">CF value loader</param>
+        /// <param name="customFieldLoader">The custom field loader.</permission>
+        /// <param name="offloadRatesDTOLoader">Offload Rates Loader</param>
         /// <param name="projectMapDataLoader">The project map data loader.</param>
-        /// <param name="boePickListMapper">The boe pick list mapper.</param>
-        /// <param name="ptmPickListMapper">The ptm pick list mapper.</param>
+        /// <param name="boePickListMapper">The BOE pick list mapper.</param>
+        /// <param name="ptmPickListMapper">The PTM pick list mapper.</param>
+        /// <param name="contractTypeLoader">Contract Type Loader</param>
+        /// <param name="workspaceExporter">WS Exporter</param>
+        /// <param name="moqTypeLoader">Moq Type Loader</param>
         public WorkspaceControllerLogicMST(
             IWorkspaceDTODataLoader workspaceLoader,
             IUserDTODataLoader userLoader,
@@ -83,7 +87,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IPickListMapper boePickListMapper,
             IPickListMapper ptmPickListMapper,
             ContractTypeLoader contractTypeLoader,
-            WorkspaceExporter workspaceExporter)
+            WorkspaceExporter workspaceExporter,
+            IMoqTypeDataLoader moqTypeLoader)
             : base(
                 workspaceLoader,
                 userLoader,
@@ -104,7 +109,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 boePickListMapper,
                 ptmPickListMapper,
                 contractTypeLoader,
-                workspaceExporter
+                workspaceExporter,
+                moqTypeLoader
         )
         {
             this.zoneTravelRatesFeesLoader = zoneTravelRatesFeesLoader;

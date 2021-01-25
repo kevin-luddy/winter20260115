@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
     using System.Collections.ObjectModel;
     using System.Linq;
     using GenBOE.ActionLogic.BLL;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
@@ -37,6 +38,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         private IBOEFormPBOEDTODataLoader pboeDataLoader;
         private RMSZoneTravelRatesFeesDataLoader zoneTravelRatesLoader;
         private IRteTemplateDataLoader rteTemplateDataLoader;
+        private IMoqTypeDataLoader moqTypeLoader;
 
         List<BoeTaskElementDTO> copiedFromTaskElements = new List<BoeTaskElementDTO>();
         List<TravelDTO> copiedFromTravelElements = new List<TravelDTO>();
@@ -58,7 +60,8 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             IBOEFormIBOEDTODataLoader iboeDataLoader,
             IBOEFormPBOEDTODataLoader pboeDataLoader,
             RMSZoneTravelRatesFeesDataLoader zoneTravelRatesLoader,
-            IRteTemplateDataLoader rteTemplateDataLoader)
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            IMoqTypeDataLoader moqTypeLoader)
         {
             this._WorkspaceVariableLoader = inWorkspaceVariableLoader;
             this._PermissionsLoader = inPermissionsLoader;
@@ -77,6 +80,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             this.pboeDataLoader = pboeDataLoader;
             this.zoneTravelRatesLoader = zoneTravelRatesLoader;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
+            this.moqTypeLoader = moqTypeLoader;
         }
 
         /// <summary>
@@ -97,6 +101,16 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             return this.workspaceLoader.ExactCopyWorkspace(workspaceIDToCopy, newWorkspaceName, newShortName, costVolumeLeadPricerId);
         }
 
+        /// <summary>
+        /// Performs a non-exact copy of a workspace
+        /// </summary>
+        /// <param name="workspaceToCopy">Workspace to copy</param>
+        /// <param name="newWorkspace">Workspace being copied to</param>
+        /// <param name="BOEToCopy">Collection of IDs of BOEs to copy</param>
+        /// <param name="copyPermissions">Whether permissions are being copied</param>
+        /// <param name="copyTasks">Whether tasks are being copied</param>
+        /// <param name="copyLaborSpreads">Whether Labor Spreads are being copied</param>
+        /// <returns>true if finished copy correctly, otherwise false</returns>
         public bool CopyWorkspace(FullWorkspace workspaceToCopy, FullWorkspace newWorkspace, Collection<int> BOEToCopy,
             bool copyPermissions, bool copyTasks, bool copyLaborSpreads)
         {
@@ -109,7 +123,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
             this.CopyWorkspaceProperties(workspaceToCopy, newWorkspace);
             this.AddAuthorPermissionForCostLead(newWorkspace);
-            Dictionary<int, int> ClinIDMapping = this.CopyAllCLIN(workspaceToCopy, newWorkspace);
+            Dictionary<int, int> ClinIDMapping = this.CopyAllCLIN(workspaceToCopy, newWorkspace);       
 
             // Get copy of custom fields for use with CopyCustomFieldValues before any changes are made to them
             IReadOnlyCollection<CustomFieldDTO> customFieldsToCopy = workspaceToCopy.CustomFields.DeepClone();
@@ -124,7 +138,10 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                 this.CopyPotentialPermissions(workspaceToCopy, newWorkspace);
             }
 
-            Dictionary<int, int> BOEIDMapping = this.CopyBOEs(newWorkspace, BOEToCopy, ClinIDMapping, WBSIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping);
+            IDictionary<int, int> questionIdMapping;
+            IDictionary<int, int> templateIdMapping = this.CopyRteCustomTemplates(workspaceToCopy, newWorkspace, out questionIdMapping);
+
+            Dictionary<int, int> BOEIDMapping = this.CopyBOEs(newWorkspace, BOEToCopy, ClinIDMapping, WBSIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, workspaceToCopy.Id, templateIdMapping, questionIdMapping);
             Dictionary<int, int> VariableIDMapping = this.CopyWorkspaceVariables(workspaceToCopy, newWorkspace, BOEIDMapping, WBSIDMapping, ClinIDMapping);
             this.CopyINLForms(workspaceToCopy, newWorkspace);
 
@@ -138,11 +155,9 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
             if (copyTasks)
             {
-                finishedCorrectly = this.CopyTasks(BOEIDMapping, WBSIDMapping, ClinIDMapping, VariableIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, resourceMapping, performingOrgMapping) && finishedCorrectly;
+                finishedCorrectly = this.CopyTasks(BOEIDMapping, WBSIDMapping, ClinIDMapping, VariableIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, resourceMapping, performingOrgMapping, workspaceToCopy.Id, templateIdMapping, questionIdMapping, workspaceToCopy.MoqTypeSelections.Where(x => BOEToCopy.Contains(x.BoeId)).ToList()) && finishedCorrectly;
                 finishedCorrectly = this.CopyTravelTasks(newWorkspace, BOEIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, ClinIDMapping, WBSIDMapping, performingOrgMapping, resourceMapping) && finishedCorrectly;
             }
-
-            this.CopyRteCustomTemplates(workspaceToCopy, newWorkspace);
 
             return finishedCorrectly;
         }
@@ -152,14 +167,24 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         /// </summary>
         /// <param name="workspaceToCopy">The workspace to copy.</param>
         /// <param name="newWorkspace">The workspace to copy into.</param>
-        private void CopyRteCustomTemplates(FullWorkspace workspaceToCopy, FullWorkspace newWorkspace)
+        /// <param name="questionIdMapping">Mapping of old and new Question IDs</param>
+        /// <returns>Mapping of old and new Template IDs</returns>
+        private IDictionary<int, int> CopyRteCustomTemplates(FullWorkspace workspaceToCopy, FullWorkspace newWorkspace, out IDictionary<int, int> questionIdMapping)
         {
+            IDictionary<int, int> toReturn = new Dictionary<int, int>();
+            IDictionary<int, int> oldToTempIdMapping = new Dictionary<int, int>();
+            questionIdMapping = new Dictionary<int, int>();
+            IDictionary<int, int> oldToTempQuestionIdMapping = new Dictionary<int, int>();
+
             ICollection<RteCustomTemplateModelView> templates = this.rteTemplateDataLoader.GetTemplates(workspaceToCopy.Id);
 
             int newId = -1;
 
             foreach (RteCustomTemplateModelView template in templates)
             {
+                // Add old and temp id to mapping
+                oldToTempIdMapping.Add(template.Id, newId);
+
                 // Reset template
                 template.Id = newId--;
                 template.Updateable = UpdateType.Upsert;
@@ -169,6 +194,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                 {
                     template.Questions.ForEach(question =>
                     {
+                        oldToTempQuestionIdMapping.Add(question.Id, newId);
                         question.Id = newId--;
                         question.TemplateId = template.Id;
                         question.Updateable = UpdateType.Upsert;
@@ -176,13 +202,27 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                 }
             }
 
-            this.rteTemplateDataLoader.Save(templates);
+            IDictionary<int, int> tempToNewIdMapping = this.rteTemplateDataLoader.Save(templates);
+
+            // map old and new ids in toReturn
+            foreach (KeyValuePair<int, int> mapping in oldToTempIdMapping)
+            {
+                toReturn.Add(mapping.Key, tempToNewIdMapping[mapping.Value]);
+            }
 
             // Save Questions (Prompts)
+            IDictionary<int, int> tempToNewQuestionIdMapping = new Dictionary<int, int>();
             foreach (RteCustomTemplateModelView template in templates)
             {
-                this.rteTemplateDataLoader.SaveQuestions(template.Questions, template.Id);
+                tempToNewQuestionIdMapping.AddRange(this.rteTemplateDataLoader.SaveQuestions(template.Questions, template.Id));
             }
+
+            foreach(KeyValuePair<int, int> mapping in oldToTempQuestionIdMapping)
+            {
+                questionIdMapping.Add(mapping.Key, tempToNewQuestionIdMapping[mapping.Value]);
+            }
+
+            return toReturn;
         }
 
         /// <summary>
@@ -412,37 +452,37 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         private Dictionary<int, int> CopyPerformingOrganizations(WorkspaceDTO newWorkspace)
         {
             // Create a collection to map old Performing Organization IDs to new copied ones
-            var toReturn = new Dictionary<int, int>();
+            Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
             // Create a list of Performing Organizations to save
-            var performingOrganizationsToSave = new Collection<PerformingOrgDTO>();
+            Collection<PerformingOrgDTO> performingOrganizationsToSave = new Collection<PerformingOrgDTO>();
 
             // Get a list of all in-use Perf Org IDs
-            var taskOrganizationIDs = (from t in this.copiedFromTaskElements
+            IEnumerable<int> taskOrganizationIDs = (from t in this.copiedFromTaskElements
                                        from l in t.taskElementLabors
                                        where l.PerformingOrgID.HasValue
                                        select l.PerformingOrgID.Value).Distinct();
 
-            var ZoneTravelPerfOrgIDs = (from t in this.copiedFromTravelElements
+            IEnumerable<int> ZoneTravelPerfOrgIDs = (from t in this.copiedFromTravelElements
                                     from l in t.MSTTravelTrips
                                     select l.PerfOrgID).Distinct();
 
-            var performingOrganizationIDs = taskOrganizationIDs.Union(ZoneTravelPerfOrgIDs).ToList();
+            List<int> performingOrganizationIDs = taskOrganizationIDs.Union(ZoneTravelPerfOrgIDs).ToList();
 
             // Create a mapping between old Perf Org IDs and new DTOs for the copied workspace
-            var performingOrganizationIDMapping = new Dictionary<int, PerformingOrgDTO>();
+            IDictionary<int, PerformingOrgDTO> performingOrganizationIDMapping = new Dictionary<int, PerformingOrgDTO>();
             int newItemID = -1;
             HashSet<PerformingOrgDTO> perfOrgsFromDb = new HashSet<PerformingOrgDTO>(this.perfOrgLoader.GetByIds(performingOrganizationIDs.Distinct().ToList()));
 
             foreach (int performingOrganizationID in performingOrganizationIDs)
             {
-                var performingOrganizationToCopy = perfOrgsFromDb.FirstOrDefault(x => x.Id == performingOrganizationID);
+                PerformingOrgDTO performingOrganizationToCopy = perfOrgsFromDb.FirstOrDefault(x => x.Id == performingOrganizationID);
 
                 // If there is a Performing Organization to copy, let's do it
                 if (performingOrganizationToCopy != null)
                 {
                     // Get the corresponding Performing Organization from the copied workspace
-                    var newWorkspacePerformingOrganization = this.perfOrgLoader.GetByListIdAndName(newWorkspace.PerfOrgListID, performingOrganizationToCopy.PerformingOrgName);
+                    PerformingOrgDTO newWorkspacePerformingOrganization = this.perfOrgLoader.GetByListIdAndName(newWorkspace.PerfOrgListID, performingOrganizationToCopy.PerformingOrgName);
 
                     if (newWorkspacePerformingOrganization != null)
                     {
@@ -496,26 +536,26 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         private Dictionary<int, int> CopyResources(WorkspaceDTO newWorkspace)
         {
             // Create a collection to map old resource IDs to new copied ones
-            var toReturn = new Dictionary<int, int>();
+            Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
             // Create a list of resources to save
-            var resourcesToSave = new Collection<ResourceDTO>();
+            ICollection<ResourceDTO> resourcesToSave = new Collection<ResourceDTO>();
 
             // Get a list of all in-use Resource IDs
-            var LaborResourceIDs = (from r in this.copiedFromTaskElements
+            IEnumerable<int> LaborResourceIDs = (from r in this.copiedFromTaskElements
                                     from e in r.taskElementLabors
                                     where e.ResourceID.HasValue
                                     select e.ResourceID.Value).Distinct();
 
-            var travelResourceIds = (from t in this.copiedFromTravelElements
+            IEnumerable<int> travelResourceIds = (from t in this.copiedFromTravelElements
                                      from tt in t.MSTTravelTrips
                                      where tt.NonZoneResourceID.HasValue
                                      select tt.NonZoneResourceID.Value).Distinct();
 
-            var resourceIDs = LaborResourceIDs.Union(travelResourceIds);
+            IEnumerable<int> resourceIDs = LaborResourceIDs.Union(travelResourceIds);
 
             // Create a mapping between old Resource IDs and new DTOs for the copied workspace
-            var resourceIDMapping = new Dictionary<int, ResourceDTO>();
+            Dictionary<int, ResourceDTO> resourceIDMapping = new Dictionary<int, ResourceDTO>();
 
             int newItemID = -1;
 
@@ -524,13 +564,13 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
             foreach (int resourceID in resourceIDs)
             {
-                var resourceToCopy = resourcesToCopy.FirstOrDefault(x => x.Id == resourceID);
+                ResourceDTO resourceToCopy = resourcesToCopy.FirstOrDefault(x => x.Id == resourceID);
 
                 // If there are resources to copy, let's do it
                 if (resourceToCopy != null)
                 {
                     // Get the corresponding resource from the copied workspace
-                    var newWorkspaceResource = resourcesForWsListId.FirstOrDefault(x => x.ResourceName == resourceToCopy.ResourceName);
+                    ResourceDTO newWorkspaceResource = resourcesForWsListId.FirstOrDefault(x => x.ResourceName == resourceToCopy.ResourceName);
 
                     if (newWorkspaceResource != null)
                     {
@@ -586,18 +626,18 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         private Dictionary<int, int> CopyWorkspaceVariables(FullWorkspace workspaceToCopy, WorkspaceDTO newWorkspace, Dictionary<int, int> boeIDMapping, Dictionary<int, int> wbsIDMapping, Dictionary<int, int> clinIDMapping)
         {
             // Create a collection to map old variable IDs to new copied ones
-            var toReturn = new Dictionary<int, int>();
+            Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
             // Get the variables to copy
-            var currentWorkspaceVariables = workspaceToCopy.WorkspaceVariables; 
-            var workspaceVariablesToCopy = new Collection<WorkspaceVariableDTO>();
+            IReadOnlyCollection<WorkspaceVariableDTO> currentWorkspaceVariables = workspaceToCopy.WorkspaceVariables;
+            ICollection<WorkspaceVariableDTO> workspaceVariablesToCopy = new Collection<WorkspaceVariableDTO>();
 
             if (currentWorkspaceVariables.Any())
             {
                 int newItemID = -1;
 
                 // Iterate through each existing variables and set values to create a copy of it in the new workspace
-                foreach (var workspaceVariable in currentWorkspaceVariables)
+                foreach (WorkspaceVariableDTO workspaceVariable in currentWorkspaceVariables)
                 {
                     WorkspaceVariableDTO newVariable = new WorkspaceVariableDTO();
                     newVariable.InUse = workspaceVariable.InUse;
@@ -615,7 +655,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                     // Remap Sum of BOEs IDs from old to new
                     if (workspaceVariable.ValueType == VarValueType.SumOfBOEs)
                     {
-                        foreach (var sumOfBOEs in workspaceVariable.SelectedBOEsToSum)
+                        foreach (SelectBOEsToSum sumOfBOEs in workspaceVariable.SelectedBOEsToSum)
                         {
                             int matchingID;
                             if (sumOfBOEs.BoeID.HasValue && boeIDMapping.TryGetValue(sumOfBOEs.BoeID.Value, out matchingID))
@@ -653,11 +693,11 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                     }
                     if (!bfound) //check for variables used in tasks of the selected BOEs
                     {
-                        foreach (var taskElement in this.copiedFromTaskElements)
+                        foreach (BoeTaskElementDTO taskElement in this.copiedFromTaskElements)
                         {
                             if (taskElement.WorkspaceVariableIDs.Any())
                             {
-                                foreach (var variableID in taskElement.WorkspaceVariableIDs)
+                                foreach (int variableID in taskElement.WorkspaceVariableIDs)
                                 {
                                     if (variableID == oldItemID)
                                     {
@@ -725,10 +765,10 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         private Dictionary<int, int> CopyAllWBS(FullWorkspace workspaceToCopy, FullWorkspace newWorkspace, Dictionary<int, int> ClinIDMapping)
         {
             // Create a collection to map old WBS Numbers to new copied ones
-            var toReturn = new Dictionary<int, int>();
+            Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
             // Get the list of all WBS from the workspace to copy
-            var wbsToCopy = workspaceToCopy.WbsElements.ToList<WbsDTO>();
+            IList<WbsDTO> wbsToCopy = workspaceToCopy.WbsElements.ToList<WbsDTO>();
 
             // If there are WBSs, let's copy them
             if (wbsToCopy.Any())
@@ -737,7 +777,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                 ICollection<FullWbs> newWbsElementsToSave = new Collection<FullWbs>();
                 // Iterate through each existing WBS and set values to create a copy of
                 // it in the new workspace
-                foreach (var wbs in wbsToCopy)
+                foreach (WbsDTO wbs in wbsToCopy)
                 {
                     FullWbs newWbs = this.factory.CreateFullWbs(wbs);
                     newWbs.Id = newItemID--;
@@ -749,10 +789,10 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                     if (wbs.ClinIDs.Any())
                     {
                         // Create a new collection for the copied CLIN IDs
-                        var newCLINIDs = new Collection<int>();
+                        Collection<int> newCLINIDs = new Collection<int>();
 
                         // Iterate over old CLIN IDs and add the IDs of their copy in the new workspace
-                        foreach (var clin in wbs.ClinIDs)
+                        foreach (int clin in wbs.ClinIDs)
                         {
                             newCLINIDs.Add(ClinIDMapping[clin]);
                         }
@@ -791,7 +831,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         private Dictionary<int, int> CopyAllCLIN(FullWorkspace workspaceToCopy, WorkspaceDTO newWorkspace)
         {
             // Create a collection to map old CLIN Numbers to new copied ones
-            var toReturn = new Dictionary<int, int>();
+            Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
             // Get the list of all CLINs from the workspace to copy
             IReadOnlyCollection<FullClin> clinsToCopy = workspaceToCopy.Clins;  
@@ -839,7 +879,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         private void AddAuthorPermissionForCostLead(WorkspaceDTO newWorkspace)
         {
             // Save Author Permission for Cost Volume Lead Pricer
-            var authorPermission = new PermissionsDTO();
+            PermissionsDTO authorPermission = new PermissionsDTO();
             authorPermission.WorkspaceId = newWorkspace.Id;
             authorPermission.Role = Role.Author;
             authorPermission.ETIUserId = newWorkspace.CostVolumeLeadPricerUserID;
@@ -857,9 +897,9 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         {
             // Create one list to hold the FROM permissions and one to hold the TO permissions
             // Set the FROM permissions to the workspace permissions
-            var workspaceToCopyPermissions = this._PermissionsLoader.GetWorkspacePermissions(workspaceToCopy.Id);
-            var newWorkspacePermissions = this._PermissionsLoader.GetWorkspacePermissions(newWorkspace.Id);
-            var permissionsToSave = new Collection<PermissionsDTO>();
+            ICollection<PermissionsDTO> workspaceToCopyPermissions = this._PermissionsLoader.GetWorkspacePermissions(workspaceToCopy.Id);
+            ICollection<PermissionsDTO> newWorkspacePermissions = this._PermissionsLoader.GetWorkspacePermissions(newWorkspace.Id);
+            Collection<PermissionsDTO> permissionsToSave = new Collection<PermissionsDTO>();
 
             if (workspaceToCopyPermissions.Any())
             {
@@ -867,7 +907,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
                 // Set each existing workspace permission to reference the new workspace and reset the
                 // PKID to indicate a new permission
-                foreach (var workspacePermission in workspaceToCopyPermissions)
+                foreach (PermissionsDTO workspacePermission in workspaceToCopyPermissions)
                 {
                     bool permissionsExist = (from p in newWorkspacePermissions
                                              where p.ETIUserId == workspacePermission.ETIUserId &&
@@ -894,7 +934,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             {
                 int newItemID = -1;
                 
-                foreach (var workspacePermission in workspaceToCopyPermissions)
+                foreach (PermissionsDTO workspacePermission in workspaceToCopyPermissions)
                 {
                     bool permissionsExist = ((from p in newWorkspacePermissions
                                              where p.ETIUserId == workspacePermission.ETIUserId &&
@@ -967,11 +1007,14 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         /// <param name="WBSIDMapping">WBS ID mappings</param>
         /// <param name="customFieldIDMapping">Workspace custom field id mappings</param>
         /// <param name="customFieldValueIDMapping">Custom Field Value Id Mapping</param>
+        /// <param name="oldWorkspaceId">ID of the workspace being copied</param>
+        /// <param name="templateIdMapping">Mapping of old and new RTE Template IDs</param>
+        /// <param name="questionIdMapping">Mapping of old and new RTE Template Question IDs</param>
         /// <returns>BOE ID mappings</returns>
-        private Dictionary<int, int> CopyBOEs(WorkspaceDTO newWorkspace, Collection<int> BOEToCopy,
-            Dictionary<int, int> ClinIDMapping, Dictionary<int, int> WBSIDMapping, Dictionary<int, int> customFieldIDMapping, Dictionary<int, int> customFieldValueIDMapping)
+        private Dictionary<int, int> CopyBOEs(WorkspaceDTO newWorkspace, Collection<int> BOEToCopy, Dictionary<int, int> ClinIDMapping, Dictionary<int, int> WBSIDMapping, 
+            Dictionary<int, int> customFieldIDMapping, Dictionary<int, int> customFieldValueIDMapping, int oldWorkspaceId, IDictionary<int, int> templateIdMapping, IDictionary<int, int> questionIdMapping)
         {
-            var toReturn = new Dictionary<int, int>();
+            Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
             this.copiedFromTaskElements = new List<BoeTaskElementDTO>();
             this.copiedFromTravelElements = new List<TravelDTO>();
@@ -1035,7 +1078,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                             boeCustomFieldXRefToCopy.CustomFieldID = customFieldIDMapping[boeCustomFieldXRefToCopy.CustomFieldID];
                         }
                     }
-
+                    
                     boesToSave.Add(boe);
                 }
 
@@ -1055,9 +1098,36 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                 }
 
                 // Set all BOEs to not Upsert again. Allows future saves of BOE sub-objects.
-                foreach (var boe in boesToSave)
+                foreach (BoeDTO boe in boesToSave)
                 {
                     boe.Updateable = UpdateType.None;
+                }
+
+                // Copy any BOE-level RTE Custom Template Answers
+                if (templateIdMapping.Any())
+                {
+                    ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesToSave = new Collection<RTECustomTemplateQuestionAnswerModelView>();
+
+                    foreach (KeyValuePair<int, int> boeIDMapping in toReturn)
+                    {
+                        ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers = this.rteTemplateDataLoader.GetByBoeId(oldWorkspaceId, boeIDMapping.Key);
+
+                        // If there are any RTE Template answers, add them to the collection to be saved
+                        foreach (RTECustomTemplateQuestionAnswerModelView answer in rteTemplateAnswers)
+                        {
+                            RTECustomTemplateQuestionAnswerModelView duplicateAnswer = answer.DeepClone();
+                            duplicateAnswer.Id = -1;
+                            duplicateAnswer.BoeId = boeIDMapping.Value;
+                            duplicateAnswer.TemplateId = templateIdMapping[duplicateAnswer.TemplateId];
+                            duplicateAnswer.QuestionId = questionIdMapping[duplicateAnswer.QuestionId];
+                            duplicateAnswer.Updateable = UpdateType.Upsert;
+
+                            rteTemplatesToSave.Add(duplicateAnswer);
+                        }
+                    }
+
+                    // Save the copied RTE Answers
+                    this.rteTemplateDataLoader.SaveAnswers(rteTemplatesToSave);
                 }
             }
 
@@ -1076,45 +1146,56 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         /// <param name="copyLaborSpreads">Copy Labor Spreads?</param>
         /// <param name="Resources">Resources</param>
         /// <param name="perfOrgs">Performing Orgs</param>
+        /// <param name="workspaceId">ID of Workspace being copied</param>
+        /// <param name="templateIdMapping">Mapping of old and new RTE Template IDs</param>
+        /// <param name="questionIdMapping">Mapping of old and new RTE Template Question IDs</param>
+        /// <param name="moqTypesToCopy">Selected Moq Types for the WS</param>
         /// <returns>Boolean indicating whether there was any bad data that the user should be notified about</returns>
         private bool CopyTasks(Dictionary<int, int> boeIDMapping, Dictionary<int, int> wbsIDMapping, Dictionary<int, int> clinIDMapping,
-            Dictionary<int, int> variableIDMapping, Dictionary<int, int> customFieldIDMapping, Dictionary<int, int> customFieldValueIDMapping, bool copyLaborSpreads, Dictionary<int, int> Resources, Dictionary<int, int> perfOrgs)
+            Dictionary<int, int> variableIDMapping, Dictionary<int, int> customFieldIDMapping, Dictionary<int, int> customFieldValueIDMapping, 
+            bool copyLaborSpreads, Dictionary<int, int> Resources, Dictionary<int, int> perfOrgs, int workspaceId, IDictionary<int, int> templateIdMapping, 
+            IDictionary<int, int> questionIdMapping, ICollection<MoqTypeSelection> moqTypesToCopy)
         {
+            // Key: existing Id, value: negative Id
+            IDictionary<int, int> originalTaskIdMapping = new Dictionary<int, int>(); 
             bool finishedCorrectly = true;
 
             ICollection<BoeTaskElementDTO> taskElementsToSave = new Collection<BoeTaskElementDTO>();
 
             int newItemID = -1;
 
-            foreach (var taskElement in this.copiedFromTaskElements)
+            foreach (BoeTaskElementDTO taskElement in this.copiedFromTaskElements)
             {
                 BoeTaskElementDTO newTaskElement = new BoeTaskElementDTO();
-
+                
                 int newBoeID = boeIDMapping[taskElement.BoeID];
+                originalTaskIdMapping.Add(taskElement.Id, newItemID);
 
                 taskElement.Id = newItemID--;
                 taskElement.BoeID = newBoeID;
                 taskElement.Updateable = UpdateType.Upsert;
 
-                foreach (var ordinaryVariable in taskElement.OrdinaryVariables)
+                foreach (OrdinaryVariableDto ordinaryVariable in taskElement.OrdinaryVariables)
                 {
-                    OrdinaryVariableDto newOrdinaryVariable = new OrdinaryVariableDto();
-                    newOrdinaryVariable.Id = newItemID--;
-                    newOrdinaryVariable.BoeID = newBoeID;
-                    newOrdinaryVariable.IsPercentage = ordinaryVariable.IsPercentage;
-                    newOrdinaryVariable.OrdinaryVariableName = ordinaryVariable.OrdinaryVariableName;
-                    newOrdinaryVariable.SortBOEBy = ordinaryVariable.SortBOEBy;
-                    newOrdinaryVariable.SumVariableResourceTypeIDs = ordinaryVariable.SumVariableResourceTypeIDs;
-                    newOrdinaryVariable.UpdateDate = ordinaryVariable.UpdateDate;
-                    newOrdinaryVariable.ValueType = ordinaryVariable.ValueType;
-                    newOrdinaryVariable.OrdinaryVariableValue = ordinaryVariable.OrdinaryVariableValue;
-                    newOrdinaryVariable.DefaultSize = ordinaryVariable.DefaultSize;
+                    OrdinaryVariableDto newOrdinaryVariable = new OrdinaryVariableDto()
+                    {
+                        Id = newItemID--,
+                        BoeID = newBoeID,
+                        IsPercentage = ordinaryVariable.IsPercentage,
+                        OrdinaryVariableName = ordinaryVariable.OrdinaryVariableName,
+                        SortBOEBy = ordinaryVariable.SortBOEBy,
+                        SumVariableResourceTypeIDs = ordinaryVariable.SumVariableResourceTypeIDs,
+                        UpdateDate = ordinaryVariable.UpdateDate,
+                        ValueType = ordinaryVariable.ValueType,
+                        OrdinaryVariableValue = ordinaryVariable.OrdinaryVariableValue,
+                        DefaultSize = ordinaryVariable.DefaultSize,
+                        Updateable = UpdateType.Upsert
+                    };
 
                     // Remap Sum of BOEs IDs from old to new
                     if (ordinaryVariable.ValueType == VarValueType.SumOfBOEs)
                     {
-                        //boeSum = -1;
-                        foreach (var sumOfBOEs in ordinaryVariable.SelectedBOEsToSum)
+                        foreach (SelectBOEsToSum sumOfBOEs in ordinaryVariable.SelectedBOEsToSum)
                         {
                             int idVal = -1;
                             if (sumOfBOEs.BoeID.HasValue)
@@ -1146,7 +1227,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                             }
                         }
                     }
-                    newOrdinaryVariable.Updateable = UpdateType.Upsert;
+
                     newTaskElement.OrdinaryVariables.Add(newOrdinaryVariable);
                 }
                 taskElement.OrdinaryVariables = newTaskElement.OrdinaryVariables;
@@ -1155,7 +1236,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                 {
                     Collection<int> newVariableIDs = new Collection<int>();
 
-                    foreach (var variableID in taskElement.WorkspaceVariableIDs)
+                    foreach (int variableID in taskElement.WorkspaceVariableIDs)
                     {
                         newVariableIDs.Add(variableIDMapping[variableID]);
                         taskElement.MOQHoursEquation = taskElement.MOQHoursEquation.Replace(
@@ -1169,8 +1250,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
                     taskElement.WorkspaceVariableIDs = newVariableIDs;
                 }
-
-                // if there are custom cross refs, let's copy them
                 if (taskElement.CustomFieldValueContainers.Any())
                 {
                     foreach (CustomFieldValueContainer taskElementCustomFieldXRefToCopy in taskElement.CustomFieldValueContainers)
@@ -1182,10 +1261,9 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                         taskElementCustomFieldXRefToCopy.CustomFieldID = customFieldIDMapping[taskElementCustomFieldXRefToCopy.CustomFieldID];
                     }
                 }
-
                 if (copyLaborSpreads)
                 {
-                    foreach (var laborType in taskElement.taskElementLabors)
+                    foreach (ResourceTypeDto laborType in taskElement.taskElementLabors)
                     {
 
                         laborType.Id = newItemID--;
@@ -1199,7 +1277,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
                         if (laborType.CustomFieldValueContainers.Any())
                         {
-                            foreach (var laborTypeCustomFieldXRefToCopy in laborType.CustomFieldValueContainers)
+                            foreach (CustomFieldValueContainer laborTypeCustomFieldXRefToCopy in laborType.CustomFieldValueContainers)
                             {
                                 laborTypeCustomFieldXRefToCopy.Id = newItemID--;
                                 laborTypeCustomFieldXRefToCopy.ContainerID = laborTypeCustomFieldXRefToCopy.Id;
@@ -1217,7 +1295,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                             laborType.WBSID = wbsIDMapping[laborType.WBSID.Value];
                         }
                         // copy spreads
-                        foreach (var laborSpread in laborType.LaborSpreads)
+                        foreach (ResourceSpreadDto laborSpread in laborType.LaborSpreads)
                         {
                             laborSpread.BoeID = newBoeID;
                             laborSpread.Id = newItemID--;
@@ -1228,16 +1306,92 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                     // This needs to be done to preserve the original order of the labors.
                     taskElement.taskElementLabors.Reverse();
                 }
-
+                
                 taskElementsToSave.Add(taskElement);
             }
 
+            // Setup the final mapping to be Key: Existing Id, Value: New Id
+            IDictionary<int, int> postSaveMapping = new Dictionary<int, int>();
+
             if (taskElementsToSave.Any())
             {
-                this._BoeTaskElementLoader.BulkSave(taskElementsToSave);
+                // Key: negative Id, Value: New Id
+                IDictionary<int, int> postSaveTaskElementMapping = this._BoeTaskElementLoader.BulkSave(taskElementsToSave);
+                
+                originalTaskIdMapping.ForEach(x => { postSaveMapping.Add(x.Key, postSaveTaskElementMapping[x.Value]); } );
+
+                this.CopyMoqTypes(moqTypesToCopy, postSaveMapping);
+            }
+
+            // Copy any Task-level RTE Custom Template Answers
+            if (templateIdMapping.Any())
+            {
+                ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplatesToSave = new Collection<RTECustomTemplateQuestionAnswerModelView>();
+
+                foreach (KeyValuePair<int, int> taskIdMapping in postSaveMapping)
+                {
+                    BoeTaskElementDTO taskElement = this.copiedFromTaskElements.First(x => x.Id == taskIdMapping.Value);
+                    int originalBoeId = boeIDMapping.FirstOrDefault(x => x.Value == taskElement.BoeID).Key;
+
+                    ICollection<RTECustomTemplateQuestionAnswerModelView> rteTemplateAnswers = this.rteTemplateDataLoader.GetByBoeIdAndTaskId(workspaceId, originalBoeId, taskIdMapping.Key);
+
+                    // If there are any RTE Template answers, add them to the collection to be saved
+                    foreach (RTECustomTemplateQuestionAnswerModelView answer in rteTemplateAnswers)
+                    {
+                        RTECustomTemplateQuestionAnswerModelView duplicateAnswer = answer.DeepClone();
+                        duplicateAnswer.Id = -1;
+                        duplicateAnswer.BoeId = boeIDMapping[originalBoeId];
+                        duplicateAnswer.TaskId = taskIdMapping.Value;
+                        duplicateAnswer.TemplateId = templateIdMapping[duplicateAnswer.TemplateId];
+                        duplicateAnswer.QuestionId = questionIdMapping[duplicateAnswer.QuestionId];
+                        duplicateAnswer.Updateable = UpdateType.Upsert;
+
+                        rteTemplatesToSave.Add(duplicateAnswer);
+                    }
+                }
+
+                // Save the copied RTE Answers
+                this.rteTemplateDataLoader.SaveAnswers(rteTemplatesToSave);
             }
 
             return finishedCorrectly;
+        }
+
+        /// <summary>
+        /// Copies MOQ Type Selections
+        /// </summary>
+        /// <param name="moqTypesToCopy">MOQ Types to copy</param>
+        /// <param name="newTaskId">New Task Id</param>
+        /// <param name="newBoeId">New Boe Id</param>
+        private void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, IDictionary<int, int> taskIdMapping)
+        {
+            _ = moqTypesToCopy ?? throw new ArgumentNullException(nameof(moqTypesToCopy));
+            _ = taskIdMapping ?? throw new ArgumentNullException(nameof(taskIdMapping));
+
+            List<MoqTypeSelection> moqTypesToSave = new List<MoqTypeSelection>();
+
+            int i = 0;
+            moqTypesToCopy.Where(x => x.SelectedMOQType != MOQType.None).ForEach(existingMoqType =>
+            {
+                MoqTypeSelection newMoqType = existingMoqType.DeepClone();
+                newMoqType.TableData = new List<MoqTableData>();
+
+                newMoqType.Id = --i;
+                newMoqType.Updateable = UpdateType.Upsert;
+                newMoqType.TaskId = taskIdMapping[existingMoqType.TaskId];
+
+                existingMoqType.TableData.ForEach(existingTable =>
+                {
+                    MoqTableData newTable = existingTable.DeepClone();
+                    newTable.Id = --i;
+
+                    newMoqType.TableData.Add(newTable);
+                });
+
+                moqTypesToSave.Add(newMoqType);
+            });
+
+            this.moqTypeLoader.Save(moqTypesToSave);
         }
 
         /// <summary>
@@ -1263,7 +1417,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
                 int newItemID = -1;
                 
-                foreach (var travelElement in this.copiedFromTravelElements)
+                foreach (TravelDTO travelElement in this.copiedFromTravelElements)
                 {
                     int newBoeID = boeIDMapping[travelElement.BoeID];
 
@@ -1274,7 +1428,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                     // if there are custom cross refs, let's copy them
                     if (travelElement.CustomFieldValueContainers.Any())
                     {
-                        foreach (var travelElementCustomFieldXRefToCopy in travelElement.CustomFieldValueContainers)
+                        foreach (CustomFieldValueContainer travelElementCustomFieldXRefToCopy in travelElement.CustomFieldValueContainers)
                         {
                             travelElementCustomFieldXRefToCopy.ContainerID = newItemID--;
                             travelElementCustomFieldXRefToCopy.Updateable = UpdateType.Upsert;

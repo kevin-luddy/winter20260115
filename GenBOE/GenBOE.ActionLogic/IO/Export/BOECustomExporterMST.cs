@@ -448,7 +448,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 if (selectedComponents.Contains(BoeCustomReportComponent.ResourceInfoAndSpreadTables))
                 {
-                    var orderedResources = laborTaskElement.taskElementLabors
+                    IOrderedEnumerable<BOEExportTaskElementLabor> orderedResources = laborTaskElement.taskElementLabors
                         .Where(c => c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_ResourceID)
                         && c.ExportFields.ContainsKey(BOEExporterConstants.FieldName_PerformingOrgID))
                         .OrderBy(o => o.ExportFields[BOEExporterConstants.FieldName_ResourceID])
@@ -456,7 +456,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                     SdtElement currentInsertionPoint = laborResourceContainerTemplateElement;
 
-                    foreach (var resourceElement in orderedResources)
+                    foreach (BOEExportTaskElementLabor resourceElement in orderedResources)
                     {
                         SdtElement laborResourceContainerElement = this.CloneContainerTemplate(laborResourceContainerTemplateElement);
 
@@ -862,6 +862,20 @@ namespace GenBOE.ActionLogic.IO.Export
             }
 
             #endregion
+        }
+
+        /// <summary>
+        /// Remove MOQ related containers only used when Template BOE is set to "No"
+        /// For RMS, this is the MOQ Type Container, but only if there are no MOQ RTE Templates
+        /// </summary>
+        /// <param name="wsHasMoqRteTemplate">Whether Worksace has RTE Templates for MOQ Rationale</param>
+        /// <param name="containerElement">The container template</param>
+        protected override void RemoveNonTemplateBoeContainers(bool wsHasMoqRteTemplate, SdtElement containerElement)
+        {
+            if (!wsHasMoqRteTemplate)
+            {
+                WordUtilities.RemoveTaggedElement(containerElement, BOEExporterConstants.FieldName_MOQTypeContainer);
+            }
         }
 
         #endregion

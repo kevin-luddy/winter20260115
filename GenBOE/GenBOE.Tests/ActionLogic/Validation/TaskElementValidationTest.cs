@@ -11,6 +11,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
     using System.Collections.ObjectModel;
     using System.Linq;
     using GenBOE.ActionLogic.Common.Calculations;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
@@ -587,6 +588,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
             FullBoe boe = new FullBoe() { Id = 2, StartDate = new DateTime(2014, 1, 1), EndDate = new DateTime(2014, 5, 1) };
             this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(ws.Id)).Returns(new List<WorkspaceVariableDTO>());
+            this.retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(boe.Id)).Returns(new List<MoqTypeSelection>());
 
             ICollection<BoeTaskElementDTO> taskElementData = new List<BoeTaskElementDTO>();
             taskElementData.Add(new BoeTaskElementDTO()

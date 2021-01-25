@@ -18,15 +18,6 @@ namespace GenBOE.ActionLogic.ModelView
             this.DescriptionTemplateAnswers = new List<RTECustomTemplateQuestionAnswerModelView>();
         }
 
-        #region Dropdown values 
-
-        /// <summary>
-        /// Gets or sets the moq types.
-        /// </summary>
-        public string MOQTypes { get; set; }
-
-        #endregion Dropdown values 
-
         /// <summary>
         /// Gets or sets the task element identifier.
         /// </summary>
@@ -134,5 +125,10 @@ namespace GenBOE.ActionLogic.ModelView
         /// Gets or sets the Task Description.
         /// </summary>
         public string TaskDescription { get; set; }
+
+        /// <summary>
+        /// Is WS using Template BOEs
+        /// </summary>
+        public bool UsingTemplateBOE { get; set; }
     }
 }

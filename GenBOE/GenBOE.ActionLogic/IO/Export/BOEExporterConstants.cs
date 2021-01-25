@@ -37,7 +37,6 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string Container_TaskSpreadTables = "TaskSpreadTablesContainer";
         internal const string Container_TaskID = "TaskIDContainer";
         internal const string Container_Travel = "TravelContainer";
-        internal const string Container_Travels = "TravelsContainer";
 
         internal const string CustomFields_BOEContainer = "CustomFields-BOE";
         internal const string CustomFields_LaborContainer = "CustomFields-Labor";
@@ -101,6 +100,7 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string FieldName_MatSubIWTACostTotal = "MatSubIWTACostTotal";
         internal const string FieldName_May = "May";
         internal const string FieldName_MethodOfQuoting = "MethodOfQuoting";
+        internal const string FieldName_MethodOfQuotingLabel = "MOQRationaleLabel";
         internal const string FieldName_MethodOfQuoting_NoSpacing = "MethodOfQuoting-NoSpacing";
         internal const string FieldName_Mode = "Mode";
         internal const string FieldName_Months = "Months";
@@ -247,8 +247,7 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string Marker_BOESummaryResourceRowMarker = "BOESummaryResourceRowMarker";
         internal const string Marker_BOESummaryBOERowMarker = "BOESummaryBOERowMarker";
         internal const string Marker_BOESummaryTaskRowMarker = "BOESummaryTaskRowMarker";
-
-
+        
         internal const string SectionTitlePrefix = "SectionTitle-";
 
         internal const string Table_BOECostSummary = "BOECostSummaryTable";
@@ -323,6 +322,51 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string CustomFieldName_EstimateMethod = "Estimate Method";
         internal const string CustomFieldName_SOW = "SOW";
 
+        #region MOQ Type Constants
+
+        internal const string Container_MOQSelection = "MOQSelectionContainer";
+        internal const string Container_CerPmAr = "CER/PM/ARContainer";
+        internal const string Container_SowLoe = "SOW/LOEContainer";
+        internal const string Container_SME = "SMEContainer";
+        internal const string Container_MOQTypeRationale = "MOQTypeRationaleContainer";
+        internal const string Container_SkillMix = "SkillMixContainer";
+        internal const string FieldName_MOQTypeSelectionTitle = "MOQTypeSelectionTitle";
+        internal const string FieldName_MOQTypeSelectionLabel = "MOQTypeSelectionLabel";
+        internal const string FieldName_MOQTypeSelection = "MOQTypeSelection";
+        internal const string FieldName_MOQTypeDescription = "MOQTypeDescription";
+        internal const string FieldName_CerPmArNameLabel = "CER/PM/ARNameLabel";
+        internal const string FieldName_CerPmArName = "CER/PM/ARName";
+        internal const string FieldName_HoursDescriptionLabel = "HoursDescriptionLabel";
+        internal const string FieldName_HoursDescription = "HoursDescription";
+        internal const string FieldName_SMEReasonsLabel = "SMEReasonsLabel";
+        internal const string FieldName_SMEReasons = "SMEReasons";
+        internal const string FieldName_SMETasksBelowLabel = "SMETasksBelowLabel";
+        internal const string FieldName_SMEHoursLogicLabel = "SMEHoursLogicLabel";
+        internal const string FieldName_SMEHoursLogic = "SMEHoursLogic";
+        internal const string FieldName_SMEDurationLogicLabel = "SMEDurationLogicLabel";
+        internal const string FieldName_SMEDurationLogic = "SMEDurationLogic";
+        internal const string FieldName_SMETasksLabel = "SMETasksLabel";
+        internal const string FieldName_SMETasks = "SMETasks";
+        internal const string FieldName_Rationale = "Rationale";
+        internal const string FieldName_SkillMix = "SkillMix";
+        internal const string FieldName_TableName = "TableName";
+        internal const string FieldName_RepositoryName = "RepositoryName";
+        internal const string FieldName_QueryType = "QueryType";
+        internal const string FieldName_DateOfReport = "DateOfReport";
+        internal const string FieldName_HistoricalProgramName = "HistoricalProgramName";
+        internal const string FieldName_ContractNumber = "ContractNumber";
+        internal const string FieldName_WbsElement = "WbsElement";
+        internal const string FieldName_PoPStartDate = "PoPStartDate";
+        internal const string FieldName_PoPEndDate = "PoPEndDate";
+        internal const string FieldName_TotalWBSHours = "TotalWBSHours";
+        internal const string FieldName_AdditionalQueryFilters = "AdditionalQueryFilters";
+        internal const string FieldName_TotalRelevantHours = "TotalRelevantHours";
+        internal const string FieldName_MOQTypeTableNote = "MOQTypeTableNote";
+        internal const string Marker_AdditionalQueryFilters = "AdditionalQueryFiltersRowMarker";
+        internal const string Table_MOQType = "MOQTypeTable";
+
+        #endregion
+
         #endregion
 
         #region MIME Constants
@@ -378,6 +422,11 @@ namespace GenBOE.ActionLogic.IO.Export
         /// Summarize by option value when no summary tables are desired.
         /// </summary>
         public const string SUMMARIZE_BY_NONE = "None";
+
+        /// <summary>
+        /// Text to display for SSC when Employee ID Filters are excluded from the custom export
+        /// </summary>
+        public const string EMPLOYEE_ID_FILTERS_EXCLUSION_TEXT = "Employee IDs are considered “Personal Information,” and when utilized to filter relevant hours, have been omitted from this table. Lockheed Martin Space will provide this information upon request from the DCAA/DCMA.";
 
         #endregion
 

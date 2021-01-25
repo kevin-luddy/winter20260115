@@ -103,6 +103,9 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -127,6 +130,7 @@
     <Compile Include="DataLoaders\ClinDTODataLoaderTest.cs" />
     <Compile Include="DataLoaders\CommonDataLoaderTest.cs" />
     <Compile Include="DataLoaders\BOEFormDTODataLoaderTest.cs" />
+    <Compile Include="DataLoaders\MoqTypeDataLoaderTest.cs" />
     <Compile Include="DataLoaders\ProjectMapDataLoaderTest.cs" />
     <Compile Include="DataLoaders\RteTemplateDataLoaderTest.cs" />
     <Compile Include="DataLoaders\SystemSettingDTODataLoaderTest.cs" />

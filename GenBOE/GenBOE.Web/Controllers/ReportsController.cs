@@ -1277,7 +1277,7 @@ namespace GenBOE.Web.Controllers
             // generate the complete set of all BOEs for this workspace
             ICollection<BoeCustomReportBoeData> boeData = this.GetBoeDataForWorkspace(ws, selectedSortBy, secondarySelectedSortBy);
 
-            CustomReportSelectorModelView viewModelCustomReport = new CustomReportSelectorModelView(workspace, boeData, selectedSortBy, secondarySelectedSortBy, selections);
+            CustomReportSelectorModelView viewModelCustomReport = new CustomReportSelectorModelView(workspace, boeData, selectedSortBy, secondarySelectedSortBy, selections, ws.UsingTemplateBOE);
             ViewData["ContainsOCI"] = ws.ContainsOCI.ToString().ToLower();
 
             return this.PartialView(WebConstants.VIEW_BOE_CUSTOM_REPORT_SELECTOR, viewModelCustomReport);
@@ -1632,7 +1632,7 @@ namespace GenBOE.Web.Controllers
                         rteTemplateOverrides = boes.SelectMany(x => x.TemplateQuestionsAndAnswers).ToList();
                     }
 
-                    BOEExportInputs exportInputs = new BOEExportInputs(boes, ws.Boes.ToList(), tasks, ws, rteTemplateOverrides);
+                    BOEExportInputs exportInputs = new BOEExportInputs(boes, ws.Boes.ToList(), tasks, ws, rteTemplateOverrides, ws.MoqTypeSelections.ToList());
                     // Need picklist values for contract type for Workspace Identification sheet
                     exportInputs.ContractTypes = this.contractTypeLoader.GetPickListValues();
 

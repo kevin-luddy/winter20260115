@@ -79,33 +79,40 @@
         WorkspaceSettings.LoadWorkspaceStatus();
     });
 
-    WorkspaceStatusWidget.SaveWorkspaceStatus = function() {
+    WorkspaceStatusWidget.SaveWorkspaceStatus = function () {
         if (WorkspaceStatusWidget.preparedForSubmit()) {
             $('#Save-WorkspaceStatus').addClass('display-none');
             $('#Loader-WorkspaceStatus').removeClass('display-none');
 
-            var dataToSend = JSON.stringify(WorkspaceStatusWidget.data);
-            WorkspaceStatusWidget.ajaxRequest({
-                type: 'POST',
-                url: CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
-                        '<%: WebConstants.CONTROLLER_WORKSPACE %>',
-                        '<%: WebConstants.ACTION_SAVE_WORKSPACE_STATUS %>', ''),
-                contentType: 'application/json; charset=utf-8',
-                dataType: 'json',
-                data: dataToSend,
-                success: function () {
-                    $(document).trigger("UPDATE_STATUS", WorkspaceStatusWidget.data.WorkspaceStatus);
-                    $(document).trigger('ReloadWSStatusPage');
-                  
-                },
-                error: function () {
-                    refreshModule($('.workspace-status.module'));
-                    $('#Save-WorkspaceStatus').removeClass('display-none');
-                    $('#Loader-WorkspaceStatus').addClass('display-none');
-                }
-            }, $(this));
-        }    
+            WorkspaceStatusWidget.ContinueSaveWorkspaceStatus();
+        }
     };
+
+    WorkspaceStatusWidget.ContinueSaveWorkspaceStatus = function () {
+        var dataToSend = JSON.stringify(WorkspaceStatusWidget.data);  
+        
+        WorkspaceStatusWidget.ajaxRequest({
+            type: 'POST',
+            url: CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
+                    '<%: WebConstants.CONTROLLER_WORKSPACE %>',
+                '<%: WebConstants.ACTION_SAVE_WORKSPACE_STATUS %>', ''),
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: dataToSend,
+            success: function () {
+                $(document).trigger("UPDATE_STATUS", WorkspaceStatusWidget.data.WorkspaceStatus);
+                $(document).trigger('ReloadWSStatusPage');
+
+            },
+            error: function (errorDetails) {
+                $('#statusErrorMessage').text($.parseJSON(errorDetails.responseText).Message).show();
+
+                refreshModule($('.workspace-status.module'));
+                $('#Save-WorkspaceStatus').removeClass('display-none');
+                $('#Loader-WorkspaceStatus').addClass('display-none');
+            }
+        }, $(this));
+    }
 
     $(function () {
         WorkspaceStatusWidget.afterDOMLoad();
@@ -151,7 +158,7 @@
         
 <% using (Html.BeginForm("", "", FormMethod.Post, new { id = "WorkspaceStatusForm" }))
    { %>
-           <ul class="validation-box"> </ul>
+           <ul id="statusErrorMessage" class="validation-box"> </ul>
            <%: Html.ValidationMessageFor(model => model.WorkspaceStatus)%>
         <div class="form-row">Change the status of the Workspace.</div>
         <div class="form-row">

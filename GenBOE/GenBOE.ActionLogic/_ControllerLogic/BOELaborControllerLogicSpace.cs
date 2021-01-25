@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.ControllerLogic;
@@ -58,7 +59,8 @@ namespace GenBOE.ActionLogic
             TaskElementValidation taskElementValidation,
             IVariableCircularReferenceChecker circularReferenceChecker,
             ICommonDataMapper commonDataMapper,
-            IRteTemplateDataLoader rteTemplateDataLoader
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            IMoqTypeDataLoader moqTypeDataLoader
             ) :base(inBoeTaskElementRecalc, 
                 inBoeStateMachine, 
                 inBoeMediator, 
@@ -76,17 +78,20 @@ namespace GenBOE.ActionLogic
                 taskElementValidation,
                 circularReferenceChecker,
                 commonDataMapper,
-                rteTemplateDataLoader)
+                rteTemplateDataLoader,
+                moqTypeDataLoader)
         {
         }
 
         /// <summary>
+        /// THESE ARE LEGACY MOQ TYPES AS OF 10/2020
+        /// 
         /// Gets the valid <see cref="MOQType" />'s for the SSC configuration
         /// </summary>
         /// <returns>
         /// valid <see cref="MOQType" />'s for this company configuration
         /// </returns>
-        public override ICollection<MOQType> GetMOQTypes()
+        internal override ICollection<MOQType> GetMOQTypes()
         {
             return new MOQType[]
             {

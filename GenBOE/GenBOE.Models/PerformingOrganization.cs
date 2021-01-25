@@ -17,11 +17,11 @@ namespace GenBOE.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public PerformingOrganization()
         {
-            this.BOELaborTypes = new HashSet<BOELaborType>();
             this.MSTTravelTrips = new HashSet<MSTTravelTrip>();
             this.ODCTypes = new HashSet<ODCType>();
             this.TravelTrips = new HashSet<TravelTrip>();
             this.WorkspacePerformingOrganizations = new HashSet<WorkspacePerformingOrganization>();
+            this.BOELaborTypes = new HashSet<BOELaborType>();
         }
     
         public int PerformingOrganizationID { get; set; }
@@ -32,8 +32,6 @@ namespace GenBOE.Models
         public bool DeletedFlag { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<BOELaborType> BOELaborTypes { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<MSTTravelTrip> MSTTravelTrips { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ODCType> ODCTypes { get; set; }
@@ -42,5 +40,7 @@ namespace GenBOE.Models
         public virtual ICollection<TravelTrip> TravelTrips { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<WorkspacePerformingOrganization> WorkspacePerformingOrganizations { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<BOELaborType> BOELaborTypes { get; set; }
     }
 }

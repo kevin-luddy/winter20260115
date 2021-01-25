@@ -35,6 +35,7 @@ namespace GenBOE.Tests.ActionLogic
         private Mock<IRetriever> retriever;
         private Mock<IBoeEmailer> emailer;
         private Mock<IBOEStateMachine> stateMachine;
+        private Mock<IMoqTypeDataLoader> moqTypeLoader;
 
         /// <summary>
         /// Creates System Under Test
@@ -50,6 +51,7 @@ namespace GenBOE.Tests.ActionLogic
             this.taskElementMediator = new Mock<IBoeTaskElementMediator>();
             this.emailer = new Mock<IBoeEmailer>();
             this.stateMachine = new Mock<IBOEStateMachine>();
+            this.moqTypeLoader = new Mock<IMoqTypeDataLoader>();
 
             Mock<ICommonDataMapper> commonDataMapper = new Mock<ICommonDataMapper>();
             Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
@@ -61,7 +63,7 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionDataLoader.Object);
 
             return new RTETemplatesControllerLogic(this.rteTemplateDataLoader.Object, this.versionLoader.Object, this.boeDtoDataLoader.Object, this.boeMediator.Object, 
-                this.taskElementDtoDataLoader.Object, this.taskElementMediator.Object, this.emailer.Object, this.stateMachine.Object);
+                this.taskElementDtoDataLoader.Object, this.taskElementMediator.Object, this.emailer.Object, this.stateMachine.Object, this.moqTypeLoader.Object);
         }
 
         #region SaveTemplates
@@ -78,7 +80,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Initialization };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Initialization, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -122,7 +124,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -166,7 +168,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Initialization };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Initialization, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -217,7 +219,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -271,7 +273,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -325,7 +327,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -378,7 +380,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -448,7 +450,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Initialization };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Initialization, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -499,7 +501,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -551,7 +553,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -603,7 +605,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -654,7 +656,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Initialization };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Initialization, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -705,7 +707,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -756,7 +758,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -807,7 +809,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -858,7 +860,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToSave = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -968,7 +970,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToValidate = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -1008,7 +1010,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToValidate = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -1059,7 +1061,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToValidate = new List<RteCustomTemplateModelView>()
             {
 
@@ -1100,7 +1102,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToValidate = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -1149,7 +1151,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToValidate = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()
@@ -1198,7 +1200,7 @@ namespace GenBOE.Tests.ActionLogic
 
             #region Data Setup
 
-            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working };
+            FullWorkspace ws = new FullWorkspace() { Id = 1, WorkspaceState = WorkspaceState.Working, UsingTemplateBOE = false };
             ICollection<RteCustomTemplateModelView> templatesToValidate = new List<RteCustomTemplateModelView>()
             {
                 new RteCustomTemplateModelView()

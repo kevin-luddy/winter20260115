@@ -286,7 +286,9 @@ namespace GenBOE.DataBridge.DTO
                                     LastProPricerInstance = w.LastProPricerInstance,
                                     LastProPricerProposal = w.LastProPricerProposal,
                                     RteSizeLimit = w.RteSizeLimit,
-                                    RevisedSubmittalDate = w.RevisedSubmittalDate
+                                    RevisedSubmittalDate = w.RevisedSubmittalDate,
+                                    UsingTemplateBOE = w.TemplateBoe,
+                                    CreationDate = w.WorkspaceCreationDate
                                 }).ToCollection();
 
                     toReturn.ToList().ForEach(w =>
@@ -377,7 +379,9 @@ namespace GenBOE.DataBridge.DTO
                                         LastProPricerInstance = w.LastProPricerInstance,
                                         LastProPricerProposal = w.LastProPricerProposal,
                                         RteSizeLimit = w.RteSizeLimit,
-                                        RevisedSubmittalDate = w.RevisedSubmittalDate
+                                        RevisedSubmittalDate = w.RevisedSubmittalDate,
+                                        UsingTemplateBOE = w.TemplateBoe,
+                                        CreationDate = w.WorkspaceCreationDate
                                     }).FirstOrDefault();
 
                         if (toReturn != null)
@@ -905,7 +909,8 @@ namespace GenBOE.DataBridge.DTO
                         wsToSave.LastProPricerInstance, 
                         wsToSave.LastProPricerProposal,
                         wsToSave.RteSizeLimit,
-                        wsToSave.RevisedSubmittalDate).FirstOrDefault());
+                        wsToSave.RevisedSubmittalDate,
+                        wsToSave.UsingTemplateBOE).FirstOrDefault());
 
                     // if the result ID is not a positive number, something bad went wrong so Log it
                     if (resultID <= 0)

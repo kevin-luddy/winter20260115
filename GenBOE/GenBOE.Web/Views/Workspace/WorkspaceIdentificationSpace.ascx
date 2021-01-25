@@ -2,6 +2,13 @@
 <%@ Import namespace="System.Web.Optimization" %>
 <%@ Import namespace="IES.Common.PickList" %>
 <%: Scripts.Render("~/bundles/identification") %>
+<% 
+    bool disabledBoeTemplateDropdown = Model.UsingTemplateBoe || Model.CreatedPriorToBoeTemplates;
+    object dropdownParamsForBoeTemplates = new { onchange = @"WorkspaceIdentificationWidget.BoeTemplateChange()" };
+    if (disabledBoeTemplateDropdown) {
+        dropdownParamsForBoeTemplates = new { onchange = @"WorkspaceIdentificationWidget.BoeTemplateChange()", @class = "disabled", @disabled = "disabled" }; 
+   } 
+%>
 
 <script type="text/javascript">
 
@@ -267,6 +274,17 @@
         }    
     }
 
+    WorkspaceIdentificationWidget.BoeTemplateChange = function () {
+        GenSession.confirmDialog("Template BOE Change",
+            "Are you sure you want to change Template BOE to 'Yes'? This cannot be undone.",
+            function () { },
+            function () {
+                WorkspaceIdentificationWidget.cleanDirty();
+                window.location.reload(true);
+            }
+        );
+    }
+
     $('#RteSizeLimit').keyup(function () {
         displayApproxPages($(this).val());  
     });
@@ -365,6 +383,12 @@
 
        if ('<%: Model.RteSizeLimit.HasValue %>' === "True") {
            displayApproxPages('<%: Model.RteSizeLimit %>');
+       }
+
+       if ('<%: Model.EnableTemplateBoeSelect %>' == "True") {
+           var dropdown = $('#UsingTemplateBoe');
+           dropdown.removeClass('disabled');
+           dropdown.removeAttr('disabled');
        }
 
        originalTrackingNumber = $('#TrackingNumber').val();
@@ -630,6 +654,21 @@
             <div class="form-element">
                 <%: Html.TextBox("RteSizeLimit", Model.RteSizeLimit) %>
                 <span id="approxPages"></span>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">
+                <span helptext="Does this Workspace use the MOQ Template in its BOEs?">MOQ Template BOEs</span>
+            </div>
+            <div class="form-element">
+                <%: Html.DropDownListFor(c => c.UsingTemplateBoe, new List<SelectListItem>()
+                    {
+                        new SelectListItem() { Text = "Yes", Value = "True" },
+                        new SelectListItem() { Text = "No", Value = "False" }
+                    }, dropdownParamsForBoeTemplates) %>
+                <%if (disabledBoeTemplateDropdown) { %>
+                    <%: Html.HiddenFor(c => c.UsingTemplateBoe) %>
+                <%} %>
             </div>
         </div>
         <button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>

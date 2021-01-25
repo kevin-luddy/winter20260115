@@ -10,6 +10,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Reflection;
     using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
@@ -54,6 +55,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<IVariableCircularReferenceChecker> circularReferenceChecker = null;
         private Mock<ICommonDataMapper> commonDataMapper = null;
         private Mock<IRteTemplateDataLoader> rteTemplateDataLoader = null;
+        private Mock<IMoqTypeDataLoader> moqTypeDataLoader = null;
 
         #region Private members
         private BOELaborControllerLogic CreateSystem()
@@ -77,7 +79,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                    _TaskVariableLoader.Object,
                    _TaskElementValidation.Object,
                    circularReferenceChecker.Object,
-                   commonDataMapper.Object, this.rteTemplateDataLoader.Object
+                   commonDataMapper.Object, 
+                   this.rteTemplateDataLoader.Object,
+                   this.moqTypeDataLoader.Object
             );
         }
 
@@ -102,7 +106,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                    _TaskVariableLoader.Object,
                    _TaskElementValidation.Object,
                    circularReferenceChecker.Object,
-                   commonDataMapper.Object, rteTemplateDataLoader.Object
+                   commonDataMapper.Object, 
+                   rteTemplateDataLoader.Object,
+                   this.moqTypeDataLoader.Object
             );
         }
 
@@ -128,7 +134,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                    _MSTMetricLoader.Object,
                    _TaskElementValidation.Object,
                    circularReferenceChecker.Object,
-                   commonDataMapper.Object, rteTemplateDataLoader.Object
+                   commonDataMapper.Object, 
+                   rteTemplateDataLoader.Object,
+                   this.moqTypeDataLoader.Object
             );
         }
 
@@ -158,6 +166,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             _TaskElementValidation = new Mock<TaskElementValidation>();
             circularReferenceChecker = new Mock<IVariableCircularReferenceChecker>();
             commonDataMapper = new Mock<ICommonDataMapper>();
+            this.moqTypeDataLoader = new Mock<IMoqTypeDataLoader>();
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
@@ -166,8 +175,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             _BoeTaskElementRecalculation = new Mock<BoeTaskElementRecalculation>(_VariableSelectBoeToSum.Object, factory.Object);
             this.rteTemplateDataLoader.Setup(x => x.GetByBoeIdAndTaskId(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int?>())).Returns(new List<RTECustomTemplateQuestionAnswerModelView>());
+            this.retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { new MoqTypeSelection() });
         }
-        
+
         /// <summary>
         /// Create ModelView for testing and set up necessary methods
         /// </summary>
@@ -640,13 +650,13 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
                         
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.IsFalse(validations.Any(), "There were validation errors");
         }
 
@@ -656,7 +666,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             BOELaborControllerLogic sut = CreateSystem();
 
             //test
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -664,7 +674,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             task.LaborTypesData.First().ResourceID = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -673,7 +683,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -681,7 +691,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             task.LaborTypesData.First().PerformingOrgID = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -690,21 +700,21 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.LaborTypesData.First().SpreadCurveID = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
 
             // Also test for it being set to none
             task.LaborTypesData.First().SpreadCurveID = SpreadCurves.None;
 
-            validations = sut.ValidateLaborTaskData(ws, task);
+            validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -713,7 +723,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -721,7 +731,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             task.LaborTypesData.First().PercentSpread = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -730,7 +740,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -738,7 +748,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             task.LaborTypesData.First().HourSpread = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(2, validations.Count());
         }
 
@@ -747,15 +757,15 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.LaborTypesData.First().StartDate = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(2, validations.Count());
         }
 
@@ -764,7 +774,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016") });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -772,7 +782,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             task.LaborTypesData.First().EndDate = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -781,7 +791,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -790,7 +800,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.LaborTypesData.First().WBSID = null;
             task.LaborTypesData.First().CLINID = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -798,7 +808,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         public void Test_ValidateLaborTaskData_ArgumentNull()
         {
             BOELaborControllerLogic sut = CreateSystem();
-            sut.ValidateLaborTaskData(null, null);
+            sut.ValidateLaborTaskDataWithDataModification(null, null);
         }
 
         [TestMethod]
@@ -806,12 +816,12 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
@@ -823,13 +833,13 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, RteSizeLimit = 50 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, RteSizeLimit = 50, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             task.TaskElementData.TaskDescription = "This is a long sentence that goes over the rte size limit of 50 characters";
-
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
@@ -841,13 +851,13 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, RteSizeLimit = 50 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, RteSizeLimit = 50, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             task.TaskElementData.MOQText = "This is a long sentence that goes over the rte size limit of 50 characters";
-
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
@@ -859,14 +869,14 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             task.TaskElementData.StartDate = boe.StartDate.AddMonths(-1).ToMonthString();
             task.TaskElementData.TaskElementDetailID = -1;
-
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
@@ -878,14 +888,14 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
             
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             task.TaskElementData.EndDate = boe.EndDate.AddMonths(1).ToMonthString();
             task.TaskElementData.TaskElementDetailID = -1;
-
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
@@ -897,7 +907,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2018"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -905,7 +915,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             task.TaskElementData.StartDate = Convert.ToDateTime(task.TaskElementData.EndDate).AddMonths(1).ToMonthString();
             task.TaskElementData.TaskElementDetailID = -1;
             task.LaborTypesData = new Collection<LaborTypeDataModelView>(); // Clear to avoid issues with resource type dates
-
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
@@ -917,7 +927,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -935,7 +945,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -953,7 +963,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = false });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -967,7 +977,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 BOETaskID = "2",
                 StartDate = boe.StartDate,
                 EndDate = boe.EndDate,
-                taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto() { StartDateValue = boe.StartDate.AddMonths(-1), EndDateValue = boe.EndDate } }
+                taskElementLabors = new Collection<ResourceTypeDto>() { new ResourceTypeDto() { StartDateValue = boe.StartDate.AddMonths(-1), EndDateValue = boe.EndDate} }
             };
 
             factory.Setup(x => x.CreateTaskElement(boeTask.Id, It.IsAny<int>(), It.IsAny<int>())).Returns(boeTask);
@@ -985,7 +995,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = false });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1017,7 +1027,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1041,13 +1051,13 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-
             task.LaborTypesData.First().CustomFieldValues = new Collection<CustomFieldSelectionModelView>();
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
 
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
@@ -1060,12 +1070,13 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
             task.LaborTypesData = new Collection<LaborTypeDataModelView>();
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
 
             BoeTaskElementDTO boeTask = new BoeTaskElementDTO
             {
@@ -1090,7 +1101,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1109,11 +1120,12 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
 
             CustomFieldDTO taskCustomField = new CustomFieldDTO { Id = 2, CustomFieldName = "TaskColor", WorkspaceID = ws.Id, CustomFieldDisplayID = CustomFieldType.TaskDisplay, CustomFieldRequired = true, IsOpenEnded = true };
             Collection<CustomFieldValueDTO> colorOptions = new Collection<CustomFieldValueDTO>();
@@ -1193,15 +1205,15 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = false });
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.TaskElementData.TaskOrdinaryVariables.First().OrdinaryVariableValue = null;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(3, validations.Count());
         }
 
@@ -1210,15 +1222,15 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = false });
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.LaborTypesData.First().PerformingOrgID = -1;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -1227,15 +1239,15 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = false });
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
-
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
             task.LaborTypesData.First().ResourceID = -1;
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -1244,7 +1256,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = false });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1252,8 +1264,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             // Make MOQ not equal Labor Spread
             task.TaskElementData.MOQHoursEquation = (task.LaborTypesData.First().HourSpread - 1).ToString();
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -1262,15 +1275,16 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = false });
             FullWorkspace ws = new FullWorkspace(workspace);
 
             LaborTaskDataModelView task = CreateModelView(boe, ws);
 
             task.LaborTypesData.First().Spreads.First().LaborSpreadValue -= 1;
+            task.MOQTypes = new List<MoqTypeSelection>() { new MoqTypeSelection() };
 
-            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskData(ws, task);
+            ICollection<ValidationMessage> validations = sut.ValidateLaborTaskDataWithDataModification(ws, task);
             Assert.AreEqual(1, validations.Count());
         }
 
@@ -1855,13 +1869,16 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             BOELaborControllerLogic sut = CreateSystem();
             sut.ValidateTaskElementDto(new FullWorkspace(), null);
         }
-
+        
+        /// <summary>
+        /// Test SaveLaborTaskData for an existing task
+        /// </summary>
         [TestMethod]
         public void Test_SaveLaborTaskData()
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1871,19 +1888,24 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 
             // pass over code that does OtherBOERecalculationsNeeded
             task.TotalHours = null;
-            sut.SaveLaborTaskData(ws, task, taskMV.TaskElementData.MetricIds, null);
+            sut.SaveLaborTaskData(ws, task, taskMV.TaskElementData.MetricIds, null, new Collection<MoqTypeSelection>());
 
             _BoeTaskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { task }, ws), Times.Once());
             _VariableSelectBoeToSum.Verify(x => x.GetWorkspaceVarLabelTotal(It.IsAny<WorkspaceVariableDTO>(), It.IsAny<DataClassForSumOfBOEsCalculation>()), Times.Never());
             _WorkspaceVarLoader.Verify(x => x.SaveWorkspaceVariables(It.IsAny<Collection<WorkspaceVariableDTO>>()), Times.Never());
+            moqTypeDataLoader.Verify(x => x.Save(It.IsAny<ICollection<MoqTypeSelection>>()), Times.Never());
         }
 
+
+        /// <summary>
+        /// Test SaveLaborTaskData for a new task
+        /// </summary>
         [TestMethod]
         public void Test_SaveLaborTaskData_New()
         {
             BOELaborControllerLogic sut = CreateSystem();
 
-            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1 };
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
             FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
             FullWorkspace ws = new FullWorkspace(workspace);
 
@@ -1894,18 +1916,117 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             _BoeTaskElementMediator.Setup(x => x.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { task }, ws)).Returns(new Dictionary<int, int>() { { task.Id, 1 } });
             _BoeTaskElementRecalculation.Setup(x => x.RecalculateLaborWithBoe(It.IsAny<FullBoe>(), It.IsAny<VariableType>(), It.IsAny<FullWorkspace>(), It.IsAny<Collection<BoeTaskElementDTO>>(), It.IsAny<Collection<WorkspaceVariableDTO>>())).Returns(new Collection<BoeTaskElementDTO>());
 
-            sut.SaveLaborTaskData(ws, task, taskMV.TaskElementData.MetricIds, null);
+            sut.SaveLaborTaskData(ws, task, taskMV.TaskElementData.MetricIds, null, new Collection<MoqTypeSelection>());
 
             _BoeTaskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { task }, ws), Times.Once());
             _VariableSelectBoeToSum.Verify(x => x.GetWorkspaceVarLabelTotal(It.IsAny<WorkspaceVariableDTO>(), It.IsAny<DataClassForSumOfBOEsCalculation>()), Times.Never());
             _WorkspaceVarLoader.Verify(x => x.SaveWorkspaceVariables(It.IsAny<Collection<WorkspaceVariableDTO>>()), Times.Once());
+            moqTypeDataLoader.Verify(x => x.Save(It.IsAny<ICollection<MoqTypeSelection>>()), Times.Never());
         }
 
+
+        /// <summary>
+        /// Test SaveLaborTaskData throws an exception when ws is null
+        /// </summary>
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
         public void Test_SaveLaborTaskData_EX()
         {
             BOELaborControllerLogic sut = CreateSystem();
-            sut.SaveLaborTaskData(null, new BoeTaskElementDTO(), new Collection<int>(), null);
+            sut.SaveLaborTaskData(null, new BoeTaskElementDTO(), new Collection<int>(), null, new Collection<MoqTypeSelection>());
+        }
+
+        /// <summary>
+        /// Test SaveLaborTaskData throws an exception when moqTypes is null
+        /// </summary>
+        [TestMethod, ExpectedException(typeof(ArgumentNullException))]
+        public void Test_SaveLaborTaskData_EX2()
+        {
+            BOELaborControllerLogic sut = CreateSystem();
+            sut.SaveLaborTaskData(new FullWorkspace(), new BoeTaskElementDTO(), new Collection<int>(), null, null);
+        }
+
+
+        /// <summary>
+        /// Test SaveLaborTaskData whan saving moq types
+        /// </summary>
+        [TestMethod]
+        public void Test_SaveLaborTaskData_MOQTypes()
+        {
+            BOELaborControllerLogic sut = CreateSystem();
+
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = true };
+            FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
+            FullWorkspace ws = new FullWorkspace(workspace);
+
+            LaborTaskDataModelView taskMV = CreateModelView(boe, ws);
+            BoeTaskElementDTO task = CreateDto(boe, ws, sut);
+            _BoeTaskElementMediator.Setup(x => x.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { task }, ws)).Returns(new Dictionary<int, int>() { { task.Id, task.Id } });
+
+            MoqTypeSelection moqTypeSelectionToSave = new MoqTypeSelection()
+            {
+                Id = -1,
+                TaskId = task.Id,
+                SelectedMOQType = MOQType.Comparative,
+                CerName = "test name",
+                DescriptionHoursRequired = "test desc",
+                SmeReason = "test reason",
+                SmeHoursLogic = "test hours logic",
+                SmeDurationLogic = "test duration logic",
+                SmeTaskEstimates = "test task estimates",
+                Rationale = "test rationale",
+                SkillMixRationale = "test skill mix",
+                BoeId = boe.Id
+            };
+
+            MoqTableData moqTableData1 = new MoqTableData()
+            {
+                Id = -1,
+                TableName = "test table 1",
+                RepositoryName = "test repo 1",
+                QueryType = "query type 1",
+                DateOfReport = DateTime.Now,
+                HistoricalProgramName = "test name 1",
+                ContractNumber = "test contract 1",
+                WbsElement = "test wbs 1",
+                PoPStart = DateTime.Now.AddDays(-1),
+                PoPEnd = DateTime.Now.AddDays(1),
+                TotalWbsHours = 100,
+                AdditionalQueryFilters = "test filters 1",
+                TotalRelevantHours = 50
+            };
+
+            MoqTableData moqTableData2 = new MoqTableData()
+            {
+                Id = -1,
+                TableName = "test table 2",
+                RepositoryName = "test repo 2",
+                QueryType = "query type 2",
+                DateOfReport = DateTime.Now.AddDays(2),
+                HistoricalProgramName = "test name 2",
+                ContractNumber = "test contract 2",
+                WbsElement = "test wbs 2",
+                PoPStart = DateTime.Now.AddDays(-3),
+                PoPEnd = DateTime.Now.AddDays(3),
+                TotalWbsHours = 200,
+                AdditionalQueryFilters = "test filters 2",
+                TotalRelevantHours = 150
+            };
+
+            moqTypeSelectionToSave.TableData.Add(moqTableData1);
+            moqTypeSelectionToSave.TableData.Add(moqTableData2);
+            taskMV.MOQTypes.Add(moqTypeSelectionToSave);
+
+            // Get By BOE Id should return the existing MOQ Type plus one not included in the save to be deleted
+            moqTypeDataLoader.Setup(x => x.GetByBoeId(boe.Id)).Returns(new Collection<MoqTypeSelection>() { moqTypeSelectionToSave, new MoqTypeSelection() { Id = 2 } });
+            
+            // pass over code that does OtherBOERecalculationsNeeded
+            task.TotalHours = null;
+            sut.SaveLaborTaskData(ws, task, taskMV.TaskElementData.MetricIds, null, taskMV.MOQTypes);
+
+            _BoeTaskElementMediator.Verify(x => x.MediatedBulkSaveTaskElements(new Collection<BoeTaskElementDTO>() { task }, ws), Times.Once());
+            _VariableSelectBoeToSum.Verify(x => x.GetWorkspaceVarLabelTotal(It.IsAny<WorkspaceVariableDTO>(), It.IsAny<DataClassForSumOfBOEsCalculation>()), Times.Never());
+            _WorkspaceVarLoader.Verify(x => x.SaveWorkspaceVariables(It.IsAny<Collection<WorkspaceVariableDTO>>()), Times.Never());
+            moqTypeDataLoader.Verify(x => x.Save(It.IsAny<ICollection<MoqTypeSelection>>()), Times.Exactly(2)); // Twice - once for delete of existing, once for save of new
         }
 
         [TestMethod]
@@ -2622,6 +2743,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new List<CustomFieldValueDTO>());
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(this.Boe1.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new List<BoeTaskElementDTO> { testTask });
             retriever.Setup(x => x.GetFullWorkspaceById(It.IsAny<int>())).Returns(testWorkspace);
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(this.Boe1.Id)).Returns(new List<MoqTypeSelection>());
             LaborTaskDataModelView result = sut.GetLaborTaskData(testWorkspace, new FullBoe(this.Boe1), testTask.Id);
 
             // Assert task element data
@@ -2828,6 +2950,73 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             items = sut.FindAdjacentTasks(boeAObject, boeTaskElementD.Id);
             Assert.AreEqual(boeTaskElementC.Id, items.PreviousId);
             Assert.AreEqual(null, items.NextId);
+        }
+
+        /// <summary>
+        /// Test GetMoqTypeHelpUrls for SSC
+        /// </summary>
+        [TestMethod]
+        public void GetMoqTypeHelpUrls_Test_SSC()
+        {
+            BOELaborControllerLogic sut = CreateSystemSSC();
+
+            MoqTypeHelpUrls helpUrls = sut.GetMoqTypeHelpUrls();
+
+            Assert.IsNotNull(helpUrls);
+
+            // Assert base url matches web.config
+            Assert.AreEqual(ConfigurationUtilities.GetAppSetting("MOQHelpBaseUrl"), helpUrls.BaseUrl);
+
+            foreach (PropertyInfo property in helpUrls.GetType().GetProperties())
+            {
+                string value = property.GetValue(helpUrls).ToString();
+                Assert.IsNotNull(value);
+
+                if (property.Name == "ContractNumberSuffix" || property.Name == "TotalWBSHoursSuffix")
+                {
+                    // This field isn't used in SSC
+                    Assert.IsTrue(string.IsNullOrEmpty(value));
+                }
+                else
+                {
+                    // Make sure the rest have been populated
+                    Assert.IsFalse(string.IsNullOrEmpty(value));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Test GetMoqTypeHelpUrls for RMS
+        /// </summary>
+        [TestMethod]
+        public void GetMoqTypeHelpUrls_Test_RMS()
+        {
+            BOELaborControllerLogic sut = CreateSystemMST();
+
+            MoqTypeHelpUrls helpUrls = sut.GetMoqTypeHelpUrls();
+
+            Assert.IsNotNull(helpUrls);
+
+            // Assert base url matches web.config
+            Assert.AreEqual(ConfigurationUtilities.GetAppSetting("MOQHelpBaseUrl"), helpUrls.BaseUrl);
+
+            // Assert all fields set
+            foreach (PropertyInfo property in helpUrls.GetType().GetProperties())
+            {
+                string value = property.GetValue(helpUrls).ToString();
+                Assert.IsNotNull(value);
+
+                if (property.Name == "RepositoryNameHistoricalSuffix" || property.Name == "RepositoryNameComparativeSuffix" || property.Name == "QueryTypeHistoricalSuffix" || property.Name == "QueryTypeComparativeSuffix")
+                {
+                    // These fields aren't used in RMS
+                    Assert.IsTrue(string.IsNullOrEmpty(value));
+                }
+                else
+                {
+                    // Make sure the rest have been populated
+                    Assert.IsFalse(string.IsNullOrEmpty(value));
+                }
+            }
         }
     }
 }

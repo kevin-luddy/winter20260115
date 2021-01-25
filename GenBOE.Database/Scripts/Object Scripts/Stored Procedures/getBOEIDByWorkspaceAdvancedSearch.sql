@@ -10,168 +10,56 @@ GO
 
 CREATE PROCEDURE [dbo].[getBOEIDByWorkspaceAdvancedSearch]
 (
-@WorkspaceName nvarchar(215),
-@WorkspaceDescription nvarchar(200), 
-@ProposalSubmitStartDate DATETIME2,
-@ProposalSubmitEndDate DATETIME2,
-@RFPNumber nvarchar(200),
-@BOEDescription nvarchar(200),
-@TaskTitle nvarchar(200),
-@TaskDescription nvarchar(200),
-@DataSource nvarchar(200),
-@PerformingOrganization nvarchar(200),
-@CostVolume varchar(200),
-@Author varchar(200),
-@Approver varchar(200),
-@DisplayedCLINNumber varchar(200),
-@CLINTitle varchar(200),
-@DisplayedWBSNumber varchar(200),
-@WBSTitle varchar(200),
-@BOETitle varchar(200),
-@SearchCategory int,
-@WorkspaceID int,
-@BOEID int,
-@SearchResultsThreshold int
+	@WorkspaceName nvarchar(215),
+	@WorkspaceDescription nvarchar(200), 
+	@ProposalSubmitStartDate DATETIME2,
+	@ProposalSubmitEndDate DATETIME2,
+	@RFPNumber nvarchar(200),
+	@BOEDescription nvarchar(200),
+	@TaskTitle nvarchar(200),
+	@TaskDescription nvarchar(200),
+	@DataSource nvarchar(200),
+	@PerformingOrganization nvarchar(200),
+	@CostVolume varchar(200),
+	@Author varchar(200),
+	@Approver varchar(200),
+	@DisplayedCLINNumber varchar(200),
+	@CLINTitle varchar(200),
+	@DisplayedWBSNumber varchar(200),
+	@WBSTitle varchar(200),
+	@BOETitle varchar(200),
+	@SearchCategory int,
+	@WorkspaceID int,
+	@BOEID int,
+	@SearchResultsThreshold int
 )
 AS
 /******************************************************************************
-**		 
 **		Name: [getBOEIDByWorkspaceAdvancedSearch]
 **		Desc: Returns BOEID using Advanced Search criteria
-**			
-**		
-**
-**		Auth: Don Canuso
-**		Date: 1/19/2011
 *******************************************************************************
 **		Change History
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			-------------------------------------------
-**		2/1/11		dcanuso				Based on discussions with the SEs, the way
-**										that this stored procedure should work is,
-**										all words that are sent in need
-**										to be found in the same field with an AND
-**										So, AND between words that are sent in
-**										Application will add " and  AND between
-**										the word, so if @Paramter = 'Yellow Blue',
-**										the application will pass in
-**										'"Yellow" AND "Blue"'  (Terms in ' " " ')
-**										Wildcards (' " Term * " ')				
-**		2/15/11		dcanuso				Searching for people changed from ID to DisplayName
-**		2/17/11		dcanuso				Added Search Category:
-**										1: BOE
-**										2: BOE Content Template
-**										3: All
-**		2/23/11		dcanuso				Developer advised that ID 
-**										can not be NULL - So, they will be ''
-**										coming from the code
-**		3/3/11		dcanuso				WBS Number is being padded for ordering
-**		3/8/11		dcanuso				WBS_CLIN_BOE_XREF is back so needs to be added to SP
-**		3/21/11		dcanuso				Ability to search within your own Workspace
-**										So, re-organization of Search Category Table
-**										(1, N'BOEs in other Workspaces')
-**										(2, N'BOE Content Template')
-**										(3, N'BOEs in this Workspaces')
-**										(4, N'All')
-**										Thus, need to redo SP.
-**										Since searching within a Workspace, 
-**										Added WorkspaceID
-**										For searching, since we are working on
-**										incomplete workspaces when searching for
-**										BOEs with your Workspace, updates from 
-**										INNER to LEFT OUTER
-**		5/9/11		dcanuso				Because, in theory, a user can enter 
-**										100 characters and because
-**										the SQL code needs to have spaces, 
-**										commas, and double quotes, I 
-**										discussed with Developer and will
-**										be updating parameters to allow 
-**										more charcters - easiest to just double
-**										Front end code will limit the input that
-**										user will be able to enter
-**										Good example is, the following 3-10 character
-**										strings turns into 41 characters when you 
-**										add commas, spaces, and double quotes
-**										('"A123456789", "B123456789", "C123456789",')
-**										@WorkspaceName nvarchar(100) to 200
-**										@WorkspaceDescription nvarchar(100) to 200
-**										@RFPNumber nvarchar(100) to 200
-**										@BOEDescription nvarchar(100) to 200
-**										@TaskTitle nvarchar(100) to 200
-**										@TaskDescription nvarchar(100) to 200
-**										@DataSource nvarchar(100) to 200
-**										@PerformingOrganization nvarchar(100) to 200
-**										@CostVolume varchar(40) to 80
-**										@Author varchar(40) to 80
-**										@Approver varchar(40) to 80
-**		5/15/11		dcanuso				Developer requested user parameters changed to 200
-**		5/15/11		dcanuso				WI 3459 Advanced search is returning duplicate BOEs.
-**										It appears to be returning as many dups as there are task for that BOE
-**										Added Temp table to process results differently
-**		8/29/11		dcanuso				WI4788 - DB - update BOE quick and advanced search SPs - These 
-**										should never return any BOEs that are of type DTS.
-**		10/31/11	dcanuso				WI 5773: BOE DTS check should be 0 not 1 - Updated
-**										BOEs in this Workspace – this is a new option available 
-**										to all users who has access to the Workspace 
-**										(this is the only search option available to foreign users). 
-**										If this option is selected, then the current Workspace 
-**										in which the Author is working is searched. 
-**										In this case, the Workspace does not have to be 
-**										marked Searchable, can contain OCI data and can be in any state.
-**										BOEs in Unassigned state should not be searched since
-**										they will have no data in them.
-**										b. BOEs in Draft, Awaiting Approval and 
-**										Approved states must be searchable.
-**		12/19/11	dcanuso				WI 6504: Only need to ignore DTS BOEs if the 
-**										workspace dts autocalculate is set to InSummaryBOEs.
-**										Any BOEs from workspaces marked as "In Each BOE" 
-**										and marked as DTS will need to be searched
-**										Additional Clarification:
-**										Interested in all cases where BOE.AutoCalculateDTS is "false" and 
-**										all cases where Workspace.DTSAutoCalculateID is "In Each BOE". 
-**										The only case you want to skip is the case 
-**										where BOE.AutoCalculateDTS is true AND 
-**										Workspace.DTSAutoCalculateID is "In Summary BOEs
-**										If the DTSAutoCalculateID is "No" 
-**										then it would look to the BOE.AutoCalculateDTS setting
-**		3/9/12		dcanuso				WI 7912 Workspace should be searchable in any state
-**		3/12/12		dcanuso				Backing out WI 7912 - Wrong SP Change
-**		8/9/12		dcanuso				Bug #10631: [Manage BOE > Import] Importing updates to existing
-**										BOE from Non-Material to Material should have a Material task 
-**										automatically created.
-**		11/12/12	dcanuso				Example:
-**										DECLARE @WorkspaceName nvarchar(200) ='"Word~Word~Word~Word"'
-**										Empty parameters should be passed in as NULL
-**		11/27/12	dcanuso				WI 13214 Added:
-**										@DisplayedCLINNumber varchar(200)
-**										@CLINTitle varchar(200)
-**										@DisplayedWBSNumber varchar(200)
-**										@WBSTitle varchar(200)
-**		4/5/13		dcanuso				WI 17282 BOE Title Added by Space
-**		9/27/13		dcanuso				Task 22684:Increase Workspace Name to 115
-**										So increasing this SP by 15 as well
-**		11/11/13	dcanuso				WI 24174 Subcontractor Author
-**		1/9/14		dcanuso				Received an email request from developer/SE
-**										that Frank wants WS.WorkspaceStateID = 4 
-**										removed from the criteria and this should be
-**										dine directly on production
-**      6/9/2015    dpalider            [BOEJ-124] Fixed how DTS was being filtered out. It was checking 2 values against WS setting instead of
-**									    checking 1 against WS and the other one against BOE. I also added () into combo of OR/ADD and 
-**										lined things up to make it easier to follow
-**      9/16/2016   twilson3			BOEJ-1244 Added filtering of IsUsingEquivalentPerson, all BOE workspaces must match this on the workspace passed in
-**		1/19/2017	brunworg			BOEJ-1369 - Filter results by !isSummaryBOE, matching isMaterial, and exclude specified BOEID. 
-**										Also limit results returned to TOP @SearchResultsThreshold.
-**		3/3/2017	twilson3			BOEJ-1861 Remove DTS
-**		4/28/2017	brunworg			BOEJ-2129 - Add IsUsingTM Column to Workspace
-**		5/23/2017	ranzalon			BOEJ-2143 - Exclude Project Map from search
-**		6/1/2017    ranzalon			BOEJ-2143 - Fix for new Project Map LU values
-**		7/19/2017	Dusan				BOEJ-2410 - Allow copying between TM and non-TM workspaces
-**		12/7/17		twilson3			BOEJ-1994 - Remove Summary BOE
 **		5/25/2018	ranzalon			BOEJ-3503 - Exclude Deleted Workspaces
 **		7/12/2018	twilson3			BOEJ-3685 - Fix exclusion of Deleted Workspaces
+**		9/9/2020	ranzalon			BOEJ-4770 - Only search WSs with same Template BOE value
+**		11/4/2020	Dusan				BOEJ-4889 - Removing restriction to only search by the same Template BOE value
+**		11/24/2020	Dusan				BOEJ-4949 - Add restrictions based on Template BOE value; did some code cleanup as well
+**		12/15/2020	Dusan				BOEJ-4953 - Fixing logic w/ MOQ Type restrictions
 *******************************************************************************/
 SET NOCOUNT ON 
+
+DECLARE @Results TABLE ( OrderID int Identity(1,1) NOT NULL, BOEID int NOT NULL, WorkspaceId int NOT NULL )		
+
+DECLARE @IsEP bit = (SELECT IsUsingEquivalentPerson from dbo.Workspace where WorkspaceID = @WorkspaceID)
+DECLARE @IsMaterial bit = (SELECT IsMaterial from dbo.BOE where BOEID = @BOEID)
+/* if you are starting from an Old workspace (PreNewMoq) ==> you can only copy BOEs from another Old workspace */
+DECLARE @restrictToPreNewMoq BIT = CASE WHEN dbo.WasWorkspaceCreatedAfterNewMoqTypes((SELECT WorkspaceCreationDate FROM Workspace WHERE WorkspaceId = @WorkspaceID)) = 0 THEN 1 ELSE 0 END 
+/* if you are starting from a * / No (Not using Boe Template) ==> you can only copy from * / No */
+DECLARE @restrictToNotUsingBoeTemplate BIT = CASE WHEN (SELECT TemplateBoe FROM Workspace WHERE WorkspaceId = @WorkspaceID) = 0 THEN 1 ELSE 0 END 
+
 
 SELECT
 	@WorkspaceName = IsNULL(@WorkspaceName, '""'),
@@ -190,18 +78,6 @@ SELECT
 	@DisplayedWBSNumber = IsNULL(@DisplayedWBSNumber, '""'),
 	@WBSTitle = IsNULL(@WBSTitle, '""'),
 	@BOETitle = IsNULL (@BOETitle, '""')
-
-DECLARE @IsEP bit
-SET @IsEP = (SELECT IsUsingEquivalentPerson from dbo.Workspace where WorkspaceID = @WorkspaceID)
-DECLARE @IsMaterial bit
-SET @IsMaterial = (SELECT IsMaterial from dbo.BOE where BOEID = @BOEID)
-
-DECLARE @Results TABLE
-	(
-		OrderID int Identity(1,1) NOT NULL,
-		BOEID int NOT NULL,
-		WorkspaceId int NOT NULL
-	)		
 
 INSERT INTO @Results (BOEID, WorkspaceID)	
 	SELECT	B.BOEID, WS.WorkspaceID
@@ -276,7 +152,13 @@ INSERT INTO @Results (BOEID, WorkspaceID)
 			AND (@DisplayedCLINNumber = '""' OR CONTAINS(C.DisplayedCLINNumber, @DisplayedCLINNumber))
 			AND (@CLINTitle = '""' OR CONTAINS(C.CLINTitle, @CLINTitle))
 			AND (@DisplayedWBSNumber = '""' OR CONTAINS(WBS.DisplayedWBSNumber, @DisplayedWBSNumber))
-			AND (@WBSTitle = '""' OR CONTAINS(WBS.WBSTitle, @WBSTitle))  
+			AND (@WBSTitle = '""' OR CONTAINS(WBS.WBSTitle, @WBSTitle))
+			/* START new MOQ Types filtering */
+			AND /* not restricted or (restricted and not new) => !a || (a && !b) = !a || !b */
+				(@restrictToPreNewMoq = 0 OR dbo.WasWorkspaceCreatedAfterNewMoqTypes(WS.WorkspaceCreationDate) = 0) 
+			AND /* not restricted or (restricted and not using template) => !a || (a && !b) = !a || !b */
+				(@restrictToNotUsingBoeTemplate = 0 OR WS.TemplateBoe = 0)
+			/* END new MOQ Types filtering */
 		ORDER BY 
 			WS.WorkspaceName, WS.ProposalSubmitDate, WBS.WBSNumber
 

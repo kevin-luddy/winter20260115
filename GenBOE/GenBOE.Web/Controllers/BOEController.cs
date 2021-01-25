@@ -976,20 +976,12 @@ namespace GenBOE.Web.Controllers
         [HttpPost]
         public virtual ActionResult SaveEditBOEHeader(string workspace, int boeID, [TitleBinder] IBOEHeaderModelView inBOEHeader, BOEHeaderDescriptionModelView inBOEHeaderDescription)
         {
+            _ = inBOEHeader ?? throw new ArgumentNullException(nameof(inBOEHeader));
+            _ = inBOEHeaderDescription ?? throw new ArgumentNullException(nameof(inBOEHeaderDescription));
+
             FullBoe boe = this.Factory.CreateFullBoe(boeID);
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-            // Perform Action
-            if (inBOEHeader == null)
-            {
-                throw new ArgumentNullException(nameof(inBOEHeader));
-            }
-            if (inBOEHeaderDescription == null)
-            {
-                throw new ArgumentNullException(nameof(inBOEHeaderDescription));
-            }
-
-            Stopwatch sw = new Stopwatch();
+            Stopwatch sw;
 
             // Initialize Action
             bool descriptionOnly = false;
@@ -1005,7 +997,6 @@ namespace GenBOE.Web.Controllers
                 descriptionOnly = true;
             }
 
-            JsonResult toReturn = null;
 
             // validate RTE field length
             if (ws.RteSizeLimit.HasValue)
@@ -1023,10 +1014,10 @@ namespace GenBOE.Web.Controllers
 
             if (inBOEHeaderDescription.RteTemplateAnswers != null && inBOEHeaderDescription.RteTemplateAnswers.Any())
             {
-                ICollection<RteCustomTemplateSourceModelView> sources = this.rteTemplateDataLoader.GetSources();
+                ICollection<RteCustomTemplateSourceModelView> sources = this.rteTemplateDataLoader.GetSources(ws.UsingTemplateBOE);
                 ICollection<ValidationMessage> rteValidationErrors = this.ValidateRteAnswers(inBOEHeaderDescription.RteTemplateAnswers, sources, ws.RteSizeLimit);
 
-                //convert from validationmessage to modelerror
+                // convert from validationmessage to modelerror
                 if (rteValidationErrors.Any())
                 {
                     foreach (ValidationMessage message in rteValidationErrors)
@@ -1036,19 +1027,15 @@ namespace GenBOE.Web.Controllers
                 }
             }
 
-            /** Valid Model Check */
+            JsonResult toReturn;
             if (ModelState.IsValid)
             {
                 _ControllerLogic.SaveEditBoeHeader(ws, boe, inBOEHeader, inBOEHeaderDescription, descriptionOnly);
-
-                boe = this.Factory.CreateFullBoe(boeID);  // Defect #34726: Re-create the BOE so all DB update-dates are refreshed
-
+                boe = this.Factory.CreateFullBoe(boeID);
                 toReturn = Json(_ControllerLogic.CreateBOEHeaderMV(boe, ws));
             }
             else
             {
-                toReturn = Json(new { Status = false });
-
                 throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
             }
 
@@ -1154,9 +1141,7 @@ namespace GenBOE.Web.Controllers
         /// </returns>
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
-        public ActionResult SaveManageBOE(
-            string workspace,
-            Collection<ManageBOEModelView> boes)
+        public ActionResult SaveManageBOE(string workspace, Collection<ManageBOEModelView> boes)
         {
             if (boes == null)
             {
@@ -1692,6 +1677,7 @@ namespace GenBOE.Web.Controllers
                 List<WorkspaceVariableDTO> workspaceVariablesEffectedByMulti = new List<WorkspaceVariableDTO>();
 
                 IDictionary<int, int> boeSaveIDDict;
+                _ = ws.MoqTypeSelections; // preload the data prior to transaction
 
                 using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
                 {
@@ -1755,6 +1741,7 @@ namespace GenBOE.Web.Controllers
                     //need to update the labor resources 
                     this._TravelDTOLoader.SaveTravels(travelElementsUpdated);
                     this._BoeTaskElementMediator.MediatedSaveTaskElements(laborElementsUpdated, ws);
+                    this._ControllerLogic.DeleteMoqTypesForBoe(ws, BoesToBeDeleted.Select(x => x.Id).ToList());
                     boeSaveIDDict = this._BoeMediator.MediatedSaveBOEs(ws, boesToSave);
 
                     if (!requestIsADelete)
@@ -2809,6 +2796,8 @@ namespace GenBOE.Web.Controllers
 
                 Collection<int> BoeIDs = new Collection<int>();
                 IDictionary<int, int> boeSaveIDDict;
+                _ = ws.MoqTypeSelections; // preload the data prior to transaction
+
                 using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
                 {
                     if (travelElementsUpdated.Any())
@@ -2887,7 +2876,9 @@ namespace GenBOE.Web.Controllers
                             this.PermissionsLoader.SavePermission(permission);
                         }
                     }
-                    
+
+                    this._ControllerLogic.DeleteMoqTypesForBoe(ws, BoesToBeDeleted.Select(x => x.Id).ToList());
+
                     boeSaveIDDict = this._BoeMediator.MediatedSaveBOEs(ws, boesToSave);
 
                     // Create material task elements for new material boes
