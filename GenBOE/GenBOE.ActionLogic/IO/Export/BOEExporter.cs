@@ -4851,7 +4851,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     {
                         if (exportInputs.Workspace.UsingTemplateBOE)
                         {
-                            this.PopulateMOQTypeData(taskElement, new Collection<BoeCustomReportComponent>(), mainPart, element, false, ref counters);
+                            this.PopulateMOQTypeData(taskElement, new Collection<BoeCustomReportComponent>(), mainPart, element, false, exportInputs, ref counters);
                         }
                         else
                         {
