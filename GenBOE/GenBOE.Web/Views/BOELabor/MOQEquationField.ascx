@@ -94,7 +94,9 @@
             InitializeRteTemplate(TaskElementDetailsWidget.MOQText, 'MOQText', rteFieldSize);
         }
         else {
-            HandleRTETemplateDataForReadOnly(TaskElementDetailsWidget.MOQText, 'MOQText');
+            setTimeout(function () { 
+                HandleRTETemplateDataForReadOnly(TaskElementDetailsWidget.MOQText, 'MOQText');
+            }, 1);
         }
 
         $(document).trigger('MOQWidgetLoaded', "MOQEquationField");
