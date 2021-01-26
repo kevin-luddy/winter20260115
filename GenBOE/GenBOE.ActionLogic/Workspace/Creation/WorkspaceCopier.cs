@@ -399,6 +399,19 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
                     break;
                 }
+                case CustomFieldType.MoqTypeTableDataDisplay:
+                {
+                    if (copyTasks)
+                    {
+                        ICollection<MoqTableData> tables = boesToCopy.SelectMany(x => x.MoqTypeSelections).SelectMany(x => x.TableData).ToCollection();
+
+                        foreach (MoqTableData table in tables)
+                        {
+                            toReturn.AddRange(allCustomFieldValues.Where(x => table.CustomFieldValueContainers.Where(c => c.CustomFieldID == customField.Id).Select(y => y.CustomFieldValueID).Contains(x.CustomFieldValueID)));
+                        }
+                    }
+                    break;
+                }
             }
 
             return toReturn;
@@ -1320,7 +1333,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                 
                 originalTaskIdMapping.ForEach(x => { postSaveMapping.Add(x.Key, postSaveTaskElementMapping[x.Value]); } );
 
-                this.CopyMoqTypes(moqTypesToCopy, postSaveMapping);
+                this.CopyMoqTypes(moqTypesToCopy, postSaveMapping, customFieldIDMapping, customFieldValueIDMapping);
             }
 
             // Copy any Task-level RTE Custom Template Answers
@@ -1363,7 +1376,9 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         /// <param name="moqTypesToCopy">MOQ Types to copy</param>
         /// <param name="newTaskId">New Task Id</param>
         /// <param name="newBoeId">New Boe Id</param>
-        private void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, IDictionary<int, int> taskIdMapping)
+        /// <param name="customFieldIDMapping">Workspace custom field id mappings</param>
+        /// <param name="customFieldValueIDMapping">Custom Field Value Id Mapping</param>
+        private void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, IDictionary<int, int> taskIdMapping, IDictionary<int, int> customFieldIDMapping, IDictionary<int, int> customFieldValueIDMapping)
         {
             _ = moqTypesToCopy ?? throw new ArgumentNullException(nameof(moqTypesToCopy));
             _ = taskIdMapping ?? throw new ArgumentNullException(nameof(taskIdMapping));
@@ -1382,9 +1397,21 @@ namespace GenBOE.ActionLogic.Workspace.Creation
 
                 existingMoqType.TableData.ForEach(existingTable =>
                 {
+                    if (existingTable.CustomFieldValueContainers.Any())
+                    {
+                        foreach (CustomFieldValueContainer cfvc in existingTable.CustomFieldValueContainers)
+                        {
+                            cfvc.Id = --i;
+                            cfvc.ContainerID = cfvc.Id;
+                            cfvc.Updateable = UpdateType.Upsert;
+                            cfvc.CustomFieldValueID = customFieldValueIDMapping[cfvc.CustomFieldValueID];
+                            cfvc.CustomFieldID = customFieldIDMapping[cfvc.CustomFieldID];
+                        }
+                    }
+
                     MoqTableData newTable = existingTable.DeepClone();
                     newTable.Id = --i;
-
+                    
                     newMoqType.TableData.Add(newTable);
                 });
 
