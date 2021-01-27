@@ -128,6 +128,10 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='MOQHelpBaseUrl']/@value">
     </parameterentry>
   </parameter>
+  <parameter name="MoqTemplateStartDate" description="doesn't matter" defaultvalue="__MoqTemplateStartDate__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='MoqTemplateStartDate']/@value">
+    </parameterentry>
+  </parameter>
 
   <!--system.web-->
   <parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
