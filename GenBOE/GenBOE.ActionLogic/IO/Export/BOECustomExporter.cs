@@ -2415,7 +2415,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQType))
                 {
                     SdtElement templateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Container_MOQSelection);
-                    this.PopulateMOQTypeData(laborTaskElement, selectedComponents, document.MainDocumentPart, templateElement, true, ref counters);
+                    this.PopulateMOQTypeData(laborTaskElement, selectedComponents, document.MainDocumentPart, templateElement, true, exportInputs, ref counters);
 
                     // if using RTE Template for MOQ Types, populate the fields
                     if (wsHasMoqRteTemplate)
