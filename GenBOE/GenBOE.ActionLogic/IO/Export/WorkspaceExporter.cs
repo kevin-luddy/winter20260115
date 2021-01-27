@@ -1270,8 +1270,8 @@ namespace GenBOE.ActionLogic.IO.Export
                 table.DateOfReport.ToShortDateString(),
                 table.HistoricalProgramName,
                 table.WbsElement,
-                table.PoPStart.ToShortDateString(),
-                table.PoPEnd.ToShortDateString(),
+                table.PoPStartString,
+                table.PoPEndString,
                 table.AdditionalQueryFilters,
                 table.TotalRelevantHours.ToString()
             };

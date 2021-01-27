@@ -17,6 +17,7 @@ namespace IES.Common
     using classes;
     using PickList;
     using System.Collections.Generic;
+    using System.Globalization;
 
     /// <summary>
     /// Utility/helper methods that need a class to sit in

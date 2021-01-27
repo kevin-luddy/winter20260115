@@ -179,6 +179,15 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         var url = $scope.model.MoqTypeHelpUrls.BaseUrl + suffix;
         $window.open(url, '_blank');
     };
+
+    $scope.clearPoPDates = function (tableData) {
+        tableData.PoPStart = undefined;
+        tableData.PoPStartWeek = undefined;
+        tableData.PoPStartYear = undefined;
+        tableData.PoPEnd = undefined;
+        tableData.PoPEndWeek = undefined;
+        tableData.PoPEndYear = undefined;
+    }
 }]);
 
 // initialize MOQ Equation Widget.. moved here so that way this much script is not in the ascx page
