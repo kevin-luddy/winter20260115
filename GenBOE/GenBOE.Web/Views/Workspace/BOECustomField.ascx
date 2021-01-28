@@ -696,7 +696,7 @@
                 <!-- This comment is needed for the jquery animation to work in IE8... -->
                 <div id="OpenEnded-HelpDialog" class="help-dialog" style="width: 200px;">
                     <div class="help-dialog-close"></div>
-                    <div class="help-dialog-text">Specify if the field is open ended and contains no set values. Cannot be changed if the field is in use.</div>
+                    <div class="help-dialog-text">Specify if the field is open ended and contains no set values. Cannot be changed<%: Model.UsingTemplateBoe ? " for MOQ Table Custom Fields or" : "" %> if the field is in use.</div>
                 </div>
             </div>
             <div class="form-element">
