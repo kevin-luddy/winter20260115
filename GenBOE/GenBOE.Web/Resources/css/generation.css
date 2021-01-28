@@ -8505,3 +8505,11 @@ div.moqTypeHeader {
 .tableData .help-icon {
     margin-top: 1px;
 }
+
+.tableDataParent input[type="month"] {
+    width: 135px;
+}
+
+.tableData td input.weekYear {
+    width: 60px;
+}
