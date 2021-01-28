@@ -199,10 +199,10 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.QueryTypeHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.QueryTypeComparativeSuffix);"></div>
                             <td>
-                                <select required data-ng-model="tableData.QueryType">
+                                <select required data-ng-model="tableData.QueryType" data-ng-change="clearPoPDates(tableData)">
                                     <option value=""></option>
-                                    <option value="Monthly">Monthly</option>
-                                    <option value="Weekly">Weekly</option>
+                                    <option value="<%: MoqTableData.MONTHLY%>"><%: MoqTableData.MONTHLY%></option>
+                                    <option value="<%: MoqTableData.WEEKLY%>"><%: MoqTableData.WEEKLY%></option>
                                 </select>
                             </td>
                         </tr>
@@ -236,14 +236,26 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartComparativeSuffix);"></div>
                             </td>
-                            <td><input type="date" required data-ng-model="tableData.PoPStart" onchange="MOQEquationFieldWidget.setDirty()" /></td>
+                            <td>
+                                <input type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPStart" onchange="MOQEquationFieldWidget.setDirty()" />
+                                <input type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPStart" onchange="MOQEquationFieldWidget.setDirty()" />
+
+                                <input type="number" min="1" max="53" step="1" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" required data-ng-model="tableData.PoPStartWeek" onchange="MOQEquationFieldWidget.setDirty()" />
+                                <input type="number" min="1980" max="2050" step="1" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" required data-ng-model="tableData.PoPStartYear" onchange="MOQEquationFieldWidget.setDirty()" />
+                            </td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.PoPEnd}} *                                
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPEndHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPEndComparativeSuffix);"></div>
                             </td>
-                            <td><input type="date" required data-ng-model="tableData.PoPEnd" onchange="MOQEquationFieldWidget.setDirty()" /></td>
+                            <td>
+                                <input type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPEnd" onchange="MOQEquationFieldWidget.setDirty()" />
+                                <input type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPEnd" onchange="MOQEquationFieldWidget.setDirty()" />
+                                
+                                <input type="number" min="1" max="53" step="1" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" required data-ng-model="tableData.PoPEndWeek" onchange="MOQEquationFieldWidget.setDirty()" />
+                                <input type="number" min="1980" max="2050" step="1" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" required data-ng-model="tableData.PoPEndYear" onchange="MOQEquationFieldWidget.setDirty()" />
+                            </td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.TotalWbsHours}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalWBSHoursSuffix);"></div></td>
