@@ -81,6 +81,6 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// <summary>
         /// Should we disable the Certification Required checkbox
         /// </summary>
-        public bool DisableCertificationRequiredChange { get; set; }
+        public bool DisableCompleteButton { get; set; }
     }
 }
