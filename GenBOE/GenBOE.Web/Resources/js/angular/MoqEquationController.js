@@ -84,72 +84,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         });
     }
 
-    // Returns an Ordered Selected Moq Types array
-    $scope.OrderedSelectedMoqTypes = function () {
-        return $scope.model.SelectedMoqTypes.sort((a, b) => (a.Order < b.Order) ? -1 : 1);
-    }
-
-    // Move MOQ Type up
-    $scope.MoveUpMoqType = function () {
-        var newOrderArray = [];
-        var pos = 0;
-        $scope.OrderedSelectedMoqTypes().forEach(function (item) {
-            if (item.SelectedMOQType === $scope.model.SortingMoqTypes.SelectedMOQType) {
-                var previous = newOrderArray.pop();
-                item.Order = pos - 1;
-                newOrderArray.push(item);
-
-                if (previous) {
-                    previous.Order = pos++;
-                    newOrderArray.push(previous);
-                }
-            }
-            else {
-                item.Order = pos++;
-                newOrderArray.push(item);
-            }
-        });
-
-        $scope.UpdateOrderingMoqTypes(newOrderArray);
-    }
-
-    // Move MOQ Type down
-    $scope.MoveDownMoqType = function () {
-        var newOrderArray = [];
-        var pos = 0;
-        var nextOffset = 0;
-        $scope.OrderedSelectedMoqTypes().forEach(function (item) {
-            if (item.SelectedMOQType === $scope.model.SortingMoqTypes.SelectedMOQType) {
-                item.Order = 1 + pos++;
-
-                nextOffset = -1;
-            }
-            else {
-                item.Order = nextOffset + pos++;
-
-                nextOffset = 0;
-            }
-
-            newOrderArray.push(item);
-        });
-
-        $scope.UpdateOrderingMoqTypes(newOrderArray);
-    }
-
-    // Applies the new order of MOQ Types to the underlying model.
-    $scope.UpdateOrderingMoqTypes = function (newOrderArray) {
-        $timeout(function () {
-            $scope.$apply(function () {
-                $scope.model.SelectedMoqTypes.forEach(function (item) {
-                    var matchingItem = newOrderArray.find(({ SelectedMOQType }) => SelectedMOQType === item.SelectedMOQType);
-                    item.Order = matchingItem.Order;
-
-                    $scope.InitializeRteFields(item.SelectedMOQType, true);
-                });
-            });
-        }, 0);
-    }
-
     // Initializes RTE fields for the selected MOQ Type option
     $scope.InitializeRteFields = function (id, skipInitialClean) {
         // setTimeout is needed to allow for the objects to be added into the DOM, before we can transform them into RTE
@@ -170,6 +104,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     $scope.CreateNewTable = function (tableDataArray) {
         var newTable = {};
         newTable.Id = $scope.newTableId--;
+        newTable.Order = 2000;
+
         tableDataArray.push(newTable);
         MOQEquationFieldWidget.setDirty();
     }
@@ -251,6 +187,165 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         var url = $scope.model.MoqTypeHelpUrls.BaseUrl + suffix;
         $window.open(url, '_blank');
     };
+
+    //#region MOQ Type Ordering
+
+    // Returns an Ordered Selected Moq Types array
+    $scope.OrderedSelectedMoqTypes = function () {
+        return $scope.model.SelectedMoqTypes.sort((a, b) => (a.Order < b.Order) ? -1 : 1);
+    }
+
+    // Move MOQ Type up
+    $scope.MoveUpMoqType = function () {
+        var newOrderArray = [];
+        var pos = 0;
+        $scope.OrderedSelectedMoqTypes().forEach(function (item) {
+            if (item.SelectedMOQType === $scope.model.SortingMoqType.SelectedMOQType) {
+                var previous = newOrderArray.pop();
+                item.Order = pos - 1;
+                newOrderArray.push(item);
+
+                if (previous) {
+                    previous.Order = pos++;
+                    newOrderArray.push(previous);
+                }
+            }
+            else {
+                item.Order = pos++;
+                newOrderArray.push(item);
+            }
+        });
+
+        $scope.UpdateOrderingMoqTypes(newOrderArray);
+    }
+
+    // Move MOQ Type down
+    $scope.MoveDownMoqType = function () {
+        var newOrderArray = [];
+        var pos = 0;
+        var nextOffset = 0;
+        $scope.OrderedSelectedMoqTypes().forEach(function (item) {
+            if (item.SelectedMOQType === $scope.model.SortingMoqType.SelectedMOQType) {
+                item.Order = 1 + pos++;
+
+                nextOffset = -1;
+            }
+            else {
+                item.Order = nextOffset + pos++;
+
+                nextOffset = 0;
+            }
+
+            newOrderArray.push(item);
+        });
+
+        $scope.UpdateOrderingMoqTypes(newOrderArray);
+    }
+
+    // Applies the new order of MOQ Types to the underlying model.
+    $scope.UpdateOrderingMoqTypes = function (newOrderArray) {
+        $timeout(function () {
+            $scope.$apply(function () {
+                $scope.model.SelectedMoqTypes.forEach(function (item) {
+                    var matchingItem = newOrderArray.find(({ SelectedMOQType }) => SelectedMOQType === item.SelectedMOQType);
+                    item.Order = matchingItem.Order;
+
+                    $scope.InitializeRteFields(item.SelectedMOQType, true);
+                });
+            });
+        }, 0);
+    }
+
+    // Returns an Ordered Selected Moq Types array
+    $scope.OrderedSelectedMoqTables = function () {
+        return $scope.model.SortingMoqTablesMoqTypeParent.TableData.sort((a, b) => (a.Order < b.Order) ? -1 : 1);
+    }
+
+    // Move MOQ Table up
+    $scope.MoveUpMoqTable = function () {
+        var newOrderArray = [];
+        var pos = 0;
+        $scope.OrderedSelectedMoqTables().forEach(function (item) {
+            if (item.TableName === $scope.model.SortingMoqTable.TableName) {
+                var previous = newOrderArray.pop();
+                item.Order = pos - 1;
+                newOrderArray.push(item);
+
+                if (previous) {
+                    previous.Order = pos++;
+                    newOrderArray.push(previous);
+                }
+            }
+            else {
+                item.Order = pos++;
+                newOrderArray.push(item);
+            }
+        });
+
+        $scope.UpdateOrderingMoqTables(newOrderArray);
+    }
+
+    // Move MOQ Table down
+    $scope.MoveDownMoqTable = function () {
+        var newOrderArray = [];
+        var pos = 0;
+        var nextOffset = 0;
+        $scope.OrderedSelectedMoqTables().forEach(function (item) {
+            if (item.TableName === $scope.model.SortingMoqTable.TableName) {
+                item.Order = 1 + pos++;
+                nextOffset = -1;
+            }
+            else {
+                item.Order = nextOffset + pos++;
+                nextOffset = 0;
+            }
+
+            newOrderArray.push(item);
+        });
+
+        $scope.UpdateOrderingMoqTables(newOrderArray);
+    }
+
+    // Applies the new order of MOQ Tables to the underlying model.
+    $scope.UpdateOrderingMoqTables = function (newOrderArray) {
+        $timeout(function () {
+            $scope.$apply(function () {
+                $scope.model.SortingMoqTablesMoqTypeParent.TableData.forEach(function (item) {
+                    var matchingItem = newOrderArray.find(({ TableName }) => TableName === item.TableName);
+                    item.Order = matchingItem.Order;
+                });
+            });
+        }, 0);
+    }
+
+    // Display Reorder MOQ Types Dialog
+    $scope.displayReOrderMoqTypesDialog = function () {
+        $scope.model.SortingMoqType = $scope.model.SelectedMoqTypes[0];
+        MOQEquationFieldWidget.OpenDialogAfterInitialize(MOQEquationFieldWidget.ReOrderMoqTypesDialog);
+    };
+
+    // Close Reorder MOQ Types Dialog
+    $scope.closeReOrderMoqTypes = function () {
+        MOQEquationFieldWidget.CloseDialog(MOQEquationFieldWidget.ReOrderMoqTypesDialog);
+        MOQEquationFieldWidget.setDirty();
+    }
+
+    // Display Reorder MOQ Tables Dialog
+    $scope.displayReOrderMoqTablesDialog = function (moqType) {
+        $scope.model.SortingMoqTablesMoqTypeParent = moqType;
+        $scope.model.SortingMoqTable = moqType.TableData[0];
+
+        MOQEquationFieldWidget.OpenDialogAfterInitialize(MOQEquationFieldWidget.ReOrderMoqTablesDialog);
+    };
+
+    // Close Reorder MOQ Tables Dialog
+    $scope.closeReOrderMoqTables = function () {
+        MOQEquationFieldWidget.CloseDialog(MOQEquationFieldWidget.ReOrderMoqTablesDialog);
+        $scope.model.SortingMoqTables = [];
+        MOQEquationFieldWidget.setDirty();
+    }
+
+    //#endregion
 }]);
 
 // initialize MOQ Equation Widget.. moved here so that way this much script is not in the ascx page
@@ -953,8 +1048,7 @@ InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, wo
         }
 
         MOQEquationFieldWidget.InitializeDialog(MOQEquationFieldWidget.ReOrderMoqTypesDialog);
-        // Dusan.. Uncomment
-        // MOQEquationFieldWidget.InitializeDialog(MOQEquationFieldWidget.ReOrderMoqTablesDialog);
+        MOQEquationFieldWidget.InitializeDialog(MOQEquationFieldWidget.ReOrderMoqTablesDialog);
 
         $(document).trigger('MOQWidgetLoaded', "MOQEquationField");
         $(document).trigger('WidgetLoaded', "MOQEquationField");
@@ -963,15 +1057,14 @@ InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, wo
     /// Reordering MOQ Types
     MOQEquationFieldWidget.ReOrderMoqTypesDialog = {};
     MOQEquationFieldWidget.ReOrderMoqTypesDialog.Element = $("#ReOrderMoqTypesDialog");
-    MOQEquationFieldWidget.ReOrderMoqTypesDialog.Params = { width: 600, height: 270, modal: true, resizable: false, draggable: true, title: 'Sort Moq Types' };
-    MOQEquationFieldWidget.DisplayReOrderMoqTypesDialog = function () {
-        MOQEquationFieldWidget.OpenDialogAfterInitialize(MOQEquationFieldWidget.ReOrderMoqTypesDialog);
-    };
-    MOQEquationFieldWidget.CloseReOrderMoqTypes = function () {
-        MOQEquationFieldWidget.CloseDialog(MOQEquationFieldWidget.ReOrderMoqTypesDialog);
-        MOQEquationFieldWidget.setDirty();
-    }
+    MOQEquationFieldWidget.ReOrderMoqTypesDialog.Params = { width: 600, height: 250, modal: true, resizable: false, draggable: true, title: 'Sort Moq Types' };
     /// END Reordering MOQ Types
+
+    /// Reordering MOQ Tables
+    MOQEquationFieldWidget.ReOrderMoqTablesDialog = {};
+    MOQEquationFieldWidget.ReOrderMoqTablesDialog.Element = $("#ReOrderMoqTablesDialog");
+    MOQEquationFieldWidget.ReOrderMoqTablesDialog.Params = { width: 600, height: 230, modal: true, resizable: false, draggable: true, title: 'Sort Moq Tables' };
+    /// END Reordering MOQ Tables
 
     $("#MOQEquationField #MOQEquation").change(function () {
         $(document).trigger('ValidateMOQEquation');

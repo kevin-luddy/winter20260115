@@ -8515,3 +8515,12 @@ div.moqTypeHeader {
 .tableData .help-icon {
     margin-top: 1px;
 }
+
+.moqSortingList {
+    width: 300px;
+}
+
+button.move-button.moqTypes {
+    margin-bottom: 10px;
+    display: block;
+}
