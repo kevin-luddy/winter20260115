@@ -240,8 +240,10 @@
                                 <input type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPStart" onchange="MOQEquationFieldWidget.setDirty()" />
                                 <input type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPStart" onchange="MOQEquationFieldWidget.setDirty()" />
 
-                                FW <input type="number" class="weekYear" min="1" max="53" step="1" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" required data-ng-model="tableData.PoPStartWeek" onchange="MOQEquationFieldWidget.setDirty()" />
-                                Year <input type="number" class="weekYear" min="1980" max="2050" step="1" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" required data-ng-model="tableData.PoPStartYear" onchange="MOQEquationFieldWidget.setDirty()" />
+                                <span data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" >
+                                    FW <input type="number" class="weekYear" min="1" max="53" step="1" required data-ng-model="tableData.PoPStartWeek" onchange="MOQEquationFieldWidget.setDirty()" />
+                                    Year <input type="number" class="weekYear" min="1980" max="2050" step="1" required data-ng-model="tableData.PoPStartYear" onchange="MOQEquationFieldWidget.setDirty()" />
+                                </span>
                             </td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
@@ -253,8 +255,10 @@
                                 <input type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPEnd" onchange="MOQEquationFieldWidget.setDirty()" />
                                 <input type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPEnd" onchange="MOQEquationFieldWidget.setDirty()" />
                                 
-                                FW <input type="number" class="weekYear" min="1" max="53" step="1" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" required data-ng-model="tableData.PoPEndWeek" onchange="MOQEquationFieldWidget.setDirty()" />
-                                Year <input type="number" class="weekYear" min="1980" max="2050" step="1" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" required data-ng-model="tableData.PoPEndYear" onchange="MOQEquationFieldWidget.setDirty()" />
+                                <span data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" >
+                                    FW <input type="number" class="weekYear" min="1" max="53" step="1" required data-ng-model="tableData.PoPEndWeek" onchange="MOQEquationFieldWidget.setDirty()" />
+                                    Year <input type="number" class="weekYear" min="1980" max="2050" step="1" required data-ng-model="tableData.PoPEndYear" onchange="MOQEquationFieldWidget.setDirty()" />
+                                </span>
                             </td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
