@@ -4856,7 +4856,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         else
                         {
                             // remove this for Workspaces not using Template BOE
-                            element.Parent.RemoveIt();
+                            WordUtilities.RemoveTaggedElement(taskContainer.TaskContainer, sdtTitle);
                         }
                     }
                     else if (sdtTitle == FieldName_MOQSSDS)
