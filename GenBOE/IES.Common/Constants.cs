@@ -607,6 +607,16 @@ namespace IES.Common
             /// the end date
             /// </summary>
             public const string END_DATE = "EndDate";
+
+            /// <summary>
+            /// Viewer Filter Option
+            /// </summary>
+            public const string SHOW_PROPOSALS_FOR_MY_ORGANIZATION = "ShowProposalsForMyOrganization";
+
+            /// <summary>
+            /// User and Group IDs
+            /// </summary>
+            public const string USER_AND_GROUP_IDS = "UserAndGroupIDs";
         }
         #endregion SSRS Report
 
