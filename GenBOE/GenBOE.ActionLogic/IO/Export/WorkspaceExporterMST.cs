@@ -223,8 +223,8 @@ namespace GenBOE.ActionLogic.IO.Export
                 table.HistoricalProgramName,
                 table.ContractNumber,
                 table.WbsElement,
-                table.PoPStart.ToShortDateString(),
-                table.PoPEnd.ToShortDateString(),
+                table.PoPStartString,
+                table.PoPEndString,
                 table.TotalWbsHours.ToString(),
                 table.AdditionalQueryFilters,
                 table.TotalRelevantHours.ToString()

@@ -8524,3 +8524,11 @@ button.move-button.moqTypes {
     margin-bottom: 10px;
     display: block;
 }
+
+.tableDataParent input[type="month"] {
+    width: 135px;
+}
+
+.tableData td input.weekYear {
+    width: 60px;
+}

@@ -345,6 +345,15 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         MOQEquationFieldWidget.setDirty();
     }
 
+    $scope.clearPoPDates = function (tableData) {
+        tableData.PoPStart = undefined;
+        tableData.PoPStartWeek = undefined;
+        tableData.PoPStartYear = undefined;
+        tableData.PoPEnd = undefined;
+        tableData.PoPEndWeek = undefined;
+        tableData.PoPEndYear = undefined;
+    }
+
     //#endregion
 }]);
 

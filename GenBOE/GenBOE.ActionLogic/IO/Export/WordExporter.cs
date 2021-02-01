@@ -677,8 +677,8 @@ namespace GenBOE.ActionLogic.IO.Export
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_HistoricalProgramName), table.HistoricalProgramName);
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_ContractNumber), table.ContractNumber);
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_WbsElement), table.WbsElement);
-                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_PoPStartDate), table.PoPStart.ToString(BOEExporterConstants.DATE_FORMAT_STANDARD));
-                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_PoPEndDate), table.PoPEnd.ToString(BOEExporterConstants.DATE_FORMAT_STANDARD));
+                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_PoPStartDate), table.PoPStartString);
+                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_PoPEndDate), table.PoPEndString);
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_TotalWBSHours), table.TotalWbsHours.ToString("G29"));
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_TotalRelevantHours), table.TotalRelevantHours.ToString("G29"));
                     

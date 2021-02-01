@@ -1573,7 +1573,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>SSC Total Price</Value>
+                                  <Value>Space Total Price</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -1649,7 +1649,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>Prime or Sub</Value>
+                                  <Value>Space Role</Value>
                                   <Style>
                                     <FontFamily>Tahoma</FontFamily>
                                     <FontSize>11pt</FontSize>
@@ -3070,7 +3070,7 @@
                               </Style>
                             </Paragraph>
                           </Paragraphs>
-						  <rd:DefaultName>Textbox27</rd:DefaultName>
+                          <rd:DefaultName>Textbox27</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>DimGray</Color>
@@ -5305,7 +5305,7 @@
                               <Style />
                             </Paragraph>
                           </Paragraphs>
-						  <rd:DefaultName>Comments</rd:DefaultName>
+                          <rd:DefaultName>Comments</rd:DefaultName>
                           <Style>
                             <Border>
                               <Color>DimGray</Color>

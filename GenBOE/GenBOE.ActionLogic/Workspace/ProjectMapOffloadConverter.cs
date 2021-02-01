@@ -168,8 +168,8 @@ namespace GenBOE.ActionLogic.Workspace
                         sb.AppendLine($"{labels.HistoricalProgramName}: {table.HistoricalProgramName}");
                         sb.AppendLine($"{labels.ContractNumber}: {table.ContractNumber}");
                         sb.AppendLine($"{labels.WbsElement}: {table.WbsElement}");
-                        sb.AppendLine($"{labels.PoPStart}: {table.PoPStart.ToShortDateString()}");
-                        sb.AppendLine($"{labels.PoPEnd}: {table.PoPEnd.ToShortDateString()}");
+                        sb.AppendLine($"{labels.PoPStart}: {table.PoPStartString}");
+                        sb.AppendLine($"{labels.PoPEnd}: {table.PoPEndString}");
                         sb.AppendLine($"{labels.TotalWbsHours}: {table.TotalWbsHours.ToString(Constants.DECIMAL_FORMATTING)}");
                         sb.AppendLine($"{labels.AdditionalQueryFilters}: {table.AdditionalQueryFilters}");
                         sb.AppendLine($"{labels.TotalRelevantHours}: {table.TotalRelevantHours.ToString(Constants.DECIMAL_FORMATTING)}");
