@@ -8,6 +8,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
@@ -39,6 +40,16 @@ namespace GenBOE.Tests.DAL.DataLoaders
             GlobalTestCaseSetup.CreateBOE(GlobalTestCaseSetup.GlobalWorkspaceID);
             GlobalTestCaseSetup.CreateGlobalTaskElementID();
         }
+
+        /// <summary>
+        /// Create SUT
+        /// </summary>
+        /// <returns></returns>
+        private IMoqTypeDataLoader CreateSut()
+        {
+            IMoqTypeTableCustomFieldValueXREFLoader moqTypeTableCustomFieldValueLoader = new MoqTypeTableCustomFieldValueXREFLoader();
+            return new MoqTypeDataLoader(moqTypeTableCustomFieldValueLoader);
+        }
                 
         /// <summary>
         /// This method tests the GetByIds method as well as Upsert and Delete
@@ -46,7 +57,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [TestMethod]
         public void GetByIdsTest()
         {
-            IMoqTypeDataLoader sut = new MoqTypeDataLoader();
+            IMoqTypeDataLoader sut = this.CreateSut();
 
             MoqTypeSelection moqTypeSelectionToSave = CreateTestMoqTypeSelection();
 
@@ -61,7 +72,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             MoqTypeSelection savedMoqTypeSelection = sut.GetById(savedMoqTypeId.Value);
 
             this.AssertMoqTypeSelection(moqTypeSelectionToSave, savedMoqTypeSelection, savedMoqTypeId.Value);
-            
+
             // Test delete
             savedMoqTypeSelection.Updateable = UpdateType.Deleted;
             int? deletedMoqTypeId = sut.Save(savedMoqTypeSelection);
@@ -76,7 +87,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [TestMethod]
         public void GetByWorkspaceIdTest()
         {
-            IMoqTypeDataLoader sut = new MoqTypeDataLoader();
+            IMoqTypeDataLoader sut = this.CreateSut();
 
             MoqTypeSelection moqTypeSelectionToSave = CreateTestMoqTypeSelection();
             moqTypeSelectionToSave.Updateable = UpdateType.Upsert;
@@ -107,7 +118,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
         [TestMethod]
         public void GetByBoeIdTest()
         {
-            IMoqTypeDataLoader sut = new MoqTypeDataLoader();
+            IMoqTypeDataLoader sut = this.CreateSut();
 
             MoqTypeSelection moqTypeSelectionToSave = CreateTestMoqTypeSelection();
             moqTypeSelectionToSave.Updateable = UpdateType.Upsert;
@@ -168,7 +179,19 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 PoPEnd = DateTime.Now.AddDays(1),
                 TotalWbsHours = 100,
                 AdditionalQueryFilters = "test filters 1",
-                TotalRelevantHours = 50
+                TotalRelevantHours = 50,
+                CustomFieldValueContainers = new Collection<CustomFieldValueContainer>()
+                {
+                    new CustomFieldValueContainer()
+                        {
+                            ContainerID = -1,
+                            CustomFieldID = GlobalTestCaseSetup.GlobalCustomFieldID,
+                            CustomFieldValueID = GlobalTestCaseSetup.GlobalCustomFieldValueID,
+                            IsOpenEnded = true,
+                            OpenEndedValue = "TEST",
+                            Updateable = UpdateType.Upsert
+                        }
+                }
             };
 
             MoqTableData moqTableData2 = new MoqTableData()
@@ -192,6 +215,29 @@ namespace GenBOE.Tests.DAL.DataLoaders
             moqTypeSelectionToSave.TableData.Add(moqTableData2);
 
             return moqTypeSelectionToSave;
+        }
+
+        /// <summary>
+        /// Create a custom field xref for the moq table
+        /// </summary>
+        /// <param name="moqTableDataId">ID of the moq table</param>
+        /// <param name="moqTableData">moq table data</param>
+        private void CreateMOQTypeTableCustomFieldXref(int moqTableDataId, ICollection<MoqTableData> moqTableData)
+        {
+            IMoqTypeTableCustomFieldValueXREFLoader xrefLoader = new MoqTypeTableCustomFieldValueXREFLoader();
+
+            CustomFieldValueContainer customFieldValueContainer = new CustomFieldValueContainer()
+            {
+                ContainerID = -1,
+                OwnerID = moqTableDataId,
+                CustomFieldID = GlobalTestCaseSetup.GlobalCustomFieldID,
+                CustomFieldValueID = GlobalTestCaseSetup.GlobalCustomFieldValueID,
+                Updateable = UpdateType.Upsert
+            };
+
+            xrefLoader.SaveMoqTypeTableCustomFieldValueContainer(customFieldValueContainer, moqTableDataId);
+
+            moqTableData.First().CustomFieldValueContainers.Add(customFieldValueContainer);
         }
 
         /// <summary>
@@ -238,6 +284,16 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 Assert.AreEqual(expected.TotalWbsHours, result.TotalWbsHours);
                 Assert.AreEqual(expected.AdditionalQueryFilters, result.AdditionalQueryFilters);
                 Assert.AreEqual(expected.TotalRelevantHours, result.TotalRelevantHours);
+                Assert.AreEqual(expected.CustomFieldValueContainers.Count, result.CustomFieldValueContainers.Count);
+                for (int j = 0; j < expected.CustomFieldValueContainers.Count; j++)
+                {
+                    CustomFieldValueContainer expectedCF = expected.CustomFieldValueContainers.ElementAt(i);
+                    CustomFieldValueContainer resultCF = result.CustomFieldValueContainers.ElementAt(i);
+
+                    Assert.IsTrue(resultCF.ContainerID > 0);
+                    Assert.AreEqual(expectedCF.CustomFieldID, resultCF.CustomFieldID);
+                    Assert.AreEqual(expectedCF.CustomFieldValueID, resultCF.CustomFieldValueID);
+                }
             }
         }
     }

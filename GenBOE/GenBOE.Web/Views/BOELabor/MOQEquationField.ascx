@@ -69,38 +69,7 @@
         MOQEquationFieldWidget = InitializeMOQEquationFieldWidget(MOQEquationFieldWidget_ReadOnly, workspaceVariables, ordinaryVariables, newOrdinaryVariableID, sumOfBoes, discrete,
             validationUrl, shouldMoqReadOnlyBeReversed, calculateMOQResultUrl, openSumOfBoesByWbsUrl, openSumOfBoesByClinUrl, isNotSubContractor, sortBOEByWBS, sortBOEByClin);
 
-        TaskElementDetailsWidget.ChildWidgets.push(MOQEquationFieldWidget);
-        TaskElementDetailsWidget.registerForDelegateEvent('click', '.menu-icon', function (event) {
-            if ($('#menu-options-box').hasClass("display-none")) {
-                $('#menu-options-box').removeClass('display-none');
-            }
-            else {
-                $('#menu-options-box').addClass('display-none');
-            }
-        });
-        TaskElementDetailsWidget.registerForDelegateEvent('click', '#menu-options-box', function (event) {
-            $('#menu-options-box').addClass('display-none');
-            event.stopPropagation();
-        });
-
-        TaskElementDetailsWidget.registerForDelegateEvent('change', '.moqRteFieldContainer input, .tableData textarea', function (event) {
-            MOQEquationFieldWidget.setDirty();
-        });
-
-        TaskElementDetailsWidget.CheckToShowMetrics();
-        TaskElementDetailsWidget.MOQText = CreateRteTemplate('<%:showMoqQuestions%>'.isTrue(), <%: numberMoqQuestions %>);
-
-        if (!MOQEquationFieldWidget.isReadOnly() || shouldMoqReadOnlyBeReversed || !TaskElementDetailsWidget.isReadOnly()) {
-            InitializeRteTemplate(TaskElementDetailsWidget.MOQText, 'MOQText', rteFieldSize);
-        }
-        else {
-            setTimeout(function () { 
-                HandleRTETemplateDataForReadOnly(TaskElementDetailsWidget.MOQText, 'MOQText');
-            }, 1);
-        }
-
-        $(document).trigger('MOQWidgetLoaded', "MOQEquationField");
-        $(document).trigger('WidgetLoaded', "MOQEquationField");
+        MOQEquationFieldWidget.AfterDomLoad(TaskElementDetailsWidget, '<%:showMoqQuestions%>'.isTrue(), <%:numberMoqQuestions%>);
     }
 </script>
 
@@ -153,7 +122,7 @@
             Please add MOQ Type(s).
         </div>
     </div>
-    <div data-ng-if="model.UsingTemplateBOE" class="form-element moqRteFieldContainer" data-ng-repeat="moqType in model.SelectedMoqTypes">
+    <div id="moqTypes" data-ng-if="model.UsingTemplateBOE" class="form-element moqRteFieldContainer" data-ng-repeat="moqType in model.SelectedMoqTypes | orderBy: 'Order'">
         <div class="form-row" data-ng-class="{'collapsedBorder': moqType.collapsed}">
             <div class="form-label">
                 <a data-nodrag="" data-ng-click="toggle(moqType)">
@@ -175,9 +144,9 @@
             <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.NonLabor%>">This task is Non-Labor:</span>
         </div>
         <div data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>">
-            <div class="tableDataParent" data-ng-repeat="tableData in moqType.TableData">
+            <div class="tableDataParent" data-ng-repeat="tableData in moqType.TableData | orderBy: 'Order'">
                 <div class="tableData">
-                    <table>
+                    <table pkid="{{tableData.Id}}">
                         <tr>
                             <td class="form-label">
                                 <div class="moqTypeHeader" data-ng-class="{'collapsed': tableData.collapsed, 'expanded': !tableData.collapsed}" data-ng-click="toggle(tableData)"></div>
@@ -278,11 +247,19 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalRelevantHoursComparativeSuffix);"></div></td>
                             <td><input type="number" required min="0" data-ng-model="tableData.TotalRelevantHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
+                        <tr data-ng-repeat="customField in MoqTableCustomFields" data-ng-show="!tableData.collapsed">
+                            <td class="form-label">{{customField.CustomFieldMetaData.FieldName}}{{(customField.CustomFieldMetaData.isRequired) ? ' *' : ''}}</td>
+                            <td class="custom-field">{{ selectedItem = findMoqTableCustomFieldValue(customField, tableData); "" }}
+                                <input data-ng-if="!model.IsReadOnly" type="text" onchange="MOQEquationFieldWidget.setDirty(); validateMoqTableCustomField(this);" data-ng-required="customField.CustomFieldMetaData.isRequired" data-ng-class="{'ng-invalid': customField.CustomFieldMetaData.isRequired && selectedItem.openEndedValue.length==0}" data-ng-value="selectedItem.openEndedValue" customfieldid="{{customField.CustomFieldMetaData.CustomFieldID}}" customfieldvalueid="{{selectedItem.openEndedId}}" selectionid="{{selectedItem.selectedID}}" updatedatelong="{{selectedItem.updateDateLong}}" openended="true" />
+                                <span data-ng-if="model.IsReadOnly">{{selectedItem.openEndedValue}}</span>
+                            </td>
+                        </tr>
                    </table>
                 </div>
-                <div class="tableDataButtons">
-                    <button style="margin-bottom:9px;" data-ng-if="!model.IsReadOnly && $index == 0" data-ng-click="CreateNewTable(moqType.TableData)" type="button" class="ies-action moqTypesButton">Add Table Data</button>
-                    <button style="display:block;" data-ng-if="!model.IsReadOnly && moqType.TableData.length > 1" data-ng-click="RemoveTable(tableData, moqType.TableData)" type="button" class="ies-danger moqTypesButton">Delete Table Data</button>
+                <div class="tableDataButtons" data-ng-if="!model.IsReadOnly">
+                    <button style="margin-bottom:9px;" data-ng-if="$index == 0" data-ng-click="CreateNewTable(moqType.TableData)" type="button" class="ies-action moqTypesButton">Add Table Data</button>
+                    <button data-ng-disabled="moqType.TableData.length <= 1" data-ng-if="$index == 0" data-ng-click="displayReOrderMoqTablesDialog(moqType)" class="moqTypesButton ies-blue" type="button">Sort MOQ Tables</button>
+                    <button style="display:block;" data-ng-if="moqType.TableData.length > 1" data-ng-click="RemoveTable(tableData, moqType.TableData)" type="button" class="ies-danger moqTypesButton">Delete Table Data</button>
                 </div>
                 <hr />
             </div>
@@ -394,9 +371,9 @@
             <span>Add New MOQ Type</span>
         </div>
         <div class="form-element">
-            <select data-ng-model="model.selectedMOQType" data-ng-options="moqType.SelectedMOQTypeText for moqType in model.MOQTypes | moqTypesFilter:model.SelectedMoqTypes" class="moqTypes">
-            </select>
-            <button data-ng-click="AddMoqType()" data-ng-disabled="!model.selectedMOQType" class="moqTypesButton ies-action" type="button">Add MOQ Type</button>
+            <select data-ng-model="model.selectedMOQType" data-ng-options="moqType.SelectedMOQTypeText for moqType in model.MOQTypes | moqTypesFilter:model.SelectedMoqTypes" class="moqTypes"></select>
+            <button data-ng-if="!model.IsReadOnly" data-ng-click="AddMoqType()" data-ng-disabled="!model.selectedMOQType" class="moqTypesButton ies-action" type="button">Add MOQ Type</button>
+            <button data-ng-if="!model.IsReadOnly" data-ng-disabled="model.SelectedMoqTypes.length <= 1" data-ng-click="displayReOrderMoqTypesDialog()" class="moqTypesButton ies-blue" type="button">Sort MOQ Types</button>
         </div>
     </div>
 
@@ -485,6 +462,50 @@
                     <% }%>
                 </tbody>
             </table>
+        </div>
+    </div>
+    <div id="ReOrderMoqTypesDialog" class="reorder-moq-types-dialog" style="display: none;">
+        <div class="container">
+            <div class="form-row">
+                <div class="form-element">Sort MOQ Types using the move buttons.  Close when finished.  The defined order will be maintained when exporting data to MS Word.</div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    <select size="7" data-ng-model="model.SortingMoqType" data-ng-options="moqType as moqType.SelectedMOQTypeText for moqType in model.SelectedMoqTypes | orderBy: 'Order'" class="moqSortingList"></select>
+                    <div class="buttons inline-block centered">
+                        <button data-ng-disabled="!model.SortingMoqType" id="MoqTypesMoveItemsUp" style="margin-left: 7px;" class="ies move-button moqTypes" data-ng-click="MoveUpMoqType()" type="button">Move Up</button>
+                        <button data-ng-disabled="!model.SortingMoqType" id="MoqTypesMoveItemsDown" style="margin-left: 7px;" class="ies move-button moqTypes" data-ng-click="MoveDownMoqType()"type="button">Move Down</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-element">Note: Must not contain any OCI, classified, export controlled or third party proprietary information.</div>
+            </div>
+            <div class="buttons">
+                <button id="ReOrderMoqTypesDialog-Close" class="ies" data-ng-click="closeReOrderMoqTypes()" name="cancel-button" type="button">Close</button>
+            </div>
+        </div>
+    </div>
+        <div id="ReOrderMoqTablesDialog" class="reorder-moq-tables-dialog" style="display: none;">
+        <div class="container">
+            <div class="form-row">
+                <div class="form-element">Sort MOQ Tables using the move buttons.  Close when finished.  The defined order will be maintained when exporting data to MS Word.</div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    <select size="5" data-ng-model="model.SortingMoqTable" data-ng-options="moqTable as moqTable.TableName for moqTable in model.SortingMoqTablesMoqTypeParent.TableData | orderBy: 'Order'" class="moqSortingList"></select>
+                    <div class="buttons inline-block centered">
+                        <button data-ng-disabled="!model.SortingMoqTable" id="MoqTablesMoveItemsUp" style="margin-left: 7px;" class="ies move-button moqTypes" data-ng-click="MoveUpMoqTable()" type="button">Move Up</button>
+                        <button data-ng-disabled="!model.SortingMoqTable" id="MoqTablesMoveItemsDown" style="margin-left: 7px;" class="ies move-button moqTypes" data-ng-click="MoveDownMoqTable()"type="button">Move Down</button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-element">Note: Must not contain any OCI, classified, export controlled or third party proprietary information.</div>
+            </div>
+            <div class="buttons">
+                <button id="ReOrderMoqTablesDialog-Close" class="ies" data-ng-click="closeReOrderMoqTables()" name="cancel-button" type="button">Close</button>
+            </div>
         </div>
     </div>
 </div>

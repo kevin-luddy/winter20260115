@@ -7573,7 +7573,8 @@ div#UsingTMRow div#UsingTM-Help {
 button.ies,
 button.ies-action,
 button.ies-warning,
-button.ies-danger {
+button.ies-danger,
+button.ies-blue {
     border-radius: 3px;
     border: 1px solid #A6A6A6;
     padding: 0px 10px;
@@ -7618,6 +7619,13 @@ button.ies-action {
     background-color: #EEEEEE;
 }
 
+button.ies-blue {
+    background: linear-gradient(to bottom, #7a85f0, #909af5 1px, #aab1f2);
+    -pie-background: linear-gradient(to bottom, #7a85f0, #909af5 1px, #aab1f2);
+    background-color: #EEEEEE;
+}
+
+
 button.ies-action:active:hover:not(.disabled):not([disabled]) {
     background: linear-gradient(to bottom, #24db5e, #58a771 1px, #4d805b);
     -pie-background: linear-gradient(to bottom, #24db5e, #58a771 1px, #4d805b);
@@ -7649,10 +7657,12 @@ button.ies[disabled],
 button.ies-action[disabled]:not(.go-button),
 button.ies-warning[disabled],
 button.ies-danger[disabled],
+button.ies-blue[disabled],
 button.ies.disabled,
 button.ies-action.disabled:not(.go-button),
 button.ies-warning.disabled,
-button.ies-danger.disabled {
+button.ies-danger.disabled,
+button.ies-bluedisabled{
     border: 1px solid #D9D9D9;
     background: linear-gradient(to bottom, #F8F8F8, #EDEDED 1px, #F4F4F4);
     -pie-background: linear-gradient(to bottom, #F8F8F8, #EDEDED 1px, #F4F4F4);
@@ -8504,6 +8514,15 @@ div.moqTypeHeader {
 
 .tableData .help-icon {
     margin-top: 1px;
+}
+
+.moqSortingList {
+    width: 300px;
+}
+
+button.move-button.moqTypes {
+    margin-bottom: 10px;
+    display: block;
 }
 
 .tableDataParent input[type="month"] {

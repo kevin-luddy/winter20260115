@@ -159,6 +159,46 @@ namespace GenBOE.DataBridge.DTO
         }
 
         /// <summary>
+        /// Gets a mapping of MOQ Type Table to Custom Field Value ID
+        /// </summary>
+        /// <param name="moqTypeTableIds">MOQ Type Table IDs</param>
+        /// <returns>Mapping of MOQ Type Table to Custom Field Value ID</returns>
+        [DbQuery]
+        virtual public Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIDsByMoqTypeTableIds(ICollection<int> moqTypeTableIds)
+        {
+            using (StopwatchTimer sw = new StopwatchTimer(Log))
+            {
+                Dictionary<int, ICollection<KeyValuePair<int, int>>> toReturn = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
+
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+                    var response = (from c in gbe.MoqTypeTableCustomFieldValueXREFs
+                                    where moqTypeTableIds.Contains(c.MoqTypeTableDataId)
+                                    select new
+                                    {
+                                        MoqTypeTableId = c.MoqTypeTableDataId,
+                                        ContainerId = c.Id,
+                                        CustomFieldValueId = c.CustomFieldValueId
+                                    }).ToList();
+
+                    foreach (var item in response)
+                    {
+                        if (toReturn.ContainsKey(item.MoqTypeTableId))
+                        {
+                            toReturn[item.MoqTypeTableId].Add(new KeyValuePair<int, int>(item.ContainerId, item.CustomFieldValueId));
+                        }
+                        else
+                        {
+                            toReturn[item.MoqTypeTableId] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>(item.ContainerId, item.CustomFieldValueId) };
+                        }
+                    }
+                }
+
+                return toReturn;
+            }
+        }
+
+        /// <summary>
         /// Gets a mapping of labor type to custom field value Id.
         /// </summary>
         /// <param name="inLaborTypeIDs">Labor Type Ids.</param>

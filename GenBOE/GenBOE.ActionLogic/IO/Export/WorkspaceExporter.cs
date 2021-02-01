@@ -279,6 +279,20 @@ namespace GenBOE.ActionLogic.IO.Export
                     ExcelUtilities.RemoveColumn(document, "BOEs", "Resource Custom Field");
                 }
             }
+
+            string[] moqTableCustomFieldNames = customFields.Where(c => c.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay).Select(c => c.CustomFieldName).ToArray();
+
+            using (SpreadsheetDocument document = SpreadsheetDocument.Open(templateFileLocation, true))
+            {
+                if (moqTableCustomFieldNames.Any())
+                {
+                    ExcelUtilities.DuplicateColumn(document, "MOQ Table Data", "MOQ Table Custom Field", moqTableCustomFieldNames);
+                }
+                else
+                {
+                    ExcelUtilities.RemoveColumn(document, "MOQ Table Data", "MOQ Table Custom Field");
+                }
+            }
         }
 
         /// <summary>
@@ -1257,7 +1271,7 @@ namespace GenBOE.ActionLogic.IO.Export
             _ = task ?? throw new ArgumentNullException(nameof(task));
             _ = table ?? throw new ArgumentNullException(nameof(table));
 
-            return new List<string>()
+            IList<string> toReturn = new List<string>()
             {
                 boe.Id.ToString(),
                 boe.Title ?? this.sEmpty,
@@ -1275,6 +1289,13 @@ namespace GenBOE.ActionLogic.IO.Export
                 table.AdditionalQueryFilters,
                 table.TotalRelevantHours.ToString()
             };
+
+            foreach(CustomFieldValueContainer customFieldValue in table.CustomFieldValueContainers)
+            {
+                toReturn.Add(customFieldValue.OpenEndedValue);
+            }
+
+            return toReturn;
         }
 
         /// <summary>

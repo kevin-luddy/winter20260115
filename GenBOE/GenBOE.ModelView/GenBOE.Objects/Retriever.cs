@@ -260,6 +260,16 @@ namespace GenBOE.Objects
         }
 
         /// <summary>
+        /// Gets a mapping of MOQ Type Table ids and custom field ids/container ids
+        /// </summary>
+        /// <param name="moqTypeTableIds">MOQ Type Table IDs</param>
+        /// <returns>Data</returns>
+        public Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIdsByMoqTypeTableIds(Collection<int> moqTypeTableIds)
+        {
+            return this.customFieldValueLoader.GetCustomFieldValueIDsContainerIDsByMoqTypeTableIds(moqTypeTableIds);
+        }
+
+        /// <summary>
         /// Gets a mapping of labor type ids and custom field ids/container ids
         /// </summary>
         /// <param name="laborTypeIds">Labor Types</param>

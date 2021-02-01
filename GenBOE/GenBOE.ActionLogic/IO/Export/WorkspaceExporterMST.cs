@@ -211,7 +211,7 @@ namespace GenBOE.ActionLogic.IO.Export
             _ = task ?? throw new ArgumentNullException(nameof(task));
             _ = table ?? throw new ArgumentNullException(nameof(table));
 
-            return new List<string>()
+            IList<string> toReturn = new List<string>()
             {
                 boe.Id.ToString(),
                 boe.Title ?? this.sEmpty,
@@ -229,6 +229,13 @@ namespace GenBOE.ActionLogic.IO.Export
                 table.AdditionalQueryFilters,
                 table.TotalRelevantHours.ToString()
             };
+
+            foreach (CustomFieldValueContainer customFieldValue in table.CustomFieldValueContainers)
+            {
+                toReturn.Add(customFieldValue.OpenEndedValue);
+            }
+
+            return toReturn;
         }
     }
 }

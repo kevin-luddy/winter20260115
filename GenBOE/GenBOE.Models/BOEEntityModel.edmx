@@ -69,7 +69,7 @@
           <Property Name="ChangedByETIUserID" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'GenBOESpace.dbo.BOECopyMetric' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_UAT.dbo.BOECopyMetric' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOECopyMetric">
           <Key>
             <PropertyRef Name="CreateDate" />
@@ -79,7 +79,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.BOECopyMetric' does not have a pri
           <Property Name="CreateDate" Type="datetime2" Precision="7" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'GenBOESpace.dbo.BOECopySource' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_UAT.dbo.BOECopySource' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOECopySource">
           <Key>
             <PropertyRef Name="BOEID" />
@@ -110,7 +110,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.BOECopySource' does not have a pri
           <Property Name="CreateDate" Type="datetime2" Precision="7" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'GenBOESpace.dbo.BOECopyTarget' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_UAT.dbo.BOECopyTarget' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOECopyTarget">
           <Key>
             <PropertyRef Name="BOEID" />
@@ -179,7 +179,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.BOECopyTarget' does not have a pri
           <Property Name="FormVersion" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'GenBOESpace.dbo.BOEFormIBOECLINsXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormIBOECLINsXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOEFormIBOECLINsXREF">
           <Key>
             <PropertyRef Name="IBOEFormID" />
@@ -191,7 +191,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.BOEFormIBOECLINsXREF' does not hav
           <Property Name="ContractType" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'GenBOESpace.dbo.BOEFormIBOEResourcesXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormIBOEResourcesXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOEFormIBOEResourcesXREF">
           <Key>
             <PropertyRef Name="IBOEFormID" />
@@ -278,7 +278,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.BOEFormIBOEResourcesXREF' does not
           <Property Name="PlannedDate_ApprovedSubmission" Type="date" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'GenBOESpace.dbo.BOEFormPBOECLINsXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOECLINsXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOEFormPBOECLINsXREF">
           <Key>
             <PropertyRef Name="PBOEFormID" />
@@ -290,7 +290,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.BOEFormPBOECLINsXREF' does not hav
           <Property Name="ContractType" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'GenBOESpace.dbo.BOEFormPBOEResourcesXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOEFormPBOEResourcesXREF">
           <Key>
             <PropertyRef Name="PBOEFormID" />
@@ -653,6 +653,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.BOEFormPBOEResourcesXREF' does not
           <Property Name="MOQTypeSelection" Type="int" Nullable="false" />
           <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="Order" Type="int" Nullable="false" />
+          <Property Name="CERName" Type="varchar" MaxLength="255" />
           <Property Name="HoursDescription" Type="varchar(max)" />
           <Property Name="SubjectMatterExpert" Type="varchar(max)" />
           <Property Name="HoursLogicAndAssumptions" Type="varchar(max)" />
@@ -660,7 +661,6 @@ warning 6002: The table/view 'GenBOESpace.dbo.BOEFormPBOEResourcesXREF' does not
           <Property Name="EstimateTasks" Type="varchar(max)" />
           <Property Name="Rationale" Type="varchar(max)" />
           <Property Name="SkillMix" Type="varchar(max)" />
-          <Property Name="CERName" Type="varchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="MOQTypeSelectionTableData">
           <Key>
@@ -682,6 +682,15 @@ warning 6002: The table/view 'GenBOESpace.dbo.BOEFormPBOEResourcesXREF' does not
           <Property Name="TotalWbsHours" Type="decimal" Precision="10" Scale="2" Nullable="false" />
           <Property Name="AdditionalQueryFilters" Type="varchar" MaxLength="2500" Nullable="false" />
           <Property Name="TotalRelevantHoursAfterQueryFilters" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MoqTypeTableCustomFieldValueXREF">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="MoqTypeTableDataId" Type="int" Nullable="false" />
+          <Property Name="CustomFieldValueId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="MSTTravelModeLU">
           <Key>
@@ -1340,7 +1349,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.BOEFormPBOEResourcesXREF' does not
           <Property Name="DestinationLocationCode" Type="varchar" MaxLength="10" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'GenBOESpace.dbo.UserAccessReport' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_UAT.dbo.UserAccessReport' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="UserAccessReport">
           <Key>
             <PropertyRef Name="LogInUpdateDT" />
@@ -1350,7 +1359,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.UserAccessReport' does not have a 
           <Property Name="NTID" Type="varchar" MaxLength="1000" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'GenBOESpace.dbo.UserLog' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_UAT.dbo.UserLog' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="UserLog">
           <Key>
             <PropertyRef Name="LogInUpdateDT" />
@@ -1447,7 +1456,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.UserLog' does not have a primary k
           <Property Name="ContractTypeID" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_UAT.dbo.WorkspaceCopyMetric' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="WorkspaceCopyMetric">
           <Key>
             <PropertyRef Name="CreateDate" />
@@ -1670,7 +1679,7 @@ warning 6002: The table/view 'GenBOESpace.dbo.WorkspaceCopyMetric' does not have
           <Property Name="WorkspaceID" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'GenBOESpace.version.BOE' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_UAT.version.BOE' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="BOE1">
           <Key>
             <PropertyRef Name="BOEID" />
@@ -1701,7 +1710,7 @@ warning 6002: The table/view 'GenBOESpace.version.BOE' does not have a primary k
           <Property Name="IsMultiClinWbs" Type="bit" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'GenBOESpace.version.CLIN' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_UAT.version.CLIN' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="CLIN1">
           <Key>
             <PropertyRef Name="CLINID" />
@@ -1721,7 +1730,7 @@ warning 6002: The table/view 'GenBOESpace.version.CLIN' does not have a primary 
           <Property Name="ContractTypeID" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'GenBOESpace.version.WBS_CLIN_BOE_XREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_UAT.version.WBS_CLIN_BOE_XREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="WBS_CLIN_BOE_XREF1">
           <Key>
             <PropertyRef Name="WCBID" />
@@ -1734,7 +1743,7 @@ warning 6002: The table/view 'GenBOESpace.version.WBS_CLIN_BOE_XREF' does not ha
           <Property Name="VersionID" Type="int" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="WorkBreakdownStructure1">
           <Key>
             <PropertyRef Name="WBSID" />
@@ -1750,7 +1759,7 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <Property Name="VersionID" Type="int" Nullable="false" />
           <Property Name="WorkspaceDTCElementID" Type="int" />
         </EntityType>
-        <Association Name="FK__MOQTypeSe__MOQTy__32C688C3">
+        <Association Name="FK__MOQTypeSe__MOQTy__2B0636C1">
           <End Role="MOQTypeLU" Type="Self.MOQTypeLU" Multiplicity="1" />
           <End Role="MOQTypeSelection" Type="Self.MOQTypeSelection" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1762,7 +1771,7 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__MOQTypeSe__MOQTy__378B3DE0">
+        <Association Name="FK__MOQTypeSe__MOQTy__2FCAEBDE">
           <End Role="MOQTypeSelection" Type="Self.MOQTypeSelection" Multiplicity="1" />
           <End Role="MOQTypeSelectionTableData" Type="Self.MOQTypeSelectionTableData" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1774,7 +1783,7 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__MOQTypeSe__TaskI__31D2648A">
+        <Association Name="FK__MOQTypeSe__TaskI__2A121288">
           <End Role="BOETaskElement" Type="Self.BOETaskElement" Multiplicity="1" />
           <End Role="MOQTypeSelection" Type="Self.MOQTypeSelection" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1783,6 +1792,30 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             </Principal>
             <Dependent Role="MOQTypeSelection">
               <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__MoqTypeTa__Custo__503886C7">
+          <End Role="CustomFieldValue" Type="Self.CustomFieldValue" Multiplicity="1" />
+          <End Role="MoqTypeTableCustomFieldValueXREF" Type="Self.MoqTypeTableCustomFieldValueXREF" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomFieldValue">
+              <PropertyRef Name="CustomFieldValueID" />
+            </Principal>
+            <Dependent Role="MoqTypeTableCustomFieldValueXREF">
+              <PropertyRef Name="CustomFieldValueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__MoqTypeTa__MoqTy__4F44628E">
+          <End Role="MOQTypeSelectionTableData" Type="Self.MOQTypeSelectionTableData" Multiplicity="1" />
+          <End Role="MoqTypeTableCustomFieldValueXREF" Type="Self.MoqTypeTableCustomFieldValueXREF" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MOQTypeSelectionTableData">
+              <PropertyRef Name="MOQTypeSelectionTableDataId" />
+            </Principal>
+            <Dependent Role="MoqTypeTableCustomFieldValueXREF">
+              <PropertyRef Name="MoqTypeTableDataId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4311,6 +4344,13 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <Parameter Name="MOQTypeSelectionTableDataId" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
+        <Function Name="deleteMoqTypeTableCustomFieldValue" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="MoqTypeTableDataId" Type="int" Mode="In" />
+          <Parameter Name="CustomFieldValueId" Type="int" Mode="In" />
+          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
+          <Parameter Name="IsOpenEnded" Type="bit" Mode="In" />
+        </Function>
         <Function Name="deleteMSTTravelTrip" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="MSTTravelTripID" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
@@ -5191,6 +5231,15 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <Parameter Name="AdditionalQueryFilters" Type="varchar" Mode="In" />
           <Parameter Name="TotalRelevantHoursAfterQueryFilters" Type="decimal" Mode="In" />
         </Function>
+        <Function Name="upsertMoqTypeTableCustomFieldValue" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Id" Type="int" Mode="In" />
+          <Parameter Name="MoqTypeTableDataId" Type="int" Mode="In" />
+          <Parameter Name="CustomFieldId" Type="int" Mode="In" />
+          <Parameter Name="CustomFieldValueId" Type="int" Mode="In" />
+          <Parameter Name="CustomFieldValue" Type="varchar" Mode="In" />
+          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
+          <Parameter Name="IsOpenEnded" Type="bit" Mode="In" />
+        </Function>
         <Function Name="upsertMSTTravelTrip" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="MSTTravelTripID" Type="int" Mode="In" />
           <Parameter Name="ModeID" Type="int" Mode="In" />
@@ -5645,6 +5694,7 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <EntitySet Name="MOQTypeLU" EntityType="Self.MOQTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MOQTypeSelection" EntityType="Self.MOQTypeSelection" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MOQTypeSelectionTableData" EntityType="Self.MOQTypeSelectionTableData" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MoqTypeTableCustomFieldValueXREF" EntityType="Self.MoqTypeTableCustomFieldValueXREF" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MSTTravelModeLU" EntityType="Self.MSTTravelModeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MSTTravelNonzoneFeesAndCosts" EntityType="Self.MSTTravelNonzoneFeesAndCosts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="MSTTravelTrip" EntityType="Self.MSTTravelTrip" Schema="dbo" store:Type="Tables" />
@@ -5874,17 +5924,25 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
     [WorkBreakdownStructure1].[WorkspaceDTCElementID] AS [WorkspaceDTCElementID]
     FROM [version].[WorkBreakdownStructure] AS [WorkBreakdownStructure1]</DefiningQuery>
           </EntitySet>
-          <AssociationSet Name="FK__MOQTypeSe__MOQTy__32C688C3" Association="Self.FK__MOQTypeSe__MOQTy__32C688C3">
+          <AssociationSet Name="FK__MOQTypeSe__MOQTy__2B0636C1" Association="Self.FK__MOQTypeSe__MOQTy__2B0636C1">
             <End Role="MOQTypeLU" EntitySet="MOQTypeLU" />
             <End Role="MOQTypeSelection" EntitySet="MOQTypeSelection" />
           </AssociationSet>
-          <AssociationSet Name="FK__MOQTypeSe__MOQTy__378B3DE0" Association="Self.FK__MOQTypeSe__MOQTy__378B3DE0">
+          <AssociationSet Name="FK__MOQTypeSe__MOQTy__2FCAEBDE" Association="Self.FK__MOQTypeSe__MOQTy__2FCAEBDE">
             <End Role="MOQTypeSelection" EntitySet="MOQTypeSelection" />
             <End Role="MOQTypeSelectionTableData" EntitySet="MOQTypeSelectionTableData" />
           </AssociationSet>
-          <AssociationSet Name="FK__MOQTypeSe__TaskI__31D2648A" Association="Self.FK__MOQTypeSe__TaskI__31D2648A">
+          <AssociationSet Name="FK__MOQTypeSe__TaskI__2A121288" Association="Self.FK__MOQTypeSe__TaskI__2A121288">
             <End Role="BOETaskElement" EntitySet="BOETaskElement" />
             <End Role="MOQTypeSelection" EntitySet="MOQTypeSelection" />
+          </AssociationSet>
+          <AssociationSet Name="FK__MoqTypeTa__Custo__503886C7" Association="Self.FK__MoqTypeTa__Custo__503886C7">
+            <End Role="CustomFieldValue" EntitySet="CustomFieldValue" />
+            <End Role="MoqTypeTableCustomFieldValueXREF" EntitySet="MoqTypeTableCustomFieldValueXREF" />
+          </AssociationSet>
+          <AssociationSet Name="FK__MoqTypeTa__MoqTy__4F44628E" Association="Self.FK__MoqTypeTa__MoqTy__4F44628E">
+            <End Role="MOQTypeSelectionTableData" EntitySet="MOQTypeSelectionTableData" />
+            <End Role="MoqTypeTableCustomFieldValueXREF" EntitySet="MoqTypeTableCustomFieldValueXREF" />
           </AssociationSet>
           <AssociationSet Name="FK__MSTTravel__ModeI__355CA394" Association="Self.FK__MSTTravel__ModeI__355CA394">
             <End Role="MSTTravelModeLU" EntitySet="MSTTravelModeLU" />
@@ -7136,6 +7194,7 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <NavigationProperty Name="MSTTravelTripCustomFieldValueXREFs" Relationship="Self.FK_MSTTravelTripCustomFieldValueXREF_MSTCustomFieldValue" FromRole="CustomFieldValue" ToRole="MSTTravelTripCustomFieldValueXREF" />
           <NavigationProperty Name="TravelTripCustomFieldValueXREFs" Relationship="Self.FK_TravelTripCustomFieldValueXREF_CustomFieldValue" FromRole="CustomFieldValue" ToRole="TravelTripCustomFieldValueXREF" />
           <NavigationProperty Name="TravelTripTaskElementCustomFieldValueXREFs" Relationship="Self.FK_TravelTripTaskElementCustomFieldValueXREF_CustomFieldValue" FromRole="CustomFieldValue" ToRole="TravelTripTaskElementCustomFieldValueXREF" />
+          <NavigationProperty Name="MoqTypeTableCustomFieldValueXREFs" Relationship="GenBOE.Models.FK__MoqTypeTa__Custo__503886C7" FromRole="CustomFieldValue" ToRole="MoqTypeTableCustomFieldValueXREF" />
         </EntityType>
         <EntityType Name="ELMAH_Error">
           <Key>
@@ -12320,6 +12379,31 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             <Parameter Name="WorkspaceShortName" Mode="In" Type="String" />
             <Parameter Name="CostVolumeLeadPricerUserID" Mode="In" Type="Int32" />
           </FunctionImport>
+          <EntitySet Name="MoqTypeTableCustomFieldValueXREFs" EntityType="GenBOE.Models.MoqTypeTableCustomFieldValueXREF" />
+          <AssociationSet Name="FK__MoqTypeTa__Custo__503886C7" Association="GenBOE.Models.FK__MoqTypeTa__Custo__503886C7">
+            <End Role="CustomFieldValue" EntitySet="CustomFieldValues" />
+            <End Role="MoqTypeTableCustomFieldValueXREF" EntitySet="MoqTypeTableCustomFieldValueXREFs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__MoqTypeTa__MoqTy__4F44628E" Association="GenBOE.Models.FK__MoqTypeTa__MoqTy__4F44628E">
+            <End Role="MOQTypeSelectionTableData" EntitySet="MOQTypeSelectionTableDatas" />
+            <End Role="MoqTypeTableCustomFieldValueXREF" EntitySet="MoqTypeTableCustomFieldValueXREFs" />
+          </AssociationSet>
+          <FunctionImport Name="deleteMoqTypeTableCustomFieldValue">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="MoqTypeTableDataId" Mode="In" Type="Int32" />
+            <Parameter Name="CustomFieldValueId" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+            <Parameter Name="IsOpenEnded" Mode="In" Type="Boolean" />
+          </FunctionImport>
+          <FunctionImport Name="upsertMoqTypeTableCustomFieldValue" ReturnType="Collection(Int32)">
+            <Parameter Name="Id" Mode="In" Type="Int32" />
+            <Parameter Name="MoqTypeTableDataId" Mode="In" Type="Int32" />
+            <Parameter Name="CustomFieldId" Mode="In" Type="Int32" />
+            <Parameter Name="CustomFieldValueId" Mode="In" Type="Int32" />
+            <Parameter Name="CustomFieldValue" Mode="In" Type="String" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+            <Parameter Name="IsOpenEnded" Mode="In" Type="Boolean" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="getBOEForFindReplace_Result">
           <Property Type="Int32" Name="BOEID" Nullable="true" />
@@ -13560,6 +13644,7 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
           <Property Name="AdditionalQueryFilters" Type="String" Nullable="false" MaxLength="2500" FixedLength="false" Unicode="false" />
           <Property Name="TotalRelevantHoursAfterQueryFilters" Type="Decimal" Nullable="false" Precision="10" Scale="2" />
           <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__378B3DE0" FromRole="MOQTypeSelectionTableData" ToRole="MOQTypeSelection" />
+          <NavigationProperty Name="MoqTypeTableCustomFieldValueXREFs" Relationship="GenBOE.Models.FK__MoqTypeTa__MoqTy__4F44628E" FromRole="MOQTypeSelectionTableData" ToRole="MoqTypeTableCustomFieldValueXREF" />
         </EntityType>
         <EntityType Name="BOELaborType">
           <Key>
@@ -13754,6 +13839,41 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             </Principal>
             <Dependent Role="MOQTypeSelectionTableData">
               <PropertyRef Name="MOQTypeSelectionId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="MoqTypeTableCustomFieldValueXREF">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="MoqTypeTableDataId" Type="Int32" Nullable="false" />
+          <Property Name="CustomFieldValueId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="CustomFieldValue" Relationship="GenBOE.Models.FK__MoqTypeTa__Custo__503886C7" FromRole="MoqTypeTableCustomFieldValueXREF" ToRole="CustomFieldValue" />
+          <NavigationProperty Name="MOQTypeSelectionTableData" Relationship="GenBOE.Models.FK__MoqTypeTa__MoqTy__4F44628E" FromRole="MoqTypeTableCustomFieldValueXREF" ToRole="MOQTypeSelectionTableData" />
+        </EntityType>
+        <Association Name="FK__MoqTypeTa__Custo__503886C7">
+          <End Type="GenBOE.Models.CustomFieldValue" Role="CustomFieldValue" Multiplicity="1" />
+          <End Type="GenBOE.Models.MoqTypeTableCustomFieldValueXREF" Role="MoqTypeTableCustomFieldValueXREF" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomFieldValue">
+              <PropertyRef Name="CustomFieldValueID" />
+            </Principal>
+            <Dependent Role="MoqTypeTableCustomFieldValueXREF">
+              <PropertyRef Name="CustomFieldValueId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__MoqTypeTa__MoqTy__4F44628E">
+          <End Type="GenBOE.Models.MOQTypeSelectionTableData" Role="MOQTypeSelectionTableData" Multiplicity="1" />
+          <End Type="GenBOE.Models.MoqTypeTableCustomFieldValueXREF" Role="MoqTypeTableCustomFieldValueXREF" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="MOQTypeSelectionTableData">
+              <PropertyRef Name="MOQTypeSelectionTableDataId" />
+            </Principal>
+            <Dependent Role="MoqTypeTableCustomFieldValueXREF">
+              <PropertyRef Name="MoqTypeTableDataId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -15960,6 +16080,18 @@ warning 6002: The table/view 'GenBOESpace.version.WorkBreakdownStructure' does n
             </EntityTypeMapping>
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="copyWorkspace" FunctionName="GenBOE.Models.Store.copyWorkspace" />
+          <EntitySetMapping Name="MoqTypeTableCustomFieldValueXREFs">
+            <EntityTypeMapping TypeName="GenBOE.Models.MoqTypeTableCustomFieldValueXREF">
+              <MappingFragment StoreEntitySet="MoqTypeTableCustomFieldValueXREF">
+                <ScalarProperty Name="CustomFieldValueId" ColumnName="CustomFieldValueId" />
+                <ScalarProperty Name="MoqTypeTableDataId" ColumnName="MoqTypeTableDataId" />
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="deleteMoqTypeTableCustomFieldValue" FunctionName="GenBOE.Models.Store.deleteMoqTypeTableCustomFieldValue" />
+          <FunctionImportMapping FunctionImportName="upsertMoqTypeTableCustomFieldValue" FunctionName="GenBOE.Models.Store.upsertMoqTypeTableCustomFieldValue" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

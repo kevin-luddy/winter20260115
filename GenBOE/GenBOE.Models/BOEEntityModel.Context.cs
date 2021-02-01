@@ -173,6 +173,7 @@ namespace GenBOE.Models
         public virtual DbSet<MOQTypeSelectionTableData> MOQTypeSelectionTableDatas { get; set; }
         public virtual DbSet<BOELaborType> BOELaborTypes { get; set; }
         public virtual DbSet<MOQTypeSelection> MOQTypeSelections { get; set; }
+        public virtual DbSet<MoqTypeTableCustomFieldValueXREF> MoqTypeTableCustomFieldValueXREFs { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]
         public virtual IQueryable<SplitString_Result> SplitString(string list, string delimiter, string emptyListItem)
@@ -5411,6 +5412,64 @@ namespace GenBOE.Models
                 new ObjectParameter("CostVolumeLeadPricerUserID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("copyWorkspace", workspaceIDParameter, workspaceNameParameter, workspaceShortNameParameter, costVolumeLeadPricerUserIDParameter);
+        }
+    
+        public virtual int deleteMoqTypeTableCustomFieldValue(Nullable<int> id, Nullable<int> moqTypeTableDataId, Nullable<int> customFieldValueId, Nullable<System.DateTime> updateDT, Nullable<bool> isOpenEnded)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            var moqTypeTableDataIdParameter = moqTypeTableDataId.HasValue ?
+                new ObjectParameter("MoqTypeTableDataId", moqTypeTableDataId) :
+                new ObjectParameter("MoqTypeTableDataId", typeof(int));
+    
+            var customFieldValueIdParameter = customFieldValueId.HasValue ?
+                new ObjectParameter("CustomFieldValueId", customFieldValueId) :
+                new ObjectParameter("CustomFieldValueId", typeof(int));
+    
+            var updateDTParameter = updateDT.HasValue ?
+                new ObjectParameter("UpdateDT", updateDT) :
+                new ObjectParameter("UpdateDT", typeof(System.DateTime));
+    
+            var isOpenEndedParameter = isOpenEnded.HasValue ?
+                new ObjectParameter("IsOpenEnded", isOpenEnded) :
+                new ObjectParameter("IsOpenEnded", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteMoqTypeTableCustomFieldValue", idParameter, moqTypeTableDataIdParameter, customFieldValueIdParameter, updateDTParameter, isOpenEndedParameter);
+        }
+    
+        public virtual ObjectResult<Nullable<int>> upsertMoqTypeTableCustomFieldValue(Nullable<int> id, Nullable<int> moqTypeTableDataId, Nullable<int> customFieldId, Nullable<int> customFieldValueId, string customFieldValue, Nullable<System.DateTime> updateDT, Nullable<bool> isOpenEnded)
+        {
+            var idParameter = id.HasValue ?
+                new ObjectParameter("Id", id) :
+                new ObjectParameter("Id", typeof(int));
+    
+            var moqTypeTableDataIdParameter = moqTypeTableDataId.HasValue ?
+                new ObjectParameter("MoqTypeTableDataId", moqTypeTableDataId) :
+                new ObjectParameter("MoqTypeTableDataId", typeof(int));
+    
+            var customFieldIdParameter = customFieldId.HasValue ?
+                new ObjectParameter("CustomFieldId", customFieldId) :
+                new ObjectParameter("CustomFieldId", typeof(int));
+    
+            var customFieldValueIdParameter = customFieldValueId.HasValue ?
+                new ObjectParameter("CustomFieldValueId", customFieldValueId) :
+                new ObjectParameter("CustomFieldValueId", typeof(int));
+    
+            var customFieldValueParameter = customFieldValue != null ?
+                new ObjectParameter("CustomFieldValue", customFieldValue) :
+                new ObjectParameter("CustomFieldValue", typeof(string));
+    
+            var updateDTParameter = updateDT.HasValue ?
+                new ObjectParameter("UpdateDT", updateDT) :
+                new ObjectParameter("UpdateDT", typeof(System.DateTime));
+    
+            var isOpenEndedParameter = isOpenEnded.HasValue ?
+                new ObjectParameter("IsOpenEnded", isOpenEnded) :
+                new ObjectParameter("IsOpenEnded", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertMoqTypeTableCustomFieldValue", idParameter, moqTypeTableDataIdParameter, customFieldIdParameter, customFieldValueIdParameter, customFieldValueParameter, updateDTParameter, isOpenEndedParameter);
         }
     }
 }

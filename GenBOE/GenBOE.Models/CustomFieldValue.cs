@@ -23,6 +23,7 @@ namespace GenBOE.Models
             this.MSTTravelTripCustomFieldValueXREFs = new HashSet<MSTTravelTripCustomFieldValueXREF>();
             this.TravelTripCustomFieldValueXREFs = new HashSet<TravelTripCustomFieldValueXREF>();
             this.TravelTripTaskElementCustomFieldValueXREFs = new HashSet<TravelTripTaskElementCustomFieldValueXREF>();
+            this.MoqTypeTableCustomFieldValueXREFs = new HashSet<MoqTypeTableCustomFieldValueXREF>();
         }
     
         public int CustomFieldValueID { get; set; }
@@ -45,5 +46,7 @@ namespace GenBOE.Models
         public virtual ICollection<TravelTripCustomFieldValueXREF> TravelTripCustomFieldValueXREFs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TravelTripTaskElementCustomFieldValueXREF> TravelTripTaskElementCustomFieldValueXREFs { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MoqTypeTableCustomFieldValueXREF> MoqTypeTableCustomFieldValueXREFs { get; set; }
     }
 }

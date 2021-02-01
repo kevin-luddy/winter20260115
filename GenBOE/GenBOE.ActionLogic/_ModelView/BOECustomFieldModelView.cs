@@ -21,5 +21,10 @@ namespace GenBOE.ActionLogic.ModelView
         /// Whether the user has explicitly confirmed (via popup) that it is OK to proceed with committing changes.
         /// </summary>
         public bool UserHasConfirmed { get; set; }
+
+        /// <summary>
+        /// Whether Workspace is using Template BOE
+        /// </summary>
+        public bool UsingTemplateBoe { get; set; }
     }
 }
