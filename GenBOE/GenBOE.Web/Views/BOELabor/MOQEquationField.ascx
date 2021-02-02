@@ -473,8 +473,10 @@
                 <div class="form-label">
                     <select size="7" data-ng-model="model.SortingMoqType" data-ng-options="moqType as moqType.SelectedMOQTypeText for moqType in model.SelectedMoqTypes | orderBy: 'Order'" class="moqSortingList"></select>
                     <div class="buttons inline-block centered">
-                        <button data-ng-disabled="!model.SortingMoqType" id="MoqTypesMoveItemsUp" style="margin-left: 7px;" class="ies move-button moqTypes" data-ng-click="MoveUpMoqType()" type="button">Move Up</button>
-                        <button data-ng-disabled="!model.SortingMoqType" id="MoqTypesMoveItemsDown" style="margin-left: 7px;" class="ies move-button moqTypes" data-ng-click="MoveDownMoqType()"type="button">Move Down</button>
+                        <button data-ng-disabled="!model.SortingMoqType" data-ng-hide="sortingInProgress" id="MoqTypesMoveItemsUp" class="ies move-button moqTypes" data-ng-click="MoveUpMoqType()" type="button">Move Up</button>
+                        <button data-ng-disabled="!model.SortingMoqType" data-ng-hide="sortingInProgress" id="MoqTypesMoveItemsDown" class="ies move-button moqTypes" data-ng-click="MoveDownMoqType()"type="button">Move Down</button>
+
+                        <div class="move-button moqTypes loader" data-ng-show="sortingInProgress"></div>
                     </div>
                 </div>
             </div>
@@ -486,7 +488,7 @@
             </div>
         </div>
     </div>
-        <div id="ReOrderMoqTablesDialog" class="reorder-moq-tables-dialog" style="display: none;">
+    <div id="ReOrderMoqTablesDialog" class="reorder-moq-tables-dialog" style="display: none;">
         <div class="container">
             <div class="form-row">
                 <div class="form-element">Sort MOQ Tables using the move buttons.  Close when finished.  The defined order will be maintained when exporting data to MS Word.</div>
