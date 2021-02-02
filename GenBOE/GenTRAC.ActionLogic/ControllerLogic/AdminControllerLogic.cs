@@ -737,7 +737,7 @@ namespace GenTRAC.ActionLogic
                     TotalPrice = totalPrice,
                     ChecklistSubmittedDatePricer = checklistSubmittedDatePricer,
                     ChecklistSubmittedDatePeer = checklistSubmittedDatePeer,
-                    Comments = manageProposalInfo.Comments
+                    Comments = manageProposalInfo.Comments ?? string.Empty
                 };
 
                 toReturn = this.manageProposalInfoLoader.SaveProposalInfo(manageProposalInfoDto);
