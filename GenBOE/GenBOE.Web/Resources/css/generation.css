@@ -8532,3 +8532,11 @@ button.move-button.moqTypes {
 .tableData td input.weekYear {
     width: 60px;
 }
+
+.move-button.moqTypes {
+    margin-left: 7px;
+}
+
+.move-button.moqTypes.loader {
+    width:30px;
+}

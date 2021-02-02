@@ -195,8 +195,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         return $scope.model.SelectedMoqTypes.sort((a, b) => (a.Order < b.Order) ? -1 : 1);
     }
 
+    // Used to lock the page up while sorting. This is needed for TinyMCE to initialize correctly.
+    $scope.sortingInProgress = false;
+
     // Move MOQ Type up
     $scope.MoveUpMoqType = function () {
+        $scope.sortingInProgress = true;
         var newOrderArray = [];
         var pos = 0;
         $scope.OrderedSelectedMoqTypes().forEach(function (item) {
@@ -221,6 +225,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
     // Move MOQ Type down
     $scope.MoveDownMoqType = function () {
+        $scope.sortingInProgress = true;
         var newOrderArray = [];
         var pos = 0;
         var nextOffset = 0;
@@ -250,9 +255,17 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
                     var matchingItem = newOrderArray.find(({ SelectedMOQType }) => SelectedMOQType === item.SelectedMOQType);
                     item.Order = matchingItem.Order;
 
-                    $scope.InitializeRteFields(item.SelectedMOQType, true);
+                    InitializeRTE('DescriptionHoursRequired_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
+                    InitializeRTE('SmeReason_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
+                    InitializeRTE('SmeHoursLogic_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
+                    InitializeRTE('SmeDurationLogic_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
+                    InitializeRTE('SmeTaskEstimates_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
+                    InitializeRTE('Rationale_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
+                    InitializeRTE('SkillMixRationale_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
                 });
             });
+
+            $timeout(function () { $scope.sortingInProgress = false; }, 0);
         }, 0);
     }
 

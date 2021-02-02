@@ -216,7 +216,7 @@ namespace GenBOE.DataBridge.DTO
                         dtoToUpsert.Order, dtoToUpsert.CerName, dtoToUpsert.DescriptionHoursRequired, dtoToUpsert.SmeReason, 
                         dtoToUpsert.SmeHoursLogic, dtoToUpsert.SmeDurationLogic, dtoToUpsert.SmeTaskEstimates, dtoToUpsert.Rationale, dtoToUpsert.SkillMixRationale).FirstOrDefault();
 
-                    foreach(MoqTableData table in dtoToUpsert.TableData.Where(x => x.DateOfReport != DateTime.MinValue && x.PoPStart != DateTime.MinValue && x.PoPEnd != DateTime.MinValue))
+                    foreach(MoqTableData table in dtoToUpsert.TableData.Where(x => x.DateOfReport.Date != DateTime.MinValue.Date && x.PoPStart.Date != DateTime.MinValue.Date && x.PoPEnd.Date != DateTime.MinValue.Date))
                     {
                         int? tableId = gbe.upsertMOQTypeSelectionTableData(table.Id, toReturn, table.UpdateDate, table.Order, table.TableName, table.RepositoryName, table.QueryType,
                             table.DateOfReport, table.HistoricalProgramName, table.ContractNumber, table.WbsElement, table.PoPStart, table.PoPEnd, table.TotalWbsHours,
