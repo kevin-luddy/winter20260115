@@ -37,6 +37,11 @@ namespace GenTRAC.ActionLogic.ModelView.Home
         public string FilterProposalClass { get; set; }
 
         /// <summary>
+        /// Gets or sets the Viewer Filter Option - Show only my proposals (0), Show proposals for my organization (1)
+        /// </summary>
+        public string ViewerFilterOption { get; set; }
+
+        /// <summary>
         ///  default constructor
         /// </summary>
         public ExportProposalReportModelView()

@@ -28,6 +28,14 @@
           <QueryParameter Name="@NTID">
             <Value>=Parameters!NTID.Value</Value>
           </QueryParameter>
+          <QueryParameter Name="@ShowProposalsForMyOrganization">
+            <Value>=Parameters!ShowProposalsForMyOrganization.Value</Value>
+            <rd:UserDefined>true</rd:UserDefined>
+          </QueryParameter>
+          <QueryParameter Name="@UserAndGroupIDs">
+            <Value>=Parameters!UserAndGroupIDs.Value</Value>
+            <rd:UserDefined>true</rd:UserDefined>
+          </QueryParameter>
           <QueryParameter Name="@ProposalClassFilterID">
             <Value>=Parameters!ProposalClassID.Value</Value>
           </QueryParameter>
@@ -57,6 +65,10 @@
           <DataField>Customer</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="CustomerTypeId">
+          <DataField>CustomerTypeId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
         <Field Name="Estimated_Value">
           <DataField>Estimated Value</DataField>
           <rd:TypeName>System.Int64</rd:TypeName>
@@ -81,6 +93,10 @@
           <DataField>Peer Reviewer</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="IndependentReviewerUserId">
+          <DataField>IndependentReviewerUserId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
         <Field Name="Date_Assigned">
           <DataField>Date Assigned</DataField>
           <rd:TypeName>System.DateTime</rd:TypeName>
@@ -88,6 +104,10 @@
         <Field Name="Estimated_Ship_Date__Due_Date_">
           <DataField>Estimated Ship Date (Due Date)</DataField>
           <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="IndependentReviewerNtId">
+          <DataField>IndependentReviewerNtId</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="PricingVerificationNtId">
           <DataField>PricingVerificationNtId</DataField>
@@ -97,6 +117,10 @@
           <DataField>Proposal Submit Date</DataField>
           <rd:TypeName>System.DateTime</rd:TypeName>
         </Field>
+        <Field Name="PricingVerificationUserId">
+          <DataField>PricingVerificationUserId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
         <Field Name="Proposal_Status">
           <DataField>Proposal Status</DataField>
           <rd:TypeName>System.String</rd:TypeName>
@@ -105,9 +129,17 @@
           <DataField>IndependentReviewerName</DataField>
           <rd:UserDefined>true</rd:UserDefined>
         </Field>
+        <Field Name="CoverSheetApproverUserId">
+          <DataField>CoverSheetApproverUserId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
         <Field Name="PricingVerificationName">
           <DataField>PricingVerificationName</DataField>
           <rd:UserDefined>true</rd:UserDefined>
+        </Field>
+        <Field Name="CoverSheetApproverNtId">
+          <DataField>CoverSheetApproverNtId</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
         </Field>
         <Field Name="CoverSheetApproverName">
           <DataField>CoverSheetApproverName</DataField>
@@ -117,6 +149,10 @@
           <DataField>ProposalMgrName</DataField>
           <rd:UserDefined>true</rd:UserDefined>
         </Field>
+        <Field Name="ProposalMgrUserId">
+          <DataField>ProposalMgrUserId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
         <Field Name="TechLeadName">
           <DataField>TechLeadName</DataField>
           <rd:UserDefined>true</rd:UserDefined>
@@ -124,6 +160,46 @@
         <Field Name="ForecastedTrackingNumber">
           <DataField>Forecasted Tracking Number</DataField>
           <rd:UserDefined>true</rd:UserDefined>
+        </Field>
+        <Field Name="ProposalMgrNtId">
+          <DataField>ProposalMgrNtId</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="TechLeadUserId">
+          <DataField>TechLeadUserId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="TechLeadNtId">
+          <DataField>TechLeadNtId</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="LeadEstimatorUserId">
+          <DataField>LeadEstimatorUserId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="LeadEstimatorNtId">
+          <DataField>LeadEstimatorNtId</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ChecklistCompleteDate">
+          <DataField>ChecklistCompleteDate</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="Revised_Submittal_Date">
+          <DataField>Revised Submittal Date</DataField>
+          <rd:TypeName>System.DateTime</rd:TypeName>
+        </Field>
+        <Field Name="DocumentId">
+          <DataField>DocumentId</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
+        </Field>
+        <Field Name="ProposalClass">
+          <DataField>ProposalClass</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="HasOrIsRevision">
+          <DataField>HasOrIsRevision</DataField>
+          <rd:TypeName>System.Int32</rd:TypeName>
         </Field>
       </Fields>
     </DataSet>
@@ -1662,11 +1738,22 @@
       <Nullable>true</Nullable>
       <Prompt>Proposal Class ID</Prompt>
     </ReportParameter>
+    <ReportParameter Name="ShowProposalsForMyOrganization">
+      <DataType>Boolean</DataType>
+      <Nullable>true</Nullable>
+      <Prompt>Show Proposals For My Organization</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="UserAndGroupIDs">
+      <DataType>String</DataType>
+      <Nullable>true</Nullable>
+      <AllowBlank>true</AllowBlank>
+      <Prompt>User And Group IDs</Prompt>
+    </ReportParameter>
   </ReportParameters>
   <ReportParametersLayout>
     <GridLayoutDefinition>
       <NumberOfColumns>2</NumberOfColumns>
-      <NumberOfRows>4</NumberOfRows>
+      <NumberOfRows>5</NumberOfRows>
       <CellDefinitions>
         <CellDefinition>
           <ColumnIndex>0</ColumnIndex>
@@ -1697,6 +1784,16 @@
           <ColumnIndex>0</ColumnIndex>
           <RowIndex>3</RowIndex>
           <ParameterName>ProposalClassID</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>1</ColumnIndex>
+          <RowIndex>3</RowIndex>
+          <ParameterName>ShowProposalsForMyOrganization</ParameterName>
+        </CellDefinition>
+        <CellDefinition>
+          <ColumnIndex>0</ColumnIndex>
+          <RowIndex>4</RowIndex>
+          <ParameterName>UserAndGroupIDs</ParameterName>
         </CellDefinition>
       </CellDefinitions>
     </GridLayoutDefinition>
