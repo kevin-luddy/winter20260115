@@ -92,6 +92,36 @@ namespace GenTRAC.ActionLogic.ModelView.Home
         }
 
         /// <summary>
+        /// Submitted Value
+        /// </summary>
+        public long? SubmittedValue { get; set; }
+
+        /// <summary>
+        /// Gets the string value of Submitted Value
+        /// </summary>
+        public string SubmittedValueString
+        {
+            get
+            {
+                if (this.SubmittedValue.HasValue)
+                {
+                    if (this.SubmittedValue.Value < 0)
+                    {
+                        return string.Format("({0:#,###0})", Math.Abs(this.SubmittedValue.Value));
+                    }
+                    else
+                    {
+                        return string.Format("{0:#,###0}", this.SubmittedValue);
+                    }
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+        }
+
+        /// <summary>
         /// Proposal date assigned
         /// </summary>
         public DateTime? ProposalDateAssigned { get; set; }

@@ -37,6 +37,7 @@ AS
 **			6/18/2020	ranzalon				BOEJ-4636 - Revised Proposals in All
 **			7/15/2020	Dusan					BOEJ-4700: Pull Has / Is Revision Data
 **			8/14/2020	ranzalon				BOEJ-4676 - Use revised submittal date when available
+**			2/2/2021	ranzalon				BOEJ-4861 - Add submitted value
 ******************************************************************************/
 	SET NOCOUNT ON 
 
@@ -71,6 +72,7 @@ AS
 		P.Customer AS [Customer],
 		P.CustomerTypeId As [CustomerTypeId],
 		P.EstimatedProposalValue AS [Estimated Value],
+		PC.ISGSTotalPrice as [Submitted Value],
 		CaptureManager.DisplayName AS [Capture Manager],
 		LeadEstimator.DisplayName AS [Pricer Name],
 		PeerReviewer.DisplayName AS [Peer Reviewer],

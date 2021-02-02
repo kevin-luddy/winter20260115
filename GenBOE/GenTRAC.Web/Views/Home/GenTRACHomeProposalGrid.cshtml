@@ -23,14 +23,15 @@
 <div id="homeProposalGrid" class="homeProposalGrid">
     <table id="homeProposalTable" name="homeProposalTable" class="row-template grid sortable readonly" style="width: 100%;">
         <colgroup>
-            <col width="70px"/>
+            <col width="70px" />
             <col />
-            <col width="70px"/>
+            <col width="70px" />
             <col />
-            <col width="70px"/>
+            <col width="70px" />
+            <col width="70px" />
             <col />
             <col />
-            <col />
+            <col width="66px"/>
             <col />
             <col width="66px" />
             <col width="66px" />
@@ -45,10 +46,11 @@
                 <th sortby="ProgramArea"><span helptext="@Model.ProgramAreaHelpText">Program<br />Area</span></th>
                 <th sortby="Customer">Customer</th>
                 <th sortby="EstValue">Est.<br />Value ($)</th>
+                <th sortby="SubmittedValue">Submitted<br />Value ($)</th>
                 <th sortby="CaptureManagerDisplayName">Capture<br />Manager</th>
                 <th sortby="PricerDisplayName">Lead<br />Estimator</th>
                 <th sortby="PeerReviewerDisplayName">Independent<br />Reviewer</th>
-                <th sortby="CostVolumeLeadDisplayName">Cost Volume<br />Lead</th>
+                <th sortby="CostVolumeLeadDisplayName">Cost<br />Volume<br />Lead</th>
                 <th sortby="ProposalDateAssigned">Date<br />Assigned</th>
                 <th sortby="ProposalDueDate">Est.<br />Ship Date</th>
                 <th sortby="ProposalCompletedDate">Actual<br />Submittal<br />Date</th>
@@ -75,122 +77,122 @@
                 foreach (GenTRAC.ActionLogic.ModelView.Home.HomeProposalGridModelView item in Model.DataRows)
                 {
                     string deleteDisabledClass = item.IsDeleteAllowed ? string.Empty : "disabled-icon";
-                <tr class="row-template proposalDataRows">
-                    <td>
-                        @if (item.IsForecastProposal)
-                        {
-                        <span title="Temporary Forecasted Tracking Number">@item.ForecastedTrackingNumber</span>
-                        }
-                        else
-                        {
-                            <span class="auto-tooltip">@item.TrackingNumber</span>
-                        }
-                        <input type="hidden" id="ProposalId" name="ProposalId" value="@item.ProposalId" />
-                    </td>
-                    <td>
-                        <span class="auto-tooltip">@item.ProposalTitle</span>
-                    </td>
-                    <td>
-                        <span class="auto-tooltip">@item.ProgramArea</span>
-                    </td>
-                    <td>
-                        <span class="auto-tooltip">@item.Customer</span>
-                    </td>
-                    <td style="text-align: right;">
-                        <span class="auto-tooltip">@item.EstValueString</span>
-                    </td>
-                    <td>
-                        <span class="auto-tooltip">@item.CaptureManagerDisplayName</span>
-                    </td>
-                    <td>
-                        <span class="auto-tooltip">@item.PricerDisplayName</span>
-                    </td>
-                    <td>
-                        <span class="auto-tooltip">@item.PeerReviewerDisplayName</span>
-                    </td>
-                    <td>
-                        <span class="auto-tooltip">@item.CostVolumeLeadDisplayName</span>
-                    </td>
-                    <td>
-                        <span class="auto-tooltip">@item.ProposalDateAssignedString</span>
-                    </td>
-                    <td style="@item.DueDateBackground">
-                        <span class="auto-tooltip">@item.ProposalDueDateString</span>
-                    </td>
-                    <td>
-                        <span class="auto-tooltip">@item.ProposalCompletedDateString</span>
-                    </td>
-                    <td>
-                        <span class="auto-tooltip">@item.Status.GetDescription()</span>
-                    </td>
-                    <td class="manage-buttons">
-                        <a title="View or Edit the proposal record" class="button proposal-button" onmousedown="HomeProposalWidget.ShowProposal(event, '@item.ProposalId')"></a>
-                        @if (!item.IsForecastProposal)
-                        {
-                            <a title="View or Edit the checklists" class="button checklist-button" onmousedown="HomeProposalWidget.ShowChecklist(event, '@item.ProposalId');"></a>
-                            <a title="View or Edit the Approvals" class="button approval-button" onmousedown="HomeProposalWidget.ShowApprovals(event, '@item.ProposalId');"></a>
-                        }
-                        <div class="button delete-document-div" title="@item.DeleteButtonTitle">
-                            <span class="fa fa-remove delete-document-icon @deleteDisabledClass" 
-                                @if (item.IsDeleteAllowed) {
-                                    <text>onclick = "HomeProposalWidget.ShowConfirmDelete(event, '@item.ProposalId')"</text>
+        <tr class="row-template proposalDataRows">
+            <td>
+                @if (item.IsForecastProposal)
+                {
+                    <span title="Temporary Forecasted Tracking Number">@item.ForecastedTrackingNumber</span>
+                }
+                else
+                {
+                    <span class="auto-tooltip">@item.TrackingNumber</span>
+                }
+                <input type="hidden" id="ProposalId" name="ProposalId" value="@item.ProposalId" />
+            </td>
+            <td>
+                <span class="auto-tooltip">@item.ProposalTitle</span>
+            </td>
+            <td>
+                <span class="auto-tooltip">@item.ProgramArea</span>
+            </td>
+            <td>
+                <span class="auto-tooltip">@item.Customer</span>
+            </td>
+            <td style="text-align: right;">
+                <span class="auto-tooltip">@item.EstValueString</span>
+            </td>
+            <td style="text-align: right;">
+                <span class="auto-tooltip">@item.SubmittedValueString</span>
+            </td>
+            <td>
+                <span class="auto-tooltip">@item.CaptureManagerDisplayName</span>
+            </td>
+            <td>
+                <span class="auto-tooltip">@item.PricerDisplayName</span>
+            </td>
+            <td>
+                <span class="auto-tooltip">@item.PeerReviewerDisplayName</span>
+            </td>
+            <td>
+                <span class="auto-tooltip">@item.CostVolumeLeadDisplayName</span>
+            </td>
+            <td>
+                <span class="auto-tooltip">@item.ProposalDateAssignedString</span>
+            </td>
+            <td style="@item.DueDateBackground">
+                <span class="auto-tooltip">@item.ProposalDueDateString</span>
+            </td>
+            <td>
+                <span class="auto-tooltip">@item.ProposalCompletedDateString</span>
+            </td>
+            <td>
+                <span class="auto-tooltip">@item.Status.GetDescription()</span>
+            </td>
+            <td class="manage-buttons">
+                <a title="View or Edit the proposal record" class="button proposal-button" onmousedown="HomeProposalWidget.ShowProposal(event, '@item.ProposalId')"></a>
+                @if (!item.IsForecastProposal)
+                {
+                    <a title="View or Edit the checklists" class="button checklist-button" onmousedown="HomeProposalWidget.ShowChecklist(event, '@item.ProposalId');"></a>
+                    <a title="View or Edit the Approvals" class="button approval-button" onmousedown="HomeProposalWidget.ShowApprovals(event, '@item.ProposalId');"></a>
+                }
+                <div class="button delete-document-div" title="@item.DeleteButtonTitle">
+                    <span class="fa fa-remove delete-document-icon @deleteDisabledClass"
+                          @if (item.IsDeleteAllowed) { <text> onclick="HomeProposalWidget.ShowConfirmDelete(event, '@item.ProposalId')" </text>  }></span>
+                </div>
+                @if (!item.IsForecastProposal)
+                {
+                    <br />
+                    <a title="View or Edit Post Submittal Attachments" class="fa fa-paperclip button psa-button" onmousedown="HomeProposalWidget.ShowPostSubmittalAttachments(event, '@item.ProposalId');"></a>
+                    if (item.Workspaces.Any() || (Model.CanCreateBOEWorkspace && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised))
+                    {
+                        <div class="dropdown">
+                            <button class="dropbtn boe-button"></button>
+                            <div class="dropdown-content">
+                                @foreach (string workspace in item.Workspaces)
+                                {
+                                    <a href="@(boeUrl)@workspace" target="_blank">@workspace</a>
                                 }
-                            ></span>
+                                @if (Model.CanCreateBOEWorkspace && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised)
+                                {
+                                    <a href="@(boeUrl)default/Workspace/CreateWorkspace?TrackingNumber=@item.TrackingNumber" target="_blank">Create New genBOE Workspace</a>
+                                }
+                            </div>
                         </div>
-                        @if(!item.IsForecastProposal)
-                        { 
-                            <br />
-                            <a title="View or Edit Post Submittal Attachments" class="fa fa-paperclip button psa-button" onmousedown="HomeProposalWidget.ShowPostSubmittalAttachments(event, '@item.ProposalId');"></a>                        
-                            if (item.Workspaces.Any() || (Model.CanCreateBOEWorkspace && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised))
-                            {
-                                <div class="dropdown">
-                                    <button class="dropbtn boe-button"></button>
-                                    <div class="dropdown-content">
-                                        @foreach (string workspace in item.Workspaces)
-                                        {
-                                            <a href="@(boeUrl)@workspace" target="_blank">@workspace</a>
-                                        }
-                                        @if (Model.CanCreateBOEWorkspace && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised)
-                                        {
-                                            <a href="@(boeUrl)default/Workspace/CreateWorkspace?TrackingNumber=@item.TrackingNumber" target="_blank">Create New genBOE Workspace</a>
-                                        }
-                                    </div>
-                                </div>
-                            }
+                    }
 
-                            if (!item.IsCommercialCustomer)
-                            {
-                                if (item.HasLinkedDocument)
-                                {
-                                    <div class="add-document-div">
-                                        <div class="document-button-div">
-                                            @if (item.HasWriteAccessToLinkedDocument)
-                                            {
-                                                <a title="Edit Rates &amp; Disclosures Document" href="@(rdsbWriteAccessUrl)@item.ProposalId" target="_blank"><i class="fa fa-file-text-o document-button"></i></a>
-                                            }
-                                            else
-                                            {
-                                                <a title="Download Rates &amp; Disclosures Document" href="#" onclick="HomeProposalGridWidget.performExport('@(rdsbReadAccessUrl)@item.ProposalId');"><i class="fa fa-file-text-o document-button"></i></a>
-                                            }
-                                        </div>
-                                    </div>
-                                }
-                                else if (item.HasWriteAccessToLinkedDocument && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised)
-                                {
-                                    <div class="add-document-div">
-                                        <div class="document-button-div fa-stack add-document-icon-stack">
-                                            <a title="Create Rates &amp; Disclosures Document" href="@(rdsbWriteAccessUrl)@item.ProposalId?createIfNotExists=true" target="_blank">
-                                                <i class="fa fa-circle fa-stack-1x add-document-icon-circle"></i>
-                                                <i class="fa fa-plus fa-stack-2x add-document-icon-plus"></i>
-                                                <i class="fa fa-file-text-o add-document-icon document-button"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                }
-                            }
+                    if (!item.IsCommercialCustomer)
+                    {
+                        if (item.HasLinkedDocument)
+                        {
+                            <div class="add-document-div">
+                                <div class="document-button-div">
+                                    @if (item.HasWriteAccessToLinkedDocument)
+                                    {
+                                        <a title="Edit Rates &amp; Disclosures Document" href="@(rdsbWriteAccessUrl)@item.ProposalId" target="_blank"><i class="fa fa-file-text-o document-button"></i></a>
+                                    }
+                                    else
+                                    {
+                                        <a title="Download Rates &amp; Disclosures Document" href="#" onclick="HomeProposalGridWidget.performExport('@(rdsbReadAccessUrl)@item.ProposalId');"><i class="fa fa-file-text-o document-button"></i></a>
+                                    }
+                                </div>
+                            </div>
                         }
-                    </td>
-                </tr>
+                        else if (item.HasWriteAccessToLinkedDocument && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised)
+                        {
+                            <div class="add-document-div">
+                                <div class="document-button-div fa-stack add-document-icon-stack">
+                                    <a title="Create Rates &amp; Disclosures Document" href="@(rdsbWriteAccessUrl)@item.ProposalId?createIfNotExists=true" target="_blank">
+                                        <i class="fa fa-circle fa-stack-1x add-document-icon-circle"></i>
+                                        <i class="fa fa-plus fa-stack-2x add-document-icon-plus"></i>
+                                        <i class="fa fa-file-text-o add-document-icon document-button"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    }
+                }
+            </td>
+        </tr>
                 }
             }
         </tbody>

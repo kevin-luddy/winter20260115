@@ -286,6 +286,7 @@ namespace GenTRAC.ActionLogic
                     TrackingNumber = proposal.TrackingNumber,
                     ForecastedTrackingNumber = proposal.ForecastedTrackingNumber,
                     EstValue = proposal.EstValue,
+                    SubmittedValue = proposal.SubmittedValue,
                     CaptureManagerDisplayName = proposal.CaptureManagerDisplayName,
                     PricerDisplayName = proposal.PricerDisplayName,
                     PeerReviewerDisplayName = proposal.PeerReviewerDisplayName,
