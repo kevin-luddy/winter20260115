@@ -286,6 +286,7 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 if (moqTableCustomFieldNames.Any())
                 {
+                    // TODO - Dusan - problems here
                     ExcelUtilities.DuplicateColumn(document, "MOQ Table Data", "MOQ Table Custom Field", moqTableCustomFieldNames);
                 }
                 else
@@ -1246,7 +1247,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         
                         foreach (MoqTableData table in moqType.TableData)
                         {
-                            IList<string> row = GetMOQTableDataRow(boe, task, selectedMoqType, table);
+                            IList<string> row = GetMOQTableDataRow(boe, task, selectedMoqType, table, exportInputs);
 
                             toReturn.Add(row);
                         }
@@ -1264,12 +1265,14 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="task">Task</param>
         /// <param name="selectedMoqType">Selected MOQ Type</param>
         /// <param name="table">MOQ Table</param>
+        /// <param name="exportInputs">Export Inputs</param>
         /// <returns>MOQ Table Data row for the given data</returns>
-        protected virtual IList<string> GetMOQTableDataRow(BoeDTO boe, BoeTaskElementDTO task, string selectedMoqType, MoqTableData table)
+        protected virtual IList<string> GetMOQTableDataRow(BoeDTO boe, BoeTaskElementDTO task, string selectedMoqType, MoqTableData table, BOEExportInputs exportInputs)
         {
             _ = boe ?? throw new ArgumentNullException(nameof(boe));
             _ = task ?? throw new ArgumentNullException(nameof(task));
             _ = table ?? throw new ArgumentNullException(nameof(table));
+            _ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
 
             IList<string> toReturn = new List<string>()
             {
@@ -1285,15 +1288,17 @@ namespace GenBOE.ActionLogic.IO.Export
                 table.HistoricalProgramName,
                 table.WbsElement,
                 table.PoPStartString,
-                table.PoPEndString,
-                table.AdditionalQueryFilters,
-                table.TotalRelevantHours.ToString()
+                table.PoPEndString
             };
 
-            foreach(CustomFieldValueContainer customFieldValue in table.CustomFieldValueContainers)
+            foreach (CustomFieldDTO customField in exportInputs.CustomFields.Where(x => x.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay))
             {
-                toReturn.Add(customFieldValue.OpenEndedValue);
+                CustomFieldValueContainer customFieldValue = table.CustomFieldValueContainers.FirstOrDefault(x => x.CustomFieldID == customField.Id);
+                toReturn.Add(customFieldValue != null ? customFieldValue.OpenEndedValue : this.sEmpty);
             }
+
+            toReturn.Add(table.AdditionalQueryFilters);
+            toReturn.Add(table.TotalRelevantHours.ToString());
 
             return toReturn;
         }
