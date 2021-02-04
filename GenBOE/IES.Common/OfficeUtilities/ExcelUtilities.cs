@@ -1132,20 +1132,13 @@ namespace IES.Common.OfficeUtilities
 
                             foreach (var greaterColumn in greaterColumns)
                             {
-                                if (greaterColumn == greaterColumns.First())
+                                for (var ndx = (int)greaterColumn.Max.Value; ndx >= (int)greaterColumn.Min.Value; ndx--)
                                 {
-                                    greaterColumn.Min = greaterColumn.Min + (uint)duplications;
+                                    TransferAllCellsFromOneColumnToAnother(worksheetPart, GetColumnNameFromColumnIndex(ndx - 1), GetColumnNameFromColumnIndex(ndx + duplications - 1), true);
                                 }
-                                else
-                                {
-                                    for (var ndx = (int)greaterColumn.Max.Value; ndx >= (int)greaterColumn.Min.Value; ndx--)
-                                    {
-                                        TransferAllCellsFromOneColumnToAnother(worksheetPart, GetColumnNameFromColumnIndex(ndx - 1), GetColumnNameFromColumnIndex(ndx + duplications - 1), true);
-                                    }
 
-                                    greaterColumn.Min = greaterColumn.Min + (uint)duplications;
-                                    greaterColumn.Max = greaterColumn.Max + (uint)duplications;
-                                }
+                                greaterColumn.Min = greaterColumn.Min + (uint)duplications;
+                                greaterColumn.Max = greaterColumn.Max + (uint)duplications;
                             }
 
                             for (var ndx = columnIndex + duplications; ndx >= columnIndex + 1; ndx--)

@@ -286,7 +286,6 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 if (moqTableCustomFieldNames.Any())
                 {
-                    // TODO - Dusan - problems here
                     ExcelUtilities.DuplicateColumn(document, "MOQ Table Data", "MOQ Table Custom Field", moqTableCustomFieldNames);
                 }
                 else
@@ -1376,9 +1375,14 @@ namespace GenBOE.ActionLogic.IO.Export
                         this.sEmpty, // Task Title
                         this.sEmpty, // MOQ Equation
                         this.sEmpty, // MOQ Type
-                        this.sEmpty, // MOQ Rationale
-                        this.sEmpty // Segment Region
                     });
+
+                if (!exportInputs.FullWorkspace.UsingTemplateBOE)
+                {
+                    row.Add(this.sEmpty); // MOQ Rationale, unless using BOE / MOQ Templates
+                }
+
+                row.Add(this.sEmpty); // Segment Region
 
                 row.AddRange(this.GetBoeWbsClinTitleAndDateFields(boe, allWbs, allClins));
 
