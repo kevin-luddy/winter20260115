@@ -722,11 +722,12 @@ namespace GenBOE.ActionLogic.IO.Export
                 Table tableElement = moqTypeTableContainer.Descendants<Table>().FirstOrDefault();
                 if (tableElement != null)
                 {
-                    // clone the last row to use it as a template for adding new rows
-                    TableRow lastRow = tableElement.Elements<TableRow>().Last();
-                    TableRow cfTemplateRow = (TableRow)lastRow.CloneNode(true);
+                    // clone the row before Additional Query Filters to use it as a template for adding new rows
+                    TableRow rowToClone = WordUtilities.GetTaggedChildElement(moqTypeTableContainer, 
+                        SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ? BOEExporterConstants.FieldName_TotalWBSHours : BOEExporterConstants.FieldName_PoPEndDate).Ancestors<TableRow>().First();
+                    TableRow cfTemplateRow = (TableRow)rowToClone.CloneNode(true);
 
-                    foreach (CustomFieldValueContainer customFieldValue in table.CustomFieldValueContainers)
+                    foreach (CustomFieldValueContainer customFieldValue in table.CustomFieldValueContainers.Reverse())
                     {
                         // clone the template row
                         TableRow cfRow = (TableRow)cfTemplateRow.CloneNode(true);
@@ -765,8 +766,8 @@ namespace GenBOE.ActionLogic.IO.Export
                             }
                         }
 
-                        // Add row to the table
-                        tableElement.AppendChild(cfRow);
+                        // Add row to the table after the cloned row
+                        rowToClone.InsertAfterSelf(cfRow);
                     }
                 }
             }

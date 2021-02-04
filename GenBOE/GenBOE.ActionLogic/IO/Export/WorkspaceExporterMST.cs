@@ -204,12 +204,14 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="task">Task</param>
         /// <param name="selectedMoqType">Selected MOQ Type</param>
         /// <param name="table">MOQ Table</param>
+        /// <param name="exportInputs">Export Inputs</param>
         /// <returns>MOQ Table Data row for the given data</returns>
-        protected override IList<string> GetMOQTableDataRow(BoeDTO boe, BoeTaskElementDTO task, string selectedMoqType, MoqTableData table)
+        protected override IList<string> GetMOQTableDataRow(BoeDTO boe, BoeTaskElementDTO task, string selectedMoqType, MoqTableData table, BOEExportInputs exportInputs)
         {
             _ = boe ?? throw new ArgumentNullException(nameof(boe));
             _ = task ?? throw new ArgumentNullException(nameof(task));
             _ = table ?? throw new ArgumentNullException(nameof(table));
+            _ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
 
             IList<string> toReturn = new List<string>()
             {
@@ -225,15 +227,17 @@ namespace GenBOE.ActionLogic.IO.Export
                 table.WbsElement,
                 table.PoPStartString,
                 table.PoPEndString,
-                table.TotalWbsHours.ToString(),
-                table.AdditionalQueryFilters,
-                table.TotalRelevantHours.ToString()
+                table.TotalWbsHours.ToString()
             };
 
-            foreach (CustomFieldValueContainer customFieldValue in table.CustomFieldValueContainers)
+            foreach (CustomFieldDTO customField in exportInputs.CustomFields.Where(x => x.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay))
             {
-                toReturn.Add(customFieldValue.OpenEndedValue);
+                CustomFieldValueContainer customFieldValue = table.CustomFieldValueContainers.FirstOrDefault(x => x.CustomFieldID == customField.Id);
+                toReturn.Add(customFieldValue != null ? customFieldValue.OpenEndedValue : this.sEmpty);
             }
+
+            toReturn.Add(table.AdditionalQueryFilters);
+            toReturn.Add(table.TotalRelevantHours.ToString());
 
             return toReturn;
         }
