@@ -63,7 +63,7 @@
                     <b><%: Model.LabelLeadPricer %></b> <%: result.CostVolumeLeadPricer%><br />
                     <% if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST
                             && SiteMasterUtilities.IsProjectMapEnabled) { %>
-                    <b>Project Map Type:</b> <%: result.ProjectMapType.GetDescription() %><br />
+                    <b>Workspace Type:</b> <%: result.ProjectMapType.GetDescription() %><br />
                     <% } %>
                 </div>
                 <hr />

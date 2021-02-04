@@ -222,7 +222,7 @@
         <%if (SiteMasterUtilities.IsProjectMapEnabled) {%> 
 
         <div class="form-row">
-                    <div class="form-label">Project Map Type</div>
+                    <div class="form-label">Workspace Type</div>
                     <div class="form-element">
                         <%: Model.ProjectMapType.ToDescription() %>
                     </div>
