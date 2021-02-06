@@ -1114,7 +1114,7 @@ namespace IES.Common.OfficeUtilities
                 var columnName = GetColumnNameFromHeaderString(document, worksheetName, columnHeaderString);
                 var columnIndex = GetColumnIndexFromColumnName(columnName);
 
-                var worksheetPart = GetSpecifiedWorksheetPart(document, worksheetName); ;
+                var worksheetPart = GetSpecifiedWorksheetPart(document, worksheetName);
 
                 if (worksheetPart != null)
                 {
@@ -1132,13 +1132,20 @@ namespace IES.Common.OfficeUtilities
 
                             foreach (var greaterColumn in greaterColumns)
                             {
-                                for (var ndx = (int)greaterColumn.Max.Value; ndx >= (int)greaterColumn.Min.Value; ndx--)
+                                if (greaterColumn == greaterColumns.First())
                                 {
-                                    TransferAllCellsFromOneColumnToAnother(worksheetPart, GetColumnNameFromColumnIndex(ndx - 1), GetColumnNameFromColumnIndex(ndx + duplications - 1), true);
+                                    greaterColumn.Min = greaterColumn.Min + (uint)duplications;
                                 }
+                                else
+                                {
+                                    for (var ndx = (int)greaterColumn.Max.Value; ndx >= (int)greaterColumn.Min.Value; ndx--)
+                                    {
+                                        TransferAllCellsFromOneColumnToAnother(worksheetPart, GetColumnNameFromColumnIndex(ndx - 1), GetColumnNameFromColumnIndex(ndx + duplications - 1), true);
+                                    }
 
-                                greaterColumn.Min = greaterColumn.Min + (uint)duplications;
-                                greaterColumn.Max = greaterColumn.Max + (uint)duplications;
+                                    greaterColumn.Min = greaterColumn.Min + (uint)duplications;
+                                    greaterColumn.Max = greaterColumn.Max + (uint)duplications;
+                                }
                             }
 
                             for (var ndx = columnIndex + duplications; ndx >= columnIndex + 1; ndx--)
@@ -1147,8 +1154,6 @@ namespace IES.Common.OfficeUtilities
                             }
 
                             column.Max = column.Max + (uint)duplications;
-
-                            //column.Descendants<AutoFilter>
                         }
                     }
 
