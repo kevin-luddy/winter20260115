@@ -290,14 +290,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 }
                 else
                 {
-                    var columnNames = ExcelUtilities.GetAllColumnHeaderStrings(document, "MOQ Table Data");
                     ExcelUtilities.RemoveColumn(document, "MOQ Table Data", "MOQ Table Custom Field");
-                    var columnNames2 = ExcelUtilities.GetAllColumnHeaderStrings(document, "MOQ Table Data");
-                    if(columnNames.Count != columnNames2.Count)
-                    {
-                        columnNames = columnNames2;
-                    }
-
                 }
             }
         }
@@ -1294,11 +1287,10 @@ namespace GenBOE.ActionLogic.IO.Export
                 table.HistoricalProgramName,
                 table.WbsElement,
                 table.PoPStartString,
-                table.PoPEndString
+                table.PoPEndString,
+                table.AdditionalQueryFilters,
+                table.TotalRelevantHours.ToString()
             };
-
-            toReturn.Add(table.AdditionalQueryFilters);
-            toReturn.Add(table.TotalRelevantHours.ToString());
 
             foreach (CustomFieldDTO customField in exportInputs.CustomFields.Where(x => x.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay))
             {
