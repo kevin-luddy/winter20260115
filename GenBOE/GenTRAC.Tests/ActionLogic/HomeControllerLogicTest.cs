@@ -175,6 +175,7 @@ namespace GenTRAC.Tests.ActionLogic
                 Status = ProposalStatus.InProgress,
                 ProposalTitle = "TestProposal",
                 EstValue = 500,
+                SubmittedValue = 505,
                 ProposalSubmittalDate = new DateTime(2014, 5, 2),
                 ProgramArea = "C_MOCK",
                 ProposalDateAssigned = Convert.ToDateTime("12/12/2014"),
@@ -230,7 +231,9 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).TrackingNumber, proposal.TrackingNumber, "Proposal tracking number mismatch");
             Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).ForecastedTrackingNumber, proposal.ForecastedTrackingNumber, "Forecasted tracking number mismatch");
             Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).EstValue, proposal.EstValue, "Proposal est value mismatch");
-            Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).EstValueString, proposal.EstValue.ToString(), "Proposal est value mismatch");
+            Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).EstValueString, proposal.EstValue.ToString(), "Proposal est value string mismatch");
+            Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).SubmittedValue, proposal.SubmittedValue, "Proposal submitted value mismatch");
+            Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).SubmittedValueString, proposal.SubmittedValue.ToString(), "Proposal submitted value string mismatch");
             Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).CaptureManagerDisplayName, proposal.CaptureManagerDisplayName, "Capture Manager Display Name mismatch");
             Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).PricerDisplayName, proposal.PricerDisplayName, "Pricer name mismatch");
             Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).PeerReviewerDisplayName, proposal.PeerReviewerDisplayName, "Peer Reviewer name mismatch");
