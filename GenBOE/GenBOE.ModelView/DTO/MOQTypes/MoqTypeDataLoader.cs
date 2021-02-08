@@ -297,7 +297,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 foreach (MoqTableData table in selection.TableData)
                 {
-                    table.CustomFieldValueContainers = table.CustomFieldValueContainersIEnum.ToCollection();
+                    table.CustomFieldValueContainers = (table.CustomFieldValueContainersIEnum ?? new List<CustomFieldValueContainer>()).ToCollection();
                     table.CustomFieldValueContainersIEnum = null;
                 }
             }
