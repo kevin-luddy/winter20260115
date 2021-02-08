@@ -1287,7 +1287,9 @@ namespace GenBOE.ActionLogic.IO.Export
                 table.HistoricalProgramName,
                 table.WbsElement,
                 table.PoPStartString,
-                table.PoPEndString
+                table.PoPEndString,
+                table.AdditionalQueryFilters,
+                table.TotalRelevantHours.ToString()
             };
 
             foreach (CustomFieldDTO customField in exportInputs.CustomFields.Where(x => x.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay))
@@ -1295,9 +1297,6 @@ namespace GenBOE.ActionLogic.IO.Export
                 CustomFieldValueContainer customFieldValue = table.CustomFieldValueContainers.FirstOrDefault(x => x.CustomFieldID == customField.Id);
                 toReturn.Add(customFieldValue != null ? customFieldValue.OpenEndedValue : this.sEmpty);
             }
-
-            toReturn.Add(table.AdditionalQueryFilters);
-            toReturn.Add(table.TotalRelevantHours.ToString());
 
             return toReturn;
         }
