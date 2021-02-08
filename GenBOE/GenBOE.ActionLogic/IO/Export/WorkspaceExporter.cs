@@ -290,7 +290,14 @@ namespace GenBOE.ActionLogic.IO.Export
                 }
                 else
                 {
+                    var columnNames = ExcelUtilities.GetAllColumnHeaderStrings(document, "MOQ Table Data");
                     ExcelUtilities.RemoveColumn(document, "MOQ Table Data", "MOQ Table Custom Field");
+                    var columnNames2 = ExcelUtilities.GetAllColumnHeaderStrings(document, "MOQ Table Data");
+                    if(columnNames.Count != columnNames2.Count)
+                    {
+                        columnNames = columnNames2;
+                    }
+
                 }
             }
         }
@@ -1290,14 +1297,14 @@ namespace GenBOE.ActionLogic.IO.Export
                 table.PoPEndString
             };
 
+            toReturn.Add(table.AdditionalQueryFilters);
+            toReturn.Add(table.TotalRelevantHours.ToString());
+
             foreach (CustomFieldDTO customField in exportInputs.CustomFields.Where(x => x.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay))
             {
                 CustomFieldValueContainer customFieldValue = table.CustomFieldValueContainers.FirstOrDefault(x => x.CustomFieldID == customField.Id);
                 toReturn.Add(customFieldValue != null ? customFieldValue.OpenEndedValue : this.sEmpty);
             }
-
-            toReturn.Add(table.AdditionalQueryFilters);
-            toReturn.Add(table.TotalRelevantHours.ToString());
 
             return toReturn;
         }
