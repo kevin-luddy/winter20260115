@@ -1714,6 +1714,7 @@ namespace GenBOE.Web.Controllers
                 ICollection<BOECustomFieldsGridModelView> theModelViews = _ControllerLogic.GetCustomFieldsGridModelViews(customFields, ws.Id);
 
                 ViewData["IsProjectMapWorkspace"] = ws.IsProjectMapWorkspace;
+                ViewData["UsingTemplateBoe"] = ws.UsingTemplateBOE;
 
                 toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELDS_GRID, theModelViews);
             }
@@ -1773,7 +1774,7 @@ namespace GenBOE.Web.Controllers
             }
 
             //BOECustomField
-            BOECustomFieldModelView theModelView = new BOECustomFieldModelView() { CustomFieldMetaData = metaData, CustomFieldOptions = options };
+            BOECustomFieldModelView theModelView = new BOECustomFieldModelView() { CustomFieldMetaData = metaData, CustomFieldOptions = options, UsingTemplateBoe = ws.UsingTemplateBOE };
 
             ViewResult toReturn = View(WebConstants.VIEW_BOE_CUSTOM_FIELD, theModelView);
 
@@ -2800,7 +2801,7 @@ namespace GenBOE.Web.Controllers
                 }
 
                 //Extra validation
-                if (!atleastOneLevelSelected(customFieldsMV.CustomFieldMetaData))
+                if (!CustomFieldLevelSelected(customFieldsMV.CustomFieldMetaData))
                 {
                     validationMessages.Add(new ValidationMessage("At Least one level is required."));
                 }
@@ -6807,13 +6808,19 @@ namespace GenBOE.Web.Controllers
 
         #region Private Methods
 
-        private bool atleastOneLevelSelected(BOECustomFieldsGridModelView meta)
+        /// <summary>
+        /// Verify custom field level has been selected
+        /// </summary>
+        /// <param name="meta">Custom Fields Grid MV</param>
+        /// <returns>True if level has been selected, otherwise false</returns>
+        private bool CustomFieldLevelSelected(BOECustomFieldsGridModelView meta)
         {
-            var toReturn = false;
+            bool toReturn = false;
 
-            if (meta.CustomFieldDisplayID == IES.Common.CustomFieldType.BoeDisplay ||
-                meta.CustomFieldDisplayID == IES.Common.CustomFieldType.TaskDisplay ||
-                meta.CustomFieldDisplayID == IES.Common.CustomFieldType.LaborTypeDisplay)
+            if (meta.CustomFieldDisplayID == CustomFieldType.BoeDisplay ||
+                meta.CustomFieldDisplayID == CustomFieldType.TaskDisplay ||
+                meta.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay ||
+                meta.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay)
             {
                 toReturn = true;
             }

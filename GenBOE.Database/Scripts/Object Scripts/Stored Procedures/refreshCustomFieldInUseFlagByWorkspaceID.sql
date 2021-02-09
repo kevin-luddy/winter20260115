@@ -28,6 +28,8 @@ AS
 **		--------	--------			---------------------------------------
 **		4/3/18		ranzalon			Updated for RMS Zone Travel Trips
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
+**		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
+**		1/27/2021	ranzalon			BOEJ-4900 - fix for MOQ Table Custom Field in use flag
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -35,7 +37,7 @@ UPDATE dbo.CustomFieldValue
 		SET CustomFieldValueInUseFlag = CASE 
 				WHEN tX.[CustomFieldValueID] IS NULL AND ttX.[CustomFieldValueID] IS NULL 
                     AND bX.[CustomFieldValueID] IS NULL AND blX.[CustomFieldValueID] IS NULL AND btX.[CustomFieldValueID] IS NULL
-					AND mttX.[MSTCustomFieldValueID] IS NULL THEN 0
+					AND mttX.[MSTCustomFieldValueID] IS NULL AND moqX.[CustomFieldValueId] IS NULL THEN 0
 				ElSE 1
 			END,
 			UpdateDT = GETDATE()
@@ -47,6 +49,7 @@ UPDATE dbo.CustomFieldValue
             LEFT OUTER JOIN [dbo].[BOELaborTypeCustomFieldValueXREF] blX ON CFV.[CustomFieldValueID] = blX.[CustomFieldValueID]
             LEFT OUTER JOIN [dbo].[BOETaskElementCustomFieldValueXREF] btX ON CFV.[CustomFieldValueID] = btX.[CustomFieldValueID]
 			LEFT OUTER JOIN [dbo].[MSTTravelTripCustomFieldValueXREF] mttX ON CFV.[CustomFieldValueID] = mttX.[MSTCustomFieldValueID]
+			LEFT OUTER JOIN [dbo].[MoqTypeTableCustomFieldValueXREF] moqX ON CFV.[CustomFieldValueID] = moqX.CustomFieldValueId
 		WHERE 
 			CF.WorkspaceID = @WorkspaceID
 

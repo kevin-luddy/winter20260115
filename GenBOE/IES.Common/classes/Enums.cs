@@ -707,7 +707,9 @@ namespace IES.Common
         [Description("Task")]
         TaskDisplay = 2,
         [Description("Resource Types")]
-        LaborTypeDisplay = 3
+        LaborTypeDisplay = 3,
+        [Description("MOQ Type Table Data")]
+        MoqTypeTableDataDisplay = 4
     }
 
     /// <summary>

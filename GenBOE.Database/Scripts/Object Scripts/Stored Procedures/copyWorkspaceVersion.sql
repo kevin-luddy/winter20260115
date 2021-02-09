@@ -38,6 +38,7 @@ AS
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
 **		10/29/20	Dusan				BOEJ-4925: Fixed MOQTypeSelectionId not copying
 **		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
+**		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -2132,6 +2133,10 @@ BEGIN TRY
 		INNER JOIN @BOE B ON X.BOEID = B.BOEID
 		INNER JOIN @CustomFieldValue CFV ON X.CustomFieldValueID = CFV.CustomFieldValueID
 	  WHERE X.VersionId = @VersionID
+	INSERT INTO [dbo].[MoqTypeTableCustomFieldValueXREF] ([UpdateDT], [MoqTypeTableDataId], [CustomFieldValueId])
+		SELECT X.[UpdateDT], t.NewMOQTypeSelectionTableDataId, CFV.NewCustomFieldValueID
+			FROM [version].[MoqTypeTableCustomFieldValueXREF] X, @MOQTypeSelectionTableData t, @CustomFieldValue CFV
+			WHERE t.MoqTypeSelectionTableDataId = X.MoqTypeTableDataId AND X.CustomFieldValueID = CFV.CustomFieldValueID AND X.VersionId = @VersionID
 
 	-- These changes are to be executed in RMS only. The way we can tell the environments apart is that SSC has LOBs in the range of 1000's. RMS is 2000+ and ISGS is 0-999
 	IF EXISTS (SELECT 1 FROM [dbo].[LineOfBusiness] WHERE LineOfBusinessID > 2000)

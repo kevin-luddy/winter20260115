@@ -189,7 +189,7 @@
                 <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST
                         && SiteMasterUtilities.IsProjectMapEnabled) { %>
                 <div class="form-row">
-                    <div class="form-label">Project Map Type</div>
+                    <div class="form-label">Workspace Type</div>
                     <div class="form-element cost-volume-lead">
                         <%: Html.DropDownList("ProjectMapType", (IEnumerable<SelectListItem>)ViewData["ProjectMapTypes"], new { @class = "half oneRequired" })%>
                     </div>

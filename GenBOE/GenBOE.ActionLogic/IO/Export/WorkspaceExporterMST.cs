@@ -204,14 +204,16 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="task">Task</param>
         /// <param name="selectedMoqType">Selected MOQ Type</param>
         /// <param name="table">MOQ Table</param>
+        /// <param name="exportInputs">Export Inputs</param>
         /// <returns>MOQ Table Data row for the given data</returns>
-        protected override IList<string> GetMOQTableDataRow(BoeDTO boe, BoeTaskElementDTO task, string selectedMoqType, MoqTableData table)
+        protected override IList<string> GetMOQTableDataRow(BoeDTO boe, BoeTaskElementDTO task, string selectedMoqType, MoqTableData table, BOEExportInputs exportInputs)
         {
             _ = boe ?? throw new ArgumentNullException(nameof(boe));
             _ = task ?? throw new ArgumentNullException(nameof(task));
             _ = table ?? throw new ArgumentNullException(nameof(table));
+            _ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
 
-            return new List<string>()
+            IList<string> toReturn = new List<string>()
             {
                 boe.Id.ToString(),
                 boe.Title ?? this.sEmpty,
@@ -229,6 +231,14 @@ namespace GenBOE.ActionLogic.IO.Export
                 table.AdditionalQueryFilters,
                 table.TotalRelevantHours.ToString()
             };
+
+            foreach (CustomFieldDTO customField in exportInputs.CustomFields.Where(x => x.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay))
+            {
+                CustomFieldValueContainer customFieldValue = table.CustomFieldValueContainers.FirstOrDefault(x => x.CustomFieldID == customField.Id);
+                toReturn.Add(customFieldValue != null ? customFieldValue.OpenEndedValue : this.sEmpty);
+            }
+
+            return toReturn;
         }
     }
 }

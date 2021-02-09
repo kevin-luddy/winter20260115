@@ -38,6 +38,16 @@
         }
     }
 
+    validateMoqTableCustomField = function (item) {
+        if ($(item).attr('required') === 'required') {
+            if (item.value.length === 0) {
+                $(item).addClass('ng-invalid');
+            } else {
+                $(item).removeClass('ng-invalid');
+            }
+        }
+    }
+
     var debugOutputEnabled = false;
 
     // Get the read-only attribute passed in from the controller

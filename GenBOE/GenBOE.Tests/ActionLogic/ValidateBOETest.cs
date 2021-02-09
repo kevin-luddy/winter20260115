@@ -9,6 +9,7 @@ namespace GenBOE.Tests.ActionLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Linq;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.NewValidation;
@@ -103,16 +104,16 @@ namespace GenBOE.Tests.ActionLogic
             // Set up
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            var ResourceLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> ResourceLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
@@ -176,15 +177,15 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_MoreInvalidBOEsToValidate()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
@@ -269,14 +270,14 @@ namespace GenBOE.Tests.ActionLogic
             Assert.IsTrue(validationBOE.BOEHeaderMsgs.Contains(BoeDTO.BOE_DESC_REQUIRED), "The BOE Header was  empty");
 
             // verify task error messages
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
                 Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(BoeDTO.MOQ_EQ_REQUIRED));
                 Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL)));
                 Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(BoeDTO.TOTAL_LABOR_SPREAD_INVALID));
 
                 // verify labor error messages 
-                foreach (var y in x.LaborTypes)
+                foreach (ValidationBOELaborType y in x.LaborTypes)
                 {
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 2, "There weren't 2 labor type messages");
                 }
@@ -293,7 +294,7 @@ namespace GenBOE.Tests.ActionLogic
             toAssertTasks = validationBOE.Tasks;
 
             // verify task error messages - in space sytems we only need to verify the MOQ Text difference
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
                 Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL_SPACE_SYSTEMS)));
             }
@@ -302,16 +303,16 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateBOE_GoodMOQ_Eq()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -407,16 +408,16 @@ namespace GenBOE.Tests.ActionLogic
         // This test case will test that if a BOE and CLIN don't have a start/end date, the contract start/end date are used
         public void BL_ValidateLaborTypeContractDates()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -522,16 +523,16 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateLaborTypeBadContractDates()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -636,10 +637,10 @@ namespace GenBOE.Tests.ActionLogic
             toAssertCosts = validationBOE.Costs;
 
             // want to extract the validation contract message
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
                 // verify labor error messages 
-                foreach (var y in x.LaborTypes)
+                foreach (ValidationBOELaborType y in x.LaborTypes)
                 {
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 2, "Labor type messages did not return 2 msgs");
                     Assert.IsTrue(y.LaborTypeValidationMsgs[0].Contains("Start Date must be on or after"), "The validation msg was correct");
@@ -648,10 +649,10 @@ namespace GenBOE.Tests.ActionLogic
                 }
             }
 
-            foreach (var x in toAssertCosts)
+            foreach (ValidationBOETasks x in toAssertCosts)
             {
                 // very ODC error message
-                foreach (var y in x.LaborTypes)
+                foreach (ValidationBOELaborType y in x.LaborTypes)
                 {
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 3, "ODC type messages did not return 3 messages");
                     Assert.IsTrue(y.LaborTypeValidationMsgs[0].Contains("Start Date must be on or after"), "The validation msg was correct");
@@ -663,16 +664,16 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateBadBOEContractDates()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -777,17 +778,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateLaborTypeClinDates()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
@@ -890,17 +891,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateLaborTypeBadClinDates()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -1011,10 +1012,10 @@ namespace GenBOE.Tests.ActionLogic
             Assert.IsTrue(validationBOE.BOEHeaderMsgs.Contains(String.Format(BoeDTO.BOE_END_DATE_INVALID, "CLIN", clin.EndDate.Value.ToString("MM/yyyy"))), "BOE end date was valid");
 
             // want to extract the validation contract message
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
                 // verify labor error messages 
-                foreach (var y in x.LaborTypes)
+                foreach (ValidationBOELaborType y in x.LaborTypes)
                 {
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 2, "There weren't 2 labor type messages");
                     Assert.IsTrue(y.LaborTypeValidationMsgs[1].Contains("End Date must be on or before"), "The validation msg was correct");
@@ -1028,17 +1029,17 @@ namespace GenBOE.Tests.ActionLogic
         // This test case will test the BOE Start/End Date against the Labor Type Start/End Date
         public void BL_ValidateLaborTypeBOEDates()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -1137,17 +1138,17 @@ namespace GenBOE.Tests.ActionLogic
         // This test case will test the BOE Start/End Date against the Labor Type Start/End Date
         public void BL_ValidateLaborTypeBadBOEDates()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -1242,11 +1243,11 @@ namespace GenBOE.Tests.ActionLogic
             Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 0, "The BOE Header was not empty");
 
             // want to extract the validation contract message
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
 
                 // verify labor error messages 
-                foreach (var y in x.LaborTypes)
+                foreach (ValidationBOELaborType y in x.LaborTypes)
                 {
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 2, "There weren't 2 labor type messages");
                     Assert.IsTrue(y.LaborTypeValidationMsgs[1].Contains("End Date must be on or before"), "The validation msg was correct");
@@ -1258,17 +1259,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateTaskCustomFields()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -1370,7 +1371,7 @@ namespace GenBOE.Tests.ActionLogic
             toAssertTasks = validationBOE.Tasks;
 
             // want to extract the validation contract message
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
                 ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
 
@@ -1391,7 +1392,7 @@ namespace GenBOE.Tests.ActionLogic
 
             toAssertTasks = validationBOE.Tasks;
 
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
                 ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
 
@@ -1402,17 +1403,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateTaskCustomFields_Invalid()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -1509,7 +1510,7 @@ namespace GenBOE.Tests.ActionLogic
 
 
             // want to extract the validation contract message
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
                 ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
 
@@ -1529,7 +1530,7 @@ namespace GenBOE.Tests.ActionLogic
             toAssertTasks = validationBOE.Tasks;
 
             // want to extract the validation contract message
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
                 ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
 
@@ -1538,20 +1539,206 @@ namespace GenBOE.Tests.ActionLogic
             }
         }
 
+        /// <summary>
+        /// Validate MOQ Type Table Custom Fields - both valid and invalid
+        /// </summary>
+        [TestMethod]
+        public void BL_ValidateMoqTypeTableCustomFields()
+        {
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IMoqTypeDataLoader> moqTypeLoader = new Mock<IMoqTypeDataLoader>();
+            Mock<IMoqTypeTableCustomFieldValueXREFLoader> moqTypeTableCustomFieldXrefLoader = new Mock<IMoqTypeTableCustomFieldValueXREFLoader>();
+
+            ValidationBOEModelView validationBOE = new ValidationBOEModelView();
+
+            // set up workspace
+            string WorkspaceName = "ValidateWorkspace";
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = WorkspaceName, ResourceListID = 1, UsingTemplateBOE = true };
+
+            // set up resource
+            ResourceDTO resource = new ResourceDTO { Id = 1, ResourceName = "ResourceValidate", ResourceDesc = "validate resource" };
+            resourceDTOLoader.Setup(x => x.GetById(resource.Id)).Returns(resource);
+            resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
+
+            //setup a BOE
+            ResourceSpreadDto boeLS = new ResourceSpreadDto { Id = 1, BoeID = 4, LaborSpreadDate = Convert.ToDateTime("03/01/2011"), LaborSpreadValue = 100 };
+            ResourceTypeDto boeLT = new ResourceTypeDto { Id = 1, BoeID = 4, SpreadType = IES.Common.SpreadType.Hours, LaborSpreads = new Collection<ResourceSpreadDto> { boeLS }, ResourceID = 1, PerformingOrgID = 1, StartDateValue = Convert.ToDateTime("03/01/2011"), EndDateValue = Convert.ToDateTime("03/01/2011"), PercentSpread = 100, ValueSpread = 100, SpreadCurveID = SpreadCurves.DiscreteHours };
+            BoeTaskElementDTO boeTE = new BoeTaskElementDTO
+            {
+                Id = 1,
+                BoeID = 4,
+                BOETaskID = "T56",
+                Description = "validate data",
+                StartDate = Convert.ToDateTime("02/01/2011"),
+                EndDate = Convert.ToDateTime("06/01/2011"),
+                MOQHoursEquation = "100",
+                MOQText = "validate moq",
+                MOQType = MOQType.Comparison,
+                MOQTypeName = "validate",
+                taskElementLabors = new Collection<ResourceTypeDto> { boeLT },
+                TaskTitle = "Validate Task",
+                TotalHours = 100,
+                WorkspaceVariableIDs = new Collection<int> { 2 },
+                TaskElementType = TaskElementType.Labor
+            };
+            
+            MoqTableData moqTableData = new MoqTableData()
+            {
+                Id = 1,
+                TableName = "test table",
+                RepositoryName = "test repo",
+                QueryType = "query type",
+                DateOfReport = DateTime.Now.AddDays(-1),
+                HistoricalProgramName = "test name",
+                ContractNumber = "test contract",
+                WbsElement = "test wbs",
+                PoPStart = DateTime.Now.AddDays(-2),
+                PoPEnd = DateTime.Now,
+                TotalWbsHours = 100,
+                AdditionalQueryFilters = "test filters",
+                TotalRelevantHours = 50,
+                CustomFieldValueContainers = new Collection<CustomFieldValueContainer>()
+                {
+                    new CustomFieldValueContainer()
+                        {
+                            CustomFieldID = 1,
+                            IsOpenEnded = true,
+                            OpenEndedValue = "TEST"
+                        }
+                }
+            };
+
+            MoqTypeSelection moqTypeSelection = new MoqTypeSelection()
+            {
+                Id = 1,
+                TaskId = 1,
+                SelectedMOQType = MOQType.Historical,
+                CerName = "test name",
+                DescriptionHoursRequired = "test desc",
+                SmeReason = "test reason",
+                SmeHoursLogic = "test hours logic",
+                SmeDurationLogic = "test duration logic",
+                SmeTaskEstimates = "test task estimates",
+                Rationale = "test rationale",
+                SkillMixRationale = "test skill mix",
+                BoeId = 4,
+                TableData = new Collection<MoqTableData>()
+                {
+                    moqTableData
+                }
+            };
+
+            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
+
+            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
+            FullBoe boeObject = new FullBoe(boe);
+
+            retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+            retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
+            retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
+            retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+            retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+            retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
+            retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
+            retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { moqTypeSelection });
+            retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { moqTypeSelection });
+
+            FullWorkspace workspaceObject = new FullWorkspace(workspace);
+            Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
+            this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
+            this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
+            this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+            this.retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullWbs>());
+            factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
+            factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
+            this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
+
+            this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
+            this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
+
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
+
+            CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldName = "TEST", CustomFieldDisplayID = CustomFieldType.MoqTypeTableDataDisplay, CustomFieldRequired = true, IsOpenEnded = true };
+            CustomFieldValueDTO customValue = new CustomFieldValueDTO { CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueInUseFlag = true, Id = 1 };
+
+            ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
+
+            retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
+            _TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<TripDTO>());
+            _MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<MiscTravelRateDTO>());
+            _LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<LocationDTO>());
+
+            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
+            retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customValue });
+
+            Dictionary<int, ICollection<KeyValuePair<int, int>>> toReturn = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
+            toReturn[boeTE.Id] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>(customField.Id, customValue.Id) };
+            retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByMoqTypeTableIds(It.IsAny<Collection<int>>())).Returns(toReturn);
+            retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(new Dictionary<int, ICollection<KeyValuePair<int, int>>>() { });
+
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
+            //Act
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+            // Assert
+            Collection<ValidationBOETasks> toAssertTasks = validationBOE.Tasks;
+
+            foreach (ValidationBOETasks x in toAssertTasks)
+            {
+                ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
+
+                Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Count == 0, "Validation Msgs exist");
+            }
+
+            // Now test for invalid
+            moqTypeSelection.TableData.First().CustomFieldValueContainers.First().OpenEndedValue = string.Empty;
+            retriever.Setup(x => x.GetMoqTypeSelectionsByBoeId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { moqTypeSelection });
+            retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(It.IsAny<int>())).Returns(new List<MoqTypeSelection>() { moqTypeSelection });
+
+            //Act
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
+
+            // Assert
+            toAssertTasks = validationBOE.Tasks;
+
+            foreach (ValidationBOETasks x in toAssertTasks)
+            {
+                ValidationBOETaskElementDetails taskElementDetails = x.TaskElementDetails;
+
+                Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Count == 1, "Validation Msgs did not equal 1");
+                Assert.IsTrue(taskElementDetails.TaskElementDetailValidationMessages.Contains("Custom Field TEST is required."), "The validation msg was correct");
+            }
+        }
+
         [TestMethod]
         public void BL_ValidateLaborTypeCustomFields()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -1666,17 +1853,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateLaborTypeCustomFields_Invalid()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -1772,9 +1959,9 @@ namespace GenBOE.Tests.ActionLogic
 
 
             //want to extract the validation contract message
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
-                foreach (var y in x.LaborTypes)
+                foreach (ValidationBOELaborType y in x.LaborTypes)
                 {
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 1, "Validation Msgs did not equal 1");
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Contains("Custom Field BABBA is required."), "The validation msg was correct");
@@ -1790,9 +1977,9 @@ namespace GenBOE.Tests.ActionLogic
 
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
-                foreach (var y in x.LaborTypes)
+                foreach (ValidationBOELaborType y in x.LaborTypes)
                 {
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 1, "Validation Msgs did not equal 1");
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Contains("Custom Field BABBA is required."), "The validation msg was correct");
@@ -1803,17 +1990,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateBOECustomFields()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -1904,17 +2091,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateBOECustomFields_Invalid()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -2004,17 +2191,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateBOE_MissingHistoricMetrics()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -2121,17 +2308,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateBOECustomFields_MissingPerfOrgAndResource()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -2219,10 +2406,10 @@ namespace GenBOE.Tests.ActionLogic
 
 
             // verify task error messages
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
                 // verify labor error messages 
-                foreach (var y in x.LaborTypes)
+                foreach (ValidationBOELaborType y in x.LaborTypes)
                 {
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 2, "There weren't 2 labor type messages");
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(BoeDTO.RESOURCE_CODE_REQUIRED), "The validation msg was correct");
@@ -2237,15 +2424,15 @@ namespace GenBOE.Tests.ActionLogic
             // Set up
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permloader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
 
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
@@ -2297,10 +2484,10 @@ namespace GenBOE.Tests.ActionLogic
 
 
             // verify task error messages
-            foreach (var x in toAssertCosts)
+            foreach (ValidationBOETasks x in toAssertCosts)
             {
                 // verify labor error messages 
-                foreach (var y in x.LaborTypes)
+                foreach (ValidationBOELaborType y in x.LaborTypes)
                 {
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 3, "There weren't 3 labor type messages");
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.RESOURCE_CODE_REQUIRED), "The validation msg was correct");
@@ -2315,15 +2502,15 @@ namespace GenBOE.Tests.ActionLogic
         {
             // Set up
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
-            var ResourceLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> ResourceLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
             
 
 
@@ -2447,13 +2634,13 @@ namespace GenBOE.Tests.ActionLogic
         {
             // Set up
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
             
             Mock<RMSZoneTravelRatesFeesDataLoader> zoneTravelLoader = new Mock<RMSZoneTravelRatesFeesDataLoader>();
 
@@ -2528,17 +2715,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateTripCustomFields_Invalid()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permissionLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permissionLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -2556,7 +2743,7 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
             FullBoe boeObject = new FullBoe(boe);
 
-            var travelCollection = new Collection<TravelDTO> {
+            Collection<TravelDTO> travelCollection = new Collection<TravelDTO> {
             new TravelDTO{
                 Id = 1,
                 BoeID = boe.Id,
@@ -2649,9 +2836,9 @@ namespace GenBOE.Tests.ActionLogic
 
 
             //want to extract the validation contract message
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
-                foreach (var y in x.LaborTypes)
+                foreach (ValidationBOELaborType y in x.LaborTypes)
                 {
 
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Contains("Custom Field LaborCustom is required."), "The validation msg was correct");
@@ -2665,13 +2852,13 @@ namespace GenBOE.Tests.ActionLogic
             // Set up
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
             
 
 
@@ -2722,7 +2909,7 @@ namespace GenBOE.Tests.ActionLogic
 
             // Assert
             // verify task error messages
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
                 Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(BoeDTO.ONE_TASK_ELEMENT_REQUIRED), "Task element is required.");
             }
@@ -2731,17 +2918,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_InvalidMaterialBOEsToValidate()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permloader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
@@ -2800,12 +2987,12 @@ namespace GenBOE.Tests.ActionLogic
             toAssertTasks = validationBOE.Materials;
 
             // verify material error messages
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
                 Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL)));
 
                 // verify labor error messages 
-                foreach (var y in x.LaborTypes)
+                foreach (ValidationBOELaborType y in x.LaborTypes)
                 {
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 1, "There wasn't 1 labor type messages (resource type required)");
                 }
@@ -2822,7 +3009,7 @@ namespace GenBOE.Tests.ActionLogic
             toAssertTasks = validationBOE.Materials;
 
             // verify task error messages - in space sytems we only need to verify the MOQ Text difference
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
                 Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL_SPACE_SYSTEMS)));
             }
@@ -2831,17 +3018,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_InvalidMaterialBOEsDateToValidate()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permloader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
 
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
@@ -2901,12 +3088,12 @@ namespace GenBOE.Tests.ActionLogic
             toAssertTasks = validationBOE.Materials;
 
             // verify material error messages
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
                 Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL)));
 
                 // verify labor error messages 
-                foreach (var y in x.LaborTypes)
+                foreach (ValidationBOELaborType y in x.LaborTypes)
                 {
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 1, "There wasn't 1 labor type messages (expend date not in range)");
                 }
@@ -2923,7 +3110,7 @@ namespace GenBOE.Tests.ActionLogic
             toAssertTasks = validationBOE.Materials;
 
             // verify task error messages - in space sytems we only need to verify the MOQ Text difference
-            foreach (var x in toAssertTasks)
+            foreach (ValidationBOETasks x in toAssertTasks)
             {
                 Assert.IsTrue(x.TaskElementDetails.TaskElementDetailValidationMessages.Contains(String.Format(BoeDTO.MOQ_TEXT_REQUIRED, CommonConstants.BOE_MOQ_TEXT_LABEL_SPACE_SYSTEMS)));
             }
@@ -2932,17 +3119,17 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValiateBOE_BoeDatesWithinClinContract()
         {
-            var resourceDTOLoader = new Mock<IResourceDTODataLoader>();
+            Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permLoader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permLoader = new Mock<IPermissionsDTODataLoader>();
 
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
@@ -3032,15 +3219,15 @@ namespace GenBOE.Tests.ActionLogic
             // Set up
             ValidationAllBOEModelView validationBOE = new ValidationAllBOEModelView();
 
-            var perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-            var _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-            var _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-            var _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-            var _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-            var _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-            var _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
-            var permloader = new Mock<IPermissionsDTODataLoader>();
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
+            Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
 
 
             // set up workspace
@@ -3102,13 +3289,13 @@ namespace GenBOE.Tests.ActionLogic
 
 
             // verify that we have mulitple boe errors
-            foreach (var z in validationBOE.AllBOEs)
+            foreach (ValidationBOEModelView z in validationBOE.AllBOEs)
             {
                 //check the cost.
-                foreach(var x in z.Costs)
+                foreach(ValidationBOETasks x in z.Costs)
                 {
                 // verify labor error messages 
-                foreach (var y in x.LaborTypes)
+                foreach (ValidationBOELaborType y in x.LaborTypes)
                 {
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 3, "There weren't 3 labor type messages");
                     Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.RESOURCE_CODE_REQUIRED), "The validation msg was correct");

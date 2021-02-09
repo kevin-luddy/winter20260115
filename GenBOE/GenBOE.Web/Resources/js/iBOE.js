@@ -2033,16 +2033,19 @@ function updateRTECharacterCount(mce, options, callbackFunction) {
 			
 			if (enableCharCounting) {
 				var mceContainer = $(mce.getContainer());
-				var charCounter = $('.mce-char-count', mceContainer);
-				charCounter.text(result.Length.toLocaleString('en'));
-				var lendiff = maxlen - result.Length;
-				if (lendiff < 0) {
-					charCounter.css('color', '#FF0000').css('font-weight', 'bold');  // error
-					charCounter.text(result.Length.toLocaleString('en') + ' (' + lendiff.toLocaleString('en') + ')');
-					$('#' + mceContainer.context.id).css('border-color', 'red')
-				} else {
-					charCounter.css('color', '#000000').css('font-weight', 'normal');  // normal
-					$('#' + mceContainer.context.id).css('border-color', 'black');
+				if (mceContainer.context) { // When working on MOQ Types, and possibly other places, when a number of RTEs are being initialized/destroyed, this can take long enough to where it becomes undefined
+					var charCounter = $('.mce-char-count', mceContainer);
+					charCounter.text(result.Length.toLocaleString('en'));
+					var lendiff = maxlen - result.Length;
+
+					if (lendiff < 0) {
+						charCounter.css('color', '#FF0000').css('font-weight', 'bold');  // error
+						charCounter.text(result.Length.toLocaleString('en') + ' (' + lendiff.toLocaleString('en') + ')');
+						$('#' + mceContainer.context.id).css('border-color', 'red')
+					} else {
+						charCounter.css('color', '#000000').css('font-weight', 'normal');  // normal
+						$('#' + mceContainer.context.id).css('border-color', 'black');
+					}
 				}
 			}
 		},

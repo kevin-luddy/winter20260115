@@ -14,6 +14,12 @@ namespace GenBOE.Models
     
     public partial class MOQTypeSelectionTableData
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public MOQTypeSelectionTableData()
+        {
+            this.MoqTypeTableCustomFieldValueXREFs = new HashSet<MoqTypeTableCustomFieldValueXREF>();
+        }
+    
         public int MOQTypeSelectionTableDataId { get; set; }
         public int MOQTypeSelectionId { get; set; }
         public System.DateTime UpdateDT { get; set; }
@@ -32,5 +38,7 @@ namespace GenBOE.Models
         public decimal TotalRelevantHoursAfterQueryFilters { get; set; }
     
         public virtual MOQTypeSelection MOQTypeSelection { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<MoqTypeTableCustomFieldValueXREF> MoqTypeTableCustomFieldValueXREFs { get; set; }
     }
 }

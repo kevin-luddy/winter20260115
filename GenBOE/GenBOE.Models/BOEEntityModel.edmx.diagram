@@ -347,6 +347,9 @@
         <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__TaskI__31D2648A" />
         <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__32C688C3" />
         <AssociationConnector Association="GenBOE.Models.FK__MOQTypeSe__MOQTy__378B3DE0" />
+        <EntityTypeShape EntityType="GenBOE.Models.MoqTypeTableCustomFieldValueXREF" Width="1.5" PointX="36.25" PointY="107" />
+        <AssociationConnector Association="GenBOE.Models.FK__MoqTypeTa__Custo__503886C7" />
+        <AssociationConnector Association="GenBOE.Models.FK__MoqTypeTa__MoqTy__4F44628E" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

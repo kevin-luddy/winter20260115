@@ -24,6 +24,7 @@ namespace GenBOE.ActionLogic.ModelView
             this.LaborTypesData = new List<LaborTypeDataModelView>();
             this.ValidationErrors = new List<ValidationMessage>();
             this.TaskCustomFields = new List<BOECustomFieldModelView>();
+            this.MOQTypeTableCustomFields = new List<BOECustomFieldModelView>();
             this.LaborCustomFields = new List<BOECustomFieldModelView>();
             this.MOQTypes = new Collection<MoqTypeSelection>();
         }
@@ -52,6 +53,11 @@ namespace GenBOE.ActionLogic.ModelView
         /// Gets the overall task custom fields.
         /// </summary>
         public ICollection<BOECustomFieldModelView> TaskCustomFields { get; internal set; }
+
+        /// <summary>
+        /// Gets the MOQ Type Table Custom Fields
+        /// </summary>
+        public ICollection<BOECustomFieldModelView> MOQTypeTableCustomFields { get; internal set; }
         
         /// <summary>
         /// Gets the overall labor custom fields.

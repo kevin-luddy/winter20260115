@@ -51,6 +51,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IOrdinaryVariableLoader _taskVariableLoader;
         private readonly IRteTemplateDataLoader rteTemplateDataLoader;
         private readonly IMoqTypeDataLoader moqTypeDataLoader;
+        private readonly IValidateBOE validateBOE;
 
         /// <summary>
         /// Task Element Validation Class
@@ -79,7 +80,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IVariableCircularReferenceChecker circularReferenceChecker,
             ICommonDataMapper commonDataMapper,
             IRteTemplateDataLoader rteTemplateDataLoader,
-            IMoqTypeDataLoader moqTypeDataLoader)
+            IMoqTypeDataLoader moqTypeDataLoader,
+            IValidateBOE validateBOE)
         {
             this._BoeTaskElementRecalculation = inBoeTaskElementRecalc;
             this._boeStateMachine = inBoeStateMachine;
@@ -100,6 +102,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.CommonDataMapper = commonDataMapper;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
             this.moqTypeDataLoader = moqTypeDataLoader;
+            this.validateBOE = validateBOE;
         }
 
         #region Public Members
@@ -904,11 +907,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     // Update MOQ Types via kill and fill
                     // Get existing MOQ Types and table data, set them all to deleted, and save
                     ICollection<MoqTypeSelection> existingMoqTypes = this.moqTypeDataLoader.GetByBoeId(dtoToSave.BoeID).Where(x => x.TaskId == dtoToSave.Id).ToCollection();
-                    foreach(var moqType in existingMoqTypes)
+                    foreach(MoqTypeSelection moqType in existingMoqTypes)
                     {
                         moqType.Updateable = UpdateType.Deleted;
                     }
-
+                    
                     this.moqTypeDataLoader.Save(existingMoqTypes);
 
                     // Set all incoming MOQ Types as Upsert and set ids to -1 for insert
@@ -924,6 +927,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         {
                             table.Id = i--;
                             table.Updateable = UpdateType.Upsert;
+
+                            foreach(CustomFieldValueContainer customFieldValueContainer in table.CustomFieldValueContainers)
+                            {
+                                customFieldValueContainer.Id = i--;
+                                customFieldValueContainer.CustomFieldValueID = i--;
+                                customFieldValueContainer.Updateable = UpdateType.Upsert;
+                            }
                         }
                     }
 
@@ -1358,6 +1368,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.ValidateLaborTypeCustomFields(laborTaskData, ws, taskElement, inValidationErrors);
             this.ValidateTaskCustomFields(laborTaskData, ws, inValidationErrors);
             this.ValidateMoqTypes(ws, laborTaskData, inValidationErrors);
+            this.ValidateMoqTypeTableCustomFields(laborTaskData, ws, inValidationErrors);
         }
 
         /// <summary>
@@ -1640,16 +1651,40 @@ namespace GenBOE.ActionLogic.ControllerLogic
         }
 
         /// <summary>
+        /// Validate the MOQ Type Table Custom Fields
+        /// </summary>
+        /// <param name="laborTaskData">Labor Task Data</param>
+        /// <param name="ws">The Workspace</param>
+        /// <param name="inValidationErrors">validation errors</param>
+        private void ValidateMoqTypeTableCustomFields(LaborTaskDataModelView laborTaskData, FullWorkspace ws, ICollection<ValidationMessage> inValidationErrors)
+        {
+            ICollection<BOECustomFieldModelView> moqTypeTableCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.MoqTypeTable);
+
+            ICollection<CustomFieldValueContainer> customFields = laborTaskData.MOQTypes.SelectMany(x => x.TableData).SelectMany(x => x.CustomFieldValueContainers).ToCollection();
+            ICollection<BOECustomFieldModelView> requiredCustomFields = moqTypeTableCustomFields.Where(x => x.CustomFieldMetaData.isRequired).ToCollection();
+
+            foreach (CustomFieldValueContainer cf in customFields)
+            {
+                BOECustomFieldModelView customField = requiredCustomFields.FirstOrDefault(c => c.CustomFieldMetaData.CustomFieldID == cf.CustomFieldID);
+                if (customField != null &&
+                    string.IsNullOrEmpty(cf.OpenEndedValue))
+                {
+                    inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldMetaData.FieldName)));
+                }
+            }
+        }
+
+        /// <summary>
         /// Validates MOQ Types for UI, only fully required fields
         /// </summary>
         /// <param name="ws">Full WS</param>
         /// <param name="taskData">Task Data</param>
         /// <param name="errors">Validation Errors</param>
-        private void ValidateMoqTypes(WorkspaceDTO ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors)
+        private void ValidateMoqTypes(FullWorkspace ws, LaborTaskDataModelView taskData, ICollection<ValidationMessage> errors)
         {
             if (ws.UsingTemplateBOE)
             {
-                ICollection<string> taskErrors = ValidateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws.RteSizeLimit);
+                ICollection<string> taskErrors = this.validateBOE.ValidateTemplateMoqForTask(taskData.MOQTypes, ws, false);
                 errors.AddRange(taskErrors.Select(error => new ValidationMessage(error)));
             }
         }
@@ -1683,7 +1718,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     metadata.inUse = options.Any(x => x.CustomFieldValueInUseFlag);
 
                     if ((inTypeToGet == ControllerCustomFieldType.Task && metadata.CustomFieldDisplayID == CustomFieldType.TaskDisplay) ||
-                        (inTypeToGet == ControllerCustomFieldType.LaborTypes && metadata.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay))
+                        (inTypeToGet == ControllerCustomFieldType.LaborTypes && metadata.CustomFieldDisplayID == CustomFieldType.LaborTypeDisplay) ||
+                        (inTypeToGet == ControllerCustomFieldType.MoqTypeTable && metadata.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay))
                     {
                         Collection<BOECustomFieldOptionModelView> optionstoAdd = new Collection<BOECustomFieldOptionModelView>();
 
@@ -2004,6 +2040,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 TaskElementData = new TaskElementDetailModelView(dto),
                 TaskCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.Task),
+                MOQTypeTableCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.MoqTypeTable),
                 LaborCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.LaborTypes),
                 MOQTypes = boe.MoqTypeSelections.Where(x => x.TaskId == dto.Id).ToList()
             };
@@ -3450,6 +3487,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     public enum ControllerCustomFieldType
     {
         Task = 0,
-        LaborTypes = 1
+        LaborTypes = 1,
+        MoqTypeTable = 2
     }
 }

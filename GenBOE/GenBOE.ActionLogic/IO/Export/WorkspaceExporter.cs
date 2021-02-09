@@ -279,6 +279,20 @@ namespace GenBOE.ActionLogic.IO.Export
                     ExcelUtilities.RemoveColumn(document, "BOEs", "Resource Custom Field");
                 }
             }
+
+            string[] moqTableCustomFieldNames = customFields.Where(c => c.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay).Select(c => c.CustomFieldName).ToArray();
+
+            using (SpreadsheetDocument document = SpreadsheetDocument.Open(templateFileLocation, true))
+            {
+                if (moqTableCustomFieldNames.Any())
+                {
+                    ExcelUtilities.DuplicateColumn(document, "MOQ Table Data", "MOQ Table Custom Field", moqTableCustomFieldNames);
+                }
+                else
+                {
+                    ExcelUtilities.RemoveColumn(document, "MOQ Table Data", "MOQ Table Custom Field");
+                }
+            }
         }
 
         /// <summary>
@@ -1232,7 +1246,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         
                         foreach (MoqTableData table in moqType.TableData)
                         {
-                            IList<string> row = GetMOQTableDataRow(boe, task, selectedMoqType, table);
+                            IList<string> row = GetMOQTableDataRow(boe, task, selectedMoqType, table, exportInputs);
 
                             toReturn.Add(row);
                         }
@@ -1250,14 +1264,16 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="task">Task</param>
         /// <param name="selectedMoqType">Selected MOQ Type</param>
         /// <param name="table">MOQ Table</param>
+        /// <param name="exportInputs">Export Inputs</param>
         /// <returns>MOQ Table Data row for the given data</returns>
-        protected virtual IList<string> GetMOQTableDataRow(BoeDTO boe, BoeTaskElementDTO task, string selectedMoqType, MoqTableData table)
+        protected virtual IList<string> GetMOQTableDataRow(BoeDTO boe, BoeTaskElementDTO task, string selectedMoqType, MoqTableData table, BOEExportInputs exportInputs)
         {
             _ = boe ?? throw new ArgumentNullException(nameof(boe));
             _ = task ?? throw new ArgumentNullException(nameof(task));
             _ = table ?? throw new ArgumentNullException(nameof(table));
+            _ = exportInputs ?? throw new ArgumentNullException(nameof(exportInputs));
 
-            return new List<string>()
+            IList<string> toReturn = new List<string>()
             {
                 boe.Id.ToString(),
                 boe.Title ?? this.sEmpty,
@@ -1275,6 +1291,14 @@ namespace GenBOE.ActionLogic.IO.Export
                 table.AdditionalQueryFilters,
                 table.TotalRelevantHours.ToString()
             };
+
+            foreach (CustomFieldDTO customField in exportInputs.CustomFields.Where(x => x.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay))
+            {
+                CustomFieldValueContainer customFieldValue = table.CustomFieldValueContainers.FirstOrDefault(x => x.CustomFieldID == customField.Id);
+                toReturn.Add(customFieldValue != null ? customFieldValue.OpenEndedValue : this.sEmpty);
+            }
+
+            return toReturn;
         }
 
         /// <summary>
@@ -1350,9 +1374,14 @@ namespace GenBOE.ActionLogic.IO.Export
                         this.sEmpty, // Task Title
                         this.sEmpty, // MOQ Equation
                         this.sEmpty, // MOQ Type
-                        this.sEmpty, // MOQ Rationale
-                        this.sEmpty // Segment Region
                     });
+
+                if (!exportInputs.FullWorkspace.UsingTemplateBOE)
+                {
+                    row.Add(this.sEmpty); // MOQ Rationale, unless using BOE / MOQ Templates
+                }
+
+                row.Add(this.sEmpty); // Segment Region
 
                 row.AddRange(this.GetBoeWbsClinTitleAndDateFields(boe, allWbs, allClins));
 

@@ -1114,7 +1114,7 @@ namespace IES.Common.OfficeUtilities
                 var columnName = GetColumnNameFromHeaderString(document, worksheetName, columnHeaderString);
                 var columnIndex = GetColumnIndexFromColumnName(columnName);
 
-                var worksheetPart = GetSpecifiedWorksheetPart(document, worksheetName); ;
+                var worksheetPart = GetSpecifiedWorksheetPart(document, worksheetName);
 
                 if (worksheetPart != null)
                 {
@@ -1154,8 +1154,6 @@ namespace IES.Common.OfficeUtilities
                             }
 
                             column.Max = column.Max + (uint)duplications;
-
-                            //column.Descendants<AutoFilter>
                         }
                     }
 

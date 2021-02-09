@@ -36,6 +36,13 @@ namespace GenBOE.DataBridge.DTO
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIDsByTaskElementIDs(Collection<int> inTaskElementIDs);
 
+        /// <summary>
+        /// Gets a mapping of MOQ Type Table to Custom Field Value ID
+        /// </summary>
+        /// <param name="moqTypeTableIds">MOQ Type Table IDs</param>
+        /// <returns>Mapping of MOQ Type Table to Custom Field Value ID</returns> 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        Dictionary<int, ICollection<KeyValuePair<int, int>>> GetCustomFieldValueIDsContainerIDsByMoqTypeTableIds(ICollection<int> moqTypeTableIds);
 
         /// <summary>
         /// Gets a mapping of labor type to custom field value Id.

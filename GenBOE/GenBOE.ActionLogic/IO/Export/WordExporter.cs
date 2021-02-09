@@ -12,10 +12,10 @@ namespace GenBOE.ActionLogic.IO.Export
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
-    using System.Text;
     using DocumentFormat.OpenXml;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Wordprocessing;
+    using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -398,10 +398,11 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="mainDocumentPart">Main Document Part</param>
         /// <param name="moqTypeContainerTemplate">MOQ container template element</param>
         /// <param name="customExport">If using custom exporter</param>
+        /// <param name="exportInputs">Export inputs</param>
         /// <param name="counters">counters</param>
-        [SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "5#")]
+        [SuppressMessage("Microsoft.Design", "CA1045:DoNotPassTypesByReference", MessageId = "6#")]
         protected void PopulateMOQTypeData(BOEExportTaskElement laborTaskElement, ICollection<BoeCustomReportComponent> selectedComponents,
-            MainDocumentPart mainDocumentPart, SdtElement moqTypeContainerTemplate, bool customExport, ref ChunkCounter counters)
+            MainDocumentPart mainDocumentPart, SdtElement moqTypeContainerTemplate, bool customExport, BOEExportInputs exportInputs, ref ChunkCounter counters)
         {
             _ = laborTaskElement ?? throw new ArgumentNullException(nameof(laborTaskElement));
             _ = selectedComponents ?? throw new ArgumentNullException(nameof(selectedComponents));
@@ -451,7 +452,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                 this.RemoveSMERows(moqTypeContainer);
                             }
 
-                            this.PopulateMOQTableData(moqType, selectedComponents, moqTypeTableContainer);
+                            this.PopulateMOQTableData(moqType, selectedComponents, moqTypeTableContainer, exportInputs);
                             break;
                         case MOQType.CostEstimatingRelationships:
                         case MOQType.ParametricEstimates:
@@ -650,7 +651,8 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="moqType">MOQ Type containing the table data</param>
         /// <param name="selectedComponents">selected components for the export</param>
         /// <param name="moqTypeTableTemplate">template element for the MOQ Type table</param>
-        private void PopulateMOQTableData(MoqTypeSelection moqType, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement moqTypeTableTemplate)
+        /// <param name="exportInputs">export inputs</param>
+        private void PopulateMOQTableData(MoqTypeSelection moqType, ICollection<BoeCustomReportComponent> selectedComponents, SdtElement moqTypeTableTemplate, BOEExportInputs exportInputs)
         {
             if (moqTypeTableTemplate != null)
             {
@@ -663,6 +665,9 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     moqTypeTableContainer = moqTypeTableTemplate.CloneNode(true) as SdtElement;
                     lastElement = lastElement.InsertAfterSelf<SdtElement>(moqTypeTableContainer);
+
+                    // Populate any custom fields
+                    this.PopulateMOQTableCustomFields(table, moqTypeTableContainer, exportInputs);
 
                     // populate shared fields
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_TableName), table.TableName);
@@ -678,7 +683,8 @@ namespace GenBOE.ActionLogic.IO.Export
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_TotalRelevantHours), table.TotalRelevantHours.ToString("G29"));
                     
                     // populate/remove Additional Query filters based on selected components
-                    if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQAdditionalQueryFilters) || selectedComponents.Contains(BoeCustomReportComponent.TaskMOQEmployeeIDFilters))
+                    if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQAdditionalQueryFilters) || selectedComponents.Contains(BoeCustomReportComponent.TaskMOQEmployeeIDFilters) 
+                        || (!selectedComponents.Any() && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST))
                     {
                         WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_AdditionalQueryFilters), table.AdditionalQueryFilters);
                     }
@@ -689,7 +695,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     else
                     {
                         WordUtilities.RemoveTableRowWithTaggedElement(moqTypeTableContainer, BOEExporterConstants.FieldName_AdditionalQueryFilters);
-                    }
+                    }                    
 
                     // remove the note unless last/only table
                     if (table.Id != lastTableId)
@@ -700,6 +706,70 @@ namespace GenBOE.ActionLogic.IO.Export
 
                 // delete template
                 this.RemoveElement(moqTypeTableTemplate);
+            }
+        }
+
+        /// <summary>
+        /// Populate the rows for the MOQ Table Custom Fields
+        /// </summary>
+        /// <param name="table">The MOQ table</param>
+        /// <param name="moqTypeTableContainer">The container for the MOQ Table</param>
+        /// <param name="exportInputs">Export inputs</param>
+        private void PopulateMOQTableCustomFields(MoqTableData table, SdtElement moqTypeTableContainer, BOEExportInputs exportInputs)
+        {
+            if (table.CustomFieldValueContainers.Any())
+            {
+                Table tableElement = moqTypeTableContainer.Descendants<Table>().FirstOrDefault();
+                if (tableElement != null)
+                {
+                    // clone the row before Additional Query Filters to use it as a template for adding new rows
+                    TableRow rowToClone = WordUtilities.GetTaggedChildElement(moqTypeTableContainer, 
+                        SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ? BOEExporterConstants.FieldName_TotalWBSHours : BOEExporterConstants.FieldName_PoPEndDate).Ancestors<TableRow>().First();
+                    TableRow cfTemplateRow = (TableRow)rowToClone.CloneNode(true);
+
+                    foreach (CustomFieldValueContainer customFieldValue in table.CustomFieldValueContainers.Reverse())
+                    {
+                        // clone the template row
+                        TableRow cfRow = (TableRow)cfTemplateRow.CloneNode(true);
+                        ICollection<TableCell> cfRowCells = cfRow.Descendants<TableCell>().ToCollection();
+
+                        // First cell is label
+                        TableCell labelCell = cfRowCells.ElementAt(0);
+                        IList<Run> labelRuns = labelCell.Descendants<Run>().ToList();
+                        for (int i = 0; i < labelRuns.Count(); i++)
+                        {
+                            if (i == 0)
+                            {
+                                CustomFieldDTO customField = exportInputs.CustomFields.FirstOrDefault(x => x.Id == customFieldValue.CustomFieldID);
+                                WordUtilities.SetElementText(labelRuns.ElementAt(i), customField.CustomFieldName);
+                            }
+                            else
+                            {
+                                // clear any additional text
+                                WordUtilities.SetElementText(labelRuns.ElementAt(i), string.Empty);
+                            }
+                        }
+
+                        // Second cell is value
+                        TableCell valueCell = cfRowCells.ElementAt(1);
+                        IList<Run> valueRuns = valueCell.Descendants<Run>().ToList();
+                        for (int i = 0; i < valueRuns.Count(); i++)
+                        {
+                            if (i == 0)
+                            {
+                                WordUtilities.SetElementText(valueRuns.ElementAt(i), customFieldValue.OpenEndedValue ?? string.Empty);
+                            }
+                            else
+                            {
+                                // clear any additional text
+                                WordUtilities.SetElementText(valueRuns.ElementAt(i), string.Empty);
+                            }
+                        }
+
+                        // Add row to the table after the cloned row
+                        rowToClone.InsertAfterSelf(cfRow);
+                    }
+                }
             }
         }
 
