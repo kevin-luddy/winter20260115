@@ -1066,7 +1066,9 @@ InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, wo
             InitializeRteTemplate(taskElementDetailsWidget.MOQText, 'MOQText', rteFieldSize);
         }
         else {
-            HandleRTETemplateDataForReadOnly(taskElementDetailsWidget.MOQText, 'MOQText');
+            setTimeout(function () {
+                HandleRTETemplateDataForReadOnly(TaskElementDetailsWidget.MOQText, 'MOQText');
+            }, 1);
         }
 
         MOQEquationFieldWidget.InitializeDialog(MOQEquationFieldWidget.ReOrderMoqTypesDialog);
