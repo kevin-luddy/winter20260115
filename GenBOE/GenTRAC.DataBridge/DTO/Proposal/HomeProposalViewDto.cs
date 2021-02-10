@@ -56,6 +56,11 @@ namespace GenTRAC.DataBridge.DTO
         public long? EstValue { get; set; }
 
         /// <summary>
+        /// submitted value
+        /// </summary>
+        public long? SubmittedValue { get; set; }
+
+        /// <summary>
         /// Proposal date assigned
         /// </summary>
         public DateTime? ProposalDateAssigned { get; set; }
