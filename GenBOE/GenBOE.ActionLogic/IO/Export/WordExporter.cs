@@ -556,7 +556,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     }
 
                     // populate rationale/skill mix for all
-                    if (moqType.SelectedMOQType != MOQType.SME && (!customExport || selectedComponents.Contains(BoeCustomReportComponent.TaskMOQRationale)))
+                    if (moqType.SelectedMOQType != MOQType.SME)
                     {
                         WordUtilities.SetElementTextWithHTML(mainDocumentPart, WordUtilities.GetTaggedChildElement(moqTypeContainer, BOEExporterConstants.FieldName_Rationale),
                             moqType.Rationale, ref counters, true);
