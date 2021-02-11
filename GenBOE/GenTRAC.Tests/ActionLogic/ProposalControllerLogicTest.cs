@@ -3222,7 +3222,37 @@ namespace GenTRAC.Tests.ActionLogic
             // missing cutoff utilization selection
             sut.ValidateCertification(5, model, true);
         }
-        
+
+        /// <summary>
+        /// Validates the completing of certification timeline, specifically Certification Not Required functionality
+        /// 
+        /// We now allow certification not required when Proposal is Completed so this should throw no exceptions
+        /// </summary>
+        [TestMethod]
+        public void ValidateCompletingCertificationTimelineCertificationNotRequired_ex1()
+        {
+            var sut = this.CreateSystem();
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 5,
+                ProposalStatus = ProposalStatus.Completed
+            };
+
+            // GetDataForProposalUserInformation
+            this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
+
+            ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
+            {
+                AgreementDate = "01/01/2018",
+                CertificationDate = "01/03/2018",
+                CutOffDateUtilization = CutOffDateUtilization.Yes,
+                Comments = "55",
+                ReasonCertificationNotRequired = ReasonCertificationNotRequired.LostNotAwarded
+            };
+
+            sut.ValidateCertification(5, model, false);
+        }
+
         /// <summary>
         /// Validates the completing of certification timeline, specifically Certification Not Required functionality
         /// 
