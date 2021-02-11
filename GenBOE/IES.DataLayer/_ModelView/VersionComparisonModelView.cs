@@ -24,6 +24,7 @@ namespace IES.DataBridge.ModelViews
             this.AvailableVersions = new Collection<RevisionOptionModelView>();
             this.SelectedVersionNumber = -1;
             this.ActiveLocks = new Collection<AreaLockData>();
+            this.AvailableCompareToVersions = new Collection<RevisionOptionModelView>(); // { new RevisionOptionModelView() { Id = -1, Label = "Previous Version" } };
         }
 
         /// <summary>
@@ -37,10 +38,20 @@ namespace IES.DataBridge.ModelViews
         public IList<RevisionOptionModelView> AvailableVersions { get; set; }
 
         /// <summary>
-        /// Gets/sets selected Revision
+        /// Gets/Sets Available Versions to compare to
         /// </summary>
-        public RevisionOptionModelView SelectedRevision { get; set; }
-        
+        public IList<RevisionOptionModelView> AvailableCompareToVersions { get; set; }
+
+        /// <summary>
+        /// Gets/sets selected the first Revision
+        /// </summary>
+        public RevisionOptionModelView FirstSelectedRevision { get; set; }
+
+        /// <summary>
+        /// Gets/sets selected the second Revision
+        /// </summary>
+        public RevisionOptionModelView SecondSelectedRevision { get; set; }
+
         /// <summary>
         /// Gets/Sets the Selected Version number
         /// </summary>

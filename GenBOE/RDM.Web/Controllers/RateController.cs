@@ -108,13 +108,26 @@ namespace RDM.Web.Controllers
         /// Gets the rates for the rate compare page.
         /// </summary>
         /// <param name="id">The revision id.</param>
+        /// <param name="secondId">The id of the second revision to compare to. -1 for previous revision</param>
         /// <returns>Collection of rates with changes between the requested revisions and the previous revision.</returns>
         [HttpPost]
-        public ActionResult GetVersionDifferences(int id)
+        public ActionResult GetVersionDifferences(int id, int secondId)
         {
             ICollection<RevisionOptionModelView> revisionOptions = this.Logic.RevisionMediator.GetRevisionOptions(this.Logic.Revisions).OrderByDescending(r => r.Id).ToCollection();
-            ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetComparableRates(revisionOptions.FirstOrDefault(r => r.Id == id),
-                revisionOptions.FirstOrDefault(r => r.Id < id));
+
+            RevisionOptionModelView firstRevision = revisionOptions.FirstOrDefault(r => r.Id == id);
+            RevisionOptionModelView secondRevision = revisionOptions.FirstOrDefault(r => secondId <= 0 ? r.Id < id : r.Id == secondId);
+
+            int firstRevisionNumber;
+            int.TryParse(firstRevision.Revision, out firstRevisionNumber);
+
+            int secondRevisionNumber = -1;
+            if (secondRevision != null)
+            {
+                int.TryParse(secondRevision.Revision, out secondRevisionNumber);
+            }
+
+            ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetComparableRates(firstRevision, secondRevision);
 
             return this.Json(rates);
         }
