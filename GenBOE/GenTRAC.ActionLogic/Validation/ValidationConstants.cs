@@ -445,7 +445,7 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// validation message for wrong status and cert not required
             /// </summary>
-            public const string CERTIFICATION_NOT_REQUIRED_WRONG_STATE = "Proposal's certification cannot be marked as not-required if the proposal is not in 'Submitted' state.";
+            public const string CERTIFICATION_NOT_REQUIRED_WRONG_STATE = "Proposal's certification cannot be marked as not-required if the proposal is not in 'Submitted' or 'Completed' state.";
 
             /// <summary>
             /// This should never happen, but just in case.

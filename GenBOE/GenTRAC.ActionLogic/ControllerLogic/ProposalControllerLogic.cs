@@ -1291,7 +1291,7 @@ namespace GenTRAC.ActionLogic
                 model.ReasonCertificationNotRequiredList = reasonCertificationNotRequiredList;
                 model.Comments = fullProposalDto.Comments;
                 model.DisplayCertificationReset = string.Equals(model.IsReadOnly.ToLower(), "true") && model.ReasonCertificationNotRequired.HasValue && this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
-                model.DisableCertificationRequiredChange = fullProposalDto.ProposalStatus == ProposalStatus.Completed && !model.ReasonCertificationNotRequired.HasValue;
+                model.DisableCompleteButton = fullProposalDto.ProposalStatus == ProposalStatus.Completed;
             }
 
             return model;
@@ -2468,7 +2468,7 @@ namespace GenTRAC.ActionLogic
                 throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.COMPLETE_FAILED_PROPOSAL);
             }
 
-            if (model.ReasonCertificationNotRequired.HasValue && proposal.ProposalStatus != ProposalStatus.Submitted)
+            if (model.ReasonCertificationNotRequired.HasValue && proposal.ProposalStatus != ProposalStatus.Submitted && proposal.ProposalStatus != ProposalStatus.Completed)
             {
                 throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CERTIFICATION_NOT_REQUIRED_WRONG_STATE);
             }

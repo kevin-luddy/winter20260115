@@ -286,6 +286,7 @@ namespace GenTRAC.ActionLogic
                     TrackingNumber = proposal.TrackingNumber,
                     ForecastedTrackingNumber = proposal.ForecastedTrackingNumber,
                     EstValue = proposal.EstValue,
+                    SubmittedValue = proposal.SubmittedValue,
                     CaptureManagerDisplayName = proposal.CaptureManagerDisplayName,
                     PricerDisplayName = proposal.PricerDisplayName,
                     PeerReviewerDisplayName = proposal.PeerReviewerDisplayName,
@@ -446,7 +447,19 @@ namespace GenTRAC.ActionLogic
 
             DataBridge.DTO.UserDTO user = this.UserMapper.GetActiveUser();
             sb.Append(string.Format("&{0}={1}", Constants.Report.NTID, user.Ntid));
-            
+
+            if (!string.IsNullOrEmpty(reportParameters.ViewerFilterOption))
+            {
+                bool showProposalsForMyOrganization = reportParameters.ViewerFilterOption == Constants.Report.SHOW_PROPOSALS_FOR_MY_ORGANIZATION;
+                sb.Append(string.Format("&{0}={1}", Constants.Report.SHOW_PROPOSALS_FOR_MY_ORGANIZATION, showProposalsForMyOrganization ? "true" : "false"));
+
+                if (showProposalsForMyOrganization)
+                {
+                    string userAndGroupIDs = this.activeDirectoryUtils.GetUserAndGroupIdsAsXml(user.Ntid, this.activeDirectoryUtils.GetGroupsForUser(user.Ntid));
+                    sb.Append(string.Format("&{0}=\"{1}\"", Constants.Report.USER_AND_GROUP_IDS, userAndGroupIDs));
+                }
+            }
+
             Uri toReturn = new Uri(string.Format("{0}/{1}/{2}{3}", WebConfigurationManager.AppSettings["ReportServerLocation"], WebConfigurationManager.AppSettings["ReportServerFolderName"], "Proposal Dashboard Report", sb));
             return toReturn;
         }
