@@ -290,9 +290,9 @@
           <Property Name="CertificationLastEmailed" Type="datetime2" Precision="7" />
           <Property Name="CostVolumeClassified" Type="bit" />
           <Property Name="NoBidDate" Type="datetime2" Precision="7" />
+          <Property Name="RevisionOfId" Type="int" />
           <Property Name="OtherReasonComment" Type="varchar" MaxLength="1000" />
           <Property Name="ReasonCertificationNotRequired" Type="int" />
-          <Property Name="RevisionOfId" Type="int" />
           <Property Name="SetupComments" Type="varchar(max)" />
           <Property Name="InformationComments" Type="varchar(max)" />
         </EntityType>
@@ -576,7 +576,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="MaterialLead" Type="varchar" MaxLength="256" />
           <Property Name="SubcontractLead" Type="varchar" MaxLength="256" />
         </EntityType>
-        <Association Name="FK__CannedRes__Quest__4999D985">
+        <Association Name="FK__CannedRes__Quest__2D87AABC">
           <End Role="PARChecklistContent" Type="Self.PARChecklistContent" Multiplicity="1" />
           <End Role="CannedResponsesPAR" Type="Self.CannedResponsesPAR" Multiplicity="*" />
           <ReferentialConstraint>
@@ -588,7 +588,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__ProposalP__Canne__4A8DFDBE">
+        <Association Name="FK__ProposalP__Canne__2E7BCEF5">
           <End Role="CannedResponsesPAR" Type="Self.CannedResponsesPAR" Multiplicity="0..1" />
           <End Role="ProposalPARChecklistXREF" Type="Self.ProposalPARChecklistXREF" Multiplicity="*" />
           <ReferentialConstraint>
@@ -600,7 +600,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Proposals__Attac__5B4E756C">
+        <Association Name="FK__Proposals__Attac__07B7078F">
           <End Role="Attachment" Type="Self.Attachment" Multiplicity="1" />
           <End Role="ProposalsAttachments" Type="Self.ProposalsAttachments" Multiplicity="*" />
           <ReferentialConstraint>
@@ -612,7 +612,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Proposals__Propo__5A5A5133">
+        <Association Name="FK__Proposals__Propo__06C2E356">
           <End Role="Proposal" Type="Self.Proposal" Multiplicity="1" />
           <End Role="ProposalsAttachments" Type="Self.ProposalsAttachments" Multiplicity="*" />
           <ReferentialConstraint>
@@ -1663,19 +1663,19 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
     [genTracData].[SubcontractLead] AS [SubcontractLead]
     FROM [genBOE].[genTracData] AS [genTracData]</DefiningQuery>
           </EntitySet>
-          <AssociationSet Name="FK__CannedRes__Quest__4999D985" Association="Self.FK__CannedRes__Quest__4999D985">
+          <AssociationSet Name="FK__CannedRes__Quest__2D87AABC" Association="Self.FK__CannedRes__Quest__2D87AABC">
             <End Role="PARChecklistContent" EntitySet="PARChecklistContent" />
             <End Role="CannedResponsesPAR" EntitySet="CannedResponsesPAR" />
           </AssociationSet>
-          <AssociationSet Name="FK__ProposalP__Canne__4A8DFDBE" Association="Self.FK__ProposalP__Canne__4A8DFDBE">
+          <AssociationSet Name="FK__ProposalP__Canne__2E7BCEF5" Association="Self.FK__ProposalP__Canne__2E7BCEF5">
             <End Role="CannedResponsesPAR" EntitySet="CannedResponsesPAR" />
             <End Role="ProposalPARChecklistXREF" EntitySet="ProposalPARChecklistXREF" />
           </AssociationSet>
-          <AssociationSet Name="FK__Proposals__Attac__5B4E756C" Association="Self.FK__Proposals__Attac__5B4E756C">
+          <AssociationSet Name="FK__Proposals__Attac__07B7078F" Association="Self.FK__Proposals__Attac__07B7078F">
             <End Role="Attachment" EntitySet="Attachment" />
             <End Role="ProposalsAttachments" EntitySet="ProposalsAttachments" />
           </AssociationSet>
-          <AssociationSet Name="FK__Proposals__Propo__5A5A5133" Association="Self.FK__Proposals__Propo__5A5A5133">
+          <AssociationSet Name="FK__Proposals__Propo__06C2E356" Association="Self.FK__Proposals__Propo__06C2E356">
             <End Role="Proposal" EntitySet="Proposal" />
             <End Role="ProposalsAttachments" EntitySet="ProposalsAttachments" />
           </AssociationSet>
@@ -3026,16 +3026,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="NTID" Mode="In" Type="String" />
             <Parameter Name="genTracUserID" Mode="In" Type="Int32" />
           </FunctionImport>
-          <FunctionImport Name="getMyProposals" ReturnType="Collection(genTRACModel.getMyProposals_Result)">
-            <Parameter Name="ProposalStatusID" Mode="In" Type="Int32" />
-            <Parameter Name="AssignedStart" Mode="In" Type="DateTime" />
-            <Parameter Name="AssignedEnd" Mode="In" Type="DateTime" />
-            <Parameter Name="Search" Mode="In" Type="String" />
-            <Parameter Name="NTID" Mode="In" Type="String" />
-            <Parameter Name="ShowProposalsForMyOrganization" Mode="In" Type="Boolean" />
-            <Parameter Name="UserAndGroupIDs" Mode="In" Type="String" />
-            <Parameter Name="ProposalClassFilterID" Mode="In" Type="Int32" />
-          </FunctionImport>
           <FunctionImport Name="insertProposalUserRole" ReturnType="Collection(Int32)">
             <Parameter Name="ProposalID" Mode="In" Type="Int32" />
             <Parameter Name="RoleID" Mode="In" Type="Int32" />
@@ -3332,6 +3322,16 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <FunctionImport Name="GetProposalRevisionHistory" ReturnType="Collection(genTRACModel.GetProposalRevisionHistory_Result)">
           <Parameter Name="ProposalId" Mode="In" Type="Int32" />
           </FunctionImport>
+          <FunctionImport Name="getMyProposals" ReturnType="Collection(genTRACModel.getMyProposals_Result)">
+            <Parameter Name="ProposalStatusID" Mode="In" Type="Int32" />
+            <Parameter Name="AssignedStart" Mode="In" Type="DateTime" />
+            <Parameter Name="AssignedEnd" Mode="In" Type="DateTime" />
+            <Parameter Name="Search" Mode="In" Type="String" />
+            <Parameter Name="NTID" Mode="In" Type="String" />
+            <Parameter Name="ShowProposalsForMyOrganization" Mode="In" Type="Boolean" />
+            <Parameter Name="UserAndGroupIDs" Mode="In" Type="String" />
+            <Parameter Name="ProposalClassFilterID" Mode="In" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="CreatePARChecklistReport_Result">
           <Property Type="String" Name="QuestionNumber" Nullable="true" MaxLength="50" />
@@ -3461,47 +3461,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Type="String" Name="Schedule_Proposal" Nullable="false" MaxLength="3" />
           <Property Type="String" Name="Proposal_Location" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="ProgramProposalStatus" Nullable="true" MaxLength="50" />
-        </ComplexType>
-        <ComplexType Name="getMyProposals_Result">
-          <Property Type="Int32" Name="ProposalID" Nullable="false" />
-          <Property Type="String" Name="Tracking_Number" Nullable="true" MaxLength="13" />
-          <Property Type="String" Name="Proposal_Title" Nullable="false" MaxLength="100" />
-          <Property Type="String" Name="Program_Area" Nullable="false" MaxLength="50" />
-          <Property Type="String" Name="Customer" Nullable="false" MaxLength="50" />
-          <Property Type="Int64" Name="Estimated_Value" Nullable="true" />
-          <Property Type="String" Name="Capture_Manager" Nullable="true" MaxLength="256" />
-          <Property Type="String" Name="Pricer_Name" Nullable="true" MaxLength="256" />
-          <Property Type="String" Name="Peer_Reviewer" Nullable="true" MaxLength="256" />
-          <Property Type="String" Name="Cost_Volume_Lead" Nullable="true" MaxLength="256" />
-          <Property Type="Int32" Name="IndependentReviewerUserId" Nullable="true" />
-          <Property Type="String" Name="IndependentReviewerNtId" Nullable="true" MaxLength="1000" />
-          <Property Type="String" Name="IndependentReviewerName" Nullable="true" MaxLength="256" />
-          <Property Type="Int32" Name="PricingVerificationUserId" Nullable="true" />
-          <Property Type="String" Name="PricingVerificationNtId" Nullable="true" MaxLength="1000" />
-          <Property Type="String" Name="PricingVerificationName" Nullable="true" MaxLength="256" />
-          <Property Type="Int32" Name="CoverSheetApproverUserId" Nullable="true" />
-          <Property Type="String" Name="CoverSheetApproverNtId" Nullable="true" MaxLength="1000" />
-          <Property Type="String" Name="CoverSheetApproverName" Nullable="true" MaxLength="256" />
-          <Property Type="Int32" Name="ProposalMgrUserId" Nullable="true" />
-          <Property Type="String" Name="ProposalMgrNtId" Nullable="true" MaxLength="1000" />
-          <Property Type="String" Name="ProposalMgrName" Nullable="true" MaxLength="256" />
-          <Property Type="Int32" Name="TechLeadUserId" Nullable="true" />
-          <Property Type="String" Name="TechLeadNtId" Nullable="true" MaxLength="1000" />
-          <Property Type="String" Name="TechLeadName" Nullable="true" MaxLength="256" />
-          <Property Type="DateTime" Name="Date_Assigned" Nullable="true" />
-          <Property Type="DateTime" Name="Estimated_Ship_Date__Due_Date_" Nullable="false" />
-          <Property Type="DateTime" Name="Proposal_Submit_Date" Nullable="true" />
-          <Property Type="String" Name="Proposal_Status" Nullable="false" MaxLength="50" />
-          <Property Type="Int32" Name="DocumentId" Nullable="true" />
-          <Property Type="Int32" Name="LeadEstimatorUserId" Nullable="true" />
-          <Property Type="String" Name="LeadEstimatorNtId" Nullable="true" MaxLength="1000" />
-          <Property Type="String" Name="LeadEstimatorName" Nullable="true" MaxLength="256" />
-          <Property Type="DateTime" Name="Revised_Submittal_Date" Nullable="true" />
-          <Property Type="String" Name="ProposalClass" Nullable="false" MaxLength="50" />
-          <Property Type="String" Name="Forecasted_Tracking_Number" Nullable="true" MaxLength="13" />
-          <Property Type="Int32" Name="CustomerTypeId" Nullable="false" />
-          <Property Type="DateTime" Name="ChecklistCompleteDate" Nullable="true" />
-          <Property Type="Int32" Name="HasOrIsRevision" Nullable="false" />
         </ComplexType>
         <EntityType Name="genTracData">
           <Key>
@@ -3843,6 +3802,48 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Type="Int32" Name="ProposalId" Nullable="true" />
           <Property Type="Int32" Name="RevisionOfId" Nullable="true" />
           <Property Type="String" Name="ProposalTrackingId" Nullable="true" MaxLength="13" />
+        </ComplexType>
+        <ComplexType Name="getMyProposals_Result">
+          <Property Type="Int32" Name="ProposalID" Nullable="false" />
+          <Property Type="String" Name="Tracking_Number" Nullable="true" MaxLength="13" />
+          <Property Type="String" Name="Proposal_Title" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="Program_Area" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Customer" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="CustomerTypeId" Nullable="false" />
+          <Property Type="Int64" Name="Estimated_Value" Nullable="true" />
+          <Property Type="Int64" Name="Submitted_Value" Nullable="true" />
+          <Property Type="String" Name="Capture_Manager" Nullable="true" MaxLength="256" />
+          <Property Type="String" Name="Pricer_Name" Nullable="true" MaxLength="256" />
+          <Property Type="String" Name="Peer_Reviewer" Nullable="true" MaxLength="256" />
+          <Property Type="String" Name="Cost_Volume_Lead" Nullable="true" MaxLength="256" />
+          <Property Type="Int32" Name="IndependentReviewerUserId" Nullable="true" />
+          <Property Type="String" Name="IndependentReviewerNtId" Nullable="true" MaxLength="1000" />
+          <Property Type="String" Name="IndependentReviewerName" Nullable="true" MaxLength="256" />
+          <Property Type="Int32" Name="PricingVerificationUserId" Nullable="true" />
+          <Property Type="String" Name="PricingVerificationNtId" Nullable="true" MaxLength="1000" />
+          <Property Type="String" Name="PricingVerificationName" Nullable="true" MaxLength="256" />
+          <Property Type="Int32" Name="CoverSheetApproverUserId" Nullable="true" />
+          <Property Type="String" Name="CoverSheetApproverNtId" Nullable="true" MaxLength="1000" />
+          <Property Type="String" Name="CoverSheetApproverName" Nullable="true" MaxLength="256" />
+          <Property Type="Int32" Name="ProposalMgrUserId" Nullable="true" />
+          <Property Type="String" Name="ProposalMgrNtId" Nullable="true" MaxLength="1000" />
+          <Property Type="String" Name="ProposalMgrName" Nullable="true" MaxLength="256" />
+          <Property Type="Int32" Name="TechLeadUserId" Nullable="true" />
+          <Property Type="String" Name="TechLeadNtId" Nullable="true" MaxLength="1000" />
+          <Property Type="String" Name="TechLeadName" Nullable="true" MaxLength="256" />
+          <Property Type="Int32" Name="LeadEstimatorUserId" Nullable="true" />
+          <Property Type="String" Name="LeadEstimatorNtId" Nullable="true" MaxLength="1000" />
+          <Property Type="String" Name="LeadEstimatorName" Nullable="true" MaxLength="256" />
+          <Property Type="DateTime" Name="Date_Assigned" Nullable="true" />
+          <Property Type="DateTime" Name="Estimated_Ship_Date__Due_Date_" Nullable="true" />
+          <Property Type="DateTime" Name="ChecklistCompleteDate" Nullable="true" />
+          <Property Type="DateTime" Name="Proposal_Submit_Date" Nullable="true" />
+          <Property Type="String" Name="Proposal_Status" Nullable="false" MaxLength="50" />
+          <Property Type="DateTime" Name="Revised_Submittal_Date" Nullable="true" />
+          <Property Type="Int32" Name="DocumentId" Nullable="true" />
+          <Property Type="String" Name="Forecasted_Tracking_Number" Nullable="true" MaxLength="13" />
+          <Property Type="String" Name="ProposalClass" Nullable="false" MaxLength="50" />
+          <Property Type="Int32" Name="HasOrIsRevision" Nullable="false" />
         </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
@@ -4311,51 +4312,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <FunctionImportMapping FunctionImportName="ELMAH_GetErrorXml" FunctionName="genTRACModel.Store.ELMAH_GetErrorXml" />
           <FunctionImportMapping FunctionImportName="ELMAH_LogError" FunctionName="genTRACModel.Store.ELMAH_LogError" />
           <FunctionImportMapping FunctionImportName="getMyFunctionalTree" FunctionName="genTRACModel.Store.getMyFunctionalTree" />
-          <FunctionImportMapping FunctionImportName="getMyProposals" FunctionName="genTRACModel.Store.getMyProposals">
-            <ResultMapping>
-              <ComplexTypeMapping TypeName="genTRACModel.getMyProposals_Result">
-                <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
-                <ScalarProperty Name="Tracking_Number" ColumnName="Tracking Number" />
-                <ScalarProperty Name="Proposal_Title" ColumnName="Proposal Title" />
-                <ScalarProperty Name="Program_Area" ColumnName="Program Area" />
-                <ScalarProperty Name="Customer" ColumnName="Customer" />
-                <ScalarProperty Name="Estimated_Value" ColumnName="Estimated Value" />
-                <ScalarProperty Name="Capture_Manager" ColumnName="Capture Manager" />
-                <ScalarProperty Name="Pricer_Name" ColumnName="Pricer Name" />
-                <ScalarProperty Name="Peer_Reviewer" ColumnName="Peer Reviewer" />
-                <ScalarProperty Name="Cost_Volume_Lead" ColumnName="Cost Volume Lead" />
-                <ScalarProperty Name="IndependentReviewerUserId" ColumnName="IndependentReviewerUserId" />
-                <ScalarProperty Name="IndependentReviewerNtId" ColumnName="IndependentReviewerNtId" />
-                <ScalarProperty Name="IndependentReviewerName" ColumnName="IndependentReviewerName" />
-                <ScalarProperty Name="PricingVerificationUserId" ColumnName="PricingVerificationUserId" />
-                <ScalarProperty Name="PricingVerificationNtId" ColumnName="PricingVerificationNtId" />
-                <ScalarProperty Name="PricingVerificationName" ColumnName="PricingVerificationName" />
-                <ScalarProperty Name="CoverSheetApproverUserId" ColumnName="CoverSheetApproverUserId" />
-                <ScalarProperty Name="CoverSheetApproverNtId" ColumnName="CoverSheetApproverNtId" />
-                <ScalarProperty Name="CoverSheetApproverName" ColumnName="CoverSheetApproverName" />
-                <ScalarProperty Name="ProposalMgrUserId" ColumnName="ProposalMgrUserId" />
-                <ScalarProperty Name="ProposalMgrNtId" ColumnName="ProposalMgrNtId" />
-                <ScalarProperty Name="ProposalMgrName" ColumnName="ProposalMgrName" />
-                <ScalarProperty Name="TechLeadUserId" ColumnName="TechLeadUserId" />
-                <ScalarProperty Name="TechLeadNtId" ColumnName="TechLeadNtId" />
-                <ScalarProperty Name="TechLeadName" ColumnName="TechLeadName" />
-                <ScalarProperty Name="Date_Assigned" ColumnName="Date Assigned" />
-                <ScalarProperty Name="Estimated_Ship_Date__Due_Date_" ColumnName="Estimated Ship Date (Due Date)" />
-                <ScalarProperty Name="Proposal_Submit_Date" ColumnName="Proposal Submit Date" />
-                <ScalarProperty Name="Proposal_Status" ColumnName="Proposal Status" />
-                <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
-                <ScalarProperty Name="LeadEstimatorUserId" ColumnName="LeadEstimatorUserId" />
-                <ScalarProperty Name="LeadEstimatorNtId" ColumnName="LeadEstimatorNtId" />
-                <ScalarProperty Name="LeadEstimatorName" ColumnName="LeadEstimatorName" />
-                <ScalarProperty Name="Revised_Submittal_Date" ColumnName="Revised Submittal Date" />
-                <ScalarProperty Name="ProposalClass" ColumnName="ProposalClass" />
-                <ScalarProperty Name="Forecasted_Tracking_Number" ColumnName="Forecasted Tracking Number" />
-                <ScalarProperty Name="CustomerTypeId" ColumnName="CustomerTypeId" />
-                <ScalarProperty Name="ChecklistCompleteDate" ColumnName="ChecklistCompleteDate" />
-                <ScalarProperty Name="HasOrIsRevision" ColumnName="HasOrIsRevision" />
-              </ComplexTypeMapping>
-            </ResultMapping>
-          </FunctionImportMapping>
           <FunctionImportMapping FunctionImportName="insertProposalUserRole" FunctionName="genTRACModel.Store.insertProposalUserRole" />
           <FunctionImportMapping FunctionImportName="insertSystemUserRole" FunctionName="genTRACModel.Store.insertSystemUserRole" />
           <FunctionImportMapping FunctionImportName="unlockProposal" FunctionName="genTRACModel.Store.unlockProposal" />
@@ -4586,6 +4542,52 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
                 <ScalarProperty Name="ProposalId" ColumnName="ProposalId" />
                 <ScalarProperty Name="RevisionOfId" ColumnName="RevisionOfId" />
                 <ScalarProperty Name="ProposalTrackingId" ColumnName="ProposalTrackingId" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="getMyProposals" FunctionName="genTRACModel.Store.getMyProposals">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="genTRACModel.getMyProposals_Result">
+                <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
+                <ScalarProperty Name="Tracking_Number" ColumnName="Tracking Number" />
+                <ScalarProperty Name="Proposal_Title" ColumnName="Proposal Title" />
+                <ScalarProperty Name="Program_Area" ColumnName="Program Area" />
+                <ScalarProperty Name="Customer" ColumnName="Customer" />
+                <ScalarProperty Name="CustomerTypeId" ColumnName="CustomerTypeId" />
+                <ScalarProperty Name="Estimated_Value" ColumnName="Estimated Value" />
+                <ScalarProperty Name="Submitted_Value" ColumnName="Submitted Value" />
+                <ScalarProperty Name="Capture_Manager" ColumnName="Capture Manager" />
+                <ScalarProperty Name="Pricer_Name" ColumnName="Pricer Name" />
+                <ScalarProperty Name="Peer_Reviewer" ColumnName="Peer Reviewer" />
+                <ScalarProperty Name="Cost_Volume_Lead" ColumnName="Cost Volume Lead" />
+                <ScalarProperty Name="IndependentReviewerUserId" ColumnName="IndependentReviewerUserId" />
+                <ScalarProperty Name="IndependentReviewerNtId" ColumnName="IndependentReviewerNtId" />
+                <ScalarProperty Name="IndependentReviewerName" ColumnName="IndependentReviewerName" />
+                <ScalarProperty Name="PricingVerificationUserId" ColumnName="PricingVerificationUserId" />
+                <ScalarProperty Name="PricingVerificationNtId" ColumnName="PricingVerificationNtId" />
+                <ScalarProperty Name="PricingVerificationName" ColumnName="PricingVerificationName" />
+                <ScalarProperty Name="CoverSheetApproverUserId" ColumnName="CoverSheetApproverUserId" />
+                <ScalarProperty Name="CoverSheetApproverNtId" ColumnName="CoverSheetApproverNtId" />
+                <ScalarProperty Name="CoverSheetApproverName" ColumnName="CoverSheetApproverName" />
+                <ScalarProperty Name="ProposalMgrUserId" ColumnName="ProposalMgrUserId" />
+                <ScalarProperty Name="ProposalMgrNtId" ColumnName="ProposalMgrNtId" />
+                <ScalarProperty Name="ProposalMgrName" ColumnName="ProposalMgrName" />
+                <ScalarProperty Name="TechLeadUserId" ColumnName="TechLeadUserId" />
+                <ScalarProperty Name="TechLeadNtId" ColumnName="TechLeadNtId" />
+                <ScalarProperty Name="TechLeadName" ColumnName="TechLeadName" />
+                <ScalarProperty Name="LeadEstimatorUserId" ColumnName="LeadEstimatorUserId" />
+                <ScalarProperty Name="LeadEstimatorNtId" ColumnName="LeadEstimatorNtId" />
+                <ScalarProperty Name="LeadEstimatorName" ColumnName="LeadEstimatorName" />
+                <ScalarProperty Name="Date_Assigned" ColumnName="Date Assigned" />
+                <ScalarProperty Name="Estimated_Ship_Date__Due_Date_" ColumnName="Estimated Ship Date (Due Date)" />
+                <ScalarProperty Name="ChecklistCompleteDate" ColumnName="ChecklistCompleteDate" />
+                <ScalarProperty Name="Proposal_Submit_Date" ColumnName="Proposal Submit Date" />
+                <ScalarProperty Name="Proposal_Status" ColumnName="Proposal Status" />
+                <ScalarProperty Name="Revised_Submittal_Date" ColumnName="Revised Submittal Date" />
+                <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
+                <ScalarProperty Name="Forecasted_Tracking_Number" ColumnName="Forecasted Tracking Number" />
+                <ScalarProperty Name="ProposalClass" ColumnName="ProposalClass" />
+                <ScalarProperty Name="HasOrIsRevision" ColumnName="HasOrIsRevision" />
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>

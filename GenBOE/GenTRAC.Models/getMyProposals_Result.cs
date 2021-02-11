@@ -18,7 +18,9 @@ namespace GenTRAC.Models
         public string Proposal_Title { get; set; }
         public string Program_Area { get; set; }
         public string Customer { get; set; }
+        public int CustomerTypeId { get; set; }
         public Nullable<long> Estimated_Value { get; set; }
+        public Nullable<long> Submitted_Value { get; set; }
         public string Capture_Manager { get; set; }
         public string Pricer_Name { get; set; }
         public string Peer_Reviewer { get; set; }
@@ -38,19 +40,18 @@ namespace GenTRAC.Models
         public Nullable<int> TechLeadUserId { get; set; }
         public string TechLeadNtId { get; set; }
         public string TechLeadName { get; set; }
-        public Nullable<System.DateTime> Date_Assigned { get; set; }
-        public System.DateTime Estimated_Ship_Date__Due_Date_ { get; set; }
-        public Nullable<System.DateTime> Proposal_Submit_Date { get; set; }
-        public string Proposal_Status { get; set; }
-        public Nullable<int> DocumentId { get; set; }
         public Nullable<int> LeadEstimatorUserId { get; set; }
         public string LeadEstimatorNtId { get; set; }
         public string LeadEstimatorName { get; set; }
-        public Nullable<System.DateTime> Revised_Submittal_Date { get; set; }
-        public string ProposalClass { get; set; }
-        public string Forecasted_Tracking_Number { get; set; }
-        public int CustomerTypeId { get; set; }
+        public Nullable<System.DateTime> Date_Assigned { get; set; }
+        public Nullable<System.DateTime> Estimated_Ship_Date__Due_Date_ { get; set; }
         public Nullable<System.DateTime> ChecklistCompleteDate { get; set; }
+        public Nullable<System.DateTime> Proposal_Submit_Date { get; set; }
+        public string Proposal_Status { get; set; }
+        public Nullable<System.DateTime> Revised_Submittal_Date { get; set; }
+        public Nullable<int> DocumentId { get; set; }
+        public string Forecasted_Tracking_Number { get; set; }
+        public string ProposalClass { get; set; }
         public int HasOrIsRevision { get; set; }
     }
 }

@@ -416,43 +416,6 @@ namespace GenTRAC.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("getMyFunctionalTree", nTIDParameter, genTracUserIDParameter);
         }
     
-        public virtual ObjectResult<getMyProposals_Result> getMyProposals(Nullable<int> proposalStatusID, Nullable<System.DateTime> assignedStart, Nullable<System.DateTime> assignedEnd, string search, string nTID, Nullable<bool> showProposalsForMyOrganization, string userAndGroupIDs, Nullable<int> proposalClassFilterID)
-        {
-            var proposalStatusIDParameter = proposalStatusID.HasValue ?
-                new ObjectParameter("ProposalStatusID", proposalStatusID) :
-                new ObjectParameter("ProposalStatusID", typeof(int));
-    
-            var assignedStartParameter = assignedStart.HasValue ?
-                new ObjectParameter("AssignedStart", assignedStart) :
-                new ObjectParameter("AssignedStart", typeof(System.DateTime));
-    
-            var assignedEndParameter = assignedEnd.HasValue ?
-                new ObjectParameter("AssignedEnd", assignedEnd) :
-                new ObjectParameter("AssignedEnd", typeof(System.DateTime));
-    
-            var searchParameter = search != null ?
-                new ObjectParameter("Search", search) :
-                new ObjectParameter("Search", typeof(string));
-    
-            var nTIDParameter = nTID != null ?
-                new ObjectParameter("NTID", nTID) :
-                new ObjectParameter("NTID", typeof(string));
-    
-            var showProposalsForMyOrganizationParameter = showProposalsForMyOrganization.HasValue ?
-                new ObjectParameter("ShowProposalsForMyOrganization", showProposalsForMyOrganization) :
-                new ObjectParameter("ShowProposalsForMyOrganization", typeof(bool));
-    
-            var userAndGroupIDsParameter = userAndGroupIDs != null ?
-                new ObjectParameter("UserAndGroupIDs", userAndGroupIDs) :
-                new ObjectParameter("UserAndGroupIDs", typeof(string));
-    
-            var proposalClassFilterIDParameter = proposalClassFilterID.HasValue ?
-                new ObjectParameter("ProposalClassFilterID", proposalClassFilterID) :
-                new ObjectParameter("ProposalClassFilterID", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<getMyProposals_Result>("getMyProposals", proposalStatusIDParameter, assignedStartParameter, assignedEndParameter, searchParameter, nTIDParameter, showProposalsForMyOrganizationParameter, userAndGroupIDsParameter, proposalClassFilterIDParameter);
-        }
-    
         public virtual ObjectResult<Nullable<int>> insertProposalUserRole(Nullable<int> proposalID, Nullable<int> roleID, Nullable<int> roleTypeID, Nullable<int> userID)
         {
             var proposalIDParameter = proposalID.HasValue ?
@@ -1287,6 +1250,43 @@ namespace GenTRAC.Models
                 new ObjectParameter("ProposalId", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<GetProposalRevisionHistory_Result>("GetProposalRevisionHistory", proposalIdParameter);
+        }
+    
+        public virtual ObjectResult<getMyProposals_Result> getMyProposals(Nullable<int> proposalStatusID, Nullable<System.DateTime> assignedStart, Nullable<System.DateTime> assignedEnd, string search, string nTID, Nullable<bool> showProposalsForMyOrganization, string userAndGroupIDs, Nullable<int> proposalClassFilterID)
+        {
+            var proposalStatusIDParameter = proposalStatusID.HasValue ?
+                new ObjectParameter("ProposalStatusID", proposalStatusID) :
+                new ObjectParameter("ProposalStatusID", typeof(int));
+    
+            var assignedStartParameter = assignedStart.HasValue ?
+                new ObjectParameter("AssignedStart", assignedStart) :
+                new ObjectParameter("AssignedStart", typeof(System.DateTime));
+    
+            var assignedEndParameter = assignedEnd.HasValue ?
+                new ObjectParameter("AssignedEnd", assignedEnd) :
+                new ObjectParameter("AssignedEnd", typeof(System.DateTime));
+    
+            var searchParameter = search != null ?
+                new ObjectParameter("Search", search) :
+                new ObjectParameter("Search", typeof(string));
+    
+            var nTIDParameter = nTID != null ?
+                new ObjectParameter("NTID", nTID) :
+                new ObjectParameter("NTID", typeof(string));
+    
+            var showProposalsForMyOrganizationParameter = showProposalsForMyOrganization.HasValue ?
+                new ObjectParameter("ShowProposalsForMyOrganization", showProposalsForMyOrganization) :
+                new ObjectParameter("ShowProposalsForMyOrganization", typeof(bool));
+    
+            var userAndGroupIDsParameter = userAndGroupIDs != null ?
+                new ObjectParameter("UserAndGroupIDs", userAndGroupIDs) :
+                new ObjectParameter("UserAndGroupIDs", typeof(string));
+    
+            var proposalClassFilterIDParameter = proposalClassFilterID.HasValue ?
+                new ObjectParameter("ProposalClassFilterID", proposalClassFilterID) :
+                new ObjectParameter("ProposalClassFilterID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<getMyProposals_Result>("getMyProposals", proposalStatusIDParameter, assignedStartParameter, assignedEndParameter, searchParameter, nTIDParameter, showProposalsForMyOrganizationParameter, userAndGroupIDsParameter, proposalClassFilterIDParameter);
         }
     }
 }

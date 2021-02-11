@@ -307,8 +307,7 @@
 
         toggleCertification();
 
-        if ('@Model.DisableCertificationRequiredChange' == 'True') {
-            $('.certificationRequiredCheckbox').addClass('disabled').attr("disabled", true);
+        if ('@Model.DisableCompleteButton' == 'True') {
             $('button[name="complete-button"]').addClass('disabled');
         }
     });

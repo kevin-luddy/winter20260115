@@ -10,6 +10,7 @@ namespace GenTRAC.Tests.ActionLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Net;
     using GenBOE.DataBridge.DTO;
     using GenTRAC.ActionLogic;
     using GenTRAC.ActionLogic.CacheWarming;
@@ -174,6 +175,7 @@ namespace GenTRAC.Tests.ActionLogic
                 Status = ProposalStatus.InProgress,
                 ProposalTitle = "TestProposal",
                 EstValue = 500,
+                SubmittedValue = 505,
                 ProposalSubmittalDate = new DateTime(2014, 5, 2),
                 ProgramArea = "C_MOCK",
                 ProposalDateAssigned = Convert.ToDateTime("12/12/2014"),
@@ -229,7 +231,9 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).TrackingNumber, proposal.TrackingNumber, "Proposal tracking number mismatch");
             Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).ForecastedTrackingNumber, proposal.ForecastedTrackingNumber, "Forecasted tracking number mismatch");
             Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).EstValue, proposal.EstValue, "Proposal est value mismatch");
-            Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).EstValueString, proposal.EstValue.ToString(), "Proposal est value mismatch");
+            Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).EstValueString, proposal.EstValue.ToString(), "Proposal est value string mismatch");
+            Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).SubmittedValue, proposal.SubmittedValue, "Proposal submitted value mismatch");
+            Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).SubmittedValueString, proposal.SubmittedValue.ToString(), "Proposal submitted value string mismatch");
             Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).CaptureManagerDisplayName, proposal.CaptureManagerDisplayName, "Capture Manager Display Name mismatch");
             Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).PricerDisplayName, proposal.PricerDisplayName, "Pricer name mismatch");
             Assert.AreEqual(homeProposalView.DataRows.ElementAt(0).PeerReviewerDisplayName, proposal.PeerReviewerDisplayName, "Peer Reviewer name mismatch");
@@ -391,6 +395,10 @@ namespace GenTRAC.Tests.ActionLogic
 
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(user);
 
+            string encodedQuote = WebUtility.UrlEncode("\"");
+            string testIdsString = "TEST_IDS";
+            this.adUtils.Setup(x => x.GetUserAndGroupIdsAsXml(It.IsAny<string>(), It.IsAny<ICollection<GroupData>>())).Returns(testIdsString);
+
             string proposalClassFilter = ((int)ProposalClassFilterOption.NonForecasted).ToString();
 
             ExportProposalReportModelView goodExport = new ExportProposalReportModelView()
@@ -399,7 +407,8 @@ namespace GenTRAC.Tests.ActionLogic
                 FilterStartDate = "04/01/2013",
                 FilterEndDate = "04/30/2013",
                 SearchText = "ken",
-                FilterProposalClass = proposalClassFilter
+                FilterProposalClass = proposalClassFilter,
+                ViewerFilterOption = Constants.Report.SHOW_PROPOSALS_FOR_MY_ORGANIZATION
             };
 
             uri = sut.PopulateExportSSRSParameters(goodExport);
@@ -414,6 +423,8 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.SEARCH_TEXT + "=ken"));
             Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.NTID + "=kingkl"));
             Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.FILTER_PROPOSAL_CLASS + "=" + proposalClassFilter));
+            Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.SHOW_PROPOSALS_FOR_MY_ORGANIZATION + "=true"));
+            Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.USER_AND_GROUP_IDS + "=" + encodedQuote + testIdsString + encodedQuote));
         }
 
         /// <summary>
