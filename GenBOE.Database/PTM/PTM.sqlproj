@@ -93,6 +93,7 @@
     <Folder Include="Release Scripts\Older\Release 2019.8" />
     <Folder Include="Release Scripts\Older\Release 2020.2" />
     <Folder Include="Release Scripts\Older\Release 2020.4" />
+    <Folder Include="Release Scripts\Release 2021.2" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Object Scripts\Stored Procedures\upsertProposalChecklistTemplate.sql" />
@@ -187,6 +188,7 @@
     <None Include="Release Scripts\Older\Release 2019.8\Release 2019.8.sql" />
     <Build Include="Release Scripts\Older\Release 2020.2\Release 2020.2.sql" />
     <Build Include="Release Scripts\Older\Release 2020.4\Release 2020.4.sql" />
+    <Build Include="Release Scripts\Release 2021.2\Release 2021.2.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />
