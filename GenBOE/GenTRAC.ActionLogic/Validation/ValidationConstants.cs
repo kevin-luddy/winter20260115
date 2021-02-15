@@ -278,7 +278,7 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// Independent Reviewer is required
             /// </summary>
-            public const string INDEPENDENT_REVIEWER_REQUIRED = APPROVALS_VALDIATION + "Independent Reviewer is required when CCOPD is set to Yes and the Cover Sheet Approver and Lead Estimator are the same person.";
+            public const string INDEPENDENT_REVIEWER_REQUIRED = APPROVALS_VALDIATION + "Independent Reviewer is required when CCOPD is set to Yes.";
 
             /// <summary>
             /// LOB Estimating Lead/Mgr is required
