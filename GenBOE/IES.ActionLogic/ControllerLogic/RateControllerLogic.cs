@@ -127,6 +127,31 @@ namespace IES.ActionLogic.ControllerLogic
         }
 
         /// <summary>
+        /// Get the Version differences between the two given IDs for the Rates 
+        /// </summary>
+        /// <param name="revisionOptions">Revisions as an options list</param>
+        /// <param name="firstId">ID of the first revision to compare</param>
+        /// <param name="secondId">ID of the second revision to compare. -1 for previous revision.</param>
+        /// <returns>Version differences for the rates between the two versions</returns>
+        public ICollection<RateDetailModelView> GetRatesVersionDifferences(ICollection<RevisionOptionModelView> revisionOptions, int firstId, int secondId)
+        {
+            RevisionOptionModelView firstRevision = revisionOptions.FirstOrDefault(r => r.Id == firstId);
+            RevisionOptionModelView secondRevision = revisionOptions.FirstOrDefault(r => secondId <= 0 ? r.Id < firstId : r.Id == secondId);
+
+            int.TryParse(firstRevision.Revision, out int firstRevisionNumber);
+
+            int secondRevisionNumber = -1;
+            if (secondRevision != null)
+            {
+                int.TryParse(secondRevision.Revision, out secondRevisionNumber);
+            }
+
+            ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetComparableRates(firstRevision, secondRevision);
+
+            return rates;
+        }
+
+        /// <summary>
         /// Validates all the imported rates exist. We will not load only part of an import file.
         /// Also populates the RateCategory and RateCategoryDescription fields for each model view.
         /// </summary>

@@ -256,6 +256,7 @@
     </Content>
     <Content Include="Content\images\clear_transparent_img.png" />
     <Content Include="Content\images\excel.png" />
+    <Content Include="Content\images\helpSmall.png" />
     <Content Include="Content\images\in_progress_white.gif" />
     <Content Include="Content\images\LM_logo_notagline_black.png" />
     <Content Include="Content\images\logo_RDM_wide.jpg" />

@@ -41,8 +41,15 @@
                     <gen-validation data-errors="$root.errors"></gen-validation>
                 </div><div class="row">
                     <div class="col-xs-12" style="text-align: center;">
-                        <div id="Versions" class="col-xs-6" style="display: inline; text-align: left; padding-left:20px">                      
-                            Select a Version from the dropdown to compare it to the previous version: <select data-ng-options="item.Id as item.Label for item in versionData.AvailableVersions" data-ng-model="versionData.SelectedRevision.Id" data-ng-change="updateDiff(true)"></select>
+                        <div id="Versions" class="col-xs-6" style="display: inline; text-align: left; padding-left:20px">
+                            Select Versions from the dropdowns to compare:<br />
+                            Compare <select data-ng-options="item.Id as item.Label for item in versionData.AvailableVersions" data-ng-model="versionData.FirstSelectedRevision.Id" data-ng-change="updateDiff(true)"></select>
+                            to <select data-ng-options="item.Id as item.Label for item in versionData.AvailableCompareToVersions" data-ng-model="versionData.SecondSelectedRevision.Id" data-ng-change="updateDiff(true)"></select>
+                            <div class="version-help-icon" data-ng-mouseenter="showHelp($event)" data-ng-mouseleave="hideHelp($event)"></div>
+                            <!-- This comment is needed for the jquery animation to work in IE8... -->
+                            <div class="help-dialog display-none">
+                                <div class="help-dialog-text">Select the Versions to compare by choosing from the list of available PPR&D Version numbers or “Previous Version” to utilize the Version prior to the one selected in the first dropdown. The Version number in the second dropdown field must be less than the Version number in the first. If the Version number selected in the first dropdown field is less than the Version number in the second, the Version number in the second dropdown field will revert to Previous Version.</div>
+                            </div>
                         </div>
                         <div id="ToleranceSlider" class="tolerance-container  col-xs-6" style="display: inline; float: left; visibility:hidden">
                             <md-slider-container flex>
@@ -55,11 +62,15 @@
                             </md-slider-container>
                         </div>
                         @* ---- Show the buttons and messages below for WIP revision when user is an RDM admin. ---- *@
-                        <div class="module-content-data" data-ng-show="versionData.SelectedRevision.Label === '@IES.Common.classes.CommonConstants.WorkInProgress' && versionData.AdminUser" style="border: none; text-align: left; padding-bottom: 0px; padding-top:3px">
+                    <div data-ng-show="versionData.AdminUser" style="padding-top:33px; padding-left: 20px; text-align: left">
+                        <br/>
+                        Note: To Publish or Rollback, comparison must be between Work In Progress and Previous Version.
+                    </div>
+                        <div class="module-content-data" data-ng-show="versionData.FirstSelectedRevision.Label === '@IES.Common.classes.CommonConstants.WorkInProgress' && versionData.SecondSelectedRevision.Label === '@IES.Common.classes.CommonConstants.PreviousVersion' && versionData.AdminUser" style="border: none; text-align: left; padding-bottom: 0px; padding-top:0px">
                             <button id="Publish" data-ng-hide="ReplicationValidationMessages.length > 0" data-ng-click="validateRates();" type="button" class="ies-action" style="margin-left: 9px">Publish</button>
                             <button id="Rollback" data-ng-click="showRollbackModal();" type="button" class="ies-danger">Rollback</button>
                         </div>
-                        <div data-ng-show="activeLockMessages.length && versionData.SelectedRevision.Label === '@IES.Common.classes.CommonConstants.WorkInProgress' && versionData.AdminUser">
+                        <div data-ng-show="activeLockMessages.length && versionData.FirstSelectedRevision.Label === '@IES.Common.classes.CommonConstants.WorkInProgress' && versionData.SecondSelectedRevision.Label === '@IES.Common.classes.CommonConstants.PreviousVersion' && versionData.AdminUser">
                             <br/>
                             <b>Publish/Rollback is disabled due to the following active locks:</b>
                             <div data-ng-repeat="message in activeLockMessages">{{message}}</div>

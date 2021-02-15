@@ -35,6 +35,15 @@ namespace IES.ActionLogic.ControllerLogic
         RateGridModelView GetRatesByVersion(int? id, ICollection<RevisionModelView> revisions);
 
         /// <summary>
+        /// Get the Version differences between the two given IDs for the Rates 
+        /// </summary>
+        /// <param name="revisionOptions">Revisions as an options list</param>
+        /// <param name="firstId">ID of the first revision to compare</param>
+        /// <param name="secondId">ID of the second revision to compare. -1 for previous revision.</param>
+        /// <returns>Version differences for the rates between the two versions</returns>
+        ICollection<RateDetailModelView> GetRatesVersionDifferences(ICollection<RevisionOptionModelView> revisionOptions, int firstId, int secondId);
+
+        /// <summary>
         /// Validate imported rate codes and associated mapping data.
         /// </summary>
         /// <param name="existingRateCodes">Existing Rate Code MVs from DB</param>

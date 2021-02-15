@@ -55,7 +55,7 @@ namespace RDM.Web.Controllers
         {
             int revisionId = id ?? -1;
 
-            VersionComparisonModelView modelView = this.controllerLogic.GetVersionDifferences(revisionId, this.Logic.IsRDMAdminUser, this.Logic.ActiveUser);
+            VersionComparisonModelView modelView = this.controllerLogic.GetVersionDifferences(revisionId, -1, this.Logic.IsRDMAdminUser, this.Logic.ActiveUser);
             return this.View(modelView);
         }
 
@@ -63,11 +63,12 @@ namespace RDM.Web.Controllers
         /// Get the differences for the Version Comparison grid when a new Version is selected
         /// </summary>
         /// <param name="id">Version Selected</param>
+        /// <param name="secondId">Second selected revision ID, or -1 to return previous revision</param>
         /// <returns>Updated differences based on the selected version</returns>
         [HttpPost]
-        public ActionResult GetVersionDifferences(int id)
+        public ActionResult GetVersionDifferences(int id, int secondId)
         {
-            return this.Json(this.controllerLogic.GetVersionDifferences(id, this.Logic.IsRDMAdminUser, this.Logic.ActiveUser));
+            return this.Json(this.controllerLogic.GetVersionDifferences(id, secondId, this.Logic.IsRDMAdminUser, this.Logic.ActiveUser));
         }
 
         /// <summary>

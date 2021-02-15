@@ -55,10 +55,11 @@ namespace IES.ActionLogic.ControllerLogic
         /// Get the differences for the Version Comparison grid when a new Version is selected
         /// </summary>
         /// <param name="id">Selected Revision Id, or -1 to return most recent revision</param>
+        /// <param name="secondId">Second selected revision ID, or -1 to return previous revision</param>
         /// <param name="isRdmAdminUser">true if user is RDM Admin user</param>
         /// <param name="activeUser">The active user.</param>
         /// <returns>Differences based on the selected version</returns>
-        public VersionComparisonModelView GetVersionDifferences(int id, bool isRdmAdminUser, UserData activeUser)
+        public VersionComparisonModelView GetVersionDifferences(int id, int secondId, bool isRdmAdminUser, UserData activeUser)
         {
             ICollection<RevisionModelView> revisions = this.Revisions;
             if (revisions == null || revisions.Count == 0)
@@ -81,35 +82,74 @@ namespace IES.ActionLogic.ControllerLogic
                 return modelView;
             }
 
-            // Get specified revision.  If revision id <= 0, return first revision in list (should be WIP revision for admin user)
-            RevisionModelView selectedRevision = id <= 0
+            // Get first specified revision.  If revision id <= 0, return first revision in list (should be WIP revision for admin user)
+            RevisionModelView firstSelectedRevision = id <= 0
                 ? revisions.OrderByDescending(x => x.Id).ToList().FirstOrDefault()
                 : revisions.FirstOrDefault(x => x.Id == id);
-
-            if (selectedRevision == null)
+            
+            if (firstSelectedRevision == null)
             {
                 throw new ArgumentException("Could not find specified revision");
             }
-
+            
             modelView.AvailableVersions = this.RevisionMediator.GetRevisionOptions(revisions);
-            modelView.SelectedRevision = modelView.AvailableVersions.First(x => x.Id == selectedRevision.Id);
+            
+            modelView.FirstSelectedRevision = modelView.AvailableVersions.First(x => x.Id == firstSelectedRevision.Id);
 
-            int versionNumber;
-            int.TryParse(selectedRevision.Revision, out versionNumber);
+            int selectedVersionNumber;
+            int.TryParse(firstSelectedRevision.Revision, out selectedVersionNumber);
 
-            modelView.SelectedVersionNumber = versionNumber;
-            modelView.SelectedVersionNumberDisplay = wipRevision != null && wipRevision.Id == selectedRevision.Id
+            modelView.SelectedVersionNumber = selectedVersionNumber;
+            modelView.SelectedVersionNumberDisplay = wipRevision != null && wipRevision.Id == firstSelectedRevision.Id
                 ? CommonConstants.WorkInProgress
                 : string.Format("Version {0}", modelView.SelectedVersionNumber);
             modelView.PreviousVersionNumberDisplay = string.Format("Version {0}", modelView.PreviousVersionNumber);
 
-            RevisionModelView priorRevision = this.RevisionMediator.GetPriorRevision(revisions, selectedRevision.Id);
-
-            modelView.IsEarliestVersion = priorRevision == null;
-
-            if (priorRevision != null)
+            // Update list of versions available to compare to 
+            modelView.AvailableCompareToVersions = new List<RevisionOptionModelView>();
+            foreach (RevisionOptionModelView version in modelView.AvailableVersions)
             {
-                modelView.PPRDDifferences = this.RevisionMediator.GetVersionComparisonRows(priorRevision.Id, selectedRevision.Id);
+                int versionNumber;
+                int.TryParse(version.Revision, out versionNumber);
+                if (versionNumber < selectedVersionNumber)
+                {
+                    modelView.AvailableCompareToVersions.Add(new RevisionOptionModelView()
+                    {
+                        Id = version.Id,
+                        Label = version.Label,
+                        Revision = version.Revision,
+                        StartYear = version.StartYear,
+                        EndYear = version.EndYear
+                    });
+                }
+            }
+
+            // Get second specified revision. If id <=0, return revision previous to first or empty modelview if no previous
+            int indexOfFirstRevision = revisions.OrderByDescending(x => x.Id).ToList().IndexOf(firstSelectedRevision);
+            modelView.IsEarliestVersion = indexOfFirstRevision == revisions.Count - 1;
+
+            RevisionModelView secondSelectedRevision = modelView.IsEarliestVersion ? null // if earliest version selected, nothing to compare to
+                : secondId <= 0 || !modelView.AvailableCompareToVersions.Any(x => x.Id == secondId) // if -1 or not available to compare to, get previous version
+                    ? revisions.OrderByDescending(x => x.Id).ElementAt(indexOfFirstRevision + 1) 
+                : revisions.FirstOrDefault(x => x.Id == secondId); // otherwise get that revision
+
+            // Update label of Previous Version revision
+            if (modelView.AvailableCompareToVersions.Any())
+            {
+                modelView.AvailableCompareToVersions.First().Label = CommonConstants.PreviousVersion;
+            }
+
+            // only throw exception when first selection is not the eariest version where it's expected to be null
+            if (secondSelectedRevision == null && !modelView.IsEarliestVersion)
+            {
+                throw new ArgumentException("Could not find specified revision");
+            }
+            
+            // Don't update second revision and differences for eariest version as neither will exist in that case
+            if (!modelView.IsEarliestVersion)
+            {
+                modelView.SecondSelectedRevision = modelView.AvailableCompareToVersions.FirstOrDefault(x => x.Id == secondSelectedRevision.Id);
+                modelView.PPRDDifferences = this.RevisionMediator.GetVersionComparisonRows(secondSelectedRevision.Id, firstSelectedRevision.Id);
             }
 
             if (modelView.AdminUser)

@@ -145,7 +145,7 @@ namespace RDM.Tests.ControllerLogic
             var sut = this.CreateSut();
             this.SetupIsRdmAdminUser(true);
             this.SetupNullRevisions();
-            sut.GetVersionDifferences(9999, false, userData);
+            sut.GetVersionDifferences(9999, -1, false, userData);
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace RDM.Tests.ControllerLogic
             var sut = this.CreateSut();
             this.SetupIsRdmAdminUser(true);
             this.SetupEmptyRevisions();
-            VersionComparisonModelView mv = sut.GetVersionDifferences(9999, false, userData);
+            VersionComparisonModelView mv = sut.GetVersionDifferences(9999, -1, false, userData);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace RDM.Tests.ControllerLogic
             bool isRdmAdmin = true;
             this.SetupIsRdmAdminUser(isRdmAdmin);
             this.Setup3Revisions();
-            sut.GetVersionDifferences(9999, isRdmAdmin, userData);
+            sut.GetVersionDifferences(9999, -1, isRdmAdmin, userData);
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace RDM.Tests.ControllerLogic
             this.SetupIsRdmAdminUser(isRdmAdmin);
             this.Setup1Revision();
 
-            Assert.IsNotNull(sut.GetVersionDifferences(3, isRdmAdmin, userData));
+            Assert.IsNotNull(sut.GetVersionDifferences(3, -1, isRdmAdmin, userData));
         }
 
         /// <summary>
@@ -204,7 +204,7 @@ namespace RDM.Tests.ControllerLogic
             this.SetupIsRdmAdminUser(isRdmAdmin);
             this.Setup1Revision();
 
-            Assert.IsNotNull(sut.GetVersionDifferences(3, isRdmAdmin, userData));
+            Assert.IsNotNull(sut.GetVersionDifferences(3, -1, isRdmAdmin, userData));
         }
 
         /// <summary>
@@ -217,31 +217,31 @@ namespace RDM.Tests.ControllerLogic
             bool isRdmAdmin = true;
             this.SetupIsRdmAdminUser(isRdmAdmin);
             this.Setup2Revisions();
-            VersionComparisonModelView mv = sut.GetVersionDifferences(3, isRdmAdmin, userData);
+            VersionComparisonModelView mv = sut.GetVersionDifferences(3, -1, isRdmAdmin, userData);
             Assert.AreEqual(isRdmAdmin, mv.AdminUser);
             Assert.AreEqual(false, mv.IsEarliestVersion);
             Assert.AreEqual(2, mv.AvailableVersions.Count);
             Assert.IsNull(mv.PPRDDifferences);
-            Assert.AreSame(this.rev123Option, mv.SelectedRevision);
+            Assert.AreSame(this.rev123Option, mv.FirstSelectedRevision);
             Assert.AreEqual(123, mv.SelectedVersionNumber);
             Assert.AreEqual(122, mv.PreviousVersionNumber);
             Assert.AreEqual(CommonConstants.WorkInProgress, mv.SelectedVersionNumberDisplay);
             Assert.AreEqual($"Version 122", mv.PreviousVersionNumberDisplay);
 
             // Test id = -1 (RDM admin - should return WIP revision)
-            mv = sut.GetVersionDifferences(-1, isRdmAdmin, userData);
+            mv = sut.GetVersionDifferences(-1, -1, isRdmAdmin, userData);
             Assert.AreEqual(isRdmAdmin, mv.AdminUser);
             Assert.AreEqual(false, mv.IsEarliestVersion);
             Assert.AreEqual(2, mv.AvailableVersions.Count);
             Assert.IsNull(mv.PPRDDifferences);
-            Assert.AreSame(this.rev123Option, mv.SelectedRevision);
+            Assert.AreSame(this.rev123Option, mv.FirstSelectedRevision);
             Assert.AreEqual(123, mv.SelectedVersionNumber);
             Assert.AreEqual(122, mv.PreviousVersionNumber);
             Assert.AreEqual(CommonConstants.WorkInProgress, mv.SelectedVersionNumberDisplay);
             Assert.AreEqual($"Version 122", mv.PreviousVersionNumberDisplay);
 
             // Test id = 2 (RDM admin - should return earliest revision)
-            mv = sut.GetVersionDifferences(2, isRdmAdmin, userData);
+            mv = sut.GetVersionDifferences(2, -1, isRdmAdmin, userData);
             Assert.AreEqual(isRdmAdmin, mv.AdminUser);
             Assert.AreEqual(true, mv.IsEarliestVersion);
         }
@@ -259,7 +259,7 @@ namespace RDM.Tests.ControllerLogic
             this.SetupIsRdmAdminUser(isRdmAdmin);
             this.Setup2Revisions();
 
-            Assert.IsNotNull(sut.GetVersionDifferences(3, isRdmAdmin, userData));
+            Assert.IsNotNull(sut.GetVersionDifferences(3, -1, isRdmAdmin, userData));
         }
 
         /// <summary>
@@ -272,13 +272,13 @@ namespace RDM.Tests.ControllerLogic
             bool isRdmAdmin = true;
             this.SetupIsRdmAdminUser(isRdmAdmin);
             this.Setup3Revisions();
-            VersionComparisonModelView mv = sut.GetVersionDifferences(3, isRdmAdmin, userData);
+            VersionComparisonModelView mv = sut.GetVersionDifferences(3, -1, isRdmAdmin, userData);
             Assert.AreEqual(this.rev123.History, mv.WorkInProgressHistory);
             Assert.AreEqual(isRdmAdmin, mv.AdminUser);
             Assert.AreEqual(false, mv.IsEarliestVersion);
             Assert.AreEqual(3, mv.AvailableVersions.Count);
             Assert.IsNull(mv.PPRDDifferences);
-            Assert.AreSame(this.rev123Option, mv.SelectedRevision);
+            Assert.AreSame(this.rev123Option, mv.FirstSelectedRevision);
             Assert.AreEqual(123, mv.SelectedVersionNumber);
             Assert.AreEqual(122, mv.PreviousVersionNumber);
             Assert.AreEqual(CommonConstants.WorkInProgress, mv.SelectedVersionNumberDisplay);
@@ -287,13 +287,13 @@ namespace RDM.Tests.ControllerLogic
             isRdmAdmin = false;
             this.SetupIsRdmAdminUser(isRdmAdmin);
             this.Setup3Revisions();
-            mv = sut.GetVersionDifferences(2, isRdmAdmin, userData);
+            mv = sut.GetVersionDifferences(2, -1, isRdmAdmin, userData);
             Assert.AreEqual(this.rev123.History, mv.WorkInProgressHistory);
             Assert.AreEqual(isRdmAdmin, mv.AdminUser);
             Assert.AreEqual(false, mv.IsEarliestVersion);
             Assert.AreEqual(2, mv.AvailableVersions.Count);
             Assert.IsNull(mv.PPRDDifferences);
-            Assert.AreSame(this.rev122Option, mv.SelectedRevision);
+            Assert.AreSame(this.rev122Option, mv.FirstSelectedRevision);
             Assert.AreEqual(122, mv.SelectedVersionNumber);
             Assert.AreEqual(121, mv.PreviousVersionNumber);
             Assert.AreEqual($"Version 122", mv.SelectedVersionNumberDisplay);
@@ -303,13 +303,13 @@ namespace RDM.Tests.ControllerLogic
             isRdmAdmin = true;
             this.SetupIsRdmAdminUser(isRdmAdmin);
             this.Setup3Revisions();
-            mv = sut.GetVersionDifferences(-1, isRdmAdmin, userData);
+            mv = sut.GetVersionDifferences(-1, -1, isRdmAdmin, userData);
             Assert.AreEqual(this.rev123.History, mv.WorkInProgressHistory);
             Assert.AreEqual(isRdmAdmin, mv.AdminUser);
             Assert.AreEqual(false, mv.IsEarliestVersion);
             Assert.AreEqual(3, mv.AvailableVersions.Count);
             Assert.IsNull(mv.PPRDDifferences);
-            Assert.AreSame(this.rev123Option, mv.SelectedRevision);
+            Assert.AreSame(this.rev123Option, mv.FirstSelectedRevision);
             Assert.AreEqual(123, mv.SelectedVersionNumber);
             Assert.AreEqual(122, mv.PreviousVersionNumber);
             Assert.AreEqual(CommonConstants.WorkInProgress, mv.SelectedVersionNumberDisplay);
@@ -318,13 +318,13 @@ namespace RDM.Tests.ControllerLogic
             // Test id = -1 (non-admin - should return first (non WIP) revision)
             isRdmAdmin = false;
             this.SetupIsRdmAdminUser(isRdmAdmin);
-            mv = sut.GetVersionDifferences(-1, isRdmAdmin, userData);
+            mv = sut.GetVersionDifferences(-1, -1, isRdmAdmin, userData);
             Assert.AreEqual(this.rev123.History, mv.WorkInProgressHistory);
             Assert.AreEqual(isRdmAdmin, mv.AdminUser);
             Assert.AreEqual(false, mv.IsEarliestVersion);
             Assert.AreEqual(2, mv.AvailableVersions.Count);
             Assert.IsNull(mv.PPRDDifferences);
-            Assert.AreSame(this.rev122Option, mv.SelectedRevision);
+            Assert.AreSame(this.rev122Option, mv.FirstSelectedRevision);
             Assert.AreEqual(122, mv.SelectedVersionNumber);
             Assert.AreEqual(121, mv.PreviousVersionNumber);
             Assert.AreEqual($"Version 122", mv.SelectedVersionNumberDisplay);
@@ -332,16 +332,52 @@ namespace RDM.Tests.ControllerLogic
 
             // Test id = 1 (RDM admin - should return earliest revision)
             isRdmAdmin = true;
-            mv = sut.GetVersionDifferences(1, isRdmAdmin, userData);
+            mv = sut.GetVersionDifferences(1, -1, isRdmAdmin, userData);
             Assert.AreEqual(this.rev123.History, mv.WorkInProgressHistory);
             Assert.AreEqual(isRdmAdmin, mv.AdminUser);
             Assert.AreEqual(true, mv.IsEarliestVersion);
 
             // Test id = 1 (non-admin - should return earliest revision)
             isRdmAdmin = false;
-            mv = sut.GetVersionDifferences(1, isRdmAdmin, userData);
+            mv = sut.GetVersionDifferences(1, -1, isRdmAdmin, userData);
             Assert.AreEqual(isRdmAdmin, mv.AdminUser);
             Assert.AreEqual(true, mv.IsEarliestVersion);
+        }
+
+        /// <summary>
+        /// Test GetVersionDifferences for two non-consecutive versions
+        /// </summary>
+        [TestMethod]
+        public void TestGetVersionDifferences_NonConsecutive()
+        {
+            VersionControllerLogic sut = this.CreateSut();
+            bool isRdmAdmin = true;
+            this.SetupIsRdmAdminUser(isRdmAdmin);
+            this.Setup3Revisions();
+            VersionComparisonModelView mv = sut.GetVersionDifferences(3, 1, isRdmAdmin, userData);
+            Assert.AreEqual(3, mv.AvailableVersions.Count);
+            Assert.AreEqual(2, mv.AvailableCompareToVersions.Count);
+            Assert.AreSame(this.rev123Option, mv.FirstSelectedRevision);
+            Assert.AreEqual(this.rev121Option.Id, mv.SecondSelectedRevision.Id);
+            Assert.AreEqual(this.rev121Option.Label, mv.SecondSelectedRevision.Label);
+        }
+
+        /// <summary>
+        /// Test GetVersionDifferences for selecting to compare to the previous version
+        /// </summary>
+        [TestMethod]
+        public void TestGetVersionDifferences_PreviousVersion()
+        {
+            VersionControllerLogic sut = this.CreateSut();
+            bool isRdmAdmin = true;
+            this.SetupIsRdmAdminUser(isRdmAdmin);
+            this.Setup3Revisions();
+            VersionComparisonModelView mv = sut.GetVersionDifferences(3, -1, isRdmAdmin, userData);
+            Assert.AreEqual(3, mv.AvailableVersions.Count);
+            Assert.AreEqual(2, mv.AvailableCompareToVersions.Count);
+            Assert.AreSame(this.rev123Option, mv.FirstSelectedRevision);
+            Assert.AreEqual(this.rev122Option.Id, mv.SecondSelectedRevision.Id);
+            Assert.AreEqual(CommonConstants.PreviousVersion, mv.SecondSelectedRevision.Label);
         }
 
         /// <summary>
