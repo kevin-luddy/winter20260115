@@ -122,7 +122,9 @@
     <Compile Include="ControllerLogic\ReportsControllerLogic.cs">
       <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
-    <Compile Include="ControllerLogic\RateControllerLogic.cs" />
+    <Compile Include="ControllerLogic\RateControllerLogic.cs">
+      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
+    </Compile>
     <Compile Include="ControllerLogic\AdminControllerLogic.cs">
       <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>

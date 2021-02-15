@@ -114,20 +114,8 @@ namespace RDM.Web.Controllers
         public ActionResult GetVersionDifferences(int id, int secondId)
         {
             ICollection<RevisionOptionModelView> revisionOptions = this.Logic.RevisionMediator.GetRevisionOptions(this.Logic.Revisions).OrderByDescending(r => r.Id).ToCollection();
-
-            RevisionOptionModelView firstRevision = revisionOptions.FirstOrDefault(r => r.Id == id);
-            RevisionOptionModelView secondRevision = revisionOptions.FirstOrDefault(r => secondId <= 0 ? r.Id < id : r.Id == secondId);
-
-            int firstRevisionNumber;
-            int.TryParse(firstRevision.Revision, out firstRevisionNumber);
-
-            int secondRevisionNumber = -1;
-            if (secondRevision != null)
-            {
-                int.TryParse(secondRevision.Revision, out secondRevisionNumber);
-            }
-
-            ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetComparableRates(firstRevision, secondRevision);
+            
+            ICollection<RateDetailModelView> rates = this.controllerLogic.GetRatesVersionDifferences(revisionOptions, id, secondId);
 
             return this.Json(rates);
         }
