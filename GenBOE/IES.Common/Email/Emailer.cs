@@ -518,12 +518,12 @@ namespace IES.Common
         /// </summary>
         public static readonly EmailContent PUBLISH_EMAIL = new EmailContent
         {
-            Subject = "PPR&D VERSION {0} Published {1}",
+            Subject = "PPR&D REVISION {0} Published {1}",
             Body = "The PPR&D has been revised and is available in RDM.<br/>" +
                     "{0}<br/>" +
                         "<a href=\"{1}\">RDM Home</a><br/>" +
                         "<a href=\"{2}\">Export Current Published PPR&D</a><br/>" +
-                        "<a href=\"{3}\">Version Comparison</a><br/>"
+                        "<a href=\"{3}\">Revision Comparison</a><br/>"
         };
 
         /// <summary>
@@ -531,8 +531,8 @@ namespace IES.Common
         /// </summary>
         public static readonly EmailContent CLASSIFIED_DEPLOYMENT_SUCCESS_EMAIL = new EmailContent
         {
-            Subject = "PPR&D VERSION {0} deployment succeeded",
-            Body = "The PPR&D VERSION {0} deployment succeeded.<br/>" +
+            Subject = "PPR&D REVISION {0} deployment succeeded",
+            Body = "The PPR&D REVISION {0} deployment succeeded.<br/>" +
                     "{1}<br/>"
         };
 
@@ -541,8 +541,8 @@ namespace IES.Common
         /// </summary>
         public static readonly EmailContent CLASSIFIED_DEPLOYMENT_FAILED_EMAIL = new EmailContent
         {
-            Subject = "PPR&D version deployment failed",
-            Body = "PPR&D version deployment failed.<br/>" +
+            Subject = "PPR&D revision deployment failed",
+            Body = "PPR&D revision deployment failed.<br/>" +
                     "{0}<br/>"
         };
 

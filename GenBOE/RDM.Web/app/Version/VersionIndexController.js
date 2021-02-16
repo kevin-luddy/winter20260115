@@ -324,7 +324,7 @@
         var secondId = $scope.versionData.SecondSelectedRevision === null ? -1 : $scope.versionData.SecondSelectedRevision.Id;
         var secondSelection = $scope.versionData.AvailableCompareToVersions.find(x => x.Id === secondId);
 
-        if (secondSelection && secondSelection.Label === "Previous Version") {
+        if (secondSelection && secondSelection.Label === "Previous Revision") {
             secondId = -1;
         }
 

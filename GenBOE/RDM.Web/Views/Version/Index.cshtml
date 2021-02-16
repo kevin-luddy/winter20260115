@@ -3,7 +3,7 @@
 @using IES.Common
 @using IES.ActionLogic.Validation
 @{
-    ViewBag.Title = "Version Comparison";
+    ViewBag.Title = "Revision Comparison";
     JsonSerializerSettings microsoftDateFormatSettings = new JsonSerializerSettings
     {
         DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
@@ -36,7 +36,7 @@
     <div class="row top-margin-2">
         <div class="col-xs-12">
             <div class="module" data-ng-cloak>
-                <div class="module-header-data left">Version Comparison</div>
+                <div class="module-header-data left">Revision Comparison</div>
                 <div class="row css3pie-position-fix">
                     <gen-validation data-errors="$root.errors"></gen-validation>
                 </div><div class="row">
@@ -48,7 +48,7 @@
                             <div class="version-help-icon" data-ng-mouseenter="showHelp($event)" data-ng-mouseleave="hideHelp($event)"></div>
                             <!-- This comment is needed for the jquery animation to work in IE8... -->
                             <div class="help-dialog display-none">
-                                <div class="help-dialog-text">Select the Versions to compare by choosing from the list of available PPR&D Version numbers or “Previous Version” to utilize the Version prior to the one selected in the first dropdown. The Version number in the second dropdown field must be less than the Version number in the first. If the Version number selected in the first dropdown field is less than the Version number in the second, the Version number in the second dropdown field will revert to Previous Version.</div>
+                                <div class="help-dialog-text">Select the Versions to compare by choosing from the list of available PPR&D Revision numbers or “Previous Revision” to utilize the Revision prior to the one selected in the first dropdown. The Revision number in the second dropdown field must be less than the Revision number in the first. If the Revision number selected in the first dropdown field is less than the Revision number in the second, the Revision number in the second dropdown field will revert to Previous Revision.</div>
                             </div>
                         </div>
                         <div id="ToleranceSlider" class="tolerance-container  col-xs-6" style="display: inline; float: left; visibility:hidden">
@@ -63,8 +63,8 @@
                         </div>
                         @* ---- Show the buttons and messages below for WIP revision when user is an RDM admin. ---- *@
                     <div data-ng-show="versionData.AdminUser" style="padding-top:33px; padding-left: 20px; text-align: left">
-                        <br/>
-                        Note: To Publish or Rollback, comparison must be between Work In Progress and Previous Version.
+                        <br />
+                        Note: To Publish or Rollback, comparison must be between Work In Progress and Previous Revision.
                     </div>
                         <div class="module-content-data" data-ng-show="versionData.FirstSelectedRevision.Label === '@IES.Common.classes.CommonConstants.WorkInProgress' && versionData.SecondSelectedRevision.Label === '@IES.Common.classes.CommonConstants.PreviousVersion' && versionData.AdminUser" style="border: none; text-align: left; padding-bottom: 0px; padding-top:0px">
                             <button id="Publish" data-ng-hide="ReplicationValidationMessages.length > 0" data-ng-click="validateRates();" type="button" class="ies-action" style="margin-left: 9px">Publish</button>
@@ -83,7 +83,7 @@
                         </ul>
                         <div class="tab-content" style="min-height:500px">
                             <div id="pprd" class="tab-pane fade in active">
-                                <div data-ng-show="versionData.IsEarliestVersion">The earliest version cannot be compared as there is no previous version.</div>
+                                <div data-ng-show="versionData.IsEarliestVersion">The earliest revision cannot be compared as there is no previous revision.</div>
                                 <div data-ng-hide="versionData.IsEarliestVersion" class="tolerance-container col-xs-12" style="padding-top: 10px">
                                     <div class="form-row last-form-row">
                                         <div class="version-grid">
@@ -113,7 +113,7 @@
                                 </div>
                             </div>
                             <div id="rates" class="tab-pane fade">
-                                <div data-ng-show="versionData.IsEarliestVersion">The earliest version cannot be compared as there is no previous version.</div>
+                                <div data-ng-show="versionData.IsEarliestVersion">The earliest revision cannot be compared as there is no previous revision.</div>
                                 <div data-ng-hide="versionData.IsEarliestVersion" class="form-row" data-ng-show="rateData">
                                     <div data-ng-hide="rateData" class="form-row">No rate differences found...</div>
                                     <div data-ng-show="rateData" id="compareRateGrid" ui-grid="gridOptions" ui-grid-edit ui-grid-cellNav ui-grid-pinning ui-grid-exporter class="rate-grid-ui"></div>
@@ -132,13 +132,13 @@
             <md-dialog style="width: 400px;">
                 <form>
                     <div class="modal-title-bar modal-header">
-                        <span class="modal-title-text">Rollback to Previous Version</span>
+                        <span class="modal-title-text">Rollback to Previous Revision</span>
                         <div class="modal-close-box" data-ng-click="closeRollbackModal()">
                             <i class="glyphicon glyphicon-remove"></i>
                         </div>
                     </div>
                     <div class="modal-content-area">
-                        <span>Rolling back to the last version will delete all the changes in the Work in Progress version.
+                        <span>Rolling back to the last revision will delete all the changes in the Work in Progress revision.
                             If you are sure you wish to Rollback and delete all current changes, type <b>ROLLBACK</b> into the confirmation box below.</span>
                         <div gen-validation data-errors="$scope.importModalErrors" data-ng-show="importModalErrors.length || "></div>
                         <hr class="modal-separator"/>

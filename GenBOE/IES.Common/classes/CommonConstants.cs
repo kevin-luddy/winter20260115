@@ -99,7 +99,7 @@ namespace IES.Common.classes
         /// <summary>
         /// Previous Version constant
         /// </summary>
-        readonly static public string PreviousVersion = "Previous Version";
+        readonly static public string PreviousVersion = "Previous Revision";
 
         /// <summary>
         /// ProPricer rate mappings property name base.

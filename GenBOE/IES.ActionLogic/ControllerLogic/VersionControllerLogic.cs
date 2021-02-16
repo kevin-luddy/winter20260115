@@ -102,8 +102,8 @@ namespace IES.ActionLogic.ControllerLogic
             modelView.SelectedVersionNumber = selectedVersionNumber;
             modelView.SelectedVersionNumberDisplay = wipRevision != null && wipRevision.Id == firstSelectedRevision.Id
                 ? CommonConstants.WorkInProgress
-                : string.Format("Version {0}", modelView.SelectedVersionNumber);
-            modelView.PreviousVersionNumberDisplay = string.Format("Version {0}", modelView.PreviousVersionNumber);
+                : string.Format("Revision {0}", modelView.SelectedVersionNumber);
+            modelView.PreviousVersionNumberDisplay = string.Format("Revision {0}", modelView.PreviousVersionNumber);
 
             // Update list of versions available to compare to 
             modelView.AvailableCompareToVersions = new List<RevisionOptionModelView>();

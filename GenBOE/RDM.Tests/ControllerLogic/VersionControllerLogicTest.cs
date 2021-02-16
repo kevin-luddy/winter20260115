@@ -226,7 +226,7 @@ namespace RDM.Tests.ControllerLogic
             Assert.AreEqual(123, mv.SelectedVersionNumber);
             Assert.AreEqual(122, mv.PreviousVersionNumber);
             Assert.AreEqual(CommonConstants.WorkInProgress, mv.SelectedVersionNumberDisplay);
-            Assert.AreEqual($"Version 122", mv.PreviousVersionNumberDisplay);
+            Assert.AreEqual($"Revision 122", mv.PreviousVersionNumberDisplay);
 
             // Test id = -1 (RDM admin - should return WIP revision)
             mv = sut.GetVersionDifferences(-1, -1, isRdmAdmin, userData);
@@ -238,7 +238,7 @@ namespace RDM.Tests.ControllerLogic
             Assert.AreEqual(123, mv.SelectedVersionNumber);
             Assert.AreEqual(122, mv.PreviousVersionNumber);
             Assert.AreEqual(CommonConstants.WorkInProgress, mv.SelectedVersionNumberDisplay);
-            Assert.AreEqual($"Version 122", mv.PreviousVersionNumberDisplay);
+            Assert.AreEqual($"Revision 122", mv.PreviousVersionNumberDisplay);
 
             // Test id = 2 (RDM admin - should return earliest revision)
             mv = sut.GetVersionDifferences(2, -1, isRdmAdmin, userData);
@@ -282,7 +282,7 @@ namespace RDM.Tests.ControllerLogic
             Assert.AreEqual(123, mv.SelectedVersionNumber);
             Assert.AreEqual(122, mv.PreviousVersionNumber);
             Assert.AreEqual(CommonConstants.WorkInProgress, mv.SelectedVersionNumberDisplay);
-            Assert.AreEqual($"Version 122", mv.PreviousVersionNumberDisplay);
+            Assert.AreEqual($"Revision 122", mv.PreviousVersionNumberDisplay);
 
             isRdmAdmin = false;
             this.SetupIsRdmAdminUser(isRdmAdmin);
@@ -296,8 +296,8 @@ namespace RDM.Tests.ControllerLogic
             Assert.AreSame(this.rev122Option, mv.FirstSelectedRevision);
             Assert.AreEqual(122, mv.SelectedVersionNumber);
             Assert.AreEqual(121, mv.PreviousVersionNumber);
-            Assert.AreEqual($"Version 122", mv.SelectedVersionNumberDisplay);
-            Assert.AreEqual($"Version 121", mv.PreviousVersionNumberDisplay);
+            Assert.AreEqual($"Revision 122", mv.SelectedVersionNumberDisplay);
+            Assert.AreEqual($"Revision 121", mv.PreviousVersionNumberDisplay);
 
             // Test id = -1 (RDM admin - should return WIP revision)
             isRdmAdmin = true;
@@ -313,7 +313,7 @@ namespace RDM.Tests.ControllerLogic
             Assert.AreEqual(123, mv.SelectedVersionNumber);
             Assert.AreEqual(122, mv.PreviousVersionNumber);
             Assert.AreEqual(CommonConstants.WorkInProgress, mv.SelectedVersionNumberDisplay);
-            Assert.AreEqual($"Version 122", mv.PreviousVersionNumberDisplay);
+            Assert.AreEqual($"Revision 122", mv.PreviousVersionNumberDisplay);
 
             // Test id = -1 (non-admin - should return first (non WIP) revision)
             isRdmAdmin = false;
@@ -327,8 +327,8 @@ namespace RDM.Tests.ControllerLogic
             Assert.AreSame(this.rev122Option, mv.FirstSelectedRevision);
             Assert.AreEqual(122, mv.SelectedVersionNumber);
             Assert.AreEqual(121, mv.PreviousVersionNumber);
-            Assert.AreEqual($"Version 122", mv.SelectedVersionNumberDisplay);
-            Assert.AreEqual($"Version 121", mv.PreviousVersionNumberDisplay);
+            Assert.AreEqual($"Revision 122", mv.SelectedVersionNumberDisplay);
+            Assert.AreEqual($"Revision 121", mv.PreviousVersionNumberDisplay);
 
             // Test id = 1 (RDM admin - should return earliest revision)
             isRdmAdmin = true;
