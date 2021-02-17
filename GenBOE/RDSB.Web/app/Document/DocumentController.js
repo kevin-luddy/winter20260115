@@ -44,7 +44,7 @@
             $scope.export(Document);
         } else {
             // Only show the confirm dialog if user has Edit and not using latest
-            ConfirmDialog("Old PPR&D Version", "This document is using an older PPR&D Revision. Are you sure you want to continue publishing?", function () {
+            ConfirmDialog("Old PPR&D Revision", "This document is using an older PPR&D Revision. Are you sure you want to continue publishing?", function () {
                 $scope.export(Document);
             });
         }
@@ -139,8 +139,8 @@
                 direction: uiGridConstants.DESC,
                 priority: 1} 
             },
-            { field: 'PPRDVersion', displayName: 'PPR&D Version', groupColumn: 'trads' },
-            { field: 'PPRDVersionDate', displayName: 'PPR&D Version Date', groupColumn: 'trads', enableFiltering: false, cellFilter: 'date:\'short\'' },
+            { field: 'PPRDVersion', displayName: 'PPR&D Revision', groupColumn: 'trads' },
+            { field: 'PPRDVersionDate', displayName: 'PPR&D Revision Date', groupColumn: 'trads', enableFiltering: false, cellFilter: 'date:\'short\'' },
             {
                 field: 'Manage', groupColumn: 'trads', headerCellClass: 'text-center', enableFiltering: false, enableSorting: false,
                 cellTemplate: "<div class=\"ui-grid-cell-contents pad-left\">\
