@@ -612,7 +612,13 @@ namespace IES.Common
         /// Sunnyvale, CA
         /// </summary>
         [Description("Sunnyvale, CA")]
-        SunnyvaleCA = 14
+        SunnyvaleCA = 14,
+
+        /// <summary>
+        /// Titusville, FL
+        /// </summary>
+        [Description("Titusville, FL")]
+        TitusvilleFL = 15
     }
 
     /// <summary>
