@@ -165,7 +165,7 @@
         // columnDefs: $scope.columnDefinitions,
         var tempColDef = new Array(
             { name: 'Chg', field: 'CS', enableSorting: false, pinnedLeft: true, width: 55, cellClass: $scope.cellClass, enableCellEdit: false },
-            { name: 'Ver', field: 'RevisionIdLabel', enableSorting: false, pinnedLeft: true, width: 55, cellClass: $scope.cellClass, enableCellEdit: false },
+            { name: 'Rev', field: 'RevisionIdLabel', enableSorting: false, pinnedLeft: true, width: 55, cellClass: $scope.cellClass, enableCellEdit: false },
             { name: 'Category', field: 'RCD', enableSorting: false, pinnedLeft: true, width: 150, cellClass: $scope.cellClass, enableCellEdit: false },
             { name: 'Rate Code', field: 'Co', enableSorting: false, pinnedLeft: true, width: 95, cellClass: $scope.cellClass, enableCellEdit: false },
             { name: 'Description', field: 'De', enableSorting: false, pinnedLeft: true, width: 150, cellClass: $scope.cellClass, enableCellEdit: false },
