@@ -392,12 +392,13 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 Assert.AreEqual(workspace.LastProPricerProposal, result.LastProPricerProposal);
                 Assert.AreEqual(workspace.RteSizeLimit, result.RteSizeLimit);
                 Assert.AreEqual(workspace.RevisedSubmittalDate, result.RevisedSubmittalDate);
-                Assert.AreEqual(workspace.TemplateBoe, result.UsingTemplateBOE);  
+                Assert.AreEqual(workspace.TemplateBoe, result.UsingTemplateBOE);
                 // 50
+                Assert.AreEqual(workspace.WorkspaceCreationDate, result.CreationDate);
             }
             Type dtoType = typeof(WorkspaceDTO);
             int numProperties = dtoType.GetProperties().Count();
-            Assert.AreEqual(50, numProperties, "Untested properties exist in the Workspace DTO");
+            Assert.AreEqual(51, numProperties, "Untested properties exist in the Workspace DTO");
         }
 
         [TestMethod]
