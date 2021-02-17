@@ -3,5 +3,5 @@ GO
 
 IF NOT EXISTS (SELECT * FROM [dbo].[ProposalLocationLU] WHERE [ProposalLocation] = 'Titusville, FL')
 BEGIN
-	INSERT INTO ProposalLocationLU VALUES ('Titusville, FL, ', 1);
+	INSERT INTO ProposalLocationLU VALUES ('Titusville, FL', 1);
 END;
