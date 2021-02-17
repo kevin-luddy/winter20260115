@@ -1186,7 +1186,7 @@
                                 </TextRun>
                               </TextRuns>
                               <Style>
-                                <TextAlign>Center</TextAlign>
+                                <TextAlign>Right</TextAlign>
                               </Style>
                             </Paragraph>
                           </Paragraphs>
@@ -1223,7 +1223,7 @@
                                 </TextRun>
                               </TextRuns>
                               <Style>
-                                <TextAlign>Center</TextAlign>
+                                <TextAlign>Right</TextAlign>
                               </Style>
                             </Paragraph>
                           </Paragraphs>
@@ -1710,7 +1710,7 @@
             <DataSetName>getMyProposals</DataSetName>
             <Top>0.58709in</Top>
             <Height>0.43in</Height>
-            <Width>38.25in</Width>
+            <Width>38.39757in</Width>
             <Style />
           </Tablix>
           <Textbox Name="textbox1">

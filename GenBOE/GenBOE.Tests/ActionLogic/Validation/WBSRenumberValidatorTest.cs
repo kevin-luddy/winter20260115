@@ -141,7 +141,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             //Assert
             Assert.AreEqual(1, returnValue.Count);
-            Assert.IsTrue(returnValue[0].Contains("would now be a parent of"));
+            Assert.IsTrue(returnValue[0].Contains("which would become a parent of"));
         }
 
 
@@ -192,7 +192,7 @@ namespace GenBOE.Tests.ActionLogic.Validation
 
             //Assert
             Assert.AreEqual(1, returnValue.Count);
-            Assert.IsTrue(returnValue[0].Contains("would now be a child of"));
+            Assert.IsTrue(returnValue[0].Contains("BOEs exist for one or more level 2 WBSs"));
         }
 
         /// <summary>
