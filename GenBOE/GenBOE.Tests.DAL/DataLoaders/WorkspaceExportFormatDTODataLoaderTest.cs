@@ -38,8 +38,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
             WorkspaceExportFormatDTODataLoader sut = new WorkspaceExportFormatDTODataLoader();
 
             Collection<WorkspaceExportFormatDTO> exportFormatIdsForWS = sut.GetWorkspaceExportFormatsForWorkspace(GlobalTestCaseSetup.GlobalWorkspaceID);
-            Assert.AreEqual(1, exportFormatIdsForWS.Where(x => x.ExportFormat.TemplateId == 1).First().ExportFormat.TemplateId); // check landscape
-            Assert.AreEqual(2, exportFormatIdsForWS.Where(x => x.ExportFormat.TemplateId == 2).First().ExportFormat.TemplateId); // check portrait
+            Assert.AreEqual(9001, exportFormatIdsForWS.Where(x => x.ExportFormat.TemplateId == 9001).First().ExportFormat.TemplateId); // check Master
+            Assert.AreEqual(100001, exportFormatIdsForWS.Where(x => x.ExportFormat.TemplateId == 100001).First().ExportFormat.TemplateId); // check first template based on Master
             Assert.AreEqual(GlobalTestCaseSetup.GlobalWorkspaceTemplateID, // check our custom for this WS
                             exportFormatIdsForWS.Where(x => x.ExportFormat.TemplateId == GlobalTestCaseSetup.GlobalWorkspaceTemplateID).First().ExportFormat.TemplateId);
         }
@@ -86,8 +86,8 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Collection<int> exportFormatIds = sut.GetAllWorkspaceExportFormatIds().Select(x=>x.Id).ToCollection();
 
             Assert.IsTrue(exportFormatIds.Count() >= 3); // there should be at least 3
-            Assert.AreEqual(1, exportFormatIds.Where(x => x == 1).First()); // check landscape
-            Assert.AreEqual(2, exportFormatIds.Where(x => x == 2).First()); // check portrait
+            Assert.AreEqual(9001, exportFormatIds.Where(x => x == 9001).First()); // check Master
+            Assert.AreEqual(100001, exportFormatIds.Where(x => x == 100001).First()); // check first template based on Master
             Assert.AreEqual(GlobalTestCaseSetup.GlobalWorkspaceTemplateID, // check our custom for this WS
                             exportFormatIds.Where(x => x == GlobalTestCaseSetup.GlobalWorkspaceTemplateID).First());
         }

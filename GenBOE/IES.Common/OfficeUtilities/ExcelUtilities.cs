@@ -601,7 +601,7 @@ namespace IES.Common.OfficeUtilities
                             }
                         }
                     }
-                    else if (numericalValue > 0 && toReturn != numericalValue.ToString())
+                    else if (numericalValue > 0 && toReturn != numericalValue.ToString() && toReturn.Replace("0", "") != numericalValue.ToString())
                     {
                         // Handle Excel weirdness where a WBS # such as 1.1 gets turned into a floating point number like 1.1000000000000001
                         toReturn = numericalValue.ToString();

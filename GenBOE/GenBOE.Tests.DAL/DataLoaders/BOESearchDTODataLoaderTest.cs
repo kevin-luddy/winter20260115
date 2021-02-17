@@ -83,8 +83,12 @@ namespace GenBOE.Tests.DAL.DataLoaders
             using (GenBoeEntities gbe = new GenBoeEntities())
             {
                 Workspace ws = gbe.Workspaces.First(x => x.WorkspaceID == foundWsId);
-                Assert.AreEqual(usingBoeTemplates, ws.TemplateBoe);
                 Assert.AreEqual(testingOldWs, (ws.WorkspaceCreationDate ?? DateTime.MinValue) < cutOffDate);
+                if (!usingBoeTemplates)
+                {
+                    // Searching from a WS not using template boe can only search other WSs not using template boe
+                    Assert.IsFalse(ws.TemplateBoe);
+                }
             }
         }
 
@@ -101,7 +105,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             using (GenBoeEntities gbe = new GenBoeEntities())
             {
                 Workspace ws = gbe.Workspaces.First(x => !string.IsNullOrEmpty(x.WorkspaceDescription) && x.TemplateBoe == usingBoeTemplates
-                                                        && ((testingOldWs && x.WorkspaceCreationDate < cutOffDate) || (!testingOldWs && x.WorkspaceCreationDate >= cutOffDate))
+                                                        && ((testingOldWs && (x.WorkspaceCreationDate < cutOffDate || !x.WorkspaceCreationDate.HasValue)) || (!testingOldWs && x.WorkspaceCreationDate >= cutOffDate))
                                                         && !x.ContainsOCI && x.AllowSearch && x.IsDeleted != true
                                                         && x.BOEs.Any(z => !string.IsNullOrEmpty(z.BOEDescription)));
 
@@ -118,9 +122,13 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
             using (GenBoeEntities gbe = new GenBoeEntities())
             {
-                Workspace ws = gbe.Workspaces.First(x => x.WorkspaceID == foundWsId);
-                Assert.AreEqual(usingBoeTemplates, ws.TemplateBoe);
+                Workspace ws = gbe.Workspaces.First(x => x.WorkspaceID == foundWsId);                
                 Assert.AreEqual(testingOldWs, (ws.WorkspaceCreationDate ?? DateTime.MinValue) < cutOffDate);
+                if (!usingBoeTemplates)
+                {
+                    // Searching from a WS not using template boe can only search other WSs not using template boe
+                    Assert.IsFalse(ws.TemplateBoe);
+                }
             }
         }
     }
