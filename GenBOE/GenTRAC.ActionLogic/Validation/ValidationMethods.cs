@@ -211,9 +211,8 @@ namespace GenTRAC.ActionLogic.Validation
         /// <returns>Valid or not</returns>
         private static bool IsValidLMandUsEmployeeProperties(UserData user, bool requiredUsPerson, bool requiredLmEmployee)
         {
-            // invalid = (required && !usPerson) => valid = ! (required && !usPerson) => valid = !required || usPerson
-            return (!requiredUsPerson || user.IsUsPerson == true)
-                    && (!requiredLmEmployee || user.IsSubcontractor == false);
+            bool overrideNonUs = bool.TryParse(ConfigurationUtilities.GetAppSetting("OverrideSubNonUs"), out bool overrideNonUsTemp) && overrideNonUsTemp;
+            return overrideNonUs || ((!requiredUsPerson || user.IsUsPerson == true) && (!requiredLmEmployee || user.IsSubcontractor == false));
         }
 
         #endregion General Validation
