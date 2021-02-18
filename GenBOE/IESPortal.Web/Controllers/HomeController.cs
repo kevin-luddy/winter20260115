@@ -149,6 +149,7 @@ namespace IESPortal.Web.Controllers
             ViewBag.RDMUrl = ConfigurationManager.AppSettings["RDMUrl"];
             ViewBag.RDSBUrl = ConfigurationManager.AppSettings["RDSBUrl"];
             ViewBag.PPUrl = ConfigurationManager.AppSettings["PPUrl"];
+            ViewBag.eEPPUrl = ConfigurationManager.AppSettings["EEPPUrl"];
             ViewBag.AdminUrl = ConfigurationManager.AppSettings["AdminUrl"];
         }
     }

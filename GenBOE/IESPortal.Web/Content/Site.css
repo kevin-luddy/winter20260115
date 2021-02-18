@@ -845,3 +845,8 @@ div.action-buttons {
 .manage-offline-hr {
     margin-top: 10px;
 }
+
+.eeppLogo {
+    background-image: url(/Content/images/logo_eEPP.jpg);
+    background-size: cover;
+}

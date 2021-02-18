@@ -31,6 +31,10 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='PPUrl']/@value">
     </parameterentry>
   </parameter>
+  <parameter name="EEPPUrl" description="doesn't matter" defaultvalue="__EEPPUrl__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EEPPUrl']/@value">
+    </parameterentry>
+  </parameter>
   <parameter name="AdminUrl" description="doesn't matter" defaultvalue="__AdminUrl__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='AdminUrl']/@value">
     </parameterentry>

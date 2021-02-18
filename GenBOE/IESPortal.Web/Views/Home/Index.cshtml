@@ -48,15 +48,15 @@
                                 <!-- Indicators -->
                                 @if (ViewBag.ShowCarousel)
                                 {
-                                <ol class="carousel-indicators">
-                                    <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                                    <li data-target="#myCarousel" data-slide-to="1"></li>
-                                    <li data-target="#myCarousel" data-slide-to="2"></li>
-                                    <li data-target="#myCarousel" data-slide-to="3"></li>
-                                    <li data-target="#myCarousel" data-slide-to="4"></li>
-                                    <li data-target="#myCarousel" data-slide-to="5"></li>
-                                    <li data-target="#myCarousel" data-slide-to="6"></li>
-                                </ol>
+                                    <ol class="carousel-indicators">
+                                        <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                                        <li data-target="#myCarousel" data-slide-to="1"></li>
+                                        <li data-target="#myCarousel" data-slide-to="2"></li>
+                                        <li data-target="#myCarousel" data-slide-to="3"></li>
+                                        <li data-target="#myCarousel" data-slide-to="4"></li>
+                                        <li data-target="#myCarousel" data-slide-to="5"></li>
+                                        <li data-target="#myCarousel" data-slide-to="6"></li>
+                                    </ol>
                                 }
                                 <!-- Wrapper for slides -->
                                 <div class="carousel-inner">
@@ -65,36 +65,36 @@
                                     </div>
                                     @if (ViewBag.ShowCarousel)
                                     {
-                                    <div class="item">
-                                        <img src="~/Content/images/astronaut/astronaut2.png" style="margin: auto;">
-                                    </div>
+                                        <div class="item">
+                                            <img src="~/Content/images/astronaut/astronaut2.png" style="margin: auto;">
+                                        </div>
 
-                                    <div class="item">
-                                        <img src="~/Content/images/astronaut/astronautglow.png" style="margin: auto;">
-                                    </div>
+                                        <div class="item">
+                                            <img src="~/Content/images/astronaut/astronautglow.png" style="margin: auto;">
+                                        </div>
 
-                                    <div class="item">
-                                        <img src="~/Content/images/astronaut/astronautstarwars.png" style="margin: auto;">
-                                    </div>
+                                        <div class="item">
+                                            <img src="~/Content/images/astronaut/astronautstarwars.png" style="margin: auto;">
+                                        </div>
 
-                                    <div class="item">
-                                        <img src="~/Content/images/astronaut/comicbookastronaut.png" style="margin: auto;">
-                                    </div>
+                                        <div class="item">
+                                            <img src="~/Content/images/astronaut/comicbookastronaut.png" style="margin: auto;">
+                                        </div>
 
-                                    <div class="item">
-                                        <img src="~/Content/images/astronaut/oilPaintingastronaut.png" style="margin: auto;">
-                                    </div>
+                                        <div class="item">
+                                            <img src="~/Content/images/astronaut/oilPaintingastronaut.png" style="margin: auto;">
+                                        </div>
 
-                                    <div class="item">
-                                        <img src="~/Content/images/astronaut/oldtimeyastronaut.png" style="margin: auto;">
-                                    </div>
+                                        <div class="item">
+                                            <img src="~/Content/images/astronaut/oldtimeyastronaut.png" style="margin: auto;">
+                                        </div>
                                     }
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-2">
+                <div class="col-sm-2" style="margin-left: 330px;">
                     <img src="~/Content/images/LM_logo_notagline_black.png" alt="Lockheed Martin logo" style="width:200px" />
                 </div>
             </div>
@@ -113,10 +113,16 @@
                 <a href="@ViewBag.PPUrl" target="_blank"><img class="button-img" src="~/Content/images/logo_ProPricer.jpg" alt="PROPRICER" /></a>
             </div>
             <div class="button-row">
-                
                 <a href="@ViewBag.RDMUrl"><img class="button-img" src="~/Content/images/logo_RDM.jpg" alt="Rates and Disclosure Module" /></a>
                 <a href="@ViewBag.RDSBUrl"><img class="button-img" src="~/Content/images/logo_RDSB.jpg" alt="Rates &amp; Disclosure Section Builder" /></a>
                 <a href="@ViewBag.RPMUrl"><img class="button-img" src="~/Content/images/logo_RPM.jpg" alt="Resource Planning Module" /></a>
+            </div>
+            <div class="button-row">
+                <div class="button-img"></div>
+                @*<a href="@ViewBag.eEPPUrl">*@
+                <a>
+                    <img class="button-img eeppLogo" src="~/Content/images/logo_ComingSoon.png" alt="Electronic Executive Planning Panel" />
+                </a>
             </div>
         </div>
         <footer>

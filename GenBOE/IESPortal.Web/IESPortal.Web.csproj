@@ -201,6 +201,8 @@
     <Content Include="Content\images\in_progress_white.gif" />
     <Content Include="Content\images\launchpad-bg.jpg" />
     <Content Include="Content\images\LM_logo_notagline_black.png" />
+    <Content Include="Content\images\logo_eEPP.jpg" />
+    <Content Include="Content\images\logo_eEPP_wide.jpg" />
     <Content Include="Content\images\logo_genBOE.jpg" />
     <Content Include="Content\images\logo_BOE_Frank.jpg" />
     <Content Include="Content\images\logo_ProPricer.jpg" />
@@ -218,6 +220,7 @@
     <Content Include="Content\images\orion-bg.jpg" />
     <Content Include="Content\images\sat.png" />
     <Content Include="Content\images\tableHeaderBG.png" />
+    <Content Include="Content\images\logo_ComingSoon.png" />
     <Content Include="Content\images\warning.png" />
     <Content Include="Content\images\warning_small.png" />
     <Content Include="Content\images\ui-bg_flat_0_aaaaaa_40x100.png" />
