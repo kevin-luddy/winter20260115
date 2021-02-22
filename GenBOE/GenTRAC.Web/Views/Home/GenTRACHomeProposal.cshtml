@@ -183,7 +183,7 @@
         HomeProposalWidget.ViewReport = function (buttonPressed) {
             var data = new Object;
             data.filterOption = ProposalFiltersWidget.getElement('input[name="proposalFilterOption"]').val();
-            data.viewerFilterOption = ProposalFiltersWidget.getElement('input[name="viewerProposalFilterOption"]').val();
+            data.viewerFilterOption = null; // ProposalFiltersWidget.getElement('input[name="viewerProposalFilterOption"]').val(); // TODO - BOEJ-4848 - should be added back in
             data.filterStartDate = ProposalFiltersWidget.getElement('input[name="proposalFilterStart"]').val();
             data.filterEndDate = ProposalFiltersWidget.getElement('input[name="proposalFilterEnd"]').val();
             data.searchText = HomeProposalWidget.getElement('input[name=searchString]').val();
