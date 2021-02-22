@@ -395,8 +395,6 @@ namespace GenTRAC.Tests.ActionLogic
 
             this.userMapper.Setup(x => x.GetActiveUser()).Returns(user);
 
-            string encodedQuote = WebUtility.UrlEncode("\"");
-
             string proposalClassFilter = ((int)ProposalClassFilterOption.NonForecasted).ToString();
 
             ExportProposalReportModelView goodExport = new ExportProposalReportModelView()
@@ -420,9 +418,6 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.SEARCH_TEXT + "=ken"));
             Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.NTID + "=kingkl"));
             Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.FILTER_PROPOSAL_CLASS + "=" + proposalClassFilter));
-            // TODO - BOEJ-4848 add these asserts back in once they are testable
-            // Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.SHOW_PROPOSALS_FOR_MY_ORGANIZATION + "=true"));
-            // Assert.IsTrue(uri.AbsoluteUri.Contains(Constants.Report.USER_AND_GROUP_IDS + "=" + encodedQuote + testIdsString + encodedQuote));
         }
 
         /// <summary>
