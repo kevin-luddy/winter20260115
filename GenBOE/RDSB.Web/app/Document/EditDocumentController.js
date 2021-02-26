@@ -101,14 +101,14 @@ angular.module('rdsb').controller('editDocumentController', ['$scope', '$http', 
                   $scope.isDataLoading = false;
                   $(document).trigger("HIDE_LOADING_BOX");
                   if (!$scope.model.IsUsingLatest) {
-                      AlertDialog("Old PPR&D Version", "This document is using an older PPR&D Revision.");
+                      AlertDialog("Old PPR&D Revision", "This document is using an older PPR&D Revision.");
                   }
               },
               function (error) {
                   $scope.isDataLoading = false;
                   $(document).trigger("HIDE_LOADING_BOX");
                   if (!$scope.model.IsUsingLatest) {
-                      AlertDialog("Old PPR&D Version", "This document is using an older PPR&D Revision.");
+                      AlertDialog("Old PPR&D Revision", "This document is using an older PPR&D Revision.");
                   }
               });
         }
@@ -536,7 +536,7 @@ angular.module('rdsb').controller('editDocumentController', ['$scope', '$http', 
             $scope.export(Document);
         } else {
             // Only show the confirm dialog if user is not using latest
-            ConfirmDialog("Old PPR&D Version", "This document is using an older PPR&D Revision. Are you sure you want to continue publishing?", function () {
+            ConfirmDialog("Old PPR&D Revision", "This document is using an older PPR&D Revision. Are you sure you want to continue publishing?", function () {
                 $scope.export(Document);
             });
         }

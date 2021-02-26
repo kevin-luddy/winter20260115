@@ -30,7 +30,7 @@
                         <gen-validation data-errors="$root.errors"></gen-validation>
                         <div class="notificationMessage" id="notificationMessage" data-ng-show="notificationMessage" data-ng-cloak>{{notificationMessage}}</div>
                         <div class="form-element black" data-ng-hide="canEdit()">
-                            Version: <select data-ng-options="item.Label for item in versions" data-ng-model="selectedVersion" data-ng-change="reloadGrid()"></select>
+                            Revision: <select data-ng-options="item.Label for item in versions" data-ng-model="selectedVersion" data-ng-change="reloadGrid()"></select>
                         </div>
                     </div>
                     <div class="form-row">

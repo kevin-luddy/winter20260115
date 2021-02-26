@@ -97,6 +97,11 @@ namespace IES.Common.classes
         readonly static public string WorkInProgress = "Work In Progress";
 
         /// <summary>
+        /// Previous Version constant
+        /// </summary>
+        readonly static public string PreviousVersion = "Previous Revision";
+
+        /// <summary>
         /// ProPricer rate mappings property name base.
         /// </summary>
         readonly static public string RateDescriptionPropertyBase = "RateDescription";

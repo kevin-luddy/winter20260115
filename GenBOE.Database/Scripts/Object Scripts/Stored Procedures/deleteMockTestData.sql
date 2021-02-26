@@ -40,6 +40,7 @@ AS
 **		6/25/19		twilson3			BOEJ-3964 - Remove in-use flag, MaterialXref
 **		12/17/19	twilson3			BOEJ-4434 - RTE Templates
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
+**		2/16/2021	ranzalon			BOEJ-5011: Added support for MOQ Types
 *******************************************************************************/
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE
 
@@ -290,7 +291,19 @@ FROM dbo.WorkspaceVersion WV
 				INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
 				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
 			
-			
+			-- MOQ Type Selection data
+			DELETE FROM dbo.MOQTypeSelectionTableData
+			FROM dbo.MOQTypeSelectionTableData t
+				INNER JOIN dbo.MOQTypeSelection s ON s.MOQTypeSelectionId = t.MOQTypeSelectionId
+				INNER JOIN dbo.BOETaskElement TE ON s.TaskId = TE.BOETaskElementID
+				INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
+				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
+
+			DELETE FROM dbo.MOQTypeSelection
+				FROM dbo.MOQTypeSelection s
+				INNER JOIN dbo.BOETaskElement TE ON s.TaskId = TE.BOETaskElementID
+				INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
+				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
 			
 			DELETE FROM dbo.BOETaskElement
 			FROM dbo.BOETaskElement TE 

@@ -44,7 +44,7 @@
                         <gen-validation data-errors="$root.errors"></gen-validation>
                         <div class="notificationMessage" id="notificationMessage" data-ng-show="notificationMessage" data-ng-cloak>{{notificationMessage}}</div>
                         <div class="form-element black">
-                            Version: <select data-ng-options="item.Label for item in data.AvailableVersions" data-ng-model="selectedVersion"></select>
+                            Revision: <select data-ng-options="item.Label for item in data.AvailableVersions" data-ng-model="selectedVersion"></select>
                         </div>
                     </div>
                     <table class="grid readonly full-width">
@@ -57,16 +57,16 @@
                         <tr>
                             <td>
                                 <div class="row">
-                                    Generate a full PPR&amp;D document for selected version.
+                                    Generate a full PPR&amp;D document for selected revision.
                                     <button class="ies-action floatRight"
                                             id="Export-PPRD"
                                             type="button"
                                             data-ng-disabled="isExportingPPRD"
                                             data-ng-click="generatePPRDClick()"
                                             style="min-width: 190px">
-                                        <div data-ng-hide="isExportingPPRD" >Generate Full PPR&amp;D</div>
+                                        <div data-ng-hide="isExportingPPRD">Generate Full PPR&amp;D</div>
                                         <div data-ng-show="isExportingPPRD" class="loader button-loader"></div>
-                                    </button>                                    
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -83,14 +83,14 @@
                         <tr>
                             <td>
                                 <div class="row">
-                                    Export a Rate document for selected version.
+                                    Export a Rate document for selected revision.
                                     <button class="ies-action floatRight"
                                             id="Export-Rates"
                                             type="button"
                                             data-ng-disabled="isExportingRateDoc"
                                             data-ng-click="generateRateDocClick(false)"
                                             style="min-width: 190px">
-                                        <div data-ng-hide="isExportingRateDoc" >Export Rates</div>
+                                        <div data-ng-hide="isExportingRateDoc">Export Rates</div>
                                         <div data-ng-show="isExportingRateDoc" class="loader button-loader"></div>
                                     </button>
                                 </div>
@@ -99,7 +99,7 @@
                             <tr>
                                 <td>
                                     <div class="row">
-                                        Export an expanded Rate document for selected version.  
+                                        Export an expanded Rate document for selected revision.
                                         <button class="ies-action floatRight"
                                                 id="Export-Expanded-Rates"
                                                 type="button"
@@ -115,7 +115,7 @@
                         <tr data-ng-hide="!data.AdminUser">
                             <td>
                                 <div class="row">
-                                    Export a ProPricer rate file for selected version.
+                                    Export a ProPricer rate file for selected revision.
                                     <button class="ies-action floatRight"
                                             id="Export-ProPricer2"
                                             type="button"
@@ -131,7 +131,7 @@
                         <tr data-ng-hide="!data.AdminUser || selectedVersion.Label === '@IES.Common.classes.CommonConstants.WorkInProgress'">
                             <td>
                                 <div class="row">
-                                    Export revision data for classified deployment for selected version.
+                                    Export revision data for classified deployment for selected revision.
                                     <button class="ies-action floatRight"
                                             id="Export-RevisionAsJson"
                                             type="button"
@@ -146,15 +146,15 @@
                         </tr>
                         <tr data-ng-hide="!data.CobraAdminUser">
                             <td>
-                                <div class="row" >
-                                    Export a Cobra rate file for selected version.
+                                <div class="row">
+                                    Export a Cobra rate file for selected revision.
                                     <button class="ies-action floatRight"
                                             id="Export-Cobra"
                                             type="button"
                                             data-ng-disabled="isExportingCobra"
                                             data-ng-click="exportCobraClick()"
                                             style="min-width: 190px">
-                                        <div data-ng-hide="isExportingCobra" >Export Cobra Rates</div>
+                                        <div data-ng-hide="isExportingCobra">Export Cobra Rates</div>
                                         <div data-ng-show="isExportingCobra" class="loader button-loader"></div>
                                     </button>
                                 </div>

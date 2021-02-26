@@ -240,7 +240,7 @@ namespace IES.Common
 
                             string appVersion = ConfigurationUtilities.GetAppSetting("APPLICATION_VERSION");
 
-                            versionAndUpdatedDate = string.Format("version {0}, deployed on {1} {2}", appVersion, lastModifiedDate, lastModifiedTime);
+                            versionAndUpdatedDate = string.Format("revision {0}, deployed on {1} {2}", appVersion, lastModifiedDate, lastModifiedTime);
                         }
                     }
                 }

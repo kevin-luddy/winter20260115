@@ -19,10 +19,11 @@ namespace IES.ActionLogic.ControllerLogic
         /// Get the differences for the Version Comparison grid when a new Version is selected
         /// </summary>
         /// <param name="id">Selected Revision Id</param>
+        /// <param name="secondId">Second selected revision ID, or -1 to return previous revision</param>
         /// <param name="isRdmAdminUser">true if user is RDM Admin user</param>
         /// <param name="activeUser">The active user.</param>
         /// <returns>Differences based on the selected version</returns>
-        VersionComparisonModelView GetVersionDifferences(int id, bool isRdmAdminUser, UserData activeUser);
+        VersionComparisonModelView GetVersionDifferences(int id, int secondId, bool isRdmAdminUser, UserData activeUser);
 
         /// <summary>
         /// Gets any rates for the given revision for which the rate would have only zero values for all displayed years.

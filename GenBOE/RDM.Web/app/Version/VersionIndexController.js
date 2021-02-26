@@ -1,4 +1,4 @@
-﻿angular.module('RDM').controller('VersionIndexController', ['$scope', '$http', '$rootScope', '$mdDialog', '$uibModal', 'uiGridConstants', 'VersionIndexModel', 'utilityService', 'RateFormatter', function ($scope, $http, $rootScope, $mdDialog, $uibModal, uiGridConstants, VersionIndexModel, utilityService, RateFormatter) {
+﻿angular.module('RDM').controller('VersionIndexController', ['$scope', '$http', '$rootScope', '$mdDialog', '$uibModal', '$timeout', 'uiGridConstants', 'VersionIndexModel', 'utilityService', 'RateFormatter', function ($scope, $http, $rootScope, $mdDialog, $uibModal, $timeout, uiGridConstants, VersionIndexModel, utilityService, RateFormatter) {
     $scope.isInitializing = true;
     $scope.isDataLoading = true;
     $scope.isDataError = false;
@@ -14,6 +14,7 @@
     $scope.activeLockMessages = [];
     $rootScope.modalErrors = [];
     $scope.ReplicationValidationMessages = VersionIndexModel.data.ReplicationValidationMessages || [];
+    $scope.shouldShowHelp = false;
 
     initialize = function () {
         $scope.isInitializing = false;
@@ -22,7 +23,7 @@
         $scope.compareAction = VersionIndexModel.compareAction;
         $scope.workInProgressName = VersionIndexModel.workInProgressName;
         $scope.rollbackConfirmationText = '';
-        $scope.setGridOptions(); 
+        $scope.setGridOptions();
     };
 
     $scope.loadData = function () {
@@ -42,13 +43,13 @@
     $scope.getPPRD = function () {
         $("#ToleranceSlider").css("visibility", "hidden");
         $scope.updateDiff(true);
-    }
+    };
 
     // Rate Tab Methods
     $scope.getRates = function () {
         $("#ToleranceSlider").css("visibility", "visible");
         $scope.updateDiff(true);
-    }
+    };
 
     $scope.setGridOptions = function () {
 
@@ -110,11 +111,11 @@
 
         // Add top line to Deleted rows or current revision rows.
         if (firstVisibleEntityId > 0 && row.entity.Id !== firstVisibleEntityId &&
-            (row.entity.CS === 'Deleted' || row.entity.R === $scope.versionData.SelectedRevision.Id)) {
+            (row.entity.CS === 'Deleted' || row.entity.R === $scope.versionData.FirstSelectedRevision.Id)) {
             classString = 'top-grid-line';
         }
 
-        if (row.entity.R !== $scope.versionData.SelectedRevision.Id) {
+        if (row.entity.R !== $scope.versionData.FirstSelectedRevision.Id) {
             return classString + ' disabled-text';
         } else {
             var rateObjectRef = col.colDef.field.substring(0, col.colDef.field.indexOf('.Val'));
@@ -130,7 +131,7 @@
 
                     // Save the highest percent change in the row.entity.
                     if (row.entity.highestPercentChangeInRow === undefined) {
-                        for (i = 0; i < row.entity.Values.length; i++){
+                        for (i = 0; i < row.entity.Values.length; i++) {
                             if (row.entity.highestPercentChangeInRow === undefined || row.entity.Values[i].PC > row.entity.highestPercentChangeInRow) {
                                 if (row.entity.Values[i].PC !== null) {
                                     row.entity.highestPercentChangeInRow = row.entity.Values[i].PC;
@@ -145,7 +146,7 @@
                 }
             }
         }
-        return classString; 
+        return classString;
     };
 
     /* Helper method to check if a percentChange value > the set tolerance. */
@@ -164,7 +165,7 @@
         // columnDefs: $scope.columnDefinitions,
         var tempColDef = new Array(
             { name: 'Chg', field: 'CS', enableSorting: false, pinnedLeft: true, width: 55, cellClass: $scope.cellClass, enableCellEdit: false },
-            { name: 'Ver', field: 'RevisionIdLabel', enableSorting: false, pinnedLeft: true, width: 55, cellClass: $scope.cellClass, enableCellEdit: false },
+            { name: 'Rev', field: 'RevisionIdLabel', enableSorting: false, pinnedLeft: true, width: 55, cellClass: $scope.cellClass, enableCellEdit: false },
             { name: 'Category', field: 'RCD', enableSorting: false, pinnedLeft: true, width: 150, cellClass: $scope.cellClass, enableCellEdit: false },
             { name: 'Rate Code', field: 'Co', enableSorting: false, pinnedLeft: true, width: 95, cellClass: $scope.cellClass, enableCellEdit: false },
             { name: 'Description', field: 'De', enableSorting: false, pinnedLeft: true, width: 150, cellClass: $scope.cellClass, enableCellEdit: false },
@@ -204,12 +205,12 @@
     $scope.reloadGrid = function () {
         $(document).trigger("SHOW_LOADING_BOX");
 
-        var getRatesurl = createPostURL(VersionIndexModel.rateController, $scope.compareAction, $scope.versionData.SelectedRevision.Id);
-        
+        var getRatesurl = createPostURL(VersionIndexModel.rateController, $scope.compareAction, $scope.versionData.FirstSelectedRevision.Id);
+
         $http({
             method: 'POST',
             url: getRatesurl,
-            data: { }
+            data: { secondId: $scope.getSecondId() }
         }).then(function successCallback(response) {
             // TEMPERAMENTAL GRID WARNING - Reloading data into an existing grid is no trivial matter and the code
             // and order of events below were hard won and if modified, even a little, must be tested with the following scenario 
@@ -257,11 +258,11 @@
         // Put RevisionIdLabels in each row
         for (var i = 0; i < newRates.length; i++) {
             var revision = $scope.versionData.AvailableVersions.filter(function (v) {
-                    return v.Id === newRates[i].R;
+                return v.Id === newRates[i].R;
             });
 
             if (revision !== undefined && revision[0] !== undefined && revision[0].Label !== undefined) {
-                if(isNaN(parseFloat(revision[0].Label))) {
+                if (isNaN(parseFloat(revision[0].Label))) {
                     newRates[i].RevisionIdLabel = "WIP";
                 } else {
                     newRates[i].RevisionIdLabel = revision[0].Label;
@@ -280,11 +281,11 @@
 
     // Page methods.
 
-    $scope.refreshActiveLockMessages = function() {
+    $scope.refreshActiveLockMessages = function () {
         if ($scope.versionData.ActiveLocks.length) {
             document.getElementById("Publish").disabled = true;
             document.getElementById("Rollback").disabled = true;
-            $scope.versionData.ActiveLocks.forEach(function(activeLock) {
+            $scope.versionData.ActiveLocks.forEach(function (activeLock) {
                 $scope.activeLockMessages.push(activeLock.AreaString +
                     " is locked by " +
                     activeLock.LockedBy.DisplayName);
@@ -299,24 +300,35 @@
     // Update the grid when a new version is selected
     $scope.updateDiff = function () {
         $(document).trigger("SHOW_LOADING_BOX");
-        
+
         $http({
             method: 'POST',
             url: createPostURL(
                 $scope.controller,
                 $scope.compareAction,
-                $scope.versionData.SelectedRevision.Id),
-            data: { id: $scope.versionData.SelectedRevision.Id }
+                $scope.versionData.FirstSelectedRevision.Id),
+            data: { id: $scope.versionData.FirstSelectedRevision.Id, secondId: $scope.getSecondId() }
         }).then(function successCallback(response) {
-                $scope.versionData = response.data;
-                $scope.updateTolerance();
-                $scope.refreshActiveLockMessages();
-            },
-            function errorCallback(response) {
+            $scope.versionData = response.data;
+            $scope.updateTolerance();
+            $scope.refreshActiveLockMessages();
+        }, function errorCallback(response) {
+        }).finally(function () {
+            // Get Rates
+            $scope.reloadGrid(); // Hide loading box called within reloadGrid()
         });
+    };
 
-        // Get Rates
-        $scope.reloadGrid(); // Hide loading box called within reloadGrid()
+    // Get the second selected ID, use -1 if nothing or previous version selected
+    $scope.getSecondId = function () {
+        var secondId = $scope.versionData.SecondSelectedRevision === null ? -1 : $scope.versionData.SecondSelectedRevision.Id;
+        var secondSelection = $scope.versionData.AvailableCompareToVersions.find(x => x.Id === secondId);
+
+        if (secondSelection && secondSelection.Label === "Previous Revision") {
+            secondId = -1;
+        }
+
+        return secondId;
     };
 
     // Compare numerical values of each row to determine if they are > the set tolerance
@@ -368,7 +380,7 @@
 
         var model = {
             workInProgressName : $scope.workInProgressName,
-            revision: $scope.versionData.SelectedRevision.Revision,
+            revision: $scope.versionData.FirstSelectedRevision.Revision,
             history : $scope.versionData.WorkInProgressHistory,
             releaseNotes: $scope.versionData.ReleaseNotes,
             validateRatesController: VersionIndexModel.controller,
@@ -421,7 +433,7 @@
         return $http({
             method: 'POST',
             url: publishUrl,
-            data: JSON.stringify({ revision: $scope.versionData.SelectedRevision.Revision, history: $scope.versionData.WorkInProgressHistory, releaseNotes: $scope.versionData.ReleaseNotes })
+            data: JSON.stringify({ revision: $scope.versionData.FirstSelectedRevision.Revision, history: $scope.versionData.WorkInProgressHistory, releaseNotes: $scope.versionData.ReleaseNotes })
         }).then(function successCallback(response) {
             $(document).trigger("DISPLAY_NOTIFICATION", response.data.Message);
             $(document).trigger("HIDE_LOADING_BOX");
@@ -459,7 +471,7 @@
         return $http({
             method: 'POST',
             url: rollbackUrl,
-            data: JSON.stringify({ revision: $scope.versionData.SelectedRevision.Revision })
+            data: JSON.stringify({ revision: $scope.versionData.FirstSelectedRevision.Revision })
         }).then(function successCallback(response) {
             $(document).trigger("DISPLAY_NOTIFICATION", response.data.Message);
             $(document).trigger("HIDE_LOADING_BOX");
@@ -477,6 +489,30 @@
     
     $scope.closeRollbackModal = function () {
         $mdDialog.hide();
+    };
+
+    $scope.showHelp = function (event) {
+        $scope.shouldShowHelp = true;
+
+        // use a short timeout to avoid popping up when mouse happens to pass over button quickly
+        // shouldShowHelp gets set to false on mouseout event to help with this
+        $timeout(function () {
+            if ($scope.shouldShowHelp) {
+                var helpButton = $(event.target);
+                var helpDialog = helpButton.next();
+
+                helpDialog.css("top", $(helpButton).position().top - helpDialog.height());
+                helpDialog.css("left", $(helpButton).position().left + $(helpButton).width() + 5);
+
+                helpDialog.removeClass('display-none');
+            }
+        }, 300);        
+    };
+
+    $scope.hideHelp = function (event) {
+        $scope.shouldShowHelp = false;
+        var helpDialog = $(event.target).next();
+        helpDialog.addClass('display-none');
     };
 
     initialize();

@@ -1291,7 +1291,7 @@ namespace GenTRAC.ActionLogic
                 model.ReasonCertificationNotRequiredList = reasonCertificationNotRequiredList;
                 model.Comments = fullProposalDto.Comments;
                 model.DisplayCertificationReset = string.Equals(model.IsReadOnly.ToLower(), "true") && model.ReasonCertificationNotRequired.HasValue && this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
-                model.DisableCertificationRequiredChange = fullProposalDto.ProposalStatus == ProposalStatus.Completed && !model.ReasonCertificationNotRequired.HasValue;
+                model.DisableCompleteButton = fullProposalDto.ProposalStatus == ProposalStatus.Completed;
             }
 
             return model;
@@ -1913,8 +1913,8 @@ namespace GenTRAC.ActionLogic
 
                 if (string.IsNullOrEmpty(proposalApprovalsInfo.IndependentReviewerNtid))
                 {
-                    // if CCPD Required is set to Yes (or is not set) and if the coversheet approver and lead estimator are same person
-                    if ((!proposalGeneralInfo.IsCCPDRequired.HasValue || proposalGeneralInfo.IsCCPDRequired.Value == true) && (!string.IsNullOrEmpty(proposalApprovalsInfo.CoverSheetApproverNtid) && !string.IsNullOrEmpty(proposalApprovalsInfo.LeadEstimatorNtid) && proposalApprovalsInfo.CoverSheetApproverNtid.Equals(proposalApprovalsInfo.LeadEstimatorNtid, System.StringComparison.OrdinalIgnoreCase)))
+                    // if CCPD Required is set to Yes (or is not set)
+                    if (!proposalGeneralInfo.IsCCPDRequired.HasValue || proposalGeneralInfo.IsCCPDRequired.Value == true)
                     {
                         inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.INDEPENDENT_REVIEWER_REQUIRED));
                     }
@@ -2468,7 +2468,7 @@ namespace GenTRAC.ActionLogic
                 throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.COMPLETE_FAILED_PROPOSAL);
             }
 
-            if (model.ReasonCertificationNotRequired.HasValue && proposal.ProposalStatus != ProposalStatus.Submitted)
+            if (model.ReasonCertificationNotRequired.HasValue && proposal.ProposalStatus != ProposalStatus.Submitted && proposal.ProposalStatus != ProposalStatus.Completed)
             {
                 throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CERTIFICATION_NOT_REQUIRED_WRONG_STATE);
             }

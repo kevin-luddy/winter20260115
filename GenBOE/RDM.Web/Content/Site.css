@@ -1758,3 +1758,27 @@ import-verification .container
     overflow: auto;
     margin-bottom: 10px;
 }
+
+.version-help-icon {
+    background: transparent url(/Content/images/helpSmall.png) no-repeat 0 0;
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    vertical-align: top;
+    cursor: pointer;
+}
+
+.help-dialog {
+    position: absolute;
+    border: solid 1px #666666;
+    background: White;
+    white-space: normal;
+    overflow: visible;
+    z-index: 10000 !important;
+    width: 400px;
+}
+
+.help-dialog-text {
+    font-weight: normal;
+    padding: 5px;
+}

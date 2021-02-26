@@ -1005,7 +1005,7 @@ namespace GenTRAC.Web.Common
             /// <summary>
             /// Independent Reviewer description
             /// </summary>
-            public const string INDEPENDENT_REVIEWER = "An Independent Reviewer is required if the Cover Sheet Approver and the Lead Estimator are the same person. The Independent Reviewer will validate that every question on the checklist has been completed and validated in the proposal and review BOEs for compliance with the checklist. The Independent Reviewer needs to be involved as soon as practicable to ensure any error/duplications noticed are corrected in a timely manner.<br/><br/>By submitting your approval, you are attesting to the above description. Once your approval is submitted, you cannot undo it or edit your comment unless the workflow is reset by the Lead Estimator. Are you sure you wish to continue?";
+            public const string INDEPENDENT_REVIEWER = "The Independent Reviewer will validate that every question on the checklist has been completed and validated in the proposal and review BOEs for compliance with the checklist. The Independent Reviewer needs to be involved as soon as practicable to ensure any error/duplications noticed are corrected in a timely manner.<br/><br/>By submitting your approval, you are attesting to the above description. Once your approval is submitted, you cannot undo it or edit your comment unless the workflow is reset by the Lead Estimator. Are you sure you wish to continue?";
 
             /// <summary>
             /// LOB Estimating Lead description

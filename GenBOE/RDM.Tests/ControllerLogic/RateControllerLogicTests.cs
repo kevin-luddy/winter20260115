@@ -1318,5 +1318,28 @@ namespace RDM.Tests.ControllerLogic
             Assert.AreEqual(testRateCodes.Count + 3, updated.Count);
             Assert.AreEqual(testRateCodes.Count + 3, updated.Where(u => u.Updateable == UpdateType.Upsert).Count());
         }
+
+        /// <summary>
+        /// Test GetRatesVersionDifferences
+        /// </summary>
+        [TestMethod]
+        public void GetRatesVersionDifferencesTest()
+        {
+            RateControllerLogic sut = this.CreateSut();
+
+            RevisionOptionModelView revision1 = new RevisionOptionModelView() { Id = 5, Label = "WIP", Revision = "5", StartYear = 2010, EndYear = 2040 };
+            RevisionOptionModelView revision2 = new RevisionOptionModelView() { Id = 2, Label = "2", Revision = "2", StartYear = 2010, EndYear = 2040 };
+
+            ICollection<RateDetailModelView> expected = new Collection<RateDetailModelView>() { new RateDetailModelView() { Id = 1, RateCode = "TEST",  } };
+
+            rateDetailLoader.Setup(x => x.GetComparableRates(revision1, revision2)).Returns(expected);
+
+            ICollection<RateDetailModelView> result = sut.GetRatesVersionDifferences(new Collection<RevisionOptionModelView>() { revision1, revision2 }, revision1.Id, revision2.Id);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(expected.Count, result.Count);
+            Assert.AreEqual(expected.First().Id, result.First().Id);
+            Assert.AreEqual(expected.First().RateCode, result.First().RateCode);
+        }
     }
 }

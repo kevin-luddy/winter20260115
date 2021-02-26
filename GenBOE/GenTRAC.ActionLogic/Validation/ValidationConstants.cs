@@ -278,7 +278,7 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// Independent Reviewer is required
             /// </summary>
-            public const string INDEPENDENT_REVIEWER_REQUIRED = APPROVALS_VALDIATION + "Independent Reviewer is required when CCOPD is set to Yes and the Cover Sheet Approver and Lead Estimator are the same person.";
+            public const string INDEPENDENT_REVIEWER_REQUIRED = APPROVALS_VALDIATION + "Independent Reviewer is required when CCOPD is set to Yes.";
 
             /// <summary>
             /// LOB Estimating Lead/Mgr is required
@@ -445,7 +445,7 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// validation message for wrong status and cert not required
             /// </summary>
-            public const string CERTIFICATION_NOT_REQUIRED_WRONG_STATE = "Proposal's certification cannot be marked as not-required if the proposal is not in 'Submitted' state.";
+            public const string CERTIFICATION_NOT_REQUIRED_WRONG_STATE = "Proposal's certification cannot be marked as not-required if the proposal is not in 'Submitted' or 'Completed' state.";
 
             /// <summary>
             /// This should never happen, but just in case.
