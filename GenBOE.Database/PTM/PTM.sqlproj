@@ -167,7 +167,6 @@
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2019.8 Generated On 12_2_2019.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2019.4 Generated On 7_1_2019.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2020.2 Generated On 6_9_2020.sql" />
-    <Build Include="_Full Script Files For Specific Versions\PTM - 2020.4 Generated On 8_25_2020.sql" />
     <Build Include="Release Scripts\Older\Release 2020.5.2\Release 2020.5.2.sql" />
     <Build Include="Release Scripts\Older\Release 1.0\1 - Release 1.0 Script.sql" />
     <Build Include="Release Scripts\Older\Release 1.1\1 - Release 1.1 Script.sql" />
@@ -189,6 +188,8 @@
     <Build Include="Release Scripts\Older\Release 2020.2\Release 2020.2.sql" />
     <Build Include="Release Scripts\Older\Release 2020.4\Release 2020.4.sql" />
     <Build Include="Release Scripts\Release 2021.2\Release 2021.2.sql" />
+    <Build Include="_Full Script Files For Specific Versions\PTM - 2021.2 Generated On 2_25_2021.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2020.4 Generated On 8_25_2020.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />
