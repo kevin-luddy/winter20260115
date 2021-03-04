@@ -159,7 +159,7 @@
         $('#CostVolumeLeadPricerDisplayName').lookupUser({
             accountNameElementId: 'CostVolumeLeadPricerNTID',
             accountNameInitial: '<%:Model.CostVolumeLeadPricerNTID%>',
-            accountDisplayNameInitial: '<%:Model.CostVolumeLeadPricerDisplayName%>',
+            accountDisplayNameInitial: "<%=Model.CostVolumeLeadPricerDisplayName%>",
             enabled: true,
             readOnly: <%:ViewData["READONLY"]%>,
             fieldDisplayName: 'Cost Volume Lead/Pricer',
