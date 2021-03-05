@@ -29,7 +29,7 @@
             LabelLeadPricer: '<%= CommonConstants.LABEL_TEXT_LEAD_PRICER_SSC%>',
             ProjectMapPrecisionDefault: <%= Constants.PROJECT_MAP_DECIMAL_PRECISION_DEFAULT%>,
             CostVolumeLeadPricerNTID: '<%= Model.CostVolumeLeadPricerNTID%>',
-            CostVolumeLeadPricerDisplayName: '<%= Model.CostVolumeLeadPricerDisplayName%>',
+            CostVolumeLeadPricerDisplayName: "<%= Model.CostVolumeLeadPricerDisplayName%>",
             GetExactCopyDataAction: '<%:WebConstants.ACTION_GET_EXACT_COPY_DATA %>',
             GetWorkspaceToCopyBOEListAction: '<%:WebConstants.ACTION_GET_BOES_FOR_WORKSPACE_TO_COPY%>',
             GetWorkspaceToCopyDetailsAction: '<%:WebConstants.ACTION_GET_DETAILS_FOR_WORKSPACE_TO_COPY%>',
