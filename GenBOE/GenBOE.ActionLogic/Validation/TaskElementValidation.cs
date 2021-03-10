@@ -42,6 +42,7 @@ namespace GenBOE.ActionLogic.Validation
         private static string SPREAD_DATES_FAILED = "Resource Spread date is outside the Resource period of performance. (Spread Date: {0}, Spread Value: {1}).";
 
         private static string MOQ_EQUATION_FAILED = "An invalid MOQ equation was entered.";
+        private static string INVALID_TASK_VARIABLE = "Task variable {0} calculated value does not match the saved value.";
 
         private static string DELTA_FAILED = "Total Resource Spread must equal the MOQ Equation total.  Verify the MOQ Equation Total is fully spread and no delta remains.";
 
@@ -272,7 +273,7 @@ namespace GenBOE.ActionLogic.Validation
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "If anything fails w/ the MOQ, we want to catch it and mark it as invalid.")]
         private bool ValidateOverallSumOfHoursAndCosts(FullWorkspace ws, BoeTaskElementDTO taskElement, ref ConcurrentBag<LaborValidationClass> valueErrors, object LOCK, bool returnOnFirstInvalid = false)
         {
-            #region Hours Check -> (MOQ Equation Value == Sum of Types Hours) and (Sum of Types Hours == Sum of Spread Hours)
+            #region Hours Check -> (MOQ Equation Value == Sum of Types Hours) and (Sum of Types Hours == Sum of Spread Hours); also checks Task level Sum Of Boe variables;
 
             decimal moqResult = 0;
 
@@ -289,7 +290,18 @@ namespace GenBOE.ActionLogic.Validation
 
             try
             {
-                moqResult = this.CalculateValueOfMoqEquation(ws, taskElement, LOCK);
+                DataClassForSumOfBOEsCalculation dataForCalculation = new DataClassForSumOfBOEsCalculation();
+
+                lock (LOCK) // DB calls cannot happen in parallel
+                {
+                    Collection<WorkspaceVariableDTO> workspaceVars = ws.WorkspaceVariables.Where(x => taskElement.WorkspaceVariableIDs.Contains(x.Id)).ToCollection();
+                    dataForCalculation.FillData(taskElement.OrdinaryVariables, workspaceVars, ws);
+
+                    bool variablesValid = this.ValidateTaskSumOfBoesVariables(ws.DecimalPrecision, taskElement, dataForCalculation, ref valueErrors, returnOnFirstInvalid);
+                    if (!variablesValid && returnOnFirstInvalid) { return false; }
+
+                    moqResult = this.CalculateValueOfMoqEquation(ws, taskElement, dataForCalculation, workspaceVars);
+                }
             }
             catch
             {
@@ -377,6 +389,35 @@ namespace GenBOE.ActionLogic.Validation
             return true;
         }
 
+        /// <summary>
+        /// Validates that the value of the task variable (sum of boes one) is correct
+        /// </summary>
+        /// <param name="wsDecimalPrecision">WS Decimal precision</param>
+        /// <param name="taskElement">Task which we are validating</param>
+        /// <param name="data">Data used for calculations, must come already filled</param>
+        /// <param name="valueErrors">Value Errors which will be adjusted if any errors are found.</param>
+        /// <param name="returnOnFirstInvalid">If this is set to true, we are only looking to see if the task elementis invalid. If it is, we abort processing and report the finding</param>
+        /// <returns>False if invalid</returns>
+        private bool ValidateTaskSumOfBoesVariables(int wsDecimalPrecision, BoeTaskElementDTO taskElement, DataClassForSumOfBOEsCalculation data, ref ConcurrentBag<LaborValidationClass> valueErrors, bool returnOnFirstInvalid)
+        {
+            bool result = true;
+
+            foreach (OrdinaryVariableDto variable in taskElement.OrdinaryVariables.Where(x => x.ValueType == VarValueType.SumOfBOEs).ToList())
+            { 
+                decimal calculatedValue = this.VariableSelectBOEtoSumCalculation.GetTaskVarLabelTotal(variable, data);
+                if(Utilities.AdjustPrecision(variable.OrdinaryVariableValue ?? 0, wsDecimalPrecision) != Utilities.AdjustPrecision(calculatedValue, wsDecimalPrecision))
+                {
+                    if (returnOnFirstInvalid) { return false; }
+                    result = false;
+
+                    valueErrors.Add(new LaborValidationClass()
+                    { ErrorMessage = new ValidationMessage(string.Format(INVALID_TASK_VARIABLE, variable.OrdinaryVariableName)), ErrorType = LaborValidationErrorTypeEnum.TaskElement, TaskElementId = taskElement.Id, BoeId = taskElement.BoeID });
+                }
+            }
+
+            return result;
+        }
+
         #endregion
 
         #region Private Helpers
@@ -386,23 +427,16 @@ namespace GenBOE.ActionLogic.Validation
         /// </summary>
         /// <param name="ws">Ws to which the Boe belongs</param>
         /// <param name="taskElement">Task to which the MOQ Equation belongs</param>
-        /// <param name="LOCK">Lock for parallel processing, to isolate DB calls</param>
+        /// <param name="dataForCalculation">Data used for calculations, must come already filled</param>
+        /// <param name="workspaceVars">Workspace Variables</param>
         /// <returns>Decimal value of the equation; 0 if the equation was empty; Throws an exception if there was an error</returns>
-        private decimal CalculateValueOfMoqEquation(FullWorkspace ws, BoeTaskElementDTO taskElement, object LOCK)
+        private decimal CalculateValueOfMoqEquation(FullWorkspace ws, BoeTaskElementDTO taskElement, DataClassForSumOfBOEsCalculation dataForCalculation, Collection<WorkspaceVariableDTO> workspaceVars)
         {
             decimal moqResult = 0;
 
             if (!string.IsNullOrEmpty(taskElement.MOQHoursEquation))
             {
-                DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
-                string moqResultString = string.Empty;
-
-                lock (LOCK) // we are locking because the code below will cause DB loads and we cannot do those in parallel
-                {                    
-                    Collection<WorkspaceVariableDTO> workspaceVars = ws.WorkspaceVariables.Where(x => taskElement.WorkspaceVariableIDs.Contains(x.Id)).ToCollection();
-                    data.FillData(taskElement.OrdinaryVariables, workspaceVars, ws);
-                    moqResultString = Common.MOQ.Parser.Calculate(taskElement.MOQHoursEquation, taskElement.OrdinaryVariables, workspaceVars, this.VariableSelectBOEtoSumCalculation, data, ws);
-                }
+                string moqResultString = Common.MOQ.Parser.Calculate(taskElement.MOQHoursEquation, taskElement.OrdinaryVariables, workspaceVars, this.VariableSelectBOEtoSumCalculation, dataForCalculation, ws);
 
                 if (decimal.TryParse(moqResultString, out moqResult))
                 {
