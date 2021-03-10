@@ -2,6 +2,8 @@
 // The controller for the MOQ equation section.
 moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uibModal', '$window', 'ManageTaskModel', '$timeout', function ($scope, $document, $uibModal, $window, ManageTaskModel, $timeout) {
     $scope.init = function () {
+        var MOQEquationFieldWidget = null;
+
         $scope.model = $window.MOQEquationFieldModel;
         $scope.model.IsCostEquation = ($scope.model.MoqEquationType == 'Cost');
         $scope.model.insertWorkspaceModalOpen = false;
@@ -374,7 +376,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, workspaceVariables, ordinaryVariables, newOrdinaryVariableID, sumOfBOEs, discrete, validationUrl, shouldMoqReadOnlyBeReversed,
                                         calculateMOQResultUrl, openSumOfBoesByWbsUrl, openSumOfBoesByClinUrl, isNotSubContractor, sortBOEByWBS, sortBOEByClin) {
     // create base js object;
-    var MOQEquationFieldWidget = new Widget("MOQEquationField", MOQEquationFieldWidget_ReadOnly);
+    MOQEquationFieldWidget = new Widget("MOQEquationField", MOQEquationFieldWidget_ReadOnly);
 
     MOQEquationFieldWidget.initialLoad = false;
     MOQEquationFieldWidget.MarkedEquation = "";
@@ -385,7 +387,7 @@ InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, wo
     MOQEquationFieldWidget.MOQValid = false;
     MOQEquationFieldWidget.SavePending = false;
     MOQEquationFieldWidget.NewOrdinaryVariableID = newOrdinaryVariableID;
-
+    
     MOQEquationFieldWidget.HarvestWorkspaceVariablesForSave = function () {
         var toReturn = [];
         var workspaceVariableFields = MOQEquationFieldWidget.GetAllVariableFields().filter('[wsVar]');
@@ -789,7 +791,7 @@ InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, wo
                 }
             }
             // New Task Ordinary Variable Field
-            else {
+            else { 
                 var defaultSizeLabel = '';
                 if (defaultSize != undefined && defaultSize != '') {
                     defaultSizeLabel = '(' + defaultSize + ')';

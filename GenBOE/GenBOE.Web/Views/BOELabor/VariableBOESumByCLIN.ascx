@@ -200,13 +200,13 @@
             eventData.BOEToSum = [];
 
             $('#VariableBOESumByCLIN-BOEToCopyGrid tbody input[name=BOESelect]:checked:not(input[disabled])').each(function () {
-                eventData.BOEToSum.push($(this).parents('tr').attr('pkid'));
+                eventData.BOEToSum.push(parseInt($(this).parents('tr').attr('pkid')));
             });
 
             eventData.ResourceTypes = [];
 
             $('input[name=VariableBOESumByCLIN-ResourceTypeCheckbox]:checked').each(function () {
-                eventData.ResourceTypes.push($(this).val());
+                eventData.ResourceTypes.push(parseInt($(this).val()));
             });
 
             VariableBOESumByCLIN.CloseDialog(VariableBOESumByCLIN.Dialog);
