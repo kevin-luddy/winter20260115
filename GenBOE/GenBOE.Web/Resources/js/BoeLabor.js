@@ -737,6 +737,7 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
                     $(this).keydown();
                     $(this).blur();
                     $(this).addClass('active');
+                    $(this).change();
                 }
             });
             $('#TaskElementDetailsForm input[name=EndDate]').prop('disabled', false).datepicker({
@@ -744,6 +745,7 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
                     $(this).keydown();
                     $(this).blur();
                     $(this).addClass('active');
+                    $(this).change();
                 }
             });
         }
