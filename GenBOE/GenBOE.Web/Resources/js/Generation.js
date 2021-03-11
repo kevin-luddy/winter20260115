@@ -1723,6 +1723,7 @@ function GenWidget(inConfig) {
                 if (currentField.attr("type") != "hidden" && currentField.attr("type") != "radio"
 						&& currentField.css("display") != "none" && currentField.css("visibility") != "hidden"
 						&& !currentField.hasClass("display-none") && !currentField.hasClass("filter-textbox")
+                        && !currentField.hasClass("skip-read-only")
 						&& !currentField.hasClass("filter-dropdown")) {
                     var replacementFieldText = "";
 
@@ -1749,7 +1750,7 @@ function GenWidget(inConfig) {
                 }
 
                 if (currentField.attr("type") != "hidden" && !currentField.hasClass("filter-textbox")
-						&& !currentField.hasClass("filter-dropdown")) {
+                    && !currentField.hasClass("filter-dropdown") && !currentField.hasClass("skip-read-only")) {
                     currentField.addClass('display-none');
                 }
 
