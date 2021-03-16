@@ -772,6 +772,7 @@ Widget.prototype.applyReadOnly = function () {
 			if (currentField.attr("type") != "hidden" && currentField.css("visibility") != "hidden"
 					&& currentField.css("display") != "none" && !currentField.hasClass("display-none")
 					&& !currentField.hasClass("filter-textbox") && !currentField.hasClass("filter-dropdown")
+					&& !currentField.hasClass("skip-read-only")
 					&& currentField.attr("type") != "radio") {
 				var replacementFieldText = "";
 
@@ -799,7 +800,8 @@ Widget.prototype.applyReadOnly = function () {
 
 			if (currentField.attr("type") != "hidden" &&
 				!currentField.hasClass("filter-textbox") &&
-				!currentField.hasClass("filter-dropdown")) {
+				!currentField.hasClass("filter-dropdown") &&
+				!currentField.hasClass("skip-read-only")) {
 				currentField.addClass('display-none');
 			}
 
