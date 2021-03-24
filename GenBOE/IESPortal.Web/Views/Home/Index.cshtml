@@ -119,10 +119,14 @@
             </div>
             <div class="button-row">
                 <div class="button-img"></div>
-                @*<a href="@ViewBag.eEPPUrl">*@
-                <a>
-                    <img class="button-img eeppLogo" src="~/Content/images/logo_ComingSoon.png" alt="Electronic Executive Planning Panel" />
-                </a>
+                @if (string.IsNullOrEmpty(ViewBag.eEPPUrl))
+                {
+                    <a><img class="button-img eeppLogo" src="~/Content/images/logo_ComingSoon.png" alt="Electronic Executive Planning Panel" /></a>
+                }
+                else
+                {
+                    <a href="@ViewBag.eEPPUrl"><img class="button-img" src="~/Content/images/logo_eEPP.jpg" alt="Electronic Executive Planning Panel" /></a>
+                }
             </div>
         </div>
         <footer>
