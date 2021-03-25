@@ -106,6 +106,13 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         }, 1);
     }
 
+
+    // Actual Read Only, including reversal
+    $scope.ActualReadOnly = function()
+    {
+        return $scope.model.IsReadOnly && !$scope.model.ShouldMoqReadOnlyBeReversed;
+    }
+
     // Create New Table Data for the MOQ Type
     $scope.CreateNewTable = function (tableDataArray) {
         var newTable = {};
