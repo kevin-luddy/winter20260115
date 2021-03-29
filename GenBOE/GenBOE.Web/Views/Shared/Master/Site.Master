@@ -73,7 +73,6 @@
 	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=91" style="border:0" alt="Piwik"></p>
 	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=94" style="border:0" alt="Piwik"></p>
 	    <p><img src="<%:Utilities.PiwikUrl()%>piwik.php?idsite=<%:Utilities.PiwikId()%>" style="border:0" alt="Piwik"></p>
-
     </noscript>
     <script type="text/javascript">
         var pkBaseURL = "<%:Utilities.PiwikUrl()%>";
@@ -82,9 +81,19 @@
     <!-- End Piwik Statistics Code -->
     <% } %>
 
+    <script type="text/javascript">
+        window.onload = function () {
+            if (navigator.userAgent.indexOf("MSIE") > -1 || navigator.userAgent.indexOf("Firefox") > -1) {
+                document.getElementById("BrowserBanner").classList.remove("display-none");
+            }
+        }
+    </script>
+
     <%: Scripts.Render("~/bundles/initialization") %>
 </head>
 <body>
+    <div id="BrowserBanner" class="WarningBanner display-none">GenBOE no longer supports Internet Explorer or Firefox. Please use Google Chrome or Microsoft Edge.</div>
+
     <% if (IdentitySwap.IdentitySwappingForTesting.IsIdentitySwappingAllowed("IsIdentitySwappingAllowed", "ActiveDirectoryPath", "ADGroupsAllowedToSwapIdentity")) { %>
         <div id="IdentitySwappingDiv">
             <script src="<%= this.ResolveClientUrl("~/Resources/js/IdentitySwappingScript.js")%>" type="text/javascript"></script>

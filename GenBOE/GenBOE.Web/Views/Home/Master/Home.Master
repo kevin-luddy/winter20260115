@@ -93,8 +93,18 @@
         .nav-container { text-align: left; height: 30px; }
         .nav-bar > div { margin: 0; padding: 10px 0; }
     </style>
+
+    <script type="text/javascript">
+        window.onload = function () {
+            if (navigator.userAgent.indexOf("MSIE") > -1 || navigator.userAgent.indexOf("Firefox") > -1) {
+                document.getElementById("BrowserBanner").classList.remove("display-none");
+            }
+        }
+    </script>
 </head>
 <body class="home">
+    <div id="BrowserBanner" class="WarningBanner display-none">GenBOE no longer supports Internet Explorer or Firefox. Please use Google Chrome or Microsoft Edge.</div>
+
     <% if (IdentitySwap.IdentitySwappingForTesting.IsIdentitySwappingAllowed("IsIdentitySwappingAllowed", "ActiveDirectoryPath", "ADGroupsAllowedToSwapIdentity")) { %>
         <div id="IdentitySwappingDiv">
             <script src="<%= this.ResolveClientUrl("~/Resources/js/IdentitySwappingScript.js")%>" type="text/javascript"></script>
