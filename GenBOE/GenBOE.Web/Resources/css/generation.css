@@ -8540,3 +8540,17 @@ button.move-button.moqTypes {
 .move-button.moqTypes.loader {
     width:30px;
 }
+
+div.WarningBanner {
+    text-align: center;
+    background-color: lightcoral;
+    color: black;
+    border: 2px solid black;
+    border-radius: 5px;
+    overflow: hidden;
+    font-size: 20px;
+    max-width: 1600px;
+    padding: 2px 0 2px 0;
+    word-spacing: normal;
+    margin: 0 auto 3px auto;
+}
