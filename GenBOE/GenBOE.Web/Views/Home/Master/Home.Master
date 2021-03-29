@@ -96,14 +96,14 @@
 
     <script type="text/javascript">
         window.onload = function () {
-            if (navigator.userAgent.indexOf("MSIE") > -1 || navigator.userAgent.indexOf("Firefox") > -1) {
+            if (navigator.userAgent.indexOf("MSIE") > -1 || !!document.documentMode === true || navigator.userAgent.indexOf("Firefox") > -1) {
                 document.getElementById("BrowserBanner").classList.remove("display-none");
             }
         }
     </script>
 </head>
 <body class="home">
-    <div id="BrowserBanner" class="WarningBanner display-none">GenBOE no longer supports Internet Explorer or Firefox. Please use Google Chrome or Microsoft Edge.</div>
+    <div id="BrowserBanner" class="WarningBanner display-none">genBOE no longer supports Internet Explorer or Firefox. Please use Google Chrome or Microsoft Edge.</div>
 
     <% if (IdentitySwap.IdentitySwappingForTesting.IsIdentitySwappingAllowed("IsIdentitySwappingAllowed", "ActiveDirectoryPath", "ADGroupsAllowedToSwapIdentity")) { %>
         <div id="IdentitySwappingDiv">
