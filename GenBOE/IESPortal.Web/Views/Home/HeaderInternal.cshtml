@@ -9,13 +9,30 @@
         <div id="navbar" class="collapse navbar-collapse">
             <ul id="ies-nav" class="nav navbar-nav">
                 <li id="nav-ies-home" class="@((ViewBag.ActiveTab == null) ? "open" : string.Empty)"><a id="ies-li-a" href="#" onclick="top.location='@HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Authority)';"><img id="ies-logo-nav" src="~/Content/images/IES_logo_nav.png" alt="IES" /></a></li>
-                <li id="nav-ptm" class="@((ViewBag.ActiveTab == "PTM") ? "open" : string.Empty)"><a href="#ptm" onclick="top.location='@ViewBag.PTMUrl';">PTM</a></li>
-                <li id="nav-boe" class="@((ViewBag.ActiveTab == "BOE") ? "open" : string.Empty)"><a href="#boe" onclick="top.location='@ViewBag.BOEUrl';">genBOE</a></li>
-                <li id="nav-propricer"><a href="@ViewBag.PPUrl" target="_blank">PRO<strong>PRICER</strong></a></li>
-                <li id="nav-rdm" class="@((ViewBag.ActiveTab == "RDM") ? "open" : string.Empty)"><a href="#rdm" onclick="top.location='@ViewBag.RDMUrl';">RDM</a></li>
-                <li id="nav-rdsb" class="@((ViewBag.ActiveTab == "RDSB") ? "open" : string.Empty)"><a href="#rdsb" onclick="top.location='@ViewBag.RDSBUrl';">RDSB</a></li>
-                <li id="nav-rpm" class="@((ViewBag.ActiveTab == "RPM") ? "open" : string.Empty)"><a href="#rpm" onclick="top.location='@ViewBag.RPMUrl';">RPM</a></li>
-                @if (ViewBag.IsAdmin) { <li id="nav-admin"><a href="#admin" onclick="top.location='@ViewBag.AdminUrl';">IES Admin Area</a></li> }
+
+                @if (!string.IsNullOrEmpty(ViewBag.PTMUrl))
+                { <li id="nav-ptm" class="@((ViewBag.ActiveTab == "PTM") ? "open" : string.Empty)"><a href="#ptm" onclick="top.location='@ViewBag.PTMUrl';">PTM</a></li> }
+
+                @if (!string.IsNullOrEmpty(ViewBag.BOEUrl))
+                { <li id="nav-boe" class="@((ViewBag.ActiveTab == "BOE") ? "open" : string.Empty)"><a href="#boe" onclick="top.location='@ViewBag.BOEUrl';">genBOE</a></li> }
+                
+                @if (!string.IsNullOrEmpty(ViewBag.PPUrl))
+                { <li id="nav-propricer"><a href="@ViewBag.PPUrl" target="_blank">PRO<strong>PRICER</strong></a></li> }
+                
+                @if (!string.IsNullOrEmpty(ViewBag.RDMUrl))
+                { <li id="nav-rdm" class="@((ViewBag.ActiveTab == "RDM") ? "open" : string.Empty)"><a href="#rdm" onclick="top.location='@ViewBag.RDMUrl';">RDM</a></li> }
+                
+                @if (!string.IsNullOrEmpty(ViewBag.RDSBUrl))
+                { <li id="nav-rdsb" class="@((ViewBag.ActiveTab == "RDSB") ? "open" : string.Empty)"><a href="#rdsb" onclick="top.location='@ViewBag.RDSBUrl';">RDSB</a></li> }
+
+                @if (!string.IsNullOrEmpty(ViewBag.RPMUrl))
+                { <li id="nav-rpm" class="@((ViewBag.ActiveTab == "RPM") ? "open" : string.Empty)"><a href="#rpm" onclick="top.location='@ViewBag.RPMUrl';">RPM</a></li> }
+
+                @if (!string.IsNullOrEmpty(ViewBag.eEPPUrl))
+                { <li id="nav-eepp" class="@((ViewBag.ActiveTab == "eEPP") ? "open" : string.Empty)"><a href="#eEPP" onclick="top.location='@ViewBag.eEPPUrl';">eEPP</a></li> }
+
+                @if (ViewBag.IsAdmin)
+                { <li id="nav-admin"><a href="#admin" onclick="top.location='@ViewBag.AdminUrl';">IES Admin Area</a></li> }
             </ul>
         </div>
     </div>
