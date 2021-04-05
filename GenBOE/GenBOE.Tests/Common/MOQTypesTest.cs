@@ -154,11 +154,11 @@ namespace GenBOE.Tests.Common
 
             // SSC Types
             Assert.AreEqual(MOQType.Historical, MOQType.SSCActual.MapToNew(wsCreationDate));
-            Assert.AreEqual(MOQType.AnalogousRelationships, MOQType.SSCAnalogySimilarTo.MapToNew(wsCreationDate));
+            Assert.AreEqual(MOQType.Historical, MOQType.SSCAnalogySimilarTo.MapToNew(wsCreationDate));
             Assert.AreEqual(MOQType.SME, MOQType.SSCBottomUp.MapToNew(wsCreationDate));
             Assert.AreEqual(MOQType.CostEstimatingRelationships, MOQType.SSCCostEstimatingRelationships.MapToNew(wsCreationDate));
             Assert.AreEqual(MOQType.ParametricEstimates, MOQType.SSCDataDrivenCostModelsEquations.MapToNew(wsCreationDate));
-            Assert.AreEqual(MOQType.CostEstimatingRelationships, MOQType.SSCHistoricalExperienceFactor.MapToNew(wsCreationDate));
+            Assert.AreEqual(MOQType.AnalogousRelationships, MOQType.SSCHistoricalExperienceFactor.MapToNew(wsCreationDate));
             Assert.AreEqual(MOQType.ParametricEstimates, MOQType.SSCLaborStandardsAndRealizationPerformanceFactors.MapToNew(wsCreationDate));
             Assert.AreEqual(MOQType.LOE, MOQType.SSCLevelOfEffortSupport.MapToNew(wsCreationDate));
             Assert.AreEqual(MOQType.NonLabor, MOQType.SSCQuote.MapToNew(wsCreationDate));
