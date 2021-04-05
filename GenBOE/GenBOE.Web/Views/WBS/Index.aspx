@@ -257,7 +257,6 @@
                         <div class="important">
                             IMPORTANT: Do not change the column headings and genBOE WBS IDs in the file.  The genBOE WBS IDs in column A are unique identifiers for WBS elements.  One will be automatically generated for each new WBS element once the import is complete.  Column A has been hidden to prevent accidental edits.  These need to be unchanged for the import to work.
                         </div>
-                        <div class="important">If you delete a WBS element from the file, the WBS element will not be removed in genBOE.  To delete a WBS element, it must be deleted directly in genBOE to properly remove all associations.</div>
                         <div class="important">If you delete a CLIN for a WBS that a BOE exists for, the CLIN will not be deleted.</div>
                     </div>
                      <div class="step four">
