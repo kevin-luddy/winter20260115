@@ -50,9 +50,9 @@
             <tbody>
             <% foreach (var item in this.Model) { %>  
                 <tr pkid="<%: item.ReportID %>" reportName="<%: item.ReportName %>" ssrsUrl="<%: item.ReportUrl %>">
-                    <td class="reportLink"><input class="wordIcon" type="checkbox" value="word" /></td>
-                    <td class="reportLink"><input class="excelIcon" type="checkbox" value="excel" /></td>
-                    <td class="reportLink"><input class="pdfIcon" type="checkbox" value="pdf" /></td>
+                    <td class="reportLink"><input class="wordIcon" type="checkbox" value="<%:Constants.WORD_SSRS_FORMAT %>" /></td>
+                    <td class="reportLink"><input class="excelIcon" type="checkbox" value="<%:Constants.EXCEL_SSRS_FORMAT %>" /></td>
+                    <td class="reportLink"><input class="pdfIcon" type="checkbox" value="<%:Constants.PDF_SSRS_FORMAT %>" /></td>
                     <td><span title="<%: item.ReportName %>"><%: item.ReportName %></span></td>
                     <td title="<%: item.Description %>"><span><%: item.Description %></span></td>
                     <td><span><a name="AdditionalReports-ViewButton">View</a></span></td>
