@@ -137,13 +137,13 @@ namespace GenBOE.DataBridge.Common
                      new Role[] { Role.WorkspaceAdmin },
                      SecurityAuthorization.CreateReadUpdateDelete);
 
-            // Manage CLINs, Manage WBS, Manage BOEs
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs },
+            // Manage CLINs, Manage WBS, Manage BOEs, Bulk Role Assign
+            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs, SecurityPage.BulkRoleAssign },
                      new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working },
                      new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
                      SecurityAuthorization.CreateReadUpdateDelete);
 
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs },
+            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs, SecurityPage.BulkRoleAssign },
                      new WorkspaceState[] { WorkspaceState.Locked, WorkspaceState.Complete, WorkspaceState.Closed },
                      new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
                      SecurityAuthorization.Read);
@@ -785,6 +785,7 @@ namespace GenBOE.DataBridge.Common
                 case SecurityPage.WorkspaceRestore:
                 case SecurityPage.GettingStartedMenuOption:
                 case SecurityPage.RTETemplates:
+                case SecurityPage.BulkRoleAssign:
                     wsRequired = true;
                     boeRequired = false;
                     break;

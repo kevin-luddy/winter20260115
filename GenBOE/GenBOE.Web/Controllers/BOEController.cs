@@ -243,6 +243,12 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
+        // TODO - delete/move to new controller
+        public virtual ActionResult BulkRoleAssignIndex(string workspace)
+        {
+            return GetMasterView(WebConstants.VIEW_BULK_ROLE_ASSIGN, workspace);
+        }
+
         #endregion Views
 
         #region Partial Views

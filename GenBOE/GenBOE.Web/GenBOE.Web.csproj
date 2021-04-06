@@ -562,6 +562,7 @@
     <Content Include="Content\images\ui-icons_888888_256x240.png" />
     <Content Include="Content\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Resources\css\tinymce.css" />
+    <Content Include="Resources\js\angular\bulkRoleAssignController.js" />
     <Content Include="Resources\js\angular\rteTemplatesController.js" />
     <Content Include="Resources\js\angular\boeBulkSubmitController.js" />
     <Content Include="Resources\js\angular\createWorkspaceController.js" />
@@ -874,6 +875,8 @@
     <Content Include="Views\BOE\BOEOffload.ascx" />
     <Content Include="Views\BOE\BOEProjectMapSearchResults.ascx" />
     <Content Include="Views\BOE\BOEProjectMapSearch.ascx" />
+    <Content Include="Views\BOE\BulkRoleAssign.aspx" />
+    <Content Include="Views\BulkRoleAssign\Index.aspx" />
     <Content Include="Views\BOE\ManageBOEImportVerification.ascx" />
     <Content Include="Views\BOE\BOECopyConflicts.ascx" />
     <Content Include="Views\BOE\DuplicateTaskDialog.ascx" />

@@ -158,7 +158,6 @@ namespace GenBOE.ActionLogic.ModelView
                             securityPage = SecurityPage.ManageWBS,
                             routeName = WebConstants.ROUTE_WORKSPACE
                         },
-
                         new GenBOEMasterMenuItemModelView {
                             linkText = "Manage BOEs",
                             actionName = WebConstants.ACTION_INDEX,
@@ -166,6 +165,17 @@ namespace GenBOE.ActionLogic.ModelView
                             routeValues = new { workspace = ws.Shortname },
                             htmlAttributes = new { name = "ManageBOEsMenuLink" },
                             securityPage = SecurityPage.ManageBOEs,
+                            routeName = WebConstants.ROUTE_WORKSPACE
+                        },
+                        new GenBOEMasterMenuItemModelView {
+                            linkText = "Bulk Role Assign",
+                            //actionName = WebConstants.ACTION_INDEX,
+                            actionName = WebConstants.ACTION_BULK_ROLE_ASSIGNMENT_INDEX,
+                            // controllerName = WebConstants.CONTROLLER_BULK_ROLE_ASSIGN,
+                            controllerName = WebConstants.CONTROLLER_BOE,
+                            routeValues = new { workspace = ws.Shortname },
+                            htmlAttributes = new { name = "BulkRoleAssignMenuLink" },
+                            securityPage = SecurityPage.BulkRoleAssign,
                             routeName = WebConstants.ROUTE_WORKSPACE
                         },
                          new GenBOEMasterMenuItemModelView {
@@ -239,7 +249,7 @@ namespace GenBOE.ActionLogic.ModelView
             // RTE Templates are only going to be used in standard workspace types
             if (!ws.IsProjectMapWorkspace)
             {
-                menuItems.First(x => x.linkText == "Workspace Administration").subMenuItems.Insert(6, new GenBOEMasterMenuItemModelView
+                menuItems.First(x => x.linkText == "Workspace Administration").subMenuItems.Insert(7, new GenBOEMasterMenuItemModelView
                 {
                     linkText = "Manage Custom RTE Templates",
                     actionName = WebConstants.ACTION_INDEX,
@@ -255,7 +265,7 @@ namespace GenBOE.ActionLogic.ModelView
             if (securityInformation.IsAllowedProPricerAccess(securityInformation.ActiveUserNTID) || ws.IsProjectMapWorkspace)
             {
                 // If the user has access to ProPricer Export, add the menu item in the 9th spot in the Workspace Admin Menu
-                menuItems.First(x => x.linkText == "Workspace Administration").subMenuItems.Insert(8, new GenBOEMasterMenuItemModelView
+                menuItems.First(x => x.linkText == "Workspace Administration").subMenuItems.Insert(9, new GenBOEMasterMenuItemModelView
                 {
                     linkText = "Export to ProPricer",
                     actionName = WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER_INDEX,

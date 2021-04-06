@@ -126,6 +126,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string CONTROLLER_BOE_HISTORY = "BOEHistory";
         public static readonly string CONTROLLER_BOE_LABOR = "BOELabor";
         public static readonly string CONTROLLER_BOE_FORMS = "BOEForm";
+        public static readonly string CONTROLLER_BULK_ROLE_ASSIGN = "BulkRoleAssign";
         public static readonly string CONTROLLER_CLIN = "CLIN";
         public static readonly string CONTROLLER_DATESHIFT = "DateShift";
         public static readonly string CONTROLLER_GENBOE = "GenBOE";
@@ -151,6 +152,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_SAVE_SYSTEM_EMAIL_PREFERENCES = "SaveSystemEmailPreferences";
         public static readonly string ACTION_INDEX = "Index";
         public static readonly string ACTION_EDIT_BOE_INDEX = "EditBOEIndex";
+        public static readonly string ACTION_BULK_ROLE_ASSIGNMENT_INDEX = "BulkRoleAssignIndex";
         public static readonly string ACTION_INVALID_REQUEST = "InvalidRequest";
         public static readonly string ACTION_MANAGE_PERMISSIONS = "ManagePermissions";
         public static readonly string ACTION_ABOUT_USER = "AboutUser";
@@ -784,8 +786,9 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string VIEW_MANAGE_BOE_IMPORT_VERIFICATION = "ManageBOEImportVerification";
         public static readonly string VIEW_WORKSPACE_WORKOFFLINE_IMPORT_VERIFICATION = "WorkspaceHomeWorkofflineImportVerification";
         public static readonly string VIEW_TASK_ELEMENT_GRID = "TaskElementGrid";
-        public static readonly string VIEW_SUMMARY_TASK_ELEMENT_GRID = "SummaryTaskElementGrid"; 
+        public static readonly string VIEW_SUMMARY_TASK_ELEMENT_GRID = "SummaryTaskElementGrid";
         public static readonly string VIEW_BOE_COPY_CONFLICTS = "BOECopyConflicts";
+        public static readonly string VIEW_BULK_ROLE_ASSIGN = "BulkRoleAssign";
 
         public static readonly string VIEW_LABOR_TASK = "LaborTask";
         public static readonly string VIEW_LABOR_TASK_STATIC = "LaborTaskStatic";
