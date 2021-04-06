@@ -131,6 +131,8 @@
                 </a>
                 {{moqType.SelectedMOQTypeText}}
             </div>
+            <button data-ng-if="!ActualReadOnly() && moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-disabled="disableHistoricalComparativeConvertButtons()" data-ng-click="convertMoqType(moqType, <%:(int)MOQType.Historical%>)" class="ies moqTypesButton" type="button">Convert to Historical</button>
+            <button data-ng-if="!ActualReadOnly() && moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-disabled="disableHistoricalComparativeConvertButtons()" data-ng-click="convertMoqType(moqType, <%:(int)MOQType.Comparative%>)" class="ies moqTypesButton" type="button">Convert to Comparative</button>
             <button data-ng-if="!ActualReadOnly()" data-ng-click="RemoveMoqType(moqType)" class="ies-danger moqTypesButton" type="button">Delete MOQ Type</button>
         </div>
         <div class="moqTaskBasedOn" data-ng-show="!moqType.collapsed">
