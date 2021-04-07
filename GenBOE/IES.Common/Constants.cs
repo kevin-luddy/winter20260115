@@ -743,5 +743,11 @@ namespace IES.Common
             /// </summary>
             public const string SIKORSKY_CF_ADDDELETE = "Add / Delete";
         }
+
+        public const string WORD_SSRS_FORMAT = "WORDOPENXML";
+
+        public const string EXCEL_SSRS_FORMAT = "EXCELOPENXML";
+
+        public const string PDF_SSRS_FORMAT = "pdf";
     }
 }
