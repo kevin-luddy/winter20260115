@@ -254,6 +254,28 @@ namespace GenBOE.Web.Controllers
         #region Partial Views
 
         /// <summary>
+        /// View for Bulk Role Assign
+        /// </summary>
+        /// <param name="workspace">Workspace Id</param>
+        public ViewResult BulkRoleAssign(string workspace)
+        {
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+            // Initialize Action
+            Stopwatch sw = InitializeAction(_log, "BulkRoleAssign", SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+
+            // Perform Action
+            BulkBoeRoleMV data = this._ControllerLogic.GetBulkRoleData(ws) ;
+
+            ViewResult toReturn = View(WebConstants.VIEW_BULK_ROLE_ASSIGN, data);
+
+            // Finalize Action
+            FinalizeAction(_log, "BulkRoleAssign", sw);
+
+            return toReturn;
+        }
+
+        /// <summary>
         /// Populates the Duplicate Task Element dialog with task data for a BOE
         /// </summary>
         /// <param name="workspace">Current Workspace</param>
@@ -828,6 +850,26 @@ namespace GenBOE.Web.Controllers
             // Finalize Action
             FinalizeAction(_log, "DisplayExportBOEButton", sw);
             return toReturn;
+        }
+
+        /// <summary>
+        /// Save Bulk Boe Roles
+        /// </summary>
+        /// <param name="workspace">Workspace</param>
+        /// <param name="boeRolesToSave">Boe Roles to Save</param>
+        public JsonResult SaveBoeBulkRoles(string workspace,ICollection<BoeRoleMV> boeRolesToSave)
+        {
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+            Stopwatch sw = InitializeAction(_log, "SaveBoeBulkRoles", SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+
+            IList<string> errorMessages = this._ControllerLogic.SaveBoeBulkRoles(ws, boeRolesToSave);
+
+            JsonResult response = Json(new { Status = true, ErrorMessages = errorMessages });
+
+            FinalizeAction(_log, "SaveBoeBulkRoles", sw);
+
+            return response;
         }
 
         #endregion

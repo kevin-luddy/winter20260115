@@ -356,7 +356,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_SAVE_COPY_OF_PROJECTMAP = "SaveCopyOfProjectMap"; 
         public static readonly string ACTION_COPY_MOQ_EQUATION = "CopyMoqEquation";
         public static readonly string ACTION_DELETE_ALL_BOE_TASK_ELEMENTS = "DeleteAllBOETaskElements";
-
+        public static readonly string ACTION_SAVE_BULK_ROLE_ASSIGN = "SaveBoeBulkRoles";
 
         // BOEComments Controller
         public static readonly string ACTION_DISPLAY_BOE_COMMENTS = "DisplayBOEComments";
@@ -968,6 +968,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string VIEW_WORKSPACE_UPDATE_RESOURCE_RATES = "UpdateWorkspaceResourceRateDialog";
         public static readonly string VIEW_DUPLICATE_TASK_DIALOG = "DuplicateTaskDialog";
         public static readonly string VIEW_WORKSPACE_EMAIL_PREFERENCES = "WorkspaceEmailPreferences";
+        public static readonly string VIEW_BULK_ROLE_ASSIGN = "BulkRoleAssign";
 
         #endregion Workspace
 
