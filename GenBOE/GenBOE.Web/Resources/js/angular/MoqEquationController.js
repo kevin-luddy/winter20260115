@@ -68,6 +68,16 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
         $scope.model.SelectedMoqTypes.push(selectedItem);
         $scope.InitializeRteFields(selectedItem.SelectedMOQType, true);
+
+        // If both Comparative and Historical exist and one is being added here, 
+        // Initialize RTE fields for the other to prevent an issue that occurs after
+        // converting one and then adding the other
+        if (selectedItem.SelectedMOQType == $scope.model.HistoricalMoqType && $scope.model.SelectedMoqTypes.find(x => x.SelectedMOQType == $scope.model.ComparativeMoqType)) {
+            $scope.InitializeRteFields($scope.model.ComparativeMoqType, true);
+        } else if (selectedItem.SelectedMOQType == $scope.model.ComparativeMoqType && $scope.model.SelectedMoqTypes.find(x => x.SelectedMOQType == $scope.model.HistoricalMoqType)) {
+            $scope.InitializeRteFields($scope.model.HistoricalMoqType, true);
+        }
+
         selectedItem.TableData = [];
         $scope.CreateNewTable(selectedItem.TableData);
         $scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
@@ -105,7 +115,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
             }
         }, 1);
     }
-
 
     // Actual Read Only, including reversal
     $scope.ActualReadOnly = function()
@@ -395,7 +404,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
         moqType.SelectedMOQType = convertToMoq.SelectedMOQType;
         moqType.SelectedMOQTypeText = convertToMoq.SelectedMOQTypeText;
-        
+
         MOQEquationFieldWidget.setDirty();
     }
 
