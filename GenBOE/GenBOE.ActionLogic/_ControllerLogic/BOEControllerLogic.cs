@@ -72,6 +72,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private IRteTemplateDataLoader rteTemplateDataLoader;
         private readonly IMoqTypeDataLoader moqTypeDataLoader;
 
+        private readonly Logger log = new Logger(typeof(BOEControllerLogic));
+
         #region Protected Properties and Constructor
 
         /// <summary>
@@ -2984,6 +2986,51 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
 
             return updateDateLong;
+        }
+
+        /// <summary>
+        /// Get Bulk Role Data
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <returns>Data for Bulk Role Modification</returns>
+        public BulkBoeRoleMV GetBulkRoleData(FullWorkspace ws)
+        {
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
+
+            BulkBoeRoleMV result = new BulkBoeRoleMV() 
+            { 
+                WorkspaceId = ws.Id,
+                PotentialAuthors = null,
+                PotentialWsApprovers = null,
+                PotentialWsSubAuthors = null,
+                BoeRoleDetails = null
+            };
+
+            return result;
+        }
+
+        /// <summary>
+        /// Save Bulk Boe Roles
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="boeRolesToSave">Boe Roles to Save</param>
+        /// <returns>Error messages, if any</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "WIP")]
+        public IList<string> SaveBoeBulkRoles(FullWorkspace ws, ICollection<BoeRoleMV> boeRolesToSave)
+        {
+            IList<string> errorMessages = new List<string>();
+
+            try
+            {
+
+            }
+            catch(Exception ex)
+            {
+                this.log.Error(ex);
+                errorMessages.Add("Bulk save failed.");
+            }
+
+            return errorMessages;
         }
     }
 }
