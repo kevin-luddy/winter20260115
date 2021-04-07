@@ -261,7 +261,7 @@ namespace GenBOE.Web.Controllers
             // Perform Action
             BulkBoeRoleMV data = this._ControllerLogic.GetBulkRoleData(ws) ;
 
-            ViewResult toReturn = View(WebConstants.VIEW_DUPLICATE_TASK_DIALOG, data);
+            ViewResult toReturn = View(WebConstants.VIEW_BULK_ROLE_ASSIGN, data);
 
             // Finalize Action
             FinalizeAction(_log, "BulkRoleAssign", sw);
