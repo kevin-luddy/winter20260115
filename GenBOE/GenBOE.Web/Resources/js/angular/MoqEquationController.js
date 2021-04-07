@@ -392,9 +392,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     $scope.disableHistoricalComparativeConvertButtons = function () {
         // Disable the buttons if task already has both Historical and Comparative MOQ Types
         return $scope.model.SelectedMoqTypes.some(function (moqType) {
-            return moqType.SelectedMOQType == "5001"; // Historical
+            return moqType.SelectedMOQType == $scope.model.HistoricalMoqType;
         }) && $scope.model.SelectedMoqTypes.some(function (moqType) {
-            return moqType.SelectedMOQType == "5002"; // Comparative
+            return moqType.SelectedMOQType == $scope.model.ComparativeMoqType;
         });
     }
 
