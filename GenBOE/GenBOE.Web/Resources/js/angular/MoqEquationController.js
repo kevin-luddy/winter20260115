@@ -389,7 +389,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         tableData.PoPEndYear = undefined;
     }
 
-    // TODO - UI position of button, convert then add other breaks RTE fields of first
     $scope.disableHistoricalComparativeConvertButtons = function () {
         // Disable the buttons if task already has both Historical and Comparative MOQ Types
         return $scope.model.SelectedMoqTypes.some(function (moqType) {
