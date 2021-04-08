@@ -38,18 +38,13 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
         /// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
+        /// <param name="ws">Full WS</param>
         /// <param name="components">List of selected components</param>
         /// <param name="Response">the web response object to write the file back to for user download</param>
         /// <param name="fileNameToDisplayToBrowser">the file name to display to the browser in the download dialog</param>
         /// <param name="exportFormat">Export file info</param>
-        void ExportBOEToWordFile(
-            BOEExportInputs exportInputs,
-            ICollection<BOEExportModelView> boeExportModelViews,
-            ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
-            ICollection<BoeCustomReportComponent> components,
-            HttpResponseBase Response,
-            string fileNameToDisplayToBrowser,
-            WorkspaceExportFormatDTO exportFormat);
+        void ExportBOEToWordFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+            FullWorkspace ws, ICollection<BoeCustomReportComponent> components, HttpResponseBase Response, string fileNameToDisplayToBrowser, WorkspaceExportFormatDTO exportFormat);
 
         /// <summary>
         /// Export data about the given BOE into a pre-formatted Word template and return the file path of
@@ -58,10 +53,11 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
         /// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
+        /// <param name="ws">Full WS</param>
         /// <param name="components">List of selected components</param>
         /// <param name="returnStream">Output stream</param>
         /// <param name="exportFormat">Export file info</param>
-        void ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+        void ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace ws,
             ICollection<BoeCustomReportComponent> components, Stream returnStream, WorkspaceExportFormatDTO exportFormat);
     }
 }

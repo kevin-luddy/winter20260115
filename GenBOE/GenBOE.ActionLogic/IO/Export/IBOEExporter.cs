@@ -41,18 +41,14 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
         /// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
+        /// <param name="ws">Full WS</param>
         /// <param name="response">the web response object to write the file back to for user download</param>
         /// <param name="fileNameToDisplayToBrowser">the file name to display to the browser in the download dialog</param>
         /// <param name="templatePath">Physical path of the template to copy and populate.</param>
         /// <param name="templateType">Template type</param>
-        void ExportBOEToWordFile(
-            BOEExportInputs exportInputs,
-            ICollection<BOEExportModelView> boeExportModelViews,
-            ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
-            HttpResponseBase response,
-            string fileNameToDisplayToBrowser,
-            string templatePath,
-            ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet);
+        /// <exception cref="System.ArgumentNullException">Response</exception>
+        void ExportBOEToWordFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+            FullWorkspace ws, HttpResponseBase response, string fileNameToDisplayToBrowser, string templatePath, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet);
 
         /// <summary>
         /// Export data about the given BOE into a pre-formatted Word template and return the file path of
@@ -61,16 +57,14 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
         /// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
+        /// <param name="ws">Full WS</param>
         /// <param name="templatePath">Physical path of the template to copy and populate.</param>
         /// <param name="returnStream">Output stream</param>
         /// <param name="templateType">Template type</param>
-        void ExportBOEToWordFileStream(
-            BOEExportInputs exportInputs,
-            ICollection<BOEExportModelView> boeExportModelViews,
-            ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
-            string templatePath,
-            Stream returnStream,
-            ExcelReportTemplateType templateType);
+        /// <exception cref="System.ArgumentNullException">workspace</exception>
+        /// <exception cref="GeneralAppException"></exception>
+        void ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+            FullWorkspace ws, string templatePath, Stream returnStream, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet);
 
         /// <summary>
         /// Exports the BOEs to Excel.

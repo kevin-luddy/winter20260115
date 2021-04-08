@@ -4431,11 +4431,11 @@ namespace GenBOE.Web.Controllers
 
                         if (isCustomExport)
                         {
-                            this.boeCustomExporter.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, null, allBoesStream, wsExportFormatDTO);
+                            this.boeCustomExporter.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, ws, null, allBoesStream, wsExportFormatDTO);
                         }
                         else
                         {
-                            this.boeExporter.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, wsExportFormatDTO.PhysicalFilePathCache,
+                            this.boeExporter.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, ws, wsExportFormatDTO.PhysicalFilePathCache,
                                 allBoesStream, wsExportFormatDTO.ExportFormat.TemplateType);
                         }
 

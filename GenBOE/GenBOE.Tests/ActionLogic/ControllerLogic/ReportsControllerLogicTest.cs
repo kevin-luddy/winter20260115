@@ -218,8 +218,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             boeSummary.Verify(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[0], It.IsAny<BOEExportInputs>(), isSubContractorUser), Times.Exactly(3));
             boeSummary.Verify(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[1], It.IsAny<BOEExportInputs>(), isSubContractorUser), Times.Never());
             boeSummary.Verify(x => x.GetBOESummaryGridModelViews(boes.ToCollection()[2], It.IsAny<BOEExportInputs>(), isSubContractorUser), Times.Exactly(3));
-            boeCustomExporter.Verify(x => x.ExportBOEToWordFile(It.IsAny<BOEExportInputs>(), boeModelCollection, listOfBOEs, selectedComponents, httpResponse.Object, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO), Times.Exactly(2));
-            boeCustomExporter.Verify(x => x.ExportBOEToWordFile(It.IsAny<BOEExportInputs>(), sortedBoeModelCollection, listOfBOEs, selectedComponents, httpResponse.Object, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO), Times.Exactly(1));
+            boeCustomExporter.Verify(x => x.ExportBOEToWordFile(It.IsAny<BOEExportInputs>(), boeModelCollection, listOfBOEs, workspace, selectedComponents, httpResponse.Object, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO), Times.Exactly(2));
+            boeCustomExporter.Verify(x => x.ExportBOEToWordFile(It.IsAny<BOEExportInputs>(), sortedBoeModelCollection, listOfBOEs, workspace, selectedComponents, httpResponse.Object, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO), Times.Exactly(1));
         }
 
         /// <summary>
@@ -303,7 +303,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             BOEExportInputs exportInputs = new BOEExportInputs(workspace.Boes.ToList(), workspace.Boes.ToList(), workspace.TaskElements.ToList(), workspace);
 
             boeExporter.Setup(x => x.ConvertBoeDTOsToExportMVs(It.IsAny<BOEExportInputs>())).Returns(new List<BOEExportModelView> { boeModel1, boeModel3 });
-            boeExporter.Setup(x => x.ExportBOEToWordFile(exportInputs, boeModelCollection, listOfBOEs, httpResponse.Object, string.Format("genBOEExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO.PhysicalFilePathCache, wsExportFormatDTO.ExportFormat.TemplateType));
+            boeExporter.Setup(x => x.ExportBOEToWordFile(exportInputs, boeModelCollection, listOfBOEs, workspace, httpResponse.Object, string.Format("genBOEExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO.PhysicalFilePathCache, wsExportFormatDTO.ExportFormat.TemplateType));
 
             ReportsControllerLogic sut = CreateSut();
 
@@ -320,7 +320,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             sut.ExportAllBOEsReport(workspace, selectedComponents, httpResponse.Object, isCustomExport, wsExportFormat, exportInputs, boeModelCollection, boeSummaryGridModelViews);
 
             //Assert
-            boeExporter.Verify(x => x.ExportBOEToWordFile(exportInputs, boeModelCollection, listOfBOEs, httpResponse.Object, string.Format("genBOEExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO.PhysicalFilePathCache, wsExportFormatDTO.ExportFormat.TemplateType), Times.Once());
+            boeExporter.Verify(x => x.ExportBOEToWordFile(exportInputs, boeModelCollection, listOfBOEs, workspace, httpResponse.Object, string.Format("genBOEExport-{0}.docx", workspace.WorkspaceName), wsExportFormatDTO.PhysicalFilePathCache, wsExportFormatDTO.ExportFormat.TemplateType), Times.Once());
         }
 
         /// <summary>
