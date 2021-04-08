@@ -263,9 +263,9 @@
                    </table>
                 </div>
                 <div class="tableDataButtons">
-                    <button data-ng-if="!ActualReadOnly()" style="margin-bottom:9px;" data-ng-if="$index == 0" data-ng-click="CreateNewTable(moqType.TableData)" type="button" class="ies-action moqTypesButton">Add Table Data</button>
-                    <button data-ng-if="!ActualReadOnly()" data-ng-disabled="moqType.TableData.length <= 1" data-ng-if="$index == 0" data-ng-click="displayReOrderMoqTablesDialog(moqType)" class="moqTypesButton ies-blue" type="button">Sort MOQ Tables</button>
-                    <button data-ng-if="!ActualReadOnly()" style="display:block;" data-ng-if="moqType.TableData.length > 1" data-ng-click="RemoveTable(tableData, moqType.TableData)" type="button" class="ies-danger moqTypesButton">Delete Table Data</button>
+                    <button data-ng-if="!ActualReadOnly() && $index == 0" style="margin-bottom:9px;" data-ng-click="CreateNewTable(moqType.TableData)" type="button" class="ies-action moqTypesButton">Add Table Data</button>
+                    <button data-ng-if="!ActualReadOnly() && $index == 0" data-ng-disabled="moqType.TableData.length <= 1" data-ng-click="displayReOrderMoqTablesDialog(moqType)" class="moqTypesButton ies-blue" type="button">Sort MOQ Tables</button>
+                    <button data-ng-if="!ActualReadOnly() && moqType.TableData.length > 1" style="display:block;" data-ng-click="RemoveTable(tableData, moqType.TableData)" type="button" class="ies-danger moqTypesButton">Delete Table Data</button>
                 </div>
                 <hr />
             </div>
