@@ -15,6 +15,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using System.Text;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ZoneTravel;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
@@ -257,7 +258,9 @@ namespace GenBOE.ActionLogic.IO.Export
                 Wbses = workspace.WbsElements.ToCollection(),
                 PPInputsToExport = proPricerExport,
                 TaskElements = workspace.TaskElements.ToCollection(),
-                IsProjectMapWorkspace = workspace.IsProjectMapWorkspace
+                IsProjectMapWorkspace = workspace.IsProjectMapWorkspace,
+                IsUsingTemplateBOE = workspace.UsingTemplateBOE,
+                MoqTypes = workspace.MoqTypeSelections.ToCollection()
             };
 
             if (offloading)
@@ -956,7 +959,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                 newTaskRow.Append(DOUBLE_QUOTE).Append((wbs == null ? "" : wbs.WbsTitle.RemoveCarriageReturns())).Append(DOUBLE_QUOTE).Append(END_FIELD);
                                 break;
                             case ProPricerField_Task.MOQType:
-                                newTaskRow.Append(DOUBLE_QUOTE).Append(boeTask.MOQType.GetDescription()).Append(DOUBLE_QUOTE).Append(END_FIELD);
+                                newTaskRow.Append(DOUBLE_QUOTE).Append(GetTaskMoqType(wsLevelData, boeTask)).Append(DOUBLE_QUOTE).Append(END_FIELD);
                                 break;
                             case ProPricerField_Task.PerformingOrg:
                             case ProPricerField_Task.ProjMapCostCenter:
@@ -1093,6 +1096,36 @@ namespace GenBOE.ActionLogic.IO.Export
             }
 
             return laborTypeIdToProPricerIdMappings;
+        }
+
+        /// <summary>
+        /// Gets Task's MOQ Type for the export
+        /// </summary>
+        /// <param name="wsLevelData">WS Level Data</param>
+        /// <param name="boeTask">Boe Task</param>
+        /// <returns>MOQ Type String</returns>
+        private static string GetTaskMoqType(WsLevelInputsForExport wsLevelData, BoeTaskElementDTO boeTask)
+        {
+            string moqType = string.Empty;
+
+            if (wsLevelData.IsUsingTemplateBOE)
+            {
+                List<MoqTypeSelection> moqTypes = wsLevelData.MoqTypes.Where(z => z.TaskId == boeTask.Id).ToList();
+                if (moqTypes.Count == 1)
+                {
+                    moqType = moqTypes.First().SelectedMOQTypeText;
+                }
+                else if (moqTypes.Count > 1)
+                {
+                    moqType = "Multiple";
+                }
+            }
+            else
+            {
+                moqType = boeTask.MOQType.GetDescription();
+            }
+
+            return moqType;
         }
 
         /// <summary>
@@ -2401,6 +2434,16 @@ namespace GenBOE.ActionLogic.IO.Export
         public bool IsProjectMapWorkspace { get; set; }
 
         /// <summary>
+        /// Is the WS using MOQ Templates?
+        /// </summary>
+        public bool IsUsingTemplateBOE { get; set; }
+
+        /// <summary>
+        /// Moq Types
+        /// </summary>
+        public ICollection<MoqTypeSelection> MoqTypes { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="WsLevelInputsForExport"/> class.
         /// </summary>
         public WsLevelInputsForExport()
@@ -2414,6 +2457,7 @@ namespace GenBOE.ActionLogic.IO.Export
             this.PpDataToBeExported = new PpDataReadyForExport();
             this.ItemCounters = new CountersForProPricer();
             this.TaskElements = new Collection<BoeTaskElementDTO>();
+            this.MoqTypes = new Collection<MoqTypeSelection>();
         }
     }
 
