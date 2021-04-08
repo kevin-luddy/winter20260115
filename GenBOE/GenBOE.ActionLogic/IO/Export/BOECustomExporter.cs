@@ -95,17 +95,17 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
         /// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
+        /// <param name="ws">Full WS</param>
         /// <param name="components">List of selected components</param>
         /// <param name="Response">the web response object to write the file back to for user download</param>
         /// <param name="fileNameToDisplayToBrowser">the file name to display to the browser in the download dialog</param>
         /// <param name="exportFormat">Export file info</param>
         public void ExportBOEToWordFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
-            ICollection<BoeCustomReportComponent> components, HttpResponseBase Response, string fileNameToDisplayToBrowser, 
-            WorkspaceExportFormatDTO exportFormat)
+            FullWorkspace ws, ICollection<BoeCustomReportComponent> components, HttpResponseBase Response, string fileNameToDisplayToBrowser, WorkspaceExportFormatDTO exportFormat)
         {
             if (Response == null) { throw new ArgumentNullException(nameof(Response)); }
             if (exportFormat == null) { throw new ArgumentNullException(nameof(exportFormat)); }
-
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
 
             // setup the response correctly with BufferOutput since this is going to be awhile...
             Response.ContentType = BOEExporterConstants.ContentType_DOCX;
@@ -113,7 +113,7 @@ namespace GenBOE.ActionLogic.IO.Export
             Response.BufferOutput = true;  // why would we want this buffered?
             Response.AppendHeader(BOEExporterConstants.CONTENT_HEADER_NAME, string.Format(BOEExporterConstants.CONTENT_HEADER_FORMAT_STRING, fileNameToDisplayToBrowser));
 
-            this.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, components, Response.OutputStream, exportFormat);
+            this.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, ws, components, Response.OutputStream, exportFormat);
         }
 
         /// <summary>
@@ -123,10 +123,11 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
         /// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
+        /// <param name="ws">Full WS</param>
         /// <param name="components">List of selected components</param>
         /// <param name="returnStream">Output stream</param>
         /// <param name="exportFormat">Export file info</param>
-        public void ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+        public void ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace ws,
             ICollection<BoeCustomReportComponent> components, Stream returnStream, WorkspaceExportFormatDTO exportFormat)
         {
             if (exportInputs == null)
@@ -149,7 +150,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     // template file is on disk
                     this.Export(exportFormat.PhysicalFilePathCache, (document) =>
                     {
-                        this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, boeSummaryGridModelViews, components, ref counters);
+                        this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, ws, boeSummaryGridModelViews, components, ref counters);
                     }, returnStream);
                 }
                 else
@@ -157,7 +158,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     // template file content was serialized to the DB (i.e. this template was DERIVED from the master)
                     this.Export(exportFormat.FileData, (document) =>
                     {
-                        this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, boeSummaryGridModelViews, components, ref counters);
+                        this.PopulateDataExportBOE(exportInputs, document, boeExportModelViews, ws, boeSummaryGridModelViews, components, ref counters);
                     }, returnStream);
                 }
             }
@@ -358,10 +359,11 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="document">The document.</param>
         /// <param name="boeExportModelViews">The boe export model views.</param>
+        /// <param name="ws">Full WS</param>
         /// <param name="boeSummaryGridModelViews">The boe summary grid model views.</param>
         /// <param name="selectedComponents">The selected components.</param>
         /// <param name="counters">The counters.</param>
-        private void PopulateDataExportBOE(BOEExportInputs exportInputs, WordprocessingDocument document, ICollection<BOEExportModelView> boeExportModelViews,
+        private void PopulateDataExportBOE(BOEExportInputs exportInputs, WordprocessingDocument document, ICollection<BOEExportModelView> boeExportModelViews, FullWorkspace ws,
             ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, ICollection<BoeCustomReportComponent> selectedComponents, ref ChunkCounter counters)
         {
             /*
@@ -484,7 +486,7 @@ namespace GenBOE.ActionLogic.IO.Export
                         List<LaborRollupByDateNew> nonLaborRollupCostData = this.ProcessNonLaborCostSummaryTable(boe, boeContainer, boeExportModelView, selectedComponents, exportInputs);
                         this.ProcessLaborAndNonLaborCostSummaryTable(boeContainer, laborTasksRollupCostData, nonLaborRollupCostData, selectedComponents);
 
-                        this.ProcessAllTaskElements(document, boeContainer, taskElementCollection, boe, exportInputs, boeExportModelView, resourcesByElementOfCost, selectedComponents, containsBoeHeaderInTask, ref counters);
+                        this.ProcessAllTaskElements(document, boeContainer, taskElementCollection, ws, boe, exportInputs, boeExportModelView, resourcesByElementOfCost, selectedComponents, containsBoeHeaderInTask, ref counters);
 
                         this.ProcessBOEHoursSummaryTable(boeContainer, boeExportModelView, selectedComponents);
                         this.ProcessBOECostSummaryTable(boeContainer, exportInputs.Workspace, travelResources, boeExportModelView, selectedComponents);
@@ -1340,6 +1342,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="document">The document.</param>
         /// <param name="boeContainer">The boe container.</param>
         /// <param name="taskElementCollection">The task element collection.</param>
+        /// <param name="ws">Full WS</param>
         /// <param name="exportBoe">The export boe.</param>
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelView">The boe export model view.</param>
@@ -1348,7 +1351,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="containsBoeHeaderInTask">if set to <c>true</c> [contains boe header in task].</param>
         /// <param name="counters">The counters.</param>
         [SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        private void ProcessAllTaskElements(WordprocessingDocument document, SdtElement boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, BoeDTO exportBoe, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView,
+        private void ProcessAllTaskElements(WordprocessingDocument document, SdtElement boeContainer, ICollection<BoeTaskElementDTO> taskElementCollection, FullWorkspace ws, BoeDTO exportBoe, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView,
             IDictionary<ElementOfCostType, Collection<ResourceDTO>> resourcesByElementOfCost, ICollection<BoeCustomReportComponent> selectedComponents, bool containsBoeHeaderInTask, ref ChunkCounter counters)
         {
             Collection<ResourceDTO> travelResources = resourcesByElementOfCost[ElementOfCostType.Travel];
@@ -1433,7 +1436,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     {
                         this.ProcessTaskHeaderWithBoeData(containerElement, selectedComponents, boeExportModelView);
                     }
-                    this.ProcessLaborTaskHeader(document, containerElement, laborTaskElement, selectedComponents, exportInputs, ref counters);
+                    this.ProcessLaborTaskHeader(document, containerElement, laborTaskElement, selectedComponents, exportInputs, ws, ref counters);
                     this.ProcessLaborTaskCustomFields(containerElement, laborTaskElement, exportInputs.CustomFields, selectedComponents, exportInputs);
                     this.ProcessLaborTaskResourceTable(containerElement, laborTaskElement, allLaborTaskElements, exportInputs.CustomFields, selectedComponents, exportInputs);
                     this.ProcessLaborTaskHoursRollupTable(containerElement, laborTaskElement, allLaborTaskElements, selectedComponents, exportInputs, boeExportModelView, true);
@@ -2172,10 +2175,10 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <summary>
         /// Gets the MOQ equation display text for an export
         /// </summary>
-        /// TODO:SJR - This was copied verbatim from BOEExporter 31741
         /// <param name="taskElement">The task element containing the data needed to construct the moq equation display</param>
+        /// <param name="ws">Full Workspace</param>
         /// <returns>The MOQ equation display text</returns>
-        private String GetMOQEquationToDisplay(BOEExportTaskElement taskElement)
+        private String GetMOQEquationToDisplay(BOEExportTaskElement taskElement, FullWorkspace ws)
         {
             string MoqToDisplay = String.Empty;
 
@@ -2212,7 +2215,10 @@ namespace GenBOE.ActionLogic.IO.Export
                                 // need to pull the string from the equation instead of what is stored in the DB since variable names are always stored in UpperCase
                                 string variableNameWithCorrectCap = s.ToString().Trim(new char[] { '<', '>' });
 
-                                var ordinaryVariableValue = taskvar.OrdinaryVariableValue;
+                                DataClassForSumOfBOEsCalculation sumOfBoesCalculator = new DataClassForSumOfBOEsCalculation();
+                                sumOfBoesCalculator.FillData(new List<OrdinaryVariableDto>() { taskvar }, null, ws);
+                                decimal ordinaryVariableValue = this._VariableSelectBOEtoSumCalculation.GetTaskVarLabelTotal(taskvar, sumOfBoesCalculator);
+
                                 MoqToDisplay = MoqToDisplay.Replace(MoqToDisplay, Regex.Replace(MoqToDisplay, variableReplacementRegex, Convert.ToDecimal(ordinaryVariableValue).ToString("0.#######") + " " + variableNameWithCorrectCap, RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT));
                             }
                         }
@@ -2327,10 +2333,11 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="laborTaskElement">The labor task element.</param>
         /// <param name="selectedComponents">The selected components.</param>
         /// <param name="exportInputs">The export inputs.</param>
+        /// <param name="ws">Full WS</param>
         /// <param name="counters">The counters.</param>
         /// <exception cref="System.ArgumentNullException">selectedComponents</exception>
         private void ProcessLaborTaskHeader(WordprocessingDocument document, SdtElement containerElement, BOEExportTaskElement laborTaskElement,
-            ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, ref ChunkCounter counters)
+            ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, FullWorkspace ws, ref ChunkCounter counters)
         {
             if (selectedComponents == null)
             {
@@ -2396,7 +2403,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQEquation))
             {
-                string moqEquationForDisplay = this.GetMOQEquationToDisplay(laborTaskElement);
+                string moqEquationForDisplay = this.GetMOQEquationToDisplay(laborTaskElement, ws);
                 laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_MOQEquation, moqEquationForDisplay);
                 //need to calculate MOQ total for cases where MOQ and total hours are not equal
                 laborTaskHeaderDataValueMappings.Add(BOEExporterConstants.FieldName_MOQEquationResult, this.GetMOQTotal(laborTaskElement, exportInputs));

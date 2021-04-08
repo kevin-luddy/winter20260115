@@ -398,13 +398,14 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
         /// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
+        /// <param name="ws">Full WS</param>
         /// <param name="response">the web response object to write the file back to for user download</param>
         /// <param name="fileNameToDisplayToBrowser">the file name to display to the browser in the download dialog</param>
         /// <param name="templatePath">Physical path of the template to copy and populate.</param>
         /// <param name="templateType">Template type</param>
         /// <exception cref="System.ArgumentNullException">Response</exception>
         public void ExportBOEToWordFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
-            HttpResponseBase response, string fileNameToDisplayToBrowser, string templatePath, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
+            FullWorkspace ws, HttpResponseBase response, string fileNameToDisplayToBrowser, string templatePath, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
         {
             if (response == null)
             {
@@ -417,7 +418,7 @@ namespace GenBOE.ActionLogic.IO.Export
             response.BufferOutput = true;
             response.AppendHeader("Content-Disposition", $"attachment;filename={fileNameToDisplayToBrowser}");
 
-            this.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, templatePath, response.OutputStream, templateType);
+            this.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, ws, templatePath, response.OutputStream, templateType);
         }
 
         /// <summary>
@@ -443,13 +444,14 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
         /// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
+        /// <param name="ws">Full WS</param>
         /// <param name="templatePath">Physical path of the template to copy and populate.</param>
         /// <param name="returnStream">Output stream</param>
         /// <param name="templateType">Template type</param>
         /// <exception cref="System.ArgumentNullException">workspace</exception>
         /// <exception cref="GeneralAppException"></exception>
         public void ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
-            string templatePath, Stream returnStream, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
+            FullWorkspace ws, string templatePath, Stream returnStream, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
         {
             if (exportInputs == null)
             {
@@ -463,7 +465,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 // template file is on disk
                 this.Export(templatePath, (document) =>
                 {
-                    this.PopulateDataExportBOE(exportInputs, boeExportModelViews, boeSummaryGridModelViews, templateType, document);
+                    this.PopulateDataExportBOE(exportInputs, boeExportModelViews, boeSummaryGridModelViews, ws, templateType, document);
                 }, returnStream);
             }
         }
@@ -474,10 +476,11 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
         /// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
+        /// <param name="ws">Full WS</param>
         /// <param name="templateType">Template type</param>
         /// <param name="document">The openxml word document.</param>
         [SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals"), SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
-        private void PopulateDataExportBOE(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+        private void PopulateDataExportBOE(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace ws,
             ExcelReportTemplateType templateType, WordprocessingDocument document)
         {
             ChunkCounter counters = new ChunkCounter();
@@ -769,7 +772,7 @@ namespace GenBOE.ActionLogic.IO.Export
                                 if (taskContainer != null)
                                 {
                                     // Populate the task-specific items in the template
-                                    this.PopulateTaskElementContent(exportInputs, taskContainer, taskElement, document.MainDocumentPart, wsHasMoqRteTemplate, ref counters);
+                                    this.PopulateTaskElementContent(exportInputs, taskContainer, taskElement, ws, document.MainDocumentPart, wsHasMoqRteTemplate, ref counters);
 
                                     switch (taskElement.ElementType)
                                     {
@@ -4632,10 +4635,11 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="taskContainer">The task container.</param>
         /// <param name="taskElement">The task element whose data will populate the template</param>
+        /// <param name="ws">Full WS</param>
         /// <param name="mainPart">Main Document Part</param>
         /// <param name="wsHasMoqRteTemplate">Whether there are any MOQ RTE Templates</param>
         /// <param name="counters">The counters.</param>
-        private void PopulateTaskElementContent(BOEExportInputs exportInputs, BOEExportTaskContainer taskContainer, BOEExportTaskElement taskElement,
+        private void PopulateTaskElementContent(BOEExportInputs exportInputs, BOEExportTaskContainer taskContainer, BOEExportTaskElement taskElement, FullWorkspace ws,
             MainDocumentPart mainPart, bool wsHasMoqRteTemplate, ref ChunkCounter counters)
         {
             // Iterate over all SdtElements in the document
@@ -4760,7 +4764,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     {
                         if (taskElement.ElementType == BOEExportTaskElementType.Labor)
                         {
-                            SetElementText(element, this.GetMOQEquationToDisplay(taskElement, exportInputs));
+                            SetElementText(element, this.GetMOQEquationToDisplay(taskElement, exportInputs, ws));
                             alias.RemoveIt();
                         }
                         else
@@ -6744,9 +6748,10 @@ namespace GenBOE.ActionLogic.IO.Export
         /// </summary>
         /// <param name="taskElement">The task element containing the data needed to construct the moq equation display</param>
         /// <param name="exportInputs">The export's inputs.</param>
+        /// <param name="ws">Full WS</param>
         /// <returns>The MOQ equation display text.</returns>
         /// <exception cref="System.ArgumentException">Workspace does not contain the expect boe with id of " + taskElement.BoeID - ws</exception>
-        private string GetMOQEquationToDisplay(BOEExportTaskElement taskElement, BOEExportInputs exportInputs)
+        private string GetMOQEquationToDisplay(BOEExportTaskElement taskElement, BOEExportInputs exportInputs, FullWorkspace ws)
         {
             string moqToDisplay = string.Empty;
             BoeDTO boeForTaskElement = exportInputs.AllWorkspaceBoes.FirstOrDefault(x => x.Id == taskElement.BoeID);
@@ -6788,7 +6793,10 @@ namespace GenBOE.ActionLogic.IO.Export
                                 // need to pull the string from the equation instead of what is stored in the DB since variable names are always stored in UpperCase
                                 string variableNameWithCorrectCap = s.ToString().Trim(new char[] { '<', '>' });
 
-                                var ordinaryVariableValue = taskvar.OrdinaryVariableValue;
+                                DataClassForSumOfBOEsCalculation sumOfBoesCalculator = new DataClassForSumOfBOEsCalculation();
+                                sumOfBoesCalculator.FillData(new List<OrdinaryVariableDto>() { taskvar }, null, ws);
+                                decimal ordinaryVariableValue = this.variableSelectBOEtoSumCalculation.GetTaskVarLabelTotal(taskvar, sumOfBoesCalculator);
+
                                 moqToDisplay = moqToDisplay.Replace(moqToDisplay, Regex.Replace(moqToDisplay, variableReplacementRegex, Convert.ToDecimal(ordinaryVariableValue).ToString("0.#######") + " " + variableNameWithCorrectCap, RegexOptions.IgnoreCase, Constants.REGEX_TIMEOUT));
                             }
                         }
