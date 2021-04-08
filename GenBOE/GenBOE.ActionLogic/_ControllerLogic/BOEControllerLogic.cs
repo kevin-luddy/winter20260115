@@ -676,7 +676,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="inUserIds">UserIDs for the select list</param>
         /// <param name="isSubcontractors">True if the list is for subcontractors</param>
         /// <returns>select list for authors/approvers</returns>
-        private Collection<SelectListItem> _CreateSelectList(Collection<int> inUserIds, bool isSubcontractors)
+        private Collection<SelectListItem> CreateUserSelectList(Collection<int> inUserIds, bool isSubcontractors)
         {
             if (inUserIds == null)
             {
@@ -2336,19 +2336,19 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IEnumerable<int> approverIDs = (from p in potentialBOEPermissions
                                where p.Role == Role.Approver
                                select p.ETIUserId).Distinct();
-            Collection<SelectListItem> approvers = this._CreateSelectList(approverIDs.ToCollection(), false);
+            Collection<SelectListItem> approvers = this.CreateUserSelectList(approverIDs.ToCollection(), false);
 
             // Author Names
             IEnumerable<int> authorIDs = (from p in potentialBOEPermissions
                              where p.Role == Role.Author
                              select p.ETIUserId).Distinct();
-            Collection<SelectListItem> authors = this._CreateSelectList(authorIDs.ToCollection(), false);
+            Collection<SelectListItem> authors = this.CreateUserSelectList(authorIDs.ToCollection(), false);
 
             // Subcontractor Author Names
             IEnumerable<int> subcontractorAuthorIDs = (from p in potentialBOEPermissions
                                           where p.Role == Role.SubcontractorAuthor
                                           select p.ETIUserId).Distinct();
-            Collection<SelectListItem> subcontractorAuthors = this._CreateSelectList(subcontractorAuthorIDs.ToCollection(), true);
+            Collection<SelectListItem> subcontractorAuthors = this.CreateUserSelectList(subcontractorAuthorIDs.ToCollection(), true);
 
             theModelView.DefaultStartDate = workspace.ContractStartDate.ToString("MM/yyyy");
             theModelView.DefaultEndDate = workspace.ContractEndDate.ToString("MM/yyyy");
@@ -2997,13 +2997,27 @@ namespace GenBOE.ActionLogic.ControllerLogic
         {
             _ = ws ?? throw new ArgumentNullException(nameof(ws));
 
+            Collection<PermissionsDTO> wsBoePermissions = this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id);
+            HashSet<PermissionsDTO> boeRoles = new HashSet<PermissionsDTO>(this.PermissionsLoader.GetBOEPermissions(ws.Boes.Select(x => x.Id).ToList()));
+
             BulkBoeRoleMV result = new BulkBoeRoleMV() 
             { 
                 WorkspaceId = ws.Id,
-                PotentialAuthors = null,
-                PotentialWsApprovers = null,
-                PotentialWsSubAuthors = null,
-                BoeRoleDetails = null
+                PotentialAuthors = this.CreateUserSelectList(wsBoePermissions.Where(x => x.Role == Role.Author).Select(x => x.ETIUserId).Distinct().ToCollection(), false),
+                PotentialWsApprovers = this.CreateUserSelectList(wsBoePermissions.Where(x => x.Role == Role.Approver).Select(x => x.ETIUserId).Distinct().ToCollection(), false),
+                PotentialWsSubAuthors = this.CreateUserSelectList(wsBoePermissions.Where(x => x.Role == Role.SubcontractorAuthor).Select(x => x.ETIUserId).Distinct().ToCollection(), true),
+                BoeRoleDetails = ws.Boes.Select(boe => new BoeRoleMV()
+                {
+                    BoeId = boe.Id,
+                    AssignedAuthors = boeRoles.Where(x => x.Role == Role.Author && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToList(),
+                    AssignedApprovers = boeRoles.Where(x => x.Role == Role.Approver && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToList(),
+                    AssignedSubAuthors = boeRoles.Where(x => x.Role == Role.SubcontractorAuthor && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToList(),
+                    BoeTitle = boe.Title,
+                    State = boe.State,
+                    IsMultiWbsClin = boe.IsMultiClinWbs,
+                    ClinString = ws.Clins.FirstOrDefault(x => x.Id == boe.CLINID)?.ClinString ?? CommonConstants.Unassigned_CLIN_Display_Text,
+                    WbsString = ws.WbsElements.FirstOrDefault(x => x.Id == boe.WBSID)?.WbsString ?? CommonConstants.Unassigned_WBS_Display_Text
+                }).ToList()
             };
 
             return result;
