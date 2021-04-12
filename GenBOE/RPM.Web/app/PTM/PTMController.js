@@ -50,12 +50,13 @@
         scale: 'week',
         sortMode: undefined,
         sideMode: 'Table',
-        columns: ['model.Title', 'model.Lead', 'model.PA', 'model.EVal | currency : \'\' : 1'],
-        columnsHeaders: { 'model.Title': 'Proposal', 'model.Lead': 'Lead Estimator', 'model.PA': 'PA', 'model.EVal | currency : \'\' : 1': 'Value ($M)' },
-        columnsClasses: { 'model.Title': 'gantt-column-name', 'model.Lead': 'gantt-column-pricer', 'model.PA': 'gantt-column-pa', 'model.EVal | currency : \'\' : 1': 'gantt-column-value' },
+        columns: ['model.Title', 'model.Lead', 'model.Cost', 'model.PA', 'model.EVal | currency : \'\' : 1'],
+        columnsHeaders: { 'model.Title': 'Proposal', 'model.Lead': 'Lead Estimator', 'model.Cost': 'Cost Volume Lead', 'model.PA': 'PA', 'model.EVal | currency : \'\' : 1': 'Value ($M)' },
+        columnsClasses: { 'model.Title': 'gantt-column-name', 'model.Lead': 'gantt-column-pricer', 'model.Cost': 'gantt-column-pa', 'model.PA': 'gantt-column-pa', 'model.EVal | currency : \'\' : 1': 'gantt-column-value' },
         columnsHeaderContents: {
             'model.Title': '<span class="gantt-column-sortable-header" ng-click="toggleSort(\'Title\')">{{getHeader()}}</span>',
             'model.Lead': '<span class="gantt-column-sortable-header" ng-click="toggleSort(\'Lead\')">{{getHeader()}}</span>',
+            'model.Cost': '<span class="gantt-column-sortable-header" ng-click="toggleSort(\'Cost\')">{{getHeader()}}</span>',
             'model.PA': '<span class="gantt-column-sortable-header" ng-click="toggleSort(\'PA\')">{{getHeader()}}</span>',
             'model.EVal | currency : \'\' : 1': '<span class="gantt-column-sortable-header" ng-click="toggleSort(\'EVal\')">{{getHeader()}}</span>'
         },
