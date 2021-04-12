@@ -251,12 +251,5 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// </summary>
         [Required(ErrorMessage = "A selection for Template BOE is required.")]
         public bool UsingTemplateBoe { get; set; }
-
-        /// <summary>
-        /// Get/Set CreateSikorskyCustomFields flag (only for new RMS workspaces, not copies)
-        /// RMS Only, always false for SSC
-        /// </summary>
-        [Required(ErrorMessage = "Create Sikorsky Custom Fields is required.")]
-        public bool CreateSikorskyCustomFields { get; set; }
     }
 }

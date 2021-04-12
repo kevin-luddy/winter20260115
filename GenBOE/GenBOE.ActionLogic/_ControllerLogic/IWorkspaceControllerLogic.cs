@@ -307,6 +307,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
         void CreateSikorskyCustomFields(int wsId);
 
         /// <summary>
+        /// Creates the default ProPricer Custom FIelds
+        /// </summary>
+        /// <param name="wsId">Workspace ID</param>
+        void CreateProPricerCustomFields(int wsId);
+
+        /// <summary>
         /// Gets MOQ Type data when WS is changing from not using BOE Templates to using BOE Templates. This data still needs to be saved later
         /// </summary>
         /// <param name="ws">Workspace which is being saved</param>

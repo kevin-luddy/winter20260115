@@ -744,6 +744,48 @@ namespace IES.Common
             public const string SIKORSKY_CF_ADDDELETE = "Add / Delete";
         }
 
+        /// <summary>
+        /// Constants used by ProPricer Custom Fields
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public static class ProPricerCFConstants
+        {
+            /// <summary>
+            /// Function Custom Field Name
+            /// </summary>
+            public const string PROPRICER_CF_FUNCTION = "Function";
+
+            /// <summary>
+            /// SOW Custom Field Name
+            /// </summary>
+            public const string PROPRICER_CF_SOW = "SOW";
+
+            /// <summary>
+            /// Location Custom Field Name
+            /// </summary>
+            public const string PROPRICER_CF_LOCATION = "Location";
+
+            /// <summary>
+            /// Class of Cost Custom Field Name
+            /// </summary>
+            public const string PROPRICER_CF_CLASSOFCOST = "Class Of Cost";
+
+            /// <summary>
+            /// Project Custom Field Name
+            /// </summary>
+            public const string PROPRICER_CF_PROJECT = "Project";
+
+            /// <summary>
+            /// Field-A Custom Field Name
+            /// </summary>
+            public const string PROPRICER_CF_FIELDA = "Field-A";
+
+            /// <summary>
+            /// Field-B Custom Field Name
+            /// </summary>
+            public const string PROPRICER_CF_FIELDB = "Field-B";
+        }
+
         public const string WORD_SSRS_FORMAT = "WORDOPENXML";
 
         public const string EXCEL_SSRS_FORMAT = "EXCELOPENXML";
