@@ -14,7 +14,6 @@
             $('a[name=ManageCLINsMenuLink]').parent().addClass('display-none');
             $('a[name=ManageWBSMenuLink]').parent().addClass('display-none');
             $('a[name=ManageBOEsMenuLink]').parent().addClass('display-none');
-            $('a[name=BulkRoleAssignMenuLink]').parent().addClass('display-none');
             $('a[name=FindReplaceBOEMenuLink]').parent().addClass('display-none');
             $('a[name=BOEBulkSubmitMenuLink]').parent().addClass('display-none');
             // Hidden for now since there is only BOE Bulk Submit in the Menu 
