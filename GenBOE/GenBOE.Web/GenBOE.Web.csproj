@@ -875,8 +875,6 @@
     <Content Include="Views\BOE\BOEOffload.ascx" />
     <Content Include="Views\BOE\BOEProjectMapSearchResults.ascx" />
     <Content Include="Views\BOE\BOEProjectMapSearch.ascx" />
-    <Content Include="Views\BOE\BulkRoleAssign.aspx" />
-    <Content Include="Views\BulkRoleAssign\Index.aspx" />
     <Content Include="Views\BOE\ManageBOEImportVerification.ascx" />
     <Content Include="Views\BOE\BOECopyConflicts.ascx" />
     <Content Include="Views\BOE\DuplicateTaskDialog.ascx" />

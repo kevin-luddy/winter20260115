@@ -167,17 +167,6 @@ namespace GenBOE.ActionLogic.ModelView
                             securityPage = SecurityPage.ManageBOEs,
                             routeName = WebConstants.ROUTE_WORKSPACE
                         },
-                        new GenBOEMasterMenuItemModelView {
-                            linkText = "Bulk Role Assign",
-                            //actionName = WebConstants.ACTION_INDEX,
-                            actionName = WebConstants.ACTION_BULK_ROLE_ASSIGNMENT_INDEX,
-                            // controllerName = WebConstants.CONTROLLER_BULK_ROLE_ASSIGN,
-                            controllerName = WebConstants.CONTROLLER_BOE,
-                            routeValues = new { workspace = ws.Shortname },
-                            htmlAttributes = new { name = "BulkRoleAssignMenuLink" },
-                            securityPage = SecurityPage.BulkRoleAssign,
-                            routeName = WebConstants.ROUTE_WORKSPACE
-                        },
                          new GenBOEMasterMenuItemModelView {
                             linkText = "Manage INL Forms",
                             actionName = WebConstants.ACTION_INDEX,

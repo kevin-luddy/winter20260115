@@ -243,37 +243,9 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        // TODO - delete/move to new controller
-        public virtual ActionResult BulkRoleAssignIndex(string workspace)
-        {
-            return GetMasterView(WebConstants.VIEW_BULK_ROLE_ASSIGN, workspace);
-        }
-
         #endregion Views
 
         #region Partial Views
-
-        /// <summary>
-        /// View for Bulk Role Assign
-        /// </summary>
-        /// <param name="workspace">Workspace Id</param>
-        public ViewResult BulkRoleAssign(string workspace)
-        {
-            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-            // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "BulkRoleAssign", SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
-
-            // Perform Action
-            BulkBoeRoleMV data = this._ControllerLogic.GetBulkRoleData(ws) ;
-
-            ViewResult toReturn = View(WebConstants.VIEW_BULK_ROLE_ASSIGN, data);
-
-            // Finalize Action
-            FinalizeAction(_log, "BulkRoleAssign", sw);
-
-            return toReturn;
-        }
 
         /// <summary>
         /// Populates the Duplicate Task Element dialog with task data for a BOE
