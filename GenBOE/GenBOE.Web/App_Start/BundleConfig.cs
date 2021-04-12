@@ -178,10 +178,6 @@ namespace GenBOE.Web
                 "~/Resources/js/angular/manageBOEController.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/bulkRoleAssign").Include(
-                "~/Resources/js/angular/bulkRoleAssignController.js"
-                ));
-
             bundles.Add(new ScriptBundle("~/bundles/manageTask").Include(
                 "~/Scripts/bignumber.js",
                 "~/Resources/js/angular/UtilityService.js",

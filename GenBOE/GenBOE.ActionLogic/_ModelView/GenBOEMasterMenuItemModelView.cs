@@ -238,7 +238,7 @@ namespace GenBOE.ActionLogic.ModelView
             // RTE Templates are only going to be used in standard workspace types
             if (!ws.IsProjectMapWorkspace)
             {
-                menuItems.First(x => x.linkText == "Workspace Administration").subMenuItems.Insert(7, new GenBOEMasterMenuItemModelView
+                menuItems.First(x => x.linkText == "Workspace Administration").subMenuItems.Insert(6, new GenBOEMasterMenuItemModelView
                 {
                     linkText = "Manage Custom RTE Templates",
                     actionName = WebConstants.ACTION_INDEX,
@@ -254,7 +254,7 @@ namespace GenBOE.ActionLogic.ModelView
             if (securityInformation.IsAllowedProPricerAccess(securityInformation.ActiveUserNTID) || ws.IsProjectMapWorkspace)
             {
                 // If the user has access to ProPricer Export, add the menu item in the 9th spot in the Workspace Admin Menu
-                menuItems.First(x => x.linkText == "Workspace Administration").subMenuItems.Insert(9, new GenBOEMasterMenuItemModelView
+                menuItems.First(x => x.linkText == "Workspace Administration").subMenuItems.Insert(8, new GenBOEMasterMenuItemModelView
                 {
                     linkText = "Export to ProPricer",
                     actionName = WebConstants.ACTION_DISPLAY_EXPORT_TO_PROPRICER_INDEX,

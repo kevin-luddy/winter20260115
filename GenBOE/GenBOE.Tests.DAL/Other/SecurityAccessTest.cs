@@ -176,7 +176,7 @@ namespace GenBOE.Tests.DAL.Other
                 new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working };
 
             SecurityPage[] pages =
-                new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs, SecurityPage.BulkRoleAssign };
+                new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs };
 
             _TestExecution(roles, // roles
                            pages, // pages
@@ -197,7 +197,7 @@ namespace GenBOE.Tests.DAL.Other
                 new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working };
 
             SecurityPage[] pages =
-                new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs, SecurityPage.BulkRoleAssign };
+                new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs };
 
             _TestExecution(roles, // roles
                            pages, // pages
@@ -218,7 +218,7 @@ namespace GenBOE.Tests.DAL.Other
                                                 WorkspaceState.Complete, WorkspaceState.Closed };
 
             SecurityPage[] pages =
-                new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs, SecurityPage.BulkRoleAssign };
+                new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs };
 
             _TestExecution(roles, // roles
                            pages, // pages
@@ -240,7 +240,7 @@ namespace GenBOE.Tests.DAL.Other
                                                 WorkspaceState.Complete, WorkspaceState.Closed };
 
             SecurityPage[] pages =
-                new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs, SecurityPage.BulkRoleAssign };
+                new SecurityPage[] { SecurityPage.ManageCLINs, SecurityPage.ManageWBS, SecurityPage.ManageBOEs };
 
             _TestExecution(roles, // roles
                            pages, // pages

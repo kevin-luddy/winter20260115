@@ -562,7 +562,6 @@
     <Content Include="Content\images\ui-icons_888888_256x240.png" />
     <Content Include="Content\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Resources\css\tinymce.css" />
-    <Content Include="Resources\js\angular\bulkRoleAssignController.js" />
     <Content Include="Resources\js\angular\rteTemplatesController.js" />
     <Content Include="Resources\js\angular\boeBulkSubmitController.js" />
     <Content Include="Resources\js\angular\createWorkspaceController.js" />

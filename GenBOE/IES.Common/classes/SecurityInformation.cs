@@ -131,8 +131,7 @@ namespace IES.Common
         WorkspaceRestore = 71,
         GettingStartedMenuOption = 72,
         WorkspaceSettingsShareAndAllowSearch = 73,
-        RTETemplates = 74,
-        BulkRoleAssign = 75
+        RTETemplates = 74
     }
 
     /// <summary>
