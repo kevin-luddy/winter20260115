@@ -8,8 +8,16 @@
         status: 'Status',
         updateDate: 'UpdateDate',
         hours: 'TotalHours',
-        cost: 'TotalCost'
+        cost: 'TotalCost',
+        subauthors: 'SubcontractorOrderName'
     };
+    $scope.bulkAssignColumns = {
+        wbs: 'WbsDisplayName',
+        clin: 'ClinDisplayName',
+        authors: 'AuthorOrderName',
+        approvers: 'ApproverOrderName',
+        subauthors: 'SubcontractorOrderName'
+    }
     $scope.errors = [];
     $scope.modalErrors = [];
     $scope.gridModel = { containsOCI: true};
@@ -53,6 +61,7 @@
     };
 
     $scope.data = [];
+    $scope.bulkAssignData = [];
     $scope.isLoading = true;
     $scope.isBulkAssign = false;
     
@@ -179,6 +188,9 @@
         $scope.filter.status.forEach(function (item) {
             item.checked = false;
         });
+        $scope.filter.subauthor.forEach(function (item) {
+            item.checked = false;
+        })
 
         $scope.currentPage = 0;
         if (!noClose) {
@@ -612,6 +624,8 @@
             return $scope.filter.author;
         } else if ($scope.filter.filterColumn === $scope.columns.status) {
             return $scope.filter.status;
+        } else if ($scope.filter.filterColumn === $scope.columns.subauthors) {
+            return $scope.filter.subauthor;
         }
     };
 
@@ -629,6 +643,8 @@
                 selectedFilters.author = currentSet;
             } else if ($scope.filter.filterColumn === $scope.columns.status) {
                 selectedFilters.status = currentSet;
+            } else if ($scope.filter.filterColumn === $scope.columns.subauthors) {
+                selectedFilters.subauthor = currentSet;
             }
         }
     };
@@ -923,6 +939,7 @@
     var loadBOEs = function () {
         $scope.isLoading = true;
         $scope.data = [];
+        $scope.bulkAssignData = [];
         $scope.errors = [];
 
         return $http({
@@ -968,6 +985,7 @@
 
             response.data.PotentialSubcontractorAuthors.forEach(function (sub) {
                 $scope.filter.author[sub.Text] = { display: sub.Text, value: sub.Text, checked: false };
+                $scope.filter.subauthor[sub.Text] = { display: sub.Text, value: sub.Text, checked: false };
             });
 
             response.data.PotentialApprovers.forEach(function (approver) {
@@ -1002,8 +1020,9 @@
             $scope.filter.author = convertToArray($scope.filter.author);
             $scope.filter.approver = convertToArray($scope.filter.approver);
             $scope.filter.status = convertToArray($scope.filter.status);
+            $scope.filter.subauthor = convertToArray($scope.filter.subauthor);
 
-            $scope.data = response.data.BoeResults;
+            $scope.data = $scope.bulkAssignData = response.data.BoeResults;
 
             $scope.LoadFilterFromCookies();
 

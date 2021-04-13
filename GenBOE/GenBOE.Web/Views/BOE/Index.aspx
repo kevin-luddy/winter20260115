@@ -118,8 +118,50 @@
                     </table>
                 </div>
             </div>
-            <div class="form-row" data-ng-show="isBulkAssign">
-                <%--BULK ASSIGN--%>
+            <div id="BulkAssign" class="form-row" data-ng-show="isBulkAssign">
+                <div class="bulk-assign-selects">
+                    <%--BULK ASSIGN--%>                
+                </div>
+                <div id="noteMessage" class="noteMessage" data-ng-show="isDataFiltered()">You are viewing filtered data. <a data-ng-click="clearAllFilters()">Click here</a> to reset all your filters.</div>
+                <div class="bulk-assign-grid">
+                    <table id="BulkAssignGrid" class="grid readonly" width="962">
+                        <thead>
+                            <tr>
+                                <th class="wbs-title bootstrap">
+                                    <a data-ng-click="changeSorting(bulkAssignColumns.wbs)" data-ng-class="{ 'bold': boldSort(bulkAssignColumns.wbs) }">WBS</a>
+                                    <a data-ng-click="toggleFilter(columns.wbs)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
+                                </th>
+                                <th class="clin-title bootstrap">
+                                    <a data-ng-click="changeSorting(bulkAssignColumns.clin)" data-ng-class="{ 'bold': boldSort(bulkAssignColumns.clin) }">CLIN</a>
+                                    <a data-ng-click="toggleFilter(columns.clin)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
+                                </th>
+                                <th class="author-select bootstrap">
+                                    <a data-ng-click="changeSorting(bulkAssignColumns.authors)" data-ng-class="{ 'bold': boldSort(bulkAssignColumns.authors) }">Authors</a>
+                                    <a data-ng-click="toggleFilter(columns.authors)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
+                                </th>
+                                <th class="approver-select bootstrap">
+                                    <a data-ng-click="changeSorting(bulkAssignColumns.approvers)" data-ng-class="{ 'bold': boldSort(bulkAssignColumns.approvers) }">Approvers</a>
+                                    <a data-ng-click="toggleFilter(columns.approvers)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
+                                </th>
+                                <th class="sub-author-select bootstrap">
+                                    <a data-ng-click="changeSorting(bulkAssignColumns.subauthors)" data-ng-class="{ 'bold': boldSort(bulkAssignColumns.subauthors) }">Subcontract Authors</a>
+                                    <a data-ng-click="toggleFilter(columns.subauthors)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-ng-show="isLoading"><td colspan="5"><div class="loader"></div></td></tr>
+                            <tr data-ng-show="!isLoading && (data.length === 0 || filteredResults.length === 0)"><td colspan="5"><div class="empty-grid-text">There are no BOEs for the Workspace.</div></td></tr>
+                            <tr pkid="{{::boe.BoeID}}" data-ng-repeat="boe in (filteredResults = (bulkAssignData | filter:filterBOEs | orderBy:predicate:reverse))">
+                                <td>{{::boe.WbsDisplayName}}</td>
+                                <td>{{::boe.ClinDisplayName}}</td>
+                                <td><div data-ng-repeat="authorName in boe.AuthorsDisplayNames">{{authorName}}</div></td>
+                                <td><div data-ng-repeat="approver in boe.ApproversDisplayNames">{{approver}}</div></td>
+                                <td><div data-ng-repeat="subAuthorName in boe.SubcontractorAuthors">{{subAuthorName}}</div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="buttons">
                     <button id="BulkAssign-VerifyButton" type="button" class="ies-action" data-ng-disabled="dialog.disableBulkAssignButtons" data-ng-click="verifyBulkAssign()">Verify</button>
                     <button id="BulkAssign-SaveButton" type="button" class="ies-action" data-ng-disabled="dialog.disableBulkAssignButtons" data-ng-click="saveBulkAssign()">Save</button>
