@@ -29,6 +29,12 @@ GO
 
 EXEC dbo.CopyCannedResponsesPAR 14;
 GO
+
+UPDATE new
+	SET YesOnly = old.YesOnly
+	FROM PARChecklistContent new INNER JOIN PARChecklistContent old ON old.QuestionNumber = new.QuestionNumber
+	WHERE new.ProposalAdequacyReviewID = 14 AND old.ProposalAdequacyReviewID = 13 - 1;
+GO
 /*
 	4/13/2021 [Dusan] - BOEJ-5211: Canned Responses not a part of the new revision;
 
