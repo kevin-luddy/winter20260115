@@ -54,6 +54,7 @@
 
     $scope.data = [];
     $scope.isLoading = true;
+    $scope.isBulkAssign = false;
     
     $scope.predicate = [$scope.columns.wbs, $scope.columns.clin, $scope.columns.authors];
     $scope.reverse = false;
@@ -1019,4 +1020,19 @@
 
     // load the main data
     loadBOEs();
+
+    /*
+     * ******* NOTE *********
+     * Bulk Assign Functions
+     * **********************
+     */
+
+    $scope.openBulkAssign = function () {
+        $scope.isBulkAssign = true;
+    };
+
+    $scope.cancelBulkAssign = function () {
+        // TODO - clear data
+        $scope.isBulkAssign = false;
+    }
 }]);

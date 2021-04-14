@@ -784,7 +784,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string VIEW_MANAGE_BOE_IMPORT_VERIFICATION = "ManageBOEImportVerification";
         public static readonly string VIEW_WORKSPACE_WORKOFFLINE_IMPORT_VERIFICATION = "WorkspaceHomeWorkofflineImportVerification";
         public static readonly string VIEW_TASK_ELEMENT_GRID = "TaskElementGrid";
-        public static readonly string VIEW_SUMMARY_TASK_ELEMENT_GRID = "SummaryTaskElementGrid"; 
+        public static readonly string VIEW_SUMMARY_TASK_ELEMENT_GRID = "SummaryTaskElementGrid";
         public static readonly string VIEW_BOE_COPY_CONFLICTS = "BOECopyConflicts";
 
         public static readonly string VIEW_LABOR_TASK = "LaborTask";
@@ -965,7 +965,6 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string VIEW_WORKSPACE_UPDATE_RESOURCE_RATES = "UpdateWorkspaceResourceRateDialog";
         public static readonly string VIEW_DUPLICATE_TASK_DIALOG = "DuplicateTaskDialog";
         public static readonly string VIEW_WORKSPACE_EMAIL_PREFERENCES = "WorkspaceEmailPreferences";
-        public static readonly string VIEW_BULK_ROLE_ASSIGN = "BulkRoleAssign";
 
         #endregion Workspace
 

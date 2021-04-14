@@ -158,7 +158,6 @@ namespace GenBOE.ActionLogic.ModelView
                             securityPage = SecurityPage.ManageWBS,
                             routeName = WebConstants.ROUTE_WORKSPACE
                         },
-
                         new GenBOEMasterMenuItemModelView {
                             linkText = "Manage BOEs",
                             actionName = WebConstants.ACTION_INDEX,

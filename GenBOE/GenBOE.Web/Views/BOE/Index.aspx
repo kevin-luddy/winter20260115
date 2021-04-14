@@ -36,11 +36,11 @@
 
 <div data-ng-controller="ManageBOEController" data-ng-cloak="">
     <div id="ManageBOE" class="manage-boe module">
-        <div class="module-header-data">Manage BOEs</div>
+        <div class="module-header-data"><div data-ng-show="!isBulkAssign">Manage BOEs</div><div data-ng-show="isBulkAssign">Bulk BOE Role Assignment</div></div>
         <div class="module-content-data">
-            <div class="form-row">Add new or edit BOEs.<span id="InitializationText"> To allow Authors to begin work on BOEs, set <i>Workspace Status</i> to <i>Working</i> on the <a id="WorkspaceStatusLink" href="">Workspace Status</a> page.</span></div>
-            <div class="form-row color-red">{{gridModel.manageBoeHeaderInfo}}</div>
-            <div class="form-row css3pie-position-fix">
+            <div class="form-row" data-ng-show="!isBulkAssign">Add new or edit BOEs.<span id="InitializationText"> To allow Authors to begin work on BOEs, set <i>Workspace Status</i> to <i>Working</i> on the <a id="WorkspaceStatusLink" href="">Workspace Status</a> page.</span></div>
+            <div class="form-row color-red" data-ng-show="!isBulkAssign">{{gridModel.manageBoeHeaderInfo}}</div>
+            <div class="form-row css3pie-position-fix" data-ng-show="!isBulkAssign">
                 <ul class="validation-box" style="display: none;"></ul>
                 <gen-validation data-errors="errors"></gen-validation>
                 <div class="buttons inline css3pie-position-fix" style="line-height: 28px;width: 600px;">
@@ -48,6 +48,7 @@
                     <button class="ies-action" id="Add-ManageBOE" data-ng-disabled="isLoading" data-ng-show="isWorkingState" data-ng-click="AddBOE()" type="button">+ Add</button>
                     <button class="ies-action" id="Import-ManageBOE" data-ng-disabled="isLoading" data-ng-show="isWorkingState" data-ng-click="toggleImport()" type="button">Import</button>
                     <button class="ies-action" id="Export-ManageBOE" data-ng-disabled="isLoading || isExporting" data-ng-click="export(false)" type="button">Export</button>
+                    <button class="ies-action" id="BulkAssign-ManageBOE" data-ng-disabled="isLoading" data-ng-show="isWorkingState" data-ng-click="openBulkAssign()" type="button">Bulk Assign Roles</button>
                 </div>
                 <div id="noteMessage" data-ng-show="isDataFiltered()">You are viewing filtered data. <a data-ng-click="clearAllFilters()">Click here</a> to reset all your filters.</div>
                 <div class="search-box float-right">
@@ -55,7 +56,7 @@
                     <div class="paging-control" genpaging data-num-pages="{{ numberOfPages(filteredResults) }}" data-current-page="currentPage"></div>
                 </div>
             </div>
-            <div class="form-row">
+            <div class="form-row" data-ng-show="!isBulkAssign">
                <div class="manage-boe-grid">
                     <table id="ManageBOEGrid" class="grid readonly" width="962">
                         <thead>
@@ -117,7 +118,15 @@
                     </table>
                 </div>
             </div>
-            <div class="form-row last-form-row">
+            <div class="form-row" data-ng-show="isBulkAssign">
+                <%--BULK ASSIGN--%>
+                <div class="buttons">
+                    <button id="BulkAssign-VerifyButton" type="button" class="ies-action" data-ng-disabled="dialog.disableBulkAssignButtons" data-ng-click="verifyBulkAssign()">Verify</button>
+                    <button id="BulkAssign-SaveButton" type="button" class="ies-action" data-ng-disabled="dialog.disableBulkAssignButtons" data-ng-click="saveBulkAssign()">Save</button>
+                    <button id="BulkAssign-CancelButton" type="button" class="ies" data-ng-click="cancelBulkAssign()">Cancel</button>
+                </div>
+            </div>
+            <div class="form-row last-form-row" data-ng-show="!isBulkAssign">
                 <div class="search-box full-width">
                     <input type="text" class="filter" data-ng-model="searchText" data-ng-model-options="{ debounce: 200 }" data-ng-change="searchChanged()" placeholder="Search..." style="float: right" />
                     <div class="paging-control" genpaging data-num-pages="{{ numberOfPages(filteredResults) }}" data-current-page="currentPage"></div>

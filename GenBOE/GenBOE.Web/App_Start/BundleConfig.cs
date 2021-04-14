@@ -176,7 +176,7 @@ namespace GenBOE.Web
 
             bundles.Add(new ScriptBundle("~/bundles/manageBOE").Include(
                 "~/Resources/js/angular/manageBOEController.js"
-                )); 
+                ));
 
             bundles.Add(new ScriptBundle("~/bundles/manageTask").Include(
                 "~/Scripts/bignumber.js",
