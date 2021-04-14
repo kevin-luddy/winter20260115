@@ -11,16 +11,10 @@
         cost: 'TotalCost',
         subauthors: 'SubcontractorOrderName'
     };
-    $scope.bulkAssignColumns = {
-        wbs: 'WbsDisplayName',
-        clin: 'ClinDisplayName',
-        authors: 'AuthorOrderName',
-        approvers: 'ApproverOrderName',
-        subauthors: 'SubcontractorOrderName'
-    }
+
     $scope.errors = [];
     $scope.modalErrors = [];
-    $scope.gridModel = { containsOCI: true};
+    $scope.gridModel = { containsOCI: true };
     $scope.deleteAll = {};
     $scope.deleteAll.deleteAll = false;
 
@@ -28,7 +22,7 @@
     // Manage BOE can be done when workspace state is Initialization or Working
     $scope.isWorkingState = ManageBOEModel.workspaceState === 'Working' || ManageBOEModel.workspaceState === 'Initialization';
     $scope.isWorkspaceLocked = ManageBOEModel.workspaceState === 'Locked';
-    
+
     $scope.dialog = {
         title: 'Import BOEs',
         open: false,
@@ -64,7 +58,17 @@
     $scope.bulkAssignData = [];
     $scope.isLoading = true;
     $scope.isBulkAssign = false;
-    
+
+    $scope.selectedBoes;
+    $scope.selectedRole;
+    $scope.selectedUsers;
+
+    $scope.roles = {
+        author: 'Author',
+        approver: 'Approver',
+        subAuthor: 'Subcontract Author'
+    }
+
     $scope.predicate = [$scope.columns.wbs, $scope.columns.clin, $scope.columns.authors];
     $scope.reverse = false;
     $scope.pageSize = 100;
@@ -91,7 +95,7 @@
         if (angular.isDefined(column)) {
             $scope.filter.filterColumn = column;
         }
-        
+
         $scope.filter.open = !$scope.filter.open;
     };
 
@@ -115,7 +119,7 @@
 
                 // need to save the state of each cleared checkbox
                 $scope.checkboxDirty(index, item);
-            }            
+            }
         });
 
         $scope.SaveFilterToCookies();
@@ -133,7 +137,7 @@
         setWorkingFilterSet(selected);
         $scope.currentPage = 0;
         originalFilterSet = {};
-        $scope.toggleFilter(); 
+        $scope.toggleFilter();
 
         if (saveFilters) {
             $scope.SaveFilterToCookies();
@@ -326,7 +330,7 @@
         var minutes = 240;
         date.setTime(date.getTime() + (minutes * 60 * 1000));
         console.log(ManageBOEModel.workspace);
-        
+
         $cookies.put('filtersWbs' + ManageBOEModel.workspace, angular.toJson($scope.filter.wbs), { expires: date });
         $cookies.put('filtersBoe' + ManageBOEModel.workspace, angular.toJson($scope.filter.boe), { expires: date });
         $cookies.put('filtersClin' + ManageBOEModel.workspace, angular.toJson($scope.filter.clin), { expires: date });
@@ -652,7 +656,7 @@
     $scope.toggleDeleteAll = function () {
         if ($scope.deleteAll.deleteAll === false) {
             // unmark ALL
-            $scope.data.forEach(function (item) { 
+            $scope.data.forEach(function (item) {
                 item.Deleted = $scope.deleteAll.deleteAll;
             });
         } else {
@@ -791,7 +795,7 @@
         if ($scope.edit.isDirty) {
             $('#PageLoading').removeClass('display-none');
             var data = {};
-            
+
             $scope.edit.boe.Deleted = false;
 
             data.boes = [$scope.edit.boe];
@@ -935,7 +939,7 @@
         $scope.edit.showMaterial = $scope.edit.boe.isMaterial;
         $scope.edit.open = true;
     };
-    
+
     var loadBOEs = function () {
         $scope.isLoading = true;
         $scope.data = [];
@@ -1026,16 +1030,16 @@
 
             $scope.LoadFilterFromCookies();
 
-            $scope.isLoading = false;            
+            $scope.isLoading = false;
             firstLoad = false;
-            
+
         }, function errorCallback(response) {
             if (response.data && response.data.MessageList) {
                 $scope.errors = response.data.MessageList;
             }
             $scope.isLoading = false;
         });
-    }    
+    }
 
     // load the main data
     loadBOEs();
@@ -1053,5 +1057,24 @@
     $scope.cancelBulkAssign = function () {
         // TODO - clear data
         $scope.isBulkAssign = false;
+    };
+
+    $scope.bulkAssignRoles = function () {
+        // TODO - remove console logs once functionality added
+        console.log('boes', $scope.selectedBoes);
+        console.log('roles', $scope.selectedRole);
+        console.log('users', $scope.selectedUsers);
+    };
+
+    $scope.bulkRemoveRoles = function () {
+
+    };
+
+    $scope.disableAssignRemove = function () {
+        // Assign/Remove buttons should only be enabled when all selections have been made
+        // TODO - update to check selectedBoes and selectedUsers for length > 0 once multi-select implemented
+        return $scope.selectedBoes == undefined || $scope.selectedBoes == ''
+            || $scope.selectedRole == undefined || $scope.selectedRole == ''
+            || $scope.selectedUsers == undefined || $scope.selectedUsers == '';
     }
 }]);
