@@ -1927,7 +1927,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     Updateable = UpdateType.Upsert,
                     CustomFieldID = classOfCostId.Value,
                     CustomFieldValueName = "REC",
-                    CustomFieldValueDescription = "REC",
+                    CustomFieldValueDescription = "Recurring",
                     Id = -1,
                     CustomFieldValueID = -1
                 });
@@ -1937,23 +1937,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     Updateable = UpdateType.Upsert,
                     CustomFieldID = classOfCostId.Value,
                     CustomFieldValueName = "NRE",
-                    CustomFieldValueDescription = "NRE",
+                    CustomFieldValueDescription = "Non Recurring",
                     Id = -2,
                     CustomFieldValueID = -2
                 });
-
-                customFieldValues.Add(new CustomFieldValueDTO
-                {
-                    Updateable = UpdateType.Upsert,
-                    CustomFieldID = classOfCostId.Value,
-                    CustomFieldValueName = "DNR",
-                    CustomFieldValueDescription = "DNR",
-                    Id = -3,
-                    CustomFieldValueID = -3
-                });
             }
 
-            // TODO - 4732 - add remaining defaults (if any), remove/implment commented out ids above
             if (!this.CustomFieldAlreadyExists(SikorskyConstants.SIKORSKY_CF_ADDDELETE, existingCustomFields))
             {
                 CustomFieldDTO addDelete = new CustomFieldDTO
@@ -2001,13 +1990,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
         public void CreateProPricerCustomFields(int wsId)
         {
             // Custom fields(all regular custom fields, none are open ended, none are required):
-            // Function
-            // SOW-> default option SOW1
-            // Location
+            // Function -> default: FI
+            // SOW -> default: SOW1
+            // Location -> default: Moorestown
             // Class Of Cost-> defaults: REC, NRE
-            // Project
-            // FIELD-A
-            // FIELD-B
+            // Project -> default: USER1
+            // FIELD-A -> default: USER2
+            // FIELD-B -> default: USER3
 
             ICollection<CustomFieldDTO> existingCustomFields = this.customFieldLoader.GetByWorkspaceId(wsId);
             ICollection<CustomFieldValueDTO> customFieldValues = new Collection<CustomFieldValueDTO>();
@@ -2024,7 +2013,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     IsOpenEnded = false,
                     Updateable = UpdateType.Upsert
                 };
-                /*int? functionId =*/this.customFieldLoader.Save(function);
+                
+                int? functionId = this.customFieldLoader.Save(function);
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = functionId.Value,
+                    CustomFieldValueName = "FI",
+                    CustomFieldValueDescription = "Finance",
+                    Id = -1,
+                    CustomFieldValueID = -1
+                });
             }
 
             if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_SOW, existingCustomFields))
@@ -2048,8 +2048,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     CustomFieldID = sowId.Value,
                     CustomFieldValueName = "SOW1",
                     CustomFieldValueDescription = "SOW1",
-                    Id = -6,
-                    CustomFieldValueID = -6
+                    Id = -2,
+                    CustomFieldValueID = -2
                 });
             }
 
@@ -2066,7 +2066,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     Updateable = UpdateType.Upsert
                 };
 
-                /*int? locationId = */this.customFieldLoader.Save(location);
+                int? locationId = this.customFieldLoader.Save(location);
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = locationId.Value,
+                    CustomFieldValueName = "Moorestown",
+                    CustomFieldValueDescription = "Moorestown",
+                    Id = -3,
+                    CustomFieldValueID = -3
+                });
             }
 
             if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_CLASSOFCOST, existingCustomFields))
@@ -2090,8 +2100,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     CustomFieldID = classOfCostId.Value,
                     CustomFieldValueName = "NRE",
                     CustomFieldValueDescription = "Non Recurring",
-                    Id = -1,
-                    CustomFieldValueID = -2
+                    Id = -4,
+                    CustomFieldValueID = -4
                 });
 
                 customFieldValues.Add(new CustomFieldValueDTO
@@ -2100,8 +2110,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     CustomFieldID = classOfCostId.Value,
                     CustomFieldValueName = "REC",
                     CustomFieldValueDescription = "Recurring",
-                    Id = -2,
-                    CustomFieldValueID = -1
+                    Id = -5,
+                    CustomFieldValueID = -5
                 });
             }
 
@@ -2118,8 +2128,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     Updateable = UpdateType.Upsert
                 };
 
-                /*int? projectId = */
-                this.customFieldLoader.Save(project);
+                int? projectId = this.customFieldLoader.Save(project);
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = projectId.Value,
+                    CustomFieldValueName = "USER1",
+                    CustomFieldValueDescription = "User Defined",
+                    Id = -6,
+                    CustomFieldValueID = -6
+                });
             }
 
             if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_FIELDA, existingCustomFields))
@@ -2135,8 +2154,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     Updateable = UpdateType.Upsert
                 };
 
-                /*int? fieldAId = */
-                this.customFieldLoader.Save(fieldA);
+                int? fieldAId = this.customFieldLoader.Save(fieldA);
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = fieldAId.Value,
+                    CustomFieldValueName = "USER2",
+                    CustomFieldValueDescription = "User Defined 2",
+                    Id = -7,
+                    CustomFieldValueID = -7
+                });
             }
 
             if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_FIELDB, existingCustomFields))
@@ -2152,8 +2180,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     Updateable = UpdateType.Upsert
                 };
 
-                /*int? fieldBId = */
-                this.customFieldLoader.Save(fieldB);
+                int? fieldBId = this.customFieldLoader.Save(fieldB);
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = fieldBId.Value,
+                    CustomFieldValueName = "USER3",
+                    CustomFieldValueDescription = "Resource User Defined",
+                    Id = -8,
+                    CustomFieldValueID = -8
+                });
             }
 
             this.customFieldValueLoader.Save(customFieldValues);
