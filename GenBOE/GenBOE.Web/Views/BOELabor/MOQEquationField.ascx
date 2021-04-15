@@ -37,7 +37,9 @@
         MoqTypeHelpUrls:<%=serializer.Serialize(Model.MoqTypeHelpUrls)%>,
         SelectedMoqTypes:<%=Regex.Replace(serializer.Serialize(Model.SelectedMoqTypes), dateFixRegexSearch, dateFixRegexReplace)%>,
         ShouldMoqReadOnlyBeReversed: '<%:ViewData["ShouldMoqReadOnlyBeReversed"]%>'.isTrue(),
-        IsRMS:'<%:Model.Company == CompanyConfiguration.MST%>'.isTrue()
+        IsRMS: '<%:Model.Company == CompanyConfiguration.MST%>'.isTrue(),
+        HistoricalMoqType: <%:(int)MOQType.Historical%>,
+        ComparativeMoqType: <%:(int)MOQType.Comparative%>
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -125,13 +127,17 @@
     </div>
     <div id="moqTypes" data-ng-if="model.UsingTemplateBOE" class="form-element moqRteFieldContainer moqContainerClass" data-ng-repeat="moqType in model.SelectedMoqTypes | orderBy: 'Order'">
         <div class="form-row" data-ng-class="{'collapsedBorder': moqType.collapsed}">
-            <div class="form-label">
+            <div class="form-label"  data-ng-class="{'comparativeLabel':  moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>, 'historicalLabel': moqType.SelectedMOQType == <%:(int)MOQType.Historical%>}">
                 <a data-nodrag="" data-ng-click="toggle(moqType)">
                     <div class="moqTypeHeader" data-ng-class="{'collapsed': moqType.collapsed, 'expanded': !moqType.collapsed}"></div>
                 </a>
                 {{moqType.SelectedMOQTypeText}}
             </div>
-            <button data-ng-if="!ActualReadOnly()" data-ng-click="RemoveMoqType(moqType)" class="ies-danger moqTypesButton" type="button">Delete MOQ Type</button>
+            <div class="btn-group">
+                <button data-ng-if="!ActualReadOnly() && moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-disabled="disableHistoricalComparativeConvertButtons()" data-ng-click="convertMoqType(moqType, <%:(int)MOQType.Historical%>)" class="ies moqTypesButton" type="button">Convert to Historical</button>
+                <button data-ng-if="!ActualReadOnly() && moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-disabled="disableHistoricalComparativeConvertButtons()" data-ng-click="convertMoqType(moqType, <%:(int)MOQType.Comparative%>)" class="ies moqTypesButton" type="button">Convert to Comparative</button>
+                <button data-ng-if="!ActualReadOnly()" data-ng-click="RemoveMoqType(moqType)" class="ies-danger moqTypesButton" type="button">Delete MOQ Type</button>
+            </div>
         </div>
         <div class="moqTaskBasedOn" data-ng-show="!moqType.collapsed">
             <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>">{{PortionOfTask()}} historical data:</span>
@@ -257,9 +263,9 @@
                    </table>
                 </div>
                 <div class="tableDataButtons">
-                    <button data-ng-if="!ActualReadOnly()" style="margin-bottom:9px;" data-ng-if="$index == 0" data-ng-click="CreateNewTable(moqType.TableData)" type="button" class="ies-action moqTypesButton">Add Table Data</button>
-                    <button data-ng-if="!ActualReadOnly()" data-ng-disabled="moqType.TableData.length <= 1" data-ng-if="$index == 0" data-ng-click="displayReOrderMoqTablesDialog(moqType)" class="moqTypesButton ies-blue" type="button">Sort MOQ Tables</button>
-                    <button data-ng-if="!ActualReadOnly()" style="display:block;" data-ng-if="moqType.TableData.length > 1" data-ng-click="RemoveTable(tableData, moqType.TableData)" type="button" class="ies-danger moqTypesButton">Delete Table Data</button>
+                    <button data-ng-if="!ActualReadOnly() && $index == 0" style="margin-bottom:9px;" data-ng-click="CreateNewTable(moqType.TableData)" type="button" class="ies-action moqTypesButton">Add Table Data</button>
+                    <button data-ng-if="!ActualReadOnly() && $index == 0" data-ng-disabled="moqType.TableData.length <= 1" data-ng-click="displayReOrderMoqTablesDialog(moqType)" class="moqTypesButton ies-blue" type="button">Sort MOQ Tables</button>
+                    <button data-ng-if="!ActualReadOnly() && moqType.TableData.length > 1" style="display:block;" data-ng-click="RemoveTable(tableData, moqType.TableData)" type="button" class="ies-danger moqTypesButton">Delete Table Data</button>
                 </div>
                 <hr />
             </div>

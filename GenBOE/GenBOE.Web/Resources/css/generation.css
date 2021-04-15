@@ -8487,10 +8487,18 @@ textarea.ng-invalid {
     width: 1100px;
 }
 
+.historicalLabel {
+    width: 655px !important;
+}
+
+.comparativeLabel {
+    width: 677px !important;
+}
+
 .nonPrintableLabel {
     color: darkgrey;
     padding-top: 5px;
-    padding-left:10px;
+    padding-left: 10px;
 }
 
 .moqRteFieldContainer .form-label {

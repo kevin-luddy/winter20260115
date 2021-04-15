@@ -424,6 +424,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 dto.PlannedDate_WrittenApproval = modelview.PlannedDate_WrittenApproval;
                 dto.PlannedDate_ApprovedSubmission = modelview.PlannedDate_ApprovedSubmission;
             }
+            else
+            {
+                dto.PlannedDate_WrittenApproval = null;
+                dto.PlannedDate_ApprovedSubmission = null;
+            }
             dto.Poc = modelview.Poc;
             dto.PocPhone = modelview.PocPhone;
             dto.PriceAnalysis = modelview.PriceAnalysis;

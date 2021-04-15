@@ -95,6 +95,7 @@
     <Folder Include="Release Scripts\Older\Release 2020.4" />
     <Folder Include="Release Scripts\Release 2021.2" />
     <Folder Include="Release Scripts\Release 2021.5" />
+    <Folder Include="Release Scripts\Release 2021.6" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Object Scripts\Stored Procedures\upsertProposalChecklistTemplate.sql" />
@@ -192,6 +193,9 @@
     <Build Include="_Full Script Files For Specific Versions\PTM - 2021.2 Generated On 2_25_2021.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2020.4 Generated On 8_25_2020.sql" />
     <Build Include="Release Scripts\Release 2021.5\Release 2021.5.sql" />
+    <Build Include="Release Scripts\Release 2021.6\Release 2021.6.sql" />
+    <Build Include="Object Scripts\Stored Procedures\CopyCannedResponsesPAR.proc.sql" />
+    <Build Include="Object Scripts\Functions\SplitString.function.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />

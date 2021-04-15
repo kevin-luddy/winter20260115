@@ -50,7 +50,7 @@
                 plugins: [
                     "advlist autolink link image lists charmap preview hr anchor pagebreak, code",
                     "searchreplace visualblocks visualchars fullscreen insertdatetime nonbreaking",
-                    "save table contextmenu directionality template paste textcolor"
+                    "save table contextmenu directionality paste textcolor"
                 ],
                 browser_spellcheck: true,
                 paste_data_images: true,
@@ -84,7 +84,7 @@
                 content_css: "/Resources/css/tinymce.css",
                 menu: {
                     edit: { title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall | searchreplace' },
-                    insert: { title: 'Insert', items: 'image link | charmap hr anchor pagebreak insertdatetime nonbreaking template' },
+                    insert: { title: 'Insert', items: 'image link | charmap hr anchor pagebreak insertdatetime nonbreaking' },
                     view: { title: 'View', items: 'visualchars visualblocks | preview fullscreen' },
                     format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript | formats | removeformat' },
                     table: { title: 'Table', items: 'inserttable tableprops deletetable cell row column' }

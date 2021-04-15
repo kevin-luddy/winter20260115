@@ -796,13 +796,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
                         //use the custom exporter for master template types
                         this._boeCustomExporter.SetWorkspacePrecisionVariables(exportWorkspace);
                         boeExportModelView = this._boeCustomExporter.ConvertBoeDTOsToExportMVs(new FullBoe[] { boe }, inputs).First();
-                        this._boeCustomExporter.ExportBOEToWordFile(inputs, new List<BOEExportModelView> { boeExportModelView }, boeSummaryGridModelViews, null, Response, string.Format("genBOEExport-{0}.docx", boeID), wsExportFormatDTO);
+                        this._boeCustomExporter.ExportBOEToWordFile(inputs, new List<BOEExportModelView> { boeExportModelView }, boeSummaryGridModelViews, ws, null, Response, string.Format("genBOEExport-{0}.docx", boeID), wsExportFormatDTO);
                     }
                     else
                     {
                         this._BOEExporter.SetWorkspacePrecisionVariables(exportWorkspace);
                         boeExportModelView = this._BOEExporter.ConvertBoeDTOsToExportMVs(inputs).First();
-                        this._BOEExporter.ExportBOEToWordFile(inputs, new List<BOEExportModelView> { boeExportModelView }, boeSummaryGridModelViews, Response, string.Format("genBOEExport-{0}.docx", boeID), wsExportFormatDTO.PhysicalFilePathCache);
+                        this._BOEExporter.ExportBOEToWordFile(inputs, new List<BOEExportModelView> { boeExportModelView }, boeSummaryGridModelViews, ws, Response, string.Format("genBOEExport-{0}.docx", boeID), wsExportFormatDTO.PhysicalFilePathCache);
                     }
                 }
                 else
@@ -863,16 +863,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
                     if (wsExportFormatDTO.ExportFormat.TemplateType == ExcelReportTemplateType.MASTER)
                     {
-                        //use the custom exporter for master template types
+                        // use the custom exporter for master template types
                         this._boeCustomExporter.SetWorkspacePrecisionVariables(exportWorkspace);
                         boeExportModelView = this._boeCustomExporter.ConvertBoeDTOsToExportMVs(new FullBoe[] { boe }, inputs).First();
-                        this._boeCustomExporter.ExportBOEToWordFile(inputs, new List<BOEExportModelView> { boeExportModelView }, boeSummaryGridModelViews, null, Response, string.Format("genBOEExport-{0}.docx", projectMapId), wsExportFormatDTO);
+                        this._boeCustomExporter.ExportBOEToWordFile(inputs, new List<BOEExportModelView> { boeExportModelView }, boeSummaryGridModelViews, ws, null, Response, string.Format("genBOEExport-{0}.docx", projectMapId), wsExportFormatDTO);
                     }
                     else
                     {
                         this._BOEExporter.SetWorkspacePrecisionVariables(exportWorkspace);
                         boeExportModelView = this._BOEExporter.ConvertBoeDTOsToExportMVs(inputs).First();
-                        this._BOEExporter.ExportBOEToWordFile(inputs, new List<BOEExportModelView> { boeExportModelView }, boeSummaryGridModelViews, Response, string.Format("genBOEExport-{0}.docx", projectMapId), wsExportFormatDTO.PhysicalFilePathCache);
+                        this._BOEExporter.ExportBOEToWordFile(inputs, new List<BOEExportModelView> { boeExportModelView }, boeSummaryGridModelViews, ws, Response, string.Format("genBOEExport-{0}.docx", projectMapId), wsExportFormatDTO.PhysicalFilePathCache);
                     }
                 }
                 else

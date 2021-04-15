@@ -128,6 +128,7 @@ namespace IES.Common
                     case MOQType.Historical:
                     case MOQType.MSTHistoricalPerformance:
                     case MOQType.SSCActual:
+                    case MOQType.SSCAnalogySimilarTo:
                         result = MOQType.Historical;
                         break;
                     case MOQType.Comparative:
@@ -137,7 +138,6 @@ namespace IES.Common
                     case MOQType.CostEstimatingRelationships:
                     case MOQType.MSTCostEstimatingRelationships:
                     case MOQType.SSCCostEstimatingRelationships:
-                    case MOQType.SSCHistoricalExperienceFactor:
                         result = MOQType.CostEstimatingRelationships;
                         break;
                     case MOQType.ParametricEstimates:
@@ -149,7 +149,7 @@ namespace IES.Common
                         result = MOQType.ParametricEstimates;
                         break;
                     case MOQType.AnalogousRelationships:
-                    case MOQType.SSCAnalogySimilarTo:
+                    case MOQType.SSCHistoricalExperienceFactor:
                         result = MOQType.AnalogousRelationships;
                         break;
                     case MOQType.SOW:
