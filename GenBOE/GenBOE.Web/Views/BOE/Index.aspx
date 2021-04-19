@@ -119,8 +119,88 @@
                 </div>
             </div>
             <div class="form-row" data-ng-show="isBulkAssign">
-                <%--BULK ASSIGN--%>
+                Assign or Remove users in bulk. Select one or more BOEs, a Role, and one or more Users to assign or remove. <br />
+                Select "Assign" to assign the Users to the Role in the BOEs if they are not already assigned. <br />
+                Select "Remove" to remove the selected Users from the selected Role in the selected BOEs if they are assigned.</div>
+            <div id="BulkAssign" class="form-row" data-ng-show="isBulkAssign">
+                <div class="bulk-assign-add-remove">
+                    <div class="bulk-select">
+                        <div class="bulk-assign-label">BOEs</div>
+                        <select data-ng-model="selectedBoes">
+                            <option></option>
+                            <option data-ng-repeat="boe in bulkAssignData" value="{{::boe.BoeID}}">{{::boe.WbsDisplayName}} | {{::boe.ClinDisplayName}}</option>
+                        </select>
+                    </div>
+                    <div class="bulk-select">
+                        <div class="bulk-assign-label">Role</div>
+                        <select data-ng-model="selectedRole">
+                            <option></option>
+                            <option>{{roles.author}}</option>
+                            <option>{{roles.approver}}</option>
+                            <option>{{roles.subAuthor}}</option>
+                        </select>
+                    </div>
+                    <div class="bulk-select">
+                        <div class="bulk-assign-label">Users</div>
+                        <select data-ng-model="selectedUsers" data-ng-disabled="selectedRole == undefined || selectedRole == ''">
+                            <option></option>
+                            <option data-ng-if="selectedRole == roles.author" data-ng-repeat="user in gridModel.PotentialAuthors" value="{{user.Value}}">{{user.Text}}</option>
+                            <option data-ng-if="selectedRole == roles.approver" data-ng-repeat="user in gridModel.PotentialApprovers" value="{{user.Value}}">{{user.Text}}</option>
+                            <option data-ng-if="selectedRole == roles.subAuthor" data-ng-repeat="user in gridModel.PotentialSubcontractorAuthors" value="{{user.Value}}">{{user.Text}}</option>
+                        </select>
+                    </div>
+                    <button id="bulk-assign-add" class="ies-action" data-ng-click="bulkAssignRoles()" data-ng-disabled="disableAssignRemove()">Assign</button>
+                    <button id="bulk-assign-remove" class="ies-danger" data-ng-click="bulkRemoveRoles()" data-ng-disabled="disableAssignRemove()">Remove</button>
+                    <div class="search-box float-right">
+                        <input type="text" class="filter" data-ng-model="searchText" data-ng-model-options="{ debounce: 200 }" data-ng-change="searchChanged()" placeholder="Search..." style="float: right" />
+                        <div class="paging-control" genpaging data-num-pages="{{ numberOfPages(filteredResults) }}" data-current-page="currentPage"></div>
+                    </div>
+                </div>
+                <div id="noteMessage" class="noteMessage" data-ng-show="isDataFiltered()">You are viewing filtered data. <a data-ng-click="clearAllFilters()">Click here</a> to reset all your filters.</div>
+                <div class="bulk-assign-grid">
+                    <table id="BulkAssignGrid" class="grid readonly" width="962">
+                        <thead>
+                            <tr>
+                                <th class="wbs-title bootstrap">
+                                    <a data-ng-click="changeSorting(columns.wbs)" data-ng-class="{ 'bold': boldSort(columns.wbs) }">WBS</a>
+                                    <a data-ng-click="toggleFilter(columns.wbs)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
+                                </th>
+                                <th class="clin-title bootstrap">
+                                    <a data-ng-click="changeSorting(columns.clin)" data-ng-class="{ 'bold': boldSort(columns.clin) }">CLIN</a>
+                                    <a data-ng-click="toggleFilter(columns.clin)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
+                                </th>
+                                <th class="author-select bootstrap">
+                                    <a data-ng-click="changeSorting(columns.authors)" data-ng-class="{ 'bold': boldSort(columns.authors) }">Authors</a>
+                                    <a data-ng-click="toggleFilter(columns.authors)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
+                                </th>
+                                <th class="approver-select bootstrap">
+                                    <a data-ng-click="changeSorting(columns.approvers)" data-ng-class="{ 'bold': boldSort(columns.approvers) }">Approvers</a>
+                                    <a data-ng-click="toggleFilter(columns.approvers)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
+                                </th>
+                                <th class="sub-author-select bootstrap">
+                                    <a data-ng-click="changeSorting(columns.subauthors)" data-ng-class="{ 'bold': boldSort(columns.subauthors) }">Subcontract Authors</a>
+                                    <a data-ng-click="toggleFilter(columns.subauthors)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-ng-show="isLoading"><td colspan="5"><div class="loader"></div></td></tr>
+                            <tr data-ng-show="!isLoading && (data.length === 0 || filteredResults.length === 0)"><td colspan="5"><div class="empty-grid-text">There are no BOEs for the Workspace.</div></td></tr>
+                            <tr pkid="{{::boe.BoeID}}" data-ng-repeat="boe in (filteredResults = (bulkAssignData | filter:filterBOEs | orderBy:predicate:reverse)) | limitTo:pageSize:currentPage*pageSize"">
+                                <td>{{::boe.WbsDisplayName}}</td>
+                                <td>{{::boe.ClinDisplayName}}</td>
+                                <td><div data-ng-repeat="authorName in boe.AuthorsDisplayNames">{{authorName}}</div></td>
+                                <td><div data-ng-repeat="approver in boe.ApproversDisplayNames">{{approver}}</div></td>
+                                <td><div data-ng-repeat="subAuthorName in boe.SubcontractorAuthors">{{subAuthorName}}</div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <div class="buttons">
+                    <div class="search-box float-right">
+                        <input type="text" class="filter" data-ng-model="searchText" data-ng-model-options="{ debounce: 200 }" data-ng-change="searchChanged()" placeholder="Search..." style="float: right" />
+                        <div class="paging-control" genpaging data-num-pages="{{ numberOfPages(filteredResults) }}" data-current-page="currentPage"></div>
+                    </div>
                     <button id="BulkAssign-VerifyButton" type="button" class="ies-action" data-ng-disabled="dialog.disableBulkAssignButtons" data-ng-click="verifyBulkAssign()">Verify</button>
                     <button id="BulkAssign-SaveButton" type="button" class="ies-action" data-ng-disabled="dialog.disableBulkAssignButtons" data-ng-click="saveBulkAssign()">Save</button>
                     <button id="BulkAssign-CancelButton" type="button" class="ies" data-ng-click="cancelBulkAssign()">Cancel</button>

@@ -829,7 +829,7 @@ namespace GenBOE.Web.Controllers
         /// </summary>
         /// <param name="workspace">Workspace</param>
         /// <param name="boeRolesToSave">Boe Roles to Save</param>
-        public JsonResult SaveBoeBulkRoles(string workspace,ICollection<BoeRoleMV> boeRolesToSave)
+        public JsonResult SaveBoeBulkRoles(string workspace, ICollection<BoeRoleMV> boeRolesToSave)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 

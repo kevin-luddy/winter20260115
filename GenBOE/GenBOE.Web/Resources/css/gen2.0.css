@@ -186,14 +186,16 @@ a.inactive
 
 #WorkspaceHomeGrid th a,
 #ManageWBSGrid th a,
-#ManageBOEGrid th a
+#ManageBOEGrid th a,
+#BulkAssignGrid th a
 {
     display: block;
 }
 
 #WorkspaceHomeGrid th a:first-child,
 #ManageWBSGrid th a:first-child,
-#ManageBOEGrid th a:first-child
+#ManageBOEGrid th a:first-child,
+#BulkAssignGrid th a:first-child 
 {
     font-size: 12px;
 }
@@ -207,7 +209,7 @@ a.inactive
 
 #WorkspaceHomeGrid th .glyphicon-filter,
 #ManageWBSGrid th .glyphicon-filter,
-#ManageBOEGrid th .glyphicon-filter
+#ManageBOEGrid th .glyphicon-filter 
 {
     padding-left: 10px;
 }
