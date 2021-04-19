@@ -1826,111 +1826,25 @@ namespace GenBOE.ActionLogic.ControllerLogic
             // Class Of Cost->also put in options(text): REC, NRE, DNR
             // Add / Delete->also put in options(text): A, D
 
-            CustomFieldDTO sow = new CustomFieldDTO
-            {
-                Id = -1,
-                WorkspaceID = wsId,
-                CustomFieldName = SikorskyConstants.SIKORSKY_CF_SOW,
-                CustomFieldDisplayID = CustomFieldType.BoeDisplay,
-                CustomFieldRequired = false,
-                IsOpenEnded = false,
-                Updateable = UpdateType.Upsert
-            };
-            CustomFieldDTO category = new CustomFieldDTO
-            {
-                Id = -2,
-                WorkspaceID = wsId,
-                CustomFieldName = SikorskyConstants.SIKORSKY_CF_CATEGORY,
-                CustomFieldDisplayID = CustomFieldType.BoeDisplay,
-                CustomFieldRequired = false,
-                IsOpenEnded = false,
-                Updateable = UpdateType.Upsert
-            };
-            CustomFieldDTO camName = new CustomFieldDTO
-            {
-                Id = -3,
-                WorkspaceID = wsId,
-                CustomFieldName = SikorskyConstants.SIKORSKY_CF_CAMNAME,
-                CustomFieldDisplayID = CustomFieldType.BoeDisplay,
-                CustomFieldRequired = false,
-                IsOpenEnded = false,
-                Updateable = UpdateType.Upsert
-            };
-            CustomFieldDTO classOfCost = new CustomFieldDTO
-            {
-                Id = -4,
-                WorkspaceID = wsId,
-                CustomFieldName = SikorskyConstants.SIKORSKY_CF_CLASSOFCOST,
-                CustomFieldDisplayID = CustomFieldType.BoeDisplay,
-                CustomFieldRequired = false,
-                IsOpenEnded = false,
-                Updateable = UpdateType.Upsert
-            };
-            CustomFieldDTO addDelete = new CustomFieldDTO
-            {
-                Id = -5,
-                WorkspaceID = wsId,
-                CustomFieldName = SikorskyConstants.SIKORSKY_CF_ADDDELETE,
-                CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay,
-                CustomFieldRequired = false,
-                IsOpenEnded = false,
-                Updateable = UpdateType.Upsert
-            };
+            ICollection<CustomFieldDTO> existingCustomFields = this.customFieldLoader.GetByWorkspaceId(wsId);
+            ICollection<CustomFieldValueDTO> customFieldValues = new Collection<CustomFieldValueDTO>();
 
-            int? sowId = this.customFieldLoader.Save(sow);
-            int? categoryId = this.customFieldLoader.Save(category);
-            int? camNameId = this.customFieldLoader.Save(camName);
-            int? classOfCostId = this.customFieldLoader.Save(classOfCost);
-            int? addDeleteId = this.customFieldLoader.Save(addDelete);
-
-            List<CustomFieldValueDTO> customFieldValues = new List<CustomFieldValueDTO>
+            if (!this.CustomFieldAlreadyExists(SikorskyConstants.SIKORSKY_CF_SOW, existingCustomFields))
             {
-                new CustomFieldValueDTO
+                CustomFieldDTO sow = new CustomFieldDTO
                 {
-                    Updateable = UpdateType.Upsert,
-                    CustomFieldID = classOfCostId.Value,
-                    CustomFieldValueName = "REC",
-                    CustomFieldValueDescription = "REC",
                     Id = -1,
-                    CustomFieldValueID = -1
-                },
-                new CustomFieldValueDTO
-                {
-                    Updateable = UpdateType.Upsert,
-                    CustomFieldID = classOfCostId.Value,
-                    CustomFieldValueName = "NRE",
-                    CustomFieldValueDescription = "NRE",
-                    Id = -2,
-                    CustomFieldValueID = -2
-                },
-                new CustomFieldValueDTO
-                {
-                    Updateable = UpdateType.Upsert,
-                    CustomFieldID = classOfCostId.Value,
-                    CustomFieldValueName = "DNR",
-                    CustomFieldValueDescription = "DNR",
-                    Id = -3,
-                    CustomFieldValueID = -3
-                },
-                new CustomFieldValueDTO
-                {
-                    Updateable = UpdateType.Upsert,
-                    CustomFieldID = addDeleteId.Value,
-                    CustomFieldValueName = "A",
-                    CustomFieldValueDescription = "A",
-                    Id = -4,
-                    CustomFieldValueID = -4
-                },
-                new CustomFieldValueDTO
-                {
-                    Updateable = UpdateType.Upsert,
-                    CustomFieldID = addDeleteId.Value,
-                    CustomFieldValueName = "D",
-                    CustomFieldValueDescription = "D",
-                    Id = -5,
-                    CustomFieldValueID = -5
-                },
-                new CustomFieldValueDTO
+                    WorkspaceID = wsId,
+                    CustomFieldName = SikorskyConstants.SIKORSKY_CF_SOW,
+                    CustomFieldDisplayID = CustomFieldType.BoeDisplay,
+                    CustomFieldRequired = false,
+                    IsOpenEnded = false,
+                    Updateable = UpdateType.Upsert
+                };
+
+                int? sowId = this.customFieldLoader.Save(sow);
+
+                customFieldValues.Add(new CustomFieldValueDTO
                 {
                     Updateable = UpdateType.Upsert,
                     CustomFieldID = sowId.Value,
@@ -1938,8 +1852,25 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     CustomFieldValueDescription = "SOW1",
                     Id = -6,
                     CustomFieldValueID = -6
-                },
-                new CustomFieldValueDTO
+                });
+            }
+
+            if (!this.CustomFieldAlreadyExists(SikorskyConstants.SIKORSKY_CF_CATEGORY, existingCustomFields))
+            {
+                CustomFieldDTO category = new CustomFieldDTO
+                {
+                    Id = -2,
+                    WorkspaceID = wsId,
+                    CustomFieldName = SikorskyConstants.SIKORSKY_CF_CATEGORY,
+                    CustomFieldDisplayID = CustomFieldType.BoeDisplay,
+                    CustomFieldRequired = false,
+                    IsOpenEnded = false,
+                    Updateable = UpdateType.Upsert
+                };
+
+                int? categoryId = this.customFieldLoader.Save(category);
+
+                customFieldValues.Add(new CustomFieldValueDTO
                 {
                     Updateable = UpdateType.Upsert,
                     CustomFieldID = categoryId.Value,
@@ -1947,8 +1878,25 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     CustomFieldValueDescription = "Category1",
                     Id = -7,
                     CustomFieldValueID = -7
-                },
-                new CustomFieldValueDTO
+                });
+            }
+
+            if (!this.CustomFieldAlreadyExists(SikorskyConstants.SIKORSKY_CF_CAMNAME, existingCustomFields))
+            {
+                CustomFieldDTO camName = new CustomFieldDTO
+                {
+                    Id = -3,
+                    WorkspaceID = wsId,
+                    CustomFieldName = SikorskyConstants.SIKORSKY_CF_CAMNAME,
+                    CustomFieldDisplayID = CustomFieldType.BoeDisplay,
+                    CustomFieldRequired = false,
+                    IsOpenEnded = false,
+                    Updateable = UpdateType.Upsert
+                };
+
+                int? camNameId = this.customFieldLoader.Save(camName);
+
+                customFieldValues.Add(new CustomFieldValueDTO
                 {
                     Updateable = UpdateType.Upsert,
                     CustomFieldID = camNameId.Value,
@@ -1956,10 +1904,307 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     CustomFieldValueDescription = "CAM1",
                     Id = -8,
                     CustomFieldValueID = -8
-                }
-            };
+                });
+            }
+
+            if (!this.CustomFieldAlreadyExists(SikorskyConstants.SIKORSKY_CF_CLASSOFCOST, existingCustomFields))
+            {
+                CustomFieldDTO classOfCost = new CustomFieldDTO
+                {
+                    Id = -4,
+                    WorkspaceID = wsId,
+                    CustomFieldName = SikorskyConstants.SIKORSKY_CF_CLASSOFCOST,
+                    CustomFieldDisplayID = CustomFieldType.BoeDisplay,
+                    CustomFieldRequired = false,
+                    IsOpenEnded = false,
+                    Updateable = UpdateType.Upsert
+                };
+
+                int? classOfCostId = this.customFieldLoader.Save(classOfCost);
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = classOfCostId.Value,
+                    CustomFieldValueName = "REC",
+                    CustomFieldValueDescription = "Recurring",
+                    Id = -1,
+                    CustomFieldValueID = -1
+                });
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = classOfCostId.Value,
+                    CustomFieldValueName = "NRE",
+                    CustomFieldValueDescription = "Non Recurring",
+                    Id = -2,
+                    CustomFieldValueID = -2
+                });
+            }
+
+            if (!this.CustomFieldAlreadyExists(SikorskyConstants.SIKORSKY_CF_ADDDELETE, existingCustomFields))
+            {
+                CustomFieldDTO addDelete = new CustomFieldDTO
+                {
+                    Id = -5,
+                    WorkspaceID = wsId,
+                    CustomFieldName = SikorskyConstants.SIKORSKY_CF_ADDDELETE,
+                    CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay,
+                    CustomFieldRequired = false,
+                    IsOpenEnded = false,
+                    Updateable = UpdateType.Upsert
+                };
+
+                int? addDeleteId = this.customFieldLoader.Save(addDelete);
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = addDeleteId.Value,
+                    CustomFieldValueName = "A",
+                    CustomFieldValueDescription = "A",
+                    Id = -4,
+                    CustomFieldValueID = -4
+                });
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = addDeleteId.Value,
+                    CustomFieldValueName = "D",
+                    CustomFieldValueDescription = "D",
+                    Id = -5,
+                    CustomFieldValueID = -5
+                });
+            }
+
 
             this.customFieldValueLoader.Save(customFieldValues);
+        }
+
+        /// <summary>
+        /// Creates the default ProPricer Custom FIelds
+        /// </summary>
+        /// <param name="wsId">Workspace ID</param>
+        public void CreateProPricerCustomFields(int wsId)
+        {
+            // Custom fields(all regular custom fields, none are open ended, none are required):
+            // Function -> default: FI
+            // SOW -> default: SOW1
+            // Location -> default: Moorestown
+            // Class Of Cost-> defaults: REC, NRE
+            // Project -> default: USER1
+            // FIELD-A -> default: USER2
+            // FIELD-B -> default: USER3
+
+            ICollection<CustomFieldDTO> existingCustomFields = this.customFieldLoader.GetByWorkspaceId(wsId);
+            ICollection<CustomFieldValueDTO> customFieldValues = new Collection<CustomFieldValueDTO>();
+
+            if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_FUNCTION, existingCustomFields))
+            {
+                CustomFieldDTO function = new CustomFieldDTO
+                {
+                    Id = -1,
+                    WorkspaceID = wsId,
+                    CustomFieldName = ProPricerCFConstants.PROPRICER_CF_FUNCTION,
+                    CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay,
+                    CustomFieldRequired = false,
+                    IsOpenEnded = false,
+                    Updateable = UpdateType.Upsert
+                };
+                
+                int? functionId = this.customFieldLoader.Save(function);
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = functionId.Value,
+                    CustomFieldValueName = "FI",
+                    CustomFieldValueDescription = "Finance",
+                    Id = -1,
+                    CustomFieldValueID = -1
+                });
+            }
+
+            if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_SOW, existingCustomFields))
+            {
+                CustomFieldDTO sow = new CustomFieldDTO
+                {
+                    Id = -2,
+                    WorkspaceID = wsId,
+                    CustomFieldName = ProPricerCFConstants.PROPRICER_CF_SOW,
+                    CustomFieldDisplayID = CustomFieldType.BoeDisplay,
+                    CustomFieldRequired = false,
+                    IsOpenEnded = false,
+                    Updateable = UpdateType.Upsert
+                };
+
+                int? sowId = this.customFieldLoader.Save(sow);
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = sowId.Value,
+                    CustomFieldValueName = "SOW1",
+                    CustomFieldValueDescription = "SOW1",
+                    Id = -2,
+                    CustomFieldValueID = -2
+                });
+            }
+
+            if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_LOCATION, existingCustomFields))
+            {
+                CustomFieldDTO location = new CustomFieldDTO
+                {
+                    Id = -3,
+                    WorkspaceID = wsId,
+                    CustomFieldName = ProPricerCFConstants.PROPRICER_CF_LOCATION,
+                    CustomFieldDisplayID = CustomFieldType.BoeDisplay,
+                    CustomFieldRequired = false,
+                    IsOpenEnded = false,
+                    Updateable = UpdateType.Upsert
+                };
+
+                int? locationId = this.customFieldLoader.Save(location);
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = locationId.Value,
+                    CustomFieldValueName = "Moorestown",
+                    CustomFieldValueDescription = "Moorestown",
+                    Id = -3,
+                    CustomFieldValueID = -3
+                });
+            }
+
+            if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_CLASSOFCOST, existingCustomFields))
+            {
+                CustomFieldDTO classOfCost = new CustomFieldDTO
+                {
+                    Id = -4,
+                    WorkspaceID = wsId,
+                    CustomFieldName = ProPricerCFConstants.PROPRICER_CF_CLASSOFCOST,
+                    CustomFieldDisplayID = CustomFieldType.BoeDisplay,
+                    CustomFieldRequired = false,
+                    IsOpenEnded = false,
+                    Updateable = UpdateType.Upsert
+                };
+
+                int? classOfCostId = this.customFieldLoader.Save(classOfCost);
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = classOfCostId.Value,
+                    CustomFieldValueName = "NRE",
+                    CustomFieldValueDescription = "Non Recurring",
+                    Id = -4,
+                    CustomFieldValueID = -4
+                });
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = classOfCostId.Value,
+                    CustomFieldValueName = "REC",
+                    CustomFieldValueDescription = "Recurring",
+                    Id = -5,
+                    CustomFieldValueID = -5
+                });
+            }
+
+            if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_PROJECT, existingCustomFields))
+            {
+                CustomFieldDTO project = new CustomFieldDTO
+                {
+                    Id = -5,
+                    WorkspaceID = wsId,
+                    CustomFieldName = ProPricerCFConstants.PROPRICER_CF_PROJECT,
+                    CustomFieldDisplayID = CustomFieldType.BoeDisplay,
+                    CustomFieldRequired = false,
+                    IsOpenEnded = false,
+                    Updateable = UpdateType.Upsert
+                };
+
+                int? projectId = this.customFieldLoader.Save(project);
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = projectId.Value,
+                    CustomFieldValueName = "USER1",
+                    CustomFieldValueDescription = "User Defined",
+                    Id = -6,
+                    CustomFieldValueID = -6
+                });
+            }
+
+            if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_FIELDA, existingCustomFields))
+            {
+                CustomFieldDTO fieldA = new CustomFieldDTO
+                {
+                    Id = -6,
+                    WorkspaceID = wsId,
+                    CustomFieldName = ProPricerCFConstants.PROPRICER_CF_FIELDA,
+                    CustomFieldDisplayID = CustomFieldType.BoeDisplay,
+                    CustomFieldRequired = false,
+                    IsOpenEnded = false,
+                    Updateable = UpdateType.Upsert
+                };
+
+                int? fieldAId = this.customFieldLoader.Save(fieldA);
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = fieldAId.Value,
+                    CustomFieldValueName = "USER2",
+                    CustomFieldValueDescription = "User Defined 2",
+                    Id = -7,
+                    CustomFieldValueID = -7
+                });
+            }
+
+            if (!this.CustomFieldAlreadyExists(ProPricerCFConstants.PROPRICER_CF_FIELDB, existingCustomFields))
+            {
+                CustomFieldDTO fieldB = new CustomFieldDTO
+                {
+                    Id = -7,
+                    WorkspaceID = wsId,
+                    CustomFieldName = ProPricerCFConstants.PROPRICER_CF_FIELDB,
+                    CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay,
+                    CustomFieldRequired = false,
+                    IsOpenEnded = false,
+                    Updateable = UpdateType.Upsert
+                };
+
+                int? fieldBId = this.customFieldLoader.Save(fieldB);
+
+                customFieldValues.Add(new CustomFieldValueDTO
+                {
+                    Updateable = UpdateType.Upsert,
+                    CustomFieldID = fieldBId.Value,
+                    CustomFieldValueName = "USER3",
+                    CustomFieldValueDescription = "Resource User Defined",
+                    Id = -8,
+                    CustomFieldValueID = -8
+                });
+            }
+
+            this.customFieldValueLoader.Save(customFieldValues);
+        }
+
+        /// <summary>
+        /// Check if a custom field exists for the given name
+        /// </summary>
+        /// <param name="customFieldName">Name to check</param>
+        /// <param name="existingCustomFields">Existing custom fields</param>
+        /// <returns>True if custom field already exists, otherwise false</returns>
+        private bool CustomFieldAlreadyExists(string customFieldName, ICollection<CustomFieldDTO> existingCustomFields)
+        {
+            return existingCustomFields.Any(x => x.CustomFieldName.ToLower() == customFieldName.ToLower());
         }
     }
 }

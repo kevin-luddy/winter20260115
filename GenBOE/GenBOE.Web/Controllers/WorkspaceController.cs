@@ -4732,19 +4732,9 @@ namespace GenBOE.Web.Controllers
                 {
                     errors.Add(new ValidationMessage("WorkspaceName", "Name of Workspace To Copy is required."));
                 }
-
-                if (data.CreateSikorskyCustomFields)
-                {
-                    errors.Add(new ValidationMessage("Create Sikorsky Custom Fields", "Sikorsky Custom Fields are not allowed for Workspace Copies."));
-                }
             }
             else
             {
-                if (data.CreateSikorskyCustomFields && (data.ProjectMapType == ProjectMapType.NonTimePhasedProjectMap || data.ProjectMapType == ProjectMapType.TimePhasedProjectMap))
-                {
-                    errors.Add(new ValidationMessage("Create Sikorsky Custom Fields", "Sikorsky Custom Fields are not allowed for SAC Project Map Workspaces."));
-                }
-
                 // Perform Cost Volume Lead/Pricer validation - Must be an individual (not a group), and not a subcontractor.
                 if (!string.IsNullOrEmpty(data.CostVolumeLeadPricerNTID))
                 {
@@ -5230,13 +5220,6 @@ namespace GenBOE.Web.Controllers
                             _WorkspaceExportFormatDTOLoader.InsertWorkspaceExportFormatPicklist(new Collection<int> { newWorkspaceID }, (int)templateType);
                         }
                         this.workspaceLoader.InsertDefaultMutliValues(newWorkspaceID);
-
-
-
-                        if (newWorkspace.CreateSikorskyCustomFields)
-                        {
-                            this._ControllerLogic.CreateSikorskyCustomFields(newWorkspaceID);
-                        }
                     }
 
                     // invoke the state machine to perform actions for this create                    
@@ -5289,6 +5272,32 @@ namespace GenBOE.Web.Controllers
             }
 
             FinalizeAction(_log, WebConstants.ACTION_CREATE_SIKORSKY_CUSTOM_FIELDS, sw);
+            return Json(new { Status = true });
+        }
+
+        /// <summary>
+        /// Creates the Propricer Custom Fields
+        /// </summary>
+        /// <param name="workspace">A workspace to create the fields inside.</param>
+        /// <returns>Success or failure.</returns>
+        public JsonResult CreatePropricerCustomFields(string workspace)
+        {
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+            // Initialize Action
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CREATE_PROPRICER_CUSTOM_FIELDS, SecurityPage.BoeCustomFields, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+
+            if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+            {
+                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("CopyWorkspaceTransactionTimeout", Constants.DB_COPY_WORKSPACE_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+                {
+                    this._ControllerLogic.CreateProPricerCustomFields(ws.Id);
+
+                    scope.Complete();
+                }
+            }
+
+            FinalizeAction(_log, WebConstants.ACTION_CREATE_PROPRICER_CUSTOM_FIELDS, sw);
             return Json(new { Status = true });
         }
 

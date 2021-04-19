@@ -600,6 +600,7 @@ namespace GenBOE.ActionLogic.Common
         #endregion Display
 
         public static readonly string ACTION_CREATE_SIKORSKY_CUSTOM_FIELDS = "CreateSikorskyCustomFields";
+        public static readonly string ACTION_CREATE_PROPRICER_CUSTOM_FIELDS = "CreateProPricerCustomFields";
         public static readonly string ACTION_DELETE_ALL_WORKSPACE_VARIABLES = "DeleteAllWorkspaceVariables";
         public static readonly string ACTION_DELETE_CUSTOM_FIELD = "DeleteCustomField";
         public static readonly string ACTION_DELETE_WORKSPACE_VERSIONS = "DeleteWorkspaceVersions";
