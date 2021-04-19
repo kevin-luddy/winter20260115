@@ -589,7 +589,6 @@
             <div class="warning-box full export-to-pripricer-warning"><%: ViewData["TravelMessage"]%></div><br />
         <% } %>
 
-       <div id="backupPropricer" style="display:none" class="warning-box full export-to-pripricer-warning">The Primary ProPricer instances are down. Backup instances are being used.</div><br />
         <ul class="validation-box"> </ul>
         <div>Export to ProPricer or manage the export format definitions.</div>
         <ul>

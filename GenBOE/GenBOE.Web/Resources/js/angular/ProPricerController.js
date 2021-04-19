@@ -52,11 +52,6 @@
             url: $scope.model.ProPricerUrl + 'poolinstance'
         }).then(function (response) {
             $scope.model.SendToProPricerData.Instances = response.data;
-
-            if (response.data[0].IsBackup) {
-                $('#backupPropricer').show();
-            }
-
             // auto-select the instance/schema if there is only one
             if (response.data.length == 1) {
                 $scope.model.SendToProPricerData.SelectedInstance = response.data[0].Id;
