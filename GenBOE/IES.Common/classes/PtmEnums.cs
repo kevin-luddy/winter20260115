@@ -731,7 +731,19 @@ namespace IES.Common
         /// Strategist
         /// </summary>
         [Description("Strategist")]
-        Strategist = 4
+        Strategist = 4,
+
+        /// <summary>
+        /// Parametric Estimator
+        /// </summary>
+        [Description("Parametric Estimator")]
+        ParametricEstimator = 5,
+
+        /// <summary>
+        /// Other
+        /// </summary>
+        [Description("Other")]
+        Other = 6
     }
 
     /// <summary>
