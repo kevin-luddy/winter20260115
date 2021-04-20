@@ -62,18 +62,6 @@ namespace IES.Tests
         }
 
         /// <summary>
-        /// Tests BOEJ-2935 where Silva and Silva$ were both valid NTIDs, and the wrong data was being pulled
-        /// </summary>
-        [TestMethod]
-        public void Test_BOEJ2935()
-        {
-            ActiveDirectoryUtilities sut = new ActiveDirectoryUtilities(30);
-            UserData userdata = sut.GetUserByQualifiedAccount("silva", false);
-            Assert.IsNotNull(userdata);
-            Assert.IsFalse(string.IsNullOrEmpty(userdata.DisplayName));
-        }
-
-        /// <summary>
         /// test searching for an ntid that does not exist in the AD
         /// </summary>
         [TestMethod]

@@ -233,7 +233,8 @@ namespace GenTRAC.Tests
                 new SelectListItem() { Value = "11", Text = "Denver, CO" },
                 new SelectListItem() { Value = "12", Text = "Huntsville, AL" },
                 new SelectListItem() { Value = "13", Text = "Michoud, LA" },
-                new SelectListItem() { Value = "14", Text = "Sunnyvale, CA" }
+                new SelectListItem() { Value = "14", Text = "Sunnyvale, CA" },
+                new SelectListItem() { Value = "15", Text = "Titusville, FL" }
             };
 
             List<SelectListItem> actualResult = EnumUtilities.GetListItemsForEnum(typeof(ProposalLocation), false).ToList();
@@ -264,7 +265,8 @@ namespace GenTRAC.Tests
                 new SelectListItem() { Value = "11", Text = "Denver, CO" },
                 new SelectListItem() { Value = "12", Text = "Huntsville, AL" },
                 new SelectListItem() { Value = "13", Text = "Michoud, LA" },
-                new SelectListItem() { Value = "14", Text = "Sunnyvale, CA" }
+                new SelectListItem() { Value = "14", Text = "Sunnyvale, CA" },
+                new SelectListItem() { Value = "15", Text = "Titusville, FL" }
             };
 
             // Provide a selected value for an item that is inactive.  It should be returned with the results.
@@ -295,6 +297,7 @@ namespace GenTRAC.Tests
                 new SelectListItem() { Value = "13", Text = "Michoud, LA" },
                 new SelectListItem() { Value = "9", Text = "Other" },
                 new SelectListItem() { Value = "14", Text = "Sunnyvale, CA" },
+                new SelectListItem() { Value = "15", Text = "Titusville, FL" },
                 new SelectListItem() { Value = "7", Text = "Valley Forge, PA" }
             };
 
