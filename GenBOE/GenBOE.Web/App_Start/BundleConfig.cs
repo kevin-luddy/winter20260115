@@ -77,7 +77,8 @@ namespace GenBOE.Web
                 "~/Resources/js/angular/MoqEquationApp.js",
                 "~/Scripts/angular-cookies.js",
                 "~/Resources/js/angular/genBoe.js",
-                "~/Resources/js/angular/metricsController.js"
+                "~/Resources/js/angular/metricsController.js",
+                "~/Scripts/angularjs-dropdown-multiselect.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/systemAdmin").Include(
@@ -94,7 +95,8 @@ namespace GenBOE.Web
                 "~/Resources/js/angular/genBoe.js",
                 "~/Resources/js/angular/systemEmailController.js",
                 "~/Resources/js/angular/manageSystemSettingsController.js",
-                "~/Resources/js/angular/manageOverdueTrainingController.js"
+                "~/Resources/js/angular/manageOverdueTrainingController.js",
+                "~/Scripts/angularjs-dropdown-multiselect.js"
                 ));
 
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
@@ -114,6 +116,7 @@ namespace GenBOE.Web
                 "~/Scripts/angular-ui/sortable.js",
                 "~/Scripts/modernizr-{version}.js",
                 "~/Scripts/angular-cookies.js",
+                "~/Scripts/angularjs-dropdown-multiselect.js",
                 "~/Resources/js/json2.js",
                 "~/Resources/js/iBOE.js",
                 "~/Resources/js/ImageToggler.js",

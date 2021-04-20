@@ -56,12 +56,23 @@
 
     $scope.data = [];
     $scope.bulkAssignData = [];
+    $scope.bulkAssignBoes = [];
+    $scope.bulkAssignAuthors = [];
+    $scope.bulkAssignApprovers = [];
+    $scope.bulkAssignSubAuthors = [];
     $scope.isLoading = true;
     $scope.isBulkAssign = false;
 
-    $scope.selectedBoes;
+    $scope.selectedBoes = [];
     $scope.selectedRole;
-    $scope.selectedUsers;
+    $scope.selectedUsers = [];
+
+    $scope.dropdownSettings = {
+        scrollableHeight: '200px',
+        scrollable: true,
+        checkBoxes: true,
+        enableSearch: true
+    };
 
     $scope.roles = {
         author: 'Author',
@@ -946,6 +957,11 @@
         $scope.bulkAssignData = [];
         $scope.errors = [];
 
+        $scope.bulkAssignBoes = [];
+        $scope.bulkAssignAuthors = [];
+        $scope.bulkAssignApprovers = [];
+        $scope.bulkAssignSubAuthors = [];
+
         return $http({
             method: 'POST',
             url: CreatePostURL(ManageBOEModel.workspace, ManageBOEModel.controller, ManageBOEModel.action, '')
@@ -1027,6 +1043,22 @@
             $scope.filter.subauthor = convertToArray($scope.filter.subauthor);
 
             $scope.data = $scope.bulkAssignData = response.data.BoeResults;
+
+            $scope.data.forEach(function (boe) {
+                $scope.bulkAssignBoes.push({ id: boe.BoeID, label: boe.WbsDisplayName + " | " + boe.ClinDisplayName });
+            });
+
+            $scope.gridModel.PotentialAuthors.forEach(function (user) {
+                $scope.bulkAssignAuthors.push({ id: user.Value, label: user.Text });
+            });
+
+            $scope.gridModel.PotentialApprovers.forEach(function (user) {
+                $scope.bulkAssignApprovers.push({ id: user.Value, label: user.Text });
+            });
+
+            $scope.gridModel.PotentialSubcontractorAuthors.forEach(function (user) {
+                $scope.bulkAssignSubAuthors.push({ id: user.Value, label: user.Text });
+            });
 
             $scope.LoadFilterFromCookies();
 

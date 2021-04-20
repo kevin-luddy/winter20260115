@@ -8574,12 +8574,57 @@ div.WarningBanner {
     padding-bottom: 10px;
 }
 
+.role-select {
+    position: relative;
+    top: -2px;
+}
+
 .bulk-select select {
     width: 150px;
+    height: 18px;
+}
+
+.bulk-select .dropdown-toggle {
+    width: 200px;
+    height: 18px;
+    font-size: inherit;
+    line-height:inherit;
+    border-radius: 0px;
+    border-color: darkgrey;
+    padding: 0px;
+}
+
+.bulk-select .dropdown-menu,
+.bulk-select .searchField {
+    font-size: inherit;
+    line-height:inherit;
+}
+
+.bulk-select .searchField {
+    height: 18px;
+}
+
+.bulk-select .dropdown-menu a {
+    height: 20px;
+    padding: 0px 20px !important;
+}
+
+.bulk-select .dropdown-menu a div {
+    margin: 0px;
+    padding-left: 0px;
+}
+
+.bulk-select .dropdown-menu a label span {
+    display: block;
+    padding-top: 3px;
 }
 
 .bulk-assign-add-remove button {
     bottom: 7px;
+}
+
+.bulk-select .dropdown-menu .divider {
+    margin: 2px 0;
 }
 
 #BulkAssign .search-box {
