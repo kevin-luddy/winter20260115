@@ -1999,14 +1999,15 @@ button.ui-datepicker-trigger
 }
 
 .manage-boe-grid th.author-select,
-.manage-boe-grid th.approver-select,
-.bulk-assign-grid th.author-select,
-.bulk-assign-grid th.approver-select,
-.bulk-assign-grid th.sub-author-select {
+.manage-boe-grid th.approver-select {
     width: 250px;
 }
 
-.manage-boe-grid th.hours{
+.bulk-assign-grid th {
+    width: 25%;
+}
+
+.manage-boe-grid th.hours {
     width: 60px;
 }
 

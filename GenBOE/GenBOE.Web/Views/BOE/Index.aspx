@@ -130,7 +130,7 @@
                     </div>
                     <div class="bulk-select role-select">
                         <div class="bulk-assign-label">Role</div>
-                        <select data-ng-model="selectedRole">
+                        <select data-ng-model="selectedRole" data-ng-change="clearUsers()">
                             <option></option>
                             <option>{{roles.author}}</option>
                             <option>{{roles.approver}}</option>
@@ -172,21 +172,21 @@
                                     <a data-ng-click="changeSorting(columns.approvers)" data-ng-class="{ 'bold': boldSort(columns.approvers) }">Approvers</a>
                                     <a data-ng-click="toggleFilter(columns.approvers)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
                                 </th>
-                                <th class="sub-author-select bootstrap">
+<%--                            <th class="sub-author-select bootstrap">
                                     <a data-ng-click="changeSorting(columns.subauthors)" data-ng-class="{ 'bold': boldSort(columns.subauthors) }">Subcontract Authors</a>
                                     <a data-ng-click="toggleFilter(columns.subauthors)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
-                                </th>
+                                </th>--%>
                             </tr>
                         </thead>
                         <tbody>
                             <tr data-ng-show="isLoading"><td colspan="5"><div class="loader"></div></td></tr>
-                            <tr data-ng-show="!isLoading && (data.length === 0 || filteredResults.length === 0)"><td colspan="5"><div class="empty-grid-text">There are no BOEs for the Workspace.</div></td></tr>
-                            <tr pkid="{{::boe.BoeID}}" data-ng-repeat="boe in (filteredResults = (bulkAssignData | filter:filterBOEs | orderBy:predicate:reverse)) | limitTo:pageSize:currentPage*pageSize"">
+                            <tr data-ng-show="!isLoading && (data.length === 0 || filteredBulkResults.length === 0)"><td colspan="5"><div class="empty-grid-text">There are no BOEs for the Workspace.</div></td></tr>
+                            <tr pkid="{{::boe.BoeID}}" data-ng-repeat="boe in (filteredBulkResults = (bulkAssignData | filter:filterBOEs | orderBy:predicate:reverse)) | limitTo:pageSize:currentPage*pageSize"">
                                 <td>{{::boe.WbsDisplayName}}</td>
                                 <td>{{::boe.ClinDisplayName}}</td>
                                 <td><div data-ng-repeat="authorName in boe.AuthorsDisplayNames">{{authorName}}</div></td>
                                 <td><div data-ng-repeat="approver in boe.ApproversDisplayNames">{{approver}}</div></td>
-                                <td><div data-ng-repeat="subAuthorName in boe.SubcontractorAuthors">{{subAuthorName}}</div></td>
+                                <%--<td><div data-ng-repeat="subAuthorName in boe.SubcontractorAuthors">{{subAuthorName}}</div></td>--%>
                             </tr>
                         </tbody>
                     </table>
@@ -194,7 +194,7 @@
                 <div class="buttons">
                     <div class="search-box float-right">
                         <input type="text" class="filter" data-ng-model="searchText" data-ng-model-options="{ debounce: 200 }" data-ng-change="searchChanged()" placeholder="Search..." style="float: right" />
-                        <div class="paging-control" genpaging data-num-pages="{{ numberOfPages(filteredResults) }}" data-current-page="currentPage"></div>
+                        <div class="paging-control" genpaging data-num-pages="{{ numberOfPages(filteredBulkResults) }}" data-current-page="currentPage"></div>
                     </div>
                     <button id="BulkAssign-VerifyButton" type="button" class="ies-action" data-ng-disabled="dialog.disableBulkAssignButtons" data-ng-click="verifyBulkAssign()">Verify</button>
                     <button id="BulkAssign-SaveButton" type="button" class="ies-action" data-ng-disabled="dialog.disableBulkAssignButtons" data-ng-click="saveBulkAssign()">Save</button>
