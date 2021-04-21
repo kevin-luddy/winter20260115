@@ -383,6 +383,8 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
+                    dbModel.Database.CommandTimeout = 360;  // extend time for admins
+
                     ICollection<int> proposalIdsWithWriteAccess = GetProposalIdsWithLinkedDocumentWriteAccess(ntID, dbModel);
 
                     toReturn = dbModel.getMyProposals(proposalStatus, filterStartDate, filterEndDate, searchString ?? string.Empty, ntID,
