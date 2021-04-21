@@ -48,7 +48,7 @@
                     <button class="ies-action" id="Add-ManageBOE" data-ng-disabled="isLoading" data-ng-show="isWorkingState" data-ng-click="AddBOE()" type="button">+ Add</button>
                     <button class="ies-action" id="Import-ManageBOE" data-ng-disabled="isLoading" data-ng-show="isWorkingState" data-ng-click="toggleImport()" type="button">Import</button>
                     <button class="ies-action" id="Export-ManageBOE" data-ng-disabled="isLoading || isExporting" data-ng-click="export(false)" type="button">Export</button>
-                    <button class="ies-action" id="BulkAssign-ManageBOE" data-ng-disabled="isLoading" data-ng-show="isWorkingState" data-ng-click="openBulkAssign()" type="button">Bulk Assign Roles</button>
+                    <button class="ies-action" id="BulkAssign-ManageBOE" data-ng-disabled="isLoading || data.length == 0" data-ng-show="isWorkingState" data-ng-click="openBulkAssign()" type="button">Bulk Assign Roles</button>
                 </div>
                 <div id="noteMessage" data-ng-show="isDataFiltered()">You are viewing filtered data. <a data-ng-click="clearAllFilters()">Click here</a> to reset all your filters.</div>
                 <div class="search-box float-right">
@@ -123,15 +123,12 @@
                 Select "Assign" to assign the Users to the Role in the BOEs if they are not already assigned. <br />
                 Select "Remove" to remove the selected Users from the selected Role in the selected BOEs if they are assigned.</div>
             <div id="BulkAssign" class="form-row" data-ng-show="isBulkAssign">
-                <div class="bulk-assign-add-remove">
+                <div class="bulk-assign-add-remove bootstrap">
                     <div class="bulk-select">
                         <div class="bulk-assign-label">BOEs</div>
-                        <select data-ng-model="selectedBoes">
-                            <option></option>
-                            <option data-ng-repeat="boe in bulkAssignData" value="{{::boe.BoeID}}">{{::boe.WbsDisplayName}} | {{::boe.ClinDisplayName}}</option>
-                        </select>
+                        <div ng-dropdown-multiselect="" options="bulkAssignBoes" selected-model="selectedBoes" checkBoxes="true" extra-settings="dropdownSettings"></div>
                     </div>
-                    <div class="bulk-select">
+                    <div class="bulk-select role-select">
                         <div class="bulk-assign-label">Role</div>
                         <select data-ng-model="selectedRole">
                             <option></option>
@@ -142,12 +139,10 @@
                     </div>
                     <div class="bulk-select">
                         <div class="bulk-assign-label">Users</div>
-                        <select data-ng-model="selectedUsers" data-ng-disabled="selectedRole == undefined || selectedRole == ''">
-                            <option></option>
-                            <option data-ng-if="selectedRole == roles.author" data-ng-repeat="user in gridModel.PotentialAuthors" value="{{user.Value}}">{{user.Text}}</option>
-                            <option data-ng-if="selectedRole == roles.approver" data-ng-repeat="user in gridModel.PotentialApprovers" value="{{user.Value}}">{{user.Text}}</option>
-                            <option data-ng-if="selectedRole == roles.subAuthor" data-ng-repeat="user in gridModel.PotentialSubcontractorAuthors" value="{{user.Value}}">{{user.Text}}</option>
-                        </select>
+                        <div data-ng-if="selectedRole == undefined || selectedRole == ''" data-ng-disabled="true" ng-dropdown-multiselect="" disabled="true"></div>
+                        <div data-ng-if="selectedRole == roles.author" ng-dropdown-multiselect="" options="bulkAssignAuthors" selected-model="selectedUsers" checkBoxes="true" extra-settings="dropdownSettings"></div>
+                        <div data-ng-if="selectedRole == roles.approver" ng-dropdown-multiselect="" options="bulkAssignApprovers" selected-model="selectedUsers" checkBoxes="true" extra-settings="dropdownSettings"></div>
+                        <div data-ng-if="selectedRole == roles.subAuthor" ng-dropdown-multiselect="" options="bulkAssignSubAuthors" selected-model="selectedUsers" checkBoxes="true" extra-settings="dropdownSettings"></div>
                     </div>
                     <button id="bulk-assign-add" class="ies-action" data-ng-click="bulkAssignRoles()" data-ng-disabled="disableAssignRemove()">Assign</button>
                     <button id="bulk-assign-remove" class="ies-danger" data-ng-click="bulkRemoveRoles()" data-ng-disabled="disableAssignRemove()">Remove</button>
