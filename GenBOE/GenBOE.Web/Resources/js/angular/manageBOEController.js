@@ -203,9 +203,6 @@
         $scope.filter.status.forEach(function (item) {
             item.checked = false;
         });
-        $scope.filter.subauthor.forEach(function (item) {
-            item.checked = false;
-        })
 
         $scope.currentPage = 0;
         if (!noClose) {
@@ -639,8 +636,6 @@
             return $scope.filter.author;
         } else if ($scope.filter.filterColumn === $scope.columns.status) {
             return $scope.filter.status;
-        } else if ($scope.filter.filterColumn === $scope.columns.subauthors) {
-            return $scope.filter.subauthor;
         }
     };
 
@@ -658,8 +653,6 @@
                 selectedFilters.author = currentSet;
             } else if ($scope.filter.filterColumn === $scope.columns.status) {
                 selectedFilters.status = currentSet;
-            } else if ($scope.filter.filterColumn === $scope.columns.subauthors) {
-                selectedFilters.subauthor = currentSet;
             }
         }
     };
@@ -1005,7 +998,6 @@
 
             response.data.PotentialSubcontractorAuthors.forEach(function (sub) {
                 $scope.filter.author[sub.Text] = { display: sub.Text, value: sub.Text, checked: false };
-                $scope.filter.subauthor[sub.Text] = { display: sub.Text, value: sub.Text, checked: false };
             });
 
             response.data.PotentialApprovers.forEach(function (approver) {
@@ -1040,9 +1032,9 @@
             $scope.filter.author = convertToArray($scope.filter.author);
             $scope.filter.approver = convertToArray($scope.filter.approver);
             $scope.filter.status = convertToArray($scope.filter.status);
-            $scope.filter.subauthor = convertToArray($scope.filter.subauthor);
 
-            $scope.data = $scope.bulkAssignData = response.data.BoeResults;
+            $scope.data = response.data.BoeResults; 
+            console.log($scope.data);
 
             $scope.data.forEach(function (boe) {
                 $scope.bulkAssignBoes.push({ id: boe.BoeID, label: boe.WbsDisplayName + " | " + boe.ClinDisplayName });
@@ -1083,28 +1075,94 @@
      */
 
     $scope.openBulkAssign = function () {
+        $scope.bulkAssignData = angular.copy($scope.data);
         $scope.isBulkAssign = true;
     };
 
     $scope.cancelBulkAssign = function () {
-        // TODO - clear data
+        $scope.bulkAssignData = [];
         $scope.isBulkAssign = false;
     };
 
     $scope.bulkAssignRoles = function () {
-        // TODO - remove console logs once functionality added
-        console.log('boes', $scope.selectedBoes);
-        console.log('roles', $scope.selectedRole);
-        console.log('users', $scope.selectedUsers);
+        $scope.selectedBoes.forEach(function (selectedBoe) {
+            var boeToUpdate = $scope.bulkAssignData.find(boe => boe.BoeID == selectedBoe.id);
+
+            if (boeToUpdate != undefined) {
+                $scope.selectedUsers.forEach(function (selectedUser) {
+                    var userId = parseInt(selectedUser.id);
+
+                    if ($scope.selectedRole == $scope.roles.author) {
+                        if (!boeToUpdate.Authors.includes(userId)) {
+                            boeToUpdate.Authors.push(userId);
+                            boeToUpdate.AuthorsDisplayNames.push(selectedUser.label);
+                        }
+                    } else if ($scope.selectedRole == $scope.roles.approver) {
+                        if (!boeToUpdate.Approvers.includes(userId)) {
+                            boeToUpdate.Approvers.push(userId);
+                            boeToUpdate.ApproversDisplayNames.push(selectedUser.label);
+                        }
+                    } else if ($scope.selectedRole == $scope.roles.subAuthor) {
+                        if (!boeToUpdate.SubcontractorAuthors.includes(userId)) {
+                            boeToUpdate.SubcontractorAuthors.push(userId);
+                            boeToUpdate.AuthorsDisplayNames.push(selectedUser.label);
+                        }
+                    }
+                })
+            }
+        });
+
+        $scope.clearAllSelections();
     };
 
     $scope.bulkRemoveRoles = function () {
+        $scope.selectedBoes.forEach(function (selectedBoe) {
+            var boeToUpdate = $scope.bulkAssignData.find(boe => boe.BoeID == selectedBoe.id);
 
+            if (boeToUpdate != undefined) {
+                $scope.selectedUsers.forEach(function (selectedUser) {
+                    var userId = parseInt(selectedUser.id);
+
+                    if ($scope.selectedRole == $scope.roles.author) {
+                        if (boeToUpdate.Authors.includes(userId)) {
+                            var idIndex = boeToUpdate.Authors.indexOf(userId);
+                            var nameIndex = boeToUpdate.AuthorsDisplayNames.indexOf(selectedUser.label);
+                            boeToUpdate.Authors.splice(idIndex, 1);
+                            boeToUpdate.AuthorsDisplayNames.splice(nameIndex, 1);
+                        }
+                    } else if ($scope.selectedRole == $scope.roles.approver) {
+                        if (boeToUpdate.Approvers.includes(userId)) {
+                            var idIndex = boeToUpdate.Approvers.indexOf(userId);
+                            var nameIndex = boeToUpdate.ApproversDisplayNames.indexOf(selectedUser.label);
+                            boeToUpdate.Approvers.splice(idIndex, 1);
+                            boeToUpdate.ApproversDisplayNames.splice(nameIndex, 1);
+                        }
+                    } else if ($scope.selectedRole == $scope.roles.subAuthor) {
+                        if (boeToUpdate.SubcontractorAuthors.includes(userId)) {
+                            var idIndex = boeToUpdate.SubcontractorAuthors.indexOf(userId);
+                            var nameIndex = boeToUpdate.AuthorsDisplayNames.indexOf(selectedUser.label);
+                            boeToUpdate.SubcontractorAuthors.splice(idIndex, 1);
+                            boeToUpdate.AuthorsDisplayNames.splice(nameIndex, 1);
+                        }
+                    }
+                });
+            }
+        });
+
+        $scope.clearAllSelections();
     };
 
+    $scope.clearAllSelections = function () {
+        $scope.selectedBoes = [];
+        $scope.selectedRole = '';
+        $scope.selectedUsers = [];
+    }
+
+    $scope.clearUsers = function () {
+        $scope.selectedUsers = [];
+    }
+
     $scope.disableAssignRemove = function () {
-        // Assign/Remove buttons should only be enabled when all selections have been made
-        // TODO - update to check selectedBoes and selectedUsers for length > 0 once multi-select implemented
         return $scope.selectedBoes == undefined || $scope.selectedBoes == ''
             || $scope.selectedRole == undefined || $scope.selectedRole == ''
             || $scope.selectedUsers == undefined || $scope.selectedUsers == '';
