@@ -8631,3 +8631,7 @@ div.WarningBanner {
 #BulkAssign .search-box {
     margin-right: 0px !important;
 }
+
+.bulkAssignError {
+    background-color: rgba(255, 0, 0, 0.50);
+}

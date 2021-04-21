@@ -1034,7 +1034,6 @@
             $scope.filter.status = convertToArray($scope.filter.status);
 
             $scope.data = response.data.BoeResults; 
-            console.log($scope.data);
 
             $scope.data.forEach(function (boe) {
                 $scope.bulkAssignBoes.push({ id: boe.BoeID, label: boe.WbsDisplayName + " | " + boe.ClinDisplayName });
@@ -1166,5 +1165,34 @@
         return $scope.selectedBoes == undefined || $scope.selectedBoes == ''
             || $scope.selectedRole == undefined || $scope.selectedRole == ''
             || $scope.selectedUsers == undefined || $scope.selectedUsers == '';
+    }
+
+    $scope.validateBulkAssign = function () {
+        $scope.errors = [];
+
+        $scope.bulkAssignData.forEach(function (boe) {
+            var hasAuthor = boe.Authors.length > 0 || boe.SubcontractorAuthors.length > 0;
+            var hasApprover = boe.Approvers.length > 0;
+            boe.hasError = false;
+
+            if (boe.Status == "Unassigned") {
+                if (!hasAuthor && hasApprover) {
+                    $scope.errors.push({ ValidationIssue: "Currently Unassigned BOE " + boe.WbsDisplayName + " | " + boe.ClinDisplayName + " is missing an Author. Remove the Approver(s) to keep it unassigned or add at least one Author." });
+                    boe.hasError = true;
+                } else if (hasAuthor && !hasApprover) {
+                    $scope.errors.push({ ValidationIssue: "Currently Unassigned BOE " + boe.WbsDisplayName + " | " + boe.ClinDisplayName + " is missing an Approver.  Remove the Author(s) to keep it unassigned or add at least one Approver" });
+                    boe.hasError = true;
+                }
+            } else if (!hasAuthor && !hasApprover) {
+                $scope.errors.push({ ValidationIssue: boe.WbsDisplayName + " | " + boe.ClinDisplayName + " is missing an Author and Approver. At least one Author and at least one Approver must be assigned." });
+                boe.hasError = true;
+            } else if (!hasAuthor) {
+                $scope.errors.push({ ValidationIssue: boe.WbsDisplayName + " | " + boe.ClinDisplayName + " is missing an Author. At least one Author must be assigned." });
+                boe.hasError = true;
+            } else if (!hasApprover) {
+                $scope.errors.push({ ValidationIssue: boe.WbsDisplayName + " | " + boe.ClinDisplayName + " is missing an Approver. At least one Approver must be assigned." });
+                boe.hasError = true;
+            }
+        });
     }
 }]);

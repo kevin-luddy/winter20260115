@@ -123,6 +123,8 @@
                 Select "Assign" to assign the Users to the Role in the BOEs if they are not already assigned. <br />
                 Select "Remove" to remove the selected Users from the selected Role in the selected BOEs if they are assigned.</div>
             <div id="BulkAssign" class="form-row" data-ng-show="isBulkAssign">
+                <ul class="validation-box" style="display: none;"></ul>
+                <gen-validation data-errors="errors"></gen-validation>
                 <div class="bulk-assign-add-remove bootstrap">
                     <div class="bulk-select">
                         <div class="bulk-assign-label">BOEs</div>
@@ -181,7 +183,7 @@
                         <tbody>
                             <tr data-ng-show="isLoading"><td colspan="5"><div class="loader"></div></td></tr>
                             <tr data-ng-show="!isLoading && (data.length === 0 || filteredBulkResults.length === 0)"><td colspan="5"><div class="empty-grid-text">There are no BOEs for the Workspace.</div></td></tr>
-                            <tr pkid="{{::boe.BoeID}}" data-ng-repeat="boe in (filteredBulkResults = (bulkAssignData | filter:filterBOEs | orderBy:predicate:reverse)) | limitTo:pageSize:currentPage*pageSize"">
+                            <tr pkid="{{::boe.BoeID}}" data-ng-repeat="boe in (filteredBulkResults = (bulkAssignData | filter:filterBOEs | orderBy:predicate:reverse)) | limitTo:pageSize:currentPage*pageSize" data-ng-class="{ 'bulkAssignError': boe.hasError }">
                                 <td>{{::boe.WbsDisplayName}}</td>
                                 <td>{{::boe.ClinDisplayName}}</td>
                                 <td><div data-ng-repeat="authorName in boe.AuthorsDisplayNames">{{authorName}}</div></td>
@@ -196,7 +198,7 @@
                         <input type="text" class="filter" data-ng-model="searchText" data-ng-model-options="{ debounce: 200 }" data-ng-change="searchChanged()" placeholder="Search..." style="float: right" />
                         <div class="paging-control" genpaging data-num-pages="{{ numberOfPages(filteredBulkResults) }}" data-current-page="currentPage"></div>
                     </div>
-                    <button id="BulkAssign-VerifyButton" type="button" class="ies-action" data-ng-disabled="dialog.disableBulkAssignButtons" data-ng-click="verifyBulkAssign()">Verify</button>
+                    <button id="BulkAssign-ValidateButton" type="button" class="ies-action" data-ng-disabled="dialog.disableBulkAssignButtons" data-ng-click="validateBulkAssign()">Validate</button>
                     <button id="BulkAssign-SaveButton" type="button" class="ies-action" data-ng-disabled="dialog.disableBulkAssignButtons" data-ng-click="saveBulkAssign()">Save</button>
                     <button id="BulkAssign-CancelButton" type="button" class="ies" data-ng-click="cancelBulkAssign()">Cancel</button>
                 </div>
