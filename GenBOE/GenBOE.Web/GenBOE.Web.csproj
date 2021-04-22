@@ -811,7 +811,6 @@
     <Content Include="Scripts\ui-grid.min.js" />
     <Content Include="Scripts\ui-tinymce.js" />
     <Content Include="Scripts\ui-tinymce.min.js" />
-    <Content Include="Templates\Export\Temp\RMS - Portrait - 12 point 1 inch margins - Custom Fields.xslx" />
     <Content Include="Templates\Export\Temp\this directory is for cached files.txt" />
     <Content Include="Templates\Export\Workoffline.xlsm" />
     <Content Include="Views\Admin\ManageCreateWorkspacePermissionsGrid.ascx" />
@@ -1021,12 +1020,6 @@
     <Content Include="Templates\Export\TravelUnitCost.xlsx" />
     <Content Include="Templates\Export\MissionSpread.xlsx" />
     <Content Include="Templates\Export\MissionTypes.xlsx" />
-    <Content Include="Templates\Export\Temp\DS &amp; ES - Standard - Landscape - With Cost.xslx" />
-    <Content Include="Templates\Export\Temp\DS &amp; ES - Standard - Landscape - Without Cost.xslx" />
-    <Content Include="Templates\Export\Temp\DS &amp; ES - Standard - Portrait - With Cost.xslx" />
-    <Content Include="Templates\Export\Temp\DS &amp; ES - Standard - Portrait - Without Cost.xslx" />
-    <Content Include="Templates\Export\Temp\DS &amp; ES - EDS - Landscape - Without Labor Cost.xslx" />
-    <Content Include="Templates\Export\Temp\DS &amp; ES - IECS - Landscape - With Cost.xslx" />
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>
@@ -1043,12 +1036,9 @@
     <Content Include="Scripts\tinymce\skins\lightgray\fonts\tinymce-small.eot" />
     <Content Include="Scripts\tinymce\langs\readme.md" />
     <None Include="Settings.StyleCop" />
-    <Content Include="Templates\Export\Temp\DS - Standard - Landscape - With Cost - Includes Variable Details.xslx" />
     <Content Include="Templates\Export\WorkspaceDataSpaceSystems.xlsx" />
     <Content Include="Templates\Export\SSC_Labor_Rates_example.xlsx" />
     <Content Include="Templates\Export\MST_Labor_Rates_example.xlsx" />
-    <Content Include="Templates\Export\Temp\RMS - Portrait - 12 point 1 inch margins with genBOE BOE, Task, and Resource IDs.xslx" />
-    <Content Include="Templates\Export\Temp\RMS - Portrait - 12 point 1 inch margins with genBOE Task IDs.xslx" />
     <Content Include="Templates\Export\LaborTypesAndSpread.xlsx" />
     <Content Include="Templates\Export\GoldCopies\Master Template - Landscape.docx" />
     <Content Include="Templates\Export\GoldCopies\Master Template - RMS - Portrait.docx" />
@@ -1060,23 +1050,8 @@
     <Content Include="Templates\Export\ProjectMap.xlsx" />
     <Content Include="Templates\Export\IBOE_withPortionMarkings_1.docx" />
     <Content Include="Templates\Export\PBOE_withPortionMarkings_1.docx" />
-    <None Include="Templates\Export\Temp\DS &amp; ES - Standard - Landscape - With Cost.xslx.old" />
-    <None Include="Templates\Export\Temp\DS &amp; ES - Standard - Landscape - Without Cost.xslx.old" />
-    <Content Include="Templates\Export\Temp\LMSI - GSPS - Landscape - Without Labor Cost.xslx" />
-    <Content Include="Templates\Export\Temp\DS - Standard - Portrait - Without Cost #2.xslx" />
-    <Content Include="Templates\Export\Temp\LMSI- AEHF - Landscape - With Non-Labor Cost.xslx" />
-    <Content Include="Templates\Export\Temp\Master Template - Landscape.docx" />
     <Content Include="Views\Permissions\ManagePermissions.aspx" />
-    <Content Include="Templates\Export\Temp\Master Template - SSC - Landscape.docx" />
-    <Content Include="Templates\Export\Temp\LMSI - GSM-O - Landscape - With Time Phased Summaries.xslx" />
-    <Content Include="Templates\Export\Temp\LMSI - NISSC - Landscape - With Non-Labor Costs.xslx" />
     <Content Include="Templates\Export\WorkspaceDataMST.xlsx" />
-    <Content Include="Templates\Export\Temp\RMS - Deepwater - Portrait.xslx" />
-    <Content Include="Templates\Export\Temp\RMS - Portrait - 12 point 1 inch margins.xslx" />
-    <Content Include="Templates\Export\Temp\RMS - Space Fence - Portrait.xslx" />
-    <Content Include="Templates\Export\Temp\RMS - Standard - Portrait.xslx" />
-    <Content Include="Templates\Export\Temp\LMSI - Standard - Landscape.docx" />
-    <Content Include="Templates\Export\Temp\Master Template - RMS - Portrait.docx" />
     <Content Include="Views\Shared\Error.aspx" />
     <Content Include="Views\Shared\Master\Site.Master" />
     <Content Include="Templates\Export\TravelExtendedCostRMS.xlsx" />
@@ -1084,11 +1059,7 @@
     <Content Include="Templates\Export\TravelOrigins.xlsx" />
     <Content Include="Templates\Export\EscalationRatesRMS.xlsx" />
     <Content Include="Views\Workspace\ProjectMapIndex.aspx" />
-    <Content Include="Templates\Export\Temp\RMS - Sikorsky Project Map.xslx" />
     <Content Include="Templates\Export\TMResourceRates.xlsx" />
-    <Content Include="Templates\Export\Temp\RMS - RMS Project Map.xslx" />
-    <Content Include="Templates\Export\Temp\RMS - NISSC - Landscape - with Non-labor Costs.xslx" />
-    <None Include="Templates\Export\Temp\RMS - Portrait - CLIN-WBS with SOW ID.xslx" />
     <Content Include="Views\Admin\ManageSystemSettings.ascx" />
     <Content Include="Templates\Export\WbsBoeReport.xlsx" />
   </ItemGroup>
