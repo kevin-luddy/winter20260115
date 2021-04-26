@@ -484,8 +484,19 @@
             }
         }
 
+        $scope.sortBulkAssignData();
+
         $scope.SaveFilterToCookies();
     };
+
+    $scope.sortBulkAssignData = function () {
+        $scope.bulkAssignBoes = [];
+        var sortedBoes = $filter('orderBy')($scope.isBulkAssign ? $scope.bulkAssignData : $scope.data, $scope.predicate, $scope.reverse);
+
+        sortedBoes.forEach(function (boe) {
+            $scope.bulkAssignBoes.push({ id: boe.BoeID, label: boe.WbsDisplayName + " | " + boe.ClinDisplayName });
+        });
+    }
 
     // returns true when the column being sorted matches the first index
     $scope.boldSort = function (sortColumn) {
@@ -1036,10 +1047,6 @@
 
             $scope.data = response.data.BoeResults; 
 
-            $scope.data.forEach(function (boe) {
-                $scope.bulkAssignBoes.push({ id: boe.BoeID, label: boe.WbsDisplayName + " | " + boe.ClinDisplayName });
-            });
-
             $scope.gridModel.PotentialAuthors.forEach(function (user) {
                 $scope.bulkAssignAuthors.push({ id: user.Value, label: user.Text });
             });
@@ -1053,6 +1060,8 @@
             });
 
             $scope.LoadFilterFromCookies();
+
+            $scope.sortBulkAssignData();
 
             $scope.isLoading = false;
             firstLoad = false;
