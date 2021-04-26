@@ -157,6 +157,9 @@
                 <div id="QuickFilters" data-ng-class="{ 'filter-margin': !isDataFiltered() }">
                     Quick Action Filters: 
                     <span>
+                        <a data-ng-click="filterForIncomplete()">Incomplete BOEs</a>
+                    </span>
+                    <span>
                         <a data-ng-click="filterForErrors()" data-ng-disabled="!anyBoesWithErrors()" data-ng-class="{ 'disabled': !anyBoesWithErrors() }">BOEs with Errors</a>
                     </span>
                 </div>

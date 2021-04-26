@@ -1211,6 +1211,25 @@
             || $scope.selectedUsers == undefined || $scope.selectedUsers == '';
     }
 
+    $scope.filterForIncomplete = function () {
+        $scope.clearAllFilters(true);
+
+        $scope.bulkAssignData.forEach(function (boe) {
+            if ((boe.Authors.length === 0 && boe.SubcontractorAuthors.length === 0) || boe.Approvers.length === 0) {
+                $scope.filter.boeId.some(function (item) {
+                    if (item.value === boe.BoeID.toString()) {
+                        item.checked = true;
+                        return true;
+                    }
+                });
+            }
+        });
+
+        $scope.filter.filterColumn = $scope.columns.boeId;
+
+        $scope.applyFilters(false, false);
+    }
+
     $scope.filterForErrors = function () {
         $scope.clearAllFilters(true);
         $scope.bulkAssignData.forEach(function (boe) {
