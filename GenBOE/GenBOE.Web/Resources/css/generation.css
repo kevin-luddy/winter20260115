@@ -8635,3 +8635,13 @@ div.WarningBanner {
 .bulkAssignError {
     background-color: rgba(255, 0, 0, 0.50);
 }
+
+#BulkAssign .filter-margin {
+    margin-top: 12px;
+}
+
+#BulkAssign #QuickFilters .disabled {
+    pointer-events: none;
+    cursor: default;
+    color: grey;
+}

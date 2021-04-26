@@ -154,6 +154,12 @@
                     </div>
                 </div>
                 <div id="noteMessage" class="noteMessage" data-ng-show="isDataFiltered()">You are viewing filtered data. <a data-ng-click="clearAllFilters()">Click here</a> to reset all your filters.</div>
+                <div id="QuickFilters" data-ng-class="{ 'filter-margin': !isDataFiltered() }">
+                    Quick Action Filters: 
+                    <span>
+                        <a data-ng-click="filterForErrors()" data-ng-disabled="!anyBoesWithErrors()" data-ng-class="{ 'disabled': !anyBoesWithErrors() }">BOEs with Errors</a>
+                    </span>
+                </div>
                 <div class="bulk-assign-grid">
                     <table id="BulkAssignGrid" class="grid readonly" width="962">
                         <thead>
@@ -198,7 +204,7 @@
                         <input type="text" class="filter" data-ng-model="searchText" data-ng-model-options="{ debounce: 200 }" data-ng-change="searchChanged()" placeholder="Search..." style="float: right" />
                         <div class="paging-control" genpaging data-num-pages="{{ numberOfPages(filteredBulkResults) }}" data-current-page="currentPage"></div>
                     </div>
-                    <button id="BulkAssign-ValidateButton" type="button" class="ies-action" data-ng-disabled="!isDirty" data-ng-click="validateBulkAssign()">Validate</button>
+                    <button id="BulkAssign-ValidateButton" type="button" class="ies-action" data-ng-disabled="!isDirty" data-ng-click="validateBulkAssign(true, true)">Validate</button>
                     <button id="BulkAssign-SaveButton" type="button" class="ies-action" data-ng-disabled="!isDirty" data-ng-click="saveBulkAssign()">Save</button>
                     <button id="BulkAssign-CancelButton" type="button" class="ies" data-ng-click="cancelBulkAssign()">Cancel</button>
                 </div>
