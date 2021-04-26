@@ -62,6 +62,7 @@
     $scope.bulkAssignSubAuthors = [];
     $scope.isLoading = true;
     $scope.isBulkAssign = false;
+    $scope.isDirty = false;
 
     $scope.selectedBoes = [];
     $scope.selectedRole;
@@ -1079,11 +1080,22 @@
     };
 
     $scope.cancelBulkAssign = function () {
-        $scope.bulkAssignData = [];
-        $scope.isBulkAssign = false;
+        if ($scope.isDirty) {
+            Session.confirmDialog("Cancel", "Are you sure you want to cancel all changes?", function () { $scope.$apply(function () { $scope.continueCancelBulkAssign(); }) }, null);
+        } else {
+            $scope.continueCancelBulkAssign();
+        }
     };
 
+    $scope.continueCancelBulkAssign = function () {
+        $scope.bulkAssignData = [];
+        $scope.isBulkAssign = false;
+        $scope.cleanDirty();
+    }
+
     $scope.bulkAssignRoles = function () {
+        $scope.setDirty();
+
         $scope.selectedBoes.forEach(function (selectedBoe) {
             var boeToUpdate = $scope.bulkAssignData.find(boe => boe.BoeID == selectedBoe.id);
 
@@ -1115,6 +1127,8 @@
     };
 
     $scope.bulkRemoveRoles = function () {
+        $scope.setDirty();
+
         $scope.selectedBoes.forEach(function (selectedBoe) {
             var boeToUpdate = $scope.bulkAssignData.find(boe => boe.BoeID == selectedBoe.id);
 
@@ -1194,5 +1208,15 @@
                 boe.hasError = true;
             }
         });
+    }
+
+    $scope.setDirty = function () {
+        $scope.isDirty = true;
+        ManageBOEWidget.setDirty();
+    }
+
+    $scope.cleanDirty = function () {
+        $scope.isDirty = false;
+        ManageBOEWidget.cleanDirty();
     }
 }]);

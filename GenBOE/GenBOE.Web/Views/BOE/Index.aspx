@@ -198,8 +198,8 @@
                         <input type="text" class="filter" data-ng-model="searchText" data-ng-model-options="{ debounce: 200 }" data-ng-change="searchChanged()" placeholder="Search..." style="float: right" />
                         <div class="paging-control" genpaging data-num-pages="{{ numberOfPages(filteredBulkResults) }}" data-current-page="currentPage"></div>
                     </div>
-                    <button id="BulkAssign-ValidateButton" type="button" class="ies-action" data-ng-disabled="dialog.disableBulkAssignButtons" data-ng-click="validateBulkAssign()">Validate</button>
-                    <button id="BulkAssign-SaveButton" type="button" class="ies-action" data-ng-disabled="dialog.disableBulkAssignButtons" data-ng-click="saveBulkAssign()">Save</button>
+                    <button id="BulkAssign-ValidateButton" type="button" class="ies-action" data-ng-disabled="!isDirty" data-ng-click="validateBulkAssign()">Validate</button>
+                    <button id="BulkAssign-SaveButton" type="button" class="ies-action" data-ng-disabled="!isDirty" data-ng-click="saveBulkAssign()">Save</button>
                     <button id="BulkAssign-CancelButton" type="button" class="ies" data-ng-click="cancelBulkAssign()">Cancel</button>
                 </div>
             </div>
