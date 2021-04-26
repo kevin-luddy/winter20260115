@@ -484,12 +484,12 @@
             }
         }
 
-        $scope.updateBulkAssignData();
+        $scope.sortBulkAssignData();
 
         $scope.SaveFilterToCookies();
     };
 
-    $scope.updateBulkAssignData = function () {
+    $scope.sortBulkAssignData = function () {
         $scope.bulkAssignBoes = [];
         var sortedBoes = $filter('orderBy')($scope.isBulkAssign ? $scope.bulkAssignData : $scope.data, $scope.predicate, $scope.reverse);
 
@@ -1061,7 +1061,7 @@
 
             $scope.LoadFilterFromCookies();
 
-            $scope.updateBulkAssignData();
+            $scope.sortBulkAssignData();
 
             $scope.isLoading = false;
             firstLoad = false;
