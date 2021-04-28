@@ -645,6 +645,10 @@ function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, save
                 }
             }
         }
+
+        // Initialize RTE Templates/Fields again to ensure 'original values' are updated
+        InitializeRteTemplate(BoeHeaderWidget.Description, 'Description', rteFieldSize);
+        InitializeRteTemplate(BoeHeaderWidget.DataSource, 'DataSource', rteFieldSize);
     };
 
     BoeHeaderWidget.AdjustFieldState = function(){
