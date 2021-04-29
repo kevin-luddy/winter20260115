@@ -26,7 +26,16 @@
 
         <div id="BOESearch" style="display:none; width: auto; min-height: 107px; height: auto;" class="ui-dialog-content ui-widget-content boe-search">
             <%: Html.Hidden("IsCopyFromBoeContext", true) %>
-            <div class="form-row">If searching for BOEs in other Workspace or BOE Content Templates, only Workspaces that are marked searchable and do not contain OCI information will be searched.  If searching for BOEs in this Workspace, all BOEs that have a status of Draft, Awaiting Approval or Approved will be searched.</div>
+            <% if ((bool)ViewData["UsingTemplateBoe"]) { %>
+            <div id="StandardSearchText" class="form-row">If searching for BOEs in other Workspace or BOE Content Templates, only Workspaces that are marked searchable and do not contain OCI information will be searched.  If searching for BOEs in this Workspace, all BOEs that have a status of Draft, Awaiting Approval or Approved will be searched.</div>
+            <% } else { %>
+            <div id="MOQTemplateSearchText" class="form-row">If searching for BOEs in other Workspace or BOE Content Templates, only Workspaces that:
+                <ol>
+                    <li>Are marked searchable and do not contain OCI information</li>
+                    <li>MOQ Template BOEs are set "no"</li>
+                </ol>will be searched.
+            </div>
+            <% } %>
             <% Html.RenderAction(WebConstants.ACTION_DISPLAY_BOE_QUICK_SEARCH, WebConstants.CONTROLLER_BOE, new { boeID = ViewData["BOEID"] }); %>
             <div class="divider"></div>
             <% Html.RenderAction(WebConstants.ACTION_DISPLAY_BOE_ADVANCED_SEARCH, WebConstants.CONTROLLER_BOE, new { boeID = ViewData["BOEID"] }); %>
