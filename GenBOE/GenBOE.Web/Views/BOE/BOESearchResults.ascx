@@ -212,6 +212,8 @@
             <li>Are marked searchable and do not contain OCI information</li>
             <li>MOQ Template BOEs are set "no"</li>
         </ol>will be searched.
+        <div class="color-red italic">BOEs from Workspaces with MOQ Template BOEs set to "Yes" CANNOT be copied to BOEs in Workspaces with MOQ Template BOEs set to "No."</div>
+        If searching for BOEs in this Workspace, all BOEs that have a status of Draft, Awaiting Approval or Approved will be searched.
     </div>
     <% } %>
     <ul>
