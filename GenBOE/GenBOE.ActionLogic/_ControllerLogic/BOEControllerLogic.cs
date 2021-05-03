@@ -3045,6 +3045,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 errorMessages.Add("All BOEs that have an approver assigned must also have an author / subcontractor author assigned as well.");
             }
 
+            if (boeRolesToSave.Any(x => !x.Deleted && x.State >= BOEState.Draft && (!x.Approvers.Any() || !(x.Authors.Any() || x.SubcontractorAuthors.Any()))))
+            {
+                errorMessages.Add("All BOEs in draft, awaiting approval, or approved, must have approver and author roles assigned.");
+            }
+
             return errorMessages;
         }
 
@@ -3177,6 +3182,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     if (responses.Any() && responses.All(x => x.ApproverResponse == ApproverReponseType.Approved && x.Updateable != UpdateType.Deleted))
                     {
                         boe.State = BOEState.Approved;
+                        transitionsToPerform.Add((BoeId: boe.Id, OldState: oldBoe.State, NewState: boe.State));
                     }
                 }
             }
