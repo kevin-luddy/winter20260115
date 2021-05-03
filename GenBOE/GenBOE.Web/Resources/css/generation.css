@@ -5606,7 +5606,8 @@ table.question-table tr {
     height: 190px;
 }
 
-.export-to-propricer-element-dialog select.select-list .required
+.export-to-propricer-element-dialog select.select-list .required,
+.italic
 {
     font-style: italic;
 }

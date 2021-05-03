@@ -467,6 +467,7 @@ namespace GenBOE.Web.Controllers
             Stopwatch sw = InitializeAction(_log, "DisplayBOESearch", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
 
             ViewData["BOEID"] = boeID;
+            ViewData["UsingTemplateBoe"] = ws.UsingTemplateBOE;
 
             // Only an Author in WS=Working and BOE=Draft should be able to Search to copy a BOE. 
             ViewData["BOESearch_ReadOnly"] = (Boolean.Parse(GetReadOnlyAttribute(CheckPermissions(SecurityPage.BoeSearch, ws, boeID)))).ToString().ToLower();
