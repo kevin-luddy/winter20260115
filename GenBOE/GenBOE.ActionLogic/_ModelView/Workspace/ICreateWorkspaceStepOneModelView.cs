@@ -45,11 +45,6 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         int? RteSizeLimit { get; set; }
 
         /// <summary>
-        /// Whether to create Sikorsky Custom Fields
-        /// </summary>
-        bool CreateSikorskyCustomFields { get; set; }
-
-        /// <summary>
         /// Get/Set the Workspace Type
         /// RMS Only, always None for SSC
         /// </summary>

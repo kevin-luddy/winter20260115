@@ -99,10 +99,30 @@
         });
 
         $('#Add-SikorskyCustomFields').click(function () {
+            GenSession.commonDialog('Create Custom Fields', 'Select which Custom Fields to create.',
+                [{
+                    buttonClass: 'ies-action',
+                    ButtonText: 'PROPRICER Standard Custom Fields',
+                    ButtonName: 'propricer-button',
+                    callbackMethod: function () { CreateCustomFields('<%: WebConstants.ACTION_CREATE_PROPRICER_CUSTOM_FIELDS %>'); }
+                }, {
+                    buttonClass: 'ies-action',
+                    ButtonText: 'Sikorsky Custom Fields',
+                    ButtonName: 'sikorsky-button',
+                    callbackMethod: function () { CreateCustomFields('<%: WebConstants.ACTION_CREATE_SIKORSKY_CUSTOM_FIELDS %>'); }
+                }, {
+                    buttonClass: 'ies',
+                    ButtonText: 'Cancel',
+                    ButtonName: "cancel-button",
+                    callbackMethod: null
+                }], 600, null, null);
+        });
+
+        CreateCustomFields = function (action) {
             if (isProjectMapWorkspace == 'False') {
                 var actionURL = CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
                         '<%: WebConstants.CONTROLLER_WORKSPACE %>',
-                    '<%: WebConstants.ACTION_CREATE_SIKORSKY_CUSTOM_FIELDS %>', '');
+                    action, '');
                 ShowLoadingBox();
 
                 $.ajax({
@@ -122,7 +142,7 @@
                 // Add button is hidden/disabled for Project Map, but preventing add just in case 
                 Session.alertDialog("Cannot add Custom Field", "Custom Fields cannot be added for a Project Map Workspace.");
             }
-        });
+        };
 
         BOECustomFieldsGridWidget.Module.find('tbody div.delete').click(function () {
             var parentRow = $(this).parents('tr');
@@ -161,7 +181,7 @@
         <div class="buttons">
             <button id="Add-BOECustomFieldsGrid" class="ies-action" type="button">+ Add custom field</button>
             <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) { %>
-            <button id="Add-SikorskyCustomFields" class="ies-action float-right" style="background:linear-gradient(to bottom, #5a86d5, #b1caf6 1px, #6495ed)" type="button">+ Add Sikorsky custom fields</button>
+            <button id="Add-SikorskyCustomFields" class="ies-action float-right" style="background:linear-gradient(to bottom, #5a86d5, #b1caf6 1px, #6495ed)" type="button">+ Add standard custom fields</button>
             <% } %>
         </div>
         <table class="grid readonly">

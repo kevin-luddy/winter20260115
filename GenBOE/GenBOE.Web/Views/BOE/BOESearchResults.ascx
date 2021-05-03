@@ -204,8 +204,19 @@
 <div class="SearchResultsMessage"><%:Model.SearchResultsMessage %></div>
 <% } %>
 <div id="BOESearchResults" class="boe-search-results">
-   <div class="form-row">If searching for BOEs in other Workspace or BOE Content Templates, only Workspaces that are marked searchable and do not contain OCI information will be searched.  If searching for BOEs in this Workspace, all BOEs that have a status of Draft, Awaiting Approval or Approved will be searched.</div>
-   <ul>
+    <% if ((bool)ViewData["UsingTemplateBoe"]) { %>
+    <div class="form-row">If searching for BOEs in other Workspace or BOE Content Templates, only Workspaces that are marked searchable and do not contain OCI information will be searched.  If searching for BOEs in this Workspace, all BOEs that have a status of Draft, Awaiting Approval or Approved will be searched.</div>
+    <% } else { %>
+    <div class="form-row">If searching for BOEs in other Workspace or BOE Content Templates, only Workspaces that:
+        <ol>
+            <li>Are marked searchable and do not contain OCI information</li>
+            <li>MOQ Template BOEs are set "no"</li>
+        </ol>will be searched.
+        <div class="color-red italic">BOEs from Workspaces with MOQ Template BOEs set to "Yes" CANNOT be copied to BOEs in Workspaces with MOQ Template BOEs set to "No."</div>
+        If searching for BOEs in this Workspace, all BOEs that have a status of Draft, Awaiting Approval or Approved will be searched.
+    </div>
+    <% } %>
+    <ul>
        <li>'Preview' will open the BOE in MS Word.</li>
        <li>'Copy BOE' will copy the entire BOE excluding any un-selected Task Elements (check boxes).</li>
        <li>'Copy MOQ' will copy the selected Task Elements MOQ information only.</li>
