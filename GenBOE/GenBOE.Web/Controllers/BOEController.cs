@@ -824,26 +824,6 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
-        /// <summary>
-        /// Save Bulk Boe Roles
-        /// </summary>
-        /// <param name="workspace">Workspace</param>
-        /// <param name="boeRolesToSave">Boe Roles to Save</param>
-        public JsonResult SaveBoeBulkRoles(string workspace, ICollection<BoeRoleMV> boeRolesToSave)
-        {
-            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-            Stopwatch sw = InitializeAction(_log, "SaveBoeBulkRoles", SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
-
-            IList<string> errorMessages = this._ControllerLogic.SaveBoeBulkRoles(ws, boeRolesToSave);
-
-            JsonResult response = Json(new { Status = true, ErrorMessages = errorMessages });
-
-            FinalizeAction(_log, "SaveBoeBulkRoles", sw);
-
-            return response;
-        }
-
         #endregion
 
         #endregion Partial Views
@@ -3304,6 +3284,25 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
+        /// <summary>
+        /// Save Bulk Boe Roles
+        /// </summary>
+        /// <param name="workspace">Workspace</param>
+        /// <param name="boeRolesToSave">Boe Roles to Save</param>
+        public JsonResult SaveBoeBulkRoles(string workspace, ICollection<ManageBOEModelView> boeRolesToSave)
+        {
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+            Stopwatch sw = InitializeAction(_log, "SaveBoeBulkRoles", SecurityPage.ManageBOEs, SecurityAuthorization.CreateReadUpdateDelete, ws, null);
+
+            IList<string> errorMessages = this._ControllerLogic.SaveBoeBulkRoles(ws, boeRolesToSave);
+
+            JsonResult response = Json(new { Status = true, ErrorMessages = errorMessages });
+
+            FinalizeAction(_log, "SaveBoeBulkRoles", sw);
+
+            return response;
+        }
     }
 
     internal class BOEStateTransition

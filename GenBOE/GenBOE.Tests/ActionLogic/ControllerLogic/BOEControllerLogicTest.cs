@@ -77,6 +77,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
         private Mock<Validator> _validator = new Mock<Validator>();
         private Mock<RMSZoneTravelRatesFeesDataLoader> _zoneTravelRatesFeesDataLoader = new Mock<RMSZoneTravelRatesFeesDataLoader>();
         private Mock<IMoqTypeDataLoader> moqTypeLoader = new Mock<IMoqTypeDataLoader>();
+        private Mock<IBoeApproverResponseDTODataLoader> boeApproverResponseLoader = new Mock<IBoeApproverResponseDTODataLoader>();
 
         private BOEControllerLogic CreateSystem()
         {
@@ -87,7 +88,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 _boeCustomExporter.Object, _genBOEControllerLogic.Object, _boeMediator.Object, _validationHelper.Object, _boeCommentDTODataLoader.Object, _emailer.Object,
                 _boeTaskElementMediator.Object, _workspaceVariableDTODataLoader.Object, _boeStateMachine.Object, _variableSelectBOEtoSumCalculation.Object, _boeLaborControllerLogic.Object,
                 _validateBOE.Object, _securityInformation.Object, _boeSearchLoader.Object, _securityAccess.Object, _boeTaskElementRecalculation.Object,
-                _boeImporter.Object, _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null, moqTypeLoader.Object);
+                _boeImporter.Object, _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null, moqTypeLoader.Object, boeApproverResponseLoader.Object);
         }
 
         private BOEControllerLogic CreateSystemSpaceSystems()
@@ -99,7 +100,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 _validationHelper.Object, _boeCommentDTODataLoader.Object, _emailer.Object, _boeTaskElementMediator.Object, _workspaceVariableDTODataLoader.Object,
                 _boeStateMachine.Object, _variableSelectBOEtoSumCalculation.Object, _boeLaborControllerLogic.Object, _validateBOE.Object, _securityInformation.Object,
                 _boeSearchLoader.Object, _securityAccess.Object, _boeTaskElementRecalculation.Object, _boeImporter.Object,
-                _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null, moqTypeLoader.Object);
+                _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null, moqTypeLoader.Object, boeApproverResponseLoader.Object);
         }
 
         private BOEControllerLogic CreateSystemMST()
@@ -112,7 +113,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 _validationHelper.Object, _boeCommentDTODataLoader.Object, _emailer.Object, _boeTaskElementMediator.Object, _workspaceVariableDTODataLoader.Object,
                 _boeStateMachine.Object, _variableSelectBOEtoSumCalculation.Object, _boeLaborControllerLogic.Object, _validateBOE.Object, _securityInformation.Object,
                 _boeSearchLoader.Object, _securityAccess.Object, _boeTaskElementRecalculation.Object, _boeImporter.Object,
-                _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, new Mock<OffloadRatesDTOLoader>().Object, null, this._zoneTravelRatesFeesDataLoader.Object, null, moqTypeLoader.Object);
+                _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, new Mock<OffloadRatesDTOLoader>().Object, null, this._zoneTravelRatesFeesDataLoader.Object, null, moqTypeLoader.Object, boeApproverResponseLoader.Object);
         }
 
         private void DoGetCreateBOEHeaderMVTest(BOEControllerLogic sut, CompanyConfiguration config)
@@ -874,7 +875,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 _boeCustomExporter.Object, _genBOEControllerLogic.Object, _boeMediator.Object, _validationHelper.Object, _boeCommentDTODataLoader.Object, _emailer.Object,
                 _taskElementMediator.Object, _workspaceVariableDTODataLoader.Object, _boeStateMachine.Object, _variableSelectBOEtoSumCalculation.Object, _boeLaborControllerLogic.Object,
                 _validateBOE.Object, _securityInformation.Object, _boeSearchLoader.Object, _securityAccess.Object, _boeTaskElementRecalculation.Object,
-                _boeImporter.Object, _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null, this.moqTypeLoader.Object);
+                _boeImporter.Object, _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null, this.moqTypeLoader.Object, boeApproverResponseLoader.Object);
 
             sut.ReOrderTaskElementOrder(ws, boeObject, UserTaskElementCollection);
 
@@ -995,7 +996,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 _boeCustomExporter.Object, _genBOEControllerLogic.Object, _boeMediator.Object, _validationHelper.Object, _boeCommentDTODataLoader.Object, _emailer.Object,
                 _taskElementMediator.Object, _workspaceVariableDTODataLoader.Object, _boeStateMachine.Object, _variableSelectBOEtoSumCalculation.Object, _boeLaborControllerLogic.Object,
                 _validateBOE.Object, _securityInformation.Object, _boeSearchLoader.Object, _securityAccess.Object, _boeTaskElementRecalculation.Object,
-                _boeImporter.Object, _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null, this.moqTypeLoader.Object);
+                _boeImporter.Object, _variableCircularReferenceChecker.Object, _conflictBOE.Object, _nestedWBSUtilities.Object, null, this._zoneTravelRatesFeesDataLoader.Object, null, this.moqTypeLoader.Object, boeApproverResponseLoader.Object);
 
             sut.ReOrderTaskElementOrder(ws, boeObject, UserTaskElementCollection);
 
@@ -3502,131 +3503,5 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             decimal resultInternational = sut.CalculateTotalCostTravel(travels, 0, escalationRates, fees);
             Assert.AreEqual(27.4M, resultInternational, "International total cost of travel calculated incorrectly.");
         }
-
-        #region Bulk Role Data
-
-        [TestMethod]
-        public void GetBulkRoleData_Test()
-        {
-            BOEControllerLogic sut = this.CreateSystem();
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), this._retriever.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), this.Factory.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _commonDataMapper.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissionsLoader.Object);
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), Factory.Object);
-
-            FullWorkspace ws = new FullWorkspace() { Id = 11111 };
-            ICollection<FullWbs> wbsElements = new List<FullWbs>() { new FullWbs() { Id = 3, WbsNumber = "00", WbsTitle = "WBS String" } };
-            ICollection<FullClin> clins = new List<FullClin>() { new FullClin() { Id = 777, ClinNumber = "99", ClinTitle = "Clin String" } };
-            ICollection<FullBoe> boes = new List<FullBoe>() {
-                new FullBoe() {
-                    Id = 33,
-                    WorkspaceID = ws.Id,
-                    WBSID = wbsElements.First().Id,
-                    CLINID = null,
-                    IsMultiClinWbs = false,
-                    State = BOEState.Draft,
-                    Title = "Boe Title 1"
-                },
-                new FullBoe() {
-                    Id = 44,
-                    WorkspaceID = ws.Id,
-                    WBSID = null,
-                    CLINID = clins.First().Id,
-                    IsMultiClinWbs = false,
-                    State = BOEState.Approved,
-                    Title = "Boe Title 2"
-                },
-                new FullBoe() {
-                    Id = 55,
-                    WorkspaceID = ws.Id,
-                    WBSID = null,
-                    CLINID = null,
-                    IsMultiClinWbs = true,
-                    State = BOEState.DraftLocked,
-                    Title = "Boe Title 3"
-                }
-            };
-            List<UserDTO> users = new List<UserDTO>()
-            {
-                new UserDTO() { UserID = 444, DisplayName = "Display 1" },
-                new UserDTO() { UserID = 555, DisplayName = "Display 2" },
-                new UserDTO() { UserID = 666, DisplayName = "Display 3" },
-                new UserDTO() { UserID = 777, DisplayName = "Display 4" },
-                new UserDTO() { UserID = 888, DisplayName = "Display 5" }
-            };
-            Collection<PermissionsDTO> wsPermissions = new Collection<PermissionsDTO>()
-            {
-                new PermissionsDTO() { ETIUserId = users.ElementAt(0).UserID, Role = Role.Approver },
-                new PermissionsDTO() { ETIUserId = users.ElementAt(1).UserID, Role = Role.Approver },
-                new PermissionsDTO() { ETIUserId = users.ElementAt(2).UserID, Role = Role.Author },
-                new PermissionsDTO() { ETIUserId = users.ElementAt(3).UserID, Role = Role.Author },
-                new PermissionsDTO() { ETIUserId = users.ElementAt(4).UserID, Role = Role.SubcontractorAuthor }
-            };
-            Collection<PermissionsDTO> boePermissions = new Collection<PermissionsDTO>()
-            {
-                new PermissionsDTO() { BOEId = boes.ElementAt(0).Id, Role = wsPermissions.ElementAt(2).Role },
-                new PermissionsDTO() { BOEId = boes.ElementAt(0).Id, Role = wsPermissions.ElementAt(0).Role },
-                new PermissionsDTO() { BOEId = boes.ElementAt(2).Id, Role = wsPermissions.ElementAt(4).Role },
-                new PermissionsDTO() { BOEId = boes.ElementAt(2).Id, Role = wsPermissions.ElementAt(0).Role }
-            };
-
-            this._retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(ws.Id)).Returns(wbsElements);
-            this._retriever.Setup(x => x.GetClinsByWorkspaceId(ws.Id)).Returns(clins);
-            this._retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(boes);
-            this._permissionsLoader.Setup(x => x.GetBOEPotentialPermissionsForWorkspace(ws.Id)).Returns(wsPermissions);
-            this._permissionsLoader.Setup(x => x.GetBOEPermissions(It.IsAny<ICollection<int>>())).Returns(boePermissions);
-            this._userLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(users);
-
-            BulkBoeRoleMV result = sut.GetBulkRoleData(ws);
-
-            Assert.AreEqual(result.WorkspaceId, ws.Id);
-
-            Assert.AreEqual(2, result.PotentialAuthors.Count());
-            Assert.IsTrue(result.PotentialAuthors.Select(x => x.Value).Contains(wsPermissions.ElementAt(2).ETIUserId.ToString()));
-            Assert.IsTrue(result.PotentialAuthors.Select(x => x.Text).Contains(users.ElementAt(2).DisplayName));
-            Assert.IsTrue(result.PotentialAuthors.Select(x => x.Value).Contains(wsPermissions.ElementAt(3).ETIUserId.ToString()));
-            Assert.IsTrue(result.PotentialAuthors.Select(x => x.Text).Contains(users.ElementAt(3).DisplayName));
-
-            Assert.AreEqual(2, result.PotentialWsApprovers.Count());
-            Assert.IsTrue(result.PotentialWsApprovers.Select(x => x.Value).Contains(wsPermissions.ElementAt(0).ETIUserId.ToString()));
-            Assert.IsTrue(result.PotentialWsApprovers.Select(x => x.Text).Contains(users.ElementAt(0).DisplayName));
-            Assert.IsTrue(result.PotentialWsApprovers.Select(x => x.Value).Contains(wsPermissions.ElementAt(1).ETIUserId.ToString()));
-            Assert.IsTrue(result.PotentialWsApprovers.Select(x => x.Text).Contains(users.ElementAt(1).DisplayName));
-
-            Assert.AreEqual(1, result.PotentialWsSubAuthors.Count());
-            Assert.IsTrue(result.PotentialWsSubAuthors.Select(x => x.Value).Contains(wsPermissions.ElementAt(4).ETIUserId.ToString()));
-            Assert.IsTrue(result.PotentialWsSubAuthors.Select(x => x.Text).Contains(users.ElementAt(4).DisplayName + CommonConstants.SUBCONTRACTOR_AUTHOR_SUFFIX));
-
-            Assert.AreEqual(3, result.BoeRoleDetails.Count());
-            for (int i = 0; i < result.BoeRoleDetails.Count(); i++)
-            {
-                Assert.AreEqual(boes.ElementAt(i).Id, result.BoeRoleDetails.ElementAt(i).BoeId);
-                Assert.AreEqual(boes.ElementAt(i).Title, result.BoeRoleDetails.ElementAt(i).BoeTitle);
-                Assert.AreEqual(boes.ElementAt(i).IsMultiClinWbs, result.BoeRoleDetails.ElementAt(i).IsMultiWbsClin);
-                Assert.AreEqual(boes.ElementAt(i).State, result.BoeRoleDetails.ElementAt(i).State);
-            }
-
-            Assert.AreEqual(wbsElements.First().WbsString, result.BoeRoleDetails.ElementAt(0).WbsString);
-            Assert.AreEqual(CommonConstants.Unassigned_CLIN_Display_Text, result.BoeRoleDetails.ElementAt(0).ClinString);
-            Assert.AreEqual(CommonConstants.Unassigned_WBS_Display_Text, result.BoeRoleDetails.ElementAt(1).WbsString);
-            Assert.AreEqual(clins.First().ClinString, result.BoeRoleDetails.ElementAt(1).ClinString);
-            Assert.AreEqual(CommonConstants.Unassigned_WBS_Display_Text, result.BoeRoleDetails.ElementAt(2).WbsString);
-            Assert.AreEqual(CommonConstants.Unassigned_CLIN_Display_Text, result.BoeRoleDetails.ElementAt(2).ClinString);
-
-            Assert.AreEqual(1, result.BoeRoleDetails.ElementAt(0).AssignedAuthors.Count());
-            Assert.AreEqual(1, result.BoeRoleDetails.ElementAt(0).AssignedApprovers.Count());
-            Assert.AreEqual(0, result.BoeRoleDetails.ElementAt(0).AssignedSubAuthors.Count());
-
-            Assert.AreEqual(0, result.BoeRoleDetails.ElementAt(1).AssignedAuthors.Count());
-            Assert.AreEqual(0, result.BoeRoleDetails.ElementAt(1).AssignedApprovers.Count());
-            Assert.AreEqual(0, result.BoeRoleDetails.ElementAt(1).AssignedSubAuthors.Count());
-
-            Assert.AreEqual(0, result.BoeRoleDetails.ElementAt(2).AssignedAuthors.Count());
-            Assert.AreEqual(1, result.BoeRoleDetails.ElementAt(2).AssignedApprovers.Count());
-            Assert.AreEqual(1, result.BoeRoleDetails.ElementAt(2).AssignedSubAuthors.Count());
-        }
-
-        #endregion
     }
 }
