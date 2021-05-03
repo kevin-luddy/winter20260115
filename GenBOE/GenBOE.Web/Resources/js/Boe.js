@@ -654,12 +654,9 @@ function AfterDomLoadBoeHeaderWidget(containsOCI, readOnly, workspaceState, save
     BoeHeaderWidget.AdjustFieldState = function(){
         if (BoeHeaderWidget.WorkspaceState == "Locked") {
             $(".LockedWorkspaceState").addClass('display-none');
-
-            // check BOE state (widget is not read-only, but custom field values are treated separately)
+            // check BOE state (widget is not read-only, but adjust dates link is treated separately)
             if (boeStateNotDraft) {
                 $('#AdjustDatesLink').addClass('display-none');
-                $('#customFieldID select').prop('disabled', 'disabled');
-                $('#customFieldID input').prop('disabled', 'disabled');
             }
         }
     };

@@ -186,7 +186,8 @@ function AfterDomLoadImportLaborTypeWidget(ImportLaborType) {
 
 function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetricsDialogIdSuffix, readOnly, workspaceState, boeId, taskElementId, laborTypeWarning,
     loadMOQEquationUrl, confirmWarningUrl, searchHistoricalMetricsMSTUrl, historicalMetricsDetailsUrl, pagingMetricsUrl,
-    boeStateNotDraft, isMetricStoreConnected, searchTypeAheadUrl, allowDateShift, recalculateAndRefreshPageUrl, dateShiftUrl, saveReorderLaborTypesUrl, showDescQuestions, numberDescQuestions, rteFieldSize) {
+    boeStateNotDraft, boeStateDraftOrDraftLocked, isMetricStoreConnected, searchTypeAheadUrl, allowDateShift, recalculateAndRefreshPageUrl, dateShiftUrl,
+    saveReorderLaborTypesUrl, showDescQuestions, numberDescQuestions, rteFieldSize) {
     var TaskElementDetailsWidget;
     var formConfigs = [];
     formConfigs.push({
@@ -642,13 +643,20 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
             $("#TaskElementDetails-MOQTypesDropDownList").attr("readonly", true);
             $(".LockedWorkspaceState").addClass('display-none');
 
-            // check BOE state (widget is not read-only, but custom field values are treated separately)
+            // check BOE state (widget is not read-only, but adjust dates link is treated separately)
             if (boeStateNotDraft) {
-                $('#TaskElementCustomFieldID select').prop('disabled', 'disabled');
-                $('#TaskElementCustomFieldID input').prop('disabled', 'disabled');
                 $('#AdjustTaskDatesLink').addClass('display-none');
-            }
-        }   
+            }            
+        }  
+
+        // For static version of the page, handle whether CFs are editable or not
+        if (boeStateDraftOrDraftLocked) {
+            $('#CustomFieldLocked').addClass('display-none');
+            $('#CustomFieldEditable').removeClass('display-none');
+        } else {
+            $('#CustomFieldEditable').addClass('display-none');
+            $('#CustomFieldLocked').removeClass('display-none');
+        }
     };
 
     TaskElementDetailsWidget.LoadMOQEquationField($('#MOQEquationFieldContent'), taskElementId);

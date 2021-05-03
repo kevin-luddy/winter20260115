@@ -106,6 +106,7 @@
             historicalMetricsDetailsUrl,
             pagingMetricsUrl,
             '<%:Model.BOEState%>' != '<%:(int)BOEState.Draft%>',
+            '<%:Model.BOEState%>' == '<%:(int)BOEState.Draft%>' || '<%:Model.BOEState%>' == '<%:(int)BOEState.DraftLocked%>',
             '<%:Model.MetricsSearchDialogParameters.MetricStoreConnected%>'.toLowerCase(),
             searchTypeAheadUrl,
             '<%:Model.AllowDateShift%>'.toLowerCase(),
@@ -239,7 +240,22 @@
                 <br />
                 <br />
                 <br />
-                <div class="form-row" data-ng-repeat="customField in TaskCustomFields" data-ng-init="selectedItem = findTaskCustomField(customField)">
+                <div id="CustomFieldEditable" class="form-row" data-ng-repeat="customField in TaskCustomFields">
+                    <div class="form-label">
+                        {{ selectedItem = findTaskCustomField(customField); ""}} 
+                        {{customField.CustomFieldMetaData.FieldName}} {{customField.CustomFieldMetaData.isRequired ? '*' : ''}}
+                    </div>
+                    <div class="form-element" id="TaskElementCustomFieldID">
+                        <input data-ng-if="customField.CustomFieldMetaData.isOpenEnded" customfieldid="{{customField.CustomFieldMetaData.CustomFieldID}}" name="TaskElement-CF{{customField.CustomFieldMetaData.CustomFieldID}}" customfieldvalueid="{{selectedItem.openEndedId}}" selectionid="{{selectedItem.selectedID}}" updatedatelong="{{selectedItem.updateDateLong}}" openended="true" class="customField TaskElementCustomField" maxlength="250" onchange="TaskElementDetailsWidget.setDirty()" data-ng-value="selectedItem.openEndedValue" />  
+                        <select data-ng-if="!customField.CustomFieldMetaData.isOpenEnded" onchange="TaskElementDetailsWidget.setDirty()" customfieldid="{{customField.CustomFieldMetaData.CustomFieldID}}" name="TaskElement-CF{{customField.CustomFieldMetaData.CustomFieldID}}" updatedatelong="{{selectedItem.updateDateLong}}" openended="false"
+                            class="customField TaskElementCustomField" selectionid="{{selectedItem.selectedID}}">
+                            <option value="-1"></option>
+                            <!-- keep option tag on one line to avoid insertion of line breaks (br) -->
+                            <option data-ng-repeat="option in customField.CustomFieldOptions" data-ng-value="option.CustomFieldOptionID" data-ng-selected="selectedItem.selectedOptionID == option.CustomFieldOptionID">{{option.ID}}-{{option.Description}}</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="CustomFieldLocked" class="form-row" data-ng-repeat="customField in TaskCustomFields" data-ng-init="selectedItem = findTaskCustomField(customField)">
                     <div class="form-label">
                         {{customField.CustomFieldMetaData.FieldName}} {{customField.CustomFieldMetaData.isRequired ? '*' : ''}}
                     </div>
