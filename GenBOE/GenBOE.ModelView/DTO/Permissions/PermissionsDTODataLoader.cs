@@ -675,8 +675,7 @@ namespace GenBOE.DataBridge.DTO
             foreach (PermissionsDTO dto in dtosToSave)
             {
                 this.SavePermission(dto);
-        }
-
+            }
         }
 
         /// <summary>

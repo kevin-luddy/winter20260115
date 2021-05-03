@@ -308,10 +308,8 @@
     <Compile Include="_ModelView\BOE\BOEFormModelView.cs" />
     <Compile Include="_ModelView\BOE\BOEFormPBOEModelView.cs" />
     <Compile Include="_ModelView\BOE\BoeOffloadResourceModelView.cs" />
-    <Compile Include="_ModelView\BOE\BoeRoleMV.cs" />
     <Compile Include="_ModelView\BOE\BOEZoneTravelTripsGridModelView.cs" />
     <Compile Include="_ModelView\Admin\EscalationRateModelView.cs" />
-    <Compile Include="_ModelView\BOE\BulkBoeRoleMV.cs" />
     <Compile Include="_ModelView\DownloadReportModelView.cs" />
     <Compile Include="_ModelView\ExportsModelView.cs" />
     <Compile Include="_ModelView\GenBOEHomepageModelView.cs" />
