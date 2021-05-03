@@ -2205,6 +2205,7 @@ namespace GenBOE.Web.Controllers
                 FinalizeAction(_log, "SearchForBOEs", sw);
                 throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
             }
+            ViewData["UsingTemplateBoe"] = ws.UsingTemplateBOE;
 
             return toReturn;
         }
@@ -2293,6 +2294,8 @@ namespace GenBOE.Web.Controllers
                 FinalizeAction(_log, "SearchForBOEs", sw);
                 throw new GenValidationException(Utilities.CreateModelStateValidationErrorList(ModelState));
             }
+
+            ViewData["UsingTemplateBoe"] = ws.UsingTemplateBOE;
 
             return toReturn;
         }
