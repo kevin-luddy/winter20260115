@@ -1103,8 +1103,10 @@
      */
 
     $scope.openBulkAssign = function () {
-        $scope.bulkAssignData = angular.copy($scope.data);
+        // Only get BOEs in Draft or Unassigned - roles are locked in any other status
+        $scope.bulkAssignData = angular.copy($scope.data.filter(x => x.Status == "Unassigned" || x.Status == "Draft"));
         $scope.isBulkAssign = true;
+        $scope.sortBulkAssignData();
     };
 
     $scope.cancelBulkAssign = function () {

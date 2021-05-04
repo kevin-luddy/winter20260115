@@ -122,7 +122,9 @@
             <div class="form-row" data-ng-show="isBulkAssign">
                 Assign or Remove users in bulk. Select one or more BOEs, a Role, and one or more Users to assign or remove. <br />
                 Select "Assign" to assign the Users to the Role in the BOEs if they are not already assigned. <br />
-                Select "Remove" to remove the selected Users from the selected Role in the selected BOEs if they are assigned.</div>
+                Select "Remove" to remove the selected Users from the selected Role in the selected BOEs if they are assigned. <br /><br />
+                Note: Only BOEs that are Unassigned or in Draft are available for bulk assignment. Roles are locked for BOEs outside of these statuses.
+            </div>
             <div id="BulkAssign" class="form-row" data-ng-show="isBulkAssign">
                 <ul class="validation-box" style="display: none;"></ul>
                 <gen-validation data-errors="errors"></gen-validation>
