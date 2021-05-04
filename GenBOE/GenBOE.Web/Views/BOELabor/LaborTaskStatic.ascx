@@ -144,6 +144,17 @@
             $('#Save-BOEUpdatesAndClose').addClass('display-none');
         }
 
+        // Validates individual custom field
+        validateCustomField = function (item) {
+            if ($(item).attr('isRequired') === 'true' && $(item).attr('isNew') !== 'true') {
+                if (item.value.length === 0) {
+                    $(item).parent('td').addClass('inputError');
+                } else {
+                    $(item).parent('td').removeClass('inputError');
+                }
+            }
+        }
+
         refreshModule($('.boe-details .module'));
     });
 </script>
@@ -240,7 +251,7 @@
                 <br />
                 <br />
                 <br />
-                <div id="CustomFieldEditable" class="form-row" data-ng-repeat="customField in TaskCustomFields">
+                <div class="form-row custom-field-editable" data-ng-repeat="customField in TaskCustomFields">
                     <div class="form-label">
                         {{ selectedItem = findTaskCustomField(customField); ""}} 
                         {{customField.CustomFieldMetaData.FieldName}} {{customField.CustomFieldMetaData.isRequired ? '*' : ''}}
@@ -255,7 +266,7 @@
                         </select>
                     </div>
                 </div>
-                <div id="CustomFieldLocked" class="form-row" data-ng-repeat="customField in TaskCustomFields" data-ng-init="selectedItem = findTaskCustomField(customField)">
+                <div class="form-row custom-field-locked" data-ng-repeat="customField in TaskCustomFields" data-ng-init="selectedItem = findTaskCustomField(customField)">
                     <div class="form-label">
                         {{customField.CustomFieldMetaData.FieldName}} {{customField.CustomFieldMetaData.isRequired ? '*' : ''}}
                     </div>
@@ -368,8 +379,18 @@
                                     <tbody>
                             
                         
-                                <tr data-ng-repeat="item in tableData | filter: { Deleted: false }">
-                                    <td data-ng-repeat="customField in LaborCustomFields" class="custom-field">{{ getLaborCustomFieldText(item, customField)}}</td>
+                                <tr data-ng-repeat="item in tableData | filter: { Deleted: false }" pkid="{{item.BOELaborTypeID}}">
+                                    <td data-ng-repeat="customField in LaborCustomFields" class="custom-field custom-field-editable" data-ng-init="innerIndex = $index">
+                                        {{ selectedItem = findLaborCustomField(customField, item); "" }}
+                                        <input id="LT{{item.BOELaborTypeID}}CF{{customField.CustomFieldMetaData.CustomFieldID}}" tabindex ="{{225 + ((12 + LaborCustomFields.length) * outerIndex) + innerIndex}}" data-ng-if="customField.CustomFieldMetaData.isOpenEnded && item.BOELaborTypeID > 0" customfieldid="{{customField.CustomFieldMetaData.CustomFieldID}}" name="LaborType-CF{{customField.CustomFieldMetaData.CustomFieldID}}" customfieldvalueid="{{selectedItem.openEndedId}}" selectionid="{{selectedItem.selectedID}}" updatedatelong="{{selectedItem.updateDateLong}}" openended="true" class="customField LaborTypeCustomField" maxlength="250" onchange="TaskElementDetailsWidget.setDirty(); validateCustomField(this);" isRequired="{{customField.CustomFieldMetaData.isRequired}}" isNew="{{item.NewLaborType}}" data-ng-value="selectedItem.openEndedValue" />  
+                                        <select id="LT{{item.BOELaborTypeID}}CF{{customField.CustomFieldMetaData.CustomFieldID}}" tabindex ="{{225 + ((12 + LaborCustomFields.length) * outerIndex) + innerIndex}}" data-ng-if="!customField.CustomFieldMetaData.isOpenEnded && item.BOELaborTypeID > 0" onchange="TaskElementDetailsWidget.setDirty(); validateCustomField(this);" customfieldid="{{customField.CustomFieldMetaData.CustomFieldID}}" name="TaskElement-CF{{customField.CustomFieldMetaData.CustomFieldID}}" updatedatelong="{{selectedItem.updateDateLong}}" openended="false" isRequired="{{customField.CustomFieldMetaData.isRequired}}" 
+                                            class="customField LaborTypeCustomField" selectionid="{{selectedItem.selectedID}}" isNew="{{item.NewLaborType}}">
+                                            <option value=""></option>
+                                            <!-- keep option tag on one line to avoid insertion of line breaks (br) -->
+                                            <option data-ng-repeat="option in customField.CustomFieldOptions" data-ng-value="option.CustomFieldOptionID" data-ng-selected="selectedItem.selectedOptionID == option.CustomFieldOptionID">{{option.ID}}-{{option.Description}}</option>
+                                        </select>
+                                    </td>
+                                    <td data-ng-repeat="customField in LaborCustomFields" class="custom-field custom-field-locked">{{ getLaborCustomFieldText(item, customField)}}</td>
                                     <td class="text start-date">{{item.StartDate }}</td>
                                     <td class="text end-date">{{item.EndDate }}</td>
                                     <td>{{getSpreadCurveText(item)}}</td>

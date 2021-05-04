@@ -651,11 +651,14 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
 
         // For static version of the page, handle whether CFs are editable or not
         if (boeStateDraftOrDraftLocked) {
-            $('#CustomFieldLocked').addClass('display-none');
-            $('#CustomFieldEditable').removeClass('display-none');
+            $('.custom-field-locked').addClass('display-none');
+            $('.custom-field-editable').removeClass('display-none');
+            $('.custom-field-editable input').removeClass('display-none'); 
+            $('.custom-field-editable select').removeClass('display-none');
+            $('.custom-field-editable .replacedWidgetText').addClass('display-none');
         } else {
-            $('#CustomFieldEditable').addClass('display-none');
-            $('#CustomFieldLocked').removeClass('display-none');
+            $('.custom-field-editable').addClass('display-none');
+            $('.custom-field-locked').removeClass('display-none');
         }
     };
 
