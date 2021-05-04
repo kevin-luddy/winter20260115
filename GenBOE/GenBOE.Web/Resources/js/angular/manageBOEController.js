@@ -1117,6 +1117,7 @@
 
     $scope.continueCancelBulkAssign = function () {
         $scope.bulkAssignData = [];
+        $scope.errors = [];
         $scope.isBulkAssign = false;
         $scope.cleanDirty();
     }
@@ -1291,7 +1292,7 @@
         });
 
         if (displaySuccessMessage && $scope.errors.length == 0) {
-            RaiseNotification("Validation Successful. There were no errors.")
+            RaiseNotification("Validation successful. There were no errors.");
         }
     }
 
@@ -1303,5 +1304,41 @@
     $scope.cleanDirty = function () {
         $scope.isDirty = false;
         ManageBOEWidget.cleanDirty();
+    }
+
+    $scope.saveBulkAssign = function () {
+        $scope.validateBulkAssign(false, true);
+
+        if (!$scope.bulkAssignData.some(x => x.hasError)) {
+            $('#PageLoading').removeClass('display-none');
+            var boesToSave = [];
+            $scope.bulkAssignData.forEach(function (boe) {
+                boesToSave.push({
+                    BoeID: boe.BoeID,
+                    State: boe.State,
+                    Authors: boe.Authors,
+                    Approvers: boe.Approvers,
+                    SubcontractorAuthors: boe.SubcontractorAuthors
+                });
+            });
+
+            var data = {};
+            data.boeRolesToSave = boesToSave;
+
+            $http({
+                method: 'POST',
+                url: CreatePostURL(ManageBOEModel.workspace, ManageBOEModel.controller, ManageBOEModel.bulkAssignRolesAction, ''),
+                data: data
+            }).then(function successCallback(response) {
+                // On success, return to Manage BOEs
+                RaiseNotification("Save of Bulk Assign Roles was successful.");
+                loadBOEs();
+                $scope.continueCancelBulkAssign();
+                $('#PageLoading').addClass('display-none');
+            }, function errorCallback(response) {
+                $scope.errors = response.data.MessageList;
+                $('#PageLoading').addClass('display-none');
+            });
+        } 
     }
 }]);
