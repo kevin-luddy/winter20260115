@@ -3005,13 +3005,13 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             // Get existing data
             ICollection<BoeDTO> boesToSave = ws.Boes.Select(x => x as BoeDTO).ToList().DeepClone();
-            ICollection<PermissionsDTO> wsPermissions = this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id);
-            ICollection<UserDTO> wsUsers = this.UserLoader.GetByIds(wsPermissions.Select(x => x.ETIUserId).Distinct().ToList());
+            ICollection<PermissionsDTO> boePermissions = this.PermissionsLoader.GetBOEPermissions(ws.Boes.Select(x => x.Id).ToList());
+            ICollection<UserDTO> wsUsers = this.UserLoader.GetByIds(boePermissions.Select(x => x.ETIUserId).Distinct().ToList());
             ICollection<BoeApproverResponseDTO> approverResponses = this.boeApproverResponseLoader.GetByWorkspaceId(ws.Id).SelectMany(x => x.Value).ToList();
 
             // Process changes
             Dictionary<int, Collection<UserDTO>> authorsChangeDictionary = this.ProcessAuthorsForBulkRoleSave(boeRolesToSave, boesToSave, wsUsers);
-            Dictionary<int, Collection<UserDTO>> approversChangeDictionary = this.GetApproverChangesForBulkRoleSave(boeRolesToSave, boesToSave, wsPermissions, wsUsers, ws.CurrentActiveUser.UserID, approverResponses, out ICollection<BoeApproverResponseDTO> approversToSave);
+            Dictionary<int, Collection<UserDTO>> approversChangeDictionary = this.GetApproverChangesForBulkRoleSave(boeRolesToSave, boesToSave, boePermissions, wsUsers, ws.CurrentActiveUser.UserID, approverResponses, out ICollection<BoeApproverResponseDTO> approversToSave);
 
             List<(int BoeId, BOEState OldState, BOEState NewState)> transitionsToPerform = this.GetBoeTransitionsForBulkRoleSave(ws.Boes, boesToSave, approverResponses);
 
@@ -3143,7 +3143,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 approversToSave.AddRange(approversToAdd.Select(x => new BoeApproverResponseDTO() { Id = i--, ETIUserID = x, BoeID = boe.Id, Updateable = UpdateType.Upsert, CurrentUserETIUserID = currentUserId }));
 
                 // Mark approvers being removed as "Deleted"
-                approverResponses.Where(x => x.BoeID == boe.Id && approversToRemove.Contains(x.ETIUserID)).ForEach(x => x.Updateable = UpdateType.Deleted);
+                approverResponses.Where(x => x.BoeID == boe.Id && approversToRemove.Contains(x.ETIUserID)).ForEach(x => { x.Updateable = UpdateType.Deleted; x.CurrentUserETIUserID = currentUserId; });
 
                 // record changes for emails
                 approversChangeDictionary.Add(boe.Id, wsUsers.Where(x => approversToAdd.Contains(x.UserID) || approversToRemove.Contains(x.UserID)).ToCollection());
@@ -3182,6 +3182,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     if (responses.Any() && responses.All(x => x.ApproverResponse == ApproverReponseType.Approved && x.Updateable != UpdateType.Deleted))
                     {
                         boe.State = BOEState.Approved;
+                        transitionsToPerform.Add((BoeId: boe.Id, OldState: oldBoe.State, NewState: boe.State));
+                    }
+                }
+
+                // Unassigned state -> draft if roles have been assigned
+                if (oldBoe.State == BOEState.Unassigned)
+                {
+                    if (boe.AuthorIDs.Any())
+                    {
+                        boe.State = BOEState.Draft;
                         transitionsToPerform.Add((BoeId: boe.Id, OldState: oldBoe.State, NewState: boe.State));
                     }
                 }
