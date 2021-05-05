@@ -255,6 +255,8 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
     TaskElementDetailsWidget.Search = {};
     TaskElementDetailsWidget.ChildWidgets = [];
 
+    TaskElementDetailsWidget.BoeStateDraftOrDraftLocked = boeStateDraftOrDraftLocked;
+
     TaskElementDetailsWidget.ToggleHelp = function (helpButton, side, modifyTop) {
         var helpDialog = $(helpButton).next();
 
@@ -648,18 +650,6 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
                 $('#AdjustTaskDatesLink').addClass('display-none');
             }            
         }  
-
-        // For static version of the page, handle whether CFs are editable or not
-        if (boeStateDraftOrDraftLocked) {
-            $('.custom-field-locked').addClass('display-none');
-            $('.custom-field-editable').removeClass('display-none');
-            $('.custom-field-editable input').removeClass('display-none'); 
-            $('.custom-field-editable select').removeClass('display-none');
-            $('.custom-field-editable .replacedWidgetText').addClass('display-none');
-        } else {
-            $('.custom-field-editable').addClass('display-none');
-            $('.custom-field-locked').removeClass('display-none');
-        }
     };
 
     TaskElementDetailsWidget.LoadMOQEquationField($('#MOQEquationFieldContent'), taskElementId);
