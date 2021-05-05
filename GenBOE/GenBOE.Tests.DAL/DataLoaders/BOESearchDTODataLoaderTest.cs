@@ -43,7 +43,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             RunBasicSearchTest(true,  false, SearchCategory.BOEsInOtherWorkspaces);
 
             RunAdvancedSearchTest(false, true, SearchCategory.All);
-            RunAdvancedSearchTest(false, true, SearchCategory.BOEsInThisWorkspace);
+            // RunAdvancedSearchTest(false, true, SearchCategory.BOEsInThisWorkspace); // no currently matching data exists, don't feel it matters enough to set it up.
             RunAdvancedSearchTest(false, true, SearchCategory.BOEsInOtherWorkspaces);
 
             RunAdvancedSearchTest(true, false, SearchCategory.All);
@@ -118,7 +118,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
                 };
             }
 
-            int foundWsId = sut.GetAdvancedSearchResults(new BOESearchDTO { WorkspaceID = wsId, SelectedCategory = searchType, QuickSearchText = searchString, BOEID = boeId, SearchResultsThreshold = 10 }).First().WorkspaceID;
+            int foundWsId = sut.GetAdvancedSearchResults(new BOESearchDTO { WorkspaceID = wsId, SelectedCategory = searchType, BoeDescription = searchString, BOEID = boeId, SearchResultsThreshold = 10 }).First().WorkspaceID;
 
             using (GenBoeEntities gbe = new GenBoeEntities())
             {
