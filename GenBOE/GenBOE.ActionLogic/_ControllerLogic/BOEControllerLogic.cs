@@ -3186,15 +3186,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     }
                 }
 
-                ////// Unassigned state -> draft if roles have been assigned
-                ////if (oldBoe.State == BOEState.Unassigned)
-                ////{
-                ////    if (false)
-                ////    {
-                ////        boe.State = BOEState.Draft;
-                ////        transitionsToPerform.Add((BoeId: boe.Id, OldState: oldBoe.State, NewState: boe.State));
-                ////    }
-                ////}
+                // Unassigned state -> draft if roles have been assigned
+                if (oldBoe.State == BOEState.Unassigned)
+                {
+                    if (boe.AuthorIDs.Any())
+                    {
+                        boe.State = BOEState.Draft;
+                        transitionsToPerform.Add((BoeId: boe.Id, OldState: oldBoe.State, NewState: boe.State));
+                    }
+                }
             }
 
             return transitionsToPerform;
