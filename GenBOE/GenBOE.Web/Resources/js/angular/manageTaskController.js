@@ -28,6 +28,7 @@
     $scope.model.AdjacentItems.PreviousId = undefined;
     $scope.model.AdjacentItems.NextId = undefined;
     $scope.SelectedMoqTypes = [];
+    $scope.IsDraftOrDraftLocked = false;
 
     $scope.isPreviousTaskDisabled = function () {
         return $scope.model.AdjacentItems.PreviousId === undefined || $scope.model.AdjacentItems.PreviousId === null;
@@ -1058,6 +1059,8 @@
             } else {
                 $('#recalculateTaskElementButton').hide();
             }
+
+            $scope.IsDraftOrDraftLocked = TaskElementDetailsWidget.BoeStateDraftOrDraftLocked;
 
             AfterDomLoadTaskElementDetailsWidget(TaskElementDetailsWidget, $scope.taskElementId);
             if ($scope.taskElementId === "-1") {
