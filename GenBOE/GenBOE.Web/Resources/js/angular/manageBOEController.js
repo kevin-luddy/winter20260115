@@ -1332,15 +1332,29 @@
                 url: CreatePostURL(ManageBOEModel.workspace, ManageBOEModel.controller, ManageBOEModel.bulkAssignRolesAction, ''),
                 data: data
             }).then(function successCallback(response) {
-                // On success, return to Manage BOEs
-                RaiseNotification("Save of Bulk Assign Roles was successful.");
-                loadBOEs();
-                $scope.continueCancelBulkAssign();
-                $('#PageLoading').addClass('display-none');
+                if (response.data.ErrorMessages.length > 0) {
+                    $scope.displayBulkAssignSaveErrors(response.data.ErrorMessages);
+                    $('#PageLoading').addClass('display-none');
+                } else {
+                    // On success, return to Manage BOEs
+                    RaiseNotification("Save of Bulk Assign Roles was successful.");
+                    loadBOEs();
+                    $scope.continueCancelBulkAssign();
+                    $('#PageLoading').addClass('display-none');
+                }
             }, function errorCallback(response) {
-                $scope.errors = response.data.MessageList;
+                $scope.displayBulkAssignSaveErrors(response.data.MessageList);
                 $('#PageLoading').addClass('display-none');
             });
         } 
+
+        $scope.displayBulkAssignSaveErrors = function (errors) {
+            if (errors != undefined) {
+                $scope.errors = [];
+                errors.forEach(function (error) {
+                    $scope.errors.push({ ValidationIssue: error });
+                });
+            }
+        }
     }
 }]);
