@@ -3004,7 +3004,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             if (errorMessages.Any()) { return errorMessages; }
 
             // Get existing data
-            ICollection<BoeDTO> boesToSave = ws.Boes.Select(x => x as BoeDTO).DeepClone().ToList();
+            ICollection<BoeDTO> boesToSave = ws.Boes.Select(x => x as BoeDTO).ToList().DeepClone();
             ICollection<PermissionsDTO> wsPermissions = this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(ws.Id);
             ICollection<UserDTO> wsUsers = this.UserLoader.GetByIds(wsPermissions.Select(x => x.ETIUserId).Distinct().ToList());
             ICollection<BoeApproverResponseDTO> approverResponses = this.boeApproverResponseLoader.GetByWorkspaceId(ws.Id).SelectMany(x => x.Value).ToList();

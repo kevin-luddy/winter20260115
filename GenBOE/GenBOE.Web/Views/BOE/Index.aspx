@@ -18,6 +18,7 @@
         exportTemplateAction: '<%:WebConstants.ACTION_EXPORT_MANAGE_BOE_TEMPLATE %>',
         workspaceState: '<%: ((GenBOEMasterModelView)Model).WorkspaceState %>',
         completeImportAction: '<%: WebConstants.ACTION_COMPLETE_IMPORT_MANAGE_BOE %>',
+        bulkAssignRolesAction: '<%: WebConstants.ACTION_SAVE_BULK_ROLE_ASSIGN %>',
         draftState: <%: (int)BOEState.Draft%>,
         draftLockedState: <%: (int)BOEState.DraftLocked%>
     });
@@ -121,7 +122,9 @@
             <div class="form-row" data-ng-show="isBulkAssign">
                 Assign or Remove users in bulk. Select one or more BOEs, a Role, and one or more Users to assign or remove. <br />
                 Select "Assign" to assign the Users to the Role in the BOEs if they are not already assigned. <br />
-                Select "Remove" to remove the selected Users from the selected Role in the selected BOEs if they are assigned.</div>
+                Select "Remove" to remove the selected Users from the selected Role in the selected BOEs if they are assigned. <br /><br />
+                Note: Only BOEs that are Unassigned or in Draft are available for bulk assignment. Roles are locked for BOEs outside of these statuses.
+            </div>
             <div id="BulkAssign" class="form-row" data-ng-show="isBulkAssign">
                 <ul class="validation-box" style="display: none;"></ul>
                 <gen-validation data-errors="errors"></gen-validation>
@@ -183,10 +186,6 @@
                                     <a data-ng-click="changeSorting(columns.approvers)" data-ng-class="{ 'bold': boldSort(columns.approvers) }">Approvers</a>
                                     <a data-ng-click="toggleFilter(columns.approvers)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
                                 </th>
-<%--                            <th class="sub-author-select bootstrap">
-                                    <a data-ng-click="changeSorting(columns.subauthors)" data-ng-class="{ 'bold': boldSort(columns.subauthors) }">Subcontract Authors</a>
-                                    <a data-ng-click="toggleFilter(columns.subauthors)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
-                                </th>--%>
                             </tr>
                         </thead>
                         <tbody>
@@ -197,7 +196,6 @@
                                 <td>{{::boe.ClinDisplayName}}</td>
                                 <td><div data-ng-repeat="authorName in boe.AuthorsDisplayNames">{{authorName}}</div></td>
                                 <td><div data-ng-repeat="approver in boe.ApproversDisplayNames">{{approver}}</div></td>
-                                <%--<td><div data-ng-repeat="subAuthorName in boe.SubcontractorAuthors">{{subAuthorName}}</div></td>--%>
                             </tr>
                         </tbody>
                     </table>
