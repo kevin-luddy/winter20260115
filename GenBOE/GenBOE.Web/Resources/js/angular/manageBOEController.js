@@ -1291,6 +1291,11 @@
                 }
                 boe.hasError = true;
             }
+
+            if (hasAuthor && hasApprover && boe.Approvers.some(function (approver) { return boe.Authors.indexOf(approver) >= 0; })) {
+                $scope.errors.push({ ValidationIssue: boe.WbsDisplayName + " | " + boe.ClinDisplayName + " cannot have the same person as both an Author and Approver." });
+                boe.hasError = true;
+            }
         });
 
         if (displaySuccessMessage && $scope.errors.length == 0) {
