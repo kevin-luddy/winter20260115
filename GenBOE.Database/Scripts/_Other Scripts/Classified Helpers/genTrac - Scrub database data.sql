@@ -10,7 +10,6 @@
 DELETE FROM ELMAH_Error;
 DELETE FROM DataMart.DataMartEmployee;
 
-DELETE FROM ContractTypeGroupXREF;
 DELETE FROM LineOfBusinessRoleXREF;
 DELETE FROM ProposalContractTypeXREF;
 DELETE FROM ProposalCostElementXREF;
