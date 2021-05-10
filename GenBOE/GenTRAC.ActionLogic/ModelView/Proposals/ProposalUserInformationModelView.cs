@@ -144,7 +144,12 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Gets or sets the list of GenBOE Workspace Creators
         /// </summary>
         public ICollection<SelectListItem> GenBoeWorkspaceCreatorList { get; set; }
-        
+
+        /// <summary>
+        /// Contract Leads
+        /// </summary>
+        public List<SelectListItem> ContractLeadList { get; set; }
+
         /// <summary>
         /// Constructor
         /// </summary>

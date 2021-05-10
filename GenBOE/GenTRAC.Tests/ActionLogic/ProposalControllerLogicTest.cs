@@ -1828,7 +1828,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.retriever.Setup(x => x.GetProposalPermissions(proposalId.Value)).Returns(permissions);
             this.retriever.Setup(x => x.GetAllChecklistSaveInfo(proposalId.Value)).Returns(new Collection<ProposalChecklistSaveInfo>());
             this.genBoePermissionsLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("TestNtid", "TestDisplayName") });
-            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<UserDTO>() { user });
+            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>())).Returns(new Collection<UserDTO>() { user });
 
             ProposalApprovalsModelView proposalApprovalsInfo = sut.GetDataForProposalApprovals(proposalId, false);
             ProposalUserInformationModelView proposalUserInfo = sut.GetDataForProposalUserInformation(proposalId);
@@ -1899,7 +1899,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetById(user.Id)).Returns(user);
             this.retriever.Setup(x => x.GetProposalPermissions(proposalId.Value)).Returns(permissions);
             this.genBoePermissionsLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("TestNtid", "TestDisplayName") });
-            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<UserDTO>() { user });
+            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>())).Returns(new Collection<UserDTO>() { user });
 
             ProposalApprovalsModelView proposalApprovalsInfo = sut.GetDataForProposalApprovals(proposalId, true);
 
