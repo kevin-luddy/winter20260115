@@ -88,6 +88,10 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IndependentReviewers']/@value">
     </parameterentry>
   </parameter>
+  <parameter name="ContractsLead" description="doesn't matter" defaultvalue="__ContractsLead__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ContractsLead']/@value">
+    </parameterentry>
+  </parameter>
   <parameter name="LogType" description="doesn't matter" defaultvalue="__LogType__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='LogType']/@value">
     </parameterentry>

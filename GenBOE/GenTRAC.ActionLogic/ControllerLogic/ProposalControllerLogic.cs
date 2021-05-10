@@ -1390,9 +1390,12 @@ namespace GenTRAC.ActionLogic
                 case PtmRole.CoverSheetApprover:
                     groupName = IES.Common.ConfigurationUtilities.GetAppSetting("CoverSheetApprovers");
                     break;
+                case PtmRole.ContractsPOC:
+                    groupName = IES.Common.ConfigurationUtilities.GetAppSetting("ContractsLead");
+                    break;
             }
 
-            return this.userLoader.GetUserDTOsByADGroup(groupName.GetObjectName(), groupName.GetDomain());
+            return this.userLoader.GetUserDTOsByADGroup(groupName.GetObjectName());
         }
 
         /// <summary>
@@ -1581,6 +1584,12 @@ namespace GenTRAC.ActionLogic
                             break;
                     }
                 }
+            }
+
+            model.ContractLeadList = this.GetUsersForSelectList(PtmRole.ContractsPOC).Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName }).ToList();
+            if(!model.ContractLeadList.Any(x => x.Value == model.CostVolumeLeadNtid))
+            {
+                model.ContractLeadList.Insert(0, new SelectListItem() { Value = model.CostVolumeLeadNtid, Text = model.CostVolumeLeadDisplayName });
             }
 
             model.GenBoeWorkspaceCreatorList = new Collection<SelectListItem>() { new SelectListItem() { Value = string.Empty, Text = "Select GenBOE Workspace Creator" } };

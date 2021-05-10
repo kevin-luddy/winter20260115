@@ -185,9 +185,8 @@ namespace GenTRAC.DataBridge.DTO
         /// GetUserDTOsByADGroup
         /// </summary>
         /// <param name="inADGroup">inADGroup</param>
-        /// <param name="inADDomain">inADDomain</param>
         /// <returns>user DTOs based on adgroup</returns>
-        public ICollection<UserDTO> GetUserDTOsByADGroup(string inADGroup, string inADDomain)
+        public ICollection<UserDTO> GetUserDTOsByADGroup(string inADGroup)
         {
             ICollection<UserDTO> toReturn = new Collection<UserDTO>();
             if (string.IsNullOrEmpty(inADGroup))
@@ -195,12 +194,7 @@ namespace GenTRAC.DataBridge.DTO
                 throw new ArgumentNullException(nameof(inADGroup));
             }
 
-            if (string.IsNullOrEmpty(inADDomain))
-            {
-                inADDomain = "us"; // default, TODO: check is domain even needed?
-            }
-
-            var users = this.adUtils.GetAdGroupUsers(inADGroup);
+            ICollection<UserData> users = this.adUtils.GetAdGroupUsers(inADGroup);
             foreach (UserData user in users)
             {
                 toReturn.Add(GetUserDTOFromADUser(user));
