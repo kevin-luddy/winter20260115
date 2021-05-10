@@ -3050,6 +3050,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 errorMessages.Add("All BOEs in draft, awaiting approval, or approved, must have approver and author roles assigned.");
             }
 
+            if (boeRolesToSave.Any(x => x.Authors.Intersect(x.Approvers).Any()))
+            {
+                errorMessages.Add("The same person cannot be assigned as both Author and Approver to the same BOE.");
+            }
+
             return errorMessages;
         }
 
@@ -3189,7 +3194,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 // Unassigned state -> draft if roles have been assigned
                 if (oldBoe.State == BOEState.Unassigned)
                 {
-                    if (boe.AuthorIDs.Any())
+                    if (boe.AuthorIDs != null && boe.AuthorIDs.Any())
                     {
                         boe.State = BOEState.Draft;
                         transitionsToPerform.Add((BoeId: boe.Id, OldState: oldBoe.State, NewState: boe.State));
