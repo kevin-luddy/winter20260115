@@ -362,6 +362,7 @@
             historicalMetricsDetailsUrl,
             pagingMetricsUrl,
             '<%:Model.BOEState%>' != '<%:(int)BOEState.Draft%>',
+            '<%:Model.BOEState%>' == '<%:(int)BOEState.Draft%>' || '<%:Model.BOEState%>' == '<%:(int)BOEState.DraftLocked%>',
             '<%:Model.MetricsSearchDialogParameters.MetricStoreConnected%>'.toLowerCase(),
             searchTypeAheadUrl,
             '<%:Model.AllowDateShift%>'.toLowerCase(),
