@@ -7,16 +7,17 @@
 namespace GenBOE.ActionLogic
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Transactions;
     using GenBOE.ActionLogic.ModelView;
-    using IES.Common;
-    using IES.Common.Exceptions;
+    using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
-    using System.Collections.Generic;
+    using IES.Common;
+    using IES.Common.Exceptions;
 
     public class PermissionControllerLogic
     {
@@ -108,7 +109,6 @@ namespace GenBOE.ActionLogic
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
-
                 // Seperate nt ids
                 String[] tempids = inPermission.EntityIds[0].Split(';');
                 if (tempids.Length > 1)
@@ -178,6 +178,8 @@ namespace GenBOE.ActionLogic
                         }
                     }
 
+                    this.ValidateWsAdminMustHaveCreateWsPermission(ws.Id, userDTO.NTID, inPermission.Roles);
+
                     foreach (Role role in inPermission.Roles)
                     {
                         bool isSubcontractor = this._SecurityInformation.IsSubcontractorUser(userDTO.NTID, userDTO.IsSubcontractor ?? false);
@@ -242,6 +244,32 @@ namespace GenBOE.ActionLogic
             Dictionary<UserData, bool> result = _ADUtils.CheckUsersBoeAccess(usersToCheck, groups);
 
             return result;
+        }
+
+        /// <summary>
+        /// If we are assigning a WS Admin role, we need to make sure that:
+        ///     the user already has the WS Admin role (because we ignore existing roles)
+        ///     OR the user has a create WS role
+        ///     OR the user is a system admin
+        /// </summary>
+        /// <param name="wsId">Workspace Id</param>
+        /// <param name="ntid">User's NTID</param>
+        /// <param name="Roles">Roles being assigned</param>
+        /// <exception cref="GenValidationException">If invalid, the method throws a validation exception.</exception>
+        public void ValidateWsAdminMustHaveCreateWsPermission(int wsId, string ntid, ICollection<Role> Roles)
+        {
+            if(Roles.Any(x => x == Role.WorkspaceAdmin))
+            {
+                IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
+                bool isWsAdminAlready = permissions.Any(x => x.AuthorizedRole == Role.WorkspaceAdmin && x.WorkspaceId == wsId);
+                bool isAllowedToCreateWs = permissions.Any(x => x.AuthorizedRole == Role.CreateWorkspacePermissions);
+                bool isSystemAdmin = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin);
+
+                if (!isWsAdminAlready && !isAllowedToCreateWs && !isSystemAdmin)
+                {
+                    throw new GenValidationException("In order for a user to be allowed to be assigned 'Workspace Administrator' rights, the user must have 'Create Workspace' permissions.");
+                }
+            }
         }
     }
 }

@@ -331,5 +331,13 @@ namespace GenBOE.ActionLogic
         /// <param name="ws">workspace</param>
         /// <param name="boeIds">BoeIds</param>
         void DeleteMoqTypesForBoe(FullWorkspace ws, ICollection<int> boeIds);
+
+        /// <summary>
+        /// Save Bulk Boe Roles
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="boeRolesToSave">Boe Roles to Save</param>
+        /// <returns>Error messages, if any</returns>
+        IList<string> SaveBoeBulkRoles(FullWorkspace ws, ICollection<ManageBOEModelView> boeRolesToSave);
     }
 }

@@ -18,6 +18,7 @@
         exportTemplateAction: '<%:WebConstants.ACTION_EXPORT_MANAGE_BOE_TEMPLATE %>',
         workspaceState: '<%: ((GenBOEMasterModelView)Model).WorkspaceState %>',
         completeImportAction: '<%: WebConstants.ACTION_COMPLETE_IMPORT_MANAGE_BOE %>',
+        bulkAssignRolesAction: '<%: WebConstants.ACTION_SAVE_BULK_ROLE_ASSIGN %>',
         draftState: <%: (int)BOEState.Draft%>,
         draftLockedState: <%: (int)BOEState.DraftLocked%>
     });
@@ -36,11 +37,11 @@
 
 <div data-ng-controller="ManageBOEController" data-ng-cloak="">
     <div id="ManageBOE" class="manage-boe module">
-        <div class="module-header-data">Manage BOEs</div>
+        <div class="module-header-data"><div data-ng-show="!isBulkAssign">Manage BOEs</div><div data-ng-show="isBulkAssign">Bulk BOE Role Assignment</div></div>
         <div class="module-content-data">
-            <div class="form-row">Add new or edit BOEs.<span id="InitializationText"> To allow Authors to begin work on BOEs, set <i>Workspace Status</i> to <i>Working</i> on the <a id="WorkspaceStatusLink" href="">Workspace Status</a> page.</span></div>
-            <div class="form-row color-red">{{gridModel.manageBoeHeaderInfo}}</div>
-            <div class="form-row css3pie-position-fix">
+            <div class="form-row" data-ng-show="!isBulkAssign">Add new or edit BOEs.<span id="InitializationText"> To allow Authors to begin work on BOEs, set <i>Workspace Status</i> to <i>Working</i> on the <a id="WorkspaceStatusLink" href="">Workspace Status</a> page.</span></div>
+            <div class="form-row color-red" data-ng-show="!isBulkAssign">{{gridModel.manageBoeHeaderInfo}}</div>
+            <div class="form-row css3pie-position-fix" data-ng-show="!isBulkAssign">
                 <ul class="validation-box" style="display: none;"></ul>
                 <gen-validation data-errors="errors"></gen-validation>
                 <div class="buttons inline css3pie-position-fix" style="line-height: 28px;width: 600px;">
@@ -48,6 +49,7 @@
                     <button class="ies-action" id="Add-ManageBOE" data-ng-disabled="isLoading" data-ng-show="isWorkingState" data-ng-click="AddBOE()" type="button">+ Add</button>
                     <button class="ies-action" id="Import-ManageBOE" data-ng-disabled="isLoading" data-ng-show="isWorkingState" data-ng-click="toggleImport()" type="button">Import</button>
                     <button class="ies-action" id="Export-ManageBOE" data-ng-disabled="isLoading || isExporting" data-ng-click="export(false)" type="button">Export</button>
+                    <button class="ies-action" id="BulkAssign-ManageBOE" data-ng-disabled="isLoading || data.length == 0" data-ng-show="isWorkingState" data-ng-click="openBulkAssign()" type="button">Bulk Assign Roles</button>
                 </div>
                 <div id="noteMessage" data-ng-show="isDataFiltered()">You are viewing filtered data. <a data-ng-click="clearAllFilters()">Click here</a> to reset all your filters.</div>
                 <div class="search-box float-right">
@@ -55,7 +57,7 @@
                     <div class="paging-control" genpaging data-num-pages="{{ numberOfPages(filteredResults) }}" data-current-page="currentPage"></div>
                 </div>
             </div>
-            <div class="form-row">
+            <div class="form-row" data-ng-show="!isBulkAssign">
                <div class="manage-boe-grid">
                     <table id="ManageBOEGrid" class="grid readonly" width="962">
                         <thead>
@@ -117,7 +119,98 @@
                     </table>
                 </div>
             </div>
-            <div class="form-row last-form-row">
+            <div class="form-row" data-ng-show="isBulkAssign">
+                Assign or Remove users in bulk. Select one or more BOEs, a Role, and one or more Users to assign or remove. <br />
+                Select "Assign" to assign the Users to the Role in the BOEs if they are not already assigned. <br />
+                Select "Remove" to remove the selected Users from the selected Role in the selected BOEs if they are assigned. <br /><br />
+                Note: Only BOEs that are Unassigned or in Draft are available for bulk assignment. Roles are locked for BOEs outside of these statuses.
+            </div>
+            <div id="BulkAssign" class="form-row" data-ng-show="isBulkAssign">
+                <ul class="validation-box" style="display: none;"></ul>
+                <gen-validation data-errors="errors"></gen-validation>
+                <div class="bulk-assign-add-remove bootstrap">
+                    <div class="bulk-select">
+                        <div class="bulk-assign-label">BOEs</div>
+                        <div ng-dropdown-multiselect="" options="bulkAssignBoes" selected-model="selectedBoes" checkBoxes="true" extra-settings="dropdownSettings"></div>
+                    </div>
+                    <div class="bulk-select role-select">
+                        <div class="bulk-assign-label">Role</div>
+                        <select data-ng-model="selectedRole" data-ng-change="clearUsers()">
+                            <option></option>
+                            <option>{{roles.author}}</option>
+                            <option>{{roles.approver}}</option>
+                            <option>{{roles.subAuthor}}</option>
+                        </select>
+                    </div>
+                    <div class="bulk-select">
+                        <div class="bulk-assign-label">Users</div>
+                        <div data-ng-if="selectedRole == undefined || selectedRole == ''" data-ng-disabled="true" ng-dropdown-multiselect="" disabled="true"></div>
+                        <div data-ng-if="selectedRole == roles.author" ng-dropdown-multiselect="" options="bulkAssignAuthors" selected-model="selectedUsers" checkBoxes="true" extra-settings="dropdownSettings"></div>
+                        <div data-ng-if="selectedRole == roles.approver" ng-dropdown-multiselect="" options="bulkAssignApprovers" selected-model="selectedUsers" checkBoxes="true" extra-settings="dropdownSettings"></div>
+                        <div data-ng-if="selectedRole == roles.subAuthor" ng-dropdown-multiselect="" options="bulkAssignSubAuthors" selected-model="selectedUsers" checkBoxes="true" extra-settings="dropdownSettings"></div>
+                    </div>
+                    <button id="bulk-assign-add" class="ies-action" data-ng-click="bulkAssignRoles()" data-ng-disabled="disableAssignRemove()">Assign</button>
+                    <button id="bulk-assign-remove" class="ies-danger" data-ng-click="bulkRemoveRoles()" data-ng-disabled="disableAssignRemove()">Remove</button>
+                    <div class="search-box float-right">
+                        <input type="text" class="filter" data-ng-model="searchText" data-ng-model-options="{ debounce: 200 }" data-ng-change="searchChanged()" placeholder="Search..." style="float: right" />
+                        <div class="paging-control" genpaging data-num-pages="{{ numberOfPages(filteredResults) }}" data-current-page="currentPage"></div>
+                    </div>
+                </div>
+                <div id="noteMessage" class="noteMessage" data-ng-show="isDataFiltered()">You are viewing filtered data. <a data-ng-click="clearAllFilters()">Click here</a> to reset all your filters.</div>
+                <div id="QuickFilters" data-ng-class="{ 'filter-margin': !isDataFiltered() }">
+                    Quick Action Filters: 
+                    <span>
+                        <a data-ng-click="filterForIncomplete()">Incomplete BOEs</a>
+                    </span>
+                    <span>
+                        <a data-ng-click="filterForErrors()" data-ng-disabled="!anyBoesWithErrors()" data-ng-class="{ 'disabled': !anyBoesWithErrors() }">BOEs with Errors</a>
+                    </span>
+                </div>
+                <div class="bulk-assign-grid">
+                    <table id="BulkAssignGrid" class="grid readonly" width="962">
+                        <thead>
+                            <tr>
+                                <th class="wbs-title bootstrap">
+                                    <a data-ng-click="changeSorting(columns.wbs)" data-ng-class="{ 'bold': boldSort(columns.wbs) }">WBS</a>
+                                    <a data-ng-click="toggleFilter(columns.wbs)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
+                                </th>
+                                <th class="clin-title bootstrap">
+                                    <a data-ng-click="changeSorting(columns.clin)" data-ng-class="{ 'bold': boldSort(columns.clin) }">CLIN</a>
+                                    <a data-ng-click="toggleFilter(columns.clin)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
+                                </th>
+                                <th class="author-select bootstrap">
+                                    <a data-ng-click="changeSorting(columns.authors)" data-ng-class="{ 'bold': boldSort(columns.authors) }">Authors</a>
+                                    <a data-ng-click="toggleFilter(columns.authors)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
+                                </th>
+                                <th class="approver-select bootstrap">
+                                    <a data-ng-click="changeSorting(columns.approvers)" data-ng-class="{ 'bold': boldSort(columns.approvers) }">Approvers</a>
+                                    <a data-ng-click="toggleFilter(columns.approvers)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-ng-show="isLoading"><td colspan="5"><div class="loader"></div></td></tr>
+                            <tr data-ng-show="!isLoading && (data.length === 0 || filteredBulkResults.length === 0)"><td colspan="5"><div class="empty-grid-text">There are no BOEs for the Workspace.</div></td></tr>
+                            <tr pkid="{{::boe.BoeID}}" data-ng-repeat="boe in (filteredBulkResults = (bulkAssignData | filter:filterBOEs | orderBy:predicate:reverse)) | limitTo:pageSize:currentPage*pageSize" data-ng-class="{ 'bulkAssignError': boe.hasError }">
+                                <td>{{::boe.WbsDisplayName}}</td>
+                                <td>{{::boe.ClinDisplayName}}</td>
+                                <td><div data-ng-repeat="authorName in boe.AuthorsDisplayNames">{{authorName}}</div></td>
+                                <td><div data-ng-repeat="approver in boe.ApproversDisplayNames">{{approver}}</div></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="buttons">
+                    <div class="search-box float-right">
+                        <input type="text" class="filter" data-ng-model="searchText" data-ng-model-options="{ debounce: 200 }" data-ng-change="searchChanged()" placeholder="Search..." style="float: right" />
+                        <div class="paging-control" genpaging data-num-pages="{{ numberOfPages(filteredBulkResults) }}" data-current-page="currentPage"></div>
+                    </div>
+                    <button id="BulkAssign-ValidateButton" type="button" class="ies-action" data-ng-disabled="!isDirty" data-ng-click="validateBulkAssign(true, true)">Validate</button>
+                    <button id="BulkAssign-SaveButton" type="button" class="ies-action" data-ng-disabled="!isDirty" data-ng-click="saveBulkAssign()">Save</button>
+                    <button id="BulkAssign-CancelButton" type="button" class="ies" data-ng-click="cancelBulkAssign()">Cancel</button>
+                </div>
+            </div>
+            <div class="form-row last-form-row" data-ng-show="!isBulkAssign">
                 <div class="search-box full-width">
                     <input type="text" class="filter" data-ng-model="searchText" data-ng-model-options="{ debounce: 200 }" data-ng-change="searchChanged()" placeholder="Search..." style="float: right" />
                     <div class="paging-control" genpaging data-num-pages="{{ numberOfPages(filteredResults) }}" data-current-page="currentPage"></div>

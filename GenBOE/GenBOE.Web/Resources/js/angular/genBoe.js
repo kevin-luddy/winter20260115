@@ -1,4 +1,4 @@
-﻿var app = angular.module('genboe', ['ngAnimate', 'ngSanitize', 'ui.grid', 'ui.grid.edit', 'ui.grid.cellNav', 'ui.grid.resizeColumns', 'ui.grid.pagination', 'ui.bootstrap', 'ngCookies', 'gen.directives', 'MoqEquationApp', 'ui.tinymce', 'ui.sortable'])
+﻿var app = angular.module('genboe', ['ngAnimate', 'ngSanitize', 'ui.grid', 'ui.grid.edit', 'ui.grid.cellNav', 'ui.grid.resizeColumns', 'ui.grid.pagination', 'ui.bootstrap', 'ngCookies', 'gen.directives', 'MoqEquationApp', 'ui.tinymce', 'ui.sortable', 'angularjs-dropdown-multiselect'])
 
 // Intercept ajax responses for global error handling.
 .factory('globalErrorInterceptor', ['$q', function ($q) {
