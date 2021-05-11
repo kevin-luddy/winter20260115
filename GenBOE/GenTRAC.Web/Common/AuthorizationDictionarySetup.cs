@@ -36,6 +36,7 @@ namespace GenTRAC.Web.Common
             AddApprovalsControllerActions(result);
             AddPostSubmittalAttachmentsControllerActions(result);
             AddCertificationTimelineControllerActions(result);
+            AddContractsControllerActions(result);
 
             return result;
         }
@@ -234,6 +235,18 @@ namespace GenTRAC.Web.Common
             AddActionToController(WebConstants.Action.SAVE_CERTIFICATION_TIMELINE, PtmSecurityPage.CertificationTimeline, SecurityAuthorization.CreateReadUpdateDelete, certificationTimelineActions);
             AddActionToController(WebConstants.Action.COMPLETE_CERTIFICATION_TIMELINE, PtmSecurityPage.CertificationTimeline, SecurityAuthorization.CreateReadUpdateDelete, certificationTimelineActions);
             result.Add(WebConstants.Controller.CERTIFICATION_TIMELINE, certificationTimelineActions);
+        }
+
+        /// <summary>
+        /// Generates items for the contracts controller
+        /// </summary>
+        /// <param name="result">The result</param>
+        private static void AddContractsControllerActions(Dictionary<string, Dictionary<string, SecurityPageAndAuthorization>> result)
+        {
+            Dictionary<string, SecurityPageAndAuthorization> contractsTimelineActions = new Dictionary<string, SecurityPageAndAuthorization>();
+            AddActionToController(WebConstants.Action.DISPLAY_CONTRACTS_INDEX, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsTimelineActions);
+
+            result.Add(WebConstants.Controller.CONTRACTS, contractsTimelineActions);
         }
 
         #endregion

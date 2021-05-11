@@ -67,7 +67,12 @@ namespace IES.Common
         /// <summary>
         /// Revision History Tab
         /// </summary>
-        RevisionHistory = 12
+        RevisionHistory = 12,
+
+        /// <summary>
+        /// Contracts Tab
+        /// </summary>
+        Contracts = 13
     }
 
     /// <summary>
