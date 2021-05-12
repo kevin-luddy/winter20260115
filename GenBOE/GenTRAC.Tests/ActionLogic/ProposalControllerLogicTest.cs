@@ -2630,6 +2630,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.retriever.Setup(x => x.GetProposalPermissions(proposalId.Value)).Returns(savedUserPermissions); // GetFullProposal
             this.userMapper.Setup(x => x.GetById(savedUser.Id)).Returns(savedUser); // UserMapper
             this.genBoePermissionsLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<KeyValuePair<string, string>>());
+            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>())).Returns(new Collection<UserDTO>() { savedUser });
 
             // ProposalChecklistSaveInfo
             ICollection<ProposalChecklistSaveInfo> saveInfo = new Collection<ProposalChecklistSaveInfo>();
@@ -2729,6 +2730,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.retriever.Setup(x => x.GetProposalPermissions(proposalId.Value)).Returns(savedUserPermissions); // GetFullProposal
             this.userMapper.Setup(x => x.GetById(savedUser.Id)).Returns(savedUser); // UserMapper
             this.genBoePermissionsLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("TestNtid", "TestDisplayName") });
+            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>())).Returns(new Collection<UserDTO>() { savedUser });
 
             // ProposalChecklistSaveInfo
             ICollection<ProposalChecklistSaveInfo> saveInfo = new Collection<ProposalChecklistSaveInfo>();
@@ -2787,6 +2789,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.retriever.Setup(x => x.GetProposalPermissions(proposalId.Value)).Returns(savedUserPermissions); // GetFullProposal
             this.userMapper.Setup(x => x.GetById(savedUser.Id)).Returns(savedUser); // UserMapper
             this.genBoePermissionsLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("TestNtid", "TestDisplayName") });
+            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>())).Returns(new Collection<UserDTO>() { savedUser });
 
             // ProposalChecklistSaveInfo
             ICollection<ProposalChecklistSaveInfo> saveInfo = new Collection<ProposalChecklistSaveInfo>();
