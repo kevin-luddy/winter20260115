@@ -428,6 +428,15 @@ namespace GenTRAC.Web.Common
 
             #endregion
 
+            #region Contracts
+
+            /// <summary>
+            /// Display Contracts
+            /// </summary>
+            public const string DISPLAY_CONTRACTS_INDEX = "DisplayContractsIndex";
+
+            #endregion
+
             #region Approvals
             /// <summary>
             /// approvals
@@ -602,6 +611,11 @@ namespace GenTRAC.Web.Common
             /// Checklist
             /// </summary>
             public const string APPROVALS = "approvals";
+
+            /// <summary>
+            /// Contracts
+            /// </summary>
+            public const string CONTRACTS = "contracts";
 
             /// <summary>
             /// Revision
@@ -899,6 +913,15 @@ namespace GenTRAC.Web.Common
             public const string PROPOSAL_COMMENTS = "ProposalComments";
 
             #endregion Proposal
+
+            #region Contracts
+
+            /// <summary>
+            /// Approvals index
+            /// </summary>
+            public const string CONTRACTS_INDEX = "ContractsIndex";
+
+            #endregion
 
             #region Approvals
 

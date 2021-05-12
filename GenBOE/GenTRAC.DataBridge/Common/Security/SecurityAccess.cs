@@ -107,7 +107,7 @@ namespace GenTRAC.DataBridge.Common.Security
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Proposal },
                 new PtmRole[] { PtmRole.CostVolumeLead, PtmRole.AdditionalPricingResource1, PtmRole.AdditionalPricingResource2, PtmRole.BackupPricer, PtmRole.ProposalSetupAdmin }, SecurityAuthorization.ReadUpdate);
 
-            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Proposal },
+            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Proposal, PtmSecurityPage.Contracts },
                 new PtmRole[] { PtmRole.CaptureManager, PtmRole.AdditionalUser, PtmRole.PeerReviewer, PtmRole.ContractsPOC, PtmRole.SupplyChainPOCMatl, PtmRole.SupplyChainPOCSubs, PtmRole.Viewer, PtmRole.CoverSheetApprover, PtmRole.PricingVerification },
                 SecurityAuthorization.Read);
 
@@ -150,7 +150,11 @@ namespace GenTRAC.DataBridge.Common.Security
 
             // Revision History
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.RevisionHistory },
-                new PtmRole[] { PtmRole.Admin, PtmRole.CostVolumeLead, PtmRole.Pricer, PtmRole.BackupPricer, PtmRole.CaptureManager, PtmRole.CostVolumeLead }, SecurityAuthorization.Read);
+                new PtmRole[] { PtmRole.Admin, PtmRole.CostVolumeLead, PtmRole.Pricer, PtmRole.BackupPricer, PtmRole.CaptureManager }, SecurityAuthorization.Read);
+
+            // Contracts Tab.. read is done w/ Proposal
+            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Contracts },
+                new PtmRole[] { PtmRole.Admin, PtmRole.ContractsPOC }, SecurityAuthorization.ReadUpdate);
         }
 
         /// <summary>
@@ -248,6 +252,7 @@ namespace GenTRAC.DataBridge.Common.Security
                 case PtmSecurityPage.PostSubmittalAttachments:
                 case PtmSecurityPage.CertificationTimeline:
                 case PtmSecurityPage.RevisionHistory:
+                case PtmSecurityPage.Contracts:
                     proposalRequired = true;
                     break;
                 default:

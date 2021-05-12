@@ -1587,10 +1587,11 @@ namespace GenTRAC.ActionLogic
             }
 
             model.ContractLeadList = this.GetUsersForSelectList(PtmRole.ContractsPOC).Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName }).ToList();
-            if(!model.ContractLeadList.Any(x => x.Value == model.CostVolumeLeadNtid))
+            if (!model.ContractLeadList.Any(x => x.Value == model.CostVolumeLeadNtid))
             {
                 model.ContractLeadList.Insert(0, new SelectListItem() { Value = model.CostVolumeLeadNtid, Text = model.CostVolumeLeadDisplayName });
             }
+            model.ContractLeadList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Contracts Lead" });
 
             model.GenBoeWorkspaceCreatorList = new Collection<SelectListItem>() { new SelectListItem() { Value = string.Empty, Text = "Select GenBOE Workspace Creator" } };
             ICollection<KeyValuePair<string, string>> workspaceCreatorList = this.genBoePermissionLoader.GetCreateWorkspaceRolesForPtm(model.GenBoeWorkspaceCreatorNtid, model.GenBoeWorkspaceCreatorDisplayName);

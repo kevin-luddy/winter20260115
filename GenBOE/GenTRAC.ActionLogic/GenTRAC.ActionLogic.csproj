@@ -92,6 +92,7 @@
     <Compile Include="ControllerLogic\AdminControllerLogic.cs" />
     <Compile Include="ControllerLogic\ApprovalsControllerLogic.cs" />
     <Compile Include="ControllerLogic\ChecklistControllerLogic.cs" />
+    <Compile Include="ControllerLogic\ContractsControllerLogic.cs" />
     <Compile Include="ControllerLogic\GenTRACControllerLogic.cs" />
     <Compile Include="ControllerLogic\HomeControllerLogic.cs" />
     <Compile Include="CacheWarming\CacheWarmer.cs" />
