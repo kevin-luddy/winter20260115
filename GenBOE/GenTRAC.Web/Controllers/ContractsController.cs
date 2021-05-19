@@ -46,7 +46,14 @@ namespace GenTRAC.Web.Controllers
             this.ViewBag.ProposalId = proposalId.ToString();
             this.ViewBag.ReadOnly = false; // todo.. fix me
 
-            ContractsModelView model = new ContractsModelView() { PreviousROMValueDecimal = 1000, PreviouslySubmittedROM = "rom", ContractsCorrespondenceLogNumber = "log #", PreviousROMDate = DateTime.Now.AddDays(-100), CustomerSubmittalDate = DateTime.Now.AddDays(-1) };
+            ContractsModelView model = new ContractsModelView()
+            { 
+                PreviousROMValueDecimal = 1000, 
+                PreviouslySubmittedROM = "rom", 
+                ContractsCorrespondenceLogNumber = "log #", 
+                PreviousROMDate = DateTime.Now.AddDays(-100).ToString(), 
+                CustomerSubmittalDate = DateTime.Now.AddDays(-1).ToString() 
+            };
 
             return this.View(WebConstants.View.CONTRACTS_INDEX, model);
         }

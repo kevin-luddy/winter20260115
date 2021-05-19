@@ -1,6 +1,28 @@
 ﻿@model GenTRAC.ActionLogic.ModelView.ContractsModelView
+<script type="text/javascript">
+    var ContractsInfoWidget;
 
-<div class="composite module full">
+    $(function () {
+        var readOnly = @ViewBag.ReadOnly.ToString().ToLower();
+        var widgetConfig = {};
+        widgetConfig.ContextID = "contractsInfo";
+        widgetConfig.IsModule = true;
+        widgetConfig.isReadOnly = readOnly;
+
+        ContractsInfoWidget = new GenWidget(widgetConfig);
+
+        if (!readOnly) {
+            ContractsInfoWidget.getElement('input[name="CustomerSubmittalDate"]').datepicker({
+                dateFormat: 'mm/dd/yy',
+                onSelect: function () {
+                    ContractsInfoWidget.setDirty("contractsForm");
+                }
+            });
+        }
+	});
+</script>
+
+<div id="contractsInfo" class="composite module full">
     <div class="module-header-data">Contract Information</div>
     <div class="module-content-data expanded-content">
         <div class="form-row">
@@ -12,7 +34,7 @@
         <div class="form-row">
             <div class="form-label">@Html.LabelFor(x => x.PreviousROMDate)</div>
             <div class="form-element">
-                @Html.DisplayFor(x => x.PreviousROMDate);
+                @Html.DisplayFor(x => x.PreviousROMDate)
             </div>
         </div>
         <div class="form-row">

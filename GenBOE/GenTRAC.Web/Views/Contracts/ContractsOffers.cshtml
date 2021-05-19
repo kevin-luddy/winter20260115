@@ -1,6 +1,20 @@
-﻿<div class="composite module full">
+﻿<script type="text/javascript">
+    var ContractsOfferWidget;
+
+	$(function () {
+        var widgetConfig = {};
+        widgetConfig.ContextID = "contractsOffers";
+        widgetConfig.IsModule = true;
+        widgetConfig.isReadOnly = @ViewBag.ReadOnly.ToString().ToLower();
+
+        ContractsOfferWidget = new GenWidget(widgetConfig);
+	});
+</script>
+
+<div id="contractsOffers" class="composite module full">
     <div class="module-header-data">Offers</div>
     <div class="module-content-data expanded-content">
-        Coming soon 3
+        Coming soon
     </div>
+    <br />
 </div>

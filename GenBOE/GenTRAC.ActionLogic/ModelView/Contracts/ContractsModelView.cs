@@ -10,27 +10,77 @@ namespace GenTRAC.ActionLogic.ModelView
     using System.ComponentModel.DataAnnotations;
     using IES.Common;
 
+    /// <summary>
+    /// Contracts Tab MV
+    /// </summary>
     public class ContractsModelView
     {
+        /// <summary>
+        /// Previously Submitted ROM (PTM record)
+        /// </summary>
         [Display(Name= "Previously Submitted ROM")]
         public string PreviouslySubmittedROM { get; set; }
 
-        private DateTime? previousROMDate { get; set; }
+        /// <summary>
+        /// Previous ROM Date
+        /// </summary>
+        public DateTime? previousROMDt { get; private set; }
 
+        /// <summary>
+        /// Previous ROM Date String
+        /// </summary>
         [Display(Name = "Previously Submitted ROM Date")]
-        public DateTime? PreviousROMDate { get => this.previousROMDate?.Date; set => this.previousROMDate = value?.Normalize(DateTimePrecision.Day); }
+        public string PreviousROMDate
+        {
+            get => this.previousROMDt?.Date.ToShortDateString(); 
+            
+            set
+            {
+                this.previousROMDt = null;
+                if(DateTime.TryParse(value, out DateTime result))
+                {
+                    this.previousROMDt = result.Normalize(DateTimePrecision.Day);
+                }
+            }
+        }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1044:PropertiesShouldNotBeWriteOnly")]
-        public decimal? PreviousROMValueDecimal { private get; set; }
+        /// <summary>
+        /// Previous ROM Value
+        /// </summary>
+        public decimal? PreviousROMValueDecimal { get; set; }
 
+        /// <summary>
+        /// Previous ROM Value
+        /// </summary>
         [Display(Name = "Previously Submitted ROM Value")]
         public string PreviousROMValue => this.PreviousROMValueDecimal?.ToString("C");
 
-        private DateTime? customerSubmittalDate { get; set; }
+        /// <summary>
+        /// Customer Submittal Date
+        /// </summary>
+        public DateTime? customerSubmittalDt { get; private set; }
 
+        /// <summary>
+        /// Customer Submittal Date String
+        /// </summary>
         [Display(Name = "Customer Submittal Date")]
-        public DateTime? CustomerSubmittalDate { get => this.customerSubmittalDate?.Date; set => this.customerSubmittalDate = value?.Normalize(DateTimePrecision.Day); }
+        public string CustomerSubmittalDate
+        {
+            get => this.customerSubmittalDt?.Date.ToShortDateString();
 
+            set
+            {
+                this.customerSubmittalDt = null;
+                if (DateTime.TryParse(value, out DateTime result))
+                {
+                    this.customerSubmittalDt = result.Normalize(DateTimePrecision.Day);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Contracts Correspondence Log Number
+        /// </summary>
         [Display(Name = "Contracts Correspondence Log Number")]
         public string ContractsCorrespondenceLogNumber { get; set; }
     }
