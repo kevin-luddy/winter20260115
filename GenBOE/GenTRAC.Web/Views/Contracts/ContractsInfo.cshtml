@@ -12,12 +12,7 @@
         ContractsInfoWidget = new GenWidget(widgetConfig);
 
         if (!readOnly) {
-            ContractsInfoWidget.getElement('input[name="CustomerSubmittalDate"]').datepicker({
-                dateFormat: 'mm/dd/yy',
-                onSelect: function () {
-                    ContractsInfoWidget.setDirty("contractsForm");
-                }
-            });
+            ContractsInfoWidget.getElement('input.date').datepicker({ dateFormat: 'm/d/yy', onSelect: function () { ContractsOfferWidget.setDirty("contractsForm"); } });
         }
 	});
 </script>
@@ -26,7 +21,7 @@
     <div class="module-header-data">Contract Information</div>
     <div class="module-content-data expanded-content">
         <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.PreviouslySubmittedROM)</div>
+            <div class="form-label">@Html.LabelFor(x => x.PreviouslySubmittedROM) *</div>
             <div class="form-element">
                 @Html.TextBoxFor(x => x.PreviouslySubmittedROM, new { @class = "half" })
             </div>
@@ -50,9 +45,21 @@
             </div>
         </div>
         <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.ContractsCorrespondenceLogNumber)</div>
+            <div class="form-label">@Html.LabelFor(x => x.ContractsCorrespondenceLogNumber) *</div>
             <div class="form-element">
                 @Html.TextBoxFor(x => x.ContractsCorrespondenceLogNumber, new { @class = "half" })
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">@Html.LabelFor(x => x.FinalNegotiatedValue)</div>
+            <div class="form-element">
+                @Html.TextBoxFor(x => x.FinalNegotiatedValue, new { @class = "half" })
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">@Html.LabelFor(x => x.NegotiationsSubmitted)</div>
+            <div class="form-element">
+                @Html.TextBoxFor(x => x.NegotiationsSubmitted, new { @class = "date", placeholder = "mm/dd/yyyy" })
             </div>
         </div>
     </div>

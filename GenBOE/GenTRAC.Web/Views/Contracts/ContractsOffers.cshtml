@@ -1,20 +1,98 @@
-﻿<script type="text/javascript">
+﻿@model GenTRAC.ActionLogic.ModelView.ContractsModelView
+
+<script type="text/javascript">
     var ContractsOfferWidget;
 
 	$(function () {
+        var readOnly = @ViewBag.ReadOnly.ToString().ToLower();
         var widgetConfig = {};
         widgetConfig.ContextID = "contractsOffers";
         widgetConfig.IsModule = true;
         widgetConfig.isReadOnly = @ViewBag.ReadOnly.ToString().ToLower();
 
         ContractsOfferWidget = new GenWidget(widgetConfig);
+        ContractsOfferWidget.getElement('button.offer-button').hide();
+
+        ContractsOfferWidget.deleteOffer = function (id) {
+            $('#offer_' + id).remove();
+            ContractsOfferWidget.setDirty("contractsForm");
+            ContractsOfferWidget.refreshModule();
+        }
+        ContractsOfferWidget.addOffer = function() {
+            var id = '#offer_-2';
+            var temp = $(id).clone(true);
+            temp.insertBefore(id);
+
+            ContractsOfferWidget.setDirty("contractsForm");
+            ContractsOfferWidget.refreshModule();
+        }
+
+        if (!readOnly) {
+            ContractsOfferWidget.getElement('input.date').datepicker({ dateFormat: 'm/d/yy', onSelect: function () { ContractsOfferWidget.setDirty("contractsForm"); } });
+            ContractsOfferWidget.getElement('button.offer-button').show();
+        }
 	});
 </script>
-
 <div id="contractsOffers" class="composite module full">
-    <div class="module-header-data">Offers</div>
-    <div class="module-content-data expanded-content">
-        Coming soon
+    <div class="module-header-data">Offers
+        <button type="button" class="ies-action offer-button" style="margin-left:800px;" onclick="ContractsOfferWidget.addOffer()">Add</button>
     </div>
-    <br />
+    <div class="module-content-data expanded-content">
+        @for (int i = 0; i < Model.ContractOffers.Count; i++)
+        {
+            <div id="offer_@Model.ContractOffers.ElementAt(i).Id">
+                @Html.HiddenFor(x => x.ContractOffers.ElementAt(i).Id)
+                <div class="form-row">
+                    <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).CustomerOfferAmmount) *</div>
+                    <div class="form-element">
+                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).CustomerOfferAmmount, new { @class = "half", id = "CustomerOfferAmmount_" + i.ToString() })
+                    </div>
+                    <button type="button" class="ies-danger" style="margin-left:30px;" onclick="ContractsOfferWidget.deleteOffer(@Model.ContractOffers.ElementAt(i).Id)">Delete</button>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).CustomerOfferDate) *</div>
+                    <div class="form-element">
+                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).CustomerOfferDate, new { @class = "date", placeholder = "mm/dd/yyyy", id = "CustomerOfferDate_" + i.ToString() })
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferDate)</div>
+                    <div class="form-element">
+                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferDate, new { @class = "date", placeholder = "mm/dd/yyyy", id = "LMCounterOfferDate_" + i.ToString() })
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferCost)</div>
+                    <div class="form-element">
+                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferCost, new { @class = "half", id = "LMCounterOfferCost_" + i.ToString() })
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferCOM)</div>
+                    <div class="form-element">
+                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferCOM, new { @class = "half", id = "LMCounterOfferCOM_" + i.ToString() })
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferProfitFee)</div>
+                    <div class="form-element">
+                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferProfitFee, new { @class = "half", id = "LMCounterOfferProfitFee_" + i.ToString() })
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferTotalPrice)</div>
+                    <div class="form-element">
+                        @Html.DisplayFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferTotalPrice, new { @class = "half" })
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferROS)</div>
+                    <div class="form-element">
+                        @Html.DisplayFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferROS, new { @class = "half" })
+                    </div>
+                </div>
+                <hr />
+            </div>
+        }
+    </div>
 </div>

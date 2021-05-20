@@ -6,7 +6,6 @@
 
 namespace GenTRAC.Web.Controllers
 {
-    using System;
     using System.Web.Mvc;
     using GenTRAC.ActionLogic;
     using GenTRAC.ActionLogic.ModelView;
@@ -21,7 +20,6 @@ namespace GenTRAC.Web.Controllers
         /// <summary>
         /// Contracts Logic
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]        
         private ContractsControllerLogic logic;
 
         /// <summary>
@@ -46,14 +44,7 @@ namespace GenTRAC.Web.Controllers
             this.ViewBag.ProposalId = proposalId.ToString();
             this.ViewBag.ReadOnly = false; // todo.. fix me
 
-            ContractsModelView model = new ContractsModelView()
-            { 
-                PreviousROMValueDecimal = 1000, 
-                PreviouslySubmittedROM = "rom", 
-                ContractsCorrespondenceLogNumber = "log #", 
-                PreviousROMDate = DateTime.Now.AddDays(-100).ToString(), 
-                CustomerSubmittalDate = DateTime.Now.AddDays(-1).ToString() 
-            };
+            ContractsModelView model = this.logic.GetContractsData(proposalId);
 
             return this.View(WebConstants.View.CONTRACTS_INDEX, model);
         }

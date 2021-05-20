@@ -6,7 +6,10 @@
 
 namespace GenTRAC.ActionLogic
 {
+    using System;
+    using System.Collections.Generic;
     using GenTRAC.ActionLogic.Mediator;
+    using GenTRAC.ActionLogic.ModelView;
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
     using GenTRAC.Objects;
@@ -31,6 +34,52 @@ namespace GenTRAC.ActionLogic
             IProposalChecklistLoader proposalChecklistLoader, IChecklistMediator checklistMediator, IProposalMediator proposalMediator)
             : base(securityAccess, proposalLoader, userMapper, objectFactory, approvalsLoader, proposalChecklistLoader, checklistMediator, proposalMediator)
         {
+        }
+
+        /// <summary>
+        /// Get Contracts Data
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Contracts Tab Data</returns>
+        public ContractsModelView GetContractsData(int proposalId)
+        {
+            if(proposalId < 0)
+            {
+                throw new ArgumentNullException(nameof(proposalId));
+            }
+            
+            int i = 1;
+            ContractsModelView model = new ContractsModelView()
+            {
+                PreviousROMValueDecimal = 1000,
+                PreviouslySubmittedROM = "rom",
+                ContractsCorrespondenceLogNumber = "log #",
+                PreviousROMDate = DateTime.Now.AddDays(-100).ToString(),
+                CustomerSubmittalDate = DateTime.Now.AddDays(-1).ToString(),
+                ContractOffers = new List<ContractsOfferModelView>()
+                {
+                    new ContractsOfferModelView()
+                    {
+                        Id = ++i,
+                        CustomerOfferAmmountInt = 100000,
+                        CustomerOfferDate = DateTime.Now.AddDays(-30).ToString(),
+                        LMCounterOfferCOMInt = 70000,
+                        LMCounterOfferCostInt = 20000,
+                        LMCounterOfferProfitFeeInt = 19000,
+                        LMCounterOfferDate = DateTime.Now.AddDays(-10).ToString()
+                    },
+                    new ContractsOfferModelView()
+                    {
+                        Id = ++i,
+                        CustomerOfferAmmountInt = 110000,
+                        CustomerOfferDate = DateTime.Now.AddDays(-3).ToString()
+                    }
+                },
+                FinalNegotiatedValueInt = 114000,
+                NegotiationsSubmitted = DateTime.Now.AddDays(-1).ToString()
+            };
+
+            return model;
         }
     }
 }
