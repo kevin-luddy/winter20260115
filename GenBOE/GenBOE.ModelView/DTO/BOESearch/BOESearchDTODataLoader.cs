@@ -307,7 +307,8 @@ namespace GenBOE.DataBridge.DTO
                 string[] searchStrings = searchParam.Trim().Split(' ');
                 foreach (string searchString in searchStrings)
                 {
-                    if (!string.IsNullOrEmpty(searchString))
+                    // Make sure search string has at least one alphanumeric character
+                    if (!string.IsNullOrEmpty(searchString) && searchString.Any(x => Char.IsLetterOrDigit(x)))
                     {
                         finalSearchString.Append('"').Append(searchString).Append('"').Append(delimiter);
                     }
