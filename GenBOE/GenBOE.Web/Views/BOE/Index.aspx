@@ -23,6 +23,7 @@
         draftLockedState: <%: (int)BOEState.DraftLocked%>
     });
     var ManageBOEWidget;
+    var BulkAssignWidget;
     $(function () {
         $(".main").addClass("boe");
 
@@ -31,7 +32,10 @@
 
         $('#WorkspaceStatusLink').attr('href', CreatePostURL('<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
                 '<%: WebConstants.CONTROLLER_WORKSPACE %>',
-                '<%: WebConstants.ACTION_WORKSPACE_SETTINGS %>#WorkspaceStatus', ''));
+            '<%: WebConstants.ACTION_WORKSPACE_SETTINGS %>#WorkspaceStatus', ''));
+
+        var BulkAssignWidgetConfig = { ContextID: "BulkAssign", IsModule: false, isReadOnly: false };
+        BulkAssignWidget = new GenWidget(BulkAssignWidgetConfig);
     });
 </script>
 
@@ -130,8 +134,10 @@
                 <gen-validation data-errors="errors"></gen-validation>
                 <div class="bulk-assign-add-remove bootstrap">
                     <div class="bulk-select">
-                        <div class="bulk-assign-label">BOEs</div>
-                        <div ng-dropdown-multiselect="" options="bulkAssignBoes" selected-model="selectedBoes" checkBoxes="true" extra-settings="dropdownSettings"></div>
+                        <div class="bulk-assign-label">
+                            <span helptext="BOEs within the dropdown can be searched by WBS or CLIN. Search 'error' to get all BOEs currently with validation errors.">BOEs</span>
+                        </div>
+                        <div ng-dropdown-multiselect="" options="bulkAssignBoes" selected-model="selectedBoes" checkBoxes="true" extra-settings="boeDropdownSettings"></div>
                     </div>
                     <div class="bulk-select role-select">
                         <div class="bulk-assign-label">Role</div>
@@ -145,9 +151,9 @@
                     <div class="bulk-select">
                         <div class="bulk-assign-label">Users</div>
                         <div data-ng-if="selectedRole == undefined || selectedRole == ''" data-ng-disabled="true" ng-dropdown-multiselect="" disabled="true"></div>
-                        <div data-ng-if="selectedRole == roles.author" ng-dropdown-multiselect="" options="bulkAssignAuthors" selected-model="selectedUsers" checkBoxes="true" extra-settings="dropdownSettings"></div>
-                        <div data-ng-if="selectedRole == roles.approver" ng-dropdown-multiselect="" options="bulkAssignApprovers" selected-model="selectedUsers" checkBoxes="true" extra-settings="dropdownSettings"></div>
-                        <div data-ng-if="selectedRole == roles.subAuthor" ng-dropdown-multiselect="" options="bulkAssignSubAuthors" selected-model="selectedUsers" checkBoxes="true" extra-settings="dropdownSettings"></div>
+                        <div data-ng-if="selectedRole == roles.author" ng-dropdown-multiselect="" options="bulkAssignAuthors" selected-model="selectedUsers" checkBoxes="true" extra-settings="userDropdownSettings"></div>
+                        <div data-ng-if="selectedRole == roles.approver" ng-dropdown-multiselect="" options="bulkAssignApprovers" selected-model="selectedUsers" checkBoxes="true" extra-settings="userDropdownSettings"></div>
+                        <div data-ng-if="selectedRole == roles.subAuthor" ng-dropdown-multiselect="" options="bulkAssignSubAuthors" selected-model="selectedUsers" checkBoxes="true" extra-settings="userDropdownSettings"></div>
                     </div>
                     <button id="bulk-assign-add" class="ies-action" data-ng-click="bulkAssignRoles()" data-ng-disabled="disableAssignRemove()">Assign</button>
                     <button id="bulk-assign-remove" class="ies-danger" data-ng-click="bulkRemoveRoles()" data-ng-disabled="disableAssignRemove()">Remove</button>

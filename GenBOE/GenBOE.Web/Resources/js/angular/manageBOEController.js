@@ -69,7 +69,16 @@
     $scope.selectedRole;
     $scope.selectedUsers = [];
 
-    $scope.dropdownSettings = {
+    $scope.boeDropdownSettings = {
+        scrollableHeight: '200px',
+        scrollable: true,
+        checkBoxes: true,
+        enableSearch: true,
+        searchField: 'search',
+        enableSearch: true
+    };
+
+    $scope.userDropdownSettings = {
         scrollableHeight: '200px',
         scrollable: true,
         checkBoxes: true,
@@ -507,7 +516,7 @@
         var sortedBoes = $filter('orderBy')($scope.isBulkAssign ? $scope.bulkAssignData : $scope.data, $scope.predicate, $scope.reverse);
 
         sortedBoes.forEach(function (boe) {
-            $scope.bulkAssignBoes.push({ id: boe.BoeID, label: boe.WbsDisplayName + " | " + boe.ClinDisplayName });
+            $scope.bulkAssignBoes.push({ id: boe.BoeID, label: boe.WbsDisplayName + " | " + boe.ClinDisplayName, search: boe.WbsDisplayName + " | " + boe.ClinDisplayName });
         });
     }
 
@@ -1295,6 +1304,16 @@
             if (hasAuthor && hasApprover && boe.Approvers.some(function (approver) { return boe.Authors.indexOf(approver) >= 0; })) {
                 $scope.errors.push({ ValidationIssue: boe.WbsDisplayName + " | " + boe.ClinDisplayName + " cannot have the same person as both an Author and Approver." });
                 boe.hasError = true;
+            }
+
+            // add "(error)" to the dropdown search string if has error, otherwise make sure it's cleared
+            var dropdownBoe = $scope.bulkAssignBoes.find(b => b.id == boe.BoeID);
+            if (dropdownBoe != undefined) {
+                if (boe.hasError) {
+                    dropdownBoe.search = dropdownBoe.search.concat(" (error)");
+                } else {
+                    dropdownBoe.search = dropdownBoe.search.replace(" (error)", "");
+                }
             }
         });
 
