@@ -1,0 +1,59 @@
+﻿@model GenTRAC.ActionLogic.ModelView.ContractsModelView
+<script type="text/javascript">
+    var ContractsInfoWidget;
+
+    $(function () {
+        var readOnly = @ViewBag.ReadOnly.ToString().ToLower();
+        var widgetConfig = {};
+        widgetConfig.ContextID = "contractsInfo";
+        widgetConfig.IsModule = true;
+        widgetConfig.isReadOnly = readOnly;
+
+        ContractsInfoWidget = new GenWidget(widgetConfig);
+
+        if (!readOnly) {
+            ContractsInfoWidget.getElement('input[name="CustomerSubmittalDate"]').datepicker({
+                dateFormat: 'mm/dd/yy',
+                onSelect: function () {
+                    ContractsInfoWidget.setDirty("contractsForm");
+                }
+            });
+        }
+	});
+</script>
+
+<div id="contractsInfo" class="composite module full">
+    <div class="module-header-data">Contract Information</div>
+    <div class="module-content-data expanded-content">
+        <div class="form-row">
+            <div class="form-label">@Html.LabelFor(x => x.PreviouslySubmittedROM)</div>
+            <div class="form-element">
+                @Html.TextBoxFor(x => x.PreviouslySubmittedROM, new { @class = "half" })
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">@Html.LabelFor(x => x.PreviousROMDate)</div>
+            <div class="form-element">
+                @Html.DisplayFor(x => x.PreviousROMDate)
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">@Html.LabelFor(x => x.PreviousROMValue)</div>
+            <div class="form-element">
+                @Html.DisplayFor(x => x.PreviousROMValue)
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">@Html.LabelFor(x => x.CustomerSubmittalDate)</div>
+            <div class="form-element">
+                @Html.TextBoxFor(x => x.CustomerSubmittalDate, new { @class = "date", placeholder = "mm/dd/yyyy" })
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-label">@Html.LabelFor(x => x.ContractsCorrespondenceLogNumber)</div>
+            <div class="form-element">
+                @Html.TextBoxFor(x => x.ContractsCorrespondenceLogNumber, new { @class = "half" })
+            </div>
+        </div>
+    </div>
+</div>

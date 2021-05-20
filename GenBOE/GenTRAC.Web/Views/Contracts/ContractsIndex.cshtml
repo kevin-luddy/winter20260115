@@ -1,37 +1,83 @@
-﻿<script type="text/javascript">
+﻿@model GenTRAC.ActionLogic.ModelView.ContractsModelView
+
+<script type="text/javascript">
     var ContractsIndexWidget;
-    GenSession.ShowLoadingBox();
 
 	$(function () {
-		@*var readOnly = @Model.IsReadOnly;*@
+		var FormConfigs = [];
+		FormConfigs.push({
+			ElementID: "contractsForm",
+			Buttons: [
+				{
+					ButtonClass: 'ies-action',
+					ButtonText: 'Save',
+					ButtonName: "save-button",
+					ButtonAction: function () {
+						alert('save');
+					},
+					Stateful: true
+				},
+				{
+					ButtonClass: 'ies',
+					ButtonText: 'Cancel',
+					ButtonName: "cancel-button",
+					ButtonAction: function () {
+						if (GenSession.isDirty()) {
+							GenSession.confirmDialog(
+								"Unsaved Changes",
+								"You have selected to leave this tab without saving your current changes.  If you wish to leave the unsaved changes select Yes.  To stay on the page select No.",
+								alert('cancel'),
+								null);
+						} else {
+							alert('cancel');
+						}
+					}
+				}],
+			ContainsOCI: "true",
+			IsClassEnvironment: isClassEnvironment
+		});
 
         var widgetConfig = {};
-        widgetConfig.ContextID = "contractsIndex";
-        widgetConfig.IsModule = true;
-        widgetConfig.isReadOnly = false;
+		widgetConfig.ContextID = "contractsIndex";
+        widgetConfig.isReadOnly = @ViewBag.ReadOnly.ToString().ToLower();
+		widgetConfig.FormConfigs = FormConfigs;
 
-        ContractsIndexWidget = new GenWidget(widgetConfig);
+		ContractsIndexWidget = new GenWidget(widgetConfig);
 
-        GenSession.HideLoadingBox();
+        ContractsIndexWidget.refreshModule2 = function () {
+            if (typeof (ContractsInfoWidget) != 'undefined') {
+                ContractsInfoWidget.refreshModule();
+            }
+            if (typeof (ContractsOfferWidget) != 'undefined') {
+                ContractsOfferWidget.refreshModule();
+            }
+
+            ContractsIndexWidget.refreshModule();
+		};
+
+        setTimeout(function () { alert('refresh'); ContractsIndexWidget.refreshModule2(); }, 1000);
 	});
 </script>
 
-<div id="contractsIndex" class="module full">
-    <div class="composite module full link-header">
-        <div class="module-header-data" style="width: 962px; display: inline-block;">Contracts</div>
-    </div>
-    <div class="module-content-data" style="width: 982px; height: 60px;">
-        <div style="display: inline-block;">
-            @using (Html.BeginForm("", "", FormMethod.Post, new { id = "contractsIndexForm", name = "contractsIndexForm" }))
-            {
-                <div class="form-row">
-                    <div class="form-label">Label</div>
-                    <div class="form-element"></div>
-                    <div class="form-element">
-                        <input id="TBD" name="TBD" type="text" class="half" size="50" placeholder="TBD" />
-                    </div>
-                </div>
-            }
-        </div>
+<style type="text/css">
+    #contractsIndex .form-label {
+        width: 230px;
+    }
+
+    #contractsIndex .module-header-data,
+    #contractsIndex .module-content-data {
+        width: 962px;
+        display: inline-block;
+    }
+</style>
+
+<div id="contractsIndex" class="composite module full" style="min-height:800px;">
+    @Html.Partial("ContractsInfo", Model)
+    @Html.Partial("ContractsOffers")
+    <div class="module-content-data" style="height:200px;">
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = "contractsForm", name = "contractsForm" }))
+        {
+            <div class="required-note"> * required for saving.</div>
+        }
     </div>
 </div>

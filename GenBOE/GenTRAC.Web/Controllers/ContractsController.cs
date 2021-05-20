@@ -6,8 +6,10 @@
 
 namespace GenTRAC.Web.Controllers
 {
+    using System;
     using System.Web.Mvc;
     using GenTRAC.ActionLogic;
+    using GenTRAC.ActionLogic.ModelView;
     using GenTRAC.Web.Common;
     using IES.Common;
 
@@ -44,7 +46,16 @@ namespace GenTRAC.Web.Controllers
             this.ViewBag.ProposalId = proposalId.ToString();
             this.ViewBag.ReadOnly = false; // todo.. fix me
 
-            return this.View(WebConstants.View.CONTRACTS_INDEX, null);
+            ContractsModelView model = new ContractsModelView()
+            { 
+                PreviousROMValueDecimal = 1000, 
+                PreviouslySubmittedROM = "rom", 
+                ContractsCorrespondenceLogNumber = "log #", 
+                PreviousROMDate = DateTime.Now.AddDays(-100).ToString(), 
+                CustomerSubmittalDate = DateTime.Now.AddDays(-1).ToString() 
+            };
+
+            return this.View(WebConstants.View.CONTRACTS_INDEX, model);
         }
     }
 }

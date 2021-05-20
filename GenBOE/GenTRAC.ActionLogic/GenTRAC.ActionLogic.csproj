@@ -116,6 +116,7 @@
     <Compile Include="Mediator\ProposalPermissionMediator.cs" />
     <Compile Include="Mediator\SystemPermissionMediator.cs" />
     <Compile Include="Mediator\UserMediator.cs" />
+    <Compile Include="ModelView\Contracts\ContractsModelView.cs" />
     <Compile Include="ModelView\PostSubmittalAttachments\PostSubmittalAttachmentModelView.cs" />
     <Compile Include="ModelView\Proposals\ProposalCertificationTimelineModelView.cs" />
     <Compile Include="ModelView\Proposals\ProposalCommentsModelView.cs" />
