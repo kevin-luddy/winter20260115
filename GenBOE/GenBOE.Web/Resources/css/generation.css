@@ -8654,3 +8654,11 @@ div.WarningBanner {
     cursor: default;
     color: grey;
 }
+
+#BulkAssign .help-icon {
+    margin-left: 3px;
+}
+
+#BulkAssign .help-dialog-text {
+    font-size: 11px;
+}
