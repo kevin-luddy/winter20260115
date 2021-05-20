@@ -9,8 +9,9 @@
     string TravelCostHelpText = "Enter the total cost of all direct travel included in the proposal.";
     string OtherDirectCostsHelpText = "Enter the total cost of all direct other direct costs included in the proposal (For LMSI, enter IWTA values in the \"IWTA Cost\" field, not as an ODC).";
     string ProfitComFeeHelpText = "Enter the total Profit/Fee and COM (if applicable) dollars included in the proposal for the LM bidding entity.";
-    string ROSHelpText = "For Space Dev, ROS% = ((Profit or Fee + COM) / Total Price).<br />" +
-        "ROS % may be entered up to two decimal places (e.g., 12.55)";
+    string ProfitFeeHelpText = "Enter the total Profit/Fee dollars included in the proposal for the LM bidding entity.";
+    string ComFeeHelpText = "Enter the total COM (if applicable) dollars included in the proposal for the LM bidding entity.";
+    string ROSHelpText = "For Space Dev, ROS% = ((Profit or Fee + COM) / Total Price).<br />ROS % may be entered up to two decimal places (e.g., 12.55)";
 }
 
 
@@ -39,6 +40,18 @@
         ChecklistProposalPricingDataWidget.getElement('input[name="ProfitFeeComTotal"]').focusout(function () {
             var dollarAmount = ChecklistProposalPricingDataWidget.getElement('input[name="ProfitFeeComTotal"]').val().replace(/\,/g, "");
             ChecklistProposalPricingDataWidget.CommaSeparator(dollarAmount, 'input[name="ProfitFeeComTotal"]');
+        });
+
+        //On lose focus, adds thousand comma separator for dollar amount input field.
+        ChecklistProposalPricingDataWidget.getElement('input[name="ProfitFeeTotal"]').focusout(function () {
+            var dollarAmount = ChecklistProposalPricingDataWidget.getElement('input[name="ProfitFeeTotal"]').val().replace(/\,/g, "");
+            ChecklistProposalPricingDataWidget.CommaSeparator(dollarAmount, 'input[name="ProfitFeeTotal"]');
+        });
+
+        //On lose focus, adds thousand comma separator for dollar amount input field.
+        ChecklistProposalPricingDataWidget.getElement('input[name="ComTotal"]').focusout(function () {
+            var dollarAmount = ChecklistProposalPricingDataWidget.getElement('input[name="ComTotal"]').val().replace(/\,/g, "");
+            ChecklistProposalPricingDataWidget.CommaSeparator(dollarAmount, 'input[name="ComTotal"]');
         });
 
         //On lose focus, adds thousand comma separator for dollar amount input field.
@@ -171,7 +184,13 @@
                             <div style="width: 100px"> <span helptext="@ProfitComFeeHelpText">Profit/Fee + COM</span></div>
                         </th>
                         <th>
-                            <div style="width: 100px"> <span>Space Total Price</span></div>
+                            <div style="width: 100px"> <span helptext="@ProfitFeeHelpText">Profit/Fee</span></div>
+                        </th>
+                        <th>
+                            <div style="width: 100px"> <span helptext="@ComFeeHelpText">COM</span></div>
+                        </th>
+                        <th>
+                            <div style="width: 100px"> <span>LM Space Total Price</span></div>
                         </th>
                         <th>
                             <div style="width: 100px"> <span helptext="@ROSHelpText">ROS %</span></div>
@@ -185,13 +204,19 @@
                 <tbody>
                     <tr>
                         <td>
-                             @Html.TextBoxFor(model => model.ProfitFeeComTotal, new { size = 15, name = "ProfitFeeComTotal", maxInt = 12, numDecimals = 0 })
+                            @Html.TextBoxFor(model => model.ProfitFeeComTotal, new { size = 15, name = "ProfitFeeComTotal", maxInt = 12, numDecimals = 0 })
                         </td>
                         <td>
-                             <div name="SSCTotalPrice">@Html.DisplayTextFor(model => model.SubmittedValue )</div>
+                            @Html.TextBoxFor(model => model.ProfitFeeTotal, new { size = 15, name = "ProfitFeeTotal", maxInt = 12, numDecimals = 0 })
                         </td>
                         <td>
-                             @Html.TextBoxFor(model => model.ROSPercent, new { maxlength = 6, size = 6, name="ROSPercent", maxInt = 2, numDecimals = 2 })
+                            @Html.TextBoxFor(model => model.ComTotal, new { size = 15, name = "ComTotal", maxInt = 12, numDecimals = 0 })
+                        </td>
+                        <td>
+                            <div name="SSCTotalPrice">@Html.DisplayTextFor(model => model.SubmittedValue)</div>
+                        </td>
+                        <td>
+                            @Html.TextBoxFor(model => model.ROSPercent, new { maxlength = 6, size = 6, name = "ROSPercent", maxInt = 2, numDecimals = 2 })
                         </td>
                         <td class="hiddenColumn"></td>
                         <td class="hiddenColumn"></td>

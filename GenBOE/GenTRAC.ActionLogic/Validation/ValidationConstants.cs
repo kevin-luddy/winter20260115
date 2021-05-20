@@ -632,6 +632,16 @@ namespace GenTRAC.ActionLogic.Validation
             public const string PROFIT_FEE_COM_WHOLE_NUMBER = PROPOSAL_PRICING_DATA_VALDIATION + "Profit/Fee + COM must be in U.S. whole dollars in the range +- 999,999,999,999.";
 
             /// <summary>
+            /// profit/fee is a whole number
+            /// </summary>
+            public const string PROFIT_FEE_WHOLE_NUMBER = PROPOSAL_PRICING_DATA_VALDIATION + "Profit/Fee must be in U.S. whole dollars in the range +- 999,999,999,999.";
+
+            /// <summary>
+            /// com is a whole number
+            /// </summary>
+            public const string COM_WHOLE_NUMBER = PROPOSAL_PRICING_DATA_VALDIATION + "COM must be in U.S. whole dollars in the range +- 999,999,999,999.";
+
+            /// <summary>
             /// ROS % is between 0.00 and 99.99
             /// </summary>
             public const string ROS_PERCENT_RANGE = PROPOSAL_PRICING_DATA_VALDIATION + "ROS% must be between 0.00 and +-99.99 (2 decimal places max).";

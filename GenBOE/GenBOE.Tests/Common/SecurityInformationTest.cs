@@ -120,7 +120,7 @@ namespace GenBOE.Tests.Common
 
             bool returned = sut.IsSubcontractorUser(user.NTID, user.IsSubcontractor);
             Assert.IsTrue(returned);
-            adUtils.Verify(x => x.IsMemberOfADGroup(It.IsAny<string>(), It.IsAny<string>()), Times.Once());
+            adUtils.Verify(x => x.IsMemberOfADGroup(user.NTID, It.IsAny<string>()), Times.Once());
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace GenBOE.Tests.Common
 
             bool returned = sut.IsSubcontractorUser(user.NTID, user.IsSubcontractor);
             Assert.IsFalse(returned);
-            adUtils.Verify(x => x.IsMemberOfADGroup(It.IsAny<string>(), It.IsAny<string>()), Times.Once());
+            adUtils.Verify(x => x.IsMemberOfADGroup(user.NTID, It.IsAny<string>()), Times.Once());
         }
 
         /// <summary>

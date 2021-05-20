@@ -291,7 +291,7 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = -22,
                 OtherDirectCosts = 22,
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeCOM = 7777,
                 ROSPercentage = -98.89m
             };
 
@@ -313,7 +313,9 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(checklistProposalPricingData.IWTACost, proposalChecklist.IWTACost.ToString());
             Assert.AreEqual(checklistProposalPricingData.TravelCost, proposalChecklist.TravelCost.ToString());
             Assert.AreEqual(checklistProposalPricingData.OtherDirectCosts, proposalChecklist.OtherDirectCosts.ToString());
-            Assert.AreEqual(checklistProposalPricingData.ProfitFeeComTotal, string.Format("{0:#,###0}", proposalChecklist.ProfitFee));
+            Assert.AreEqual(checklistProposalPricingData.ProfitFeeComTotal, string.Format("{0:#,###0}", proposalChecklist.ProfitFeeCOM));
+            Assert.AreEqual(checklistProposalPricingData.ProfitFeeTotal, string.Format("{0:#,###0}", proposalChecklist.ProfitFee));
+            Assert.AreEqual(checklistProposalPricingData.ComTotal, string.Format("{0:#,###0}", proposalChecklist.COM));
             Assert.AreEqual(checklistProposalPricingData.ROSPercent, proposalChecklist.ROSPercentage.ToString());
         }
 
@@ -336,6 +338,8 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = "-999,999,999,999",
                 OtherDirectCosts = "-999,999,999,999",
                 ProfitFeeComTotal = "-999,999,999,999",
+                ProfitFeeTotal = "-999,999,999,999",
+                ComTotal = "-999,999,999,999",
                 ROSPercent = "-99.99"
             };
 
@@ -363,6 +367,8 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = "-abc,def,ghi,jkl",
                 OtherDirectCosts = "-abc,def,ghi,jkl",
                 ProfitFeeComTotal = "-abc,def,ghi,jkl",
+                ProfitFeeTotal = "-abc,def,ghi,jkl",
+                ComTotal = "-abc,def,ghi,jkl",
                 ROSPercent = "-100.999"
             };
 
@@ -476,6 +482,8 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalID = proposalId,
                 UpdateDate = DateTime.Now,
                 ProfitFeeComTotal = "7777",
+                ProfitFeeTotal = "777",
+                ComTotal = "77",
                 ROSPercent = "98989"
             };
 
@@ -588,7 +596,7 @@ namespace GenTRAC.Tests.ActionLogic
                 UpdateDate = DateTime.Now,
                 ProposalSubmittalDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeCOM = 7777,
                 AbsoluteValue = 1500,
                 ROSPercentage = 98989,
                 PPRResponses = responses
@@ -803,7 +811,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalSubmittalDate = new DateTime(2014, 5, 2),
                 AbsoluteValue = 1500,
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeCOM = 7777,
                 ROSPercentage = 98989,
                 PARResponses = responses,
                 ResponseType = ChecklistResponseType.Pricer
@@ -1137,6 +1145,8 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalID = proposalId,
                 UpdateDate = DateTime.Now,
                 ProfitFeeComTotal = string.Empty,
+                ProfitFeeTotal = string.Empty,
+                ComTotal = string.Empty,
                 ROSPercent = string.Empty,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -1227,6 +1237,8 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = string.Empty,
                 OtherDirectCosts = string.Empty,
                 ProfitFeeComTotal = string.Empty,
+                ProfitFeeTotal = string.Empty,
+                ComTotal = string.Empty,
                 ROSPercent = string.Empty,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -1307,7 +1319,7 @@ namespace GenTRAC.Tests.ActionLogic
                 AbsoluteValue = 1500,
                 ProposalSubmittalDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeCOM = 7777,
                 ROSPercentage = 98989
             };
 
@@ -1361,6 +1373,8 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = "22",
                 OtherDirectCosts = "22",
                 ProfitFeeComTotal = "234",
+                ProfitFeeTotal = "34",
+                ComTotal = "24",
                 ROSPercent = "22.56",
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -1489,6 +1503,8 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = string.Empty,
                 OtherDirectCosts = string.Empty,
                 ProfitFeeComTotal = string.Empty,
+                ProfitFeeTotal = string.Empty,
+                ComTotal = string.Empty,
                 ROSPercent = string.Empty,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -1570,7 +1586,7 @@ namespace GenTRAC.Tests.ActionLogic
                 AbsoluteValue = 1500,
                 ProposalSubmittalDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeCOM = 7777,
                 ROSPercentage = 98989
             };
 
@@ -1629,6 +1645,8 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = "22",
                 OtherDirectCosts = "22",
                 ProfitFeeComTotal = "234",
+                ProfitFeeTotal = "4",
+                ComTotal = "2354",
                 ROSPercent = "22.56",
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -1762,6 +1780,8 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = string.Empty,
                 OtherDirectCosts = string.Empty,
                 ProfitFeeComTotal = string.Empty,
+                ProfitFeeTotal = string.Empty,
+                ComTotal = string.Empty,
                 ROSPercent = string.Empty,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -1844,7 +1864,7 @@ namespace GenTRAC.Tests.ActionLogic
                 AbsoluteValue = 1500,
                 ProposalSubmittalDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeCOM = 7777,
                 ROSPercentage = 98989
             };
 
@@ -1917,6 +1937,8 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = "22",
                 OtherDirectCosts = "22",
                 ProfitFeeComTotal = "234",
+                ProfitFeeTotal = "6875",
+                ComTotal = "41",
                 ROSPercent = "22.56",
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -2234,7 +2256,7 @@ namespace GenTRAC.Tests.ActionLogic
                 AbsoluteValue = 1500,
                 ProposalSubmittalDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeCOM = 7777,
                 ROSPercentage = 98989
             };
 
@@ -2382,7 +2404,7 @@ namespace GenTRAC.Tests.ActionLogic
                 UpdateDate = DateTime.Now,
                 ProposalSubmittalDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeCOM = 7777,
                 ROSPercentage = 98989
             };
 
@@ -2531,7 +2553,7 @@ namespace GenTRAC.Tests.ActionLogic
                 UpdateDate = DateTime.Now,
                 ProposalSubmittalDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeCOM = 7777,
                 ROSPercentage = 98989
             };
 
@@ -2677,7 +2699,7 @@ namespace GenTRAC.Tests.ActionLogic
                 UpdateDate = DateTime.Now,
                 ProposalSubmittalDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeCOM = 7777,
                 AbsoluteValue = 1500,
                 ROSPercentage = 98989
             };
@@ -2899,7 +2921,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalSubmittalDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
                 AbsoluteValue = 1500,
-                ProfitFee = 7777,
+                ProfitFeeCOM = 7777,
                 ROSPercentage = 98989
             };
 

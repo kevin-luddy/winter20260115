@@ -31,11 +31,6 @@ namespace GenTRAC.DataBridge.DTO
         public ProposalStatus NewProposalStatus { get; set; }
 
         /// <summary>
-        /// Proposal Submittal Date
-        /// </summary>
-        public DateTime? ProposalSubmittalDate { get; set; }
-
-        /// <summary>
         /// Total Price
         /// </summary>
         public long? TotalPrice { get; set; }
@@ -54,5 +49,10 @@ namespace GenTRAC.DataBridge.DTO
         /// Comments on the Manage Proposal Information page
         /// </summary>
         public string Comments { get; set; }
+
+        /// <summary>
+        /// Date Estimating Submits To Contracts, used to be Proposal Submittal Date
+        /// </summary>
+        public DateTime? EstimatingSubmitsToContractsDate { get; set; }
     }
 }

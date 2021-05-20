@@ -95,9 +95,19 @@ namespace GenTRAC.DataBridge.DTO
         public long? OtherDirectCosts { get; set; }
 
         /// <summary>
+        /// Profit Fee + COM (being replaced by Profit Fee / COM, but required for historical data)
+        /// </summary>
+        public long? ProfitFeeCOM { get; set; }
+
+        /// <summary>
         /// Profit Fee
         /// </summary>
         public long? ProfitFee { get; set; }
+
+        /// <summary>
+        /// COM
+        /// </summary>
+        public long? COM { get; set; }
 
         /// <summary>
         /// ROS Percentage
