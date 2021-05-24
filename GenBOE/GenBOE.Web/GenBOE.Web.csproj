@@ -653,7 +653,10 @@
     <Content Include="Scripts\angular-sanitize.min.js.map" />
     <Content Include="Scripts\angular-ui-tree-search.min.js.map" />
     <Content Include="Scripts\angular-cookies.min.js.map" />
+    <Content Include="Scripts\angularjs-dropdown-multiselect.min.js.map" />
     <None Include="Scripts\jquery-1.12.4.intellisense.js" />
+    <Content Include="Scripts\angularjs-dropdown-multiselect.js" />
+    <Content Include="Scripts\angularjs-dropdown-multiselect.min.js" />
     <Content Include="Scripts\bignumber.js" />
     <Content Include="Scripts\bignumber.min.js" />
     <Content Include="Scripts\jquery-1.12.4.js" />

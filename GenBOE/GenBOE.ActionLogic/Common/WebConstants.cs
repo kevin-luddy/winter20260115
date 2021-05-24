@@ -354,7 +354,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_SAVE_COPY_OF_PROJECTMAP = "SaveCopyOfProjectMap"; 
         public static readonly string ACTION_COPY_MOQ_EQUATION = "CopyMoqEquation";
         public static readonly string ACTION_DELETE_ALL_BOE_TASK_ELEMENTS = "DeleteAllBOETaskElements";
-
+        public static readonly string ACTION_SAVE_BULK_ROLE_ASSIGN = "SaveBoeBulkRoles";
 
         // BOEComments Controller
         public static readonly string ACTION_DISPLAY_BOE_COMMENTS = "DisplayBOEComments";
@@ -785,7 +785,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string VIEW_MANAGE_BOE_IMPORT_VERIFICATION = "ManageBOEImportVerification";
         public static readonly string VIEW_WORKSPACE_WORKOFFLINE_IMPORT_VERIFICATION = "WorkspaceHomeWorkofflineImportVerification";
         public static readonly string VIEW_TASK_ELEMENT_GRID = "TaskElementGrid";
-        public static readonly string VIEW_SUMMARY_TASK_ELEMENT_GRID = "SummaryTaskElementGrid"; 
+        public static readonly string VIEW_SUMMARY_TASK_ELEMENT_GRID = "SummaryTaskElementGrid";
         public static readonly string VIEW_BOE_COPY_CONFLICTS = "BOECopyConflicts";
 
         public static readonly string VIEW_LABOR_TASK = "LaborTask";
