@@ -703,7 +703,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             this.Factory.Setup(x => x.GetPermissionsForUser(ntid)).Returns(new List<SecurityPermissionsResponse>());
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.ValidateWsAdminMustHaveCreateWsPermission(ws.Id, ntid, roles);
+            sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
         }
 
         /// <summary>
@@ -720,7 +720,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             this.Factory.Setup(x => x.GetPermissionsForUser(ntid)).Returns(new List<SecurityPermissionsResponse>() { new SecurityPermissionsResponse(Role.WorkspaceAdmin, ws.Id + 1, null) });
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.ValidateWsAdminMustHaveCreateWsPermission(ws.Id, ntid, roles);
+            sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
         }
 
         /// <summary>
@@ -736,7 +736,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             FullWorkspace ws = new FullWorkspace() { Id = 1 };
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.ValidateWsAdminMustHaveCreateWsPermission(ws.Id, ntid, roles);
+            sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
         }
 
         /// <summary>
@@ -753,7 +753,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             this.Factory.Setup(x => x.GetPermissionsForUser(ntid)).Returns(new List<SecurityPermissionsResponse>() { new SecurityPermissionsResponse(Role.SystemAdmin, null, null) });
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.ValidateWsAdminMustHaveCreateWsPermission(ws.Id, ntid, roles);
+            sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
         }
 
         /// <summary>
@@ -770,15 +770,15 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             this.Factory.Setup(x => x.GetPermissionsForUser(ntid)).Returns(new List<SecurityPermissionsResponse>() { new SecurityPermissionsResponse(Role.CreateWorkspacePermissions, null, null) });
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.ValidateWsAdminMustHaveCreateWsPermission(ws.Id, ntid, roles);
+            sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
         }
 
         /// <summary>
         /// Tests ValidateWsAdminMustHaveCreateWsPermission.
         /// 
-        /// In this case, the result is valid, because the user has a system admin role (only, already assigned and Create WS are false)
+        /// In this case, the result is invalid, because the user does not have a create WS or System Admin role. They have an existing WS Admin role, but it must be removed to make addtional changes to their roles.
         /// </summary>
-        [TestMethod]
+        [TestMethod, ExpectedException(typeof(GenValidationException))]
         public void ValidateWsAdminMustHaveCreateWsPermission_HasExistingRoleOnly()
         {
             string ntid = "someNtid";
@@ -787,7 +787,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             this.Factory.Setup(x => x.GetPermissionsForUser(ntid)).Returns(new List<SecurityPermissionsResponse>() { new SecurityPermissionsResponse(Role.WorkspaceAdmin, ws.Id, null) });
             PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
 
-            sut.ValidateWsAdminMustHaveCreateWsPermission(ws.Id, ntid, roles);
+            sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
         }
 
         #endregion

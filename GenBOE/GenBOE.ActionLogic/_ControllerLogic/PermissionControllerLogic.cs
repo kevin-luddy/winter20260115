@@ -178,7 +178,7 @@ namespace GenBOE.ActionLogic
                         }
                     }
 
-                    this.ValidateWsAdminMustHaveCreateWsPermission(ws.Id, userDTO.NTID, inPermission.Roles);
+                    this.ValidateWsAdminMustHaveCreateWsPermission(userDTO.NTID, inPermission.Roles);
 
                     foreach (Role role in inPermission.Roles)
                     {
@@ -248,24 +248,22 @@ namespace GenBOE.ActionLogic
 
         /// <summary>
         /// If we are assigning a WS Admin role, we need to make sure that:
-        ///     the user already has the WS Admin role (because we ignore existing roles)
-        ///     OR the user has a create WS role
+        ///     the user has a create WS role
         ///     OR the user is a system admin
         /// </summary>
         /// <param name="wsId">Workspace Id</param>
         /// <param name="ntid">User's NTID</param>
         /// <param name="Roles">Roles being assigned</param>
         /// <exception cref="GenValidationException">If invalid, the method throws a validation exception.</exception>
-        public void ValidateWsAdminMustHaveCreateWsPermission(int wsId, string ntid, ICollection<Role> Roles)
+        public void ValidateWsAdminMustHaveCreateWsPermission(string ntid, ICollection<Role> Roles)
         {
             if(Roles.Any(x => x == Role.WorkspaceAdmin))
             {
                 IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
-                bool isWsAdminAlready = permissions.Any(x => x.AuthorizedRole == Role.WorkspaceAdmin && x.WorkspaceId == wsId);
                 bool isAllowedToCreateWs = permissions.Any(x => x.AuthorizedRole == Role.CreateWorkspacePermissions);
                 bool isSystemAdmin = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin);
 
-                if (!isWsAdminAlready && !isAllowedToCreateWs && !isSystemAdmin)
+                if (!isAllowedToCreateWs && !isSystemAdmin)
                 {
                     throw new GenValidationException("In order for a user to be allowed to be assigned 'Workspace Administrator' rights, the user must have 'Create Workspace' permissions.");
                 }
