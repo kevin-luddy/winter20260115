@@ -206,7 +206,7 @@ namespace GenBOE.Web.Controllers
                     this.Factory.ClearPermissionsCache(currentUser.NTID);
                     bool isSubcontractor = _SecurityInformation.IsSubcontractorUser(currentUser.NTID, currentUser.IsSubcontractor ?? false);
 
-                    this._permissionControllerLogic.ValidateWsAdminMustHaveCreateWsPermission(ws.Id, currentUser.NTID, inRoles);
+                    this._permissionControllerLogic.ValidateWsAdminMustHaveCreateWsPermission(currentUser.NTID, inRoles);
 
                     if (isSubcontractor && (!inRoles.Contains(Role.SubcontractorAuthor) || inRoles.Count() > 1))
                     {
