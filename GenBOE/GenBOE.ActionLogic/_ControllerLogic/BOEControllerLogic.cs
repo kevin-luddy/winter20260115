@@ -3004,8 +3004,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
             if (errorMessages.Any()) { return errorMessages; }
 
             // Get existing data
-            ICollection<BoeDTO> boesToSave = ws.Boes.Select(x => x as BoeDTO).ToList().DeepClone();
-            ICollection<PermissionsDTO> boePermissions = this.PermissionsLoader.GetBOEPermissions(ws.Boes.Select(x => x.Id).ToList());
+            ICollection<FullBoe> originalBoes = ws.Boes.Where(boe => boe.State == BOEState.Draft || boe.State == BOEState.Unassigned || boe.State == BOEState.None).ToList();
+            ICollection<BoeDTO> boesToSave = originalBoes.Select(boe => boe as BoeDTO).ToList().DeepClone();
+            ICollection<PermissionsDTO> boePermissions = this.PermissionsLoader.GetBOEPermissions(originalBoes.Select(x => x.Id).ToList());
             ICollection<UserDTO> wsUsers = this.UserLoader.GetByIds(boePermissions.Select(x => x.ETIUserId).Distinct().ToList());
             ICollection<BoeApproverResponseDTO> approverResponses = this.boeApproverResponseLoader.GetByWorkspaceId(ws.Id).SelectMany(x => x.Value).ToList();
 
@@ -3013,11 +3014,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
             Dictionary<int, Collection<UserDTO>> authorsChangeDictionary = this.ProcessAuthorsForBulkRoleSave(boeRolesToSave, boesToSave, wsUsers);
             Dictionary<int, Collection<UserDTO>> approversChangeDictionary = this.GetApproverChangesForBulkRoleSave(boeRolesToSave, boesToSave, boePermissions, wsUsers, ws.CurrentActiveUser.UserID, approverResponses, out ICollection<BoeApproverResponseDTO> approversToSave);
 
-            List<(int BoeId, BOEState OldState, BOEState NewState)> transitionsToPerform = this.GetBoeTransitionsForBulkRoleSave(ws.Boes, boesToSave, approverResponses);
+            List<(int BoeId, BOEState OldState, BOEState NewState)> transitionsToPerform = this.GetBoeTransitionsForBulkRoleSave(originalBoes, boesToSave, approverResponses);
 
-            this.DoBulkBoeRoleSave(ws, boesToSave, ws.Boes, approversToSave, transitionsToPerform);
+            this.DoBulkBoeRoleSave(ws, boesToSave, originalBoes, approversToSave, transitionsToPerform);
 
-            this.SendEmailsAfterBulkRoleSave(ws, boesToSave, ws.Boes, authorsChangeDictionary, approversChangeDictionary);
+            this.SendEmailsAfterBulkRoleSave(ws, boesToSave, originalBoes, authorsChangeDictionary, approversChangeDictionary);
 
             return errorMessages;
         }
@@ -3171,7 +3172,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="boesToSave">BOEs being saved</param>
         /// <param name="allApproverResponses">All Approver Responses</param>
         /// <returns>Transitions to perform</returns>
-        private List<(int BoeId, BOEState OldState, BOEState NewState)> GetBoeTransitionsForBulkRoleSave(IReadOnlyCollection<FullBoe> originalBoes, ICollection<BoeDTO> boesToSave, ICollection<BoeApproverResponseDTO> allApproverResponses)
+        private List<(int BoeId, BOEState OldState, BOEState NewState)> GetBoeTransitionsForBulkRoleSave(ICollection<FullBoe> originalBoes, ICollection<BoeDTO> boesToSave, ICollection<BoeApproverResponseDTO> allApproverResponses)
         {
             List<(int BoeId, BOEState OldState, BOEState NewState)> transitionsToPerform = new List<(int BoeId, BOEState OldState, BOEState NewState)>();
 
@@ -3213,7 +3214,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="originalBoes">Original BOEs</param>
         /// <param name="boeApproversToSave">Boe approver roles to save</param>
         /// <param name="transitionsToPerform">Transitions to perform</param>
-        private void DoBulkBoeRoleSave(FullWorkspace ws, ICollection<BoeDTO> boesToSave, IReadOnlyCollection<FullBoe> originalBoes, ICollection<BoeApproverResponseDTO> boeApproversToSave, List<(int BoeId, BOEState OldState, BOEState NewState)> transitionsToPerform)
+        private void DoBulkBoeRoleSave(FullWorkspace ws, ICollection<BoeDTO> boesToSave, ICollection<FullBoe> originalBoes, ICollection<BoeApproverResponseDTO> boeApproversToSave, List<(int BoeId, BOEState OldState, BOEState NewState)> transitionsToPerform)
         {
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
@@ -3243,7 +3244,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="originalBoes">Original BOEs</param>
         /// <param name="authorsChangeDictionary">List of Authors with changes</param>
         /// <param name="approversChangeDictionary">List of Approvers with changes</param>
-        private void SendEmailsAfterBulkRoleSave(FullWorkspace ws, ICollection<BoeDTO> boesToSave, IReadOnlyCollection<FullBoe> originalBoes, Dictionary<int, Collection<UserDTO>> authorsChangeDictionary, Dictionary<int, Collection<UserDTO>> approversChangeDictionary)
+        private void SendEmailsAfterBulkRoleSave(FullWorkspace ws, ICollection<BoeDTO> boesToSave, ICollection<FullBoe> originalBoes, Dictionary<int, Collection<UserDTO>> authorsChangeDictionary, Dictionary<int, Collection<UserDTO>> approversChangeDictionary)
         {
             foreach (BoeDTO boe in boesToSave)
             {
