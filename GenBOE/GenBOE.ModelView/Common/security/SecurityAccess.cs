@@ -713,7 +713,16 @@ namespace GenBOE.DataBridge.Common
                 throw new ArgumentNullException(nameof(inPermissions));
             }
 
-            SecurityAuthorization authorization = _GetAuthorizationsRoles(inPermissions, rolesForUser, workspace);
+            List<SecurityPermissionsResponse> userRoles = rolesForUser.ToList();
+
+            // If you aren't allowed to have a WS Admin permission (controlled via Create WS Permissions), you shouldn't have it. 
+            // This is horrid, but it's necessary because you can assign a role to an AD group, hence the secondary check being necessary
+            if (!userRoles.Any(x => x.AuthorizedRole == Role.CreateWorkspacePermissions))
+            {
+                userRoles = userRoles.Where(x => x.AuthorizedRole != Role.WorkspaceAdmin).ToList();
+            }
+
+            SecurityAuthorization authorization = GetAuthorizationsRoles(inPermissions, userRoles, workspace);
 
             return authorization;
         }
@@ -724,8 +733,8 @@ namespace GenBOE.DataBridge.Common
         /// <param name="inPermission">The requested permissions</param>
         /// <param name="rolesForUser">The user's roles</param>
         /// <returns>The highest security permission present between for the roles the user has</returns>
-        private SecurityAuthorization _GetAuthorizationsRoles(SecurityPermissionsRequested inPermission, 
-            IReadOnlyCollection<SecurityPermissionsResponse> rolesForUser, WorkspaceDTO workspace)
+        private SecurityAuthorization GetAuthorizationsRoles(SecurityPermissionsRequested inPermission,
+            List<SecurityPermissionsResponse> rolesForUser, WorkspaceDTO workspace)
         {
             #region Figure out requirement of WS and Boe and verify that it was as needed
 

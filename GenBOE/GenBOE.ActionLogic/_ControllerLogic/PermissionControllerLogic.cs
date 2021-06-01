@@ -25,7 +25,7 @@ namespace GenBOE.ActionLogic
 
         protected IFullObjectFactory Factory { get; set; }
         private IPermissionsDTODataLoader permissionLoader;
-        private IActiveDirectoryUtilities _ADUtils;
+        private IActiveDirectoryUtilities ADUtils;
         private ISecurityInformation _SecurityInformation;
         private IUserDTODataLoader _UserDTODataLoader;
 
@@ -37,7 +37,7 @@ namespace GenBOE.ActionLogic
         {
             this.Factory = factory;
             this.permissionLoader = inPermissionsLoader;
-            this._ADUtils = inADUtils;
+            this.ADUtils = inADUtils;
             this._SecurityInformation = inISecurityInformation;
             this._UserDTODataLoader = inUserLoader;
         }
@@ -132,7 +132,7 @@ namespace GenBOE.ActionLogic
 
                     if (entity.Contains('.'))
                     {
-                        if (!this._ADUtils.IsGroup(entity.Trim()))
+                        if (!this.ADUtils.IsGroup(entity.Trim()))
                         {
                             ValidationErrors.Add(new ValidationMessage("The group '" + entity + "' was not found"));
                             throw new GenValidationException(ValidationErrors);
@@ -140,7 +140,7 @@ namespace GenBOE.ActionLogic
 
                         userDTO = this._UserDTODataLoader.GetOrCreateUserByNtid(entity);
 
-                        ICollection<UserData> groupMembers = this._ADUtils.GetAdGroupUsers(entity);
+                        ICollection<UserData> groupMembers = this.ADUtils.GetAdGroupUsers(entity);
                         Dictionary<UserData, bool> groupMemberAccess = this.GetGenBOEAccess(groupMembers);
 
                         if (groupMemberAccess.Any(x => x.Value == false))
@@ -153,7 +153,7 @@ namespace GenBOE.ActionLogic
                     else
                     {
                         // details from AD
-                        UserData user = this._ADUtils.GetUserByQualifiedAccount(entity, false);
+                        UserData user = this.ADUtils.GetUserByQualifiedAccount(entity, false);
                         if (user == null)
                         {
                             ValidationErrors.Add(new ValidationMessage("UserNotFound", "User not found"));
@@ -239,9 +239,9 @@ namespace GenBOE.ActionLogic
         /// <returns>A dictionary of users and a bool indicating if they have access or not</returns>
         public Dictionary<UserData, bool> GetGenBOEAccess(ICollection<UserData> usersToCheck)
         {
-            ICollection<GroupData> groups = this._ADUtils.GetAuthorizationGroupsFromWebConfig();
+            ICollection<GroupData> groups = this.ADUtils.GetAuthorizationGroupsFromWebConfig();
 
-            Dictionary<UserData, bool> result = _ADUtils.CheckUsersBoeAccess(usersToCheck, groups);
+            Dictionary<UserData, bool> result = ADUtils.CheckUsersBoeAccess(usersToCheck, groups);
 
             return result;
         }
@@ -259,13 +259,24 @@ namespace GenBOE.ActionLogic
         {
             if(Roles.Any(x => x == Role.WorkspaceAdmin))
             {
-                IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
-                bool isAllowedToCreateWs = permissions.Any(x => x.AuthorizedRole == Role.CreateWorkspacePermissions);
-                bool isSystemAdmin = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin);
+                // need to figure out if the ntid belongs to a group.. if yes, then break it up into users and run it through.
+                // else, just check the user
 
-                if (!isAllowedToCreateWs && !isSystemAdmin)
+                if(this.ADUtils.IsGroup(ntid))
                 {
-                    throw new GenValidationException("In order for a user to be allowed to be assigned 'Workspace Administrator' rights, the user must have 'Create Workspace' permissions.");
+                    List<string> ntidsInGroup = this.ADUtils.GetAdGroupUsers(ntid).Select(x => x.Ntid).ToList();
+                    ntidsInGroup.ForEach(NTID => this.ValidateWsAdminMustHaveCreateWsPermission(NTID, Roles));
+                }
+                else
+                {
+                    IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
+                    bool isAllowedToCreateWs = permissions.Any(x => x.AuthorizedRole == Role.CreateWorkspacePermissions);
+                    bool isSystemAdmin = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin);
+
+                    if (!isAllowedToCreateWs && !isSystemAdmin)
+                    {
+                        throw new GenValidationException($"User {ntid} cannot be assigned 'Workspace Administrator' permissions, because they do not have 'Create Workspace' permissions.");
+                    }
                 }
             }
         }
