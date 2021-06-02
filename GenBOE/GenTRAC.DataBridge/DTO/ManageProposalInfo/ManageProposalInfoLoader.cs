@@ -48,7 +48,7 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToSave.ProposalId,
                             dtoToSave.UpdateDate,
                             (int)dtoToSave.NewProposalStatus,
-                            dtoToSave.ProposalSubmittalDate,
+                            dtoToSave.EstimatingSubmitsToContractsDate,
                             dtoToSave.TotalPrice,
                             dtoToSave.ChecklistSubmittedDatePricer,
                             dtoToSave.ChecklistSubmittedDatePeer,

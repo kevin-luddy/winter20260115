@@ -618,7 +618,7 @@ namespace GenTRAC.Tests
             Assert.AreEqual(proposal.ProposalStatus, manageProposalInfo.OldStatus);
             Assert.IsFalse(manageProposalInfo.ShowCompletedSection);
             Assert.IsFalse(manageProposalInfo.ShowChecklistSubmittedDatePeer);
-            Assert.IsNull(manageProposalInfo.NewProposalSubmittalDate);
+            Assert.IsNull(manageProposalInfo.EstimatingSubmitsToContractsDate);
             Assert.IsNull(manageProposalInfo.NewTotalPrice);
             Assert.IsNull(manageProposalInfo.NewChecklistSubmittedDatePricer);
             Assert.IsNull(manageProposalInfo.NewChecklistSubmittedDatePeer);
@@ -653,7 +653,7 @@ namespace GenTRAC.Tests
             Assert.AreEqual(fullProposal.ProposalStatus, manageProposalInfo.OldStatus);
             Assert.IsTrue(manageProposalInfo.ShowCompletedSection);
             Assert.IsFalse(manageProposalInfo.ShowChecklistSubmittedDatePeer);
-            Assert.AreEqual(proposalChecklist.ProposalSubmittalDate.Value.ToString("MM/dd/yyyy"), manageProposalInfo.NewProposalSubmittalDate);
+            Assert.AreEqual(proposalChecklist.ProposalSubmittalDate.Value.ToString("MM/dd/yyyy"), manageProposalInfo.EstimatingSubmitsToContractsDate);
             Assert.AreEqual(proposalChecklist.SubmittedValue.ToString(), manageProposalInfo.NewTotalPrice);
             Assert.AreEqual(pricerSubmitDate.ToString("MM/dd/yyyy"), manageProposalInfo.NewChecklistSubmittedDatePricer);
             Assert.IsNull(manageProposalInfo.NewChecklistSubmittedDatePeer);
@@ -669,7 +669,7 @@ namespace GenTRAC.Tests
             manageProposalInfo = sut.GetManageProposalInfoDetailsView(proposalId);
             Assert.IsTrue(manageProposalInfo.ShowCompletedSection);
             Assert.IsTrue(manageProposalInfo.ShowChecklistSubmittedDatePeer);
-            Assert.AreEqual(proposalChecklist.ProposalSubmittalDate.Value.ToString("MM/dd/yyyy"), manageProposalInfo.NewProposalSubmittalDate);
+            Assert.AreEqual(proposalChecklist.ProposalSubmittalDate.Value.ToString("MM/dd/yyyy"), manageProposalInfo.EstimatingSubmitsToContractsDate);
             Assert.AreEqual(proposalChecklist.SubmittedValue.ToString(), manageProposalInfo.NewTotalPrice);
             Assert.AreEqual(pricerSubmitDate.ToString("MM/dd/yyyy"), manageProposalInfo.NewChecklistSubmittedDatePricer);
             Assert.AreEqual(peerSubmitDate.ToString("MM/dd/yyyy"), manageProposalInfo.NewChecklistSubmittedDatePeer);
@@ -708,7 +708,7 @@ namespace GenTRAC.Tests
             Assert.AreEqual(proposal.ProposalStatus, manageProposalInfo.OldStatus);
             Assert.IsFalse(manageProposalInfo.ShowCompletedSection);
             Assert.IsFalse(manageProposalInfo.ShowChecklistSubmittedDatePeer);
-            Assert.IsNull(manageProposalInfo.NewProposalSubmittalDate);
+            Assert.IsNull(manageProposalInfo.EstimatingSubmitsToContractsDate);
             Assert.IsNull(manageProposalInfo.NewTotalPrice);
             Assert.IsNull(manageProposalInfo.NewChecklistSubmittedDatePricer);
             Assert.IsNull(manageProposalInfo.NewChecklistSubmittedDatePeer);
@@ -743,7 +743,7 @@ namespace GenTRAC.Tests
             Assert.AreEqual(fullProposal.ProposalStatus, manageProposalInfo.OldStatus);
             Assert.IsTrue(manageProposalInfo.ShowCompletedSection);
             Assert.IsFalse(manageProposalInfo.ShowChecklistSubmittedDatePeer);
-            Assert.AreEqual(proposalChecklist.ProposalSubmittalDate.Value.ToString("MM/dd/yyyy"), manageProposalInfo.NewProposalSubmittalDate);
+            Assert.AreEqual(proposalChecklist.ProposalSubmittalDate.Value.ToString("MM/dd/yyyy"), manageProposalInfo.EstimatingSubmitsToContractsDate);
             Assert.AreEqual(proposalChecklist.SubmittedValue.ToString(), manageProposalInfo.NewTotalPrice);
             Assert.AreEqual(pricerSubmitDate.ToString("MM/dd/yyyy"), manageProposalInfo.NewChecklistSubmittedDatePricer);
             Assert.IsNull(manageProposalInfo.NewChecklistSubmittedDatePeer);
@@ -759,7 +759,7 @@ namespace GenTRAC.Tests
             manageProposalInfo = sut.GetManageProposalInfoDetailsView(proposalId);
             Assert.IsTrue(manageProposalInfo.ShowCompletedSection);
             Assert.IsTrue(manageProposalInfo.ShowChecklistSubmittedDatePeer);
-            Assert.AreEqual(proposalChecklist.ProposalSubmittalDate.Value.ToString("MM/dd/yyyy"), manageProposalInfo.NewProposalSubmittalDate);
+            Assert.AreEqual(proposalChecklist.ProposalSubmittalDate.Value.ToString("MM/dd/yyyy"), manageProposalInfo.EstimatingSubmitsToContractsDate);
             Assert.AreEqual(proposalChecklist.SubmittedValue.ToString(), manageProposalInfo.NewTotalPrice);
             Assert.AreEqual(pricerSubmitDate.ToString("MM/dd/yyyy"), manageProposalInfo.NewChecklistSubmittedDatePricer);
             Assert.AreEqual(peerSubmitDate.ToString("MM/dd/yyyy"), manageProposalInfo.NewChecklistSubmittedDatePeer);
@@ -805,7 +805,7 @@ namespace GenTRAC.Tests
                 ProposalID = proposalId,
                 NewStatus = ProposalStatus.Completed,
                 OldProposalSubmittalDate = "01/01/2013",
-                NewProposalSubmittalDate = "01/01/2014",
+                EstimatingSubmitsToContractsDate = "01/01/2014",
                 OldTotalPrice = "1",
                 NewTotalPrice = "10",
                 OldChecklistSubmittedDatePricer = "01/01/2013",
@@ -820,7 +820,7 @@ namespace GenTRAC.Tests
             Assert.IsNotNull(savedProposalId);
             Assert.AreEqual(proposalId, savedProposalId.Value);
             this.manageProposalInfoLoader.Verify(x => x.SaveProposalInfo(
-                It.Is<ManageProposalInfoDto>(y => y.ProposalSubmittalDate != null && y.TotalPrice != null &&
+                It.Is<ManageProposalInfoDto>(y => y.EstimatingSubmitsToContractsDate != null && y.TotalPrice != null &&
                 y.ChecklistSubmittedDatePricer != null && y.ChecklistSubmittedDatePeer != null && y.Comments == "Test")), Times.Once());
 
             // equivalent values
@@ -829,7 +829,7 @@ namespace GenTRAC.Tests
                 ProposalID = proposalId,
                 NewStatus = ProposalStatus.Completed,
                 OldProposalSubmittalDate = "01/01/2013",
-                NewProposalSubmittalDate = "1/1/2013",
+                EstimatingSubmitsToContractsDate = "1/1/2013",
                 OldTotalPrice = "10000",
                 NewTotalPrice = "10,000",
                 OldChecklistSubmittedDatePricer = "01/01/2013",
@@ -843,7 +843,7 @@ namespace GenTRAC.Tests
             Assert.IsNotNull(savedProposalId);
             Assert.AreEqual(proposalId, savedProposalId.Value);
             this.manageProposalInfoLoader.Verify(x => x.SaveProposalInfo(
-                It.Is<ManageProposalInfoDto>(y => y.ProposalSubmittalDate == null && y.TotalPrice == null &&
+                It.Is<ManageProposalInfoDto>(y => y.EstimatingSubmitsToContractsDate == null && y.TotalPrice == null &&
                 y.ChecklistSubmittedDatePricer == null && y.ChecklistSubmittedDatePeer == null)), Times.Exactly(2));
         }
 
@@ -892,7 +892,7 @@ namespace GenTRAC.Tests
             {
                 ProposalID = proposalId,
                 OldStatus = ProposalStatus.Completed,
-                NewProposalSubmittalDate = null,
+                EstimatingSubmitsToContractsDate = null,
                 NewTotalPrice = null,
                 NewChecklistSubmittedDatePricer = null,
                 NewChecklistSubmittedDatePeer = null,
@@ -920,7 +920,7 @@ namespace GenTRAC.Tests
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ManageProposalInfoValidationConstants.CHECKLIST_DATE_PRICER_REQUIRED)).Count());
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ManageProposalInfoValidationConstants.CHECKLIST_DATE_PEER_REQUIRED)).Count());
 
-            manageProposalInfo.NewProposalSubmittalDate = "123";
+            manageProposalInfo.EstimatingSubmitsToContractsDate = "123";
             manageProposalInfo.NewChecklistSubmittedDatePricer = "123";
             manageProposalInfo.NewChecklistSubmittedDatePeer = "123";
             manageProposalInfo.NewTotalPrice = "999,999,999";
@@ -934,7 +934,7 @@ namespace GenTRAC.Tests
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ManageProposalInfoValidationConstants.CHECKLIST_DATE_PRICER_FORMAT)).Count());
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ManageProposalInfoValidationConstants.CHECKLIST_DATE_PEER_FORMAT)).Count());
            
-            manageProposalInfo.NewProposalSubmittalDate = "01/01/2014";
+            manageProposalInfo.EstimatingSubmitsToContractsDate = "01/01/2014";
             manageProposalInfo.NewTotalPrice = "123";
             manageProposalInfo.NewChecklistSubmittedDatePricer = "01/01/2014";
             manageProposalInfo.NewChecklistSubmittedDatePeer = "01/01/2014";

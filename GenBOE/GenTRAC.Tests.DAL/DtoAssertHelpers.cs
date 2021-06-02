@@ -305,21 +305,26 @@ namespace GenTRAC.Tests.DAL
             int numProperties = dtoType.GetProperties().Count();
 
             // 3 properties we can't test (primary key, update date, updatable), plus response type, and save info, plus the ones below 
-            Assert.AreEqual(UNTESTABLE_PROPERTIES + 3 + 16, numProperties, "Untested properties exist in the DTO.");
+            Assert.AreEqual(UNTESTABLE_PROPERTIES + 3 + 18, numProperties, "Untested properties exist in the DTO.");
 
             Assert.AreEqual(expectedResult.LMLaborHrs, actualResult.LMLaborHrs);
             Assert.AreEqual(expectedResult.LMLaborCost, actualResult.LMLaborCost);
             Assert.AreEqual(expectedResult.SubcontractorCost, actualResult.SubcontractorCost);
             Assert.AreEqual(expectedResult.MaterialCost, actualResult.MaterialCost);
             Assert.AreEqual(expectedResult.IWTACost, actualResult.IWTACost);
+
             Assert.AreEqual(expectedResult.TravelCost, actualResult.TravelCost);
             Assert.AreEqual(expectedResult.OtherDirectCosts, actualResult.OtherDirectCosts);
+            Assert.AreEqual(expectedResult.ProfitFeeCOM, actualResult.ProfitFeeCOM);
             Assert.AreEqual(expectedResult.ProfitFee, actualResult.ProfitFee);
+            Assert.AreEqual(expectedResult.COM, actualResult.COM);
+
             Assert.AreEqual(expectedResult.AbsoluteValue, actualResult.AbsoluteValue);
             Assert.AreEqual(expectedResult.ProposalID, actualResult.ProposalID);
             Assert.AreEqual(expectedResult.ROSPercentage, actualResult.ROSPercentage);
             Assert.AreEqual(expectedResult.SubmittedValue, actualResult.SubmittedValue);
             Assert.AreEqual(expectedResult.IsSubmit, actualResult.IsSubmit);
+
             Assert.AreEqual(expectedResult.DeliverChecklistDFARS, actualResult.DeliverChecklistDFARS);
             
             // TODO: check if this value should be false or null, assert is failing

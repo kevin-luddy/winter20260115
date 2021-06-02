@@ -653,7 +653,7 @@ namespace GenTRAC.ActionLogic
                     if (checklist.ProposalSubmittalDate.HasValue)
                     {
                         manageProposalInfoDetailsView.OldProposalSubmittalDate = checklist.ProposalSubmittalDate.Value.ToString("MM/dd/yyyy");
-                        manageProposalInfoDetailsView.NewProposalSubmittalDate = manageProposalInfoDetailsView.OldProposalSubmittalDate;
+                        manageProposalInfoDetailsView.EstimatingSubmitsToContractsDate = manageProposalInfoDetailsView.OldProposalSubmittalDate;
                     }
 
                     if (checklist.SubmittedValue.HasValue)
@@ -719,10 +719,10 @@ namespace GenTRAC.ActionLogic
                 throw new ArgumentException(string.Format("Invalid transition from {0} to {1}. Refresh page to re-synch with database.", fullProposal.ProposalStatus, manageProposalInfo.NewStatus));
             }
 
-            DateTime? proposalSubmittalDate = this.DetermineIfDateChanged(manageProposalInfo.OldProposalSubmittalDate, manageProposalInfo.NewProposalSubmittalDate);
             long? totalPrice = this.DetermineIfPriceChanged(manageProposalInfo.OldTotalPrice, manageProposalInfo.NewTotalPrice);
             DateTime? checklistSubmittedDatePricer = this.DetermineIfDateChanged(manageProposalInfo.OldChecklistSubmittedDatePricer, manageProposalInfo.NewChecklistSubmittedDatePricer);
             DateTime? checklistSubmittedDatePeer = this.DetermineIfDateChanged(manageProposalInfo.OldChecklistSubmittedDatePeer, manageProposalInfo.NewChecklistSubmittedDatePeer);
+            DateTime? estimatingSubmitsToContractsDate = this.DetermineIfDateChanged(manageProposalInfo.OldProposalSubmittalDate, manageProposalInfo.EstimatingSubmitsToContractsDate);
 
             int? toReturn;
 
@@ -733,11 +733,11 @@ namespace GenTRAC.ActionLogic
                     ProposalId = proposalId,
                     UpdateDate = manageProposalInfo.UpdateDate,
                     NewProposalStatus = manageProposalInfo.NewStatus,
-                    ProposalSubmittalDate = proposalSubmittalDate,
                     TotalPrice = totalPrice,
                     ChecklistSubmittedDatePricer = checklistSubmittedDatePricer,
                     ChecklistSubmittedDatePeer = checklistSubmittedDatePeer,
-                    Comments = manageProposalInfo.Comments ?? string.Empty
+                    Comments = manageProposalInfo.Comments ?? string.Empty,
+                    EstimatingSubmitsToContractsDate = estimatingSubmitsToContractsDate
                 };
 
                 toReturn = this.manageProposalInfoLoader.SaveProposalInfo(manageProposalInfoDto);
@@ -815,7 +815,7 @@ namespace GenTRAC.ActionLogic
 
             if (manageProposalInfo.OldStatus == ProposalStatus.Completed || manageProposalInfo.OldStatus == ProposalStatus.Submitted)
             {
-                if (string.IsNullOrEmpty(manageProposalInfo.NewProposalSubmittalDate))
+                if (string.IsNullOrEmpty(manageProposalInfo.EstimatingSubmitsToContractsDate))
                 {
                     inValidationErrors.Add(new ValidationMessage(ValidationConstants.ManageProposalInfoValidationConstants.SUBMITTAL_DATE_REQUIRED));
                 }
@@ -823,7 +823,7 @@ namespace GenTRAC.ActionLogic
                 {
                     try
                     {
-                        manageProposalInfo.NewProposalSubmittalDate.ToDateTime("MM/dd/yyyy");
+                        manageProposalInfo.EstimatingSubmitsToContractsDate.ToDateTime("MM/dd/yyyy");
                     }
                     catch (FormatException)
                     {

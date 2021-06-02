@@ -83,6 +83,16 @@
             }
         });
 
+        ManageProposalInfoDetailsWidget.getElement('input[name="estimatingSubmitsToContractsDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: function (dateText, inst) {
+                ManageProposalInfoDetailsWidget.setDirty("manageProposalInfoDetailsForm");
+                $(this).blur();
+                $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+                $(this).next('button.ui-datepicker-trigger').focus();
+            }
+        });        
+
         ManageProposalInfoDetailsWidget.getElement('input[name="newChecklistSubmittedDatePricer"]').datepicker({
             dateFormat: 'mm/dd/yy',
             onSelect: function (dateText, inst) {
@@ -182,27 +192,28 @@
             <div id="manageProposalInfoDetailsCompletedSection" style="display: none;">
                 <div class="form-row">
                     <div class="form-label">
-                        Actual Submittal Date
+                        Date Estimating Submits to Contracts
                     </div>
                     <div class="form-element">
-                        <input name="newProposalSubmittalDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.NewProposalSubmittalDate" maxlength="10" size="12"/>
+                        <input name="estimatingSubmitsToContractsDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.EstimatingSubmitsToContractsDate" maxlength="10" size="12" />
                     </div>
                 </div>
+
                 <div class="form-row">
                     <div class="form-label">
                         Total Price ($)
                     </div>
                     <div class="form-element">
-                        @Html.TextBoxFor(model => model.NewTotalPrice, new { style = "text-align: right", name = "NewTotalPrice", size="17" })
+                        @Html.TextBoxFor(model => model.NewTotalPrice, new { style = "text-align: right", name = "NewTotalPrice", size = "17" })
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-label">
-                        LOB Estimating Manager / Delegate<br/>
+                        LOB Estimating Manager / Delegate<br />
                         Approval
                     </div>
                     <div class="form-element">
-                        <input name="newChecklistSubmittedDatePricer" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.NewChecklistSubmittedDatePricer" maxlength="10" size="12"/>
+                        <input name="newChecklistSubmittedDatePricer" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.NewChecklistSubmittedDatePricer" maxlength="10" size="12" />
                     </div>
                 </div>
                 <div class="form-row" id="manageProposalInfoDetailsPeerDateSection" style="display: none;">
@@ -210,7 +221,7 @@
                         Checklist Submitted Date (Peer)
                     </div>
                     <div class="form-element">
-                        <input name="newChecklistSubmittedDatePeer" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.NewChecklistSubmittedDatePeer" maxlength="10" size="12"/>
+                        <input name="newChecklistSubmittedDatePeer" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.NewChecklistSubmittedDatePeer" maxlength="10" size="12" />
                     </div>
                 </div>
             </div>

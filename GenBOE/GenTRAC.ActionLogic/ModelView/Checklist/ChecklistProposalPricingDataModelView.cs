@@ -76,9 +76,23 @@ namespace GenTRAC.ActionLogic.ModelView.Checklist
 
         /// <summary>
         /// Gets or sets profit/fee + com value
+        /// 
+        /// This field is being split into 2, but this is required for historical data
         /// </summary>
         [RegularExpression(Validation.ValidationConstants.PRICE_RANGE_FORMAT, ErrorMessage = ValidationConstants.ChecklistValidationConstants.PROFIT_FEE_COM_WHOLE_NUMBER)]
         public string ProfitFeeComTotal { get; set; }
+
+        /// <summary>
+        /// Gets or sets profit/fee
+        /// </summary>
+        [RegularExpression(Validation.ValidationConstants.PRICE_RANGE_FORMAT, ErrorMessage = ValidationConstants.ChecklistValidationConstants.PROFIT_FEE_WHOLE_NUMBER)] 
+        public string ProfitFeeTotal { get; set; }
+
+        /// <summary>
+        /// Gets or sets COM
+        /// </summary>
+        [RegularExpression(Validation.ValidationConstants.PRICE_RANGE_FORMAT, ErrorMessage = ValidationConstants.ChecklistValidationConstants.COM_WHOLE_NUMBER)] 
+        public string ComTotal { get; set; }
 
         /// <summary>
         /// Gets or sets ROS %
