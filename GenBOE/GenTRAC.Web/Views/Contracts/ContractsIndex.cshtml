@@ -55,7 +55,7 @@
             ContractsIndexWidget.refreshModule();
 		};
 
-        setTimeout(function () { alert('refresh'); ContractsIndexWidget.refreshModule2(); }, 1000);
+        ContractsIndexWidget.refreshModule2();
 	});
 </script>
 
@@ -69,11 +69,17 @@
         width: 962px;
         display: inline-block;
     }
+
+    hr {
+        width:60%; 
+		margin:10px 0;
+    }
 </style>
 
 <div id="contractsIndex" class="composite module full" style="min-height:800px;">
     @Html.Partial("ContractsInfo", Model)
-    @Html.Partial("ContractsOffers")
+    @Html.Partial("ContractsOffers", Model)
+
     <div class="module-content-data" style="height:200px;">
         @using (Html.BeginForm("", "", FormMethod.Post, new { id = "contractsForm", name = "contractsForm" }))
         {

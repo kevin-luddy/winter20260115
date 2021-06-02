@@ -7,6 +7,7 @@
 namespace GenTRAC.ActionLogic.ModelView
 {
     using System;
+    using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using IES.Common;
 
@@ -16,15 +17,35 @@ namespace GenTRAC.ActionLogic.ModelView
     public class ContractsModelView
     {
         /// <summary>
+        /// Previous ROM Date
+        /// </summary>
+        private DateTime? previousROMDt { get; set; }
+
+        /// <summary>
+        /// Customer Submittal Date
+        /// </summary>
+        private DateTime? customerSubmittalDt { get; set; }
+
+        /// <summary>
+        /// Date Confirmation of Negotiations Submitted
+        /// </summary>
+        private DateTime? negotiationsSubmittedDt { get; set; }
+
+        /// <summary>
+        /// Final Negotiated Value
+        /// </summary>
+        public int? FinalNegotiatedValueInt { get; set; }
+
+        /// <summary>
+        /// Previous ROM Value
+        /// </summary>
+        public decimal? PreviousROMValueDecimal { get; set; }
+
+        /// <summary>
         /// Previously Submitted ROM (PTM record)
         /// </summary>
         [Display(Name= "Previously Submitted ROM")]
         public string PreviouslySubmittedROM { get; set; }
-
-        /// <summary>
-        /// Previous ROM Date
-        /// </summary>
-        public DateTime? previousROMDt { get; private set; }
 
         /// <summary>
         /// Previous ROM Date String
@@ -47,18 +68,8 @@ namespace GenTRAC.ActionLogic.ModelView
         /// <summary>
         /// Previous ROM Value
         /// </summary>
-        public decimal? PreviousROMValueDecimal { get; set; }
-
-        /// <summary>
-        /// Previous ROM Value
-        /// </summary>
         [Display(Name = "Previously Submitted ROM Value")]
         public string PreviousROMValue => this.PreviousROMValueDecimal?.ToString("C");
-
-        /// <summary>
-        /// Customer Submittal Date
-        /// </summary>
-        public DateTime? customerSubmittalDt { get; private set; }
 
         /// <summary>
         /// Customer Submittal Date String
@@ -83,5 +94,34 @@ namespace GenTRAC.ActionLogic.ModelView
         /// </summary>
         [Display(Name = "Contracts Correspondence Log Number")]
         public string ContractsCorrespondenceLogNumber { get; set; }
+
+        /// <summary>
+        /// Final Negotiated Value String
+        /// </summary>
+        [Display(Name = "Final Negotiated Value")]
+        public string FinalNegotiatedValue => this.FinalNegotiatedValueInt?.ToString("C");
+
+        /// <summary>
+        /// Date Confirmation of Negotiations Submitted String
+        /// </summary>
+        [Display(Name = "Date Confirmation of Negotiations Submitted")]
+        public string NegotiationsSubmitted
+        {
+            get => this.negotiationsSubmittedDt?.Date.ToShortDateString();
+
+            set
+            {
+                this.negotiationsSubmittedDt = null;
+                if (DateTime.TryParse(value, out DateTime result))
+                {
+                    this.negotiationsSubmittedDt = result.Normalize(DateTimePrecision.Day);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Contract Offers
+        /// </summary>
+        public ICollection<ContractsOfferModelView> ContractOffers { get; set; } = new List<ContractsOfferModelView>();
     }
 }
