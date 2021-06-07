@@ -257,7 +257,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                
                 StartDate = DateTime.Parse("1/15/2017").Normalize(),
                 EndDate = DateTime.Parse("2/15/2018").Normalize(),
-                ClassOfCost = ClassOfCost.DevNonRecurring
+                ClassOfCost = ClassOfCost.NonRecurring
             };
             BoeTaskElementDTO taskElement1 = new BoeTaskElementDTO()
             {
@@ -431,7 +431,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                     ActivityName = "Boe2Desc", WbsElementTitle = "WbsTitle1", InitialResource = "Resource1", StartDate = DateTime.Parse("1/15/2018").Normalize(), EndDate = DateTime.Parse("2/15/2018").Normalize(),
                     Clin = "Clin1Title", SowNumber = "sow", SowTitle = "sow title", Task = "task3", Hours = 7, Dollars = 0, Rationale = "rationale 3", CamName = "Test Name",
                     Category = "Cat2", Offload = false, AddDelete = "A", DiscreteMonths = new decimal?[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  4, 3} },
-                new ProjectMapModelView { ClassOfCost = ClassOfCost.DevNonRecurring.ToDescription(), WbsNumber = "1.2.3", CostCenter = "PerfOrg1", ActivityID = "Boe2Title",
+                new ProjectMapModelView { ClassOfCost = ClassOfCost.NonRecurring.ToDescription(), WbsNumber = "1.2.3", CostCenter = "PerfOrg1", ActivityID = "Boe2Title",
                     ActivityName = "Boe2Desc", WbsElementTitle = "WbsTitle1", InitialResource = "Resource1", StartDate = DateTime.Parse("1/15/2017").Normalize(), EndDate = DateTime.Parse("2/15/2017").Normalize(),
                     Clin = "Clin1Title", SowNumber = "sow", SowTitle = "sow title", Task = "task4", Hours = 3, Dollars = 0, Rationale = "rationale 4", CamName = "Test Name",
                     Category = "Cat2", Offload = false, AddDelete = "A", DiscreteMonths = new decimal?[] { 2, 1} }

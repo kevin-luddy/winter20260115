@@ -129,7 +129,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             if (projectMapData.Any())
             {
-                foreach (var data in projectMapData)
+                foreach (ProjectMapModelView data in projectMapData)
                 {
                     Collection<string> row = new Collection<string>
                     {
@@ -208,7 +208,7 @@ namespace GenBOE.ActionLogic.IO.Export
             IReadOnlyCollection<SikorskyLegacyResourceDTO> legacyResources = commonDataMapper.GetSikorskyLegacyResources();
             string[] offloadOptions = new string[] { "TRUE", "FALSE" };
             string[] addDeleteOptions = new string[] { "A", "D" };
-            string[] classOfCostOptions = new string[] { ClassOfCost.Recurring.GetDescription(), ClassOfCost.NonRecurring.GetDescription(), ClassOfCost.DevNonRecurring.GetDescription() };
+            string[] classOfCostOptions = new string[] { ClassOfCost.Recurring.GetDescription(), ClassOfCost.NonRecurring.GetDescription() };
 
             // Options List Column Headers
             List<string> headerValues = new List<string>

@@ -1302,9 +1302,7 @@ namespace IES.Common
         [Description("REC")]
         Recurring = 1,
         [Description("NRE")]
-        NonRecurring = 2,
-        [Description("DNR")]
-        DevNonRecurring = 3
+        NonRecurring = 2
     }
 
     /// <summary>

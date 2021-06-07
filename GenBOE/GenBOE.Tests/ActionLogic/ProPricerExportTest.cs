@@ -1957,7 +1957,7 @@ namespace GenBOE.Tests.ActionLogic
             //  there is no other way to verify the results other than hard coding string values
             //  Removed MOQ and Custom Fields from the hard-coded strings since ProjectMap doesn't save/use them
             Assert.AreEqual(2, result.TaskData.Count);
-            Assert.AreEqual("112005,,TOTAL,mock clin1 title,012006,LIDN000001,,\"\",\"mock clin1 title\",\"mock wbs title\",2.2,,,,\"BBBBBBB\",\"KristinePO\",\"\",-100000,-100000,-100000,\"Boe1Title\",\"\",\"DNR\",", result.TaskData[0], "The first task did not match this value");
+            Assert.AreEqual("112005,,TOTAL,mock clin1 title,012006,LIDN000001,,\"\",\"mock clin1 title\",\"mock wbs title\",2.2,,,,\"BBBBBBB\",\"KristinePO\",\"\",-100000,-100000,-100000,\"Boe1Title\",\"\",\"NRE\",", result.TaskData[0], "The first task did not match this value");
             Assert.AreEqual("112006,,TOTAL,mock clin1 title,012007,LIDN000002,,\"\",\"mock clin1 title\",\"mock wbs title\",2.2,,,,\"BBBBBBB\",\"KristinePO\",\"\",-100001,-100001,-100001,\"Boe2Title\",\"\",\"NRE\",", result.TaskData[1], "The second task (first resource) did not match this value");
 
             Assert.AreEqual(",\"BBBBBBB\",LIDN000001,2.2,,,,D,mock clin1 title,\"mock clin1 title\",112005,\"mock wbs title\",-100000,-100000,-100000,\"Boe1Title\",\"KristinePO\",\"\",\"\",133,133,134,", result.ResourceData[0], "The first resource did not match this value");
@@ -1987,7 +1987,7 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ISystemSettingDTODataLoader), systemSettingLoader.Object);
 
             ICollection<ProjectMapModelView> modelsWorkspace1 = new List<ProjectMapModelView> {
-                new ProjectMapModelView { ClassOfCost = ClassOfCost.DevNonRecurring.ToDescription(), WbsNumber = this.Wbs.WbsNumber, CostCenter = this.Perforg.PerformingOrgName, ActivityID = "Boe1Title",
+                new ProjectMapModelView { ClassOfCost = ClassOfCost.NonRecurring.ToDescription(), WbsNumber = this.Wbs.WbsNumber, CostCenter = this.Perforg.PerformingOrgName, ActivityID = "Boe1Title",
                     ActivityName = "Boe1Desc", WbsElementTitle = this.Wbs.WbsTitle, InitialResource = this.Resource.ResourceName, StartDate = this.Boe1.StartDate.Normalize(), EndDate = this.Boe1.EndDate.Normalize(),
                     Clin = this.Clin1.ClinTitle, SowNumber = "sow", SowTitle = "sow title", Task = "MOCK TASK1", Hours = 400, Dollars = 0, Rationale = "rationale1", CamName = "Test Name",
                     Category = "Cat1", Offload = false, AddDelete = "A"},
@@ -1996,7 +1996,7 @@ namespace GenBOE.Tests.ActionLogic
                     ActivityName = "Boe2Desc", WbsElementTitle = this.Wbs.WbsTitle, InitialResource = this.Resource.ResourceName, StartDate = this.Boe2.StartDate.Normalize(), EndDate = this.Boe2.EndDate.Normalize(),
                     Clin = this.Clin1.ClinTitle, SowNumber = "sow", SowTitle = "sow title", Task = "MOCK TASK2", Hours = 225, Dollars = 0, Rationale = "rationale1", CamName = "Test Name",
                     Category = "Cat1", Offload = true, AddDelete = "A"},
-                new ProjectMapModelView { ClassOfCost = ClassOfCost.DevNonRecurring.ToDescription(), WbsNumber = this.Wbs.WbsNumber, CostCenter = this.Perforg.PerformingOrgName, ActivityID = "Boe2Title",
+                new ProjectMapModelView { ClassOfCost = ClassOfCost.NonRecurring.ToDescription(), WbsNumber = this.Wbs.WbsNumber, CostCenter = this.Perforg.PerformingOrgName, ActivityID = "Boe2Title",
                     ActivityName = "Boe2Desc", WbsElementTitle = this.Wbs.WbsTitle, InitialResource = this.Resource.ResourceName, StartDate = this.Boe2.StartDate.Normalize(), EndDate = this.Boe2.EndDate.Normalize(),
                     Clin = this.Clin1.ClinTitle, SowNumber = "sow", SowTitle = "sow title", Task = "MOCK TASK2", Hours = 450, Dollars = 0, Rationale = "rationale1", CamName = "Test Name",
                     Category = "Cat1", Offload = true, AddDelete = "A"}
