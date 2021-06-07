@@ -650,9 +650,9 @@ namespace GenTRAC.ActionLogic
                 if (checklists != null && checklists.Any())
                 {
                     ProposalChecklistDto checklist = checklists.First();
-                    if (checklist.ProposalSubmittalDate.HasValue)
+                    if (checklist.EstimatingSubmitsToContractsDate.HasValue)
                     {
-                        manageProposalInfoDetailsView.OldProposalSubmittalDate = checklist.ProposalSubmittalDate.Value.ToString("MM/dd/yyyy");
+                        manageProposalInfoDetailsView.OldProposalSubmittalDate = checklist.EstimatingSubmitsToContractsDate.Value.ToString("MM/dd/yyyy");
                         manageProposalInfoDetailsView.EstimatingSubmitsToContractsDate = manageProposalInfoDetailsView.OldProposalSubmittalDate;
                     }
 

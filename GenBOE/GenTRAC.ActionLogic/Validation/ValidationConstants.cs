@@ -557,7 +557,7 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// Proposal Submittal Date is required
             /// </summary>
-            public const string SUBMITTAL_DATE_REQUIRED = GENERAL_INFO_VALDIATION + "Proposal Submittal Date is required.";
+            public const string ESTIMATING_SUBMITS_TO_CONTRACTS_DATE_REQUIRED = GENERAL_INFO_VALDIATION + "Estimating Submits To Contracts Date is required.";
 
             /// <summary>
             /// Proposal Submitted Value is required
@@ -894,7 +894,7 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// Approval Workflow Completed Date Range Section
             /// </summary>
-            public const string DATE_RANGE_SECTION = "(Actual Submittal Date Range) - ";
+            public const string DATE_RANGE_SECTION = "(Estimating Submits to Contracts Date Range) - ";
 
             /// <summary>
             /// Approval Workflow Completed Start Date invalid format

@@ -498,11 +498,11 @@ namespace GenTRAC.ActionLogic
             if (checklistGeneralInfo.ShowChecklistResponse == ShowChecklistResponse.Pricer)
             {
                 // the following validation checks are always done regardless if this is a save or submit
-                if (!string.IsNullOrEmpty(checklistGeneralInfo.SubmittalDate))
+                if (!string.IsNullOrEmpty(checklistGeneralInfo.EstimatingSubmitsToContractsDate))
                 {
                     try
                     {
-                        checklistGeneralInfo.SubmittalDate.ToDateTime("MM/dd/yyyy");
+                        checklistGeneralInfo.EstimatingSubmitsToContractsDate.ToDateTime("MM/dd/yyyy");
                     }
                     catch (FormatException)
                     {
@@ -518,9 +518,9 @@ namespace GenTRAC.ActionLogic
                 // only do the general info validation if its the pricer saving
                 if (checklistGeneralInfo.ShowChecklistResponse == ShowChecklistResponse.Pricer)
                 {
-                    if (string.IsNullOrEmpty(checklistGeneralInfo.SubmittalDate))
+                    if (string.IsNullOrEmpty(checklistGeneralInfo.EstimatingSubmitsToContractsDate))
                     {
-                        inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.SUBMITTAL_DATE_REQUIRED));
+                        inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.ESTIMATING_SUBMITS_TO_CONTRACTS_DATE_REQUIRED));
                     }
 
                     if (string.IsNullOrEmpty(checklistGeneralInfo.SubmittedValue))
@@ -1078,7 +1078,7 @@ namespace GenTRAC.ActionLogic
                     Updateable = IES.Common.UpdateType.Upsert,
                     UpdateDate = checklistGeneralInfo.UpdateDate,
                     ProposalID = checklistGeneralInfo.ProposalID,
-                    ProposalSubmittalDate = string.IsNullOrEmpty(checklistGeneralInfo.SubmittalDate) ? (DateTime?)null : checklistGeneralInfo.SubmittalDate.ToDateTime("MM/dd/yyyy"),
+                    EstimatingSubmitsToContractsDate = string.IsNullOrEmpty(checklistGeneralInfo.EstimatingSubmitsToContractsDate) ? (DateTime?)null : checklistGeneralInfo.EstimatingSubmitsToContractsDate.ToDateTime("MM/dd/yyyy"),
                     SubmittedValue = !string.IsNullOrEmpty(checklistGeneralInfo.SubmittedValue) ? long.Parse(checklistGeneralInfo.SubmittedValue.Replace(",", string.Empty)) : (long?)null,
                     AbsoluteValue = !string.IsNullOrEmpty(checklistGeneralInfo.AbsoluteValue) ? long.Parse(checklistGeneralInfo.AbsoluteValue.Replace(",", string.Empty)) : (long?)null,
                     ProfitFeeCOM = !string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeComTotal) ? long.Parse(checklistProposalPricingData.ProfitFeeComTotal.Replace(",", string.Empty)) : (long?)null,
@@ -1306,9 +1306,9 @@ namespace GenTRAC.ActionLogic
                 ProposalChecklistDto checklist = checklists.First();
                 model.ProposalChecklistID = checklist.Id;
 
-                if (checklist.ProposalSubmittalDate.HasValue)
+                if (checklist.EstimatingSubmitsToContractsDate.HasValue)
                 {
-                    model.SubmittalDate = checklist.ProposalSubmittalDate.Value.ToString("MM/dd/yyyy");
+                    model.EstimatingSubmitsToContractsDate = checklist.EstimatingSubmitsToContractsDate.Value.ToString("MM/dd/yyyy");
                 }
 
                 // submitted value is SSC total price

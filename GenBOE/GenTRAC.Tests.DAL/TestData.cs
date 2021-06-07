@@ -627,7 +627,7 @@ namespace GenTRAC.Tests.DAL
                     });
                     newChecklist.ProfitFeeCOM = 0;
                     newChecklist.ProposalID = proposalId;
-                    newChecklist.ProposalSubmittalDate = DateTime.Now;
+                    newChecklist.EstimatingSubmitsToContractsDate = DateTime.Now;
                     newChecklist.ROSPercentage = 0;
                     newChecklist.SubmittedValue = 0;
                     newChecklist.LMLaborHrs = 0;

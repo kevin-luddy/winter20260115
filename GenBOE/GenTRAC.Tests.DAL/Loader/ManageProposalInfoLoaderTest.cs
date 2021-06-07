@@ -126,7 +126,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             checklist = proposalChecklistLoader.GetByProposalIds(new Collection<int>() { proposal.Id }).FirstOrDefault();
             Assert.AreEqual(manageProposalInfo.TotalPrice, checklist.SubmittedValue);
-            Assert.AreEqual(manageProposalInfo.EstimatingSubmitsToContractsDate, checklist.ProposalSubmittalDate);
+            Assert.AreEqual(manageProposalInfo.EstimatingSubmitsToContractsDate, checklist.EstimatingSubmitsToContractsDate);
 
             ICollection<ProposalChecklistSaveInfo> saveInfo = proposalChecklistLoader.GetAllChecklistSaveInfo(proposal.Id);
             saveInfo.Where(x => x.ResponseType == ChecklistResponseType.Pricer).ToList().ForEach(x => Assert.AreEqual(manageProposalInfo.ChecklistSubmittedDatePricer, x.SubmitDate));
