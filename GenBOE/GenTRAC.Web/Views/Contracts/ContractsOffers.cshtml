@@ -2,6 +2,7 @@
 
 <script type="text/javascript">
     var ContractsOfferWidget;
+    var i = 0;
 
 	$(function () {
         var readOnly = @ViewBag.ReadOnly.ToString().ToLower();
@@ -13,16 +14,20 @@
         ContractsOfferWidget = new GenWidget(widgetConfig);
         ContractsOfferWidget.getElement('button.offer-button').hide();
 
-        ContractsOfferWidget.deleteOffer = function (id) {
-            $('#offer_' + id).remove();
+        ContractsOfferWidget.deleteOffer = function (item) {
+            $(item).closest('div.offerWrapper').remove();
             ContractsOfferWidget.setDirty("contractsForm");
             ContractsOfferWidget.refreshModule();
         }
-        ContractsOfferWidget.addOffer = function() {
-            var id = '#offer_-2';
-            var temp = $(id).clone(true);
-            temp.insertBefore(id);
 
+        ContractsOfferWidget.addOffer = function () {
+            var idToClone = '#offer_@ContractsOfferModelView.OFFER_TO_IGNORE_ID';
+            var newId = 'offer_' + --i;
+
+            $(idToClone).clone(true).removeAttr('hidden').prop('id', newId).insertBefore(idToClone);
+            $('#' + newId).children("#Id").val(i)
+
+            ContractsOfferWidget.getElement('input.date').datepicker({ dateFormat: 'm/d/yy', onSelect: function () { ContractsOfferWidget.setDirty("contractsForm"); } });
             ContractsOfferWidget.setDirty("contractsForm");
             ContractsOfferWidget.refreshModule();
         }
@@ -40,14 +45,14 @@
     <div class="module-content-data expanded-content">
         @for (int i = 0; i < Model.ContractOffers.Count; i++)
         {
-            <div id="offer_@Model.ContractOffers.ElementAt(i).Id">
+            <div id="offer_@Model.ContractOffers.ElementAt(i).Id" @Model.ContractOffers.ElementAt(i).Hidden class="offerWrapper">
                 @Html.HiddenFor(x => x.ContractOffers.ElementAt(i).Id)
                 <div class="form-row">
                     <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).CustomerOfferAmmount) *</div>
                     <div class="form-element">
                         @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).CustomerOfferAmmount, new { @class = "half", id = "CustomerOfferAmmount_" + i.ToString() })
                     </div>
-                    <button type="button" class="ies-danger" style="margin-left:30px;" onclick="ContractsOfferWidget.deleteOffer(@Model.ContractOffers.ElementAt(i).Id)">Delete</button>
+                    <button type="button" class="ies-danger" style="margin-left:30px;" onclick="ContractsOfferWidget.deleteOffer(this)">Delete</button>
                 </div>
                 <div class="form-row">
                     <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).CustomerOfferDate) *</div>
