@@ -25,15 +25,22 @@
             var newId = 'offer_' + --i;
 
             $(idToClone).clone(true).removeAttr('hidden').prop('id', newId).insertBefore(idToClone);
-            $('#' + newId).children("#Id").val(i)
+            $('#' + newId).children("#Id").val(i);
 
-            ContractsOfferWidget.getElement('input.date').datepicker({ dateFormat: 'm/d/yy', onSelect: function () { ContractsOfferWidget.setDirty("contractsForm"); } });
+            $.each($('#' + newId).find('input'), function (j, item) {
+                item.id += (i * -1);
+            });
+
+            $.each($('#' + newId).find('input.date'), function (j, item) {
+                $(item).datepicker({ dateFormat: 'm/d/yy', onSelect: function () { ContractsOfferWidget.setDirty("contractsForm"); } });
+            });
+
             ContractsOfferWidget.setDirty("contractsForm");
             ContractsOfferWidget.refreshModule();
         }
 
         if (!readOnly) {
-            ContractsOfferWidget.getElement('input.date').datepicker({ dateFormat: 'm/d/yy', onSelect: function () { ContractsOfferWidget.setDirty("contractsForm"); } });
+            ContractsOfferWidget.getElement('input.date:visible').datepicker({ dateFormat: 'm/d/yy', onSelect: function () { ContractsOfferWidget.setDirty("contractsForm"); } });
             ContractsOfferWidget.getElement('button.offer-button').show();
         }
 	});
