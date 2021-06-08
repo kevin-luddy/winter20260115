@@ -274,7 +274,8 @@ namespace GenTRAC.Tests.ActionLogic
                 Request = 1,
                 ProposalClass = 1,
                 RFPNumber = "myRFP",
-                UpdateDate = DateTime.Now
+                UpdateDate = DateTime.Now,
+                DateCreated = new DateTime(2021, 1, 1)
             };
 
             ProposalChecklistDto proposalChecklist = new ProposalChecklistDto()
@@ -317,6 +318,51 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(checklistProposalPricingData.ProfitFeeTotal, string.Format("{0:#,###0}", proposalChecklist.ProfitFee));
             Assert.AreEqual(checklistProposalPricingData.ComTotal, string.Format("{0:#,###0}", proposalChecklist.COM));
             Assert.AreEqual(checklistProposalPricingData.ROSPercent, proposalChecklist.ROSPercentage.ToString());
+            Assert.IsFalse(checklistProposalPricingData.SplitProfitFeeCOM);
+        }
+
+        /// <summary>
+        /// test GetDataForChecklistProposalPricingData.. Only check here is that SplitProfitFeeCom = true
+        /// </summary>
+        [TestMethod]
+        public void C_GetDataForChecklistProposalPricingDataTest_2()
+        {
+            var sut = this.CreateSystem();
+
+            int proposalId = 5;
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = proposalId,
+                DeliveryDate = new DateTime(2014, 1, 1),
+                BoeTool = BOETool.Excel,
+                ContractTypeIds = new List<int> { 1, 2, 3 },
+                CostElementTypeIds = new List<int> { 1, 2, 3 },
+                Customer = "myCustomer",
+                CustomerType = CustomerType.InternationalCommercial,
+                EstimatedProposalValue = 400,
+                ISGSRole = ISGSRole.Prime,
+                ProgramAreaId = 3,
+                PricingTool = PricingTool.Excel,
+                LineOfBusinessID = 2,
+                ProgramName = "myProgram",
+                ProposalType = 3,
+                Request = 1,
+                ProposalClass = 1,
+                RFPNumber = "myRFP",
+                UpdateDate = DateTime.Now,
+                DateCreated = new DateTime(2021, 8, 1)
+            };
+
+            FullProposal fullProposal = new FullProposal(proposal);
+
+            this.objectFactory.Setup(x => x.CreateFullProposal(proposal)).Returns(fullProposal);
+            this.proposalLoader.Setup(x => x.GetById(proposalId)).Returns(proposal);
+            this.securityAccess.Setup(x => x.CurrentUserHasRole(PtmRole.Pricer, proposalId)).Returns(true);
+            this.retriever.Setup(x => x.GetAllChecklistSaveInfo(proposalId)).Returns(new Collection<ProposalChecklistSaveInfo>());
+
+            ChecklistProposalPricingDataModelView checklistProposalPricingData = sut.GetDataForChecklistProposalPricingData(proposalId);
+            Assert.IsTrue(checklistProposalPricingData.SplitProfitFeeCOM);
         }
 
         /// <summary>
@@ -375,7 +421,7 @@ namespace GenTRAC.Tests.ActionLogic
             ctx = new ValidationContext(checkList, null, null);
             result = Validator.TryValidateObject(checkList, ctx, validationResults, true);
             Assert.IsFalse(result);
-            Assert.AreEqual(9, validationResults.Count);
+            Assert.AreEqual(11, validationResults.Count);
         }
 
         /// <summary>

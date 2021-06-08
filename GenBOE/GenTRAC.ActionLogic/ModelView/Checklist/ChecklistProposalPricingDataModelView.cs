@@ -95,6 +95,11 @@ namespace GenTRAC.ActionLogic.ModelView.Checklist
         public string ComTotal { get; set; }
 
         /// <summary>
+        /// Should we be splitting the Profit/Fee + COM field. It is based on the date of Proposal Creation & when the feature was introduced
+        /// </summary>
+        public bool SplitProfitFeeCOM { get; set; }
+
+        /// <summary>
         /// Gets or sets ROS %
         /// </summary>
         [RegularExpression(Validation.ValidationConstants.PERCENT_FORMAT, ErrorMessage = ValidationConstants.ChecklistValidationConstants.ROS_PERCENT_RANGE)]
