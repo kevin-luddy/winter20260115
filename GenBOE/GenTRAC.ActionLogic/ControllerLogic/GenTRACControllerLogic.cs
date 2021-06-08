@@ -1329,42 +1329,19 @@ namespace GenTRAC.ActionLogic
         /// <returns>Checklist Proposal Pricing Data Model View</returns>
         public ChecklistProposalPricingDataModelView GetDataForChecklistProposalPricingData(int proposalId)
         {
-            ChecklistProposalPricingDataModelView model = new ChecklistProposalPricingDataModelView();
-
-            // set which role is trying to view general info
-            if (this.SecurityAccess.CurrentUserHasRole(PtmRole.Pricer, proposalId) || this.SecurityAccess.CurrentUserHasRole(PtmRole.BackupPricer, proposalId))
+            FullProposal proposal = this.GetFullProposalDto(proposalId);
+            ChecklistProposalPricingDataModelView model = new ChecklistProposalPricingDataModelView()
             {
-                model.ShowChecklistResponse = ShowChecklistResponse.Pricer;
-            }
-            else if (this.SecurityAccess.CurrentUserHasRole(PtmRole.PeerReviewer, proposalId))
-            {
-                model.ShowChecklistResponse = ShowChecklistResponse.Peer;
-            }
-            else
-            {
-                // all other roles get show both
-                model.ShowChecklistResponse = ShowChecklistResponse.ShowBoth;
-            }
+                ProposalID = proposal.Id,
+                SplitProfitFeeCOM = (proposal.DateCreated ?? DateTime.Now) >= ConfigurationUtilities.GetAppSetting<DateTime>("ProfitFeeComSplitStartDate"),
+                IsReadOnly = this.IsProposalChecklistReadOnly(proposal),
+                ShowChecklistResponse = this.GetShowChecklistResponse(proposal)
+            };
 
-            FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
-            model.IsReadOnly = this.IsProposalChecklistReadOnly(fullProposalDto);
-
-            model.ProposalID = fullProposalDto.Id;
-
-            bool isPTMChecklistUIEnabled = (fullProposalDto.ProposalChecklistPPRData == null) ? true : this.IsPTMChecklistUIEnabled(fullProposalDto.ProposalChecklistPPRData.Version);
-            // if this is a PTM checklist, only show Estimator (Pricer) response column.
-            if (isPTMChecklistUIEnabled)
-            {
-                model.ShowChecklistResponse = ShowChecklistResponse.Pricer;
-            }
-
-            // even though a collection is returned, we know that one proposal can only contain one of these dtos
-            var checklists = fullProposalDto.ProposalChecklistData;
-
-            if (checklists != null && checklists.Any())
+            if (proposal.ProposalChecklistData != null && proposal.ProposalChecklistData.Any())
             {
                 // there is really only one checklist per proposal so just grab it
-                ProposalChecklistDto checklist = checklists.First();
+                ProposalChecklistDto checklist = proposal.ProposalChecklistData.First();
                 model.ProposalChecklistID = checklist.Id;
                 model.LMLaborHrs = string.Format("{0:#,###0.##}", checklist.LMLaborHrs);
                 model.LMLaborCost = string.Format("{0:#,###0}", checklist.LMLaborCost);
@@ -1383,6 +1360,30 @@ namespace GenTRAC.ActionLogic
             }
 
             return model;
+        }
+
+        /// <summary>
+        /// Gets the value for the ShowChecklistResponse field, for ChecklistProposalPricingDataModelView
+        /// </summary>
+        /// <param name="proposal">Proposal</param>
+        /// <returns>ChecklistProposalPricingDataModelView.ShowChecklistResponse value</returns>
+        private ShowChecklistResponse GetShowChecklistResponse(FullProposal proposal)
+        {
+            ShowChecklistResponse result = ShowChecklistResponse.ShowBoth;
+
+            // set which role is trying to view general info
+            if (this.SecurityAccess.CurrentUserHasRole(PtmRole.Pricer, proposal.Id) 
+                || this.SecurityAccess.CurrentUserHasRole(PtmRole.BackupPricer, proposal.Id) 
+                || (proposal.ProposalChecklistPPRData == null) ? true : this.IsPTMChecklistUIEnabled(proposal.ProposalChecklistPPRData.Version))
+            {
+                result = ShowChecklistResponse.Pricer;
+            }
+            else if (this.SecurityAccess.CurrentUserHasRole(PtmRole.PeerReviewer, proposal.Id))
+            {
+                result = ShowChecklistResponse.Peer;
+            }
+
+            return result;
         }
 
         /// <summary>
