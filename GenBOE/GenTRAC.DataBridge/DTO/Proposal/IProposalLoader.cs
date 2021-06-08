@@ -8,6 +8,7 @@ namespace GenTRAC.DataBridge.DTO
 {
     using System;
     using System.Collections.Generic;
+    using System.Web.Mvc;
     using IES.Common;
 
     /// <summary>
@@ -160,5 +161,20 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="proposalId">Proposal Id</param>
         /// <returns>Revision History</returns>
         ICollection<RevisionHistoryModelView> GetRevisionHistory(int proposalId);
+
+        /// <summary>
+        /// Get options for the Previously Submitted ROM field in the Contracts Tab
+        /// </summary>
+        /// <param name="selectedValue">Selected option</param>
+        /// <returns>Values for dropdown</returns>
+        ICollection<SelectListItem> GetRomProposalOptions(int? selectedValue);
+
+        /// <summary>
+        /// Gets ROM Proposal's Previously Submitted ROM Value and Previously Submitted ROM Date
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Submitted Date and Submitted Value</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        Tuple<DateTime?, decimal?> GetRomDateAndValue(int proposalId);
     }
 }
