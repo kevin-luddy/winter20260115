@@ -102,9 +102,10 @@
     <div class="module-content-data expanded-content">
         @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ChecklistControllerLogic.CHECKLIST_PROPOSAL_PRICING_DATA_FORM, name = GenTRAC.ActionLogic.ChecklistControllerLogic.CHECKLIST_PROPOSAL_PRICING_DATA_FORM }))
         {
-            <input name="ProposalID" value="@Model.ProposalID" type="hidden"/>
-            <input name="ProposalChecklistID" value="@Model.ProposalChecklistID" type="hidden" />
-            <input name="ShowChecklistResponse" value="@Model.ShowChecklistResponse" type="hidden" />
+            @Html.HiddenFor(m => m.ProposalID)
+            @Html.HiddenFor(m => m.ProposalChecklistID)
+            @Html.HiddenFor(m => m.ShowChecklistResponse)
+            @Html.HiddenFor(m => m.SplitProfitFeeCOM)
             <div id="ProposalPriceDataHeaderText" class="proposalPriceDataText">Pricing data should reflect Customer <u>Submitted</u> Values in Whole U.S. Dollars (e.g., $1,000,000).<br /><span style="color: red">For International proposals, enter the U.S. dollar equivalent. Hours may be entered up to two decimal places (e.g., 1,500.05).</span></div><br />
             <table id="PriceTableOne" style="display: inline-block;">
                 <colgroup>
@@ -144,31 +145,31 @@
                 <tbody>
                     <tr>
                         <td>
-                             @Html.TextBoxFor(model => model.LMLaborHrs, new { size = 15, name="LMLaborHrs", maxInt = 9, numDecimals = 2 })
+                            @Html.TextBoxFor(model => model.LMLaborHrs, new { size = 15, name = "LMLaborHrs", maxInt = 9, numDecimals = 2 })
                         </td>
                         <td>
-                             @Html.TextBoxFor(model => model.LMLaborCost, new { size = 15, name="LMLaborCost", maxInt = 12, numDecimals = 0 })
+                            @Html.TextBoxFor(model => model.LMLaborCost, new { size = 15, name = "LMLaborCost", maxInt = 12, numDecimals = 0 })
                         </td>
                         <td>
-                            @Html.TextBoxFor(model => model.SubcontractorCost, new { size = 15, name="SubcontractorCost", maxInt = 12, numDecimals = 0 })
+                            @Html.TextBoxFor(model => model.SubcontractorCost, new { size = 15, name = "SubcontractorCost", maxInt = 12, numDecimals = 0 })
                         </td>
                         <td>
-                            @Html.TextBoxFor(model => model.MaterialCost, new { size = 15, name="MaterialCost", maxInt = 12, numDecimals = 0 })
+                            @Html.TextBoxFor(model => model.MaterialCost, new { size = 15, name = "MaterialCost", maxInt = 12, numDecimals = 0 })
                         </td>
                         <td>
-                            @Html.TextBoxFor(model => model.IWTACost, new { size = 15, name="IWTACost", maxInt = 12, numDecimals = 0 })
+                            @Html.TextBoxFor(model => model.IWTACost, new { size = 15, name = "IWTACost", maxInt = 12, numDecimals = 0 })
                         </td>
                         <td>
-                            @Html.TextBoxFor(model => model.TravelCost, new { size = 15, name="TravelCost", maxInt = 12, numDecimals = 0 })
+                            @Html.TextBoxFor(model => model.TravelCost, new { size = 15, name = "TravelCost", maxInt = 12, numDecimals = 0 })
                         </td>
                         <td>
-                            @Html.TextBoxFor(model => model.OtherDirectCosts, new { size = 15, name="OtherDirectCosts", maxInt = 12, numDecimals = 0 })
+                            @Html.TextBoxFor(model => model.OtherDirectCosts, new { size = 15, name = "OtherDirectCosts", maxInt = 12, numDecimals = 0 })
                         </td>
                     </tr>
                 </tbody>
             </table>
-           <br />
-           <table id="PriceTableTwo" style="display: inline-block;">
+            <br />
+            <table id="PriceTableTwo" style="display: inline-block;">
                 <colgroup>
                     <col style="width: 132px" />
                     <col style="width: 132px" />
@@ -180,15 +181,21 @@
                 </colgroup>
                 <thead>
                     <tr style="height: 25px;">
-                        <th>
-                            <div style="width: 100px"> <span helptext="@ProfitComFeeHelpText">Profit/Fee + COM</span></div>
-                        </th>
-                        <th>
-                            <div style="width: 100px"> <span helptext="@ProfitFeeHelpText">Profit/Fee</span></div>
-                        </th>
-                        <th>
-                            <div style="width: 100px"> <span helptext="@ComFeeHelpText">COM</span></div>
-                        </th>
+                        @if (!Model.SplitProfitFeeCOM)
+                        {
+                            <th>
+                                <div style="width: 100px"> <span helptext="@ProfitComFeeHelpText">Profit/Fee + COM</span></div>
+                            </th>
+                        }
+                        else
+                        {
+                            <th>
+                                <div style="width: 100px"> <span helptext="@ProfitFeeHelpText">Profit/Fee</span></div>
+                            </th>
+                            <th>
+                                <div style="width: 100px"> <span helptext="@ComFeeHelpText">COM</span></div>
+                            </th>
+                        }
                         <th>
                             <div style="width: 100px"> <span>LM Space Total Price</span></div>
                         </th>
@@ -203,15 +210,21 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>
-                            @Html.TextBoxFor(model => model.ProfitFeeComTotal, new { size = 15, name = "ProfitFeeComTotal", maxInt = 12, numDecimals = 0 })
-                        </td>
-                        <td>
-                            @Html.TextBoxFor(model => model.ProfitFeeTotal, new { size = 15, name = "ProfitFeeTotal", maxInt = 12, numDecimals = 0 })
-                        </td>
-                        <td>
-                            @Html.TextBoxFor(model => model.ComTotal, new { size = 15, name = "ComTotal", maxInt = 12, numDecimals = 0 })
-                        </td>
+                        @if (!Model.SplitProfitFeeCOM)
+                        {
+                            <td>
+                                @Html.TextBoxFor(model => model.ProfitFeeComTotal, new { size = 15, name = "ProfitFeeComTotal", maxInt = 12, numDecimals = 0 })
+                            </td>
+                        }
+                        else
+                        {
+                            <td>
+                                @Html.TextBoxFor(model => model.ProfitFeeTotal, new { size = 15, name = "ProfitFeeTotal", maxInt = 12, numDecimals = 0 })
+                            </td>
+                            <td>
+                                @Html.TextBoxFor(model => model.ComTotal, new { size = 15, name = "ComTotal", maxInt = 12, numDecimals = 0 })
+                            </td>
+                        }
                         <td>
                             <div name="SSCTotalPrice">@Html.DisplayTextFor(model => model.SubmittedValue)</div>
                         </td>

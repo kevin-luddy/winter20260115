@@ -20,7 +20,7 @@
         GeneralInformationWidgetConfig.IsModule = true;
         GeneralInformationWidgetConfig.isReadOnly = readOnly;
         GeneralInformationWidgetConfig.KeepSpecialFieldsEditable = keepSpecialFieldsEditable;
-        GeneralInformationWidgetConfig.EditableSpecialFieldNames = ['SubmittalDate'];
+        GeneralInformationWidgetConfig.EditableSpecialFieldNames = ['EstimatingSubmitsToContractsDate'];
 
         if (readOnly) {
 
@@ -34,7 +34,7 @@
                 $(this).attr('placeholder', '');
             });
 
-            // The placeholder (mm/dd/yyyy format) for SubmittalDate should be visible for valid user roles even if the proposal is locked.
+            // The placeholder (mm/dd/yyyy format) for EstimatingSubmitsToContractsDate should be visible for valid user roles even if the proposal is locked.
             if (!keepSpecialFieldsEditable) {
                 $('input[placeholder="mm/dd/yyyy"]').each(function() {
                     $(this).attr('placeholder', '');
@@ -111,8 +111,8 @@
 
         ChecklistGeneralInformationWidget = new GenWidget(GeneralInformationWidgetConfig);
 
-        ChecklistGeneralInformationWidget.getElement('input[name="SubmittalDate"]').data('previousDateText', '@Model.SubmittalDate');
-        ChecklistGeneralInformationWidget.getElement('input[name="SubmittalDate"]').datepicker({
+        ChecklistGeneralInformationWidget.getElement('input[name="EstimatingSubmitsToContractsDate"]').data('previousDateText', '@Model.EstimatingSubmitsToContractsDate');
+        ChecklistGeneralInformationWidget.getElement('input[name="EstimatingSubmitsToContractsDate"]').datepicker({
             dateFormat: 'mm/dd/yy',
             onSelect: function (dateText, inst) {
                 ChecklistIndexWidget.setDirty("checklistForm");
@@ -127,7 +127,7 @@
             $(this).attr('tabindex', '-1');
         });
 
-        // The DatePicker for SubmittalDate should be editable for valid user roles even if the proposal is locked.
+        // The DatePicker for EstimatingSubmitsToContractsDate should be editable for valid user roles even if the proposal is locked.
         if (readOnly && !keepSpecialFieldsEditable) {
             // remove calendar link
             $(".ui-datepicker-trigger").each(function() {
@@ -230,10 +230,10 @@
 
                 <div class="form-row">
                     <div class="form-label">
-                        <span helptext="Actual Submittal Date is the date the proposal was shipped to the customer.">Actual Submittal Date*:</span>
+                        <span>Date Estimating Submits to Contracts*:</span>
                     </div>
                     <div class="form-element">
-                        <input name="SubmittalDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.SubmittalDate" />
+                        <input name="EstimatingSubmitsToContractsDate" type="text" placeholder="mm/dd/yyyy" class="date" value="@Model.EstimatingSubmitsToContractsDate" />
                     </div>
                 </div>
                 <div class="form-row">

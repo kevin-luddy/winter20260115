@@ -15,6 +15,14 @@ namespace GenTRAC.ActionLogic.ModelView
     /// </summary>
     public class ContractsOfferModelView
     {
+        /// <summary>
+        /// Offer Id for an offer that will be ignored in the UI and then on save
+        /// </summary>
+        public static readonly int OFFER_TO_IGNORE_ID = -1000;
+
+        /// <summary>
+        /// Id
+        /// </summary>
         public int Id { get; set; }
 
         /// <summary>
@@ -123,5 +131,10 @@ namespace GenTRAC.ActionLogic.ModelView
                 }
             }
         }
+
+        /// <summary>
+        /// Hidden string, if applicable
+        /// </summary>
+        public string Hidden => this.Id == OFFER_TO_IGNORE_ID ? "hidden = \"hidden\"" : string.Empty;
     }
 }

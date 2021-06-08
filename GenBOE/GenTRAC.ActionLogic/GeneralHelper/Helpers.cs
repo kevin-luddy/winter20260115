@@ -18,16 +18,17 @@ namespace GenTRAC.ActionLogic.GeneralHelper
         /// Is Proposal Certification Required and Missing
         /// </summary>
         /// <param name="status">Proposal Status</param>
-        /// <param name="actualSubmittalDate">Actual Submittal Date is in the Checklist tab / table. 
+        /// <param name="submittedToContracts">Date Estimating Submits to Contracts is in the Checklist tab / table. 
         ///     NOT to be confused with:
         ///         - Workflow / Proposal Submitted Date (when the workflow is completed), 
         ///         - "Revised Anticipated Delivery Date" in the proposal general info tab / table</param>
+        ///         - Actual Submittal Date in the Contracts tab
         /// <returns>True if the certification is considered missing and late</returns>
-        public static bool IsProposalCertificationLate(ProposalStatus status, DateTime? actualSubmittalDate)
+        public static bool IsProposalCertificationLate(ProposalStatus status, DateTime? submittedToContracts)
         {
             return status == ProposalStatus.Submitted
-                && (!actualSubmittalDate.HasValue 
-                    || DateTime.Now.Date > actualSubmittalDate.Value.AddDays(60).Date);
+                && (!submittedToContracts.HasValue 
+                    || DateTime.Now.Date > submittedToContracts.Value.AddDays(60).Date);
         }
     }
 }

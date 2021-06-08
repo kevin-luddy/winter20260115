@@ -45,9 +45,9 @@ namespace GenTRAC.DataBridge.DTO
         public int ProposalID { get; set; }
 
         /// <summary>
-        /// Proposal Submittal Date
+        /// Estimating Submits To Contracts Date
         /// </summary>
-        public DateTime? ProposalSubmittalDate { get; set; }
+        public DateTime? EstimatingSubmitsToContractsDate { get; set; }
 
         /// <summary>
         /// Submitted Value

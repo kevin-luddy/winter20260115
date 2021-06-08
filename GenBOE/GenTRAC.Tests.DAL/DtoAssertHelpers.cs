@@ -330,9 +330,9 @@ namespace GenTRAC.Tests.DAL
             // TODO: check if this value should be false or null, assert is failing
             // Assert.AreEqual(expectedResult.IsCCPDRequired, actualResult.IsCCPDRequired);
 
-            if (expectedResult.ProposalSubmittalDate.HasValue)
+            if (expectedResult.EstimatingSubmitsToContractsDate.HasValue)
             {
-                Assert.AreEqual(expectedResult.ProposalSubmittalDate.Value.ToString("MM/DD/YYYY"), actualResult.ProposalSubmittalDate.Value.ToString("MM/DD/YYYY"));
+                Assert.AreEqual(expectedResult.EstimatingSubmitsToContractsDate.Value.ToString("MM/DD/YYYY"), actualResult.EstimatingSubmitsToContractsDate.Value.ToString("MM/DD/YYYY"));
             }
 
             AssertChecklistResponses(expectedResult.PARResponses, actualResult.PARResponses);

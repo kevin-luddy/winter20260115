@@ -90,7 +90,7 @@ namespace GenTRAC.DataBridge.DTO
                         if (dtoToUpsert.ResponseType == ChecklistResponseType.Pricer)
                         {
                             toReturn = dbModel.upsertProposalChecklist(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.ProposalID,
-                                dtoToUpsert.ProposalSubmittalDate, dtoToUpsert.SubmittedValue, 
+                                dtoToUpsert.EstimatingSubmitsToContractsDate, dtoToUpsert.SubmittedValue, 
                                 dtoToUpsert.ProfitFeeCOM, dtoToUpsert.ROSPercentage, dtoToUpsert.LMLaborHrs, dtoToUpsert.LMLaborCost,
                                 dtoToUpsert.SubcontractorCost, dtoToUpsert.MaterialCost, dtoToUpsert.IWTACost, dtoToUpsert.TravelCost, dtoToUpsert.OtherDirectCosts, dtoToUpsert.DeliverChecklistDFARS, dtoToUpsert.AbsoluteValue).FirstOrDefault();
 
@@ -245,7 +245,7 @@ namespace GenTRAC.DataBridge.DTO
                         UpdateDate = entity.UpdateDate,
                         ProposalID = entity.ProposalID,
                         ProfitFeeCOM = entity.ProfitFee,
-                        ProposalSubmittalDate = entity.ProposalSubmittalDate,
+                        EstimatingSubmitsToContractsDate = entity.ProposalSubmittalDate,
                         ROSPercentage = entity.ROSPercentage,
                         SubmittedValue = entity.ISGSTotalPrice,
                         AbsoluteValue = entity.AbsoluteValue,

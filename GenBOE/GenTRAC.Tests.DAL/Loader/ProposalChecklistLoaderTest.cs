@@ -123,7 +123,7 @@ namespace GenTRAC.Tests.DAL.Loader
                 ROSPercentage = (decimal)62.50,
                 ProfitFeeCOM = 1000,
                 AbsoluteValue = 1500,
-                ProposalSubmittalDate = DateTime.Now,
+                EstimatingSubmitsToContractsDate = DateTime.Now,
                 ResponseType = ChecklistResponseType.Pricer,
                 SubmittedValue = 2000,
                 PPRResponses = pprResponses,
@@ -460,7 +460,7 @@ namespace GenTRAC.Tests.DAL.Loader
             ProposalChecklistDto checklist1 = new ProposalChecklistDto()
             {
                 ProposalID = proposal1.Id,
-                ProposalSubmittalDate = submitDate1,
+                EstimatingSubmitsToContractsDate = submitDate1,
                 ResponseType = ChecklistResponseType.Pricer,
                 Updateable = UpdateType.Upsert
             };
@@ -471,7 +471,7 @@ namespace GenTRAC.Tests.DAL.Loader
             ProposalChecklistDto checklist2 = new ProposalChecklistDto()
             {
                 ProposalID = proposal2.Id,
-                ProposalSubmittalDate = submitDate2,
+                EstimatingSubmitsToContractsDate = submitDate2,
                 ResponseType = ChecklistResponseType.Pricer,
                 Updateable = UpdateType.Upsert
             };
@@ -618,7 +618,7 @@ namespace GenTRAC.Tests.DAL.Loader
                 ROSPercentage = (decimal)62.50,
                 ProfitFeeCOM = 1000,
                 AbsoluteValue = 1500,
-                ProposalSubmittalDate = DateTime.Now,
+                EstimatingSubmitsToContractsDate = DateTime.Now,
                 ResponseType = ChecklistResponseType.Pricer,
                 SubmittedValue = 2000,
                 PPRResponses = pprResponses,

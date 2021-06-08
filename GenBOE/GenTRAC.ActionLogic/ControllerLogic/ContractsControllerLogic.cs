@@ -79,6 +79,9 @@ namespace GenTRAC.ActionLogic
                 NegotiationsSubmitted = DateTime.Now.AddDays(-1).ToString()
             };
 
+            // Add an extra dummy offer, for UI clone purposes. We will be throwing this one out when the data comes back into a save
+            model.ContractOffers.Add(new ContractsOfferModelView() { Id = ContractsOfferModelView.OFFER_TO_IGNORE_ID });
+
             return model;
         }
     }
