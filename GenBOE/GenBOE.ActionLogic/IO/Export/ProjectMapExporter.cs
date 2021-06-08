@@ -210,6 +210,17 @@ namespace GenBOE.ActionLogic.IO.Export
             string[] addDeleteOptions = new string[] { "A", "D" };
             string[] classOfCostOptions = new string[] { ClassOfCost.Recurring.GetDescription(), ClassOfCost.NonRecurring.GetDescription() };
 
+            // Add DevNonRecurring Class of Cost option if workspace is using it
+            CustomFieldDTO classOfCostCf = workspace.CustomFields.FirstOrDefault(x => x.CustomFieldName == Constants.SikorskyConstants.SIKORSKY_CF_CLASSOFCOST);
+            if (classOfCostCf != null)
+            {
+                ICollection<CustomFieldValueDTO> cfOptions = workspace.CustomFieldValues.Where(x => x.CustomFieldID == classOfCostCf.Id).ToCollection();
+                if (cfOptions != null && cfOptions.Any(x => x.CustomFieldValueName == ClassOfCost.DevNonRecurring.GetDescription()))
+                {
+                    classOfCostOptions = new string[] { ClassOfCost.Recurring.GetDescription(), ClassOfCost.NonRecurring.GetDescription(), ClassOfCost.DevNonRecurring.GetDescription() };
+                }
+            }
+
             // Options List Column Headers
             List<string> headerValues = new List<string>
             {

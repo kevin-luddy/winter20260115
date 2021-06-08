@@ -154,7 +154,7 @@ namespace IES.Common
         /// Gets or sets the class of cost.
         /// </summary>
         [Required(ErrorMessage = "Class of Cost is required.")]
-        [ValidValues("REC", "NRE", ErrorMessage="The field Class Of Cost contains invalid values.")]
+        [ValidValues("REC", "NRE", "DNR", ErrorMessage="The field Class Of Cost contains invalid values.")]
         public string ClassOfCost { get; set; }
 
         /// <summary>

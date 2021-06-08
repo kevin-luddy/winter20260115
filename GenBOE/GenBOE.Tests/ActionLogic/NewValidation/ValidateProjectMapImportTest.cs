@@ -165,7 +165,7 @@ namespace GenBOE.Tests.ActionLogic.NewValidation
                     ActivityID = "BSW1023",
                     InitialResource = "4043WWC",
                     WbsElementTitle = "1234",
-                    ClassOfCost = ClassOfCost.NonRecurring.ToDescription()
+                    ClassOfCost = ClassOfCost.DevNonRecurring.ToDescription()
                 },
                 new ProjectMapModelView
                 {
