@@ -51,10 +51,7 @@ namespace GenTRAC.ActionLogic
             int i = 1;
             ContractsModelView model = new ContractsModelView()
             {
-                PreviousROMValueDecimal = 1000,
-                PreviouslySubmittedROM = "rom",
                 ContractsCorrespondenceLogNumber = "log #",
-                PreviousROMDate = DateTime.Now.AddDays(-100).ToString(),
                 CustomerSubmittalDate = DateTime.Now.AddDays(-1).ToString(),
                 ContractOffers = new List<ContractsOfferModelView>()
                 {
@@ -76,8 +73,19 @@ namespace GenTRAC.ActionLogic
                     }
                 },
                 FinalNegotiatedValueInt = 114000,
-                NegotiationsSubmitted = DateTime.Now.AddDays(-1).ToString()
+                NegotiationsSubmitted = DateTime.Now.AddDays(-1).ToString(),
+                PreviouslySubmittedROM = 15212
             };
+
+            // Load additional values
+            model.PreviouslySubmittedRoms = this.ProposalLoader.GetRomProposalOptions(model.PreviouslySubmittedROM);
+
+            if (model.PreviouslySubmittedROM.HasValue)
+            {
+                Tuple<DateTime?, decimal?> previousRomDateAndValue = this.ProposalLoader.GetRomDateAndValue(model.PreviouslySubmittedROM.Value);
+                model.previousROMDt = previousRomDateAndValue?.Item1;
+                model.PreviousROMValueDecimal = previousRomDateAndValue?.Item2;
+            }
 
             // Add an extra dummy offer, for UI clone purposes. We will be throwing this one out when the data comes back into a save
             model.ContractOffers.Add(new ContractsOfferModelView() { Id = ContractsOfferModelView.OFFER_TO_IGNORE_ID });

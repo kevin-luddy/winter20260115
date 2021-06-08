@@ -10,6 +10,7 @@ namespace GenTRAC.DataBridge.DTO
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Web.Mvc;
     using GenTRAC.Models;
     using IES.Common;
 
@@ -1814,6 +1815,52 @@ namespace GenTRAC.DataBridge.DTO
         private bool DisplayRevisionTab(bool isRevision, ProposalStatus proposalStatus)
         {
             return isRevision || proposalStatus == ProposalStatus.Revised;
+        }
+
+        /// <summary>
+        /// Get options for the Previously Submitted ROM field in the Contracts Tab
+        /// </summary>
+        /// <param name="selectedValue">Selected option</param>
+        /// <returns>Values for dropdown</returns>
+        [DbQuery]
+        public ICollection<SelectListItem> GetRomProposalOptions(int? selectedValue)
+        {
+            ICollection<SelectListItem> result;
+
+            using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetRomProposalOptions", Log))
+            {
+                using (genTRACEntities dbModel = new genTRACEntities())
+                {
+                    result = dbModel.Proposals.Where(x => x.ProposalClassLU.ProposalClass == "ROM")
+                        .Select(x => new { id = x.ProposalID, text = x.ProposalTrackingID + " " + x.ProposalTitle }).ToList()
+                        .Select(x => new SelectListItem() { Value = x.id.ToString(), Text = x.text, Selected = x.id == selectedValue }).ToList();
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets ROM Proposal's Previously Submitted ROM Value and Previously Submitted ROM Date
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Submitted Date and Submitted Value</returns>
+        [DbQuery, System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        public Tuple<DateTime?, decimal?> GetRomDateAndValue(int proposalId)
+        {
+            Tuple<DateTime?, decimal?> result;
+
+            using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetRomDateAndValue", Log))
+            {
+                using (genTRACEntities dbModel = new genTRACEntities())
+                {
+                    result = dbModel.Proposals.Where(x => x.ProposalID == proposalId)
+                        .Select(x => new { submittedDate = x.ProposalChecklists.FirstOrDefault().ProposalSubmittalDate, submittedValue = x.ProposalChecklists.FirstOrDefault().ISGSTotalPrice }).ToList()
+                        .Select(x => new Tuple<DateTime?, decimal?>(x.submittedDate, x.submittedValue)).FirstOrDefault();
+                }
+            }
+
+            return result;
         }
     }
 }

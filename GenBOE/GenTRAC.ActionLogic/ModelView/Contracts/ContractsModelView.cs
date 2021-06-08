@@ -9,6 +9,7 @@ namespace GenTRAC.ActionLogic.ModelView
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.Web.Mvc;
     using IES.Common;
 
     /// <summary>
@@ -19,7 +20,8 @@ namespace GenTRAC.ActionLogic.ModelView
         /// <summary>
         /// Previous ROM Date
         /// </summary>
-        private DateTime? previousROMDt { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1044:PropertiesShouldNotBeWriteOnly")]
+        public DateTime? previousROMDt { private get; set; }
 
         /// <summary>
         /// Customer Submittal Date
@@ -39,31 +41,25 @@ namespace GenTRAC.ActionLogic.ModelView
         /// <summary>
         /// Previous ROM Value
         /// </summary>
-        public decimal? PreviousROMValueDecimal { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1044:PropertiesShouldNotBeWriteOnly")]
+        public decimal? PreviousROMValueDecimal { private get; set; }
+
+        /// <summary>
+        /// A list of options for the previously submitted roms
+        /// </summary>
+        public ICollection<SelectListItem> PreviouslySubmittedRoms { get; set; }
 
         /// <summary>
         /// Previously Submitted ROM (PTM record)
         /// </summary>
         [Display(Name= "Previously Submitted ROM")]
-        public string PreviouslySubmittedROM { get; set; }
+        public int? PreviouslySubmittedROM { get; set; }
 
         /// <summary>
         /// Previous ROM Date String
         /// </summary>
         [Display(Name = "Previously Submitted ROM Date")]
-        public string PreviousROMDate
-        {
-            get => this.previousROMDt?.Date.ToShortDateString(); 
-            
-            set
-            {
-                this.previousROMDt = null;
-                if(DateTime.TryParse(value, out DateTime result))
-                {
-                    this.previousROMDt = result.Normalize(DateTimePrecision.Day);
-                }
-            }
-        }
+        public string PreviousROMDate => this.previousROMDt?.Date.ToShortDateString(); 
 
         /// <summary>
         /// Previous ROM Value
