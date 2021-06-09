@@ -325,7 +325,7 @@ namespace GenBOE.DataBridge.DTO
                 task.SOWTitle = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_SOW.ToUpper())?.CfValue;
                 task.Category = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CATEGORY.ToUpper())?.CfValue;
                 task.CamName = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CAMNAME.ToUpper())?.CfValue;
-                task.ClassOfCost = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CLASSOFCOST.ToUpper())?.CfValue?.GetEnumeratedValueNullable<ClassOfCost>() ?? ClassOfCost.None;
+                task.ClassOfCost = sikorskyCfTaskData.FirstOrDefault(x => x.TaskElementId == task.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CLASSOFCOST.ToUpper())?.CfName?.GetEnumeratedValueNullable<ClassOfCost>() ?? ClassOfCost.None;
             });
         }
 
