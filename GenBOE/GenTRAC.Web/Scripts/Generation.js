@@ -2515,7 +2515,7 @@ GenWidget.prototype.ajaxRequest = function (options, formElement) {
                 var error = {};
                 if (!(response.indexOf('{') < 0 || response.indexOf('{') > 2)) {
                     error = $.parseJSON(response);
-                    if (error.ReturnType == "GenValidationException") {
+                    if (error.ReturnType == "GenValidationException" || error.ReturnType == "IES.Common.Exceptions.GenValidationException") {
                         /*
                         *  Multi-form validation logic re-copied from $\GenBOE\GenBOE.Web\Resources\js\iBOE.js
                         *  Looks like Jim inadvertently removed this on 3/12.

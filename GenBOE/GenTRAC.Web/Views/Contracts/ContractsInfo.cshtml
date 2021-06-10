@@ -11,6 +11,34 @@
 
         ContractsInfoWidget = new GenWidget(widgetConfig);
 
+        ContractsInfoWidget.romChanged = function () {
+            var previouslySubmittedROM = ContractsInfoWidget.getElement('#PreviouslySubmittedROM').val();
+
+            ContractsInfoWidget.getElement('[name="PreviousROMDate"]').text('');
+            ContractsInfoWidget.getElement('[name="PreviousROMValue"]').text('');
+
+            if (previouslySubmittedROM) {
+                var contractsUrl = GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.CONTRACTS',
+                    action: '@WebConstants.Action.GET_SELECTED_ROM_DATA',
+                    id: '@ViewBag.ProposalId'
+                });
+
+                var data = { previousRomProposalId: previouslySubmittedROM };
+
+                $.ajax({
+                    type: "POST",
+                    url: contractsUrl,
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        ContractsInfoWidget.getElement('[name="PreviousROMDate"]').text(response.Date);
+                        ContractsInfoWidget.getElement('[name="PreviousROMValue"]').text(response.Value);
+                    }
+                });
+            }
+        }
+
         if (!readOnly) {
             ContractsInfoWidget.getElement('input.date').datepicker({ dateFormat: 'm/d/yy', onSelect: function () { ContractsOfferWidget.setDirty("contractsForm"); } });
         }
@@ -23,18 +51,18 @@
         <div class="form-row">
             <div class="form-label">@Html.LabelFor(x => x.PreviouslySubmittedROM) *</div>
             <div class="form-element">
-                @Html.DropDownListFor(x => x.PreviouslySubmittedROM, Model.PreviouslySubmittedRoms, string.Empty, new { @class = "half" })
+                @Html.DropDownListFor(x => x.PreviouslySubmittedROM, Model.PreviouslySubmittedRoms, string.Empty, new { @class = "half", onchange = "ContractsInfoWidget.romChanged()" })
             </div>
         </div>
         <div class="form-row">
             <div class="form-label">@Html.LabelFor(x => x.PreviousROMDate)</div>
-            <div class="form-element">
+            <div class="form-element" name="PreviousROMDate">
                 @Html.DisplayFor(x => x.PreviousROMDate)
             </div>
         </div>
         <div class="form-row">
             <div class="form-label">@Html.LabelFor(x => x.PreviousROMValue)</div>
-            <div class="form-element">
+            <div class="form-element" name="PreviousROMValue">
                 @Html.DisplayFor(x => x.PreviousROMValue)
             </div>
         </div>

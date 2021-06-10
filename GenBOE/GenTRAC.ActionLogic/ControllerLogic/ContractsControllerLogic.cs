@@ -82,7 +82,7 @@ namespace GenTRAC.ActionLogic
 
             if (model.PreviouslySubmittedROM.HasValue)
             {
-                Tuple<DateTime?, decimal?> previousRomDateAndValue = this.ProposalLoader.GetRomDateAndValue(model.PreviouslySubmittedROM.Value);
+                Tuple<DateTime?, decimal?> previousRomDateAndValue = this.GetRomDateAndValue(model.PreviouslySubmittedROM.Value);
                 model.previousROMDt = previousRomDateAndValue?.Item1;
                 model.PreviousROMValueDecimal = previousRomDateAndValue?.Item2;
             }
@@ -91,6 +91,17 @@ namespace GenTRAC.ActionLogic
             model.ContractOffers.Add(new ContractsOfferModelView() { Id = ContractsOfferModelView.OFFER_TO_IGNORE_ID });
 
             return model;
+        }
+
+        /// <summary>
+        /// Get ROM Date and Value
+        /// </summary>
+        /// <param name="proposalId">(previously) selected rom (proposal id)</param>
+        /// <returns>Submittal date and value</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        public Tuple<DateTime?, decimal?> GetRomDateAndValue(int proposalId)
+        {
+            return this.ProposalLoader.GetRomDateAndValue(proposalId);
         }
     }
 }

@@ -245,6 +245,8 @@ namespace GenTRAC.Web.Common
         {
             Dictionary<string, SecurityPageAndAuthorization> contractsTimelineActions = new Dictionary<string, SecurityPageAndAuthorization>();
             AddActionToController(WebConstants.Action.DISPLAY_CONTRACTS_INDEX, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsTimelineActions);
+            AddActionToController(WebConstants.Action.CALCULATE_OFFER_FIELDS, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsTimelineActions);
+            AddActionToController(WebConstants.Action.GET_SELECTED_ROM_DATA, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsTimelineActions);
 
             result.Add(WebConstants.Controller.CONTRACTS, contractsTimelineActions);
         }
