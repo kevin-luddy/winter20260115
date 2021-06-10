@@ -1065,6 +1065,8 @@
     <Content Include="Templates\Export\TMResourceRates.xlsx" />
     <Content Include="Views\Admin\ManageSystemSettings.ascx" />
     <Content Include="Templates\Export\WbsBoeReport.xlsx" />
+    <Content Include="Templates\Export\MOQTableRMS.xlsx" />
+    <Content Include="Templates\Export\MOQTableSSC.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

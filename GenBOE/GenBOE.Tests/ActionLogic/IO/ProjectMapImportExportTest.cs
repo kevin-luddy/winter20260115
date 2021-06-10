@@ -97,6 +97,7 @@ namespace GenBOE.Tests.ActionLogic.IO
                 RateType = RateType.Cost
             };
             retriever.Setup(x => x.GetResourcesByResourceListId(It.IsAny<int>())).Returns(new Collection<ResourceDTO>() { resource1, resource2, resource3 });
+            retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<CustomFieldDTO>());
 
             SikorskyLegacyResourceDTO legacy1 = new SikorskyLegacyResourceDTO() { LegacyID = 1, LegacyResourceID = "4000W", LegacyResourceName = "iTAS STA Direct" };
             SikorskyLegacyResourceDTO legacy2 = new SikorskyLegacyResourceDTO() { LegacyID = 2, LegacyResourceID = "4046FI1", LegacyResourceName = "Management Engineering" };
