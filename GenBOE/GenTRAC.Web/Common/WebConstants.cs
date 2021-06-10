@@ -435,6 +435,16 @@ namespace GenTRAC.Web.Common
             /// </summary>
             public const string DISPLAY_CONTRACTS_INDEX = "DisplayContractsIndex";
 
+            /// <summary>
+            /// Display Contracts
+            /// </summary>
+            public const string CALCULATE_OFFER_FIELDS = "CalculateOfferFields";
+
+            /// <summary>
+            /// Display Contracts
+            /// </summary>
+            public const string GET_SELECTED_ROM_DATA = "GetPreviouslySelectedRomData";
+
             #endregion
 
             #region Approvals

@@ -39,6 +39,37 @@
             ContractsOfferWidget.refreshModule();
         }
 
+        ContractsOfferWidget.recalculateOffer = function (item) {
+            var contractsUrl = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.CONTRACTS',
+                action: '@WebConstants.Action.CALCULATE_OFFER_FIELDS',
+                id: '@ViewBag.ProposalId'
+            });
+
+            var parent = $(item).closest('div.offerWrapper');
+
+            var data = {
+                counterOfferCost: $(parent).find('[name="LMCounterOfferCost"]').val(),
+                counterOfferCom: $(parent).find('[name="LMCounterOfferCOM"]').val(),
+                counterOfferProfitFee: $(parent).find('[name="LMCounterOfferProfitFee"]').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: contractsUrl,
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    $(parent).find('[name="LMCounterOfferCost"]').val(response.Cost);
+                    $(parent).find('[name="LMCounterOfferCOM"]').val(response.Com);
+                    $(parent).find('[name="LMCounterOfferProfitFee"]').val(response.ProfitFee);
+
+                    $(parent).find('[name="LMCounterOfferTotalPrice"]').text(response.TotalPrice);
+                    $(parent).find('[name="LMCounterOfferROS"]').text(response.Ros);
+                }
+            });
+        }
+
         if (!readOnly) {
             ContractsOfferWidget.getElement('input.date:visible').datepicker({ dateFormat: 'm/d/yy', onSelect: function () { ContractsOfferWidget.setDirty("contractsForm"); } });
             ContractsOfferWidget.getElement('button.offer-button').show();
@@ -46,6 +77,7 @@
 	});
 </script>
 <div id="contractsOffers" class="composite module full">
+    <ul class="validation-box"></ul>
     <div class="module-header-data">Offers
         <button type="button" class="ies-action offer-button" style="margin-left:800px;" onclick="ContractsOfferWidget.addOffer()">Add</button>
     </div>
@@ -76,30 +108,30 @@
                 <div class="form-row">
                     <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferCost)</div>
                     <div class="form-element">
-                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferCost, new { @class = "half", id = "LMCounterOfferCost_" + i.ToString() })
+                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferCost, new { @class = "half", id = "LMCounterOfferCost_" + i.ToString(), onchange= "ContractsOfferWidget.recalculateOffer(this)" })
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferCOM)</div>
                     <div class="form-element">
-                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferCOM, new { @class = "half", id = "LMCounterOfferCOM_" + i.ToString() })
+                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferCOM, new { @class = "half", id = "LMCounterOfferCOM_" + i.ToString(), onchange = "ContractsOfferWidget.recalculateOffer(this)" })
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferProfitFee)</div>
                     <div class="form-element">
-                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferProfitFee, new { @class = "half", id = "LMCounterOfferProfitFee_" + i.ToString() })
+                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferProfitFee, new { @class = "half", id = "LMCounterOfferProfitFee_" + i.ToString(), onchange = "ContractsOfferWidget.recalculateOffer(this)" })
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferTotalPrice)</div>
-                    <div class="form-element">
+                    <div class="form-element" name="LMCounterOfferTotalPrice">
                         @Html.DisplayFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferTotalPrice, new { @class = "half" })
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferROS)</div>
-                    <div class="form-element">
+                    <div class="form-element" name="LMCounterOfferROS">
                         @Html.DisplayFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferROS, new { @class = "half" })
                     </div>
                 </div>

@@ -59,25 +59,25 @@ namespace GenTRAC.ActionLogic.ModelView
         /// Customer Offer Amount String
         /// </summary>
         [Display(Name = "Customer Offer Amount")]
-        public string CustomerOfferAmmount => this.CustomerOfferAmmountInt?.ToString("C");
+        public string CustomerOfferAmmount => this.CustomerOfferAmmountInt?.ToString("C0");
 
         /// <summary>
         /// LM Counter Offer Cost
         /// </summary>
         [Display(Name = "LM Counter Offer Cost")]
-        public string LMCounterOfferCost => this.LMCounterOfferCostInt?.ToString("C");
+        public string LMCounterOfferCost => this.LMCounterOfferCostInt?.ToString("C0");
 
         /// <summary>
         /// LM Counter Offer COM
         /// </summary>
         [Display(Name = "LM Counter Offer COM")]
-        public string LMCounterOfferCOM => this.LMCounterOfferCOMInt?.ToString("C");
+        public string LMCounterOfferCOM => this.LMCounterOfferCOMInt?.ToString("C0");
 
         /// <summary>
         /// LM Counter Offer Profit Fee
         /// </summary>
         [Display(Name = "LM Counter Offer Profit/Fee")]
-        public string LMCounterOfferProfitFee => this.LMCounterOfferProfitFeeInt?.ToString("C");
+        public string LMCounterOfferProfitFee => this.LMCounterOfferProfitFeeInt?.ToString("C0");
 
         /// <summary>
         /// LM Counter Offer Total Price Int
@@ -88,7 +88,7 @@ namespace GenTRAC.ActionLogic.ModelView
         /// Calculated - LM Counter Offer Price
         /// </summary>
         [Display(Name = "LM Counter Offer Total Price")]
-        public string LMCounterOfferTotalPrice => lmCounterOfferTotalPriceInt?.ToString("C");
+        public string LMCounterOfferTotalPrice => lmCounterOfferTotalPriceInt?.ToString("C0");
 
         /// <summary>
         /// Calculated - LM Counter Offer ROS
