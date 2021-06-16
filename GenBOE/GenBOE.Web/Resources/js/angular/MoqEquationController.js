@@ -1,6 +1,6 @@
 ﻿/// <reference path="directives.js" />
 // The controller for the MOQ equation section.
-moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uibModal', '$window', 'ManageTaskModel', '$timeout', function ($scope, $document, $uibModal, $window, ManageTaskModel, $timeout) {
+moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uibModal', '$window', 'ManageTaskModel', '$timeout', '$http', function ($scope, $document, $uibModal, $window, ManageTaskModel, $timeout, $http) {
     $scope.init = function () {
         var MOQEquationFieldWidget = null;
 
@@ -11,14 +11,26 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         $scope.newTableId = -1;
 
         // This is needed to allow for some other processing to finish, otherwise we get errors from angular.js
-        setTimeout(function () { 
+        setTimeout(function () {
             initializeWidget();
 
             angular.forEach($scope.model.SelectedMoqTypes.map(e => e.SelectedMOQType.toString()), function (id) {
                 $scope.InitializeRteFields(id);
             });
-        }, 10);        
-    }
+        }, 10);
+    };
+
+    $scope.dialog = {
+        title: 'Import MOQ Tables',
+        open: false,
+        file: null,
+        importWorking: false,
+        completeImportWorking: false,
+        showImportResults: false,
+        disableImport: true,
+        invalidData: false,
+        importResults: []
+    };
 
     // Called when the Insert Workspace Variable dropdown item is clicked.
     $scope.InsertWorkspaceVariableClicked = function () {
@@ -406,6 +418,92 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
         MOQEquationFieldWidget.setDirty();
     }
+
+    /*
+    * **************************** NOTE **********************************
+    * Functions below relate to the logic of the MOQ Table import/export
+    * ********************************************************************
+    */
+
+    $scope.isDirty = function () {
+        if (MOQEquationFieldWidget != undefined) { // TODO - BOEJ-5379 - fix console error thrown here
+            return MOQEquationFieldWidget.isDirty();
+        } else {
+            return false;
+        }
+    }
+
+    $scope.openImportMoqTables = function (moqType) {
+        $scope.model.ImportingMoqType = moqType;
+        MOQEquationFieldWidget.OpenDialogAfterInitialize(MOQEquationFieldWidget.ImportMoqTypesDialog);
+    };
+
+    $scope.closeImportMoqTables = function () {
+        MOQEquationFieldWidget.CloseDialog(MOQEquationFieldWidget.ImportMoqTypesDialog);
+    };
+
+    $scope.fileUploadChange = function (element) {
+        $scope.$apply(function ($scope) {
+            $scope.dialog.disableImport = element.value.endsWith('.xlsx') || element.value.endsWith('.xlsm') ? false : true;
+            $scope.dialog.file = $scope.dialog.disableImport ? null : element.files[0];
+        });
+    };
+
+    var resetUploadForm = function () {
+        $("#ImportMoqTableDialog-Form")[0].reset();
+        $scope.dialog.disableImport = true;
+        $scope.dialog.file = null;
+    };
+
+    $scope.importMoqTables = function () {
+        // create form data
+        var fd = new FormData();
+        fd.append("file", $scope.dialog.file);
+
+        // get url from form
+        var url = $('#ImportMoqTableDialog-Form').attr('action') + '&taskElementID=' + $scope.model.TaskElementId + '&moqTypeId=' + $scope.model.ImportingMoqType.Id;
+        $scope.dialog.importWorking = true;
+
+        // TODO - BOEJ-5380 - fix new tab issue
+        $http.post(url, fd, {
+            headers: {
+                'Content-Type': undefined
+            }
+        }).then(function (response) {
+            $scope.dialog.importWorking = false;
+            $scope.dialog.showImportResults = true;
+
+            // TODO - handle the import data
+            // place returned html into the content div
+            //  $('#ImportResults .content').html(response.data);
+
+            // grab the two values returned as JS inside the new html
+            //$timeout(function () {
+            //    $scope.dialog.invalidData = window.ManageBoeImportVerificationWidget.invalidData;
+            //    $scope.dialog.importResults = window.ManageBoeImportVerificationWidget.data.importResults;
+            //}, 0);
+        });
+    };
+
+    $scope.completeImportMoqTables = function () {
+        // TODO
+    };
+
+    // clicking back from import results
+    $scope.backFromImport = function () {
+        resetUploadForm();
+        $scope.dialog.showImportResults = false;
+    };
+
+    $scope.exportMoqTablesFromImport = function () {
+        $scope.exportMoqTables($scope.model.ImportingMoqType);
+    };
+
+    $scope.exportMoqTables = function (moqType) {
+        var urlPart = '?taskElementID=' + $scope.model.TaskElementId + '&moqTypeId=' + moqType.Id;
+        var exportUrl = CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.ExportMoqTablesAction, urlPart);
+        GenWidget.prototype.performExport(exportUrl);
+    };
 
     //#endregion
 }]);
@@ -1113,6 +1211,7 @@ InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, wo
 
         MOQEquationFieldWidget.InitializeDialog(MOQEquationFieldWidget.ReOrderMoqTypesDialog);
         MOQEquationFieldWidget.InitializeDialog(MOQEquationFieldWidget.ReOrderMoqTablesDialog);
+        MOQEquationFieldWidget.InitializeDialog(MOQEquationFieldWidget.ImportMoqTypesDialog);
 
         $(document).trigger('MOQWidgetLoaded', "MOQEquationField");
         $(document).trigger('WidgetLoaded', "MOQEquationField");
@@ -1129,6 +1228,12 @@ InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, wo
     MOQEquationFieldWidget.ReOrderMoqTablesDialog.Element = $("#ReOrderMoqTablesDialog");
     MOQEquationFieldWidget.ReOrderMoqTablesDialog.Params = { width: 600, height: 230, modal: true, resizable: false, draggable: true, title: 'Sort Moq Tables' };
     /// END Reordering MOQ Tables
+
+    /// Import MOQ Tables
+    MOQEquationFieldWidget.ImportMoqTypesDialog = {};
+    MOQEquationFieldWidget.ImportMoqTypesDialog.Element = $("#ImportMoqTableDialog");
+    MOQEquationFieldWidget.ImportMoqTypesDialog.Params = { width: 520, height: 430, modal: true, resizable: false, draggable: true, title: 'Import Moq Tables' };
+    /// END Import MOQ Tables
 
     $("#MOQEquationField #MOQEquation").change(function () {
         $(document).trigger('ValidateMOQEquation');

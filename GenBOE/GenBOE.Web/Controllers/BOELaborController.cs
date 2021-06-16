@@ -1341,6 +1341,56 @@ namespace GenBOE.Web.Controllers
             return toReturn;
         }
 
+        /// <summary>
+        /// Import MOQ Table data
+        /// </summary>
+        /// <param name="moqTypeId">ID of the MOQ type</param>
+        /// <param name="workspace">Workspace name</param>
+        /// <param name="taskElementID">Task ID</param>
+        /// <returns>View with imported MOQ Table data</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "moqTypeId")]
+        public ViewResult ImportMoqTables(int moqTypeId, string workspace, int taskElementID)
+        {
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+            BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision); 
+
+            // Initialize Action
+            Stopwatch sw = InitializeAction(_log, "ImportMoqTables", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, taskElement.BoeID);
+
+            // TODO Import
+            // for reference - remove
+            // var file = Request.Files[0];
+            // var filename = Request.Files[0].FileName;
+            // var inputstream = Request.Files[0].InputStream;
+
+            // Finalize Action
+            FinalizeAction(_log, "ImportMoqTables", sw);
+            return new ViewResult();
+        }
+
+        /// <summary>
+        /// Export MOQ Table data
+        /// </summary>
+        /// <param name="moqTypeId">ID of the MOQ type</param>
+        /// <param name="workspace">Workspace name</param>
+        /// <param name="taskElementID">Task ID</param>
+        /// <returns>Export</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "moqTypeId")]
+        public ActionResult ExportMoqTables(int moqTypeId, string workspace, int taskElementID)
+        {
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+            BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision);
+
+            // Initialize Action
+            Stopwatch sw = InitializeAction(_log, "ExportMoqTables", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, taskElement.BoeID);
+
+            // TODO Export
+
+            // Finalize Action
+            FinalizeAction(_log, "ExportMoqTables", sw);
+            return new EmptyResult();
+        }
+
         #endregion
 
         #region Private Methods
