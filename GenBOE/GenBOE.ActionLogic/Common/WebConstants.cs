@@ -390,6 +390,8 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_SAVE_REORDER_LABOR_TASK_ELEMENTS = "SaveReorderLaborTaskElements";
         public static readonly string ACTION_SAVE_REORDER_LABOR_TYPES = "SaveReorderLaborTypes";
         public static readonly string ACTION_LOAD_DUPLICATE_TASK_DIALOG = "LoadDuplicateTaskDialog";
+        public static readonly string ACTION_IMPORT_MOQ_TABLES = "ImportMoqTables";
+        public static readonly string ACTION_EXPORT_MOQ_TABLES = "ExportMoqTables";
 
 
         //BOE ODC Controller
