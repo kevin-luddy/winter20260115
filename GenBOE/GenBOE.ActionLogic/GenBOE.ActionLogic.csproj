@@ -161,6 +161,9 @@
     <Compile Include="IO\Export\BOE\BOEExportConverter.cs" />
     <Compile Include="IO\Export\BOE\BOEExportInputs.cs" />
     <Compile Include="IO\Export\BOE\BOEExportConverterRMS.cs" />
+    <Compile Include="IO\Export\IMoqTableExporter.cs" />
+    <Compile Include="IO\Export\MoqTableExporter.cs" />
+    <Compile Include="IO\Export\MoqTableExporterRMS.cs" />
     <Compile Include="IO\Export\TMResourceRatesExporter.cs" />
     <Compile Include="IO\Import\TMResourceRatesImporter.cs" />
     <Compile Include="IO\Import\TrainingImporter.cs" />
