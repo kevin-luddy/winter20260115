@@ -18,6 +18,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.MOQ;
+    using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
@@ -52,6 +53,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IRteTemplateDataLoader rteTemplateDataLoader;
         private readonly IMoqTypeDataLoader moqTypeDataLoader;
         private readonly IValidateBOE validateBOE;
+        private readonly IMoqTableExporter moqTableExporter;
 
         /// <summary>
         /// Task Element Validation Class
@@ -81,7 +83,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             ICommonDataMapper commonDataMapper,
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeDataLoader,
-            IValidateBOE validateBOE)
+            IValidateBOE validateBOE,
+            IMoqTableExporter moqTableExporter)
         {
             this._BoeTaskElementRecalculation = inBoeTaskElementRecalc;
             this._boeStateMachine = inBoeStateMachine;
@@ -103,6 +106,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.rteTemplateDataLoader = rteTemplateDataLoader;
             this.moqTypeDataLoader = moqTypeDataLoader;
             this.validateBOE = validateBOE;
+            this.moqTableExporter = moqTableExporter;
         }
 
         #region Public Members
@@ -3481,6 +3485,22 @@ namespace GenBOE.ActionLogic.ControllerLogic
             toReturn.ContractNumberSuffix = toReturn.TotalWBSHoursSuffix = string.Empty;
 
             return toReturn;
+        }
+
+        /// <summary>
+        /// Export MOQ Tables
+        /// </summary>
+        /// <param name="moqTypeId">MOQ Type ID</param>
+        /// <param name="ws">Workspace</param>
+        /// <param name="templateFileLocation">Template file location</param>
+        /// <returns>file name for the export</returns>
+        public string ExportMoqTables(int moqTypeId, FullWorkspace ws, string templateFileLocation)
+        {
+            MoqTypeSelection moqType = this.moqTypeDataLoader.GetById(moqTypeId);
+
+            string exportedFileName = this.moqTableExporter.ExportToExcelFile(templateFileLocation, moqType.TableData, ws);
+
+            return exportedFileName;
         }
     }
 

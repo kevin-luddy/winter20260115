@@ -297,5 +297,14 @@ namespace GenBOE.ActionLogic
         /// </summary>
         /// <returns>help URLs for MOQ Type fields</returns>
         MoqTypeHelpUrls GetMoqTypeHelpUrls();
+
+        /// <summary>
+        /// Export MOQ Tables
+        /// </summary>
+        /// <param name="moqTypeId">MOQ Type ID</param>
+        /// <param name="ws">Workspace</param>
+        /// <param name="templateFileLocation">Template file location</param>
+        /// <returns>file name for the export</returns>
+        string ExportMoqTables(int moqTypeId, FullWorkspace ws, string templateFileLocation);
     }
 }

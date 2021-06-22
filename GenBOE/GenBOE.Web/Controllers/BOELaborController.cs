@@ -55,6 +55,7 @@ namespace GenBOE.Web.Controllers
         private const string SYSTEM_OFFLOAD_RATES_EXPORT_TEMPLATE = "~/Templates/Export/OffloadRatesRMS.xlsx";
         private readonly IOffloadRatesDTOLoader offloadRatesLoader;
         private readonly IRteTemplateDataLoader rteTemplateDataLoader;
+        private readonly IMoqTableExporter moqTableExporter;
 
         /// <summary>
         /// Starting date for MOQ Templates. WS created after this date will be using new MOQ Types.
@@ -90,7 +91,8 @@ namespace GenBOE.Web.Controllers
             TaskElementValidation taskElementValidation,
             IMSTMetricLoader inMSTMetricsLoader,
             IOffloadRatesDTOLoader offloadRatesDTOLoader,
-            IRteTemplateDataLoader rteTemplateDataLoader)
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            IMoqTableExporter moqTableExporter)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserLoader, inPermissionsLoader, inControllerLogic)
         {
             this._CommonDataMapper = inCommonDataMapper;
@@ -108,6 +110,7 @@ namespace GenBOE.Web.Controllers
             this._MSTMetricsLoader = inMSTMetricsLoader;
             this.offloadRatesLoader = offloadRatesDTOLoader;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
+            this.moqTableExporter = moqTableExporter;
         }
 
         #region Display
@@ -1384,11 +1387,12 @@ namespace GenBOE.Web.Controllers
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "ExportMoqTables", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, taskElement.BoeID);
 
-            // TODO Export
+            string exportFileName = this._BoeLaborControllerLogic.ExportMoqTables(moqTypeId, ws, Server.MapPath(this.moqTableExporter.MOQ_TABLE_EXCEL_MAP_PATH));
+            ActionResult toReturn = new ExportFileDownloadResult(exportFileName, string.Format("Task-{0}_{1}_MoqTableData.xlsx", taskElement.Id, taskElement.TaskTitle));
 
             // Finalize Action
             FinalizeAction(_log, "ExportMoqTables", sw);
-            return new EmptyResult();
+            return toReturn;
         }
 
         #endregion
