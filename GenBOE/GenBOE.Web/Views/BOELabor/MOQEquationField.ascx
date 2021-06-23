@@ -554,12 +554,12 @@
                         <input type="file" size="60" id="ImportMoqTableDialog-File" name="file" onchange="angular.element('[data-ng-controller=MoqEquationController]').scope().fileUploadChange(this)" />
                     </div>
                 </div>
+                <% Html.EndForm(); %>
                 <div class="buttons">
                     <button id="ImportMoqTableDialog-ImportButton" class="ies-action" name="import-button" data-ng-click="importMoqTables()" data-ng-hide="dialog.importWorking" data-ng-disabled="dialog.disableImport">Import</button>
                     <div id="ImportMoqTableDialog-ImportLoader" class="loader display-none" data-ng-show="dialog.importWorking"></div>
                     <button id="ImportMoqTableDialog.CancelButton" class="ies" name="cancel-button" type="button" data-ng-click="closeImportMoqTables()">Cancel</button>
                 </div>
-                <% Html.EndForm(); %>
             </div>
         </div>
     </div>

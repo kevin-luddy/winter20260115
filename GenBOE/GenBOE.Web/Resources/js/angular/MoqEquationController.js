@@ -1,8 +1,9 @@
-﻿/// <reference path="directives.js" />
+﻿var MOQEquationFieldWidget = null;
+
+/// <reference path="directives.js" />
 // The controller for the MOQ equation section.
 moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uibModal', '$window', 'ManageTaskModel', '$timeout', '$http', function ($scope, $document, $uibModal, $window, ManageTaskModel, $timeout, $http) {
     $scope.init = function () {
-        var MOQEquationFieldWidget = null;
 
         $scope.model = $window.MOQEquationFieldModel;
         $scope.model.IsCostEquation = ($scope.model.MoqEquationType == 'Cost');
@@ -426,7 +427,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     */
 
     $scope.isDirty = function () {
-        if (MOQEquationFieldWidget != undefined) { // TODO - BOEJ-5379 - fix console error thrown here
+        if (MOQEquationFieldWidget) {
             return MOQEquationFieldWidget.isDirty();
         } else {
             return false;
@@ -464,7 +465,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         var url = $('#ImportMoqTableDialog-Form').attr('action') + '&taskElementID=' + $scope.model.TaskElementId + '&moqTypeId=' + $scope.model.ImportingMoqType.Id;
         $scope.dialog.importWorking = true;
 
-        // TODO - BOEJ-5380 - fix new tab issue
         $http.post(url, fd, {
             headers: {
                 'Content-Type': undefined
