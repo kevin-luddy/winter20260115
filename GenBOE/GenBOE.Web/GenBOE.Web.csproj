@@ -1067,7 +1067,6 @@
     <Content Include="Templates\Export\WbsBoeReport.xlsx" />
     <Content Include="Templates\Export\MOQTableRMS.xlsx" />
     <Content Include="Templates\Export\MOQTableSSC.xlsx" />
-    <Content Include="Templates\Export\MOQTableSSCnew.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

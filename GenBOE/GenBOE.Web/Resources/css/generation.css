@@ -8498,11 +8498,11 @@ textarea.ng-invalid {
 }
 
 .historicalLabel {
-    width: 655px !important;
+    width: 550px !important;
 }
 
 .comparativeLabel {
-    width: 677px !important;
+    width: 571px !important;
 }
 
 .nonPrintableLabel {
@@ -8512,7 +8512,7 @@ textarea.ng-invalid {
 }
 
 .moqRteFieldContainer .form-label {
-    width: 850px;
+    width: 907px;
 }
 
 div.moqTypeHeader {

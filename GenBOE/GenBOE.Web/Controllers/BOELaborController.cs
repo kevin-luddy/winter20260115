@@ -52,7 +52,8 @@ namespace GenBOE.Web.Controllers
         private readonly IPerformingOrgDTODataLoader perfOrgLoader;
         private readonly IFullWorkspaceRecalculation fullWsRecalc;
         private readonly IMSTMetricLoader _MSTMetricsLoader;
-        private const string SYSTEM_OFFLOAD_RATES_EXPORT_TEMPLATE = "~/Templates/Export/OffloadRatesRMS.xlsx";
+        private const string TEMPLATE_FOLDER = "~/Templates/Export/";
+        private const string SYSTEM_OFFLOAD_RATES_EXPORT_TEMPLATE = "OffloadRatesRMS.xlsx";
         private readonly IOffloadRatesDTOLoader offloadRatesLoader;
         private readonly IRteTemplateDataLoader rteTemplateDataLoader;
         private readonly IMoqTableExporter moqTableExporter;
@@ -1165,7 +1166,7 @@ namespace GenBOE.Web.Controllers
                 DataRelationshipVerifier.VerifyDataRelation(thisTaskElement, boeID);
             }
 
-            string templateName = "~/Templates/Export/LaborTypesAndSpread.xlsx";
+            string templateName = TEMPLATE_FOLDER + "LaborTypesAndSpread.xlsx";
 
             string fileName = LaborTypeAndSpreadExporter.ExportToExcelFile(Server.MapPath(templateName), _ResourceDTODataLoader, _CommonDataMapper, ws, thisTaskElement, boeID, isTemplate);
 
@@ -1192,7 +1193,7 @@ namespace GenBOE.Web.Controllers
             ICollection<OffloadRatesDTO> ratesForMV = this.offloadRatesLoader.GetByWorkspaceId(ws.Id).OrderBy(r => r.Resource).ThenBy(r => r.PerformingOrg).ThenBy(r => r.Year).ToList();
 
             // Get Offload Rates template file name
-            string templateFileName = Server.MapPath(SYSTEM_OFFLOAD_RATES_EXPORT_TEMPLATE);
+            string templateFileName = Server.MapPath(TEMPLATE_FOLDER + SYSTEM_OFFLOAD_RATES_EXPORT_TEMPLATE);
 
             ICollection<ResourceDTO> resources = ws.ResourcesForWsResourceListId.ToList();
             ICollection<PerformingOrgDTO> performingOrgs = ws.PerformingOrgsForWsList.ToList();
@@ -1378,7 +1379,6 @@ namespace GenBOE.Web.Controllers
         /// <param name="workspace">Workspace name</param>
         /// <param name="taskElementID">Task ID</param>
         /// <returns>Export</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "moqTypeId")]
         public ActionResult ExportMoqTables(int moqTypeId, string workspace, int taskElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1387,7 +1387,7 @@ namespace GenBOE.Web.Controllers
             // Initialize Action
             Stopwatch sw = InitializeAction(_log, "ExportMoqTables", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, taskElement.BoeID);
 
-            string exportFileName = this._BoeLaborControllerLogic.ExportMoqTables(moqTypeId, ws, Server.MapPath(this.moqTableExporter.MOQ_TABLE_EXCEL_MAP_PATH));
+            string exportFileName = this._BoeLaborControllerLogic.ExportMoqTables(moqTypeId, ws, Server.MapPath(TEMPLATE_FOLDER + this.moqTableExporter.MOQ_TABLE_EXCEL_MAP_PATH));
             ActionResult toReturn = new ExportFileDownloadResult(exportFileName, string.Format("Task-{0}_{1}_MoqTableData.xlsx", taskElement.Id, taskElement.TaskTitle));
 
             // Finalize Action
