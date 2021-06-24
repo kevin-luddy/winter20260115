@@ -22,18 +22,13 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <summary>
         /// MOQ Table export excel file path
         /// </summary>
-        public virtual string MOQ_TABLE_EXCEL_MAP_PATH
-        {
-            get { return "~/Templates/Export/MOQTableSSC.xlsx"; }
-        }
+        public virtual string MOQ_TABLE_EXCEL_MAP_PATH => "MOQTableSSC.xlsx";
 
         /// <summary>
         /// Default constructor
         /// </summary>
         public MoqTableExporter()
-        {
-
-        }
+        { }
 
         /// <summary>
         /// Exports MOQ Table data to Excel

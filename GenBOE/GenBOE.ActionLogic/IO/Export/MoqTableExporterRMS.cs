@@ -19,19 +19,13 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <summary>
         /// MOQ Table export excel file path
         /// </summary>
-        public override string MOQ_TABLE_EXCEL_MAP_PATH
-        {
-            get { return "~/Templates/Export/MOQTableRMS.xlsx"; }
-        }
+        public override string MOQ_TABLE_EXCEL_MAP_PATH => "MOQTableRMS.xlsx";
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public MoqTableExporterRMS()
-            :base()
-        {
-
-        }
+        public MoqTableExporterRMS() :base()
+        { }
 
         /// <summary>
         /// Get the MOQ Table Data row data

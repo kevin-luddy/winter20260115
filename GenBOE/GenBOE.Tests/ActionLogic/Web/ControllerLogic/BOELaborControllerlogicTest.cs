@@ -17,6 +17,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.ControllerLogic;
+    using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.Validation;
@@ -58,6 +59,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<IRteTemplateDataLoader> rteTemplateDataLoader = null;
         private Mock<IMoqTypeDataLoader> moqTypeDataLoader = null;
         private Mock<IValidateBOE> validateBOE = null;
+        private Mock<IMoqTableExporter> moqTableExporter = null;
 
         #region Private members
         private BOELaborControllerLogic CreateSystem()
@@ -84,7 +86,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                    commonDataMapper.Object,
                    this.rteTemplateDataLoader.Object,
                    this.moqTypeDataLoader.Object,
-                   this.validateBOE.Object
+                   this.validateBOE.Object,
+                   this.moqTableExporter.Object
             );
         }
 
@@ -112,7 +115,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                    commonDataMapper.Object, 
                    rteTemplateDataLoader.Object,
                    this.moqTypeDataLoader.Object,
-                   this.validateBOE.Object
+                   this.validateBOE.Object,
+                   this.moqTableExporter.Object
             );
         }
 
@@ -141,7 +145,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                    commonDataMapper.Object, 
                    rteTemplateDataLoader.Object,
                    this.moqTypeDataLoader.Object,
-                   this.validateBOE.Object
+                   this.validateBOE.Object,
+                   this.moqTableExporter.Object
             );
         }
 
@@ -173,6 +178,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             commonDataMapper = new Mock<ICommonDataMapper>();
             this.moqTypeDataLoader = new Mock<IMoqTypeDataLoader>();
             this.validateBOE = new Mock<IValidateBOE>();
+            this.moqTableExporter = new Mock<IMoqTableExporter>();
 
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
