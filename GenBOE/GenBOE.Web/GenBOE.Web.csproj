@@ -853,6 +853,7 @@
     <Content Include="Views\BOELabor\LaborTask.ascx" />
     <Content Include="Views\BOELabor\MOQEquationField.ascx" />
     <Content Include="Views\BOELabor\LaborTaskStatic.ascx" />
+    <Content Include="Views\BOELabor\MoqTableImportVerification.ascx" />
     <Content Include="Views\BOEMaterial\BOEMaterialComposite.ascx" />
     <Content Include="Views\BOEMaterial\BOEMaterialElementDetails.ascx" />
     <Content Include="Views\BOEMaterial\BOEMaterialGrid.ascx" />

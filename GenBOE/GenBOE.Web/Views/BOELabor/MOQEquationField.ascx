@@ -518,8 +518,8 @@
             </div>
         </div>
     </div>
-    <div id="ImportMoqTableDialog" class="import-moq-table-dialog form dialog" style="display: none;">
-        <div class="container">
+    <div gen-dialog id="ImportMoqTableDialog" class="import-moq-table-dialog form dialog" data-width="650" data-height="430" data-title="Import MOQ Tables" data-open="dialog.open">
+        <div class="container" data-ng-hide="dialog.showImportResults">
             <div class="form-row">
                 Import MOQ Tables using an Excel file.
                 <% Html.BeginRouteForm(WebConstants.ROUTE_DEFAULT, new { 
@@ -557,9 +557,19 @@
                 <% Html.EndForm(); %>
                 <div class="buttons">
                     <button id="ImportMoqTableDialog-ImportButton" class="ies-action" name="import-button" data-ng-click="importMoqTables()" data-ng-hide="dialog.importWorking" data-ng-disabled="dialog.disableImport">Import</button>
-                    <div id="ImportMoqTableDialog-ImportLoader" class="loader display-none" data-ng-show="dialog.importWorking"></div>
+                    <div id="ImportMoqTableDialog-ImportLoader" class="loader" data-ng-show="dialog.importWorking"></div>
                     <button id="ImportMoqTableDialog.CancelButton" class="ies" name="cancel-button" type="button" data-ng-click="closeImportMoqTables()">Cancel</button>
                 </div>
+            </div>
+        </div>
+        <div id="ImportResults" data-ng-show="dialog.showImportResults" class="import-verification">
+            <div class="content import-verification"></div>
+            <div class="important">IMPORTANT: This will replace all existing tables. If a table is removed or excluded from the excel file, the table will be deleted.</div>
+            <br />
+            <div class="buttons">
+                <button id="Back-ImportMoqTableVerification" type="button" class="ies" data-ng-click="backFromImport()" name="back-button">Back</button>
+                <button id="CompleteImportButton-ImportMoqTableVerification" class="ies-action" data-ng-if="!dialog.invalidData" data-ng-hide="dialog.completeImportWorking" data-ng-click="completeImportMoqTables()">Complete Import</button>
+                <div id="CompleteImportLoader-ImportMoqTableVerification" class="loader" data-ng-show="dialog.completeImportWorking" style="width: 129px"></div>
             </div>
         </div>
     </div>

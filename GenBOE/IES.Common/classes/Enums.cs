@@ -1368,6 +1368,9 @@ namespace IES.Common
         ID = 1
     }
 
+    /// <summary>
+    /// RTE Template Source
+    /// </summary>
     public enum RteTemplateSource
     {
         NA = 0,
@@ -1379,5 +1382,28 @@ namespace IES.Common
         TaskDescription = 3,
         [Description("Task MOQ Rationale")]
         TaskMOQ = 4
+    }
+
+    /// <summary>
+    /// MOQ Table import types
+    /// </summary>
+    public enum MoqTableImportType
+    {
+        None = 0,
+        CreateMoqTable = 1,
+        MissingTableName = 2,
+        MissingRequiredField = 3,
+        LargeTableName = 4,
+        LargeRepositoryName = 5,
+        InvalidQueryType = 6,
+        LargeContractNumber = 7,
+        InvalidWbsHours = 8,
+        InvalidDateOfReport = 9,
+        LargeHistoricalProgramName = 10,
+        LargeWBSElement = 11,
+        InvalidPopStart = 12,
+        InvalidPopEnd = 13,
+        InvalidPopRange = 14,
+        InvalidTotalRelevantHours = 15
     }
 }

@@ -316,6 +316,7 @@
     <Compile Include="_ModelView\DownloadReportModelView.cs" />
     <Compile Include="_ModelView\ExportsModelView.cs" />
     <Compile Include="_ModelView\GenBOEHomepageModelView.cs" />
+    <Compile Include="_ModelView\ImportMoqTableResultsModelView.cs" />
     <Compile Include="_ModelView\LaborTabDataModelView.cs" />
     <Compile Include="_ModelView\AdjacentItems.cs" />
     <Compile Include="_ModelView\Task\LaborTaskDataModelView.cs" />

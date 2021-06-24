@@ -436,11 +436,13 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
     $scope.openImportMoqTables = function (moqType) {
         $scope.model.ImportingMoqType = moqType;
-        MOQEquationFieldWidget.OpenDialogAfterInitialize(MOQEquationFieldWidget.ImportMoqTypesDialog);
+        resetUploadForm();
+        $scope.dialog.open = true;
     };
 
     $scope.closeImportMoqTables = function () {
-        MOQEquationFieldWidget.CloseDialog(MOQEquationFieldWidget.ImportMoqTypesDialog);
+        resetUploadForm();
+        $scope.dialog.open = false;
     };
 
     $scope.fileUploadChange = function (element) {
@@ -473,15 +475,14 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
             $scope.dialog.importWorking = false;
             $scope.dialog.showImportResults = true;
 
-            // TODO - handle the import data
             // place returned html into the content div
-            //  $('#ImportResults .content').html(response.data);
+            $('#ImportResults .content').html(response.data);
 
             // grab the two values returned as JS inside the new html
-            //$timeout(function () {
-            //    $scope.dialog.invalidData = window.ManageBoeImportVerificationWidget.invalidData;
-            //    $scope.dialog.importResults = window.ManageBoeImportVerificationWidget.data.importResults;
-            //}, 0);
+            $timeout(function () {
+                $scope.dialog.invalidData = window.MoqTableImportVerificationWidget.invalidData;
+                $scope.dialog.importResults = window.MoqTableImportVerificationWidget.data.importResults;
+            }, 0);
         });
     };
 
@@ -1211,7 +1212,6 @@ InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, wo
 
         MOQEquationFieldWidget.InitializeDialog(MOQEquationFieldWidget.ReOrderMoqTypesDialog);
         MOQEquationFieldWidget.InitializeDialog(MOQEquationFieldWidget.ReOrderMoqTablesDialog);
-        MOQEquationFieldWidget.InitializeDialog(MOQEquationFieldWidget.ImportMoqTypesDialog);
 
         $(document).trigger('MOQWidgetLoaded', "MOQEquationField");
         $(document).trigger('WidgetLoaded', "MOQEquationField");
@@ -1228,12 +1228,6 @@ InitializeMOQEquationFieldWidget = function (MOQEquationFieldWidget_ReadOnly, wo
     MOQEquationFieldWidget.ReOrderMoqTablesDialog.Element = $("#ReOrderMoqTablesDialog");
     MOQEquationFieldWidget.ReOrderMoqTablesDialog.Params = { width: 600, height: 230, modal: true, resizable: false, draggable: true, title: 'Sort Moq Tables' };
     /// END Reordering MOQ Tables
-
-    /// Import MOQ Tables
-    MOQEquationFieldWidget.ImportMoqTypesDialog = {};
-    MOQEquationFieldWidget.ImportMoqTypesDialog.Element = $("#ImportMoqTableDialog");
-    MOQEquationFieldWidget.ImportMoqTypesDialog.Params = { width: 520, height: 430, modal: true, resizable: false, draggable: true, title: 'Import Moq Tables' };
-    /// END Import MOQ Tables
 
     $("#MOQEquationField #MOQEquation").change(function () {
         $(document).trigger('ValidateMOQEquation');

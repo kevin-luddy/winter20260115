@@ -8662,3 +8662,9 @@ div.WarningBanner {
 #BulkAssign .help-dialog-text {
     font-size: 11px;
 }
+
+.moq-table-import-results {
+    height: 300px;
+    overflow: auto;
+    margin-bottom: 10px;
+}
