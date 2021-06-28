@@ -197,6 +197,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
                         return 'Reminder:  need to provide a copy of any model used/created that was used for estimating.';
                 }
                 break;
+            case 'Skill Mix Rationale':
+                return 'Need to provide a narrative which documents the source and rationale as to why the proposed skill mix was selected. Remember: If based on actuals and not the exact same labor mix, a summary table of the historical labor mix is required. Click the grey question mark for additional information and suggested format.';
+
         }
     }
 
