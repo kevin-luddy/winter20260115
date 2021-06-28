@@ -798,6 +798,7 @@ namespace GenBOE.ActionLogic.Common
 
         //these 3 views make up the composite view
         public static readonly string VIEW_MOQ_EQUATION_FIELD = "MOQEquationField";
+        public static readonly string VIEW_MOQ_TABLE_IMPORT_VERIFICATION = "MoqTableImportVerification";
 
         public static readonly string VIEW_BOE_HISTORICAL_METRICS_SEARCH_RESULTS_SPACE = "HistoricalMetricsSearchResultsSpace";
         public static readonly string VIEW_BOE_HISTORICAL_METRICS_SEARCH_RESULTS_MST = "HistoricalMetricsSearchResultsMST";
