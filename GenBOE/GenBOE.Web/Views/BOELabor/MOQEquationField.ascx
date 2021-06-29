@@ -366,7 +366,7 @@
                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.SmeSkillMixSuffix);"></div>
             </div>
             <div class="form-element">
-                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="SkillMixRationale_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SkillMixRationale"></textarea>
+                <textarea data-ng-if="!ActualReadOnly()" cols="20" name="SkillMixRationale_{{moqType.SelectedMOQType}}" placeholder="{{MoqTypesPlaceholder('Skill Mix Rationale', moqType.SelectedMOQType)}}" data-ng-model="moqType.SkillMixRationale"></textarea>
                 <span data-ng-if="ActualReadOnly()" data-ng-bind-html="moqType.SkillMixRationale"></span>
             </div>
         </div>
