@@ -16,6 +16,7 @@ namespace GenBOE.ActionLogic
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.IO.Export;
+    using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.Validation;
@@ -77,7 +78,8 @@ namespace GenBOE.ActionLogic
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeDataLoader,
             IValidateBOE validateBOE,
-            IMoqTableExporter moqTableExporter
+            IMoqTableExporter moqTableExporter,
+            IMoqTableImporter moqTableImporter
             )
             : base(inBoeTaskElementRecalc,
                 inBoeStateMachine,
@@ -99,7 +101,8 @@ namespace GenBOE.ActionLogic
                 rteTemplateDataLoader,
                 moqTypeDataLoader,
                 validateBOE,
-                moqTableExporter)
+                moqTableExporter,
+                moqTableImporter)
         {
             this._mstMetricsLoader = inMSTMetricLoader;
             this.rteTemplateDataLoader = rteTemplateDataLoader;

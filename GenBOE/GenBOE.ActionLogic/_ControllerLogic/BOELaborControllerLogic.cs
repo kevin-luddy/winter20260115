@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Transactions;
+    using System.Web;
     using System.Web.Configuration;
     using System.Web.Mvc;
     using GenBOE.ActionLogic;
@@ -54,6 +55,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IMoqTypeDataLoader moqTypeDataLoader;
         private readonly IValidateBOE validateBOE;
         private readonly IMoqTableExporter moqTableExporter;
+        private readonly IMoqTableImporter moqTableImporter;
 
         /// <summary>
         /// Task Element Validation Class
@@ -84,7 +86,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeDataLoader,
             IValidateBOE validateBOE,
-            IMoqTableExporter moqTableExporter)
+            IMoqTableExporter moqTableExporter,
+            IMoqTableImporter moqTableImporter)
         {
             this._BoeTaskElementRecalculation = inBoeTaskElementRecalc;
             this._boeStateMachine = inBoeStateMachine;
@@ -107,6 +110,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.moqTypeDataLoader = moqTypeDataLoader;
             this.validateBOE = validateBOE;
             this.moqTableExporter = moqTableExporter;
+            this.moqTableImporter = moqTableImporter;
         }
 
         #region Public Members
@@ -3501,6 +3505,51 @@ namespace GenBOE.ActionLogic.ControllerLogic
             string exportedFileName = this.moqTableExporter.ExportToExcelFile(templateFileLocation, moqType.TableData, ws);
 
             return exportedFileName;
+        }
+
+        /// <summary>
+        /// Import MOQ Tables
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="request">http request containing import file</param>
+        /// <param name="dataToSave">Data to save</param>
+        /// <param name="errorsOccurred">if errors occurred</param>
+        /// <param name="exception">Exception</param>
+        /// <returns>Imported MOQ Table modelviews</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        public ICollection<ImportMoqTableResultsModelView> ImportMoqTables(FullWorkspace ws, HttpRequestBase request, out ICollection<ImportMoqTableResultsModelView> dataToSave, out bool errorsOccurred, out Exception exception)
+        {
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
+            _ = request ?? throw new ArgumentNullException(nameof(request));
+
+            ICollection<ImportMoqTableResultsModelView> toReturn = new Collection<ImportMoqTableResultsModelView>();
+            exception = null;
+            errorsOccurred = false;
+
+            try
+            {
+                if(request.Files.Count > 0 && request.Files[0].FileName.Length > 0)
+                {
+                    ICollection<ImportedMoqTable> results = this.moqTableImporter.ImportMoqTableFromExcelFile(request.Files[0].InputStream, ws);
+
+                    foreach (ImportedMoqTable result in results)
+                    {
+                        foreach (MoqTableImportType importType in result.ImportTypes)
+                        {
+                            toReturn.Add(new ImportMoqTableResultsModelView(result, importType));
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+                errorsOccurred = true;
+            }
+
+            dataToSave = toReturn.Where(x => x.ImportType == (int)MoqTableImportType.CreateMoqTable).ToList();
+
+            return toReturn;
         }
     }
 

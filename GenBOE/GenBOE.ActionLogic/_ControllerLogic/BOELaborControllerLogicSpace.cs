@@ -14,6 +14,7 @@ namespace GenBOE.ActionLogic
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.IO.Export;
+    using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.Validation;
     using GenBOE.ActionLogic.WBS.BOE;
     using GenBOE.DataBridge.Common;
@@ -63,7 +64,8 @@ namespace GenBOE.ActionLogic
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeDataLoader,
             IValidateBOE validateBOE,
-            IMoqTableExporter moqTableExporter
+            IMoqTableExporter moqTableExporter,
+            IMoqTableImporter moqTableImporter
             ) :base(inBoeTaskElementRecalc, 
                 inBoeStateMachine, 
                 inBoeMediator, 
@@ -84,7 +86,8 @@ namespace GenBOE.ActionLogic
                 rteTemplateDataLoader,
                 moqTypeDataLoader,
                 validateBOE,
-                moqTableExporter)
+                moqTableExporter,
+                moqTableImporter)
         {
         }
 

@@ -57,13 +57,24 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">The export inputs.</param>
         private void DuplicateCustomFieldColumns(string templateFileLocation, FullWorkspace ws)
         {
-            string[] moqTableCustomFieldNames = ws.CustomFields.Where(c => c.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay).Select(c => c.CustomFieldName).ToArray();
+            ICollection<string> moqTableCustomFieldNames = new Collection<string>();
+            foreach(var cf in ws.CustomFields.Where(c => c.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay))
+            {
+                if (cf.CustomFieldRequired)
+                {
+                    moqTableCustomFieldNames.Add(ExcelUtilities.SetPrefixCustomFieldRequired(cf.CustomFieldName));
+                }
+                else
+                {
+                    moqTableCustomFieldNames.Add(ExcelUtilities.SetPrefixCustomField(cf.CustomFieldName));
+                }
+            }
 
             using (SpreadsheetDocument document = SpreadsheetDocument.Open(templateFileLocation, true))
             {
                 if (moqTableCustomFieldNames.Any())
                 {
-                    ExcelUtilities.DuplicateColumn(document, "MOQ Tables", "MOQ Table Custom Field", moqTableCustomFieldNames);
+                    ExcelUtilities.DuplicateColumn(document, "MOQ Tables", "MOQ Table Custom Field", moqTableCustomFieldNames.ToArray());
                 }
                 else
                 {

@@ -165,6 +165,10 @@
     <Compile Include="IO\Export\MoqTableExporter.cs" />
     <Compile Include="IO\Export\MoqTableExporterRMS.cs" />
     <Compile Include="IO\Export\TMResourceRatesExporter.cs" />
+    <Compile Include="IO\Import\IMoqTableImporter.cs" />
+    <Compile Include="IO\Import\ImportedMoqTable.cs" />
+    <Compile Include="IO\Import\MoqTableImporter.cs" />
+    <Compile Include="IO\Import\MoqTableImporterRMS.cs" />
     <Compile Include="IO\Import\TMResourceRatesImporter.cs" />
     <Compile Include="IO\Import\TrainingImporter.cs" />
     <Compile Include="Validation\SystemExportToProPricerFormatValidator.cs" />

@@ -33,6 +33,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         importResults: []
     };
 
+    $scope.isExporting = false;
+
     // Called when the Insert Workspace Variable dropdown item is clicked.
     $scope.InsertWorkspaceVariableClicked = function () {
         // show the modal
@@ -432,7 +434,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         } else {
             return false;
         }
-    }
+    };
 
     $scope.openImportMoqTables = function (moqType) {
         $scope.model.ImportingMoqType = moqType;
@@ -501,9 +503,15 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     };
 
     $scope.exportMoqTables = function (moqType) {
+        $scope.isExporting = true;
         var urlPart = '?taskElementID=' + $scope.model.TaskElementId + '&moqTypeId=' + moqType.Id;
         var exportUrl = CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.ExportMoqTablesAction, urlPart);
         GenWidget.prototype.performExport(exportUrl);
+
+        // export is done via attaching an iframe, so just wait to prevent double-clicking
+        $timeout(function () {
+            $scope.isExporting = false;
+        }, 2000);
     };
 
     //#endregion

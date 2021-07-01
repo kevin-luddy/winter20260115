@@ -1404,6 +1404,8 @@ namespace IES.Common
         InvalidPopStart = 12,
         InvalidPopEnd = 13,
         InvalidPopRange = 14,
-        InvalidTotalRelevantHours = 15
+        InvalidTotalRelevantHours = 15,
+        InvalidPopStartFW = 16,
+        InvalidPopEndFW = 17
     }
 }

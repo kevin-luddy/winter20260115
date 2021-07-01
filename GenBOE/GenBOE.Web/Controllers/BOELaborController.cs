@@ -1364,38 +1364,16 @@ namespace GenBOE.Web.Controllers
 
             JavaScriptSerializer serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
 
-            // TODO Import
-            // for reference - remove
-            // var file = Request.Files[0];
-            // var filename = Request.Files[0].FileName;
-            // var inputstream = Request.Files[0].InputStream;
+            ICollection<ImportMoqTableResultsModelView> importResults = this._BoeLaborControllerLogic.ImportMoqTables(ws, Request, out ICollection<ImportMoqTableResultsModelView> dataToSave, out bool errorsOccurred, out Exception ex);
 
-            // TODO - Remove dummy info, fix ERRORS_OCCURRED
-            ICollection<ImportMoqTableResultsModelView> importResults = new Collection<ImportMoqTableResultsModelView>();
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test", ImportType = 1 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 2", ImportType = 1 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 3", ImportType = 2 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 4", ImportType = 3 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 5", ImportType = 4 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 6", ImportType = 5 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 7", ImportType = 6 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 8", ImportType = 7 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 9", ImportType = 8 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 10", ImportType = 9 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 11", ImportType = 10 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 12", ImportType = 11 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 13", ImportType = 12 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 14", ImportType = 13 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 15", ImportType = 14 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 16", ImportType = 15 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 17", ImportType = 1 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 18", ImportType = 7 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 19", ImportType = 9 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 20", ImportType = 12 });
-
-            this.ViewData["ERRORS_OCCURRED"] = true;
-            this.ViewData["SERIALIZED_DATA"] = serializer.Serialize(importResults);
+            this.ViewData["ERRORS_OCCURRED"] = errorsOccurred;
+            this.ViewData["SERIALIZED_DATA"] = serializer.Serialize(dataToSave);
             this.ViewData["DOCUMENT_DOMAIN"] = this.Request["documentDomain"];
+
+            if (errorsOccurred)
+            {
+                this._log.Error(ex);
+            }
 
             ViewResult toReturn = this.View(WebConstants.VIEW_MOQ_TABLE_IMPORT_VERIFICATION, importResults);
 
