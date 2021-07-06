@@ -28,5 +28,11 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="boeId">BOE ID</param>
         /// <returns>MOQ Type Selections for the given BOE ID</returns>
         ICollection<MoqTypeSelection> GetByBoeId(int boeId);
+
+        /// <summary>
+        /// Save the MOQ Type Tables from an import by deleting the original tables and saving the new ones
+        /// </summary>
+        /// <param name="moqType">MOQ Type containing the tables</param>
+        void SaveImportedMoqTypeTables(MoqTypeSelection moqType);
     }
 }

@@ -396,6 +396,7 @@ namespace GenBOE.ActionLogic.IO.Import
                         moqTable.CustomFieldValueContainers.Add(new CustomFieldValueContainer()
                         {
                             Id = index--,
+                            CustomFieldID = customField.Id,
                             CustomFieldValueID = index--,
                             Updateable = UpdateType.Upsert,
                             ContainerID = index--,

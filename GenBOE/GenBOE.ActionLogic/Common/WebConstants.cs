@@ -391,6 +391,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_SAVE_REORDER_LABOR_TYPES = "SaveReorderLaborTypes";
         public static readonly string ACTION_LOAD_DUPLICATE_TASK_DIALOG = "LoadDuplicateTaskDialog";
         public static readonly string ACTION_IMPORT_MOQ_TABLES = "ImportMoqTables";
+        public static readonly string ACTION_COMPLETE_IMPORT_MOQ_TABLES = "CompleteImportMoqTables";
         public static readonly string ACTION_EXPORT_MOQ_TABLES = "ExportMoqTables";
 
 

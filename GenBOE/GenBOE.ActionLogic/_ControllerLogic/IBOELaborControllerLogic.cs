@@ -318,5 +318,13 @@ namespace GenBOE.ActionLogic
         /// <param name="exception">Exception</param>
         /// <returns>Imported MOQ Table modelviews</returns>
         ICollection<ImportMoqTableResultsModelView> ImportMoqTables(FullWorkspace ws, HttpRequestBase request, out ICollection<ImportMoqTableResultsModelView> dataToSave, out bool errorsOccurred, out Exception exception);
+
+        /// <summary>
+        /// Complete the MOQ Table import
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="importResults">MOQ Table import results</param>
+        /// <param name="moqTypeId">MOQ Type Id</param>
+        void CompleteImportMoqTables(FullWorkspace ws, ICollection<ImportMoqTableResultsModelView> importResults, int moqTypeId);
     }
 }
