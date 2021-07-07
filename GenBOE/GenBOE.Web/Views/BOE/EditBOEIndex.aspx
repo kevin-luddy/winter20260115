@@ -22,6 +22,7 @@
             exportOffloadAction: '<%: WebConstants.ACTION_EXPORT_OFFLOAD_RATES %>',
             calculateSpreadAction: '<%: WebConstants.ACTION_CALCULATE_SPREAD %>',
             ImportMoqTablesAction: '<%: WebConstants.ACTION_IMPORT_MOQ_TABLES %>',
+            CompleteImportMoqTablesAction: '<%: WebConstants.ACTION_COMPLETE_IMPORT_MOQ_TABLES %>',
             ExportMoqTablesAction: '<%: WebConstants.ACTION_EXPORT_MOQ_TABLES %>',
             boeId: '<%=ViewData["BOEID"]%>',
             ElementsOfCost: <%=serializer.Serialize(ViewData["ElementsOfCost"])%>,

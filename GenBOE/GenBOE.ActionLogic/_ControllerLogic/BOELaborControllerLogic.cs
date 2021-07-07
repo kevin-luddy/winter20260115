@@ -3551,6 +3551,37 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             return toReturn;
         }
+
+        /// <summary>
+        /// Complete the MOQ Table import
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="importResults">MOQ Table import results</param>
+        /// <param name="moqTypeId">MOQ Type Id</param>
+        public void CompleteImportMoqTables(FullWorkspace ws, ICollection<ImportMoqTableResultsModelView> importResults, int moqTypeId)
+        {
+            _ = importResults ?? throw new ArgumentNullException(nameof(importResults));
+
+            // get MOQ Type
+            MoqTypeSelection moqType = this.moqTypeDataLoader.GetById(moqTypeId);
+            moqType.Updateable = UpdateType.Upsert;
+
+            // set original tables to be deleted
+            moqType.TableData.ForEach(table => table.Updateable = UpdateType.Deleted);
+
+            // set new tables to upsert
+            foreach(ImportMoqTableResultsModelView table in importResults)
+            {
+                table.Updateable = UpdateType.Upsert;
+                moqType.TableData.Add(table);
+            }
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+            {
+                // save the moq type to save updated table data
+                this.moqTypeDataLoader.SaveImportedMoqTypeTables(moqType);
+            }
+        }
     }
 
     public enum ControllerCustomFieldType

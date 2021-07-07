@@ -1349,18 +1349,17 @@ namespace GenBOE.Web.Controllers
         /// <summary>
         /// Import MOQ Table data
         /// </summary>
-        /// <param name="moqTypeId">ID of the MOQ type</param>
         /// <param name="workspace">Workspace name</param>
         /// <param name="taskElementID">Task ID</param>
         /// <returns>View with imported MOQ Table data</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "moqTypeId")]
-        public ViewResult ImportMoqTables(int moqTypeId, string workspace, int taskElementID)
+        public ViewResult ImportMoqTables(string workspace, int taskElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision); 
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ImportMoqTables", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, taskElement.BoeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_MOQ_TABLES, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, taskElement.BoeID);
 
             JavaScriptSerializer serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
 
@@ -1378,7 +1377,35 @@ namespace GenBOE.Web.Controllers
             ViewResult toReturn = this.View(WebConstants.VIEW_MOQ_TABLE_IMPORT_VERIFICATION, importResults);
 
             // Finalize Action
-            FinalizeAction(_log, "ImportMoqTables", sw);
+            FinalizeAction(_log, WebConstants.ACTION_IMPORT_MOQ_TABLES, sw);
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Complete the MOQ Table import
+        /// </summary>
+        /// <param name="importResults">The imoprt rsults to save</param>
+        /// <param name="moqTypeId">ID of the MOQ Type</param>
+        /// <param name="workspace">Workspace name</param>
+        /// <param name="taskElementID">Task element ID</param>
+        /// <returns>Json result</returns>
+        public JsonResult CompleteImportMoqTables(ICollection<ImportMoqTableResultsModelView> importResults, int moqTypeId, string workspace, int taskElementID)
+        {
+            // TODO - fix dates, reload page
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+            BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision);
+
+            // Initialize Action
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_COMPLETE_IMPORT_MOQ_TABLES, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, taskElement.BoeID);
+
+            JsonResult toReturn;
+
+            this._BoeLaborControllerLogic.CompleteImportMoqTables(ws, importResults, moqTypeId);
+
+            toReturn = this.Json(new { Status = true });
+
+            // Finalize Action
+            this.FinalizeAction(this._log, WebConstants.ACTION_COMPLETE_IMPORT_MOQ_TABLES, sw);
             return toReturn;
         }
 
@@ -1395,13 +1422,13 @@ namespace GenBOE.Web.Controllers
             BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ExportMoqTables", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, taskElement.BoeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_MOQ_TABLES, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, taskElement.BoeID);
 
             string exportFileName = this._BoeLaborControllerLogic.ExportMoqTables(moqTypeId, ws, Server.MapPath(TEMPLATE_FOLDER + this.moqTableExporter.MOQ_TABLE_EXCEL_MAP_PATH));
             ActionResult toReturn = new ExportFileDownloadResult(exportFileName, string.Format("Task-{0}_{1}_MoqTableData.xlsx", taskElement.Id, taskElement.TaskTitle));
 
             // Finalize Action
-            FinalizeAction(_log, "ExportMoqTables", sw);
+            FinalizeAction(_log, WebConstants.ACTION_EXPORT_MOQ_TABLES, sw);
             return toReturn;
         }
 
