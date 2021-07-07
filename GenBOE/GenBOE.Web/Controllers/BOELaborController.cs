@@ -1349,58 +1349,63 @@ namespace GenBOE.Web.Controllers
         /// <summary>
         /// Import MOQ Table data
         /// </summary>
-        /// <param name="moqTypeId">ID of the MOQ type</param>
         /// <param name="workspace">Workspace name</param>
         /// <param name="taskElementID">Task ID</param>
         /// <returns>View with imported MOQ Table data</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "moqTypeId")]
-        public ViewResult ImportMoqTables(int moqTypeId, string workspace, int taskElementID)
+        public ViewResult ImportMoqTables(string workspace, int taskElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision); 
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ImportMoqTables", SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, taskElement.BoeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_MOQ_TABLES, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, taskElement.BoeID);
 
             JavaScriptSerializer serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
 
-            // TODO Import
-            // for reference - remove
-            // var file = Request.Files[0];
-            // var filename = Request.Files[0].FileName;
-            // var inputstream = Request.Files[0].InputStream;
+            ICollection<ImportMoqTableResultsModelView> importResults = this._BoeLaborControllerLogic.ImportMoqTables(ws, Request, out ICollection<ImportMoqTableResultsModelView> dataToSave, out bool errorsOccurred, out Exception ex);
 
-            // TODO - Remove dummy info, fix ERRORS_OCCURRED
-            ICollection<ImportMoqTableResultsModelView> importResults = new Collection<ImportMoqTableResultsModelView>();
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test", ImportType = 1 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 2", ImportType = 1 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 3", ImportType = 2 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 4", ImportType = 3 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 5", ImportType = 4 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 6", ImportType = 5 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 7", ImportType = 6 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 8", ImportType = 7 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 9", ImportType = 8 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 10", ImportType = 9 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 11", ImportType = 10 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 12", ImportType = 11 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 13", ImportType = 12 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 14", ImportType = 13 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 15", ImportType = 14 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 16", ImportType = 15 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 17", ImportType = 1 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 18", ImportType = 7 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 19", ImportType = 9 });
-            importResults.Add(new ImportMoqTableResultsModelView() { TableName = "test 20", ImportType = 12 });
-
-            this.ViewData["ERRORS_OCCURRED"] = true;
-            this.ViewData["SERIALIZED_DATA"] = serializer.Serialize(importResults);
+            this.ViewData["ERRORS_OCCURRED"] = errorsOccurred;
+            this.ViewData["SERIALIZED_DATA"] = serializer.Serialize(dataToSave);
             this.ViewData["DOCUMENT_DOMAIN"] = this.Request["documentDomain"];
+
+            if (errorsOccurred)
+            {
+                this._log.Error(ex);
+            }
 
             ViewResult toReturn = this.View(WebConstants.VIEW_MOQ_TABLE_IMPORT_VERIFICATION, importResults);
 
             // Finalize Action
-            FinalizeAction(_log, "ImportMoqTables", sw);
+            FinalizeAction(_log, WebConstants.ACTION_IMPORT_MOQ_TABLES, sw);
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Complete the MOQ Table import
+        /// </summary>
+        /// <param name="importResults">The imoprt rsults to save</param>
+        /// <param name="moqTypeId">ID of the MOQ Type</param>
+        /// <param name="workspace">Workspace name</param>
+        /// <param name="taskElementID">Task element ID</param>
+        /// <returns>Json result</returns>
+        public JsonResult CompleteImportMoqTables(ICollection<ImportMoqTableResultsModelView> importResults, int moqTypeId, string workspace, int taskElementID)
+        {
+            // TODO - fix dates, reload page
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+            BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision);
+
+            // Initialize Action
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_COMPLETE_IMPORT_MOQ_TABLES, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, taskElement.BoeID);
+
+            JsonResult toReturn;
+
+            this._BoeLaborControllerLogic.CompleteImportMoqTables(ws, importResults, moqTypeId);
+
+            toReturn = this.Json(new { Status = true });
+
+            // Finalize Action
+            this.FinalizeAction(this._log, WebConstants.ACTION_COMPLETE_IMPORT_MOQ_TABLES, sw);
             return toReturn;
         }
 
@@ -1417,13 +1422,13 @@ namespace GenBOE.Web.Controllers
             BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision);
 
             // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "ExportMoqTables", SecurityPage.TaskElements, SecurityAuthorization.Read, ws, taskElement.BoeID);
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_MOQ_TABLES, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, taskElement.BoeID);
 
             string exportFileName = this._BoeLaborControllerLogic.ExportMoqTables(moqTypeId, ws, Server.MapPath(TEMPLATE_FOLDER + this.moqTableExporter.MOQ_TABLE_EXCEL_MAP_PATH));
             ActionResult toReturn = new ExportFileDownloadResult(exportFileName, string.Format("Task-{0}_{1}_MoqTableData.xlsx", taskElement.Id, taskElement.TaskTitle));
 
             // Finalize Action
-            FinalizeAction(_log, "ExportMoqTables", sw);
+            FinalizeAction(_log, WebConstants.ACTION_EXPORT_MOQ_TABLES, sw);
             return toReturn;
         }
 

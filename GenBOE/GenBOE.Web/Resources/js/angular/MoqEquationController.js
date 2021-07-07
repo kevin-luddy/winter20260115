@@ -33,6 +33,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         importResults: []
     };
 
+    $scope.isExporting = false;
+
     // Called when the Insert Workspace Variable dropdown item is clicked.
     $scope.InsertWorkspaceVariableClicked = function () {
         // show the modal
@@ -432,7 +434,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         } else {
             return false;
         }
-    }
+    };
 
     $scope.openImportMoqTables = function (moqType) {
         $scope.model.ImportingMoqType = moqType;
@@ -464,7 +466,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         fd.append("file", $scope.dialog.file);
 
         // get url from form
-        var url = $('#ImportMoqTableDialog-Form').attr('action') + '&taskElementID=' + $scope.model.TaskElementId + '&moqTypeId=' + $scope.model.ImportingMoqType.Id;
+        var url = $('#ImportMoqTableDialog-Form').attr('action') + '&taskElementID=' + $scope.model.TaskElementId;
         $scope.dialog.importWorking = true;
 
         $http.post(url, fd, {
@@ -487,7 +489,31 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     };
 
     $scope.completeImportMoqTables = function () {
-        // TODO
+        $scope.dialog.completeImportWorking = true;
+
+        // fix imported dates
+        $scope.dialog.importResults.forEach(function (r) {
+            r.DateOfReport = $scope.convertJsonDate(r.DateOfReport);
+            r.PoPStart = $scope.convertJsonDate(r.PoPStart);
+            r.PoPEnd = $scope.convertJsonDate(r.PoPEnd);
+        });
+
+        var data = {};
+        data.importResults = $scope.dialog.importResults;
+        data.taskElementID = $scope.model.TaskElementId;
+        data.moqTypeId = $scope.model.ImportingMoqType.Id;
+
+        $http({
+            method: 'POST',
+            url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CompleteImportMoqTablesAction, ''),
+            data: data 
+        }).then(function () {
+            $scope.refreshPage();
+        }).catch(function () {
+            $scope.dialog.completeImportWorking = false;
+            $scope.backFromImport();
+            RaiseNotification('Import failed');
+        });
     };
 
     // clicking back from import results
@@ -501,12 +527,26 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     };
 
     $scope.exportMoqTables = function (moqType) {
+        $scope.isExporting = true;
         var urlPart = '?taskElementID=' + $scope.model.TaskElementId + '&moqTypeId=' + moqType.Id;
         var exportUrl = CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.ExportMoqTablesAction, urlPart);
         GenWidget.prototype.performExport(exportUrl);
+
+        // export is done via attaching an iframe, so just wait to prevent double-clicking
+        $timeout(function () {
+            $scope.isExporting = false;
+        }, 2000);
     };
 
     //#endregion
+
+    $scope.refreshPage = function () {
+        $window.location.reload();
+    };
+
+    $scope.convertJsonDate = function (date) {
+        return new Date(JSON.parse(date.match(/\d+/)));
+    };
 }]);
 
 // initialize MOQ Equation Widget.. moved here so that way this much script is not in the ascx page

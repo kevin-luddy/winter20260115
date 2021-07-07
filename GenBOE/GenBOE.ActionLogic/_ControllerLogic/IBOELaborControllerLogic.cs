@@ -8,9 +8,10 @@ namespace GenBOE.ActionLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Web;
     using System.Web.Mvc;
-    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ControllerLogic;
+    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
@@ -306,5 +307,24 @@ namespace GenBOE.ActionLogic
         /// <param name="templateFileLocation">Template file location</param>
         /// <returns>file name for the export</returns>
         string ExportMoqTables(int moqTypeId, FullWorkspace ws, string templateFileLocation);
+
+        /// <summary>
+        /// Import MOQ Tables
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="request">http request containing import file</param>
+        /// <param name="dataToSave">Data to save</param>
+        /// <param name="errorsOccurred">if errors occurred</param>
+        /// <param name="exception">Exception</param>
+        /// <returns>Imported MOQ Table modelviews</returns>
+        ICollection<ImportMoqTableResultsModelView> ImportMoqTables(FullWorkspace ws, HttpRequestBase request, out ICollection<ImportMoqTableResultsModelView> dataToSave, out bool errorsOccurred, out Exception exception);
+
+        /// <summary>
+        /// Complete the MOQ Table import
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="importResults">MOQ Table import results</param>
+        /// <param name="moqTypeId">MOQ Type Id</param>
+        void CompleteImportMoqTables(FullWorkspace ws, ICollection<ImportMoqTableResultsModelView> importResults, int moqTypeId);
     }
 }

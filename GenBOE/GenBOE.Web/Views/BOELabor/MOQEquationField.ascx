@@ -137,7 +137,7 @@
                 <button data-ng-if="!ActualReadOnly() && moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-disabled="disableHistoricalComparativeConvertButtons()" data-ng-click="convertMoqType(moqType, <%:(int)MOQType.Historical%>)" class="ies moqTypesButton" type="button">Convert to Historical</button>
                 <button data-ng-if="!ActualReadOnly() && moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-disabled="disableHistoricalComparativeConvertButtons()" data-ng-click="convertMoqType(moqType, <%:(int)MOQType.Comparative%>)" class="ies moqTypesButton" type="button">Convert to Comparative</button>
                 <button data-ng-if="!ActualReadOnly() && (moqType.SelectedMOQType == <%:(int)MOQType.Comparative%> || moqType.SelectedMOQType == <%:(int)MOQType.Historical%>)" data-ng-disabled="isDirty()" data-ng-class="{disabled: isDirty()}" data-ng-click="openImportMoqTables(moqType)" class="ies-action moqTypesButton" type="button">Import</button>
-                <button data-ng-if="!ActualReadOnly() && (moqType.SelectedMOQType == <%:(int)MOQType.Comparative%> || moqType.SelectedMOQType == <%:(int)MOQType.Historical%>)" data-ng-disabled="isDirty()" data-ng-class="{disabled: isDirty()}" data-ng-click="exportMoqTables(moqType)" class="ies-action moqTypesButton" type="button">Export</button>
+                <button data-ng-if="!ActualReadOnly() && (moqType.SelectedMOQType == <%:(int)MOQType.Comparative%> || moqType.SelectedMOQType == <%:(int)MOQType.Historical%>)" data-ng-disabled="isDirty() || isExporting" data-ng-class="{disabled: isDirty() || isExporting}" data-ng-click="exportMoqTables(moqType)" class="ies-action moqTypesButton" type="button">Export</button>
                 <button data-ng-if="!ActualReadOnly()" data-ng-click="RemoveMoqType(moqType)" class="ies-danger moqTypesButton" type="button">Delete MOQ Type</button>
             </div>
         </div>
@@ -531,7 +531,10 @@
                 <div class="step" id="ImportMoqStepOne">
                     <div class="title">Step 1: Export the existing MOQ Tables file</div>
                     <div>Start by exporting the existing MOQ Tables.</div>
-                    <div><a data-ng-click="exportMoqTablesFromImport()">Export existing MOQ Tables</a></div>
+                    <div>
+                        <a data-ng-hide="isExporting" data-ng-click="exportMoqTablesFromImport()">Export existing MOQ Tables</a>
+                        <div class="loader" data-ng-show="isExporting"></div>
+                    </div>
                 </div>
                 <div class="step" id="ImportMoqStepTwo">
                     <div class="title">Step 2: Enter/Update MOQ Tables in the file</div>
