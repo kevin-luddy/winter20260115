@@ -3567,10 +3567,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             moqType.Updateable = UpdateType.Upsert;
 
             // set original tables to be deleted
-            foreach (MoqTableData table in moqType.TableData)
-            {
-                table.Updateable = UpdateType.Deleted;
-            }
+            moqType.TableData.ForEach(table => table.Updateable = UpdateType.Deleted);
 
             // set new tables to upsert
             foreach(ImportMoqTableResultsModelView table in importResults)
@@ -3579,8 +3576,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 moqType.TableData.Add(table);
             }
 
-            // save the moq type to save updated table data
-            this.moqTypeDataLoader.SaveImportedMoqTypeTables(moqType);
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+            {
+                // save the moq type to save updated table data
+                this.moqTypeDataLoader.SaveImportedMoqTypeTables(moqType);
+            }
         }
     }
 
