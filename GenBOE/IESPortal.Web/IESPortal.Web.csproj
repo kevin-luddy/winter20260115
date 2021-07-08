@@ -201,6 +201,8 @@
     <Content Include="Content\images\in_progress_white.gif" />
     <Content Include="Content\images\launchpad-bg.jpg" />
     <Content Include="Content\images\LM_logo_notagline_black.png" />
+    <Content Include="Content\images\logo_ACV.jpg" />
+    <Content Include="Content\images\logo_ACV_wide.jpg" />
     <Content Include="Content\images\logo_eEPP.jpg" />
     <Content Include="Content\images\logo_eEPP_wide.jpg" />
     <Content Include="Content\images\logo_genBOE.jpg" />
