@@ -1400,7 +1400,7 @@ namespace GenBOE.Web.Controllers
 
             JsonResult toReturn;
 
-            this._BoeLaborControllerLogic.CompleteImportMoqTables(ws, importResults, moqTypeId);
+            this._BoeLaborControllerLogic.CompleteImportMoqTables(importResults, moqTypeId);
 
             toReturn = this.Json(new { Status = true });
 

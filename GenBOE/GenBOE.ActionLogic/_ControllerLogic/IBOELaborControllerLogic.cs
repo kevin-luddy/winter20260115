@@ -325,6 +325,6 @@ namespace GenBOE.ActionLogic
         /// <param name="ws">Workspace</param>
         /// <param name="importResults">MOQ Table import results</param>
         /// <param name="moqTypeId">MOQ Type Id</param>
-        void CompleteImportMoqTables(FullWorkspace ws, ICollection<ImportMoqTableResultsModelView> importResults, int moqTypeId);
+        void CompleteImportMoqTables(ICollection<ImportMoqTableResultsModelView> importResults, int moqTypeId);
     }
 }
