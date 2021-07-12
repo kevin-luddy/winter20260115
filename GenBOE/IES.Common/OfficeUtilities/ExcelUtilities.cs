@@ -166,7 +166,8 @@ namespace IES.Common.OfficeUtilities
             string[] allColumns,
             string[] requiredValueColumns,
             string[] uniqueValueColumns,
-            string[] textOnlyValueColumns = null)
+            string[] textOnlyValueColumns = null, 
+            bool includeDateDay = false)
         {
             if (document == null)
             {
@@ -267,7 +268,7 @@ namespace IES.Common.OfficeUtilities
                             // If the cell for the current column and row is found, get it's value
                             if (cell != null)
                             {
-                                cellValue = GetCellValue(cell, sharedStringItems, stylesheet, textOnlyValueColumns != null && textOnlyValueColumns.Contains(column.Value));
+                                cellValue = GetCellValue(cell, sharedStringItems, stylesheet, textOnlyValueColumns != null && textOnlyValueColumns.Contains(column.Value), includeDateDay);
                             }
 
                             // If the cell was null, or an empty string
@@ -432,7 +433,7 @@ namespace IES.Common.OfficeUtilities
         /// <param name="stylesheet">The stylesheet.</param>
         /// <param name="textOnly">Optional.  Whether the cell value should be treated as text only (and not be converted to a numerical value).</param>
         /// <returns>The cell value as a string.</returns>
-        public static string GetCellValue(Cell cell, SharedStringItem[] sharedStringItems, Stylesheet stylesheet, bool textOnly = false)
+        public static string GetCellValue(Cell cell, SharedStringItem[] sharedStringItems, Stylesheet stylesheet, bool textOnly = false, bool includeDateDay = false)
         {
             if (cell == null)
             {
@@ -464,7 +465,7 @@ namespace IES.Common.OfficeUtilities
             }
             else if (cell.CellValue != null)
             {
-                toReturn = GetValueForFormattedCell(cell, stylesheet, textOnly);
+                toReturn = GetValueForFormattedCell(cell, stylesheet, textOnly, includeDateDay);
             }
 
             toReturn = toReturn.Trim();
@@ -480,7 +481,7 @@ namespace IES.Common.OfficeUtilities
         /// <param name="stylesheet">The document's stylesheet</param>
         /// <param name="textOnly">Whether the cell value should be treated as text only (and not be converted to a numerical value).</param>
         /// <returns>A string value from the cell contents</returns>
-        public static string GetValueForFormattedCell(Cell cell, Stylesheet stylesheet, bool textOnly)
+        public static string GetValueForFormattedCell(Cell cell, Stylesheet stylesheet, bool textOnly, bool includeDateDay)
         {
             if (cell == null)
             {
@@ -564,7 +565,14 @@ namespace IES.Common.OfficeUtilities
                                     case 16:
                                     case 17:
                                     case 22:
-                                        toReturn = DateTime.FromOADate(Convert.ToDouble(numericalValue)).ToString("M/yyyy");
+                                        if(includeDateDay)
+                                        {
+                                            toReturn = DateTime.FromOADate(Convert.ToDouble(numericalValue)).ToShortDateString();
+                                        }
+                                        else
+                                        {
+                                            toReturn = DateTime.FromOADate(Convert.ToDouble(numericalValue)).ToString("M/yyyy");
+                                        }
                                         break;
 
                                     default:

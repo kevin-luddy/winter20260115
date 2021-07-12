@@ -51,6 +51,20 @@ namespace GenBOE.ActionLogic.IO.Import
                 moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
             }
 
+            // WBS/WBS Element
+            if (row.ContainsKey(WBS_ELEMENT) && !string.IsNullOrEmpty(row[WBS_ELEMENT]))
+            {
+                moqTable.WbsElement = row[WBS_ELEMENT];
+                if (moqTable.WbsElement.Length > Constants.MOQ_WBS_ELEMENT_RMS_FIELD_LENGTH)
+                {
+                    moqTable.ImportTypes.Add(MoqTableImportType.LargeWBSElement);
+                }
+            }
+            else if (!moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
+            {
+                moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
+            }
+
             // Total WBS/WBS Element Hours
             if (row.ContainsKey(TOTAL_WBS_HOURS) && !string.IsNullOrEmpty(row[TOTAL_WBS_HOURS]))
             {

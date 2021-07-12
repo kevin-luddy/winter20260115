@@ -91,7 +91,7 @@ namespace GenBOE.ActionLogic.IO.Import
                             }
                         }
 
-                        ICollection<Dictionary<string, string>> allRows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(document, IMPORT_TAB, requiredColumns.ToArray(), allColumns.ToArray());
+                        ICollection<Dictionary<string, string>> allRows = ExcelUtilities.GetAllRowsFilteredBySpecifiedHeaders(document, IMPORT_TAB, requiredColumns.ToArray(), allColumns.ToArray(), null, null, null, true);
 
                         results = this.CreateImportedMoqTables(allRows, customFields);
                     }
@@ -181,20 +181,6 @@ namespace GenBOE.ActionLogic.IO.Import
                 if (toReturn.HistoricalProgramName.Length > Constants.MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH)
                 {
                     toReturn.ImportTypes.Add(MoqTableImportType.LargeHistoricalProgramName);
-                }
-            }
-            else if (!toReturn.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
-            {
-                toReturn.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
-            }
-
-            // WBS/WBS Element
-            if (row.ContainsKey(WBS_ELEMENT) && !string.IsNullOrEmpty(row[WBS_ELEMENT]))
-            {
-                toReturn.WbsElement = row[WBS_ELEMENT];
-                if (toReturn.WbsElement.Length > Constants.MOQ_WBS_ELEMENT_SSC_FIELD_LENGTH) // todo make sure to do for rms
-                {
-                    toReturn.ImportTypes.Add(MoqTableImportType.LargeWBSElement);
                 }
             }
             else if (!toReturn.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
@@ -336,6 +322,20 @@ namespace GenBOE.ActionLogic.IO.Import
                 moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
             }
 
+            // WBS/WBS Element
+            if (row.ContainsKey(WBS_ELEMENT) && !string.IsNullOrEmpty(row[WBS_ELEMENT]))
+            {
+                moqTable.WbsElement = row[WBS_ELEMENT];
+                if (moqTable.WbsElement.Length > Constants.MOQ_WBS_ELEMENT_SSC_FIELD_LENGTH)
+                {
+                    moqTable.ImportTypes.Add(MoqTableImportType.LargeWBSElement);
+                }
+            }
+            else if (!moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
+            {
+                moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
+            }
+
             // Employee ID Filters
             if (row.ContainsKey(EMPLOYEE_ID_FILTERS) && !string.IsNullOrEmpty(row[EMPLOYEE_ID_FILTERS]))
             {
@@ -383,10 +383,6 @@ namespace GenBOE.ActionLogic.IO.Import
                     if (customField.CustomFieldRequired)
                     {
                         customFieldKey = ExcelUtilities.SetPrefixCustomFieldRequired(customField.CustomFieldName);
-                        
-                        {
-                            moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
-                        }
                     }
 
                     if (row.ContainsKey(customFieldKey) && !string.IsNullOrWhiteSpace(row[customFieldKey]))
@@ -405,6 +401,10 @@ namespace GenBOE.ActionLogic.IO.Import
                             UpdateDate = DateTime.Now
                         });
                     }
+                    else if (customField.CustomFieldRequired && !moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
+                    {
+                        moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
+                    }
 
                 }
             }
@@ -421,6 +421,13 @@ namespace GenBOE.ActionLogic.IO.Import
         {
             string cleanedFiscalWeekString = fiscalWeekString.Replace("FW", string.Empty).Trim();
             string[] fiscalWeekValues = cleanedFiscalWeekString.Split('/');
+
+            if (fiscalWeekValues.Length != 2)
+            {
+                weekValue = 0;
+                yearValue = 0;
+                return false;
+            }
 
             bool validWeek = int.TryParse(fiscalWeekValues[0], out weekValue);
             bool validYear = int.TryParse(fiscalWeekValues[1], out yearValue);
