@@ -850,3 +850,8 @@ div.action-buttons {
     background-image: url(/Content/images/logo_eEPP.jpg);
     background-size: cover;
 }
+
+.acvLogo {
+    background-image: url(/Content/images/logo_ACV.jpg);
+    background-size: cover;
+}

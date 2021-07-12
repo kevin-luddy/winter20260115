@@ -118,7 +118,15 @@
                 <a href="@ViewBag.RPMUrl"><img class="button-img" src="~/Content/images/logo_RPM.jpg" alt="Resource Planning Module" /></a>
             </div>
             <div class="button-row">
-                <div class="button-img"></div>
+                @if (string.IsNullOrEmpty(ViewBag.ACVUrl))
+                {
+                    <a><img class="button-img acvLogo" src="~/Content/images/logo_ComingSoon.png" alt="Electronic Executive Planning Panel" /></a>
+                }
+                else
+                {
+                    <a href="@ViewBag.ACVUrl"><img class="button-img" src="~/Content/images/logo_ACV.jpg" alt="Electronic Executive Planning Panel" /></a>
+                }
+
                 @if (string.IsNullOrEmpty(ViewBag.eEPPUrl))
                 {
                     <a><img class="button-img eeppLogo" src="~/Content/images/logo_ComingSoon.png" alt="Electronic Executive Planning Panel" /></a>
