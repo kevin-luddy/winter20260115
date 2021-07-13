@@ -10,18 +10,19 @@ namespace GenBOE.ActionLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.BLL;
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.ControllerLogic;
+    using GenBOE.ActionLogic.IO.Export;
+    using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.Validation;
+    using GenBOE.ActionLogic.WBS.BOE;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
-    using GenBOE.ActionLogic.WBS.BOE;
 
     public class BOELaborControllerLogicSpace : BOELaborControllerLogic
     {
@@ -62,7 +63,9 @@ namespace GenBOE.ActionLogic
             ICommonDataMapper commonDataMapper,
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeDataLoader,
-            IValidateBOE validateBOE
+            IValidateBOE validateBOE,
+            IMoqTableExporter moqTableExporter,
+            IMoqTableImporter moqTableImporter
             ) :base(inBoeTaskElementRecalc, 
                 inBoeStateMachine, 
                 inBoeMediator, 
@@ -82,7 +85,9 @@ namespace GenBOE.ActionLogic
                 commonDataMapper,
                 rteTemplateDataLoader,
                 moqTypeDataLoader,
-                validateBOE)
+                validateBOE,
+                moqTableExporter,
+                moqTableImporter)
         {
         }
 

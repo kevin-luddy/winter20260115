@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Transactions;
+    using System.Web;
     using System.Web.Configuration;
     using System.Web.Mvc;
     using GenBOE.ActionLogic;
@@ -18,6 +19,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.MOQ;
+    using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
@@ -52,6 +54,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IRteTemplateDataLoader rteTemplateDataLoader;
         private readonly IMoqTypeDataLoader moqTypeDataLoader;
         private readonly IValidateBOE validateBOE;
+        private readonly IMoqTableExporter moqTableExporter;
+        private readonly IMoqTableImporter moqTableImporter;
 
         /// <summary>
         /// Task Element Validation Class
@@ -81,7 +85,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
             ICommonDataMapper commonDataMapper,
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeDataLoader,
-            IValidateBOE validateBOE)
+            IValidateBOE validateBOE,
+            IMoqTableExporter moqTableExporter,
+            IMoqTableImporter moqTableImporter)
         {
             this._BoeTaskElementRecalculation = inBoeTaskElementRecalc;
             this._boeStateMachine = inBoeStateMachine;
@@ -103,6 +109,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.rteTemplateDataLoader = rteTemplateDataLoader;
             this.moqTypeDataLoader = moqTypeDataLoader;
             this.validateBOE = validateBOE;
+            this.moqTableExporter = moqTableExporter;
+            this.moqTableImporter = moqTableImporter;
         }
 
         #region Public Members
@@ -3481,6 +3489,98 @@ namespace GenBOE.ActionLogic.ControllerLogic
             toReturn.ContractNumberSuffix = toReturn.TotalWBSHoursSuffix = string.Empty;
 
             return toReturn;
+        }
+
+        /// <summary>
+        /// Export MOQ Tables
+        /// </summary>
+        /// <param name="moqTypeId">MOQ Type ID</param>
+        /// <param name="ws">Workspace</param>
+        /// <param name="templateFileLocation">Template file location</param>
+        /// <returns>file name for the export</returns>
+        public string ExportMoqTables(int moqTypeId, FullWorkspace ws, string templateFileLocation)
+        {
+            MoqTypeSelection moqType = this.moqTypeDataLoader.GetById(moqTypeId);
+
+            string exportedFileName = this.moqTableExporter.ExportToExcelFile(templateFileLocation, moqType.TableData, ws);
+
+            return exportedFileName;
+        }
+
+        /// <summary>
+        /// Import MOQ Tables
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="request">http request containing import file</param>
+        /// <param name="dataToSave">Data to save</param>
+        /// <param name="errorsOccurred">if errors occurred</param>
+        /// <param name="exception">Exception</param>
+        /// <returns>Imported MOQ Table modelviews</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        public ICollection<ImportMoqTableResultsModelView> ImportMoqTables(FullWorkspace ws, HttpRequestBase request, out ICollection<ImportMoqTableResultsModelView> dataToSave, out bool errorsOccurred, out Exception exception)
+        {
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
+            _ = request ?? throw new ArgumentNullException(nameof(request));
+
+            ICollection<ImportMoqTableResultsModelView> toReturn = new Collection<ImportMoqTableResultsModelView>();
+            exception = null;
+            errorsOccurred = false;
+
+            try
+            {
+                if(request.Files.Count > 0 && request.Files[0].FileName.Length > 0)
+                {
+                    ICollection<ImportedMoqTable> results = this.moqTableImporter.ImportMoqTableFromExcelFile(request.Files[0].InputStream, ws);
+
+                    foreach (ImportedMoqTable result in results)
+                    {
+                        foreach (MoqTableImportType importType in result.ImportTypes)
+                        {
+                            toReturn.Add(new ImportMoqTableResultsModelView(result, importType));
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                exception = ex;
+                errorsOccurred = true;
+            }
+
+            dataToSave = toReturn.Where(x => x.ImportType == (int)MoqTableImportType.CreateMoqTable).ToList();
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Complete the MOQ Table import
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="importResults">MOQ Table import results</param>
+        /// <param name="moqTypeId">MOQ Type Id</param>
+        public void CompleteImportMoqTables(ICollection<ImportMoqTableResultsModelView> importResults, int moqTypeId)
+        {
+            _ = importResults ?? throw new ArgumentNullException(nameof(importResults));
+
+            // get MOQ Type
+            MoqTypeSelection moqType = this.moqTypeDataLoader.GetById(moqTypeId);
+            moqType.Updateable = UpdateType.Upsert;
+
+            // set original tables to be deleted
+            moqType.TableData.ForEach(table => table.Updateable = UpdateType.Deleted);
+
+            // set new tables to upsert
+            foreach(ImportMoqTableResultsModelView table in importResults)
+            {
+                table.Updateable = UpdateType.Upsert;
+                moqType.TableData.Add(table);
+            }
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+            {
+                // save the moq type to save updated table data
+                this.moqTypeDataLoader.SaveImportedMoqTypeTables(moqType);
+            }
         }
     }
 

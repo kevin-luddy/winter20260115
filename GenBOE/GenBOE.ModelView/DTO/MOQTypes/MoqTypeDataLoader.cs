@@ -235,6 +235,41 @@ namespace GenBOE.DataBridge.DTO
         }
 
         /// <summary>
+        /// Save the MOQ Type Tables from an import by deleting the original tables and saving the new ones
+        /// </summary>
+        /// <param name="moqType">MOQ Type containing the tables</param>
+        public void SaveImportedMoqTypeTables(MoqTypeSelection moqType)
+        {
+            _ = moqType ?? throw new ArgumentNullException(nameof(moqType));
+
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            {
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+                    // Delete original tables
+                    foreach(MoqTableData table in moqType.TableData.Where(x => x.Updateable == UpdateType.Deleted))
+                    {
+                        gbe.deleteMOQTypeSelectionTableData(table.Id, table.UpdateDate);
+                    }
+
+                    // Save new imported tables
+                    foreach (MoqTableData table in moqType.TableData.Where(x => x.Updateable == UpdateType.Upsert))
+                    {
+                        int? tableId = gbe.upsertMOQTypeSelectionTableData(table.Id, moqType.Id, table.UpdateDate, table.Order, table.TableName, table.RepositoryName, table.QueryType,
+                            table.DateOfReport, table.HistoricalProgramName, table.ContractNumber, table.WbsElement, table.PoPStart, table.PoPEnd, table.TotalWbsHours,
+                            table.AdditionalQueryFilters, table.TotalRelevantHours).FirstOrDefault();
+
+                        // Save custom fields
+                        if (tableId.HasValue)
+                        {
+                            this.moqTypeTableCustomFieldValueXREFLoader.SaveMoqTypeTableCustomFieldValueContainers(table.CustomFieldValueContainers, tableId.Value);
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Get the MOQ Tyoe Table Data  for the MOQ Type Selections
         /// </summary>
         /// <param name="moqTypeSelections"></param>

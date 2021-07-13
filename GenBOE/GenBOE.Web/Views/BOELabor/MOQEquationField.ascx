@@ -136,6 +136,8 @@
             <div class="btn-group">
                 <button data-ng-if="!ActualReadOnly() && moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-disabled="disableHistoricalComparativeConvertButtons()" data-ng-click="convertMoqType(moqType, <%:(int)MOQType.Historical%>)" class="ies moqTypesButton" type="button">Convert to Historical</button>
                 <button data-ng-if="!ActualReadOnly() && moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-disabled="disableHistoricalComparativeConvertButtons()" data-ng-click="convertMoqType(moqType, <%:(int)MOQType.Comparative%>)" class="ies moqTypesButton" type="button">Convert to Comparative</button>
+                <button data-ng-if="!ActualReadOnly() && (moqType.SelectedMOQType == <%:(int)MOQType.Comparative%> || moqType.SelectedMOQType == <%:(int)MOQType.Historical%>)" data-ng-disabled="isDirty()" data-ng-class="{disabled: isDirty()}" data-ng-click="openImportMoqTables(moqType)" class="ies-action moqTypesButton" type="button">Import</button>
+                <button data-ng-if="!ActualReadOnly() && (moqType.SelectedMOQType == <%:(int)MOQType.Comparative%> || moqType.SelectedMOQType == <%:(int)MOQType.Historical%>)" data-ng-disabled="isDirty() || isExporting" data-ng-class="{disabled: isDirty() || isExporting}" data-ng-click="exportMoqTables(moqType)" class="ies-action moqTypesButton" type="button">Export</button>
                 <button data-ng-if="!ActualReadOnly()" data-ng-click="RemoveMoqType(moqType)" class="ies-danger moqTypesButton" type="button">Delete MOQ Type</button>
             </div>
         </div>
@@ -513,6 +515,64 @@
             </div>
             <div class="buttons">
                 <button id="ReOrderMoqTablesDialog-Close" class="ies" data-ng-click="closeReOrderMoqTables()" name="cancel-button" type="button">Close</button>
+            </div>
+        </div>
+    </div>
+    <div gen-dialog id="ImportMoqTableDialog" class="import-moq-table-dialog form dialog" data-width="650" data-height="430" data-title="Import MOQ Tables" data-open="dialog.open">
+        <div class="container" data-ng-hide="dialog.showImportResults">
+            <div class="form-row">
+                Import MOQ Tables using an Excel file.
+                <% Html.BeginRouteForm(WebConstants.ROUTE_DEFAULT, new { 
+                                                controller = WebConstants.CONTROLLER_BOE_LABOR, 
+                                                action = WebConstants.ACTION_IMPORT_MOQ_TABLES, 
+                                                workspace = SiteMasterUtilities.GetCurrentWorkspace()}, 
+                                                FormMethod.Post, 
+                                                new { enctype = "multipart/form-data", id = "ImportMoqTableDialog-Form", target = "ImportMoqTableDialog-UploadTarget" }); %>
+                <div class="step" id="ImportMoqStepOne">
+                    <div class="title">Step 1: Export the existing MOQ Tables file</div>
+                    <div>Start by exporting the existing MOQ Tables.</div>
+                    <div>
+                        <a data-ng-hide="isExporting" data-ng-click="exportMoqTablesFromImport()">Export existing MOQ Tables</a>
+                        <div class="loader" data-ng-show="isExporting"></div>
+                    </div>
+                </div>
+                <div class="step" id="ImportMoqStepTwo">
+                    <div class="title">Step 2: Enter/Update MOQ Tables in the file</div>
+                    <div>Enter new MOQ Tables into the file or update existing MOQ Tables. </div>
+                    <div>All columns besides custom fields are required. Custom field columns may be required or optional. </div>
+                    <div data-ng-if="model.IsRMS">Date of Report, PoP Start Date, and PoP End date must be in the format m/yyyy or mm/yyyy</div>
+                    <div data-ng-if="!model.IsRMS">
+                        <div>Date of Report must be in the format m/yyyy or mm/yyyy</div>
+                        <div>For Weekly Query Type, PoP Start Date and PoP End date must be in the format fw/yyyy</div>
+                        <div>For Monthly Query Type, PoP Start Date and PoP End date must be in the format m/yyyy or mm/yyyy</div>
+                    </div>
+                    <br />                    
+                    <div class="important">IMPORTANT: This will replace all existing tables. If a table is removed or excluded from the excel file, the table will be deleted.</div>
+                </div>
+                <div class="step" id="ImportMoqStepThree">
+                    <div class="title">Step 3: Import the updated MOQ Table template file</div>
+                    <div>Choose a file to import. The file you import ust be an Excel file that ends in .xlsx or .xlsm. </div>
+                    <div>
+                        <input type="hidden" id="ImportMoqTableDialog-DocumentDomain" name="documentDomain" />
+                        <input type="file" size="60" id="ImportMoqTableDialog-File" name="file" onchange="angular.element('[data-ng-controller=MoqEquationController]').scope().fileUploadChange(this)" />
+                    </div>
+                </div>
+                <% Html.EndForm(); %>
+                <div class="buttons">
+                    <button id="ImportMoqTableDialog-ImportButton" class="ies-action" name="import-button" data-ng-click="importMoqTables()" data-ng-hide="dialog.importWorking" data-ng-disabled="dialog.disableImport">Import</button>
+                    <div id="ImportMoqTableDialog-ImportLoader" class="loader" data-ng-show="dialog.importWorking"></div>
+                    <button id="ImportMoqTableDialog.CancelButton" class="ies" name="cancel-button" type="button" data-ng-click="closeImportMoqTables()">Cancel</button>
+                </div>
+            </div>
+        </div>
+        <div id="ImportResults" data-ng-show="dialog.showImportResults" class="import-verification">
+            <div class="content import-verification"></div>
+            <div class="important">IMPORTANT: This will replace all existing tables. If a table is removed or excluded from the excel file, the table will be deleted.</div>
+            <br />
+            <div class="buttons">
+                <button id="Back-ImportMoqTableVerification" type="button" class="ies" data-ng-click="backFromImport()" name="back-button">Back</button>
+                <button id="CompleteImportButton-ImportMoqTableVerification" class="ies-action" data-ng-if="!dialog.invalidData" data-ng-hide="dialog.completeImportWorking" data-ng-click="completeImportMoqTables()">Complete Import</button>
+                <div id="CompleteImportLoader-ImportMoqTableVerification" class="loader" data-ng-show="dialog.completeImportWorking" style="width: 129px"></div>
             </div>
         </div>
     </div>

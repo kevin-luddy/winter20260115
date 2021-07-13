@@ -1,8 +1,9 @@
-﻿/// <reference path="directives.js" />
+﻿var MOQEquationFieldWidget = null;
+
+/// <reference path="directives.js" />
 // The controller for the MOQ equation section.
-moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uibModal', '$window', 'ManageTaskModel', '$timeout', function ($scope, $document, $uibModal, $window, ManageTaskModel, $timeout) {
+moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uibModal', '$window', 'ManageTaskModel', '$timeout', '$http', function ($scope, $document, $uibModal, $window, ManageTaskModel, $timeout, $http) {
     $scope.init = function () {
-        var MOQEquationFieldWidget = null;
 
         $scope.model = $window.MOQEquationFieldModel;
         $scope.model.IsCostEquation = ($scope.model.MoqEquationType == 'Cost');
@@ -11,14 +12,28 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         $scope.newTableId = -1;
 
         // This is needed to allow for some other processing to finish, otherwise we get errors from angular.js
-        setTimeout(function () { 
+        setTimeout(function () {
             initializeWidget();
 
             angular.forEach($scope.model.SelectedMoqTypes.map(e => e.SelectedMOQType.toString()), function (id) {
                 $scope.InitializeRteFields(id);
             });
-        }, 10);        
-    }
+        }, 10);
+    };
+
+    $scope.dialog = {
+        title: 'Import MOQ Tables',
+        open: false,
+        file: null,
+        importWorking: false,
+        completeImportWorking: false,
+        showImportResults: false,
+        disableImport: true,
+        invalidData: false,
+        importResults: []
+    };
+
+    $scope.isExporting = false;
 
     // Called when the Insert Workspace Variable dropdown item is clicked.
     $scope.InsertWorkspaceVariableClicked = function () {
@@ -410,7 +425,131 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         MOQEquationFieldWidget.setDirty();
     }
 
+    /*
+    * **************************** NOTE **********************************
+    * Functions below relate to the logic of the MOQ Table import/export
+    * ********************************************************************
+    */
+
+    $scope.isDirty = function () {
+        if (MOQEquationFieldWidget) {
+            return MOQEquationFieldWidget.isDirty();
+        } else {
+            return false;
+        }
+    };
+
+    $scope.openImportMoqTables = function (moqType) {
+        $scope.model.ImportingMoqType = moqType;
+        resetUploadForm();
+        $scope.dialog.open = true;
+    };
+
+    $scope.closeImportMoqTables = function () {
+        resetUploadForm();
+        $scope.dialog.open = false;
+    };
+
+    $scope.fileUploadChange = function (element) {
+        $scope.$apply(function ($scope) {
+            $scope.dialog.disableImport = element.value.endsWith('.xlsx') || element.value.endsWith('.xlsm') ? false : true;
+            $scope.dialog.file = $scope.dialog.disableImport ? null : element.files[0];
+        });
+    };
+
+    var resetUploadForm = function () {
+        $("#ImportMoqTableDialog-Form")[0].reset();
+        $scope.dialog.disableImport = true;
+        $scope.dialog.file = null;
+    };
+
+    $scope.importMoqTables = function () {
+        // create form data
+        var fd = new FormData();
+        fd.append("file", $scope.dialog.file);
+
+        // get url from form
+        var url = $('#ImportMoqTableDialog-Form').attr('action') + '&taskElementID=' + $scope.model.TaskElementId;
+        $scope.dialog.importWorking = true;
+
+        $http.post(url, fd, {
+            headers: {
+                'Content-Type': undefined
+            }
+        }).then(function (response) {
+            $scope.dialog.importWorking = false;
+            $scope.dialog.showImportResults = true;
+
+            // place returned html into the content div
+            $('#ImportResults .content').html(response.data);
+
+            // grab the two values returned as JS inside the new html
+            $timeout(function () {
+                $scope.dialog.invalidData = window.MoqTableImportVerificationWidget.invalidData;
+                $scope.dialog.importResults = window.MoqTableImportVerificationWidget.data.importResults;
+            }, 0);
+        });
+    };
+
+    $scope.completeImportMoqTables = function () {
+        $scope.dialog.completeImportWorking = true;
+
+        // fix imported dates
+        $scope.dialog.importResults.forEach(function (r) {
+            r.DateOfReport = $scope.convertJsonDate(r.DateOfReport);
+            r.PoPStart = $scope.convertJsonDate(r.PoPStart);
+            r.PoPEnd = $scope.convertJsonDate(r.PoPEnd);
+        });
+
+        var data = {};
+        data.importResults = $scope.dialog.importResults;
+        data.taskElementID = $scope.model.TaskElementId;
+        data.moqTypeId = $scope.model.ImportingMoqType.Id;
+
+        $http({
+            method: 'POST',
+            url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CompleteImportMoqTablesAction, ''),
+            data: data 
+        }).then(function () {
+            $scope.refreshPage();
+        }).catch(function () {
+            $scope.dialog.completeImportWorking = false;
+            $scope.backFromImport();
+            RaiseNotification('Import failed');
+        });
+    };
+
+    // clicking back from import results
+    $scope.backFromImport = function () {
+        resetUploadForm();
+        $scope.dialog.showImportResults = false;
+    };
+
+    $scope.exportMoqTablesFromImport = function () {
+        $scope.exportMoqTables($scope.model.ImportingMoqType);
+    };
+
+    $scope.exportMoqTables = function (moqType) {
+        $scope.isExporting = true;
+        var urlPart = '?taskElementID=' + $scope.model.TaskElementId + '&moqTypeId=' + moqType.Id;
+        var exportUrl = CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.ExportMoqTablesAction, urlPart);
+        GenWidget.prototype.performExport(exportUrl);
+
+        // export is done via attaching an iframe, so just wait to prevent double-clicking
+        $timeout(function () {
+            $scope.isExporting = false;
+        }, 2000);
+    };
+
     //#endregion
+
+    $scope.refreshPage = function () {
+        $window.location.reload();
+    };
+
+    $scope.convertJsonDate = function (date) {
+        return new Date(JSON.parse(date.match(/\d+/)));
+    };
 }]);
 
 // initialize MOQ Equation Widget.. moved here so that way this much script is not in the ascx page

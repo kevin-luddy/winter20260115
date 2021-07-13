@@ -144,6 +144,82 @@ namespace GenBOE.Tests.DAL.DataLoaders
         }
 
         /// <summary>
+        /// Test SaveImportedMoqTypeTables
+        /// </summary>
+        [TestMethod]
+        public void SaveImportedMoqTypesTablesTest()
+        {
+            IMoqTypeDataLoader sut = this.CreateSut();
+
+            MoqTypeSelection moqTypeSelectionToSave = CreateTestMoqTypeSelection();
+            moqTypeSelectionToSave.Updateable = UpdateType.Upsert;
+
+            // save test data
+            int? savedMoqTypeId = sut.Save(moqTypeSelectionToSave);
+
+            Assert.IsNotNull(savedMoqTypeId);
+
+            // get test data from db
+            MoqTypeSelection savedMoqTypeSelection = sut.GetById(savedMoqTypeId.Value);
+
+            // Set MOQ Tables as deleted
+            savedMoqTypeSelection.TableData.ForEach(x => x.Updateable = UpdateType.Deleted);
+            ICollection<string> oldTableNames = savedMoqTypeSelection.TableData.Select(x => x.TableName).ToCollection();
+
+            // Add new "imported" MOQ Table
+            MoqTableData newMoqTableData = new MoqTableData()
+            {
+                Id = -1,
+                TableName = "new test table",
+                RepositoryName = "new test repo",
+                QueryType = "new query type",
+                DateOfReport = DateTime.Now,
+                HistoricalProgramName = "new test name",
+                ContractNumber = "new test contract",
+                WbsElement = "new test wbs",
+                PoPStart = DateTime.Now.AddDays(-2),
+                PoPEnd = DateTime.Now.AddDays(-1),
+                TotalWbsHours = 100,
+                AdditionalQueryFilters = "new test filters",
+                TotalRelevantHours = 50,
+                CustomFieldValueContainers = new Collection<CustomFieldValueContainer>()
+                {
+                    new CustomFieldValueContainer()
+                        {
+                            ContainerID = -1,
+                            CustomFieldID = GlobalTestCaseSetup.GlobalCustomFieldID,
+                            CustomFieldValueID = GlobalTestCaseSetup.GlobalCustomFieldValueID,
+                            IsOpenEnded = true,
+                            OpenEndedValue = "TEST",
+                            Updateable = UpdateType.Upsert
+                        }
+                },
+                Updateable = UpdateType.Upsert
+            };
+
+            savedMoqTypeSelection.TableData.Add(newMoqTableData);
+
+            // call SaveImportedMoqTypeTables
+            sut.SaveImportedMoqTypeTables(savedMoqTypeSelection);
+
+            // Get MOQ Type from db again
+            savedMoqTypeSelection = sut.GetById(savedMoqTypeSelection.Id);
+
+            // Assert old tables removed, new table added
+            Assert.IsTrue(savedMoqTypeSelection.TableData.Any());
+            Assert.AreEqual(1, savedMoqTypeSelection.TableData.Count());
+            Assert.AreEqual(newMoqTableData.TableName, savedMoqTypeSelection.TableData.First().TableName);
+            Assert.IsFalse(savedMoqTypeSelection.TableData.Any(x => oldTableNames.Contains(x.TableName)));
+
+            // delete test data
+            savedMoqTypeSelection.Updateable = UpdateType.Deleted;
+            int? deletedMoqTypeId = sut.Save(savedMoqTypeSelection);
+
+            savedMoqTypeSelection = sut.GetById(savedMoqTypeId.Value);
+            Assert.IsNull(savedMoqTypeSelection);
+        }
+
+        /// <summary>
         /// Create a MOQ Type Selection to save for testing
         /// </summary>
         /// <returns>MOQ Type Selection</returns>
