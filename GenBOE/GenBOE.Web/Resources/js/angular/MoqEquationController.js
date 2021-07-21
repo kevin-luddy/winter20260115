@@ -432,11 +432,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     */
 
     $scope.isDirty = function () {
-        if (MOQEquationFieldWidget) {
-            return MOQEquationFieldWidget.isDirty();
-        } else {
-            return false;
-        }
+        return (MOQEquationFieldWidget && MOQEquationFieldWidget.isDirty())
+            || (TaskElementDetailsWidget && TaskElementDetailsWidget.isDirty());
     };
 
     $scope.openImportMoqTables = function (moqType) {

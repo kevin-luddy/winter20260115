@@ -1,7 +1,6 @@
 ﻿angular.module('genboe').controller('ManageTaskController', ['$scope', '$http', '$timeout', 'ManageTaskModel', 'utilityService', function ($scope, $http, $timeout, ManageTaskModel, utilityService) {
 
     $scope.ManageTaskModel = ManageTaskModel;
-    $scope.isDirty = false;
     $scope.TaskCustomFields = [];
     $scope.LaborCustomFields = [];
     $scope.errors = [];
@@ -63,7 +62,7 @@
     };
 
     $scope.navigateToUrl = function (hash) {
-        if (TaskElementDetailsWidget.isAnyDirty() || $scope.isDirty) {
+        if (TaskElementDetailsWidget.isAnyDirty() || $scope.isDirty()) {
             Session.confirmDialog("Navigate to Next/Previous Task", "You have unsaved work that will not be saved upon navigation.  Would you like to change Tasks anyway?", function () {
                 $scope.$apply(function () {
                     window.location.hash = hash;
@@ -91,7 +90,7 @@
         // this function is a private constructor for ManageTaskController
         $scope.showDropdowns = false;
         $scope.taskElementId = taskElementId;
-        $scope.isDirty = false;
+        $scope.cleanDirty();
 
         angular.forEach($scope.PerfOrgModels, function (item, key) {
             item.Label = item.PerformingOrgName + '-' + item.PerformingOrgDesc;
@@ -104,8 +103,7 @@
         // load the main data
         loadData(function () {
             // this is needed because ui-tinymce does things on its own schedule
-            TaskElementDetailsWidget.cleanAllDirty();
-            $scope.isDirty = false;
+            $scope.cleanDirty();
         });
     };
 
@@ -1121,12 +1119,10 @@
             // reload the LM Labor grid
             window.location.hash = 'LMLabor';
             $(document).trigger('BOESUMMARYGRID_RELOAD');
-            TaskElementDetailsWidget.cleanAllDirty();
-            $scope.isDirty = false;
+            $scope.cleanDirty();
             // this is needed because ui-tinymce does things on its own schedule
             $timeout(function () {
-                TaskElementDetailsWidget.cleanAllDirty();
-                $scope.isDirty = false;
+                $scope.cleanDirty();
             }, 300);
         }, wsLocked);
     };
@@ -1405,8 +1401,7 @@
                     $scope.taskElementId = response.data;
 
                     $timeout(function () {
-                        TaskElementDetailsWidget.cleanAllDirty();
-                        $scope.isDirty = false;
+                        $scope.cleanDirty();
                     }, 100);
                     $scope.errors = [];
                     $scope.laborTypeErrors = [];
@@ -1450,9 +1445,18 @@
         }
     };
 
+    $scope.isDirty = function () {
+        return (TaskElementDetailsWidget && TaskElementDetailsWidget.isDirty())
+            || (MOQEquationFieldWidget && MOQEquationFieldWidget.isDirty());
+    };
+
+    $scope.cleanDirty = function () {
+        TaskElementDetailsWidget.cleanDirty();
+        TaskElementDetailsWidget.cleanAllDirty();
+    };
+
     $scope.setDirty = function (formId) {
         TaskElementDetailsWidget.setDirty();
-        $scope.isDirty = true;
     };
 
     $scope.generateSpreadDatesFull = function () {
