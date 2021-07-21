@@ -3578,8 +3578,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
-                // save the moq type to save updated table data
                 this.moqTypeDataLoader.SaveImportedMoqTypeTables(moqType);
+                scope.Complete();
             }
         }
     }
