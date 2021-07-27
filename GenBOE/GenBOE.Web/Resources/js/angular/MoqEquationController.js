@@ -111,6 +111,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         });
     }
 
+    // Used by RTE methods to update the scope when is dirty changes
+    // what makes this work is the MoqEquationApp configuration of having a window listener throw the event into scope
+    $scope.$on('RteDirtyChanged', function () {
+        $scope.$apply();
+    });
+
     // Initializes RTE fields for the selected MOQ Type option
     $scope.InitializeRteFields = function (id, skipInitialClean) {
         // setTimeout is needed to allow for the objects to be added into the DOM, before we can transform them into RTE
@@ -290,19 +296,17 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     // Applies the new order of MOQ Types to the underlying model.
     $scope.UpdateOrderingMoqTypes = function (newOrderArray) {
         $timeout(function () {
-            $scope.$apply(function () {
-                $scope.model.SelectedMoqTypes.forEach(function (item) {
-                    var matchingItem = newOrderArray.find(({ SelectedMOQType }) => SelectedMOQType === item.SelectedMOQType);
-                    item.Order = matchingItem.Order;
+            $scope.model.SelectedMoqTypes.forEach(function (item) {
+                var matchingItem = newOrderArray.find(({ SelectedMOQType }) => SelectedMOQType === item.SelectedMOQType);
+                item.Order = matchingItem.Order;
 
-                    InitializeRTE('DescriptionHoursRequired_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
-                    InitializeRTE('SmeReason_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
-                    InitializeRTE('SmeHoursLogic_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
-                    InitializeRTE('SmeDurationLogic_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
-                    InitializeRTE('SmeTaskEstimates_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
-                    InitializeRTE('Rationale_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
-                    InitializeRTE('SkillMixRationale_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
-                });
+                InitializeRTE('DescriptionHoursRequired_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
+                InitializeRTE('SmeReason_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
+                InitializeRTE('SmeHoursLogic_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
+                InitializeRTE('SmeDurationLogic_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
+                InitializeRTE('SmeTaskEstimates_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
+                InitializeRTE('Rationale_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
+                InitializeRTE('SkillMixRationale_' + item.SelectedMOQType, { maxlen: $scope.model.RteFieldSize, enableCharCounting: true }, MOQEquationFieldWidget, true);
             });
 
             $timeout(function () { $scope.sortingInProgress = false; }, 0);

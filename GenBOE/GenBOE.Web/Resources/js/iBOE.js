@@ -2163,6 +2163,7 @@ function InitializeRTE(elementName, options, widget, skipInitialClean) {
 				updateRTECharacterCount(this, options, function (mce) {
 					var form = $(mce.getElement()).closest('form');
 					widget.setDirty(form.attr('id'));
+					this.dispatchEvent(new CustomEvent('RteDirtyChanged', { bubbles: true }));
 				});
 			});
 
@@ -2171,6 +2172,7 @@ function InitializeRTE(elementName, options, widget, skipInitialClean) {
 					updateRTECharacterCount(this, options, function (mce) {
 						var form = $(mce.getElement()).closest('form');
 						widget.setDirty(form.attr('id'));
+						this.dispatchEvent(new CustomEvent('RteDirtyChanged', { bubbles: true }));
 					});
 				}
 			});
@@ -2215,7 +2217,7 @@ function InitializeRTE(elementName, options, widget, skipInitialClean) {
 			// BOEJ-2849 - clear the title (tooltip) attribute for the tinymce editor iframe.
 			mceContainer.find('iframe').attr('title', '');
 
-			updateRTECharacterCount(this, options, function () { if (!skipInitialClean) { widget.cleanDirty(); }});
+			updateRTECharacterCount(this, options, function () { if (!skipInitialClean) { widget.cleanDirty(); this.dispatchEvent(new CustomEvent('RteDirtyChanged', { bubbles: true })); }});
 		}
 	});
 }
