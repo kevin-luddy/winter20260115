@@ -162,7 +162,14 @@ namespace GenBOE.ActionLogic.IO.Import
             {
                 if(DateTime.TryParse(row[DATE_OF_REPORT], out DateTime dateOfReport))
                 {
-                    toReturn.DateOfReport = dateOfReport;
+                    if (dateOfReport <= DateTime.Now)
+                    {
+                        toReturn.DateOfReport = dateOfReport;
+                    }
+                    else
+                    {
+                        toReturn.ImportTypes.Add(MoqTableImportType.InvalidDateOfReport);
+                    }
                 }
                 else
                 {
