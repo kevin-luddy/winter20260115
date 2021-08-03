@@ -2039,6 +2039,44 @@
             <param name="instanceId">The instance identifier.</param>
             <param name="rfddto">The rfddto.</param>
         </member>
+        <member name="M:APTSPropricerApi.Controllers.SummaryFieldDefinitionsController.Get(System.Int32,System.String)">
+            <summary>
+            Returns the list of SummaryFieldDefinitions in the given proposal.
+            </summary>
+            <param name="instanceId">The instance identifier.</param>
+            <param name="id">The EntityId of the proposal to obtain the summary field definitions. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
+            <returns>
+            Returns a collection of summary field definitions from the proposal.
+            </returns>
+        </member>
+        <member name="M:APTSPropricerApi.Controllers.SummaryFieldDefinitionsController.Post(System.Int32,APTSPropricerApi.DTOs.ProposalDto)">
+            <summary>
+            Adds the list of SummaryFieldDefinitions for a proposal using ProposalDto.
+            </summary>
+            <param name="instanceId">The instance identifier.</param>
+            <param name="proposalAndSummaryFields">A collection of summary field definitions contained in a proposal (ProposalDto).</param>
+        </member>
+        <member name="M:APTSPropricerApi.Controllers.SummaryFieldDefinitionsController.Put(System.Int32,APTSPropricerApi.DTOs.ProposalDto)">
+            <summary>
+            Updates the list of SummaryFieldDefinitions for a proposal using ProposalDto.
+            </summary>
+            <param name="instanceId">The instance identifier.</param>
+            <param name="proposalAndSummaryFields">A collection of summary field definitions contained in a proposal (ProposalDto).</param>
+        </member>
+        <member name="M:APTSPropricerApi.Controllers.SummaryFieldDefinitionsController.Delete(System.Int32,APTSPropricerApi.DTOs.ProposalDto)">
+            <summary>
+            Deletes the given list of SummaryFieldDefinitions for a proposal using ProposalDto.
+            </summary>
+            <param name="instanceId">The instance identifier.</param>
+            <param name="proposalAndSummaryFields">A collection of summary field definitions contained in a proposal (ProposalDto).</param>
+        </member>
+        <member name="M:APTSPropricerApi.Controllers.SummaryFieldDefinitionsController.Delete(System.Int32,System.String)">
+            <summary>
+            Deletes all of the SummaryFieldDefinitions for a given proposal.
+            </summary>
+            <param name="instanceId">The instance identifier.</param>
+            <param name="id">The EntityId of the proposal to obtain the summary field definitions. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
+        </member>
         <member name="M:APTSPropricerApi.Controllers.SysCdsController.Get(System.Int32)">
             <summary>
             Returns the list of SysCds in the instance of PROPRICER.

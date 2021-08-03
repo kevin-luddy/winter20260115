@@ -5,7 +5,7 @@
     commercial or financial information. Public disclosure of any information marked as indicated above is prohibited 
     by the Trade Secrets Act (18 U.S.C. Sec. 1905) and the Economic Espionage Act of 1996 (18 U.S.C. Sec. 1831 et seq.) 
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
-* /
+*/
 
 using System;
 using System.Collections.Generic;
@@ -21,57 +21,57 @@ namespace APTSPropricerApi.Controllers
 {
     public class SummaryFieldDefinitionsController : ProPricerController
     {
-        // GET api/SummaryFieldDefinitions
-        /// <summary>
-        /// Returns the list of SummaryFieldDefinitions in the instance of PROPRICER.
-        /// </summary>
-        /// <param name="instanceId">The instance identifier.</param>
-        /// <returns>
-        /// Returns a collection of summary field definitions from the instance of PROPRICER.
-        /// </returns>
-        public IEnumerable<SummaryFieldDefinitionsDto> Get(int instanceId)
-        {
-            List<SummaryFieldDefinitionsDto> sfdl = new List<SummaryFieldDefinitionsDto>();
-            using (IProPricerConnection ppc = (IProPricerConnection)PoolManager.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                if (ppc.Workspace != null)
-                {
-                    ppc.Workspace.ProposalDefaults.SummaryFieldDefinitions.Open();
-                    foreach (DefaultSummaryFieldDefinition sfd in ppc.Workspace.ProposalDefaults.SummaryFieldDefinitions.Items())
-                    {
-                        SummaryFieldDefinitionsDto sfddto = new SummaryFieldDefinitionsDto
-                        {
-                            Id = sfd.Id.ToString(),
-                            Name = sfd.Name,
-                            DataType = sfd.DataType.ToString(),
-                            MaxLength = sfd.MaxLength,
-                            SortType = sfd.SortType.ToString(),
-                            Required = sfd.Required
-                        };
-                        if (sfddto.DataType == "List")
-                        {
-                            List<SummaryFieldListDto> sflist = new List<SummaryFieldListDto>();
-                            foreach (DefaultSummaryFieldStandardValue sf in sfd.ValueList.Items())
-                            {
-                                SummaryFieldListDto sfdto = new SummaryFieldListDto
-                                {
-                                    Value = sf.Value,
-                                    Description = sf.Description
-                                };
-                                sflist.Add(sfdto);
-                            }
+        //// GET api/SummaryFieldDefinitions
+        ///// <summary>
+        ///// Returns the list of SummaryFieldDefinitions in the instance of PROPRICER.
+        ///// </summary>
+        ///// <param name="instanceId">The instance identifier.</param>
+        ///// <returns>
+        ///// Returns a collection of summary field definitions from the instance of PROPRICER.
+        ///// </returns>
+        //public IEnumerable<SummaryFieldDefinitionsDto> Get(int instanceId)
+        //{
+        //    List<SummaryFieldDefinitionsDto> sfdl = new List<SummaryFieldDefinitionsDto>();
+        //    using (IProPricerConnection ppc = (IProPricerConnection)PoolManager.GetInstance(instanceId).GetObjectsFromPool())
+        //    {
+        //        if (ppc.Workspace != null)
+        //        {                    
+        //            ppc.Workspace.summary.ProposalUserFieldDefinitions.ProposalDefaults.SummaryFieldDefinitions.Open();
+        //            foreach (SummaryFieldDefinition sfd in ppc.Workspace.ProposalDefaults.SummaryFieldDefinitions.Items())
+        //            {
+        //                SummaryFieldDefinitionsDto sfddto = new SummaryFieldDefinitionsDto
+        //                {
+        //                    Id = sfd.Id.ToString(),
+        //                    Name = sfd.Name,
+        //                    DataType = sfd.DataType.ToString(),
+        //                    MaxLength = sfd.MaxLength,
+        //                    SortType = sfd.SortType.ToString(),
+        //                    Required = sfd.Required
+        //                };
+        //                if (sfddto.DataType == "List")
+        //                {
+        //                    List<SummaryFieldListDto> sflist = new List<SummaryFieldListDto>();
+        //                    foreach (SummaryFieldStandardValue sf in sfd.ValueList.Items())
+        //                    {
+        //                        SummaryFieldListDto sfdto = new SummaryFieldListDto
+        //                        {
+        //                            Value = sf.Value,
+        //                            Description = sf.Description
+        //                        };
+        //                        sflist.Add(sfdto);
+        //                    }
 
-                            sfddto.ValueList = sflist;
-                        }
+        //                    sfddto.ValueList = sflist;
+        //                }
 
-                        sfdl.Add(sfddto);
-                    }
+        //                sfdl.Add(sfddto);
+        //            }
 
-                    ppc.Workspace.ProposalDefaults.SummaryFieldDefinitions.Close();
-                }
-            }
-            return sfdl;
-        }
+        //            ppc.Workspace.ProposalDefaults.SummaryFieldDefinitions.Close();
+        //        }
+        //    }
+        //    return sfdl;
+        //}
 
         // GET api/SummaryFieldDefinitions/id
         /// <summary>
@@ -486,4 +486,3 @@ namespace APTSPropricerApi.Controllers
         }
     }
 }
-*/
