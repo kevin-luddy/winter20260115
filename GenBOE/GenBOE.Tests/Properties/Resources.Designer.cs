@@ -563,6 +563,66 @@ namespace GenBOE.Tests.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] MOQTableRMS {
+            get {
+                object obj = ResourceManager.GetObject("MOQTableRMS", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] MOQTableRMSInvalid {
+            get {
+                object obj = ResourceManager.GetObject("MOQTableRMSInvalid", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] MoqTableRmsValid {
+            get {
+                object obj = ResourceManager.GetObject("MoqTableRmsValid", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] MOQTableSSC {
+            get {
+                object obj = ResourceManager.GetObject("MOQTableSSC", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] MOQTableSSCInvalid {
+            get {
+                object obj = ResourceManager.GetObject("MOQTableSSCInvalid", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] MoqTableSscValid {
+            get {
+                object obj = ResourceManager.GetObject("MoqTableSscValid", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] ProjectMap {
             get {
                 object obj = ResourceManager.GetObject("ProjectMap", resourceCulture);

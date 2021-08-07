@@ -12,7 +12,11 @@ moqEquationApp.factory('TemplateService', ['$templateCache', function ($template
 }]);
 
 // Initialization logic.
-moqEquationApp.run(['TemplateService', function (TemplateService) {
+moqEquationApp.run(["$window", "$rootScope", 'TemplateService', function ($window, $rootScope, TemplateService) {
+    $window.addEventListener('RteDirtyChanged', function (e) {
+        $rootScope.$broadcast('RteDirtyChanged', e.data);
+    });
+
     // modify the default bootstrap templates to remove the trailing newline characters, which seem to be conflicting with something
     //TemplateService.RemoveTrailingNewline('uib/template/modal/backdrop.html');
     TemplateService.RemoveTrailingNewline('uib/template/modal/window.html');

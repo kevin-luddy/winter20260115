@@ -560,12 +560,12 @@
                        { %>
                     <ul class="validation-box"></ul>
                     <div class="import-buttons">
-                        <button data-ng-hide="taskElementId == -1" data-ng-disabled="isDirty || isLoading || isExporting" data-ng-click="Import()" id="LTImportButton" class="ies-action" type="button">Import</button>
-                        <button data-ng-hide="taskElementId == -1" data-ng-disabled="isDirty || isLoading || isExporting" data-ng-click="tryExport()" id="LTExportButton" class="ies-action" type="button">Export</button>
-                        <button data-ng-hide="taskElementId == -1" data-ng-disabled="isDirty || isLoading || isExporting" data-ng-click="reorder()" id="LTReorderButton" class="ies-action" type="button">Sort Resource Types</button>
+                        <button data-ng-hide="taskElementId == -1" data-ng-disabled="isDirty() || isLoading || isExporting" data-ng-click="Import()" id="LTImportButton" class="ies-action" type="button">Import</button>
+                        <button data-ng-hide="taskElementId == -1" data-ng-disabled="isDirty() || isLoading || isExporting" data-ng-click="tryExport()" id="LTExportButton" class="ies-action" type="button">Export</button>
+                        <button data-ng-hide="taskElementId == -1" data-ng-disabled="isDirty() || isLoading || isExporting" data-ng-click="reorder()" id="LTReorderButton" class="ies-action" type="button">Sort Resource Types</button>
                         <button data-ng-disabled = "isLoading || isExporting" data-ng-click="duplicate()" id="LTDucplicateButton" class="ies-action" type="button">Duplicate Resource Types</button>
                         
-                        <div id="ImportNote" data-ng-show="isDirty" class="import-note">
+                        <div id="ImportNote" data-ng-show="isDirty()" class="import-note">
                             <b>Note:</b> Importing, exporting, and sorting are disabled until the task is saved. <br />
                             To import, export, or sort, please save the task and return to this screen.
                         </div>
