@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -1814,6 +1814,61 @@ namespace GenTRAC.DataBridge.DTO
         private bool DisplayRevisionTab(bool isRevision, ProposalStatus proposalStatus)
         {
             return isRevision || proposalStatus == ProposalStatus.Revised;
+        }
+
+        /// <summary>
+        /// Gets Proposal Data for eEPP
+        /// </summary>
+        /// <param name="ntid">User's NTID</param>
+        /// <param name="isAdmin">Is the user System Admin</param>
+        /// <returns>Proposal Data</returns>
+        public ICollection<EppProposalData> GetEppProposalData(string ntid, bool isAdmin)
+        {
+            List<EppProposalData> result;
+            using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetByIds", Log))
+            {
+                using (genTRACEntities dbModel = new genTRACEntities())
+                {
+                    result = dbModel.Proposals
+                        .Where(x => 
+                            x.ProposalClassLU.ProposalClass != Constants.PROPOSAL_CLASS_FORECASTED
+                            && x.ProposalStatusID == (int)ProposalStatus.InProgress
+
+                            // ToDo: Proposal doesn't already have a linked eEPP record (will come later)
+                            && true 
+                            
+                            && (isAdmin
+                                // ToDo: once we have Backup Contracts Lead, add the role into the 2nd role comparison
+                                || x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid && (role.RoleID == (int)PtmRole.ContractsPOC || role.RoleID == (int)PtmRole.ContractsPOC)))
+                        )
+                        .Select(entity => new
+                        {
+                            Id = entity.ProposalID,
+                            TrackingNumber = entity.ProposalTrackingID,
+                            ProposalTitle = entity.ProposalTitle,
+                            LineOfBusinessID = entity.LineOfBusinessID,
+                            ProgramAreaId = entity.ProgramAreaID,
+                            AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate,
+                            LobDescription = entity.LineOfBusinessLU.LineOfBusinessName,
+                            PaDescription = entity.ProgramAreaLU.ProgramAreaName,
+                            ContractTypeLUs = entity.ContractTypeLUs
+                        }).Take(50).ToList()
+                        .Select(entity => new EppProposalData()
+                        {
+                            ProposalId = entity.Id,
+                            PTMTrackingNumber = entity.TrackingNumber,
+                            ProposalTitle = entity.ProposalTitle,
+                            LobId = entity.LineOfBusinessID,
+                            LobDescription = entity.LobDescription,
+                            PaId = entity.ProgramAreaId,
+                            PaDescription = entity.PaDescription,
+                            AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate,
+                            ContractTypes = entity.ContractTypeLUs.Select(x => new KeyValuePair<int, string>(x.ContractTypeID, x.ContractType)).ToList()
+                        }).ToList();
+                }
+            }
+
+            return result;
         }
     }
 }

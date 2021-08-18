@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -1006,5 +1006,89 @@ namespace GenTRAC.Tests.DAL.Loader
             result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.NoBid, anticipatedDeliveryDate, null, null);
             Assert.AreEqual(ProposalStatus.NoBid.GetDescription(), result);
         }
+
+        #region GetEppProposalData
+
+        /// <summary>
+        /// Test non-admin, verify that retrieved proposals are pulled for the right role
+        /// </summary>
+        [TestMethod]
+        public void GetEppProposalData_Test1()
+        {
+            bool isAdmin = false;
+            string ntid = "paliderd";
+
+            ProposalLoader sut = this.CreateSystem();
+            UserLoader userLoader = new UserLoader();
+            ProposalPermissionLoader permissionsLoader = new ProposalPermissionLoader();
+
+            int userId = userLoader.GetByNtid(ntid).Id;
+            ICollection<EppProposalData> result = sut.GetEppProposalData(ntid, isAdmin);
+            
+            foreach(int id in result.Select(x => x.ProposalId).ToList())
+            {
+                Assert.IsTrue(permissionsLoader.GetByIds(permissionsLoader.GetIdsByProposalId(id)).Any(x => x.UserId == userId && x.Role == PtmRole.ContractsPOC));
+            }
+        }
+
+        /// <summary>
+        /// Test to verify that retrieved proposals are not forecasted
+        /// </summary>
+        [TestMethod]
+        public void GetEppProposalData_Test2()
+        {
+            bool isAdmin = true;
+            string ntid = "paliderd";
+
+            ProposalLoader sut = this.CreateSystem();
+
+            ICollection<EppProposalData> result = sut.GetEppProposalData(ntid, isAdmin);
+
+            ICollection<ProposalDto> proposals = sut.GetByIds(result.Select(x => x.ProposalId).ToList());
+
+            foreach (ProposalDto prop in proposals)
+            {
+                Assert.IsFalse(prop.IsForecastProposal);
+            }
+        }
+
+        /// <summary>
+        /// Test to verify that retrieved proposals are in progress
+        /// </summary>
+        [TestMethod]
+        public void GetEppProposalData_Test3()
+        {
+            bool isAdmin = true;
+            string ntid = "paliderd";
+
+            ProposalLoader sut = this.CreateSystem();
+
+            ICollection<EppProposalData> result = sut.GetEppProposalData(ntid, isAdmin);
+
+            ICollection<ProposalDto> proposals = sut.GetByIds(result.Select(x => x.ProposalId).ToList());
+
+            foreach (ProposalDto prop in proposals)
+            {
+                Assert.IsTrue(prop.ProposalStatus == ProposalStatus.InProgress);
+            }
+        }
+
+        /// <summary>
+        /// Test to verify that we retrieve max of 50 records
+        /// </summary>
+        [TestMethod]
+        public void GetEppProposalData_Test4()
+        {
+            bool isAdmin = true;
+            string ntid = "paliderd";
+
+            ProposalLoader sut = this.CreateSystem();
+
+            ICollection<EppProposalData> result = sut.GetEppProposalData(ntid, isAdmin);
+
+            Assert.IsTrue(result.Count >= 50);
+        }
+
+        #endregion
     }
 }

@@ -155,6 +155,7 @@
     <Compile Include="DTO\PickLists\ProposalClassLULoader.cs" />
     <Compile Include="DTO\PickLists\TypeOfRequestLULoader.cs" />
     <Compile Include="DTO\PickLists\ProposalTypeLULoader.cs" />
+    <Compile Include="DTO\Proposal\EppProposalData.cs" />
     <Compile Include="DTO\Proposal\HomeProposalViewDto.cs" />
     <Compile Include="DTO\Proposal\IProposalLoader.cs" />
     <Compile Include="DTO\Proposal\ProposalDto.cs" />

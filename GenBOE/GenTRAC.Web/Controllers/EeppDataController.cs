@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -8,6 +8,8 @@ namespace GenTRAC.Web.Controllers
 {
     using System.Collections.Generic;
     using System.Web.Http;
+    using GenTRAC.DataBridge.Common.Security;
+    using GenTRAC.DataBridge.DTO;
     using IES.Common;
 
     /// <summary>
@@ -20,25 +22,37 @@ namespace GenTRAC.Web.Controllers
         /// <summary>
         /// Security Information
         /// </summary>
-        ISecurityInformation security;
+        private ISecurityInformation securityInformation;
+
+        /// <summary>
+        /// Security Access
+        /// </summary>
+        private ISecurityAccess securityAccess;
+
+        /// <summary>
+        /// Proposal Loader
+        /// </summary>
+        private IProposalLoader loader;
 
         /// <summary>
         /// Ctor
         /// </summary>
-        public EeppDataController(ISecurityInformation security)
+        public EeppDataController(ISecurityInformation security, IProposalLoader loader, ISecurityAccess securityAccess)
         {
-            this.security = security;
+            this.securityInformation = security;
+            this.loader = loader;
+            this.securityAccess = securityAccess;
         }
 
         /// <summary>
         /// Get Proposals for eEPP
         /// </summary>
         /// <returns>Proposal Data</returns>
-        public List<string> GetProposalData()
+        public ICollection<EppProposalData> GetProposalData()
         {
-            List<string> result = new List<string>();
+            bool isAdmin = this.securityAccess.CurrentUserHasRole(PtmRole.Admin, null);
 
-            result.Add(this.security.ActiveUserNTID);
+            ICollection<EppProposalData> result = this.loader.GetEppProposalData(this.securityInformation.ActiveUserNTID, isAdmin);
 
             return result;
         }
