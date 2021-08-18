@@ -25,7 +25,6 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
     <AllowUntrustedCertificate>True</AllowUntrustedCertificate>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -197,6 +196,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\ApprovalsController.cs" />
     <Compile Include="Controllers\ChecklistController.cs" />
+    <Compile Include="Controllers\EeppDataController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\CertificationTimelineController.cs" />
     <Compile Include="Controllers\PostSubmittalAttachmentsController.cs" />
@@ -207,6 +207,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WebApiConfig.cs" />
     <Content Include="app_offlineX.htm" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
@@ -336,7 +337,6 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Views\Shared\Error.cshtml" />
-    <Content Include="Settings.StyleCop" />
     <Content Include="Views\Home\GenTRACHome.cshtml" />
     <Content Include="Views\Shared\HomeLayout.cshtml" />
     <Content Include="Views\Shared\HomeMenu.cshtml" />
@@ -435,7 +435,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
-  <Import Project="..\Libraries\StyleCop Files\StyleCop.targets" />
   <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
     <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
   </Target>

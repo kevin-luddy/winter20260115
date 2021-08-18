@@ -1,8 +1,14 @@
-﻿using Microsoft.Practices.Unity;
-using System.Diagnostics.CodeAnalysis;
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
 
 namespace IES.Common.classes
-{ 
+{
+    using System.Diagnostics.CodeAnalysis;
+    using Microsoft.Practices.Unity;
+
     [ExcludeFromCodeCoverage]
     public sealed class GenBOEUnityContainer : IUnityContainerAccessor
     {
