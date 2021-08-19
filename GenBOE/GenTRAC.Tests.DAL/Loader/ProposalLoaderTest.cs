@@ -1231,6 +1231,40 @@ namespace GenTRAC.Tests.DAL.Loader
             Assert.IsTrue(permissionsLoader.GetByIds(permissionsLoader.GetIdsByProposalId(result.ProposalId)).Any(x => x.UserId == userId && x.Role == PtmRole.ContractsPOC));
         }
 
+        /// <summary>
+        /// Test to verify get by id, correct search, correct result
+        /// </summary>
+        [TestMethod]
+        public void GetEppProposalDataByProposalId_Test1()
+        {
+            bool isAdmin = true;
+            string ntid = "paliderd";
+            int proposalId = 14729;
+
+            ProposalLoader sut = this.CreateSystem();
+
+            EppProposalData result = sut.GetEppProposalDataByProposalId(ntid, isAdmin, proposalId);
+
+            Assert.AreEqual(proposalId, result.ProposalId);
+        }
+
+        /// <summary>
+        /// Test to verify get by id, incorrect search (invalid permissions), null result
+        /// </summary>
+        [TestMethod]
+        public void GetEppProposalDataByProposalId_Test2()
+        {
+            bool isAdmin = false;
+            string ntid = "paliderd";
+            int proposalId = 14729;
+
+            ProposalLoader sut = this.CreateSystem();
+
+            EppProposalData result = sut.GetEppProposalDataByProposalId(ntid, isAdmin, proposalId);
+
+            Assert.IsNull(result);
+        }
+
         #endregion
     }
 }
