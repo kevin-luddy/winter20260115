@@ -1821,9 +1821,12 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="ntid">User's NTID</param>
         /// <param name="isAdmin">Is the user System Admin</param>
+        /// <param name="searchString">Optional search string</param>
         /// <returns>Proposal Data</returns>
-        public ICollection<EppProposalData> GetEppProposalData(string ntid, bool isAdmin)
+        public ICollection<EppProposalData> GetEppProposalData(string ntid, bool isAdmin, string searchString)
         {
+            searchString = (searchString ?? string.Empty).ToLower();
+
             List<EppProposalData> result;
             using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetByIds", Log))
             {
@@ -1840,6 +1843,13 @@ namespace GenTRAC.DataBridge.DTO
                             && (isAdmin
                                 // ToDo: once we have Backup Contracts Lead, add the role into the 2nd role comparison
                                 || x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid && (role.RoleID == (int)PtmRole.ContractsPOC || role.RoleID == (int)PtmRole.ContractsPOC)))
+
+                            && (string.IsNullOrEmpty(searchString) 
+                                    || x.ProposalTrackingID.ToLower().Contains(searchString)
+                                    || x.ProposalTitle.ToLower().Contains(searchString)
+                                    || x.LineOfBusinessLU.LineOfBusinessName.ToLower().Contains(searchString)
+                                    || x.ProposalUserRoles.Any(z => z.genTRACUser.DisplayName.ToLower().Contains(searchString) && (z.RoleID == (int)PtmRole.Pricer || z.RoleID == (int)PtmRole.ContractsPOC))
+                                )
                         )
                         .Select(entity => new
                         {

@@ -47,12 +47,13 @@ namespace GenTRAC.Web.Controllers
         /// <summary>
         /// Get Proposals for eEPP
         /// </summary>
+        /// <param name="searchString">Search String</param>
         /// <returns>Proposal Data</returns>
-        public ICollection<EppProposalData> GetProposalData()
+        public ICollection<EppProposalData> GetProposalData(string searchString)
         {
             bool isAdmin = this.securityAccess.CurrentUserHasRole(PtmRole.Admin, null);
 
-            ICollection<EppProposalData> result = this.loader.GetEppProposalData(this.securityInformation.ActiveUserNTID, isAdmin);
+            ICollection<EppProposalData> result = this.loader.GetEppProposalData(this.securityInformation.ActiveUserNTID, isAdmin, searchString);
 
             return result;
         }

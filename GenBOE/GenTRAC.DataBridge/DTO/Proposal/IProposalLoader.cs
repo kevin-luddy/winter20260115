@@ -166,7 +166,8 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="ntid">User's NTID</param>
         /// <param name="isAdmin">Is the user System Admin</param>
+        /// <param name="searchString">Optional search string</param>
         /// <returns>Proposal Data</returns>
-        ICollection<EppProposalData> GetEppProposalData(string ntid, bool isAdmin);
+        ICollection<EppProposalData> GetEppProposalData(string ntid, bool isAdmin, string searchString);
     }
 }

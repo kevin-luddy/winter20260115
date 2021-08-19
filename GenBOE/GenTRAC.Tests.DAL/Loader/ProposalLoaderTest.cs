@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -1023,7 +1023,7 @@ namespace GenTRAC.Tests.DAL.Loader
             ProposalPermissionLoader permissionsLoader = new ProposalPermissionLoader();
 
             int userId = userLoader.GetByNtid(ntid).Id;
-            ICollection<EppProposalData> result = sut.GetEppProposalData(ntid, isAdmin);
+            ICollection<EppProposalData> result = sut.GetEppProposalData(ntid, isAdmin, null);
             
             foreach(int id in result.Select(x => x.ProposalId).ToList())
             {
@@ -1042,7 +1042,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             ProposalLoader sut = this.CreateSystem();
 
-            ICollection<EppProposalData> result = sut.GetEppProposalData(ntid, isAdmin);
+            ICollection<EppProposalData> result = sut.GetEppProposalData(ntid, isAdmin, string.Empty);
 
             ICollection<ProposalDto> proposals = sut.GetByIds(result.Select(x => x.ProposalId).ToList());
 
@@ -1063,7 +1063,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             ProposalLoader sut = this.CreateSystem();
 
-            ICollection<EppProposalData> result = sut.GetEppProposalData(ntid, isAdmin);
+            ICollection<EppProposalData> result = sut.GetEppProposalData(ntid, isAdmin, null);
 
             ICollection<ProposalDto> proposals = sut.GetByIds(result.Select(x => x.ProposalId).ToList());
 
@@ -1084,9 +1084,151 @@ namespace GenTRAC.Tests.DAL.Loader
 
             ProposalLoader sut = this.CreateSystem();
 
-            ICollection<EppProposalData> result = sut.GetEppProposalData(ntid, isAdmin);
+            ICollection<EppProposalData> result = sut.GetEppProposalData(ntid, isAdmin, string.Empty);
 
             Assert.IsTrue(result.Count >= 50);
+        }
+
+        /// <summary>
+        /// Test to verify search by LOB Name, full string
+        /// </summary>
+        [TestMethod]
+        public void GetEppProposalData_Test5()
+        {
+            bool isAdmin = false;
+            string ntid = "paliderd";
+            string searchString = "Comm Space".ToLower();
+
+            ProposalLoader sut = this.CreateSystem();
+
+            EppProposalData result = sut.GetEppProposalData(ntid, isAdmin, searchString).First();
+
+            Assert.IsTrue(result.LobDescription.ToLower().Contains(searchString));
+        }
+
+        /// <summary>
+        /// Test to verify search by LOB Name, partial string
+        /// </summary>
+        [TestMethod]
+        public void GetEppProposalData_Test6()
+        {
+            bool isAdmin = false;
+            string ntid = "paliderd";
+            string searchString = "Space".ToLower();
+
+            ProposalLoader sut = this.CreateSystem();
+
+            EppProposalData result = sut.GetEppProposalData(ntid, isAdmin, searchString).First();
+
+            Assert.IsTrue(result.LobDescription.ToLower().Contains(searchString));
+        }
+
+        /// <summary>
+        /// Test to verify search by title, full string
+        /// </summary>
+        [TestMethod]
+        public void GetEppProposalData_Test7()
+        {
+            bool isAdmin = false;
+            string ntid = "paliderd";
+            string searchString = "Patton Regular Proposal 2".ToLower();
+
+            ProposalLoader sut = this.CreateSystem();
+
+            EppProposalData result = sut.GetEppProposalData(ntid, isAdmin, searchString).First();
+
+            Assert.IsTrue(result.ProposalTitle.ToLower().Contains(searchString));
+        }
+
+        /// <summary>
+        /// Test to verify search by title, partial string
+        /// </summary>
+        [TestMethod]
+        public void GetEppProposalData_Test8()
+        {
+            bool isAdmin = false;
+            string ntid = "paliderd";
+            string searchString = "Regular Proposal".ToLower();
+
+            ProposalLoader sut = this.CreateSystem();
+
+            EppProposalData result = sut.GetEppProposalData(ntid, isAdmin, searchString).First();
+
+            Assert.IsTrue(result.ProposalTitle.ToLower().Contains(searchString));
+        }
+
+        /// <summary>
+        /// Test to verify search by tracking number, full string
+        /// </summary>
+        [TestMethod]
+        public void GetEppProposalData_Test9()
+        {
+            bool isAdmin = false;
+            string ntid = "paliderd";
+            string searchString = "18-00008".ToLower();
+
+            ProposalLoader sut = this.CreateSystem();
+
+            EppProposalData result = sut.GetEppProposalData(ntid, isAdmin, searchString).First();
+
+            Assert.IsTrue(result.PTMTrackingNumber.ToLower().Contains(searchString));
+        }
+
+        /// <summary>
+        /// Test to verify search by tracking number, partial string
+        /// </summary>
+        [TestMethod]
+        public void GetEppProposalData_Test10()
+        {
+            bool isAdmin = false;
+            string ntid = "paliderd";
+            string searchString = "00008".ToLower();
+
+            ProposalLoader sut = this.CreateSystem();
+
+            EppProposalData result = sut.GetEppProposalData(ntid, isAdmin, searchString).First();
+
+            Assert.IsTrue(result.PTMTrackingNumber.ToLower().Contains(searchString));
+        }
+
+        /// <summary>
+        /// Test to verify search by Contracts POC, full string
+        /// </summary>
+        [TestMethod]
+        public void GetEppProposalData_Test11()
+        {
+            bool isAdmin = false;
+            string ntid = "paliderd";
+            string searchString = "Palider, Dusan".ToLower();
+
+            ProposalLoader sut = this.CreateSystem();
+            UserLoader userLoader = new UserLoader();
+            ProposalPermissionLoader permissionsLoader = new ProposalPermissionLoader();
+            int userId = userLoader.GetByNtid(ntid).Id;
+
+            EppProposalData result = sut.GetEppProposalData(ntid, isAdmin, searchString).First();
+
+            Assert.IsTrue(permissionsLoader.GetByIds(permissionsLoader.GetIdsByProposalId(result.ProposalId)).Any(x => x.UserId == userId && x.Role == PtmRole.ContractsPOC));
+        }
+
+        /// <summary>
+        /// Test to verify search by Contracts POC, partial string
+        /// </summary>
+        [TestMethod]
+        public void GetEppProposalData_Test12()
+        {
+            bool isAdmin = false;
+            string ntid = "paliderd";
+            string searchString = "Palider".ToLower();
+
+            ProposalLoader sut = this.CreateSystem();
+            UserLoader userLoader = new UserLoader();
+            ProposalPermissionLoader permissionsLoader = new ProposalPermissionLoader();
+            int userId = userLoader.GetByNtid(ntid).Id;
+
+            EppProposalData result = sut.GetEppProposalData(ntid, isAdmin, searchString).First();
+
+            Assert.IsTrue(permissionsLoader.GetByIds(permissionsLoader.GetIdsByProposalId(result.ProposalId)).Any(x => x.UserId == userId && x.Role == PtmRole.ContractsPOC));
         }
 
         #endregion
