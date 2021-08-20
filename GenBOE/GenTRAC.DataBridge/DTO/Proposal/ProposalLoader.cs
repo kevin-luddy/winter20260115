@@ -9,7 +9,7 @@ namespace GenTRAC.DataBridge.DTO
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-using System.Data.Entity.Infrastructure;
+    using System.Data.Entity.Infrastructure;
     using System.Linq;
     using GenTRAC.Models;
     using IES.Common;
