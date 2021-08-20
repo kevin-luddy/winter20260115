@@ -1828,6 +1828,7 @@ namespace GenTRAC.DataBridge.DTO
             searchString = (searchString ?? string.Empty).ToLower();
 
             List<EppProposalData> result;
+
             using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetByIds", Log))
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
@@ -1875,6 +1876,58 @@ namespace GenTRAC.DataBridge.DTO
                             AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate,
                             ContractTypes = entity.ContractTypeLUs.Select(x => new KeyValuePair<int, string>(x.ContractTypeID, x.ContractType)).ToList()
                         }).ToList();
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets Proposal Data for eEPP, by Proposal Id
+        /// </summary>
+        /// <param name="ntid">User's NTID</param>
+        /// <param name="isAdmin">Is the user System Admin</param>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Proposal Data</returns>
+        public EppProposalData GetEppProposalDataByProposalId(string ntid, bool isAdmin, int proposalId)
+        {
+            EppProposalData result;
+
+            using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetByIds", Log))
+            {
+                using (genTRACEntities dbModel = new genTRACEntities())
+                {
+                    result = dbModel.Proposals
+                        .Where(x =>
+                            (isAdmin
+                                // ToDo: once we have Backup Contracts Lead, add the role into the 2nd role comparison
+                                || x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid && (role.RoleID == (int)PtmRole.ContractsPOC || role.RoleID == (int)PtmRole.ContractsPOC)))
+                            && x.ProposalID == proposalId
+                        )
+                        .Select(entity => new
+                        {
+                            Id = entity.ProposalID,
+                            TrackingNumber = entity.ProposalTrackingID,
+                            ProposalTitle = entity.ProposalTitle,
+                            LineOfBusinessID = entity.LineOfBusinessID,
+                            ProgramAreaId = entity.ProgramAreaID,
+                            AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate,
+                            LobDescription = entity.LineOfBusinessLU.LineOfBusinessName,
+                            PaDescription = entity.ProgramAreaLU.ProgramAreaName,
+                            ContractTypeLUs = entity.ContractTypeLUs
+                        }).Take(1).ToList()
+                        .Select(entity => new EppProposalData()
+                        {
+                            ProposalId = entity.Id,
+                            PTMTrackingNumber = entity.TrackingNumber,
+                            ProposalTitle = entity.ProposalTitle,
+                            LobId = entity.LineOfBusinessID,
+                            LobDescription = entity.LobDescription,
+                            PaId = entity.ProgramAreaId,
+                            PaDescription = entity.PaDescription,
+                            AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate,
+                            ContractTypes = entity.ContractTypeLUs.Select(x => new KeyValuePair<int, string>(x.ContractTypeID, x.ContractType)).ToList()
+                        }).FirstOrDefault();
                 }
             }
 

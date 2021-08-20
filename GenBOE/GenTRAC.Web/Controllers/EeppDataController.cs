@@ -57,5 +57,21 @@ namespace GenTRAC.Web.Controllers
 
             return result;
         }
+
+        /// <summary>
+        /// Get Single Proposal for eEPP
+        /// 
+        /// Returns null if the proposal doesn't exist, or the user isn't allowed to access it
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Proposal Data</returns>
+        public EppProposalData GetProposalDataByProposalId(int proposalId)
+        {
+            bool isAdmin = this.securityAccess.CurrentUserHasRole(PtmRole.Admin, null);
+
+            EppProposalData result = this.loader.GetEppProposalDataByProposalId(this.securityInformation.ActiveUserNTID, isAdmin, proposalId);
+
+            return result;
+        }
     }
 }
