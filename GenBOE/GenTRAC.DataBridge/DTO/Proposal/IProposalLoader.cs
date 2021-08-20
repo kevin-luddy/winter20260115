@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -160,5 +160,23 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="proposalId">Proposal Id</param>
         /// <returns>Revision History</returns>
         ICollection<RevisionHistoryModelView> GetRevisionHistory(int proposalId);
+
+        /// <summary>
+        /// Gets Proposal Data for eEPP
+        /// </summary>
+        /// <param name="ntid">User's NTID</param>
+        /// <param name="isAdmin">Is the user System Admin</param>
+        /// <param name="searchString">Optional search string</param>
+        /// <returns>Proposal Data</returns>
+        ICollection<EppProposalData> GetEppProposalData(string ntid, bool isAdmin, string searchString);
+
+        /// <summary>
+        /// Gets Proposal Data for eEPP, by Proposal Id
+        /// </summary>
+        /// <param name="ntid">User's NTID</param>
+        /// <param name="isAdmin">Is the user System Admin</param>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Proposal Data</returns>
+        EppProposalData GetEppProposalDataByProposalId(string ntid, bool isAdmin, int proposalId);
     }
 }
