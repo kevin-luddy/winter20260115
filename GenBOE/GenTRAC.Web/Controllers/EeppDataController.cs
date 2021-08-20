@@ -8,6 +8,7 @@ namespace GenTRAC.Web.Controllers
 {
     using System.Collections.Generic;
     using System.Web.Http;
+    using System.Web.Http.Cors;
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
     using IES.Common;
@@ -17,6 +18,7 @@ namespace GenTRAC.Web.Controllers
     /// 
     /// This is going to be a REST controller that the eEPP application will use to pull proposal data
     /// </summary>
+    [EnableCors(origins: "https://localhost:44386", headers: "*", methods: "*", SupportsCredentials = true)]
     public class EeppDataController : ApiController
     {
         /// <summary>

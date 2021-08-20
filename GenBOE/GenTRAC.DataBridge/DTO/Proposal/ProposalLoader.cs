@@ -9,6 +9,7 @@ namespace GenTRAC.DataBridge.DTO
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+using System.Data.Entity.Infrastructure;
     using System.Linq;
     using GenTRAC.Models;
     using IES.Common;
@@ -1817,7 +1818,7 @@ namespace GenTRAC.DataBridge.DTO
         }
 
         /// <summary>
-        /// Gets Proposal Data for eEPP
+        /// Gets Proposal Data for eEPP application, when the user is searching for a PTM record
         /// </summary>
         /// <param name="ntid">User's NTID</param>
         /// <param name="isAdmin">Is the user System Admin</param>
@@ -1825,56 +1826,36 @@ namespace GenTRAC.DataBridge.DTO
         /// <returns>Proposal Data</returns>
         public ICollection<EppProposalData> GetEppProposalData(string ntid, bool isAdmin, string searchString)
         {
-            searchString = (searchString ?? string.Empty).ToLower();
-
             List<EppProposalData> result;
 
             using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetByIds", Log))
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    result = dbModel.Proposals
-                        .Where(x => 
-                            x.ProposalClassLU.ProposalClass != Constants.PROPOSAL_CLASS_FORECASTED
-                            && x.ProposalStatusID == (int)ProposalStatus.InProgress
-
-                            // ToDo: Proposal doesn't already have a linked eEPP record (will come later)
-                            && true 
-                            
-                            && (isAdmin
-                                // ToDo: once we have Backup Contracts Lead, add the role into the 2nd role comparison
-                                || x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid && (role.RoleID == (int)PtmRole.ContractsPOC || role.RoleID == (int)PtmRole.ContractsPOC)))
-
-                            && (string.IsNullOrEmpty(searchString) 
-                                    || x.ProposalTrackingID.ToLower().Contains(searchString)
-                                    || x.ProposalTitle.ToLower().Contains(searchString)
-                                    || x.LineOfBusinessLU.LineOfBusinessName.ToLower().Contains(searchString)
-                                    || x.ProposalUserRoles.Any(z => z.genTRACUser.DisplayName.ToLower().Contains(searchString) && (z.RoleID == (int)PtmRole.Pricer || z.RoleID == (int)PtmRole.ContractsPOC))
-                                )
-                        )
+                    result = GetFilteredProposalsForEppRetrieval(dbModel, ntid, isAdmin, searchString)
                         .Select(entity => new
                         {
                             Id = entity.ProposalID,
                             TrackingNumber = entity.ProposalTrackingID,
                             ProposalTitle = entity.ProposalTitle,
-                            LineOfBusinessID = entity.LineOfBusinessID,
                             ProgramAreaId = entity.ProgramAreaID,
                             AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate,
                             LobDescription = entity.LineOfBusinessLU.LineOfBusinessName,
                             PaDescription = entity.ProgramAreaLU.ProgramAreaName,
-                            ContractTypeLUs = entity.ContractTypeLUs
+                            ContractTypeLUs = entity.ContractTypeLUs,
+                            Customer = entity.Customer
                         }).Take(50).ToList()
                         .Select(entity => new EppProposalData()
                         {
                             ProposalId = entity.Id,
                             PTMTrackingNumber = entity.TrackingNumber,
                             ProposalTitle = entity.ProposalTitle,
-                            LobId = entity.LineOfBusinessID,
                             LobDescription = entity.LobDescription,
                             PaId = entity.ProgramAreaId,
                             PaDescription = entity.PaDescription,
-                            AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate,
-                            ContractTypes = entity.ContractTypeLUs.Select(x => new KeyValuePair<int, string>(x.ContractTypeID, x.ContractType)).ToList()
+                            AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate.ToShortDateString(),
+                            ContractTypes = entity.ContractTypeLUs.Select(x => new KeyValuePair<int, string>(x.ContractTypeID, x.ContractType)).ToList(),
+                            Customer = entity.Customer
                         }).ToList();
                 }
             }
@@ -1883,7 +1864,46 @@ namespace GenTRAC.DataBridge.DTO
         }
 
         /// <summary>
-        /// Gets Proposal Data for eEPP, by Proposal Id
+        /// This is a helper method used when retrieving data for EPP Application, to limit / filter the proposals
+        /// 
+        /// The proposals must:
+        ///     - not be Forecasted
+        ///     - be In Progress
+        ///     - not have been selected by another eEPP record
+        ///     
+        /// Additionally the user's permissions will limit the allowed proposals.
+        /// 
+        /// Finally a search can be used to further limit which proposals will be returned
+        /// </summary>
+        /// <param name="dbModel">DB Model</param>
+        /// <param name="ntid">User's NTID</param>
+        /// <param name="isAdmin">Is User Admin</param>
+        /// <param name="searchString">Search String</param>
+        /// <returns>Filtered data</returns>
+        private static IEnumerable<Proposal> GetFilteredProposalsForEppRetrieval(genTRACEntities dbModel, string ntid, bool isAdmin, string searchString)
+        {
+            searchString = (searchString ?? string.Empty).Trim().ToLower();
+
+            return dbModel.Proposals.Where(
+                                x => x.ProposalClassLU.ProposalClass != Constants.PROPOSAL_CLASS_FORECASTED
+                                && x.ProposalStatusID == (int)ProposalStatus.InProgress
+
+                                // ToDo: Proposal doesn't already have a linked eEPP record (will come later)
+                                && true
+
+                                && (isAdmin
+                                        // ToDo: once we have Backup Contracts Lead, add the role into the 2nd role comparison
+                                        || x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid && (role.RoleID == (int)PtmRole.ContractsPOC || role.RoleID == (int)PtmRole.ContractsPOC)))
+                                && (string.IsNullOrEmpty(searchString)
+                                        || x.ProposalTrackingID.ToLower().Contains(searchString)
+                                        || x.ProposalTitle.ToLower().Contains(searchString)
+                                        || x.LineOfBusinessLU.LineOfBusinessName.ToLower().Contains(searchString)
+                                        || x.ProposalUserRoles.Any(z => z.genTRACUser.DisplayName.ToLower().Contains(searchString) && (z.RoleID == (int)PtmRole.Pricer || z.RoleID == (int)PtmRole.ContractsPOC))
+                                    ));
+        }
+
+        /// <summary>
+        /// Gets Proposal Data for eEPP, by Proposal Id, when the application needs to check if the previously selected PTM record is out-of-date
         /// </summary>
         /// <param name="ntid">User's NTID</param>
         /// <param name="isAdmin">Is the user System Admin</param>
@@ -1909,24 +1929,24 @@ namespace GenTRAC.DataBridge.DTO
                             Id = entity.ProposalID,
                             TrackingNumber = entity.ProposalTrackingID,
                             ProposalTitle = entity.ProposalTitle,
-                            LineOfBusinessID = entity.LineOfBusinessID,
                             ProgramAreaId = entity.ProgramAreaID,
                             AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate,
                             LobDescription = entity.LineOfBusinessLU.LineOfBusinessName,
                             PaDescription = entity.ProgramAreaLU.ProgramAreaName,
-                            ContractTypeLUs = entity.ContractTypeLUs
+                            ContractTypeLUs = entity.ContractTypeLUs,
+                            Customer = entity.Customer
                         }).Take(1).ToList()
                         .Select(entity => new EppProposalData()
                         {
                             ProposalId = entity.Id,
                             PTMTrackingNumber = entity.TrackingNumber,
                             ProposalTitle = entity.ProposalTitle,
-                            LobId = entity.LineOfBusinessID,
                             LobDescription = entity.LobDescription,
                             PaId = entity.ProgramAreaId,
                             PaDescription = entity.PaDescription,
-                            AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate,
-                            ContractTypes = entity.ContractTypeLUs.Select(x => new KeyValuePair<int, string>(x.ContractTypeID, x.ContractType)).ToList()
+                            AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate.ToShortDateString(),
+                            ContractTypes = entity.ContractTypeLUs.Select(x => new KeyValuePair<int, string>(x.ContractTypeID, x.ContractType)).ToList(),
+                            Customer = entity.Customer
                         }).FirstOrDefault();
                 }
             }
