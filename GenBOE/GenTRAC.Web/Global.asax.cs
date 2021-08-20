@@ -10,6 +10,7 @@ namespace GenTRAC
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.Threading;
+    using System.Web.Http;
     using System.Web.Mvc;
     using System.Web.Optimization;
     using System.Web.Routing;
@@ -25,6 +26,7 @@ namespace GenTRAC
     using GenTRAC.Objects;
     using GenTRAC.Web.Common;
     using IES.Common;
+    using IES.Common.classes;
     using IES.Common.PickList;
     using Microsoft.Practices.Unity;
     using Microsoft.Practices.Unity.InterceptionExtension;
@@ -72,8 +74,10 @@ namespace GenTRAC
 
             AreaRegistration.RegisterAllAreas();
 
+            ConfigureWebApi();
+
             this.InitializeContainer();
-            IControllerFactory factory = new GenTRAC.Web.Controllers.Unity.UnityFactory(IES.Common.classes.GenBOEUnityContainer.Container);
+            IControllerFactory factory = new GenTRAC.Web.Controllers.Unity.UnityFactory(GenBOEUnityContainer.Container);
             ControllerBuilder.Current.SetControllerFactory(factory);
 
             RegisterGlobalFilters(GlobalFilters.Filters);
@@ -83,8 +87,8 @@ namespace GenTRAC
             // start a thread to warm the cache up ... we don't care about the 'lost'
             // resources enough to check everytime a user starts a session .... just let
             // it go until the app pool recycles which will reclaim the thread
-            CacheWarmer warm = IES.Common.classes.GenBOEUnityContainer.Container.Resolve(typeof(CacheWarmer)) as CacheWarmer;
-            Thread warmThread = new Thread(delegate()
+            CacheWarmer warm = GenBOEUnityContainer.Container.Resolve(typeof(CacheWarmer)) as CacheWarmer;
+            Thread warmThread = new Thread(delegate ()
             {
                 Stopwatch timespent = new Stopwatch();
                 timespent.Start();
@@ -93,6 +97,15 @@ namespace GenTRAC
                 this.logger.Info("Finished warming cache.. took " + timespent.Elapsed.TotalSeconds + " seconds.");
             });
             warmThread.Start();
+        }
+
+        /// <summary>
+        /// Configures Web Api 2 "things" to work in an MVC application
+        /// </summary>
+        private static void ConfigureWebApi()
+        {
+            GlobalConfiguration.Configure(WebApiConfig.Register);
+            GlobalConfiguration.Configuration.DependencyResolver = new UnityResolver(GenBOEUnityContainer.Container);
         }
 
         /// <summary>
@@ -206,7 +219,7 @@ namespace GenTRAC
         {
             //// for more info see http://msdn.microsoft.com/en-us/library/ff660882%28PandP.20%29.aspx
 
-            IES.Common.classes.GenBOEUnityContainer.Container.AddNewExtension<Interception>();
+            GenBOEUnityContainer.Container.AddNewExtension<Interception>();
 
             #region Register ICache, Cache and Non Cache Data Loader
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterType(typeof(ICache), typeof(MemoryCache), this.GetLifetimeManager(), new InjectionMember[] { });
@@ -287,7 +300,7 @@ namespace GenTRAC
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterType(typeof(IPtmEmailer), typeof(PtmEmailer), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ISecurityInformation)), new ResolvedParameter(typeof(IDataFetchingScheduler))));
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterType(typeof(ICacheWarmer), typeof(CacheWarmer), this.GetLifetimeManager(), new InjectionConstructor(
                                                                                                                                         new ResolvedParameter(typeof(CacheWarmingUserMapper))));
-                                                                                                                                        
+
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterType(typeof(IFullObjectFactory), typeof(FullObjectFactory), this.GetLifetimeManager(), new InjectionConstructor());
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterType(typeof(IEmailInformationLoader), typeof(EmailInformationLoader), this.GetLifetimeManager(), new InjectionConstructor());
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterType(typeof(IRetriever), typeof(Retriever), this.GetLifetimeManager(), new InjectionConstructor(
