@@ -547,7 +547,7 @@
                         <div>For Monthly Query Type, PoP Start Date and PoP End date must be in the format m/yyyy or mm/yyyy</div>
                     </div>
                     <br />                    
-                    <div class="important">IMPORTANT: This will replace all existing tables. If a table is removed or excluded from the excel file, the table will be deleted.</div>
+                    <div class="important">IMPORTANT: This will replace all existing tables. If a table is removed or excluded from the Excel file, the table will be deleted.</div>
                 </div>
                 <div class="step" id="ImportMoqStepThree">
                     <div class="title">Step 3: Import the updated MOQ Table template file</div>
@@ -567,7 +567,7 @@
         </div>
         <div id="ImportResults" data-ng-show="dialog.showImportResults" class="import-verification">
             <div class="content import-verification"></div>
-            <div class="important">IMPORTANT: This will replace all existing tables. If a table is removed or excluded from the excel file, the table will be deleted.</div>
+            <div class="important">IMPORTANT: This will replace all existing tables. If a table is removed or excluded from the Excel file, the table will be deleted.</div>
             <br />
             <div class="buttons">
                 <button id="Back-ImportMoqTableVerification" type="button" class="ies" data-ng-click="backFromImport()" name="back-button">Back</button>
