@@ -1332,6 +1332,11 @@ function AfterDomLoadBOEDetailsWidget(BOEDetails, displayTaskElementDetailsEvent
             dataType: 'html',
             data: JSON.stringify(data),
             success: function (response) {
+                if (taskElementID > 0) {
+                    // ensure URL is updated with task ID for new tasks during Save & Continue
+                    history.pushState(null, null, '#LMLabor/task/' + taskElementID)
+                }
+
                 $('div[tab*=LMLabor] .task-details').html(response);
 
                 $('div[tab*=LMLabor] .task-details').each(function () {
