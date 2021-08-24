@@ -23,6 +23,8 @@ namespace GenTRAC
         {
             _ = config ?? throw new ArgumentNullException(nameof(config));
 
+            config.EnableCors();
+
             // Web API routes
             config.MapHttpAttributeRoutes();
 

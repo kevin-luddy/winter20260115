@@ -31,11 +31,6 @@ namespace GenTRAC.DataBridge.DTO
         public string ProposalTitle { get; set; }
 
         /// <summary>
-        /// Line of business Id
-        /// </summary>
-        public int LobId { get; set; }
-
-        /// <summary>
         /// Line of business Description
         /// </summary>
         public string LobDescription { get; set; }
@@ -53,7 +48,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <summary>
         /// Anticipated Delivery date
         /// </summary>
-        public DateTime AnticipatedDeliveryDate { get; set; }
+        public string AnticipatedDeliveryDate { get; set; }
 
         /// <summary>
         /// Customer
