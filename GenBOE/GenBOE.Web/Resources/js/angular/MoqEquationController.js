@@ -495,6 +495,18 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     $scope.completeImportMoqTables = function () {
         $scope.dialog.completeImportWorking = true;
 
+        GenSession.confirmDialog('Complete import?', 'This will replace all existing tables. If a table is removed or excluded from the Excel file, the table will be deleted.<br/>Do you want to continue?',
+            function () {
+                $scope.completeImportMoqTablesFromConfirmDialog();
+            }, function () {
+                $scope.$apply(function () {
+                    $scope.dialog.completeImportWorking = false;
+                });
+            }
+        );
+    };
+
+    $scope.completeImportMoqTablesFromConfirmDialog = function () {
         // fix imported dates
         $scope.dialog.importResults.forEach(function (r) {
             r.DateOfReport = $scope.convertJsonDate(r.DateOfReport);
@@ -510,7 +522,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         $http({
             method: 'POST',
             url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CompleteImportMoqTablesAction, ''),
-            data: data 
+            data: data
         }).then(function () {
             $scope.refreshPage();
         }).catch(function () {
