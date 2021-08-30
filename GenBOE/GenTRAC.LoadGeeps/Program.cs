@@ -69,7 +69,7 @@ namespace GenTRAC.LoadGeeps
         private static ICollection<DataMartEmployeeDTO> LoadEmployees()
         {
             List<DataMartEmployeeDTO> employees = new List<DataMartEmployeeDTO>();
-            using(OracleConnection conn = new OracleConnection("Data Source=DWLMP;User Id=GEEPS_PTM;Password=etadpu_SLP_29;"))
+            using (OracleConnection conn = new OracleConnection("Data Source=DWLMP;User Id=GEEPS_PTM;Password=etadpuSLP_24;"))
             {
                 conn.Open();
 
