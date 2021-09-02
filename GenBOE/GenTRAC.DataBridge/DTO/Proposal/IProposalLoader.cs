@@ -160,5 +160,23 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="proposalId">Proposal Id</param>
         /// <returns>Revision History</returns>
         ICollection<RevisionHistoryModelView> GetRevisionHistory(int proposalId);
+
+        /// <summary>
+        /// Gets Proposal Data for eEPP application, when the user is searching for a PTM record
+        /// </summary>
+        /// <param name="ntid">User's NTID</param>
+        /// <param name="isAdmin">Is the user System Admin</param>
+        /// <param name="searchString">Optional search string</param>
+        /// <returns>Proposal Data</returns>
+        ICollection<EppProposalData> GetEppProposalData(string ntid, bool isAdmin, string searchString);
+
+        /// <summary>
+        /// Gets Proposal Data for eEPP, by Proposal Tracking Number, when the application needs to check if the previously selected PTM record is out-of-date
+        /// </summary>
+        /// <param name="ntid">User's NTID</param>
+        /// <param name="isAdmin">Is the user System Admin</param>
+        /// <param name="trackingNumber">Proposal Tracking Number</param>
+        /// <returns>Proposal Data</returns>
+        EppProposalData GetEppProposalDataByProposalId(string ntid, bool isAdmin, string trackingNumber);
     }
 }
