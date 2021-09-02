@@ -177,6 +177,6 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="isAdmin">Is the user System Admin</param>
         /// <param name="trackingNumber">Proposal Tracking Number</param>
         /// <returns>Proposal Data</returns>
-        EppProposalData GetEppProposalDataByProposalId(string ntid, bool isAdmin, string trackingNumber);
+        EppProposalData GetEppProposalDataByProposalTrackingNumber(string ntid, bool isAdmin, string trackingNumber);
     }
 }

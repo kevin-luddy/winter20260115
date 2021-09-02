@@ -1828,7 +1828,7 @@ namespace GenTRAC.DataBridge.DTO
         {
             List<EppProposalData> result;
 
-            using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetByIds", Log))
+            using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetEppProposalData", Log))
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
@@ -1909,11 +1909,11 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="isAdmin">Is the user System Admin</param>
         /// <param name="trackingNumber">Proposal Tracking Number</param>
         /// <returns>Proposal Data</returns>
-        public EppProposalData GetEppProposalDataByProposalId(string ntid, bool isAdmin, string trackingNumber)
+        public EppProposalData GetEppProposalDataByProposalTrackingNumber(string ntid, bool isAdmin, string trackingNumber)
         {
             EppProposalData result;
 
-            using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetByIds", Log))
+            using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetEppProposalDataByProposalTrackingNumber", Log))
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {

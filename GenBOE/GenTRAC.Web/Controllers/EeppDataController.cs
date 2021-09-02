@@ -70,7 +70,7 @@ namespace GenTRAC.Web.Controllers
         {
             bool isAdmin = this.securityAccess.CurrentUserHasRole(PtmRole.Admin, null);
 
-            EppProposalData result = this.loader.GetEppProposalDataByProposalId(this.securityInformation.ActiveUserNTID, isAdmin, trackingNumber);
+            EppProposalData result = this.loader.GetEppProposalDataByProposalTrackingNumber(this.securityInformation.ActiveUserNTID, isAdmin, trackingNumber);
 
             return result;
         }
