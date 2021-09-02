@@ -1842,7 +1842,7 @@ namespace GenTRAC.DataBridge.DTO
                             AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate,
                             LobDescription = entity.LineOfBusinessLU.LineOfBusinessName,
                             PaDescription = entity.ProgramAreaLU.ProgramAreaName,
-                            ContractTypeLUs = entity.ContractTypeLUs,
+                            ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
                             Customer = entity.Customer
                         }).Take(50).ToList()
                         .Select(entity => new EppProposalData()
@@ -1854,7 +1854,7 @@ namespace GenTRAC.DataBridge.DTO
                             PaId = entity.ProgramAreaId,
                             PaDescription = entity.PaDescription,
                             AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate.ToShortDateString(),
-                            ContractTypes = entity.ContractTypeLUs.Select(x => new KeyValuePair<int, string>(x.ContractTypeID, x.ContractType)).ToList(),
+                            ContractTypeIds = entity.ContractTypeIds.ToList(),
                             Customer = entity.Customer
                         }).ToList();
                 }
@@ -1903,13 +1903,13 @@ namespace GenTRAC.DataBridge.DTO
         }
 
         /// <summary>
-        /// Gets Proposal Data for eEPP, by Proposal Id, when the application needs to check if the previously selected PTM record is out-of-date
+        /// Gets Proposal Data for eEPP, by Proposal Tracking Number, when the application needs to check if the previously selected PTM record is out-of-date
         /// </summary>
         /// <param name="ntid">User's NTID</param>
         /// <param name="isAdmin">Is the user System Admin</param>
-        /// <param name="proposalId">Proposal Id</param>
+        /// <param name="trackingNumber">Proposal Tracking Number</param>
         /// <returns>Proposal Data</returns>
-        public EppProposalData GetEppProposalDataByProposalId(string ntid, bool isAdmin, int proposalId)
+        public EppProposalData GetEppProposalDataByProposalId(string ntid, bool isAdmin, string trackingNumber)
         {
             EppProposalData result;
 
@@ -1922,7 +1922,7 @@ namespace GenTRAC.DataBridge.DTO
                             (isAdmin
                                 // ToDo: once we have Backup Contracts Lead, add the role into the 2nd role comparison
                                 || x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid && (role.RoleID == (int)PtmRole.ContractsPOC || role.RoleID == (int)PtmRole.ContractsPOC)))
-                            && x.ProposalID == proposalId
+                            && x.ProposalTrackingID == trackingNumber
                         )
                         .Select(entity => new
                         {
@@ -1933,7 +1933,7 @@ namespace GenTRAC.DataBridge.DTO
                             AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate,
                             LobDescription = entity.LineOfBusinessLU.LineOfBusinessName,
                             PaDescription = entity.ProgramAreaLU.ProgramAreaName,
-                            ContractTypeLUs = entity.ContractTypeLUs,
+                            ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
                             Customer = entity.Customer
                         }).Take(1).ToList()
                         .Select(entity => new EppProposalData()
@@ -1945,7 +1945,7 @@ namespace GenTRAC.DataBridge.DTO
                             PaId = entity.ProgramAreaId,
                             PaDescription = entity.PaDescription,
                             AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate.ToShortDateString(),
-                            ContractTypes = entity.ContractTypeLUs.Select(x => new KeyValuePair<int, string>(x.ContractTypeID, x.ContractType)).ToList(),
+                            ContractTypeIds = entity.ContractTypeIds.ToList(),
                             Customer = entity.Customer
                         }).FirstOrDefault();
                 }

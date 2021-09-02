@@ -9,7 +9,9 @@ namespace GenTRAC
     using System;
     using System.Net.Http.Formatting;
     using System.Net.Http.Headers;
+    using System.Web.Configuration;
     using System.Web.Http;
+    using System.Web.Http.Cors;
 
     /// <summary>
     /// Class to add Web API to an MVC application
@@ -23,7 +25,10 @@ namespace GenTRAC
         {
             _ = config ?? throw new ArgumentNullException(nameof(config));
 
-            config.EnableCors();
+            if (WebConfigurationManager.AppSettings["EnableEppIntegration"] == "true")
+            {
+                config.EnableCors(new EnableCorsAttribute(WebConfigurationManager.AppSettings["eEPPUrl"], "*", "*") { SupportsCredentials = true });
+            }
 
             // Web API routes
             config.MapHttpAttributeRoutes();

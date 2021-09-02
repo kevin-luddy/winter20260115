@@ -1239,13 +1239,13 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             bool isAdmin = true;
             string ntid = "paliderd";
-            int proposalId = 14729;
+            string trackingNumber = "21-00008";
 
             ProposalLoader sut = this.CreateSystem();
 
-            EppProposalData result = sut.GetEppProposalDataByProposalId(ntid, isAdmin, proposalId);
+            EppProposalData result = sut.GetEppProposalDataByProposalId(ntid, isAdmin, trackingNumber);
 
-            Assert.AreEqual(proposalId, result.ProposalId);
+            Assert.AreEqual(trackingNumber, result.PTMTrackingNumber);
         }
 
         /// <summary>
@@ -1256,11 +1256,11 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             bool isAdmin = false;
             string ntid = "paliderd";
-            int proposalId = 14729;
+            string trackingNumber = "21-00008";
 
             ProposalLoader sut = this.CreateSystem();
 
-            EppProposalData result = sut.GetEppProposalDataByProposalId(ntid, isAdmin, proposalId);
+            EppProposalData result = sut.GetEppProposalDataByProposalId(ntid, isAdmin, trackingNumber);
 
             Assert.IsNull(result);
         }

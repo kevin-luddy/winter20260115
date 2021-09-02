@@ -71,10 +71,9 @@ namespace GenTRAC
         protected void Application_Start()
         {
             this.logger.Info("Starting Application...");
+            ConfigureWebApi();
 
             AreaRegistration.RegisterAllAreas();
-
-            ConfigureWebApi();
 
             this.InitializeContainer();
             IControllerFactory factory = new GenTRAC.Web.Controllers.Unity.UnityFactory(GenBOEUnityContainer.Container);

@@ -211,7 +211,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WebApiConfig.cs" />
+    <Compile Include="Common\WebApiConfig.cs" />
     <Content Include="app_offlineX.htm" />
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
