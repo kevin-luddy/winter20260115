@@ -8,6 +8,7 @@ namespace GenTRAC.DataBridge.DTO
 {
     using System;
     using System.Collections.Generic;
+    using Newtonsoft.Json;
 
     /// <summary>
     /// Proposal Data for eEPP
@@ -16,8 +17,9 @@ namespace GenTRAC.DataBridge.DTO
     public class EppProposalData
     {
         /// <summary>
-        /// Proposal Id
+        /// Proposal Id, used for unit tests, not actually sent down w/ JSON
         /// </summary>
+        [JsonIgnore]
         public int ProposalId { get; set; }
 
         /// <summary>
@@ -56,9 +58,8 @@ namespace GenTRAC.DataBridge.DTO
         public string Customer { get; set; }
 
         /// <summary>
-        /// Contract Types
+        /// Contract Type Ids
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        public ICollection<KeyValuePair<int, string>> ContractTypes { get; set; }
+        public ICollection<int> ContractTypeIds { get; set; }
     }
 }

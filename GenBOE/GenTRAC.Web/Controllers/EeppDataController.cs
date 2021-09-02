@@ -18,7 +18,6 @@ namespace GenTRAC.Web.Controllers
     /// 
     /// This is going to be a REST controller that the eEPP application will use to pull proposal data
     /// </summary>
-    [EnableCors(origins: "https://localhost:44386", headers: "*", methods: "*", SupportsCredentials = true)]
     public class EeppDataController : ApiController
     {
         /// <summary>
@@ -65,13 +64,13 @@ namespace GenTRAC.Web.Controllers
         /// 
         /// Returns null if the proposal doesn't exist, or the user isn't allowed to access it
         /// </summary>
-        /// <param name="proposalId">Proposal Id</param>
+        /// <param name="trackingNumber">Proposal Tracking Number</param>
         /// <returns>Proposal Data</returns>
-        public EppProposalData GetProposalDataByProposalId(int proposalId)
+        public EppProposalData GetProposalDataByProposal(string trackingNumber)
         {
             bool isAdmin = this.securityAccess.CurrentUserHasRole(PtmRole.Admin, null);
 
-            EppProposalData result = this.loader.GetEppProposalDataByProposalId(this.securityInformation.ActiveUserNTID, isAdmin, proposalId);
+            EppProposalData result = this.loader.GetEppProposalDataByProposalId(this.securityInformation.ActiveUserNTID, isAdmin, trackingNumber);
 
             return result;
         }
