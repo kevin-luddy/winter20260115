@@ -1232,10 +1232,10 @@ namespace GenTRAC.Tests.DAL.Loader
         }
 
         /// <summary>
-        /// Test to verify get by id, correct search, correct result
+        /// Test to verify get by tracking number, correct search, correct result
         /// </summary>
         [TestMethod]
-        public void GetEppProposalDataByProposalId_Test1()
+        public void GetEppProposalDataByProposalTrackingNumber_Test1()
         {
             bool isAdmin = true;
             string ntid = "paliderd";
@@ -1243,16 +1243,16 @@ namespace GenTRAC.Tests.DAL.Loader
 
             ProposalLoader sut = this.CreateSystem();
 
-            EppProposalData result = sut.GetEppProposalDataByProposalId(ntid, isAdmin, trackingNumber);
+            EppProposalData result = sut.GetEppProposalDataByProposalTrackingNumber(ntid, isAdmin, trackingNumber);
 
             Assert.AreEqual(trackingNumber, result.PTMTrackingNumber);
         }
 
         /// <summary>
-        /// Test to verify get by id, incorrect search (invalid permissions), null result
+        /// Test to verify get by tracking number, incorrect search (invalid permissions), null result
         /// </summary>
         [TestMethod]
-        public void GetEppProposalDataByProposalId_Test2()
+        public void GetEppProposalDataByProposalTrackingNumber_Test2()
         {
             bool isAdmin = false;
             string ntid = "paliderd";
@@ -1260,7 +1260,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             ProposalLoader sut = this.CreateSystem();
 
-            EppProposalData result = sut.GetEppProposalDataByProposalId(ntid, isAdmin, trackingNumber);
+            EppProposalData result = sut.GetEppProposalDataByProposalTrackingNumber(ntid, isAdmin, trackingNumber);
 
             Assert.IsNull(result);
         }
