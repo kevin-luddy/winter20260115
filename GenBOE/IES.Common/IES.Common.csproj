@@ -211,6 +211,7 @@
     <Compile Include="classes\SystemConfigurationSection.cs" />
     <Compile Include="classes\UnityFactory.cs" />
     <Compile Include="classes\IUpdateableDTO.cs" />
+    <Compile Include="classes\UnityResolver.cs" />
     <Compile Include="classes\UpdateableDTO.cs" />
     <Compile Include="classes\UserData.cs" />
     <Compile Include="Compression\Zip.cs" />

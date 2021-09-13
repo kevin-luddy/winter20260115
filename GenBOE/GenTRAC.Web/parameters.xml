@@ -100,6 +100,14 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='DisableAllEmails']/@value">
     </parameterentry>
   </parameter>
+  <parameter name="EnableEppIntegration" description="doesn't matter" defaultvalue="__EnableEppIntegration__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EnableEppIntegration']/@value">
+    </parameterentry>
+  </parameter>
+  <parameter name="eEPPUrl" description="doesn't matter" defaultvalue="__eEPPUrl__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='eEPPUrl']/@value">
+    </parameterentry>
+  </parameter>
 
   <!--system.web-->
   <parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
