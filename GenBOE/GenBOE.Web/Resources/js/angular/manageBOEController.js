@@ -516,7 +516,9 @@
         var sortedBoes = $filter('orderBy')($scope.isBulkAssign ? $scope.bulkAssignData : $scope.data, $scope.predicate, $scope.reverse);
 
         sortedBoes.forEach(function (boe) {
-            $scope.bulkAssignBoes.push({ id: boe.BoeID, label: boe.WbsDisplayName + " | " + boe.ClinDisplayName, search: boe.WbsDisplayName + " | " + boe.ClinDisplayName });
+            var boeString = boe.WbsDisplayName + (boe.BOETitle.length > 0 ? " | " + boe.BOETitle : "") + " | " + boe.ClinDisplayName;
+
+            $scope.bulkAssignBoes.push({ id: boe.BoeID, label: boeString, search: boeString });
         });
     }
 
