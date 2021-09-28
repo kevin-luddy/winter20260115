@@ -28,6 +28,9 @@
                 @if (!string.IsNullOrEmpty(ViewBag.RPMUrl))
                 { <li id="nav-rpm" class="@((ViewBag.ActiveTab == "RPM") ? "open" : string.Empty)"><a href="#rpm" onclick="top.location='@ViewBag.RPMUrl';">RPM</a></li> }
 
+                @if (!string.IsNullOrEmpty(ViewBag.ACVUrl))
+                { <li id="nav-acv" class="@((ViewBag.ActiveTab == "ACV") ? "open" : string.Empty)"><a href="#ACV" onclick="top.location='@ViewBag.ACVUrl';">ACV</a></li> }
+
                 @if (!string.IsNullOrEmpty(ViewBag.eEPPUrl))
                 { <li id="nav-eepp" class="@((ViewBag.ActiveTab == "eEPP") ? "open" : string.Empty)"><a href="#eEPP" onclick="top.location='@ViewBag.eEPPUrl';">eEPP</a></li> }
 

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -823,11 +823,12 @@ namespace GenBOE.ActionLogic.Validation
 
                 ICollection<FullWbs> wbsObject = (from w in workspace.WbsElements
                                                   where idsOfDistinctSummedWBS.Contains(w.Id)
-                                                  select w).ToCollection(); ;
+                                                  select w).ToCollection();
 
 
                 // Get BOEs under the WBS that were not modified in-memory
                 var dbBOEsImplicitlyReferencedByWBS = from w in distinctSummedWBS
+                                                      where wbsObject.Any(x => x.Id == w.WBSID)
                                                       from b in FullWorkspaceHelper.GetBoesForWbsWithNesting(wbsObject.First(x => x.Id == w.WBSID), workspace)
                                                       where !boesToCheck.Select(x => x.Id == b.Id).Any()
                                                       select b.Id;

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -13,8 +13,9 @@ namespace GenBOE.DataBridge.Common
     using GenBOE.DataBridge.Common.Interfaces;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
-    using IES.Common;    
-    
+    using IES.Common;
+    using IES.Common.classes;
+
     /// <summary>
     /// Class the requests CRUD Authorizations to a given page for given roles for the currently logged in user
     /// </summary>
@@ -713,7 +714,20 @@ namespace GenBOE.DataBridge.Common
                 throw new ArgumentNullException(nameof(inPermissions));
             }
 
-            SecurityAuthorization authorization = _GetAuthorizationsRoles(inPermissions, rolesForUser, workspace);
+            List<SecurityPermissionsResponse> userRoles = rolesForUser.ToList();
+
+            // RMS is temporarily not using this.. BOEJ-5305
+            if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+            {
+                // If you aren't allowed to have a WS Admin permission (controlled via Create WS Permissions), you shouldn't have it. 
+                // This is horrid, but it's necessary because you can assign a role to an AD group, hence the secondary check being necessary
+                if (!userRoles.Any(x => x.AuthorizedRole == Role.CreateWorkspacePermissions))
+                {
+                    userRoles = userRoles.Where(x => x.AuthorizedRole != Role.WorkspaceAdmin).ToList();
+                }
+            }
+
+            SecurityAuthorization authorization = GetAuthorizationsRoles(inPermissions, userRoles, workspace);
 
             return authorization;
         }
@@ -724,8 +738,8 @@ namespace GenBOE.DataBridge.Common
         /// <param name="inPermission">The requested permissions</param>
         /// <param name="rolesForUser">The user's roles</param>
         /// <returns>The highest security permission present between for the roles the user has</returns>
-        private SecurityAuthorization _GetAuthorizationsRoles(SecurityPermissionsRequested inPermission, 
-            IReadOnlyCollection<SecurityPermissionsResponse> rolesForUser, WorkspaceDTO workspace)
+        private SecurityAuthorization GetAuthorizationsRoles(SecurityPermissionsRequested inPermission,
+            List<SecurityPermissionsResponse> rolesForUser, WorkspaceDTO workspace)
         {
             #region Figure out requirement of WS and Boe and verify that it was as needed
 

@@ -261,7 +261,7 @@
             </div>
     </div>
     <div class="form-row"> 
-        <div class="form-label">a) Supplier proposal and supporting data included if > $13.5M or ≥ CCoPD threshold AND >10%  of the LM proposal?</div>
+        <div class="form-label">a) Supplier proposal and supporting data included if > $15M or ≥ CCoPD threshold AND >10%  of the LM proposal?</div>
         <div class="form-element">
             <%: Html.RadioButton("SupplierProposalSupportingDataIncluded", TripleBooleanState.Yes, Model.PBOEModel.SupplierProposalSupportingDataIncluded == TripleBooleanState.Yes, new { id = "SupplierProposalSupportingDataIncluded" }) %><label>Yes</label><br />
             <%: Html.RadioButton("SupplierProposalSupportingDataIncluded", TripleBooleanState.NA, Model.PBOEModel.SupplierProposalSupportingDataIncluded == TripleBooleanState.NA, new { id = "SupplierProposalSupportingDataIncluded" }) %><label>N/A</label><br />

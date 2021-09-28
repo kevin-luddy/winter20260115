@@ -1,22 +1,23 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
 namespace GenBOE.ActionLogic
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
     using System.Transactions;
     using GenBOE.ActionLogic.ModelView;
-    using IES.Common;
-    using IES.Common.Exceptions;
+    using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.DTO;
     using GenBOE.Dtos;
     using GenBOE.Objects;
-    using System.Collections.Generic;
+    using IES.Common;
+    using IES.Common.Exceptions;
 
     public class PermissionControllerLogic
     {
@@ -24,7 +25,7 @@ namespace GenBOE.ActionLogic
 
         protected IFullObjectFactory Factory { get; set; }
         private IPermissionsDTODataLoader permissionLoader;
-        private IActiveDirectoryUtilities _ADUtils;
+        private IActiveDirectoryUtilities ADUtils;
         private ISecurityInformation _SecurityInformation;
         private IUserDTODataLoader _UserDTODataLoader;
 
@@ -36,7 +37,7 @@ namespace GenBOE.ActionLogic
         {
             this.Factory = factory;
             this.permissionLoader = inPermissionsLoader;
-            this._ADUtils = inADUtils;
+            this.ADUtils = inADUtils;
             this._SecurityInformation = inISecurityInformation;
             this._UserDTODataLoader = inUserLoader;
         }
@@ -108,7 +109,6 @@ namespace GenBOE.ActionLogic
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
             {
-
                 // Seperate nt ids
                 String[] tempids = inPermission.EntityIds[0].Split(';');
                 if (tempids.Length > 1)
@@ -132,7 +132,7 @@ namespace GenBOE.ActionLogic
 
                     if (entity.Contains('.'))
                     {
-                        if (!this._ADUtils.IsGroup(entity.Trim()))
+                        if (!this.ADUtils.IsGroup(entity.Trim()))
                         {
                             ValidationErrors.Add(new ValidationMessage("The group '" + entity + "' was not found"));
                             throw new GenValidationException(ValidationErrors);
@@ -140,7 +140,7 @@ namespace GenBOE.ActionLogic
 
                         userDTO = this._UserDTODataLoader.GetOrCreateUserByNtid(entity);
 
-                        ICollection<UserData> groupMembers = this._ADUtils.GetAdGroupUsers(entity);
+                        ICollection<UserData> groupMembers = this.ADUtils.GetAdGroupUsers(entity);
                         Dictionary<UserData, bool> groupMemberAccess = this.GetGenBOEAccess(groupMembers);
 
                         if (groupMemberAccess.Any(x => x.Value == false))
@@ -153,7 +153,7 @@ namespace GenBOE.ActionLogic
                     else
                     {
                         // details from AD
-                        UserData user = this._ADUtils.GetUserByQualifiedAccount(entity, false);
+                        UserData user = this.ADUtils.GetUserByQualifiedAccount(entity, false);
                         if (user == null)
                         {
                             ValidationErrors.Add(new ValidationMessage("UserNotFound", "User not found"));
@@ -177,6 +177,8 @@ namespace GenBOE.ActionLogic
                             this.Factory.ClearPermissionsCache(userDTO.NTID);
                         }
                     }
+
+                    this.ValidateWsAdminMustHaveCreateWsPermission(userDTO.NTID, inPermission.Roles);
 
                     foreach (Role role in inPermission.Roles)
                     {
@@ -237,11 +239,46 @@ namespace GenBOE.ActionLogic
         /// <returns>A dictionary of users and a bool indicating if they have access or not</returns>
         public Dictionary<UserData, bool> GetGenBOEAccess(ICollection<UserData> usersToCheck)
         {
-            ICollection<GroupData> groups = this._ADUtils.GetAuthorizationGroupsFromWebConfig();
+            ICollection<GroupData> groups = this.ADUtils.GetAuthorizationGroupsFromWebConfig();
 
-            Dictionary<UserData, bool> result = _ADUtils.CheckUsersBoeAccess(usersToCheck, groups);
+            Dictionary<UserData, bool> result = ADUtils.CheckUsersBoeAccess(usersToCheck, groups);
 
             return result;
+        }
+
+        /// <summary>
+        /// If we are assigning a WS Admin role, we need to make sure that:
+        ///     the user has a create WS role
+        ///     OR the user is a system admin
+        /// </summary>
+        /// <param name="wsId">Workspace Id</param>
+        /// <param name="ntid">User's NTID</param>
+        /// <param name="Roles">Roles being assigned</param>
+        /// <exception cref="GenValidationException">If invalid, the method throws a validation exception.</exception>
+        public void ValidateWsAdminMustHaveCreateWsPermission(string ntid, ICollection<Role> Roles)
+        {
+            if(Roles.Any(x => x == Role.WorkspaceAdmin))
+            {
+                // need to figure out if the ntid belongs to a group.. if yes, then break it up into users and run it through.
+                // else, just check the user
+
+                if(this.ADUtils.IsGroup(ntid))
+                {
+                    List<string> ntidsInGroup = this.ADUtils.GetAdGroupUsers(ntid).Select(x => x.Ntid).ToList();
+                    ntidsInGroup.ForEach(NTID => this.ValidateWsAdminMustHaveCreateWsPermission(NTID, Roles));
+                }
+                else
+                {
+                    IReadOnlyCollection<SecurityPermissionsResponse> permissions = this.Factory.GetPermissionsForUser(ntid);
+                    bool isAllowedToCreateWs = permissions.Any(x => x.AuthorizedRole == Role.CreateWorkspacePermissions);
+                    bool isSystemAdmin = permissions.Any(x => x.AuthorizedRole == Role.SystemAdmin);
+
+                    if (!isAllowedToCreateWs && !isSystemAdmin)
+                    {
+                        throw new GenValidationException($"User {ntid} cannot be assigned 'Workspace Administrator' permissions, because they do not have 'Create Workspace' permissions.");
+                    }
+                }
+            }
         }
     }
 }

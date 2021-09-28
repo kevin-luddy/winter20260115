@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -357,91 +357,92 @@ namespace IES.Common.OfficeUtilities
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2202:Do not dispose objects multiple times")]
         public static void SetElementTextWithHTML(MainDocumentPart mainPart, OpenXmlElement element, string htmlFormattedText, ref ChunkCounter counters, bool removeSpacing = false, bool applyInternalSectionFormatting = false)
         {
-            if (element == null) { throw new ArgumentNullException(nameof(element)); }
-
-            // the idea for altchunks was based on http://yeshagupta.blogspot.com/2010/06/downloading-ms-word-2007-files-for-html.html
-            // it's been heavily modified & adjusted beyond what it started it..
-
-            // Clears out the original text
-            SetElementText(element, null);
-
-            if (!string.IsNullOrEmpty(htmlFormattedText))
+            if (element != null)
             {
-                bool skipCleanup = false;
+                // the idea for altchunks was based on http://yeshagupta.blogspot.com/2010/06/downloading-ms-word-2007-files-for-html.html
+                // it's been heavily modified & adjusted beyond what it started it..
 
-                // do some initial prep
-                htmlFormattedText = RTEUtilities.PrepareHtmlForWordExport(htmlFormattedText, removeSpacing, ref skipCleanup);
+                // Clears out the original text
+                SetElementText(element, null);
 
-                // Get font information for the field/element into which we are inserting the HTML.
-                decimal? fontSize = RTEUtilities.GetFontSizeBasedOnWordElementXml(element);
-                ICollection<string> fontFamilies = RTEUtilities.GetFontFamiliesBasedOnElementXml(element);
-                SpacingDetailsForRTEWordExports paragraphSizing = RTEUtilities.GetSpacingFromXml(element);
-
-                #region Cleanup the Element, if needed
-
-                if (!skipCleanup)
+                if (!string.IsNullOrEmpty(htmlFormattedText))
                 {
-                    // This is done in order to deal with how strangly the MHTML can be inserted into the document
-                    // Issues this will help correct/prevent are strange spacings before/after items, styles bleeding through from the HTML into the labels and such
-                    // It needs to be done in three ways, because some fields are contained inside of a paragraph, others inside of Runs, and yet others of Runs inside of StdContentRuns
+                    bool skipCleanup = false;
 
-                    // we are attaching properties to an existing Run/Paragraph, in order to make sure that it basically goes "invisible", as there's no fool proof way to replace it w/ the chunk
+                    // do some initial prep
+                    htmlFormattedText = RTEUtilities.PrepareHtmlForWordExport(htmlFormattedText, removeSpacing, ref skipCleanup);
 
-                    // 2 half points -> font size of 1, to make it as invisible as possible
-                    FontSize size = new FontSize() { Val = "2" };
+                    // Get font information for the field/element into which we are inserting the HTML.
+                    decimal? fontSize = RTEUtilities.GetFontSizeBasedOnWordElementXml(element);
+                    ICollection<string> fontFamilies = RTEUtilities.GetFontFamiliesBasedOnElementXml(element);
+                    SpacingDetailsForRTEWordExports paragraphSizing = RTEUtilities.GetSpacingFromXml(element);
 
-                    // clear out any weird spacing
-                    SpacingBetweenLines spacing = new SpacingBetweenLines() { Before = "0", After = "0", Line = "0", AfterLines = 0, BeforeLines = 0 };
+                    #region Cleanup the Element, if needed
 
-                    // create a run properties object, for modifying runs
-                    RunProperties runProp = new RunProperties();
-                    runProp.Append(size);
-                    runProp.Append(spacing);
-
-                    if (element.GetFirstChild<Run>() != null)
-                    // if the element contains the Run directly, adjust it
+                    if (!skipCleanup)
                     {
-                        element.GetFirstChild<Run>().PrependChild<RunProperties>(runProp);
-                    }
-                    else if (element.GetFirstChild<SdtContentRun>() != null && element.GetFirstChild<SdtContentRun>().GetFirstChild<Run>() != null)
-                    // at times the runs are inside of a Standard Content Run, in which case we need to then go one level deeper
-                    {
-                        element.GetFirstChild<SdtContentRun>().GetFirstChild<Run>().PrependChild<RunProperties>(runProp);
-                    }
-                    else if (element.GetFirstChild<Paragraph>() != null)
-                    {
-                        // finally, if no runs exist, it's likely that a paragraph is in place, so we have to create paragraph properties instead & use those
-                        // we need to clone because the original nodes are already a part of the RunProperties..
-                        ParagraphProperties parProperties = new ParagraphProperties();
-                        parProperties.Append(size.CloneNode(true));
-                        parProperties.Append(spacing.CloneNode(true));
+                        // This is done in order to deal with how strangly the MHTML can be inserted into the document
+                        // Issues this will help correct/prevent are strange spacings before/after items, styles bleeding through from the HTML into the labels and such
+                        // It needs to be done in three ways, because some fields are contained inside of a paragraph, others inside of Runs, and yet others of Runs inside of StdContentRuns
 
-                        element.RemoveAllChildren<Paragraph>(); // in weird cases this may cause formatting issues, especially w/ html containing lists; so we remove it
-                        element.Append(new Paragraph()); // and replace the original one w/ a new, clean one
-                        element.GetFirstChild<Paragraph>().PrependChild<ParagraphProperties>(parProperties); // to which we will then append the new styles
+                        // we are attaching properties to an existing Run/Paragraph, in order to make sure that it basically goes "invisible", as there's no fool proof way to replace it w/ the chunk
+
+                        // 2 half points -> font size of 1, to make it as invisible as possible
+                        FontSize size = new FontSize() { Val = "2" };
+
+                        // clear out any weird spacing
+                        SpacingBetweenLines spacing = new SpacingBetweenLines() { Before = "0", After = "0", Line = "0", AfterLines = 0, BeforeLines = 0 };
+
+                        // create a run properties object, for modifying runs
+                        RunProperties runProp = new RunProperties();
+                        runProp.Append(size);
+                        runProp.Append(spacing);
+
+                        if (element.GetFirstChild<Run>() != null)
+                        // if the element contains the Run directly, adjust it
+                        {
+                            element.GetFirstChild<Run>().PrependChild<RunProperties>(runProp);
+                        }
+                        else if (element.GetFirstChild<SdtContentRun>() != null && element.GetFirstChild<SdtContentRun>().GetFirstChild<Run>() != null)
+                        // at times the runs are inside of a Standard Content Run, in which case we need to then go one level deeper
+                        {
+                            element.GetFirstChild<SdtContentRun>().GetFirstChild<Run>().PrependChild<RunProperties>(runProp);
+                        }
+                        else if (element.GetFirstChild<Paragraph>() != null)
+                        {
+                            // finally, if no runs exist, it's likely that a paragraph is in place, so we have to create paragraph properties instead & use those
+                            // we need to clone because the original nodes are already a part of the RunProperties..
+                            ParagraphProperties parProperties = new ParagraphProperties();
+                            parProperties.Append(size.CloneNode(true));
+                            parProperties.Append(spacing.CloneNode(true));
+
+                            element.RemoveAllChildren<Paragraph>(); // in weird cases this may cause formatting issues, especially w/ html containing lists; so we remove it
+                            element.Append(new Paragraph()); // and replace the original one w/ a new, clean one
+                            element.GetFirstChild<Paragraph>().PrependChild<ParagraphProperties>(parProperties); // to which we will then append the new styles
+                        }
                     }
+
+                    #endregion
+
+                    // Need this in order to be able to insert the object into Word and uniquely be able to reference it
+                    if (counters == null) { throw new ArgumentNullException(nameof(counters)); }
+                    string altChunkId = String.Format("AltChunkId{0}", counters.AltChunkCounter);
+
+                    // Add the mhtml as a Mht(ml) special part, associated w/ the id
+                    if (mainPart == null) { throw new ArgumentNullException(nameof(mainPart)); }
+                    AlternativeFormatImportPart chunk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.Mht, altChunkId);
+
+                    // Write the mhtml into this newly associated AlternativeFormatImportPart
+                    using (Stream chunkStream = chunk.GetStream(FileMode.Create, FileAccess.Write))
+                    {
+                        using (StreamWriter writer = new StreamWriter(chunkStream, Encoding.UTF8)) //Encoding.UTF8 removes special characters
+                        {
+                            RTEUtilities.ConvertHtmlToMhtml(writer, htmlFormattedText, fontSize, fontFamilies, paragraphSizing, applyInternalSectionFormatting);
+                        }
+                    }
+
+                    element.Append(new AltChunk() { Id = altChunkId });
                 }
-
-                #endregion
-
-                // Need this in order to be able to insert the object into Word and uniquely be able to reference it
-                if (counters == null) { throw new ArgumentNullException(nameof(counters)); }
-                string altChunkId = String.Format("AltChunkId{0}", counters.AltChunkCounter);
-
-                // Add the mhtml as a Mht(ml) special part, associated w/ the id
-                if (mainPart == null) { throw new ArgumentNullException(nameof(mainPart)); }
-                AlternativeFormatImportPart chunk = mainPart.AddAlternativeFormatImportPart(AlternativeFormatImportPartType.Mht, altChunkId);
-
-                // Write the mhtml into this newly associated AlternativeFormatImportPart
-                using (Stream chunkStream = chunk.GetStream(FileMode.Create, FileAccess.Write))
-                {
-                    using (StreamWriter writer = new StreamWriter(chunkStream, Encoding.UTF8)) //Encoding.UTF8 removes special characters
-                    {
-                        RTEUtilities.ConvertHtmlToMhtml(writer, htmlFormattedText, fontSize, fontFamilies, paragraphSizing, applyInternalSectionFormatting);
-                    }
-                }
-
-                element.Append(new AltChunk() { Id = altChunkId });
             }
         }
 

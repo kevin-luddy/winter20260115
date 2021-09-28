@@ -8,11 +8,14 @@
         status: 'Status',
         updateDate: 'UpdateDate',
         hours: 'TotalHours',
-        cost: 'TotalCost'
+        cost: 'TotalCost',
+        subauthors: 'SubcontractorOrderName',
+        boeId: 'BoeID'
     };
+
     $scope.errors = [];
     $scope.modalErrors = [];
-    $scope.gridModel = { containsOCI: true};
+    $scope.gridModel = { containsOCI: true };
     $scope.deleteAll = {};
     $scope.deleteAll.deleteAll = false;
 
@@ -20,7 +23,7 @@
     // Manage BOE can be done when workspace state is Initialization or Working
     $scope.isWorkingState = ManageBOEModel.workspaceState === 'Working' || ManageBOEModel.workspaceState === 'Initialization';
     $scope.isWorkspaceLocked = ManageBOEModel.workspaceState === 'Locked';
-    
+
     $scope.dialog = {
         title: 'Import BOEs',
         open: false,
@@ -36,7 +39,7 @@
     };
 
     $scope.filter = {
-        wbs: {}, boe: {}, clin: {}, author: {}, approver: {}, status: {},
+        wbs: {}, boe: {}, clin: {}, author: {}, approver: {}, status: {}, boeId: {},
         filterColumn: '',
         open: false
     };
@@ -53,8 +56,41 @@
     };
 
     $scope.data = [];
+    $scope.bulkAssignData = [];
+    $scope.bulkAssignBoes = [];
+    $scope.bulkAssignAuthors = [];
+    $scope.bulkAssignApprovers = [];
+    $scope.bulkAssignSubAuthors = [];
     $scope.isLoading = true;
-    
+    $scope.isBulkAssign = false;
+    $scope.isDirty = false;
+
+    $scope.selectedBoes = [];
+    $scope.selectedRole;
+    $scope.selectedUsers = [];
+
+    $scope.boeDropdownSettings = {
+        scrollableHeight: '200px',
+        scrollable: true,
+        checkBoxes: true,
+        enableSearch: true,
+        searchField: 'search',
+        enableSearch: true
+    };
+
+    $scope.userDropdownSettings = {
+        scrollableHeight: '200px',
+        scrollable: true,
+        checkBoxes: true,
+        enableSearch: true
+    };
+
+    $scope.roles = {
+        author: 'Author',
+        approver: 'Approver',
+        subAuthor: 'Subcontract Author'
+    }
+
     $scope.predicate = [$scope.columns.wbs, $scope.columns.clin, $scope.columns.authors];
     $scope.reverse = false;
     $scope.pageSize = 100;
@@ -81,7 +117,7 @@
         if (angular.isDefined(column)) {
             $scope.filter.filterColumn = column;
         }
-        
+
         $scope.filter.open = !$scope.filter.open;
     };
 
@@ -105,13 +141,13 @@
 
                 // need to save the state of each cleared checkbox
                 $scope.checkboxDirty(index, item);
-            }            
+            }
         });
 
         $scope.SaveFilterToCookies();
     };
 
-    $scope.applyFilters = function (saveFilters) {
+    $scope.applyFilters = function (saveFilters, toggleFilters = true) {
         var selected = [];
         var workingSet = getWorkingFilterSet();
         workingSet.forEach(function (item) {
@@ -123,7 +159,10 @@
         setWorkingFilterSet(selected);
         $scope.currentPage = 0;
         originalFilterSet = {};
-        $scope.toggleFilter(); 
+
+        if (toggleFilters) {
+            $scope.toggleFilter();
+        }
 
         if (saveFilters) {
             $scope.SaveFilterToCookies();
@@ -147,7 +186,8 @@
     $scope.isDataFiltered = function () {
         return selectedFilters.wbs.length > 0 || selectedFilters.boe.length > 0
             || selectedFilters.clin.length > 0 || selectedFilters.author.length > 0
-            || selectedFilters.approver.length > 0 || selectedFilters.status.length > 0 || $scope.searchText.length > 0;
+            || selectedFilters.approver.length > 0 || selectedFilters.status.length > 0
+            || $scope.searchText.length > 0 || selectedFilters.boeId.length > 0;
     };
 
     // reset all filters to be empty and unselected
@@ -158,6 +198,7 @@
         selectedFilters.author = [];
         selectedFilters.approver = [];
         selectedFilters.status = [];
+        selectedFilters.boeId = [];
         $scope.searchText = '';
 
         $scope.filter.wbs.forEach(function (item) {
@@ -176,6 +217,9 @@
             item.checked = false;
         });
         $scope.filter.status.forEach(function (item) {
+            item.checked = false;
+        });
+        $scope.filter.boeId.forEach(function (item) {
             item.checked = false;
         });
 
@@ -239,6 +283,10 @@
         }
 
         if (selectedFilters.status.length > 0 && selectedFilters.status.indexOf(data.Status.toLowerCase()) === -1) {
+            return false;
+        }
+
+        if (selectedFilters.boeId.length > 0 && selectedFilters.boeId.indexOf(data.BoeID.toString()) === -1) {
             return false;
         }
 
@@ -313,7 +361,7 @@
         var minutes = 240;
         date.setTime(date.getTime() + (minutes * 60 * 1000));
         console.log(ManageBOEModel.workspace);
-        
+
         $cookies.put('filtersWbs' + ManageBOEModel.workspace, angular.toJson($scope.filter.wbs), { expires: date });
         $cookies.put('filtersBoe' + ManageBOEModel.workspace, angular.toJson($scope.filter.boe), { expires: date });
         $cookies.put('filtersClin' + ManageBOEModel.workspace, angular.toJson($scope.filter.clin), { expires: date });
@@ -458,8 +506,21 @@
             }
         }
 
+        $scope.sortBulkAssignData();
+
         $scope.SaveFilterToCookies();
     };
+
+    $scope.sortBulkAssignData = function () {
+        $scope.bulkAssignBoes = [];
+        var sortedBoes = $filter('orderBy')($scope.isBulkAssign ? $scope.bulkAssignData : $scope.data, $scope.predicate, $scope.reverse);
+
+        sortedBoes.forEach(function (boe) {
+            var boeString = boe.WbsDisplayName + (boe.BOETitle.length > 0 ? " | " + boe.BOETitle : "") + " | " + boe.ClinDisplayName;
+
+            $scope.bulkAssignBoes.push({ id: boe.BoeID, label: boeString, search: boeString });
+        });
+    }
 
     // returns true when the column being sorted matches the first index
     $scope.boldSort = function (sortColumn) {
@@ -574,7 +635,7 @@
     var firstLoad = true;
     var originalFilterSet = {};
     var currentUserName = '';
-    var selectedFilters = { wbs: [], boe: [], clin: [], author: [], approver: [], status: [] };
+    var selectedFilters = { wbs: [], boe: [], clin: [], author: [], approver: [], status: [], boeId: [] };
 
     var convertToArray = function (data) {
         var newData = [];
@@ -611,6 +672,8 @@
             return $scope.filter.author;
         } else if ($scope.filter.filterColumn === $scope.columns.status) {
             return $scope.filter.status;
+        } else if ($scope.filter.filterColumn === $scope.columns.boeId) {
+            return $scope.filter.boeId;
         }
     };
 
@@ -628,6 +691,8 @@
                 selectedFilters.author = currentSet;
             } else if ($scope.filter.filterColumn === $scope.columns.status) {
                 selectedFilters.status = currentSet;
+            } else if ($scope.filter.filterColumn === $scope.columns.boeId) {
+                selectedFilters.boeId = currentSet;
             }
         }
     };
@@ -635,7 +700,7 @@
     $scope.toggleDeleteAll = function () {
         if ($scope.deleteAll.deleteAll === false) {
             // unmark ALL
-            $scope.data.forEach(function (item) { 
+            $scope.data.forEach(function (item) {
                 item.Deleted = $scope.deleteAll.deleteAll;
             });
         } else {
@@ -774,7 +839,7 @@
         if ($scope.edit.isDirty) {
             $('#PageLoading').removeClass('display-none');
             var data = {};
-            
+
             $scope.edit.boe.Deleted = false;
 
             data.boes = [$scope.edit.boe];
@@ -918,11 +983,17 @@
         $scope.edit.showMaterial = $scope.edit.boe.isMaterial;
         $scope.edit.open = true;
     };
-    
+
     var loadBOEs = function () {
         $scope.isLoading = true;
         $scope.data = [];
+        $scope.bulkAssignData = [];
         $scope.errors = [];
+
+        $scope.bulkAssignBoes = [];
+        $scope.bulkAssignAuthors = [];
+        $scope.bulkAssignApprovers = [];
+        $scope.bulkAssignSubAuthors = [];
 
         return $http({
             method: 'POST',
@@ -939,7 +1010,7 @@
 
             // reset the filters
             $scope.filter = {
-                wbs: {}, boe: {}, clin: {}, author: {}, approver: {}, status: {},
+                wbs: {}, boe: {}, clin: {}, author: {}, approver: {}, status: {}, boeId: {},
                 filterColumn: '',
                 open: false
             };
@@ -956,6 +1027,7 @@
                 // build filter sets based on the data returned
                 $scope.filter.boe[item.BOETitle] = { display: item.BOETitle, value: item.BOETitle, checked: false };
                 $scope.filter.status[item.Status] = { display: item.Status, value: item.Status, checked: false };
+                $scope.filter.boeId[item.BoeID] = { display: item.BoeID, value: item.BoeID.toString(), checked: false };
 
                 // Remove c# date
                 delete item.UpdateDate;
@@ -1001,22 +1073,314 @@
             $scope.filter.author = convertToArray($scope.filter.author);
             $scope.filter.approver = convertToArray($scope.filter.approver);
             $scope.filter.status = convertToArray($scope.filter.status);
+            $scope.filter.boeId = convertToArray($scope.filter.boeId);
 
-            $scope.data = response.data.BoeResults;
+            $scope.data = response.data.BoeResults; 
+
+            $scope.gridModel.PotentialAuthors.forEach(function (user) {
+                $scope.bulkAssignAuthors.push({ id: user.Value, label: user.Text });
+            });
+
+            $scope.gridModel.PotentialApprovers.forEach(function (user) {
+                $scope.bulkAssignApprovers.push({ id: user.Value, label: user.Text });
+            });
+
+            $scope.gridModel.PotentialSubcontractorAuthors.forEach(function (user) {
+                $scope.bulkAssignSubAuthors.push({ id: user.Value, label: user.Text });
+            });
 
             $scope.LoadFilterFromCookies();
 
-            $scope.isLoading = false;            
+            $scope.sortBulkAssignData();
+
+            $scope.isLoading = false;
             firstLoad = false;
-            
+
         }, function errorCallback(response) {
             if (response.data && response.data.MessageList) {
                 $scope.errors = response.data.MessageList;
             }
             $scope.isLoading = false;
         });
-    }    
+    }
 
     // load the main data
     loadBOEs();
+
+    /*
+     * ******* NOTE *********
+     * Bulk Assign Functions
+     * **********************
+     */
+
+    $scope.openBulkAssign = function () {
+        // Only get BOEs in Draft or Unassigned - roles are locked in any other status
+        $scope.bulkAssignData = angular.copy($scope.data.filter(x => x.Status == "Unassigned" || x.Status == "Draft"));
+        $scope.isBulkAssign = true;
+        $scope.sortBulkAssignData();
+    };
+
+    $scope.cancelBulkAssign = function () {
+        if ($scope.isDirty) {
+            Session.confirmDialog("Cancel", "Are you sure you want to cancel all changes?", function () { $scope.$apply(function () { $scope.continueCancelBulkAssign(); }) }, null);
+        } else {
+            $scope.continueCancelBulkAssign();
+        }
+    };
+
+    $scope.continueCancelBulkAssign = function () {
+        $scope.bulkAssignData = [];
+        $scope.errors = [];
+        $scope.isBulkAssign = false;
+        $scope.cleanDirty();
+    }
+
+    $scope.bulkAssignRoles = function () {
+        $scope.setDirty();
+
+        $scope.selectedBoes.forEach(function (selectedBoe) {
+            var boeToUpdate = $scope.bulkAssignData.find(boe => boe.BoeID == selectedBoe.id);
+
+            if (boeToUpdate != undefined) {
+                $scope.selectedUsers.forEach(function (selectedUser) {
+                    var userId = parseInt(selectedUser.id);
+
+                    if ($scope.selectedRole == $scope.roles.author) {
+                        if (!boeToUpdate.Authors.includes(userId)) {
+                            boeToUpdate.Authors.push(userId);
+                            boeToUpdate.AuthorsDisplayNames.push(selectedUser.label);
+                        }
+                    } else if ($scope.selectedRole == $scope.roles.approver) {
+                        if (!boeToUpdate.Approvers.includes(userId)) {
+                            boeToUpdate.Approvers.push(userId);
+                            boeToUpdate.ApproversDisplayNames.push(selectedUser.label);
+                        }
+                    } else if ($scope.selectedRole == $scope.roles.subAuthor) {
+                        if (!boeToUpdate.SubcontractorAuthors.includes(userId)) {
+                            boeToUpdate.SubcontractorAuthors.push(userId);
+                            boeToUpdate.AuthorsDisplayNames.push(selectedUser.label);
+                        }
+                    }
+                })
+            }
+        });
+
+        $scope.validateBulkAssign(false, false);
+        $scope.clearAllSelections();
+    };
+
+    $scope.bulkRemoveRoles = function () {
+        $scope.setDirty();
+
+        $scope.selectedBoes.forEach(function (selectedBoe) {
+            var boeToUpdate = $scope.bulkAssignData.find(boe => boe.BoeID == selectedBoe.id);
+
+            if (boeToUpdate != undefined) {
+                $scope.selectedUsers.forEach(function (selectedUser) {
+                    var userId = parseInt(selectedUser.id);
+
+                    if ($scope.selectedRole == $scope.roles.author) {
+                        if (boeToUpdate.Authors.includes(userId)) {
+                            var idIndex = boeToUpdate.Authors.indexOf(userId);
+                            var nameIndex = boeToUpdate.AuthorsDisplayNames.indexOf(selectedUser.label);
+                            boeToUpdate.Authors.splice(idIndex, 1);
+                            boeToUpdate.AuthorsDisplayNames.splice(nameIndex, 1);
+                        }
+                    } else if ($scope.selectedRole == $scope.roles.approver) {
+                        if (boeToUpdate.Approvers.includes(userId)) {
+                            var idIndex = boeToUpdate.Approvers.indexOf(userId);
+                            var nameIndex = boeToUpdate.ApproversDisplayNames.indexOf(selectedUser.label);
+                            boeToUpdate.Approvers.splice(idIndex, 1);
+                            boeToUpdate.ApproversDisplayNames.splice(nameIndex, 1);
+                        }
+                    } else if ($scope.selectedRole == $scope.roles.subAuthor) {
+                        if (boeToUpdate.SubcontractorAuthors.includes(userId)) {
+                            var idIndex = boeToUpdate.SubcontractorAuthors.indexOf(userId);
+                            var nameIndex = boeToUpdate.AuthorsDisplayNames.indexOf(selectedUser.label);
+                            boeToUpdate.SubcontractorAuthors.splice(idIndex, 1);
+                            boeToUpdate.AuthorsDisplayNames.splice(nameIndex, 1);
+                        }
+                    }
+                });
+            }
+        });
+
+        $scope.validateBulkAssign(false, false);
+        $scope.clearAllSelections();
+    };
+
+    $scope.clearAllSelections = function () {
+        $scope.selectedBoes = [];
+        $scope.selectedRole = '';
+        $scope.selectedUsers = [];
+    }
+
+    $scope.clearUsers = function () {
+        $scope.selectedUsers = [];
+    }
+
+    $scope.disableAssignRemove = function () {
+        return $scope.selectedBoes == undefined || $scope.selectedBoes == ''
+            || $scope.selectedRole == undefined || $scope.selectedRole == ''
+            || $scope.selectedUsers == undefined || $scope.selectedUsers == '';
+    }
+
+    $scope.filterForIncomplete = function () {
+        $scope.clearAllFilters(true);
+
+        $scope.bulkAssignData.forEach(function (boe) {
+            if ((boe.Authors.length === 0 && boe.SubcontractorAuthors.length === 0) || boe.Approvers.length === 0) {
+                $scope.filter.boeId.some(function (item) {
+                    if (item.value === boe.BoeID.toString()) {
+                        item.checked = true;
+                        return true;
+                    }
+                });
+            }
+        });
+
+        $scope.filter.filterColumn = $scope.columns.boeId;
+
+        $scope.applyFilters(false, false);
+    }
+
+    $scope.filterForErrors = function () {
+        $scope.clearAllFilters(true);
+        $scope.bulkAssignData.forEach(function (boe) {
+            if (boe.hasError) {
+                $scope.filter.boeId.some(function (item) {
+                    if (item.value === boe.BoeID.toString()) {
+                        item.checked = true;
+                        return true;
+                    }
+                });
+            }
+        });
+
+        $scope.filter.filterColumn = $scope.columns.boeId;
+
+        $scope.applyFilters(false, false);
+    }
+
+    $scope.anyBoesWithErrors = function () {
+        return $scope.bulkAssignData.some(function (boe) { return boe.hasError; });
+    }
+
+    $scope.validateBulkAssign = function (displaySuccessMessage, displayErrorMessage) {
+        $scope.errors = [];
+
+        $scope.bulkAssignData.forEach(function (boe) {
+            var hasAuthor = boe.Authors.length > 0 || boe.SubcontractorAuthors.length > 0;
+            var hasApprover = boe.Approvers.length > 0;
+            boe.hasError = false;
+
+            if (boe.Status == "Unassigned") {
+                if (!hasAuthor && hasApprover) {
+                    if (displayErrorMessage) {
+                        $scope.errors.push({ ValidationIssue: "Currently Unassigned BOE " + boe.WbsDisplayName + " | " + boe.ClinDisplayName + " is missing an Author. Remove the Approver(s) to keep it unassigned or add at least one Author." });
+                    }
+                    boe.hasError = true;
+                } else if (hasAuthor && !hasApprover) {
+                    if (displayErrorMessage) {
+                        $scope.errors.push({ ValidationIssue: "Currently Unassigned BOE " + boe.WbsDisplayName + " | " + boe.ClinDisplayName + " is missing an Approver.  Remove the Author(s) to keep it unassigned or add at least one Approver." });
+                    }
+                    boe.hasError = true;
+                }
+            } else if (!hasAuthor && !hasApprover) {
+                if (displayErrorMessage) {
+                    $scope.errors.push({ ValidationIssue: boe.WbsDisplayName + " | " + boe.ClinDisplayName + " is missing an Author and Approver. At least one Author and at least one Approver must be assigned." });
+                }
+                boe.hasError = true;
+            } else if (!hasAuthor) {
+                if (displayErrorMessage) {
+                    $scope.errors.push({ ValidationIssue: boe.WbsDisplayName + " | " + boe.ClinDisplayName + " is missing an Author. At least one Author must be assigned." });
+                }
+                boe.hasError = true;
+            } else if (!hasApprover) {
+                if (displayErrorMessage) {
+                    $scope.errors.push({ ValidationIssue: boe.WbsDisplayName + " | " + boe.ClinDisplayName + " is missing an Approver. At least one Approver must be assigned." });
+                }
+                boe.hasError = true;
+            }
+
+            if (hasAuthor && hasApprover && boe.Approvers.some(function (approver) { return boe.Authors.indexOf(approver) >= 0; })) {
+                $scope.errors.push({ ValidationIssue: boe.WbsDisplayName + " | " + boe.ClinDisplayName + " cannot have the same person as both an Author and Approver." });
+                boe.hasError = true;
+            }
+
+            // add "(error)" to the dropdown search string if has error, otherwise make sure it's cleared
+            var dropdownBoe = $scope.bulkAssignBoes.find(b => b.id == boe.BoeID);
+            if (dropdownBoe != undefined) {
+                if (boe.hasError) {
+                    dropdownBoe.search = dropdownBoe.search.concat(" (error)");
+                } else {
+                    dropdownBoe.search = dropdownBoe.search.replace(" (error)", "");
+                }
+            }
+        });
+
+        if (displaySuccessMessage && $scope.errors.length == 0) {
+            RaiseNotification("Validation successful. There were no errors.");
+        }
+    }
+
+    $scope.setDirty = function () {
+        $scope.isDirty = true;
+        ManageBOEWidget.setDirty();
+    }
+
+    $scope.cleanDirty = function () {
+        $scope.isDirty = false;
+        ManageBOEWidget.cleanDirty();
+    }
+
+    $scope.saveBulkAssign = function () {
+        $scope.validateBulkAssign(false, true);
+
+        if (!$scope.bulkAssignData.some(x => x.hasError)) {
+            $('#PageLoading').removeClass('display-none');
+            var boesToSave = [];
+            $scope.bulkAssignData.forEach(function (boe) {
+                boesToSave.push({
+                    BoeID: boe.BoeID,
+                    State: boe.State,
+                    Authors: boe.Authors,
+                    Approvers: boe.Approvers,
+                    SubcontractorAuthors: boe.SubcontractorAuthors
+                });
+            });
+
+            var data = {};
+            data.boeRolesToSave = boesToSave;
+
+            $http({
+                method: 'POST',
+                url: CreatePostURL(ManageBOEModel.workspace, ManageBOEModel.controller, ManageBOEModel.bulkAssignRolesAction, ''),
+                data: data
+            }).then(function successCallback(response) {
+                if (response.data.ErrorMessages.length > 0) {
+                    $scope.displayBulkAssignSaveErrors(response.data.ErrorMessages);
+                    $('#PageLoading').addClass('display-none');
+                } else {
+                    // On success, return to Manage BOEs
+                    RaiseNotification("Save of Bulk Assign Roles was successful.");
+                    loadBOEs();
+                    $scope.continueCancelBulkAssign();
+                    $('#PageLoading').addClass('display-none');
+                }
+            }, function errorCallback(response) {
+                $scope.displayBulkAssignSaveErrors(response.data.MessageList);
+                $('#PageLoading').addClass('display-none');
+            });
+        } 
+
+        $scope.displayBulkAssignSaveErrors = function (errors) {
+            if (errors != undefined) {
+                $scope.errors = [];
+                errors.forEach(function (error) {
+                    $scope.errors.push({ ValidationIssue: error });
+                });
+            }
+        }
+    }
 }]);

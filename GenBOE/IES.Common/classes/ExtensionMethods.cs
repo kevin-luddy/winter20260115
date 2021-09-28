@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -217,7 +217,7 @@ namespace IES.Common
 
             // set the time to the 15th of the month at noon (12PM)
             DateTime dateFirstOfMonth = DateTime.TryParseExact(date, format, CultureInfo.CurrentCulture, DateTimeStyles.None, out dateFirstOfMonth) ? dateFirstOfMonth.AddDays(14).AddHours(12) 
-                : throw new FormatException("Date must be valid and in the format {0}.");
+                : throw new FormatException($"Date must be valid and in the format {format}. The entered string was {date}.");
 
             return dateFirstOfMonth;
         }

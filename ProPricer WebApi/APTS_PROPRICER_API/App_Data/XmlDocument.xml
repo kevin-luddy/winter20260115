@@ -2039,15 +2039,6 @@
             <param name="instanceId">The instance identifier.</param>
             <param name="rfddto">The rfddto.</param>
         </member>
-        <member name="M:APTSPropricerApi.Controllers.SummaryFieldDefinitionsController.Get(System.Int32)">
-            <summary>
-            Returns the list of SummaryFieldDefinitions in the instance of PROPRICER.
-            </summary>
-            <param name="instanceId">The instance identifier.</param>
-            <returns>
-            Returns a collection of summary field definitions from the instance of PROPRICER.
-            </returns>
-        </member>
         <member name="M:APTSPropricerApi.Controllers.SummaryFieldDefinitionsController.Get(System.Int32,System.String)">
             <summary>
             Returns the list of SummaryFieldDefinitions in the given proposal.

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -431,7 +431,7 @@ namespace GenBOE.DataBridge.DTO
                 boe.SOWTitle = sikorskyCfData.FirstOrDefault(x => x.BoeId == boe.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_SOW.ToUpper())?.CfValue;
                 boe.Category = sikorskyCfData.FirstOrDefault(x => x.BoeId == boe.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CATEGORY.ToUpper())?.CfValue;
                 boe.CamName = sikorskyCfData.FirstOrDefault(x => x.BoeId == boe.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CAMNAME.ToUpper())?.CfValue;
-                boe.ClassOfCost = sikorskyCfData.FirstOrDefault(x => x.BoeId == boe.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CLASSOFCOST.ToUpper())?.CfValue?.GetEnumeratedValueNullable<ClassOfCost>() ?? ClassOfCost.None;
+                boe.ClassOfCost = sikorskyCfData.FirstOrDefault(x => x.BoeId == boe.Id && x.FieldName == SikorskyConstants.SIKORSKY_CF_CLASSOFCOST.ToUpper())?.CfName?.GetEnumeratedValueNullable<ClassOfCost>() ?? ClassOfCost.None;
             });
         }
 

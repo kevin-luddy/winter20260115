@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -65,14 +65,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IProjectMapDataLoader projectMapLoader,
             RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesDataLoader,
             IRteTemplateDataLoader rteTemplateDataLoader,
-            IMoqTypeDataLoader moqTypeDataLoader
+            IMoqTypeDataLoader moqTypeDataLoader,
+            IBoeApproverResponseDTODataLoader boeApproverResponseLoader
             )
             : base(inBOESummary, inUserLoader, inActiveDirectoryUtil,
             inPermissionsLoader, inFactory, inBOEExporter, inBoeCustomExporter, inGenBOEControllerLogic,
             inBoeMediator, inValidationHelper, inBoeCommentLoader, inEmailer, inBoeTaskElementMediator, inWorkspaceVariableLoader, inBOEStateMachine,
             inVariableSelectBOEtoSumCalculation, inBOELaborControllerLogic, inValidateBOE, inSecurityInformation, inBoeSearchLoader, inSecurityAccess,
             inBoeTaskElementRecalculation, inBOEImporter, inVariableCircularReferenceChecker, inConflictBOE, inNestedWBSUtilities, projectMapLoader, zoneTravelRatesFeesDataLoader,
-            rteTemplateDataLoader, moqTypeDataLoader)
+            rteTemplateDataLoader, moqTypeDataLoader, boeApproverResponseLoader)
         {
         }
 

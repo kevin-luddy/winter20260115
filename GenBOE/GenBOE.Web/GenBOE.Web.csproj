@@ -653,7 +653,10 @@
     <Content Include="Scripts\angular-sanitize.min.js.map" />
     <Content Include="Scripts\angular-ui-tree-search.min.js.map" />
     <Content Include="Scripts\angular-cookies.min.js.map" />
+    <Content Include="Scripts\angularjs-dropdown-multiselect.min.js.map" />
     <None Include="Scripts\jquery-1.12.4.intellisense.js" />
+    <Content Include="Scripts\angularjs-dropdown-multiselect.js" />
+    <Content Include="Scripts\angularjs-dropdown-multiselect.min.js" />
     <Content Include="Scripts\bignumber.js" />
     <Content Include="Scripts\bignumber.min.js" />
     <Content Include="Scripts\jquery-1.12.4.js" />
@@ -850,6 +853,7 @@
     <Content Include="Views\BOELabor\LaborTask.ascx" />
     <Content Include="Views\BOELabor\MOQEquationField.ascx" />
     <Content Include="Views\BOELabor\LaborTaskStatic.ascx" />
+    <Content Include="Views\BOELabor\MoqTableImportVerification.ascx" />
     <Content Include="Views\BOEMaterial\BOEMaterialComposite.ascx" />
     <Content Include="Views\BOEMaterial\BOEMaterialElementDetails.ascx" />
     <Content Include="Views\BOEMaterial\BOEMaterialGrid.ascx" />
@@ -1062,6 +1066,8 @@
     <Content Include="Templates\Export\TMResourceRates.xlsx" />
     <Content Include="Views\Admin\ManageSystemSettings.ascx" />
     <Content Include="Templates\Export\WbsBoeReport.xlsx" />
+    <Content Include="Templates\Export\MOQTableRMS.xlsx" />
+    <Content Include="Templates\Export\MOQTableSSC.xlsx" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

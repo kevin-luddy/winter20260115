@@ -1909,7 +1909,8 @@ button.ui-datepicker-trigger
 
 .manage-wbs-grid .grid,
 .manage-clin-grid .grid,
-.manage-boe-grid .grid
+.manage-boe-grid .grid,
+.bulk-assign-grid .grid
 {
     width: 100%
 }
@@ -1998,12 +1999,15 @@ button.ui-datepicker-trigger
 }
 
 .manage-boe-grid th.author-select,
-.manage-boe-grid th.approver-select
-{
+.manage-boe-grid th.approver-select {
     width: 250px;
 }
 
-.manage-boe-grid th.hours{
+.bulk-assign-grid th {
+    width: 25%;
+}
+
+.manage-boe-grid th.hours {
     width: 60px;
 }
 
@@ -4101,7 +4105,8 @@ table.manage-historical-metrics-grid
     margin-bottom: 5px;
 }
 
-.manage-boe-grid > div
+.manage-boe-grid > div,
+.bulk-assign-grid > div
 {
     margin-bottom: 5px;
 }
@@ -4657,6 +4662,10 @@ table.manage-historical-metrics-grid
 #DateShift .noteMessage{
     margin-left: 150px !important;
     display: inline-block;
+}
+
+#BulkAssign #noteMessage {
+    position: inherit !important;
 }
 
 #ManageCLIN{
@@ -8489,11 +8498,11 @@ textarea.ng-invalid {
 }
 
 .historicalLabel {
-    width: 655px !important;
+    width: 550px !important;
 }
 
 .comparativeLabel {
-    width: 677px !important;
+    width: 571px !important;
 }
 
 .nonPrintableLabel {
@@ -8503,7 +8512,7 @@ textarea.ng-invalid {
 }
 
 .moqRteFieldContainer .form-label {
-    width: 850px;
+    width: 907px;
 }
 
 div.moqTypeHeader {
@@ -8562,4 +8571,100 @@ div.WarningBanner {
     padding: 2px 0 2px 0;
     word-spacing: normal;
     margin: 0 auto 3px auto;
+}
+
+.bulk-assign-label {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.bulk-select {
+    display: inline-block;
+    padding-right: 120px;
+    padding-bottom: 10px;
+}
+
+.role-select {
+    position: relative;
+    top: -2px;
+}
+
+.bulk-select select {
+    width: 150px;
+    height: 18px;
+}
+
+.bulk-select .dropdown-toggle {
+    width: 200px;
+    height: 18px;
+    font-size: inherit;
+    line-height:inherit;
+    border-radius: 0px;
+    border-color: darkgrey;
+    padding: 0px;
+}
+
+.bulk-select .dropdown-menu,
+.bulk-select .searchField {
+    font-size: inherit;
+    line-height:inherit;
+}
+
+.bulk-select .searchField {
+    height: 18px;
+}
+
+.bulk-select .dropdown-menu a {
+    height: 20px;
+    padding: 0px 20px !important;
+}
+
+.bulk-select .dropdown-menu a div {
+    margin: 0px;
+    padding-left: 0px;
+}
+
+.bulk-select .dropdown-menu a label span {
+    display: block;
+    padding-top: 3px;
+}
+
+.bulk-assign-add-remove button {
+    bottom: 7px;
+}
+
+.bulk-select .dropdown-menu .divider {
+    margin: 2px 0;
+}
+
+#BulkAssign .search-box {
+    margin-right: 0px !important;
+}
+
+.bulkAssignError {
+    background-color: rgba(255, 0, 0, 0.50);
+}
+
+#BulkAssign .filter-margin {
+    margin-top: 12px;
+}
+
+#BulkAssign #QuickFilters .disabled {
+    pointer-events: none;
+    cursor: default;
+    color: grey;
+}
+
+#BulkAssign .help-icon {
+    margin-left: 3px;
+}
+
+#BulkAssign .help-dialog-text {
+    font-size: 11px;
+}
+
+.moq-table-import-results {
+    height: 300px;
+    overflow: auto;
+    margin-bottom: 10px;
 }

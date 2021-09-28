@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -4807,7 +4807,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     }
                     else if (sdtTitle == FieldName_MOQEquationResult)
                     {
-                        SetElementText(element, this.GetMOQTotal(taskElement, exportInputs));
+                        SetElementText(element, this.GetMOQTotal(taskElement, exportInputs, ws.TaskElements));
                         alias.RemoveIt();
                     }
                     else if (sdtTitle == FieldName_MethodOfQuoting || sdtTitle == FieldName_Rationale)
@@ -6831,17 +6831,18 @@ namespace GenBOE.ActionLogic.IO.Export
         /// </summary>
         /// <param name="taskElement">The task element containing the data needed to construct the moq total display.</param>
         /// <param name="exportInputs">The export's inputs.</param>
+        /// <param name="allTaskElements">All task elements in the BOE - needed to be able to correctly calculate variable values</param>
         /// <returns>The MOQ total display text.</returns>
         /// <exception cref="GenValidationException">The report could not be generated because there is an invalid MOQ Equation in the workspace. Please run the Validate All BOEs Report to determine the location of this error. Please correct the invalid MOQ Equation before attempting the export again.</exception>
         [SuppressMessage("Microsoft.Naming", "CA2204:Literals should be spelled correctly", MessageId = "Moq")]
-        private string GetMOQTotal(BOEExportTaskElement taskElement, BOEExportInputs exportInputs)
+        private string GetMOQTotal(BOEExportTaskElement taskElement, BOEExportInputs exportInputs, IReadOnlyCollection<BoeTaskElementDTO> allTaskElements)
         {
             decimal moqResult = 0;
 
             try
             {
                 DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
-                data.FillData(taskElement.OrdinaryVariables, taskElement.WorkspaceVariables, exportInputs.WbsElements, exportInputs.AllWorkspaceBoes, exportInputs.TaskElements, exportInputs.ResourcesForWsResourceListId, exportInputs.Clins);
+                data.FillData(taskElement.OrdinaryVariables, taskElement.WorkspaceVariables, exportInputs.WbsElements, exportInputs.AllWorkspaceBoes, allTaskElements, exportInputs.ResourcesForWsResourceListId, exportInputs.Clins);
 
                 var moqResultString = Common.MOQ.Parser.Calculate(taskElement.MOQEquation, taskElement.OrdinaryVariables, taskElement.WorkspaceVariables, this.variableSelectBOEtoSumCalculation, data, exportInputs.Workspace);
 

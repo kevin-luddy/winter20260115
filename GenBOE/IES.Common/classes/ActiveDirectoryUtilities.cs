@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -633,8 +633,8 @@ namespace IES.Common
 
                     if (groupNotFound)
                     {
-                        Console.WriteLine("\nWe did not find that group.");
-                        throw new GeneralAppException("We did not find that group.");
+                        Console.WriteLine($"\nWe did not find the group {inGroupName}.");
+                        throw new GeneralAppException($"We did not find the group {inGroupName}.");
                     }
 
                     if (allUsersAdded)

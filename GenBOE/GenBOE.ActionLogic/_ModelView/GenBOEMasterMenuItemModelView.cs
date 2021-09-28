@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -158,7 +158,6 @@ namespace GenBOE.ActionLogic.ModelView
                             securityPage = SecurityPage.ManageWBS,
                             routeName = WebConstants.ROUTE_WORKSPACE
                         },
-
                         new GenBOEMasterMenuItemModelView {
                             linkText = "Manage BOEs",
                             actionName = WebConstants.ACTION_INDEX,

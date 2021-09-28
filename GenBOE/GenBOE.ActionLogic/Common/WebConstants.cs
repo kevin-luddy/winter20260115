@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -354,7 +354,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_SAVE_COPY_OF_PROJECTMAP = "SaveCopyOfProjectMap"; 
         public static readonly string ACTION_COPY_MOQ_EQUATION = "CopyMoqEquation";
         public static readonly string ACTION_DELETE_ALL_BOE_TASK_ELEMENTS = "DeleteAllBOETaskElements";
-
+        public static readonly string ACTION_SAVE_BULK_ROLE_ASSIGN = "SaveBoeBulkRoles";
 
         // BOEComments Controller
         public static readonly string ACTION_DISPLAY_BOE_COMMENTS = "DisplayBOEComments";
@@ -390,6 +390,9 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_SAVE_REORDER_LABOR_TASK_ELEMENTS = "SaveReorderLaborTaskElements";
         public static readonly string ACTION_SAVE_REORDER_LABOR_TYPES = "SaveReorderLaborTypes";
         public static readonly string ACTION_LOAD_DUPLICATE_TASK_DIALOG = "LoadDuplicateTaskDialog";
+        public static readonly string ACTION_IMPORT_MOQ_TABLES = "ImportMoqTables";
+        public static readonly string ACTION_COMPLETE_IMPORT_MOQ_TABLES = "CompleteImportMoqTables";
+        public static readonly string ACTION_EXPORT_MOQ_TABLES = "ExportMoqTables";
 
 
         //BOE ODC Controller
@@ -785,7 +788,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string VIEW_MANAGE_BOE_IMPORT_VERIFICATION = "ManageBOEImportVerification";
         public static readonly string VIEW_WORKSPACE_WORKOFFLINE_IMPORT_VERIFICATION = "WorkspaceHomeWorkofflineImportVerification";
         public static readonly string VIEW_TASK_ELEMENT_GRID = "TaskElementGrid";
-        public static readonly string VIEW_SUMMARY_TASK_ELEMENT_GRID = "SummaryTaskElementGrid"; 
+        public static readonly string VIEW_SUMMARY_TASK_ELEMENT_GRID = "SummaryTaskElementGrid";
         public static readonly string VIEW_BOE_COPY_CONFLICTS = "BOECopyConflicts";
 
         public static readonly string VIEW_LABOR_TASK = "LaborTask";
@@ -796,6 +799,7 @@ namespace GenBOE.ActionLogic.Common
 
         //these 3 views make up the composite view
         public static readonly string VIEW_MOQ_EQUATION_FIELD = "MOQEquationField";
+        public static readonly string VIEW_MOQ_TABLE_IMPORT_VERIFICATION = "MoqTableImportVerification";
 
         public static readonly string VIEW_BOE_HISTORICAL_METRICS_SEARCH_RESULTS_SPACE = "HistoricalMetricsSearchResultsSpace";
         public static readonly string VIEW_BOE_HISTORICAL_METRICS_SEARCH_RESULTS_MST = "HistoricalMetricsSearchResultsMST";

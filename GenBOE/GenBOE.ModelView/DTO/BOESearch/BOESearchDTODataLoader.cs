@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -307,7 +307,8 @@ namespace GenBOE.DataBridge.DTO
                 string[] searchStrings = searchParam.Trim().Split(' ');
                 foreach (string searchString in searchStrings)
                 {
-                    if (!string.IsNullOrEmpty(searchString))
+                    // Make sure search string has at least one alphanumeric character
+                    if (!string.IsNullOrEmpty(searchString) && searchString.Any(x => Char.IsLetterOrDigit(x)))
                     {
                         finalSearchString.Append('"').Append(searchString).Append('"').Append(delimiter);
                     }

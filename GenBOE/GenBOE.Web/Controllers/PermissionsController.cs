@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -19,8 +19,6 @@ namespace GenBOE.Web.Controllers
     using GenBOE.ActionLogic.Metrics;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.Permissions;
-    using IES.Common;
-    using IES.Common.Exceptions;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.Common.Interfaces;
     using GenBOE.DataBridge.DTO;
@@ -28,6 +26,8 @@ namespace GenBOE.Web.Controllers
     using GenBOE.Objects;
     using GenBOE.Web.Common;
     using GenBOE.Web.ModelView;
+    using IES.Common;
+    using IES.Common.Exceptions;
 
     public class PermissionsController : GenBOEController
     {
@@ -205,6 +205,8 @@ namespace GenBOE.Web.Controllers
                     UserDTO currentUser = this.UserLoader.GetUserByID(inEntityId);
                     this.Factory.ClearPermissionsCache(currentUser.NTID);
                     bool isSubcontractor = _SecurityInformation.IsSubcontractorUser(currentUser.NTID, currentUser.IsSubcontractor ?? false);
+
+                    this._permissionControllerLogic.ValidateWsAdminMustHaveCreateWsPermission(currentUser.NTID, inRoles);
 
                     if (isSubcontractor && (!inRoles.Contains(Role.SubcontractorAuthor) || inRoles.Count() > 1))
                     {

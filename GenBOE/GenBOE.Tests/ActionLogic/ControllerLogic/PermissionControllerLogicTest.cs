@@ -1,26 +1,26 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
 namespace GenBOE.Tests.ActionLogic.ControllerLogic
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.ModelView;
+    using GenBOE.DataBridge.Common;
+    using GenBOE.DataBridge.DTO;
+    using GenBOE.Dtos;
+    using GenBOE.Objects;
     using IES.Common;
     using IES.Common.classes;
     using IES.Common.Exceptions;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.DataBridge.Common;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using System;
-    using System.Collections.ObjectModel;
-    using GenBOE.ActionLogic;
     using Microsoft.Practices.Unity;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
-    using System.Collections.Generic;
 
     [TestClass]
     public class PermissionControllerLogicTest
@@ -685,6 +685,111 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             //Act
             sut.SaveNewPermission(workspace, inPermission);
         }
+        #endregion
+
+        #region Ws Admin Validation
+
+        /// <summary>
+        /// Tests ValidateWsAdminMustHaveCreateWsPermission.
+        /// 
+        /// In this case, this is an invalid assignment.. no roles
+        /// </summary>
+        [TestMethod, ExpectedException(typeof(GenValidationException))]
+        public void ValidateWsAdminMustHaveCreateWsPermission_Invalid1()
+        {
+            string ntid = "someNtid";
+            ICollection<Role> roles = new List<Role>() { Role.WorkspaceAdmin, Role.Author };
+            FullWorkspace ws = new FullWorkspace() { Id = 1 };
+            this.Factory.Setup(x => x.GetPermissionsForUser(ntid)).Returns(new List<SecurityPermissionsResponse>());
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+
+            sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
+        }
+
+        /// <summary>
+        /// Tests ValidateWsAdminMustHaveCreateWsPermission.
+        /// 
+        /// In this case, this is an invalid assignment - existing ws admin doesn't apply to this WS
+        /// </summary>
+        [TestMethod, ExpectedException(typeof(GenValidationException))]
+        public void ValidateWsAdminMustHaveCreateWsPermission_Invalid2()
+        {
+            string ntid = "someNtid";
+            ICollection<Role> roles = new List<Role>() { Role.WorkspaceAdmin };
+            FullWorkspace ws = new FullWorkspace() { Id = 1 };
+            this.Factory.Setup(x => x.GetPermissionsForUser(ntid)).Returns(new List<SecurityPermissionsResponse>() { new SecurityPermissionsResponse(Role.WorkspaceAdmin, ws.Id + 1, null) });
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+
+            sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
+        }
+
+        /// <summary>
+        /// Tests ValidateWsAdminMustHaveCreateWsPermission.
+        /// 
+        /// In this case, the result is "valid", because we are not assigning a WS Admin role
+        /// </summary>
+        [TestMethod]
+        public void ValidateWsAdminMustHaveCreateWsPermission_NotAssigningWSAdmin()
+        {
+            string ntid = "someNtid";
+            ICollection<Role> roles = new List<Role>() { Role.Author };
+            FullWorkspace ws = new FullWorkspace() { Id = 1 };
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+
+            sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
+        }
+
+        /// <summary>
+        /// Tests ValidateWsAdminMustHaveCreateWsPermission.
+        /// 
+        /// In this case, the result is valid, because the user already has an admin role (only, Create WS and Sys Admin are false)
+        /// </summary>
+        [TestMethod]
+        public void ValidateWsAdminMustHaveCreateWsPermission_HasSystemAdminOnly()
+        {
+            string ntid = "someNtid";
+            ICollection<Role> roles = new List<Role>() { Role.WorkspaceAdmin };
+            FullWorkspace ws = new FullWorkspace() { Id = 1 };
+            this.Factory.Setup(x => x.GetPermissionsForUser(ntid)).Returns(new List<SecurityPermissionsResponse>() { new SecurityPermissionsResponse(Role.SystemAdmin, null, null) });
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+
+            sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
+        }
+
+        /// <summary>
+        /// Tests ValidateWsAdminMustHaveCreateWsPermission.
+        /// 
+        /// In this case, the result is valid, because the user has a create WS role (only, already assigned and Sys Admin are false)
+        /// </summary>
+        [TestMethod]
+        public void ValidateWsAdminMustHaveCreateWsPermission_HasCreateWorkspaceOnly()
+        {
+            string ntid = "someNtid";
+            ICollection<Role> roles = new List<Role>() { Role.WorkspaceAdmin };
+            FullWorkspace ws = new FullWorkspace() { Id = 1 };
+            this.Factory.Setup(x => x.GetPermissionsForUser(ntid)).Returns(new List<SecurityPermissionsResponse>() { new SecurityPermissionsResponse(Role.CreateWorkspacePermissions, null, null) });
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+
+            sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
+        }
+
+        /// <summary>
+        /// Tests ValidateWsAdminMustHaveCreateWsPermission.
+        /// 
+        /// In this case, the result is invalid, because the user does not have a create WS or System Admin role. They have an existing WS Admin role, but it must be removed to make addtional changes to their roles.
+        /// </summary>
+        [TestMethod, ExpectedException(typeof(GenValidationException))]
+        public void ValidateWsAdminMustHaveCreateWsPermission_HasExistingRoleOnly()
+        {
+            string ntid = "someNtid";
+            ICollection<Role> roles = new List<Role>() { Role.WorkspaceAdmin, Role.Author };
+            FullWorkspace ws = new FullWorkspace() { Id = 1 };
+            this.Factory.Setup(x => x.GetPermissionsForUser(ntid)).Returns(new List<SecurityPermissionsResponse>() { new SecurityPermissionsResponse(Role.WorkspaceAdmin, ws.Id, null) });
+            PermissionControllerLogic sut = new PermissionControllerLogic(permissionLoader.Object, _UserDTODataLoader.Object, _ADUTils.Object, _SecurityInformation.Object, Factory.Object);
+
+            sut.ValidateWsAdminMustHaveCreateWsPermission(ntid, roles);
+        }
+
         #endregion
     }
 }

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -71,6 +71,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader;
         private IRteTemplateDataLoader rteTemplateDataLoader;
         private readonly IMoqTypeDataLoader moqTypeDataLoader;
+        private IBoeApproverResponseDTODataLoader boeApproverResponseLoader;
 
         #region Protected Properties and Constructor
 
@@ -107,7 +108,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IProjectMapDataLoader projectMapLoader,
             RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader,
             IRteTemplateDataLoader rteTemplateDataLoader,
-            IMoqTypeDataLoader moqTypeDataLoader)
+            IMoqTypeDataLoader moqTypeDataLoader,
+            IBoeApproverResponseDTODataLoader boeApproverResponseLoader)
         {
             this._BOESummary = inBOESummary;
             this.UserLoader = inUserLoader;
@@ -139,6 +141,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.zoneTravelRatesFeesLoader = zoneTravelRatesFeesLoader;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
             this.moqTypeDataLoader = moqTypeDataLoader;
+            this.boeApproverResponseLoader = boeApproverResponseLoader;
         }
 
         #endregion
@@ -674,7 +677,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="inUserIds">UserIDs for the select list</param>
         /// <param name="isSubcontractors">True if the list is for subcontractors</param>
         /// <returns>select list for authors/approvers</returns>
-        private Collection<SelectListItem> _CreateSelectList(Collection<int> inUserIds, bool isSubcontractors)
+        private Collection<SelectListItem> CreateUserSelectList(Collection<int> inUserIds, bool isSubcontractors)
         {
             if (inUserIds == null)
             {
@@ -2334,19 +2337,19 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IEnumerable<int> approverIDs = (from p in potentialBOEPermissions
                                where p.Role == Role.Approver
                                select p.ETIUserId).Distinct();
-            Collection<SelectListItem> approvers = this._CreateSelectList(approverIDs.ToCollection(), false);
+            Collection<SelectListItem> approvers = this.CreateUserSelectList(approverIDs.ToCollection(), false);
 
             // Author Names
             IEnumerable<int> authorIDs = (from p in potentialBOEPermissions
                              where p.Role == Role.Author
                              select p.ETIUserId).Distinct();
-            Collection<SelectListItem> authors = this._CreateSelectList(authorIDs.ToCollection(), false);
+            Collection<SelectListItem> authors = this.CreateUserSelectList(authorIDs.ToCollection(), false);
 
             // Subcontractor Author Names
             IEnumerable<int> subcontractorAuthorIDs = (from p in potentialBOEPermissions
                                           where p.Role == Role.SubcontractorAuthor
                                           select p.ETIUserId).Distinct();
-            Collection<SelectListItem> subcontractorAuthors = this._CreateSelectList(subcontractorAuthorIDs.ToCollection(), true);
+            Collection<SelectListItem> subcontractorAuthors = this.CreateUserSelectList(subcontractorAuthorIDs.ToCollection(), true);
 
             theModelView.DefaultStartDate = workspace.ContractStartDate.ToString("MM/yyyy");
             theModelView.DefaultEndDate = workspace.ContractEndDate.ToString("MM/yyyy");
@@ -2984,6 +2987,286 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
 
             return updateDateLong;
+        }
+
+        /// <summary>
+        /// Save Bulk Boe Roles. This is a kill and fill, so the assumption is that all BOEs from a workspace with roles will be include in Boe Roles To Save
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="boeRolesToSave">Boe Roles to Save</param>
+        /// <returns>Error messages, if any</returns>
+        public IList<string> SaveBoeBulkRoles(FullWorkspace ws, ICollection<ManageBOEModelView> boeRolesToSave)
+        {
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
+            _ = boeRolesToSave ?? throw new ArgumentNullException(nameof(boeRolesToSave));
+
+            IList<string> errorMessages = this.ValidateBoeBulkRoles(ws, boeRolesToSave);
+            if (errorMessages.Any()) { return errorMessages; }
+
+            // Get existing data
+            ICollection<FullBoe> originalBoes = ws.Boes.Where(boe => boe.State == BOEState.Draft || boe.State == BOEState.Unassigned || boe.State == BOEState.None).ToList();
+            ICollection<BoeDTO> boesToSave = originalBoes.Select(boe => boe as BoeDTO).ToList().DeepClone();
+            ICollection<PermissionsDTO> boePermissions = this.PermissionsLoader.GetBOEPermissions(originalBoes.Select(x => x.Id).ToList());
+            ICollection<UserDTO> wsUsers = this.UserLoader.GetByIds(boePermissions.Select(x => x.ETIUserId).Distinct().ToList());
+            ICollection<BoeApproverResponseDTO> approverResponses = this.boeApproverResponseLoader.GetByWorkspaceId(ws.Id).SelectMany(x => x.Value).ToList();
+
+            // Process changes
+            Dictionary<int, Collection<UserDTO>> authorsChangeDictionary = this.ProcessAuthorsForBulkRoleSave(boeRolesToSave, boesToSave, wsUsers);
+            Dictionary<int, Collection<UserDTO>> approversChangeDictionary = this.GetApproverChangesForBulkRoleSave(boeRolesToSave, boesToSave, boePermissions, wsUsers, ws.CurrentActiveUser.UserID, approverResponses, out ICollection<BoeApproverResponseDTO> approversToSave);
+
+            List<(int BoeId, BOEState OldState, BOEState NewState)> transitionsToPerform = this.GetBoeTransitionsForBulkRoleSave(originalBoes, boesToSave, approverResponses);
+
+            this.DoBulkBoeRoleSave(ws, boesToSave, originalBoes, approversToSave, transitionsToPerform);
+
+            this.SendEmailsAfterBulkRoleSave(ws, boesToSave, originalBoes, authorsChangeDictionary, approversChangeDictionary);
+
+            return errorMessages;
+        }
+
+        /// <summary>
+        /// Validate Bulk Boe Roles
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="boeRolesToSave">Boe Roles to Save</param>
+        /// <returns>Error messages, if any</returns>
+        public IList<string> ValidateBoeBulkRoles(FullWorkspace ws, ICollection<ManageBOEModelView> boeRolesToSave)
+        {
+            _ = ws ?? throw new ArgumentNullException(nameof(ws));
+            _ = boeRolesToSave ?? throw new ArgumentNullException(nameof(boeRolesToSave));
+
+            IList<string> errorMessages = new List<string>();
+
+            if (boeRolesToSave.Any(x => !x.Deleted && !x.Approvers.Any() && (x.Authors.Any() || x.SubcontractorAuthors.Any())))
+            {
+                errorMessages.Add("All BOEs that have an author / subcontractor author assigned must also have an approver assigned as well.");
+            }
+
+            if (boeRolesToSave.Any(x => !x.Deleted && x.Approvers.Any() && !x.Authors.Any() && !x.SubcontractorAuthors.Any()))
+            {
+                errorMessages.Add("All BOEs that have an approver assigned must also have an author / subcontractor author assigned as well.");
+            }
+
+            if (boeRolesToSave.Any(x => !x.Deleted && x.State >= BOEState.Draft && (!x.Approvers.Any() || !(x.Authors.Any() || x.SubcontractorAuthors.Any()))))
+            {
+                errorMessages.Add("All BOEs in draft, awaiting approval, or approved, must have approver and author roles assigned.");
+            }
+
+            if (boeRolesToSave.Any(x => x.Authors.Intersect(x.Approvers).Any()))
+            {
+                errorMessages.Add("The same person cannot be assigned as both Author and Approver to the same BOE.");
+            }
+
+            return errorMessages;
+        }
+
+        /// <summary>
+        /// Process Author changes, update BOEs.
+        /// </summary>
+        /// <param name="boeRolesToSave">Boe Roles to save</param>
+        /// <param name="boesToSave">Boes To Save</param>
+        /// <param name="wsUsers">WS Users</param>
+        private Dictionary<int, Collection<UserDTO>> ProcessAuthorsForBulkRoleSave(ICollection<ManageBOEModelView> boeRolesToSave, ICollection<BoeDTO> boesToSave, ICollection<UserDTO> wsUsers)
+        {
+            Dictionary<int, Collection<UserDTO>> authorsChangeDictionary = new Dictionary<int, Collection<UserDTO>>();
+
+            Collection<int> authorsChangedIds;
+            ManageBOEModelView rolesBeingSavedForBoe;
+
+            foreach (BoeDTO boe in boesToSave)
+            {
+                boe.AuthorIDs = boe.AuthorIDs ?? new Collection<int>();
+                boe.SubcontractorAuthorIDs = boe.SubcontractorAuthorIDs ?? new Collection<int>();
+                boe.Updateable = UpdateType.Upsert;
+
+                authorsChangedIds = null;
+                rolesBeingSavedForBoe = boeRolesToSave.FirstOrDefault(x => x.BoeID == boe.Id);
+
+                if (rolesBeingSavedForBoe != null)
+                {
+                    authorsChangedIds = rolesBeingSavedForBoe.Authors.Where(x => !boe.AuthorIDs.Contains(x)).ToCollection();
+                    authorsChangedIds.AddRange(rolesBeingSavedForBoe.SubcontractorAuthors.Where(x => !boe.SubcontractorAuthorIDs.Contains(x)).ToCollection());
+                    authorsChangedIds.AddRange(boe.AuthorIDs.Where(x => !rolesBeingSavedForBoe.Authors.Contains(x)).ToCollection());
+                    authorsChangedIds.AddRange(boe.SubcontractorAuthorIDs.Where(x => !rolesBeingSavedForBoe.SubcontractorAuthors.Contains(x)).ToCollection());
+
+                    boe.AuthorIDs = rolesBeingSavedForBoe.Authors.Any() ? rolesBeingSavedForBoe.Authors : null;
+                    boe.SubcontractorAuthorIDs = rolesBeingSavedForBoe.SubcontractorAuthors.Any() ? rolesBeingSavedForBoe.SubcontractorAuthors : null;
+                }
+                else
+                {
+                    authorsChangedIds = boe.AuthorIDs;
+                    authorsChangedIds.AddRange(boe.SubcontractorAuthorIDs);
+
+                    boe.AuthorIDs = null;
+                    boe.SubcontractorAuthorIDs = null;
+                }
+
+                authorsChangeDictionary.Add(boe.Id, wsUsers.Where(x => authorsChangedIds.Contains(x.UserID)).ToCollection());
+            }
+
+            return authorsChangeDictionary;
+        }
+
+        /// <summary>
+        /// Process Approver changes
+        /// </summary>
+        /// <param name="boeRolesToSave">Boe Roles to save</param>
+        /// <param name="boesToSave">Boes To Save</param>
+        /// <param name="wsPermissions">WS Permissions</param>
+        /// <param name="wsUsers">WS Users</param>
+        /// <param name="currentUserId">Current User Id</param>
+        /// <param name="approverResponses">Current Approver Responses</param>
+        /// <param name="approversToSave">Approvers To Save</param>
+        private Dictionary<int, Collection<UserDTO>> GetApproverChangesForBulkRoleSave(ICollection<ManageBOEModelView> boeRolesToSave, ICollection<BoeDTO> boesToSave, ICollection<PermissionsDTO> wsPermissions, ICollection<UserDTO> wsUsers,
+            int currentUserId, ICollection<BoeApproverResponseDTO> approverResponses, out ICollection<BoeApproverResponseDTO> approversToSave)
+        {
+            Dictionary<int, Collection<UserDTO>> approversChangeDictionary = new Dictionary<int, Collection<UserDTO>>();
+            approversToSave = new List<BoeApproverResponseDTO>();
+
+            // need to update approverResponses -> remove ones being deleted, and add new ones.. basically the final state is what it will look like
+            // need to record the changes (add / delete) into boeApproversToSave, which is what is then going to be saved
+            int i = -1;
+
+            Collection<int> currentBoeApproverIds, approversToAdd, approversToRemove;
+            ManageBOEModelView rolesBeingSavedForBoe;
+
+            foreach (BoeDTO boe in boesToSave)
+            {
+                rolesBeingSavedForBoe = boeRolesToSave.FirstOrDefault(x => x.BoeID == boe.Id);
+                currentBoeApproverIds = wsPermissions.Where(x => x.Role == Role.Approver && x.BOEId == boe.Id).Select(x => x.ETIUserId).ToCollection();
+
+                if (rolesBeingSavedForBoe != null)
+                {
+                    approversToAdd = rolesBeingSavedForBoe.Approvers.Where(x => !currentBoeApproverIds.Contains(x)).ToCollection();
+                    approversToRemove = currentBoeApproverIds.Where(x => !rolesBeingSavedForBoe.Approvers.Contains(x)).ToCollection();
+                }
+                else
+                {
+                    approversToAdd = new Collection<int>();
+                    approversToRemove = currentBoeApproverIds;                    
+                }
+
+                // add new approvers into Approvers To save
+                approversToSave.AddRange(approversToAdd.Select(x => new BoeApproverResponseDTO() { Id = i--, ETIUserID = x, BoeID = boe.Id, Updateable = UpdateType.Upsert, CurrentUserETIUserID = currentUserId }));
+
+                // Mark approvers being removed as "Deleted"
+                approverResponses.Where(x => x.BoeID == boe.Id && approversToRemove.Contains(x.ETIUserID)).ForEach(x => { x.Updateable = UpdateType.Deleted; x.CurrentUserETIUserID = currentUserId; });
+
+                // record changes for emails
+                approversChangeDictionary.Add(boe.Id, wsUsers.Where(x => approversToAdd.Contains(x.UserID) || approversToRemove.Contains(x.UserID)).ToCollection());
+            }
+
+            // At this point approversToSave contains only new Approvers. We need to add these into approverResponses
+            approverResponses.AddRange(approversToSave);
+
+            // Process all marked "Deleted" approvers
+            approversToSave.AddRange(approverResponses.Where(x => x.Updateable == UpdateType.Deleted));
+            approverResponses = approverResponses.Where(x => x.Updateable != UpdateType.Deleted).ToCollection();
+
+            return approversChangeDictionary;
+        }
+
+        /// <summary>
+        /// Gets BOE transitions when bulk saving BOE permissions
+        /// </summary>
+        /// <param name="originalBoes">Original BOEs</param>
+        /// <param name="boesToSave">BOEs being saved</param>
+        /// <param name="allApproverResponses">All Approver Responses</param>
+        /// <returns>Transitions to perform</returns>
+        private List<(int BoeId, BOEState OldState, BOEState NewState)> GetBoeTransitionsForBulkRoleSave(ICollection<FullBoe> originalBoes, ICollection<BoeDTO> boesToSave, ICollection<BoeApproverResponseDTO> allApproverResponses)
+        {
+            List<(int BoeId, BOEState OldState, BOEState NewState)> transitionsToPerform = new List<(int BoeId, BOEState OldState, BOEState NewState)>();
+
+            foreach (BoeDTO boe in boesToSave)
+            {
+                BoeDTO oldBoe = originalBoes.FirstOrDefault(b => b.Id == boe.Id);
+
+                // if all approvers have approved, change state to Approved
+                if (oldBoe.State == BOEState.AwaitingApproval)
+                {
+                    ICollection<BoeApproverResponseDTO> responses = allApproverResponses.Where(x => x.BoeID == boe.Id).ToList();
+
+                    if (responses.Any() && responses.All(x => x.ApproverResponse == ApproverReponseType.Approved && x.Updateable != UpdateType.Deleted))
+                    {
+                        boe.State = BOEState.Approved;
+                        transitionsToPerform.Add((BoeId: boe.Id, OldState: oldBoe.State, NewState: boe.State));
+                    }
+                }
+
+                // Unassigned state -> draft if roles have been assigned
+                if (oldBoe.State == BOEState.Unassigned)
+                {
+                    if (boe.AuthorIDs != null && boe.AuthorIDs.Any())
+                    {
+                        boe.State = BOEState.Draft;
+                        transitionsToPerform.Add((BoeId: boe.Id, OldState: oldBoe.State, NewState: boe.State));
+                    }
+                }
+            }
+
+            return transitionsToPerform;
+        }
+
+        /// <summary>
+        /// Performs the BOE permission save from the BOE Permission Bulk Page
+        /// </summary>
+        /// <param name="ws">WS</param>
+        /// <param name="boesToSave">BOEs to save</param>
+        /// <param name="originalBoes">Original BOEs</param>
+        /// <param name="boeApproversToSave">Boe approver roles to save</param>
+        /// <param name="transitionsToPerform">Transitions to perform</param>
+        private void DoBulkBoeRoleSave(FullWorkspace ws, ICollection<BoeDTO> boesToSave, ICollection<FullBoe> originalBoes, ICollection<BoeApproverResponseDTO> boeApproversToSave, List<(int BoeId, BOEState OldState, BOEState NewState)> transitionsToPerform)
+        {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+            {
+                // Save approvers
+                this.boeApproverResponseLoader.Save(boeApproversToSave);
+
+                // Save authors and sub authors
+                this._BoeMediator.MediatedSaveBOEs(ws, boesToSave);
+
+                // Transition BOEs
+                foreach ((int BoeId, BOEState OldState, BOEState NewState) transition in transitionsToPerform)
+                {
+                    this._boeStateMachine.PerformStateTransitionAction(originalBoes.FirstOrDefault(x => x.Id == transition.BoeId), ws, transition.OldState, transition.NewState);
+                }
+
+                scope.Complete();
+            }
+
+            ws.RefreshBoes(); // remove cached data
+        }
+
+        /// <summary>
+        /// Sends out an email after bulk BOE permission save
+        /// </summary>
+        /// <param name="ws">Workspace</param>
+        /// <param name="boesToSave">Boes that were saved</param>
+        /// <param name="originalBoes">Original BOEs</param>
+        /// <param name="authorsChangeDictionary">List of Authors with changes</param>
+        /// <param name="approversChangeDictionary">List of Approvers with changes</param>
+        private void SendEmailsAfterBulkRoleSave(FullWorkspace ws, ICollection<BoeDTO> boesToSave, ICollection<FullBoe> originalBoes, Dictionary<int, Collection<UserDTO>> authorsChangeDictionary, Dictionary<int, Collection<UserDTO>> approversChangeDictionary)
+        {
+            foreach (BoeDTO boe in boesToSave)
+            {
+                // If the BOE has been put in draft mode, send BOE author email opened for edit, else Send the 'Author Changed' email
+                if (ws.WorkspaceState == WorkspaceState.Working && authorsChangeDictionary.ContainsKey(boe.Id))
+                {
+                    if (boe.State == BOEState.Draft && originalBoes.First(x => x.Id == boe.Id).State == BOEState.Unassigned)
+                    {
+                        this._emailer.SendBOEAuthorsEmailOpenedForEdit(this.Factory.CreateFullBoe(boe), ws);
+                    }
+                    else
+                    {
+                        this._emailer.SendBOEAuthorsChanged(authorsChangeDictionary[boe.Id], this.Factory.CreateFullBoe(boe));
+                    }
+                }
+
+                // Send the 'Approvers Changed' email, if applicable
+                if (boe.State == BOEState.AwaitingApproval)
+                {
+                    this._emailer.SendBOEApproversChanged(approversChangeDictionary[boe.Id], this.Factory.CreateFullBoe(boe));
+                }
+            }
         }
     }
 }

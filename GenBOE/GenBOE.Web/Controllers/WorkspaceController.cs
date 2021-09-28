@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -387,8 +387,7 @@ namespace GenBOE.Web.Controllers
 
             // Action Initialize
             Stopwatch sw = InitializeAction(_log, "ExportProjectMapData", SecurityPage.WorkspaceHome, SecurityAuthorization.Read, ws, null);
-
-            
+                        
             ActionResult result = new EmptyResult();
             try
             {

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -13,6 +13,7 @@ namespace GenBOE.Web.Controllers
     using System.Linq;
     using System.Transactions;
     using System.Web.Mvc;
+    using System.Web.Script.Serialization;
     using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
@@ -52,9 +53,11 @@ namespace GenBOE.Web.Controllers
         private readonly IPerformingOrgDTODataLoader perfOrgLoader;
         private readonly IFullWorkspaceRecalculation fullWsRecalc;
         private readonly IMSTMetricLoader _MSTMetricsLoader;
-        private const string SYSTEM_OFFLOAD_RATES_EXPORT_TEMPLATE = "~/Templates/Export/OffloadRatesRMS.xlsx";
+        private const string TEMPLATE_FOLDER = "~/Templates/Export/";
+        private const string SYSTEM_OFFLOAD_RATES_EXPORT_TEMPLATE = "OffloadRatesRMS.xlsx";
         private readonly IOffloadRatesDTOLoader offloadRatesLoader;
         private readonly IRteTemplateDataLoader rteTemplateDataLoader;
+        private readonly IMoqTableExporter moqTableExporter;
 
         /// <summary>
         /// Starting date for MOQ Templates. WS created after this date will be using new MOQ Types.
@@ -90,7 +93,8 @@ namespace GenBOE.Web.Controllers
             TaskElementValidation taskElementValidation,
             IMSTMetricLoader inMSTMetricsLoader,
             IOffloadRatesDTOLoader offloadRatesDTOLoader,
-            IRteTemplateDataLoader rteTemplateDataLoader)
+            IRteTemplateDataLoader rteTemplateDataLoader,
+            IMoqTableExporter moqTableExporter)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inUserLoader, inPermissionsLoader, inControllerLogic)
         {
             this._CommonDataMapper = inCommonDataMapper;
@@ -108,6 +112,7 @@ namespace GenBOE.Web.Controllers
             this._MSTMetricsLoader = inMSTMetricsLoader;
             this.offloadRatesLoader = offloadRatesDTOLoader;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
+            this.moqTableExporter = moqTableExporter;
         }
 
         #region Display
@@ -1162,7 +1167,7 @@ namespace GenBOE.Web.Controllers
                 DataRelationshipVerifier.VerifyDataRelation(thisTaskElement, boeID);
             }
 
-            string templateName = "~/Templates/Export/LaborTypesAndSpread.xlsx";
+            string templateName = TEMPLATE_FOLDER + "LaborTypesAndSpread.xlsx";
 
             string fileName = LaborTypeAndSpreadExporter.ExportToExcelFile(Server.MapPath(templateName), _ResourceDTODataLoader, _CommonDataMapper, ws, thisTaskElement, boeID, isTemplate);
 
@@ -1189,7 +1194,7 @@ namespace GenBOE.Web.Controllers
             ICollection<OffloadRatesDTO> ratesForMV = this.offloadRatesLoader.GetByWorkspaceId(ws.Id).OrderBy(r => r.Resource).ThenBy(r => r.PerformingOrg).ThenBy(r => r.Year).ToList();
 
             // Get Offload Rates template file name
-            string templateFileName = Server.MapPath(SYSTEM_OFFLOAD_RATES_EXPORT_TEMPLATE);
+            string templateFileName = Server.MapPath(TEMPLATE_FOLDER + SYSTEM_OFFLOAD_RATES_EXPORT_TEMPLATE);
 
             ICollection<ResourceDTO> resources = ws.ResourcesForWsResourceListId.ToList();
             ICollection<PerformingOrgDTO> performingOrgs = ws.PerformingOrgsForWsList.ToList();
@@ -1338,6 +1343,92 @@ namespace GenBOE.Web.Controllers
 
             // Finalize Action
             FinalizeAction(_log, "SaveReorderLaborTypes", sw);
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Import MOQ Table data
+        /// </summary>
+        /// <param name="workspace">Workspace name</param>
+        /// <param name="taskElementID">Task ID</param>
+        /// <returns>View with imported MOQ Table data</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "moqTypeId")]
+        public ViewResult ImportMoqTables(string workspace, int taskElementID)
+        {
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+            BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision); 
+
+            // Initialize Action
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_IMPORT_MOQ_TABLES, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, taskElement.BoeID);
+
+            JavaScriptSerializer serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
+
+            ICollection<ImportMoqTableResultsModelView> importResults = this._BoeLaborControllerLogic.ImportMoqTables(ws, Request, out ICollection<ImportMoqTableResultsModelView> dataToSave, out bool errorsOccurred, out Exception ex);
+
+            this.ViewData["ERRORS_OCCURRED"] = errorsOccurred;
+            this.ViewData["SERIALIZED_DATA"] = serializer.Serialize(dataToSave);
+            this.ViewData["DOCUMENT_DOMAIN"] = this.Request["documentDomain"];
+
+            if (errorsOccurred)
+            {
+                this._log.Error(ex);
+            }
+
+            ViewResult toReturn = this.View(WebConstants.VIEW_MOQ_TABLE_IMPORT_VERIFICATION, importResults);
+
+            // Finalize Action
+            FinalizeAction(_log, WebConstants.ACTION_IMPORT_MOQ_TABLES, sw);
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Complete the MOQ Table import
+        /// </summary>
+        /// <param name="importResults">The imoprt rsults to save</param>
+        /// <param name="moqTypeId">ID of the MOQ Type</param>
+        /// <param name="workspace">Workspace name</param>
+        /// <param name="taskElementID">Task element ID</param>
+        /// <returns>Json result</returns>
+        public JsonResult CompleteImportMoqTables(ICollection<ImportMoqTableResultsModelView> importResults, int moqTypeId, string workspace, int taskElementID)
+        {
+            // TODO - fix dates, reload page
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+            BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision);
+
+            // Initialize Action
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_COMPLETE_IMPORT_MOQ_TABLES, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, taskElement.BoeID);
+
+            JsonResult toReturn;
+
+            this._BoeLaborControllerLogic.CompleteImportMoqTables(importResults, moqTypeId);
+
+            toReturn = this.Json(new { Status = true });
+
+            // Finalize Action
+            this.FinalizeAction(this._log, WebConstants.ACTION_COMPLETE_IMPORT_MOQ_TABLES, sw);
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Export MOQ Table data
+        /// </summary>
+        /// <param name="moqTypeId">ID of the MOQ type</param>
+        /// <param name="workspace">Workspace name</param>
+        /// <param name="taskElementID">Task ID</param>
+        /// <returns>Export</returns>
+        public ActionResult ExportMoqTables(int moqTypeId, string workspace, int taskElementID)
+        {
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+            BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision);
+
+            // Initialize Action
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_MOQ_TABLES, SecurityPage.TaskElements, SecurityAuthorization.Read, ws, taskElement.BoeID);
+
+            string exportFileName = this._BoeLaborControllerLogic.ExportMoqTables(moqTypeId, ws, Server.MapPath(TEMPLATE_FOLDER + this.moqTableExporter.MOQ_TABLE_EXCEL_MAP_PATH));
+            ActionResult toReturn = new ExportFileDownloadResult(exportFileName, string.Format("Task-{0}_{1}_MoqTableData.xlsx", taskElement.Id, taskElement.TaskTitle));
+
+            // Finalize Action
+            FinalizeAction(_log, WebConstants.ACTION_EXPORT_MOQ_TABLES, sw);
             return toReturn;
         }
 

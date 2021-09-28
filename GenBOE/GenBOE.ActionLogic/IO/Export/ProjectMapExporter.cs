@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -129,7 +129,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             if (projectMapData.Any())
             {
-                foreach (var data in projectMapData)
+                foreach (ProjectMapModelView data in projectMapData)
                 {
                     Collection<string> row = new Collection<string>
                     {
@@ -208,7 +208,18 @@ namespace GenBOE.ActionLogic.IO.Export
             IReadOnlyCollection<SikorskyLegacyResourceDTO> legacyResources = commonDataMapper.GetSikorskyLegacyResources();
             string[] offloadOptions = new string[] { "TRUE", "FALSE" };
             string[] addDeleteOptions = new string[] { "A", "D" };
-            string[] classOfCostOptions = new string[] { ClassOfCost.Recurring.GetDescription(), ClassOfCost.NonRecurring.GetDescription(), ClassOfCost.DevNonRecurring.GetDescription() };
+            string[] classOfCostOptions = new string[] { ClassOfCost.Recurring.GetDescription(), ClassOfCost.NonRecurring.GetDescription() };
+
+            // Add DevNonRecurring Class of Cost option if workspace is using it
+            CustomFieldDTO classOfCostCf = workspace.CustomFields.FirstOrDefault(x => x.CustomFieldName == Constants.SikorskyConstants.SIKORSKY_CF_CLASSOFCOST);
+            if (classOfCostCf != null)
+            {
+                ICollection<CustomFieldValueDTO> cfOptions = workspace.CustomFieldValues.Where(x => x.CustomFieldID == classOfCostCf.Id).ToCollection();
+                if (cfOptions != null && cfOptions.Any(x => x.CustomFieldValueName == ClassOfCost.DevNonRecurring.GetDescription()))
+                {
+                    classOfCostOptions = new string[] { ClassOfCost.Recurring.GetDescription(), ClassOfCost.NonRecurring.GetDescription(), ClassOfCost.DevNonRecurring.GetDescription() };
+                }
+            }
 
             // Options List Column Headers
             List<string> headerValues = new List<string>

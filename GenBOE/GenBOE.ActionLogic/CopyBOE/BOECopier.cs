@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -208,7 +208,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                     {
                         if (originalMoqTypes.Any())
                         {
-                            this.CopyMoqTypes(originalMoqTypes, taskDuplicateId);
+                            this.CopyMoqTypes(originalMoqTypes, taskDuplicateId, true);
                         }
 
                         if (rteTemplateAnswers.Any())
@@ -724,7 +724,7 @@ namespace GenBOE.ActionLogic.CopyBOE
                     {
                         if (moqTypesToCopy.Any())
                         {
-                            this.CopyMoqTypes(moqTypesToCopy, taskElementCopy.Id);
+                            this.CopyMoqTypes(moqTypesToCopy, taskElementCopy.Id, copyWithinSameWorkspace);
                         }
 
                         if (inUseMetricIDs.Any())
@@ -796,7 +796,8 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// </summary>
         /// <param name="moqTypesToCopy">MOQ Types to copy</param>
         /// <param name="newTaskId">New Task Id</param>
-        private void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, int newTaskId)
+        /// <param name="copyWithinSameWorkspace">Are we copying within the same workspace</param>
+        private void CopyMoqTypes(ICollection<MoqTypeSelection> moqTypesToCopy, int newTaskId, bool copyWithinSameWorkspace)
         {
             _ = moqTypesToCopy ?? throw new ArgumentNullException(nameof(moqTypesToCopy));
 
@@ -816,6 +817,11 @@ namespace GenBOE.ActionLogic.CopyBOE
                 {
                     MoqTableData newTable = existingTable.DeepClone();
                     newTable.Id = --i; 
+
+                    if (copyWithinSameWorkspace && newTable.CustomFieldValueContainers.Any())
+                    {
+                        newTable.CustomFieldValueContainers = this.GetCustomFieldValueContainersCopy(newTable.CustomFieldValueContainers);
+                    }
 
                     newMoqType.TableData.Add(newTable); 
                 });
@@ -939,7 +945,7 @@ namespace GenBOE.ActionLogic.CopyBOE
         /// <param name="CustomFieldValueContainers">Custom field container to be copied</param>
         /// <param name="newId">Starting id to use for new custom field containers. Defaults to -1, but may need to be specified when using bulk save</param>
         /// <returns>Custom field container</returns>
-        private Collection<CustomFieldValueContainer> GetCustomFieldValueContainersCopy(Collection<CustomFieldValueContainer> CustomFieldValueContainers, int newId = -1)
+        private Collection<CustomFieldValueContainer> GetCustomFieldValueContainersCopy(ICollection<CustomFieldValueContainer> CustomFieldValueContainers, int newId = -1)
         {
             Collection<CustomFieldValueContainer> destinationCustomFieldValueContainers = new Collection<CustomFieldValueContainer>();
 

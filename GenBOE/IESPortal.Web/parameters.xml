@@ -31,7 +31,13 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='PPUrl']/@value">
     </parameterentry>
   </parameter>
+  <parameter name="ACVUrl" description="doesn't matter" defaultvalue="__ACVUrl__" tags="">
+    <parameterValidation kind="AllowEmpty" />
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ACVUrl']/@value">
+    </parameterentry>
+  </parameter>
   <parameter name="EEPPUrl" description="doesn't matter" defaultvalue="__EEPPUrl__" tags="">
+    <parameterValidation kind="AllowEmpty" />
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='EEPPUrl']/@value">
     </parameterentry>
   </parameter>
