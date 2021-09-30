@@ -178,5 +178,22 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="trackingNumber">Proposal Tracking Number</param>
         /// <returns>Proposal Data</returns>
         EppProposalData GetEppProposalDataByProposalTrackingNumber(string ntid, bool isAdmin, string trackingNumber);
+
+        /// <summary>
+        /// Gets Proposal Data for ACV application, when the user is searching for a PTM record
+        /// 
+        /// Search criteria:
+        ///     - proposal is in progress
+        ///     - user is either system admin, or either a Lead Estimator, or a Backup Lead Est.
+        ///     - if search string is provided, then a proposal matches if PTM Tracking Number or Proposal Title contain the search string
+        ///     
+        /// The method will return data to top 100 records, as more data being returned to the user is not going to be helpful
+        /// </summary>
+        /// <param name="ntid">User's NTID</param>
+        /// <param name="isAdmin">Is the user System Admin</param>
+        /// <param name="searchString">Optional search string</param>
+        /// <returns>Proposal Data</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        ICollection<(string PtmTrackingNumber, string ProposalTitle)> GetCostVolumeProposalData(string ntid, bool isAdmin, string searchString);
     }
 }

@@ -1266,5 +1266,46 @@ namespace GenTRAC.Tests.DAL.Loader
         }
 
         #endregion
+
+        /// <summary>
+        /// Tests non-admin search
+        /// </summary>
+        [TestMethod]
+        public void GetCostVolumeProposalData_Test1()
+        {
+            bool isAdmin = false;
+            string ntid = "paliderd";
+            string searchString = "00016";
+
+            ProposalLoader sut = this.CreateSystem();
+            UserLoader userLoader = new UserLoader();
+            ProposalPermissionLoader permissionsLoader = new ProposalPermissionLoader();            
+
+            int userId = userLoader.GetByNtid(ntid).Id;
+            ICollection<(string PtmTrackingNumber, string ProposalTitle)> result = sut.GetCostVolumeProposalData(ntid, isAdmin, searchString);
+
+            Assert.IsTrue(result.Any(x => x.PtmTrackingNumber.Contains("17-00016")));
+        }
+
+        /// <summary>
+        /// Tests admin search and fail due to not in progress
+        /// </summary>
+        [TestMethod]
+        public void GetCostVolumeProposalData_Test2()
+        {
+            bool isAdmin = true;
+            string ntid = "paliderd";
+            string searchString = "20-00017-PR1";
+
+            ProposalLoader sut = this.CreateSystem();
+            UserLoader userLoader = new UserLoader();
+            ProposalPermissionLoader permissionsLoader = new ProposalPermissionLoader();
+
+
+            int userId = userLoader.GetByNtid(ntid).Id;
+            ICollection<(string PtmTrackingNumber, string ProposalTitle)> result = sut.GetCostVolumeProposalData(ntid, isAdmin, searchString);
+
+            Assert.IsFalse(result.Any(x => x.PtmTrackingNumber.Contains("20-00017-PR1")));
+        }
     }
 }
