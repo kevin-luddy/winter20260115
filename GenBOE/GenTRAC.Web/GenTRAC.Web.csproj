@@ -203,6 +203,7 @@
     <Compile Include="Common\HandleErrorAttribute.cs" />
     <Compile Include="Common\SiteMasterUtilities.cs" />
     <Compile Include="Common\WebConstants.cs" />
+    <Compile Include="Controllers\AcvProposalData.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\ApprovalsController.cs" />
     <Compile Include="Controllers\ChecklistController.cs" />

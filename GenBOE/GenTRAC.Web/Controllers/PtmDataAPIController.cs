@@ -6,6 +6,7 @@
 
 namespace GenTRAC.Web.Controllers
 {
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Security.Principal;
@@ -61,17 +62,27 @@ namespace GenTRAC.Web.Controllers
         /// <param name="token">Token that will allow access</param>
         /// <param name="searchString">Search String</param>
         /// <returns>Proposal Data</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         [HttpGet]
         public ICollection<AcvProposalData> GetProposalDataForCostVolume(string token, string searchString)
         {
-            AuthenticateUser(token);
+            List<AcvProposalData> result;
 
-            // Normal logic resumes
-            bool isAdmin = this.securityAccess.CurrentUserHasRole(PtmRole.Admin, null);
+            try
+            {
+                AuthenticateUser(token);
 
-            ICollection<(string PtmTrackingNumber, string ProposalTitle)> result = this.loader.GetCostVolumeProposalData(security.ActiveUserNTID, isAdmin, searchString);
+                // Normal logic resumes
+                bool isAdmin = this.securityAccess.CurrentUserHasRole(PtmRole.Admin, null);
+                ICollection<(string PtmTrackingNumber, string ProposalTitle)> data = this.loader.GetCostVolumeProposalData(security.ActiveUserNTID, isAdmin, searchString);
+                result = data.Select(x => new AcvProposalData() { PtmTrackingNumber = x.PtmTrackingNumber, ProposalTitle = x.ProposalTitle }).ToList();
+            }
+            catch
+            {
+                result = null;
+            }
 
-            return result.Select(x => new AcvProposalData() { PtmTrackingNumber = x.PtmTrackingNumber, ProposalTitle = x.ProposalTitle }).ToList();
+            return result;
         }
 
         /// <summary>
@@ -85,25 +96,14 @@ namespace GenTRAC.Web.Controllers
             // Authenticate the call, and pull out the user's ntid.
             string ntid = tokenHandler.GetNtidIfTokenIsValid(token);
 
+            if(string.IsNullOrEmpty(ntid))
+            {
+                throw new UnauthorizedAccessException();
+            }
+
             // Set the current user to the NTID that is coming in.
             GenericIdentity identity = new GenericIdentity(ntid);
             System.Threading.Thread.CurrentPrincipal = new GenericPrincipal(identity, new string[] { });
         }
-    }
-
-    /// <summary>
-    /// Class used to send proposal data for CV creation
-    /// </summary>
-    public class AcvProposalData
-    {
-        /// <summary>
-        /// PTM Tracking Number
-        /// </summary>
-        public string PtmTrackingNumber { get; set; }
-
-        /// <summary>
-        /// Proposal Title
-        /// </summary>
-        public string ProposalTitle { get; set; }
     }
 }
