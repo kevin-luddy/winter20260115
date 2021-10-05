@@ -1279,9 +1279,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             ProposalLoader sut = this.CreateSystem();
             UserLoader userLoader = new UserLoader();
-            ProposalPermissionLoader permissionsLoader = new ProposalPermissionLoader();            
 
-            int userId = userLoader.GetByNtid(ntid).Id;
             ICollection<(string PtmTrackingNumber, string ProposalTitle)> result = sut.GetCostVolumeProposalData(ntid, isAdmin, searchString);
 
             Assert.IsTrue(result.Any(x => x.PtmTrackingNumber.Contains("17-00016")));
@@ -1299,10 +1297,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             ProposalLoader sut = this.CreateSystem();
             UserLoader userLoader = new UserLoader();
-            ProposalPermissionLoader permissionsLoader = new ProposalPermissionLoader();
 
-
-            int userId = userLoader.GetByNtid(ntid).Id;
             ICollection<(string PtmTrackingNumber, string ProposalTitle)> result = sut.GetCostVolumeProposalData(ntid, isAdmin, searchString);
 
             Assert.IsFalse(result.Any(x => x.PtmTrackingNumber.Contains("20-00017-PR1")));

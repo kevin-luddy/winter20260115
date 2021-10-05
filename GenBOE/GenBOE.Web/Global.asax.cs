@@ -228,8 +228,8 @@ namespace GenBOE
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         protected void Application_Start()
         {
-            GlobalConfiguration.Configure(WebApiConfig.Register);
             _log.Debug("Starting Application..");
+            ConfigureWebApi();
 
             try { _log.Debug("GetMachineStoreForAssembly : " + string.Join(",", IsolatedStorageFile.GetMachineStoreForAssembly().GetDirectoryNames())); }
             catch { _log.Error("GetMachineStoreForAssembly : <security exception>"); }
@@ -300,6 +300,15 @@ namespace GenBOE
             catch (Exception ex) { _log.Error(ex, "FATAL - ModelBinders setup failed."); throw; }
         }
 
+        /// <summary>
+        /// Configures Web Api 2 "things" to work in an MVC application
+        /// </summary>
+        private static void ConfigureWebApi()
+        {
+            GlobalConfiguration.Configure(WebApiConfig.Register);
+            GlobalConfiguration.Configuration.DependencyResolver = new UnityResolver(GenBOEUnityContainer.Container);
+        }
+
         // Suppressed because all of these classes are needed to set up dependency injection.
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         protected virtual void InitializeContainer()
@@ -315,6 +324,7 @@ namespace GenBOE
             GenBOEUnityContainer.Container.RegisterType(typeof(CacheDataLoader), typeof(CacheDataLoader), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ICache)), -1));
             GenBOEUnityContainer.Container.RegisterType(typeof(CacheDataLoader), typeof(CacheDataLoader), "GenBOEMetricsCache", GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ICache)), 43200));
             GenBOEUnityContainer.Container.RegisterType(typeof(NonCacheDataLoader), typeof(NonCacheDataLoader), GetLifetimeManager(), new InjectionConstructor());
+            GenBOEUnityContainer.Container.RegisterType(typeof(TokenHandling), typeof(TokenHandling), this.GetLifetimeManager(), new InjectionConstructor());
 
             // Register Loaders
             GenBOEUnityContainer.Container.RegisterType(typeof(IBOEFormIBOEDTODataLoader), typeof(BOEFormIBOEDTODataLoader), GetLifetimeManager(), new InjectionMember[] { });
