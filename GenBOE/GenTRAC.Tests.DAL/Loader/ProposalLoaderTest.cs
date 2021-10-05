@@ -1278,7 +1278,6 @@ namespace GenTRAC.Tests.DAL.Loader
             string searchString = "00016";
 
             ProposalLoader sut = this.CreateSystem();
-            UserLoader userLoader = new UserLoader();
 
             ICollection<(string PtmTrackingNumber, string ProposalTitle)> result = sut.GetCostVolumeProposalData(ntid, isAdmin, searchString);
 
@@ -1296,7 +1295,6 @@ namespace GenTRAC.Tests.DAL.Loader
             string searchString = "20-00017-PR1";
 
             ProposalLoader sut = this.CreateSystem();
-            UserLoader userLoader = new UserLoader();
 
             ICollection<(string PtmTrackingNumber, string ProposalTitle)> result = sut.GetCostVolumeProposalData(ntid, isAdmin, searchString);
 
