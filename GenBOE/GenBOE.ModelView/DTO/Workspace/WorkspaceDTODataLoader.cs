@@ -510,6 +510,29 @@ namespace GenBOE.DataBridge.DTO
             return result;
         }
 
+        /// <summary>
+        /// Get Workspace Data For Proposal
+        /// 
+        /// Used by ACV
+        /// </summary>
+        [DbQuery]
+        public virtual ICollection<(int Id, string shortName, string longName)> GetWorkspaceDataForProposal(string ptmTrackingNumber)
+        {
+            ICollection<(int Id, string shortName, string longName)> result;
+
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            {
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+                    result = gbe.Workspaces.Where(x => x.TrackingNumber == ptmTrackingNumber)
+                                    .Select(x => new { Id = x.WorkspaceID, shortName = x.WorkspaceShortName, longName = x.WorkspaceName }).ToList()
+                                    .Select(x => (Id: x.Id, shortName: x.shortName, longName: x.longName)).ToList();
+                }
+            }
+
+            return result;
+        }
+
         #endregion
 
         #region Restores and Copies

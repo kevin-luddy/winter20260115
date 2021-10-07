@@ -226,7 +226,8 @@ namespace GenTRAC
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterType(typeof(CacheDataLoader), typeof(CacheDataLoader), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ICache)), -1));
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterType(typeof(CacheDataLoader), typeof(CacheDataLoader), "GenBOEMetricsCache", this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ICache)), 43200));
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterType(typeof(NonCacheDataLoader), typeof(NonCacheDataLoader), this.GetLifetimeManager(), new InjectionConstructor());
-
+            IES.Common.classes.GenBOEUnityContainer.Container.RegisterType(typeof(TokenHandling), typeof(TokenHandling), this.GetLifetimeManager(), new InjectionConstructor());
+            
             #endregion
 
             #region Register Loaders
