@@ -334,6 +334,11 @@ namespace GenTRAC.ActionLogic.Validation
             public const string CONTRACTS_POC_REQUIRED = USER_INFO_VALDIATION + "Contracts POC is required.";
 
             /// <summary>
+            /// backup contracts POC is required
+            /// </summary>
+            public const string BACKCUP_CONTRACTS_POC_REQUIRED = USER_INFO_VALDIATION + "Backup Contracts POC is required.";
+
+            /// <summary>
             /// supply chain material is required
             /// </summary>
             public const string SUPPLY_CHAIN_MATERIAL_REQUIRED = USER_INFO_VALDIATION + "Materials Lead is required if Elements of Cost includes Materials.";
@@ -394,6 +399,12 @@ namespace GenTRAC.ActionLogic.Validation
             public const string CONTRACTS_POC_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Contracts Lead, or the user is not an LM, US based employee.";
 
             /// <summary>
+            /// Backup Contracts Lead invalid NTID
+            /// </summary>
+            public const string BACKUP_CONTRACTS_POC_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Backup Contracts Lead, or the user is not an LM, US based employee.";
+
+
+            /// <summary>
             /// Proposal Manager invalid NTID.
             /// </summary>
             public const string PROPOSAL_MANAGER_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Proposal Manager.";
@@ -407,6 +418,11 @@ namespace GenTRAC.ActionLogic.Validation
             /// GenBOE Workspace Creator invalid NTID
             /// </summary>
             public const string WORKSPACE_CREATOR_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for GenBOE Workspace Creator.";
+
+            /// <summary>
+            /// Contracts Lead and Backup cannot be the same person
+            /// </summary>
+            public const string CONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL = USER_INFO_VALDIATION + "Contracts Lead and Backup Contracts Lead cannot be the same person.";
 
             #endregion  Proposal User Info Section
         }

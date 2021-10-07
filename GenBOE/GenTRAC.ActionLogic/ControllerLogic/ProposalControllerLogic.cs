@@ -676,6 +676,25 @@ namespace GenTRAC.ActionLogic
 
             this.AddAndDeletePermissions(fullProposalDto, contractsPocPermission, PtmRole.ContractsPOC, permissionsToAdd, permissionsToDelete);
 
+            // Backup Contracts POC manager
+            ProposalPermissionDto backupContractsPocPermission = null;
+            if (!isForecasted)
+            {
+                UserDTO backupContractsPoc = UserMapper.GetByNtid(proposalUserInfo.BackupContractsPOCNtId);
+                backupContractsPocPermission = new ProposalPermissionDto()
+                {
+                    Id = -1,
+                    ProposalID = proposalId,
+                    UserId = backupContractsPoc.Id,
+                    Role = PtmRole.BackupContractsPOC,
+                    ResourceType = ResourceType.NotSet,
+                    Updateable = IES.Common.UpdateType.Upsert,
+                    UpdateDate = proposalUserInfo.UpdateDate
+                };
+            }
+
+            this.AddAndDeletePermissions(fullProposalDto, backupContractsPocPermission, PtmRole.BackupContractsPOC, permissionsToAdd, permissionsToDelete);
+
             // tech lead
             ProposalPermissionDto techLeadPermission = null;
             if (!string.IsNullOrEmpty(proposalUserInfo.TechLeadNtid))
@@ -1393,6 +1412,9 @@ namespace GenTRAC.ActionLogic
                 case PtmRole.ContractsPOC:
                     groupName = IES.Common.ConfigurationUtilities.GetAppSetting("ContractsLead");
                     break;
+                case PtmRole.BackupContractsPOC:
+                    groupName = IES.Common.ConfigurationUtilities.GetAppSetting("ContractsLead");
+                    break;
             }
 
             return this.userLoader.GetUserDTOsByADGroup(groupName.GetObjectName());
@@ -1568,6 +1590,10 @@ namespace GenTRAC.ActionLogic
                             model.ContractsPOCNtId = user.Ntid;
                             model.ContractsPOCDisplayName = user.DisplayName;
                             break;
+                        case PtmRole.BackupContractsPOC:
+                            model.BackupContractsPOCNtId = user.Ntid;
+                            model.BackupContractsPOCDisplayName = user.DisplayName;
+                            break;
                         case PtmRole.TechLead:
                             model.TechLeadNtid = user.Ntid;
                             model.TechLeadDisplayName = user.DisplayName;
@@ -1587,11 +1613,18 @@ namespace GenTRAC.ActionLogic
             }
 
             model.ContractLeadList = this.GetUsersForSelectList(PtmRole.ContractsPOC).Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName }).ToList();
-            if (!model.ContractLeadList.Any(x => x.Value == model.CostVolumeLeadNtid))
+            if (!model.ContractLeadList.Any(x => x.Value == model.ContractsPOCNtId))
             {
-                model.ContractLeadList.Insert(0, new SelectListItem() { Value = model.CostVolumeLeadNtid, Text = model.CostVolumeLeadDisplayName });
+                model.ContractLeadList.Insert(0, new SelectListItem() { Value = model.ContractsPOCNtId, Text = model.ContractsPOCDisplayName });
             }
             model.ContractLeadList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Contracts Lead" });
+
+            model.BackupContractLeadList = this.GetUsersForSelectList(PtmRole.BackupContractsPOC).Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName }).ToList();
+            if (!model.BackupContractLeadList.Any(x => x.Value == model.BackupContractsPOCNtId))
+            {
+                model.BackupContractLeadList.Insert(0, new SelectListItem() { Value = model.BackupContractsPOCNtId, Text = model.BackupContractsPOCDisplayName });
+            }
+            model.BackupContractLeadList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Backup Contracts Lead" });
 
             model.GenBoeWorkspaceCreatorList = new Collection<SelectListItem>() { new SelectListItem() { Value = string.Empty, Text = "Select GenBOE Workspace Creator" } };
             ICollection<KeyValuePair<string, string>> workspaceCreatorList = this.genBoePermissionLoader.GetCreateWorkspaceRolesForPtm(model.GenBoeWorkspaceCreatorNtid, model.GenBoeWorkspaceCreatorDisplayName);
@@ -1720,14 +1753,27 @@ namespace GenTRAC.ActionLogic
                 inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.COST_VOLUME_REQUIRED));
             }
 
-            if (string.IsNullOrWhiteSpace(proposalUserInfo.ContractsPOCNtId))
+            bool invalidContractsPOCNtId = string.IsNullOrWhiteSpace(proposalUserInfo.ContractsPOCNtId);
+            bool invalidBackupContractsPOCNtId = string.IsNullOrWhiteSpace(proposalUserInfo.BackupContractsPOCNtId);
+
+            if (invalidContractsPOCNtId)
             {
                 inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CONTRACTS_POC_REQUIRED));
+            }
+
+            if (invalidBackupContractsPOCNtId)
+            {
+                inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.BACKCUP_CONTRACTS_POC_REQUIRED));
             }
 
             if (string.IsNullOrWhiteSpace(proposalUserInfo.ProposalMgrNtid))
             {
                 inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROPOSALMGR_REQUIRED));
+            }
+
+            if (!invalidContractsPOCNtId && !invalidBackupContractsPOCNtId && (proposalUserInfo.ContractsPOCNtId == proposalUserInfo.BackupContractsPOCNtId))
+            {
+                inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
             }
 
             // if this is a saved proposal, this will only validate the changed users, else validate all of the users
@@ -1741,6 +1787,7 @@ namespace GenTRAC.ActionLogic
             validUnchangedUsers = this.ValidateUserType(proposalUserInfo.SupplyChainPOCMaterialsNtId, savedProposalUsers.SupplyChainPOCMaterialsNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.SUPPLY_CHAIN_POC_MATL_INVALID_NTID, true, true) && validUnchangedUsers;
             validUnchangedUsers = this.ValidateUserType(proposalUserInfo.SupplyChainPOCSubsNtId, savedProposalUsers.SupplyChainPOCSubsNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.SUPPLY_CHAIN_POC_SUBS_INVALID_NTID, true, true) && validUnchangedUsers;
             validUnchangedUsers = this.ValidateUserType(proposalUserInfo.ContractsPOCNtId, savedProposalUsers.ContractsPOCNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.CONTRACTS_POC_INVALID_NTID, true, true) && validUnchangedUsers;
+            validUnchangedUsers = this.ValidateUserType(proposalUserInfo.BackupContractsPOCNtId, savedProposalUsers.BackupContractsPOCNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.BACKUP_CONTRACTS_POC_INVALID_NTID, true, true) && validUnchangedUsers;
             validUnchangedUsers = this.ValidateUserType(proposalUserInfo.BackupPricerNtId, savedProposalUsers.BackupPricerNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.BACKUP_PRICER_INVALID_NTID, true, true) && validUnchangedUsers;
             validUnchangedUsers = this.ValidateUserType(proposalUserInfo.ProposalMgrNtid, savedProposalUsers.ProposalMgrNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.PROPOSAL_MANAGER_INVALID_NTID, false, false) && validUnchangedUsers;
             validUnchangedUsers = this.ValidateUserType(proposalUserInfo.TechLeadNtid, savedProposalUsers.TechLeadNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.TECH_LEAD_INVALID_NTID, true, true) && validUnchangedUsers;

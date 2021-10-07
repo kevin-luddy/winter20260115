@@ -246,6 +246,7 @@ namespace GenTRAC.DataBridge.DTO
                         case PtmRole.SupplyChainPOCMatl:
                         case PtmRole.SupplyChainPOCSubs:
                         case PtmRole.ContractsPOC:
+                        case PtmRole.BackupContractsPOC:
                         case PtmRole.CoverSheetApprover:
                         case PtmRole.LOBEstLead:
                         case PtmRole.PricingVerification:

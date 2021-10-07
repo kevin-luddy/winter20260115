@@ -181,6 +181,7 @@ namespace GenTRAC.Tests.ActionLogic
                         CaptureManagerNtid = "n00000",
                         CostVolumeLeadNtid = "n00000",
                         ContractsPOCNtId = "n00000",
+                        BackupContractsPOCNtId = "n22222",
                         ProposalMgrNtid = "n00000",
                         SupplyChainPOCMaterialsNtId = "n00000",
                         SupplyChainPOCSubsNtId = "n00000"
@@ -188,9 +189,9 @@ namespace GenTRAC.Tests.ActionLogic
                 }
             }
 
-                /// <summary>
-                /// ProposalApprovalModelView Stub
-                /// </summary>
+            /// <summary>
+            /// ProposalApprovalModelView Stub
+            /// </summary>
             public ProposalApprovalsModelView ProposalApprovalsVM
             {
                 get
@@ -295,6 +296,7 @@ namespace GenTRAC.Tests.ActionLogic
                 BackupPricerNtId = ntid,
                 CaptureManagerNtid = ntid,
                 ContractsPOCNtId = ntid,
+                BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
                 SupplyChainPOCMaterialsNtId = ntid,
                 SupplyChainPOCSubsNtId = ntid
@@ -365,6 +367,7 @@ namespace GenTRAC.Tests.ActionLogic
                 BackupPricerNtId = ntid,
                 CaptureManagerNtid = ntid,
                 ContractsPOCNtId = ntid,
+                BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
                 SupplyChainPOCMaterialsNtId = ntid,
                 SupplyChainPOCSubsNtId = ntid
@@ -502,6 +505,7 @@ namespace GenTRAC.Tests.ActionLogic
                 BackupPricerNtId = ntid,
                 CaptureManagerNtid = ntid,
                 ContractsPOCNtId = ntid,
+                BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
                 SupplyChainPOCMaterialsNtId = ntid,
                 SupplyChainPOCSubsNtId = ntid
@@ -562,6 +566,7 @@ namespace GenTRAC.Tests.ActionLogic
                 BackupPricerNtId = ntid,
                 CaptureManagerNtid = ntid,
                 ContractsPOCNtId = ntid,
+                BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
                 SupplyChainPOCMaterialsNtId = ntid,
                 SupplyChainPOCSubsNtId = ntid
@@ -1816,6 +1821,8 @@ namespace GenTRAC.Tests.ActionLogic
             }
 
             permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = PtmRole.BackupPricer, ProposalID = proposal.Id });
+            permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = PtmRole.BackupContractsPOC, ProposalID = proposal.Id });
+
             permissions[(int)PtmRole.AdditionalPricingResource1 - 1].ResourceType = ResourceType.Pricer;
             permissions[(int)PtmRole.AdditionalPricingResource2 - 1].ResourceType = ResourceType.Strategist;
             permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = PtmRole.GenBoeWorkspaceCreator, ProposalID = proposal.Id });
@@ -1841,6 +1848,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(user.DisplayName, proposalUserInfo.BackupPricerDisplayName);
             Assert.AreEqual(user.DisplayName, proposalUserInfo.CaptureManagerDisplayName);
             Assert.AreEqual(user.DisplayName, proposalUserInfo.ContractsPOCDisplayName);
+            Assert.AreEqual(user.DisplayName, proposalUserInfo.BackupContractsPOCDisplayName);
             Assert.AreEqual(user.DisplayName, proposalUserInfo.CostVolumeLeadDisplayName);
             Assert.AreEqual(user.DisplayName, proposalApprovalsInfo.LeadEstimatorDisplayName);
             Assert.AreEqual(user.DisplayName, proposalUserInfo.SupplyChainPOCMaterialsDisplayName);
@@ -1851,6 +1859,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(user.Ntid, proposalUserInfo.BackupPricerNtId);
             Assert.AreEqual(user.Ntid, proposalUserInfo.CaptureManagerNtid);
             Assert.AreEqual(user.Ntid, proposalUserInfo.ContractsPOCNtId);
+            Assert.AreEqual(user.Ntid, proposalUserInfo.BackupContractsPOCNtId);
             Assert.AreEqual(user.Ntid, proposalUserInfo.CostVolumeLeadNtid);
             Assert.AreEqual(user.Ntid, proposalApprovalsInfo.LeadEstimatorNtid);
             Assert.AreEqual(user.Ntid, proposalUserInfo.SupplyChainPOCMaterialsNtId);
@@ -2622,6 +2631,14 @@ namespace GenTRAC.Tests.ActionLogic
                 DisplayName = "savedDisplayName"
             };
 
+            UserDTO user2 = new UserDTO()
+            {
+                Id = 3,
+                Ntid = "myNtId2",
+                DisplayName = "myDisplayName2",
+                UserType = IES.Common.UserType.User
+            };
+
             List<ProposalPermissionDto> savedUserPermissions = PopulateUserAndPermissions(savedUser, proposal);
             
             // GetDataForProposalUserInformation
@@ -2638,10 +2655,10 @@ namespace GenTRAC.Tests.ActionLogic
             this.retriever.Setup(x => x.GetAllChecklistSaveInfo(proposalId.Value)).Returns(saveInfo);
 
             // Validation Methods
-            this.validationMethods.Setup(x => x.IsUserTypeValid(user.Ntid, IES.Common.UserType.User, false, false, false)).Returns(true);
-            this.validationMethods.Setup(x => x.IsUserTypeValid(user.Ntid, IES.Common.UserType.User, false, true, true)).Returns(true);
+            this.validationMethods.Setup(x => x.IsUserTypeValid(user.Ntid, IES.Common.UserType.User, false, It.IsAny<bool>(), It.IsAny<bool>())).Returns(true);
+            this.validationMethods.Setup(x => x.IsUserTypeValid(user2.Ntid, IES.Common.UserType.User, false, It.IsAny<bool>(), It.IsAny<bool>())).Returns(true);
 
-            ProposalUserInformationModelView proposalUserInfo = PopulateUserInfo(user);
+            ProposalUserInformationModelView proposalUserInfo = PopulateUserInfo(user, user2);
             ProposalApprovalsModelView proposalApprovalsInfo = PopulateApprovalsInfo(user);
 
             // verify that there are no validation errors
@@ -2683,6 +2700,13 @@ namespace GenTRAC.Tests.ActionLogic
 
             proposalUserInfo.ContractsPOCNtId = savedUser.Ntid;
             validationErrors.Clear();
+            // CASE: BackupContractsPOC not set
+            proposalUserInfo.BackupContractsPOCNtId = string.Empty;
+            sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
+            Assert.AreEqual(2, validationErrors.Count);
+
+            proposalUserInfo.BackupContractsPOCNtId = user2.Ntid;
+            validationErrors.Clear();
             // CASE: GenBOE Workspace Creator not set
             proposalUserInfo.GenBoeWorkspaceCreatorNtid = null;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
@@ -2722,6 +2746,14 @@ namespace GenTRAC.Tests.ActionLogic
                 DisplayName = "savedDisplayName"
             };
 
+            UserDTO user2 = new UserDTO()
+            {
+                Id = 3,
+                Ntid = "myNtId2",
+                DisplayName = "myDisplayName2",
+                UserType = IES.Common.UserType.User
+            };
+
             List<ProposalPermissionDto> savedUserPermissions = PopulateUserAndPermissions(savedUser, proposal);
 
             // GetDataForProposalUserInformation
@@ -2738,10 +2770,10 @@ namespace GenTRAC.Tests.ActionLogic
             this.retriever.Setup(x => x.GetAllChecklistSaveInfo(proposalId.Value)).Returns(saveInfo);
 
             // Validation Methods
-            this.validationMethods.Setup(x => x.IsUserTypeValid(user.Ntid, IES.Common.UserType.User, false, false, false)).Returns(false);
+            this.validationMethods.Setup(x => x.IsUserTypeValid(user2.Ntid, IES.Common.UserType.User, false, It.IsAny<bool>(), It.IsAny<bool>())).Returns(true);
 
             ProposalApprovalsModelView proposalApprovalsInfo = PopulateApprovalsInfo(user);
-            ProposalUserInformationModelView proposalUserInfo = PopulateUserInfo(user);
+            ProposalUserInformationModelView proposalUserInfo = PopulateUserInfo(user, user2);
 
             // verify that there are 9 validation errors
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
@@ -2781,6 +2813,14 @@ namespace GenTRAC.Tests.ActionLogic
                 DisplayName = "savedDisplayName"
             };
 
+            UserDTO user2 = new UserDTO()
+            {
+                Id = 3,
+                Ntid = "myNtId2",
+                DisplayName = "myDisplayName2",
+                UserType = IES.Common.UserType.User
+            };
+
             List<ProposalPermissionDto> savedUserPermissions = PopulateUserAndPermissions(savedUser, proposal);
             
             // GetDataForProposalUserInformation
@@ -2797,11 +2837,11 @@ namespace GenTRAC.Tests.ActionLogic
             this.retriever.Setup(x => x.GetAllChecklistSaveInfo(proposalId.Value)).Returns(saveInfo);
 
             // Validation Methods
-            this.validationMethods.Setup(x => x.IsUserTypeValid(user.Ntid, IES.Common.UserType.User, false, false, false)).Returns(true);
-            this.validationMethods.Setup(x => x.IsUserTypeValid(user.Ntid, IES.Common.UserType.User, false, true, true)).Returns(true);
+            this.validationMethods.Setup(x => x.IsUserTypeValid(user.Ntid, IES.Common.UserType.User, false, It.IsAny<bool>(), It.IsAny<bool>())).Returns(true);
+            this.validationMethods.Setup(x => x.IsUserTypeValid(user2.Ntid, IES.Common.UserType.User, false, It.IsAny<bool>(), It.IsAny<bool>())).Returns(true);
 
             ProposalApprovalsModelView proposalApprovalsInfo = PopulateApprovalsInfo(user);
-            ProposalUserInformationModelView proposalUserInfo = PopulateUserInfo(user);
+            ProposalUserInformationModelView proposalUserInfo = PopulateUserInfo(user, user2);
 
             // verify that there are no validation errors
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
@@ -2822,6 +2862,7 @@ namespace GenTRAC.Tests.ActionLogic
                 permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = (PtmRole)i, ProposalID = proposal.Id });
             }
 
+            permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = PtmRole.BackupContractsPOC, ProposalID = proposal.Id });
             permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = PtmRole.BackupPricer, ProposalID = proposal.Id });
             permissions[(int)PtmRole.AdditionalPricingResource1 - 1].ResourceType = ResourceType.Pricer;
             permissions[(int)PtmRole.AdditionalPricingResource2 - 1].ResourceType = ResourceType.Strategist;
@@ -2848,8 +2889,9 @@ namespace GenTRAC.Tests.ActionLogic
         /// populate a ProposalUserInformationModelView class from a single user DTO
         /// </summary>
         /// <param name="user">input User DTO to populate with</param>
+        /// <param name="user2">second input User DTO to populate with</param>
         /// <returns>returns a populated ProposalUserInformationModelView</returns>
-        private static ProposalUserInformationModelView PopulateUserInfo(UserDTO user)
+        private static ProposalUserInformationModelView PopulateUserInfo(UserDTO user, UserDTO user2)
         {
             ProposalUserInformationModelView userInfo = new ProposalUserInformationModelView();
 
@@ -2875,6 +2917,9 @@ namespace GenTRAC.Tests.ActionLogic
 
             userInfo.ContractsPOCNtId = user.Ntid;
             userInfo.ContractsPOCDisplayName = user.DisplayName;
+
+            userInfo.BackupContractsPOCNtId = user2.Ntid;
+            userInfo.BackupContractsPOCDisplayName = user2.DisplayName;
 
             userInfo.BackupPricerNtId = user.Ntid;
             userInfo.BackupPricerDisplayName = user.DisplayName;

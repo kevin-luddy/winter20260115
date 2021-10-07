@@ -115,7 +115,7 @@ input[type=radio] {
     min-width: 150px;
 }
 
-#GenBoeWorkspaceCreatorNtid {
+.UserInformationDropDown{
     width: 287px;
     height: 18px;
 }

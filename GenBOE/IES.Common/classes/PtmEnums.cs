@@ -230,6 +230,12 @@ namespace IES.Common
         GenBoeWorkspaceCreator = 21,
 
         /// <summary>
+        /// Backup Contracts POC
+        /// </summary>
+        [Description("Backup Contracts Lead")]
+        BackupContractsPOC = 22,
+
+        /// <summary>
         /// CAREFUL
         /// 
         /// Do not use this as a ROLE. This is only used for some decisions in which dropdown should be 
@@ -238,7 +244,7 @@ namespace IES.Common
         /// Lob Estimating Manager
         /// </summary>
         [Description("LOB Estimating Manager")]
-        LOBEstMgr = 22
+        LOBEstMgr = 99
     }
 
     /// <summary>

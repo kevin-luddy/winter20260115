@@ -227,7 +227,7 @@
                 <div class="form-label">GenBOE Workspace Creator</div>
                 <div class="form-element"></div>
                 <div class="form-element">
-                    @Html.DropDownListFor(model => model.GenBoeWorkspaceCreatorNtid, Model.GenBoeWorkspaceCreatorList, new { name = "GenBoeWorkspaceCreator" })
+                    @Html.DropDownListFor(model => model.GenBoeWorkspaceCreatorNtid, Model.GenBoeWorkspaceCreatorList, new { name = "GenBoeWorkspaceCreator", @class = "UserInformationDropDown"})
                 </div>
             </div>
             <div class="form-row">
@@ -248,7 +248,14 @@
                 <div class="form-label">Contracts Lead *</div>
                 <div class="form-element"></div>
                 <div class="form-element">
-                    @Html.DropDownListFor(model => model.ContractsPOCNtId, Model.ContractLeadList, new { name = "ContractsPoc" })
+                    @Html.DropDownListFor(model => model.ContractsPOCNtId, Model.ContractLeadList, new { name = "ContractsPoc", @class = "UserInformationDropDown" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">Backup Contracts Lead *</div>
+                <div class="form-element"></div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.BackupContractsPOCNtId, Model.BackupContractLeadList, new { name = "BackupContractsPoc", @class = "UserInformationDropDown" })
                 </div>
             </div>
             <div class="form-row">

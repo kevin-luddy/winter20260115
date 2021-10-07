@@ -96,9 +96,19 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public string ContractsPOCDisplayName { get; set; }
 
         /// <summary>
+        /// Gets or sets Backup Contracts POC Display name
+        /// </summary>
+        public string BackupContractsPOCDisplayName { get; set; }
+
+        /// <summary>
         /// Gets or sets Contracts POC Nt id
         /// </summary>
         public string ContractsPOCNtId { get; set; }
+
+        /// <summary>
+        /// Gets or sets Backup Contracts POC Nt id
+        /// </summary>
+        public string BackupContractsPOCNtId { get; set; }
 
         /// <summary>
         /// Gets or sets Backup pricer Display Name
@@ -149,6 +159,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Contract Leads
         /// </summary>
         public List<SelectListItem> ContractLeadList { get; set; }
+
+        /// <summary>
+        /// Backup Contracts Leads
+        /// </summary>
+        public List<SelectListItem> BackupContractLeadList { get; set; }
 
         /// <summary>
         /// Constructor
