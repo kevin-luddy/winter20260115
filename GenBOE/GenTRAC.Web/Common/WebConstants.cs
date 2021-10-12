@@ -445,6 +445,11 @@ namespace GenTRAC.Web.Common
             /// </summary>
             public const string GET_SELECTED_ROM_DATA = "GetPreviouslySelectedRomData";
 
+            /// <summary>
+            /// Save Contracts
+            /// </summary>
+            public const string SAVE_CONTRACTS = "SaveContracts";
+
             #endregion
 
             #region Approvals

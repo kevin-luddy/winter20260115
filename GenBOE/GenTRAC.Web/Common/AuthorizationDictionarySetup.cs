@@ -243,12 +243,13 @@ namespace GenTRAC.Web.Common
         /// <param name="result">The result</param>
         private static void AddContractsControllerActions(Dictionary<string, Dictionary<string, SecurityPageAndAuthorization>> result)
         {
-            Dictionary<string, SecurityPageAndAuthorization> contractsTimelineActions = new Dictionary<string, SecurityPageAndAuthorization>();
-            AddActionToController(WebConstants.Action.DISPLAY_CONTRACTS_INDEX, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsTimelineActions);
-            AddActionToController(WebConstants.Action.CALCULATE_OFFER_FIELDS, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsTimelineActions);
-            AddActionToController(WebConstants.Action.GET_SELECTED_ROM_DATA, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsTimelineActions);
+            Dictionary<string, SecurityPageAndAuthorization> contractsActions = new Dictionary<string, SecurityPageAndAuthorization>();
+            AddActionToController(WebConstants.Action.DISPLAY_CONTRACTS_INDEX, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsActions);
+            AddActionToController(WebConstants.Action.CALCULATE_OFFER_FIELDS, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsActions);
+            AddActionToController(WebConstants.Action.GET_SELECTED_ROM_DATA, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsActions);
+            AddActionToController(WebConstants.Action.SAVE_CONTRACTS, PtmSecurityPage.Contracts, SecurityAuthorization.CreateReadUpdateDelete, contractsActions);
 
-            result.Add(WebConstants.Controller.CONTRACTS, contractsTimelineActions);
+            result.Add(WebConstants.Controller.CONTRACTS, contractsActions);
         }
 
         #endregion

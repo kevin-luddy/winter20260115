@@ -1893,8 +1893,7 @@ namespace GenTRAC.DataBridge.DTO
                                 && true
 
                                 && (isAdmin
-                                        // ToDo: once we have Backup Contracts Lead, add the role into the 2nd role comparison
-                                        || x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid && (role.RoleID == (int)PtmRole.ContractsPOC || role.RoleID == (int)PtmRole.ContractsPOC)))
+                                        || x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid && (role.RoleID == (int)PtmRole.ContractsPOC || role.RoleID == (int)PtmRole.BackupContractsPOC)))
                                 && (string.IsNullOrEmpty(searchString)
                                         || x.ProposalTrackingID.ToLower().Contains(searchString)
                                         || x.ProposalTitle.ToLower().Contains(searchString)
@@ -1921,8 +1920,7 @@ namespace GenTRAC.DataBridge.DTO
                     result = dbModel.Proposals
                         .Where(x =>
                             (isAdmin
-                                // ToDo: once we have Backup Contracts Lead, add the role into the 2nd role comparison
-                                || x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid && (role.RoleID == (int)PtmRole.ContractsPOC || role.RoleID == (int)PtmRole.ContractsPOC)))
+                                || x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid && (role.RoleID == (int)PtmRole.ContractsPOC || role.RoleID == (int)PtmRole.BackupContractsPOC)))
                             && x.ProposalTrackingID == trackingNumber
                         )
                         .Select(entity => new

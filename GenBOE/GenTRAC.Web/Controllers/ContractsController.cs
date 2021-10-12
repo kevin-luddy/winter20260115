@@ -112,5 +112,13 @@ namespace GenTRAC.Web.Controllers
 
             return result;
         }
+
+        /// <summary>
+        /// Performs contracts save
+        /// </summary>
+        public void SaveContracts()
+        {
+            // TODO: after 'IES-411 Permissions - Add a 2nd Role - Backup Contracts Lead Part 2'
+        }
     }
 }
