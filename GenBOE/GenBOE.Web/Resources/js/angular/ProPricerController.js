@@ -610,7 +610,6 @@
 
                 resourceHeaders.push('Indirect Pool');
                 resourceHeaders.push('Profit/Fee');
-                resourceHeaders.push('Rate Band');
                 resourceHeaders.push('Calendar');
                 resourceHeaders.push('Hours / Heads');
                 resourceHeaders.push('Curve');
