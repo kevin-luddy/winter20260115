@@ -363,7 +363,7 @@
         console.log(ManageBOEModel.workspace);
 
         $cookies.put('filtersWbs' + ManageBOEModel.workspace, angular.toJson($scope.filter.wbs), { expires: date });
-        $cookies.put('filtersBoe' + ManageBOEModel.workspace, angular.toJson($scope.filter.boe), { expires: date });
+        // $cookies.put('filtersBoe' + ManageBOEModel.workspace, angular.toJson($scope.filter.boe), { expires: date });
         $cookies.put('filtersClin' + ManageBOEModel.workspace, angular.toJson($scope.filter.clin), { expires: date });
         $cookies.put('filtersAuthor' + ManageBOEModel.workspace, angular.toJson($scope.filter.author), { expires: date });
         $cookies.put('filtersApprover' + ManageBOEModel.workspace, angular.toJson($scope.filter.approver), { expires: date });
