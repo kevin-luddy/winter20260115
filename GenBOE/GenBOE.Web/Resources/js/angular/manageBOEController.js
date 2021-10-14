@@ -363,7 +363,7 @@
         console.log(ManageBOEModel.workspace);
 
         $cookies.put('filtersWbs' + ManageBOEModel.workspace, angular.toJson($scope.filter.wbs), { expires: date });
-        $cookies.put('filtersBoe' + ManageBOEModel.workspace, angular.toJson($scope.filter.boe), { expires: date });
+        // $cookies.put('filtersBoe' + ManageBOEModel.workspace, angular.toJson($scope.filter.boe), { expires: date });
         $cookies.put('filtersClin' + ManageBOEModel.workspace, angular.toJson($scope.filter.clin), { expires: date });
         $cookies.put('filtersAuthor' + ManageBOEModel.workspace, angular.toJson($scope.filter.author), { expires: date });
         $cookies.put('filtersApprover' + ManageBOEModel.workspace, angular.toJson($scope.filter.approver), { expires: date });
@@ -516,7 +516,9 @@
         var sortedBoes = $filter('orderBy')($scope.isBulkAssign ? $scope.bulkAssignData : $scope.data, $scope.predicate, $scope.reverse);
 
         sortedBoes.forEach(function (boe) {
-            $scope.bulkAssignBoes.push({ id: boe.BoeID, label: boe.WbsDisplayName + " | " + boe.ClinDisplayName, search: boe.WbsDisplayName + " | " + boe.ClinDisplayName });
+            var boeString = boe.WbsDisplayName + (boe.BOETitle.length > 0 ? " | " + boe.BOETitle : "") + " | " + boe.ClinDisplayName;
+
+            $scope.bulkAssignBoes.push({ id: boe.BoeID, label: boeString, search: boeString });
         });
     }
 

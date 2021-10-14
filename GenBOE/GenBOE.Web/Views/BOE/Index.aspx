@@ -180,6 +180,10 @@
                                     <a data-ng-click="changeSorting(columns.wbs)" data-ng-class="{ 'bold': boldSort(columns.wbs) }">WBS</a>
                                     <a data-ng-click="toggleFilter(columns.wbs)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
                                 </th>
+                                <th class="boe-title bootstrap">
+                                    <a data-ng-click="changeSorting(columns.boe)" data-ng-class="{ 'bold': boldSort(columns.boe) }">BOE Title</a>
+                                    <a data-ng-click="toggleFilter(columns.boe)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
+                                </th>
                                 <th class="clin-title bootstrap">
                                     <a data-ng-click="changeSorting(columns.clin)" data-ng-class="{ 'bold': boldSort(columns.clin) }">CLIN</a>
                                     <a data-ng-click="toggleFilter(columns.clin)"><i class="glyphicon glyphicon-filter"></i> Filters</a>
@@ -199,6 +203,7 @@
                             <tr data-ng-show="!isLoading && (data.length === 0 || filteredBulkResults.length === 0)"><td colspan="5"><div class="empty-grid-text">There are no BOEs for the Workspace.</div></td></tr>
                             <tr pkid="{{::boe.BoeID}}" data-ng-repeat="boe in (filteredBulkResults = (bulkAssignData | filter:filterBOEs | orderBy:predicate:reverse)) | limitTo:pageSize:currentPage*pageSize" data-ng-class="{ 'bulkAssignError': boe.hasError }">
                                 <td>{{::boe.WbsDisplayName}}</td>
+                                <td>{{::boe.BOETitle}}</td>
                                 <td>{{::boe.ClinDisplayName}}</td>
                                 <td><div data-ng-repeat="authorName in boe.AuthorsDisplayNames">{{authorName}}</div></td>
                                 <td><div data-ng-repeat="approver in boe.ApproversDisplayNames">{{approver}}</div></td>

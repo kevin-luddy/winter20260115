@@ -8,7 +8,6 @@ namespace GenTRAC.Web.Controllers
 {
     using System.Collections.Generic;
     using System.Web.Http;
-    using System.Web.Http.Cors;
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
     using IES.Common;
