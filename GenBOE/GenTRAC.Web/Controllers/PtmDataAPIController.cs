@@ -6,10 +6,9 @@
 
 namespace GenTRAC.Web.Controllers
 {
-    using System;
     using System.Collections.Generic;
+    using System.Configuration;
     using System.Linq;
-    using System.Security.Principal;
     using System.Web.Http;
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
@@ -52,6 +51,7 @@ namespace GenTRAC.Web.Controllers
             this.loader = loader;
             this.securityAccess = securityAccess;
             this.tokenHandler = tokenHandler;
+            TokenHandling.AuthDomain = ConfigurationManager.AppSettings["oAuthDomain"];
         }
 
         #endregion
@@ -59,20 +59,18 @@ namespace GenTRAC.Web.Controllers
         /// <summary>
         /// Get Proposal data for ACV. Limits the number of records returned to 100.
         /// </summary>
-        /// <param name="token">Token that will allow access</param>
         /// <param name="searchString">Search String</param>
         /// <returns>Proposal Data</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         [HttpGet]
-        public ICollection<AcvProposalData> GetProposalDataForCostVolume(string token, string searchString)
+        public ICollection<AcvProposalData> GetProposalDataForCostVolume(string searchString)
         {
             List<AcvProposalData> result;
 
             try
             {
-                AuthenticateUser(token);
+                tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-                // Normal logic resumes
                 bool isAdmin = this.securityAccess.CurrentUserHasRole(PtmRole.Admin, null);
                 ICollection<(string PtmTrackingNumber, string ProposalTitle)> data = this.loader.GetCostVolumeProposalData(security.ActiveUserNTID, isAdmin, searchString);
                 result = data.Select(x => new AcvProposalData() { PtmTrackingNumber = x.PtmTrackingNumber, ProposalTitle = x.ProposalTitle }).ToList();
@@ -86,24 +84,25 @@ namespace GenTRAC.Web.Controllers
         }
 
         /// <summary>
-        /// Authenticates the user based on the token that is coming in. 
-        ///     The token is first validated, and if it is valid, then the user's NTID will be retrieved from it. 
-        ///     Finally, the NTID will be set into the System's Current Principal
+        /// Is Service Alive?
         /// </summary>
-        /// <param name="token">Incoming token</param>
-        private void AuthenticateUser(string token)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        [HttpGet]
+        public bool IsAlive()
         {
-            // Authenticate the call, and pull out the user's ntid.
-            string ntid = tokenHandler.GetNtidIfTokenIsValid(token);
+            bool result;
 
-            if(string.IsNullOrEmpty(ntid))
+            try
             {
-                throw new UnauthorizedAccessException();
+                // ToDo: add a DB grab, just to see if the DB is working.. To make the check more meaningful
+                result = true;
+            }
+            catch
+            {
+                result = false;
             }
 
-            // Set the current user to the NTID that is coming in.
-            GenericIdentity identity = new GenericIdentity(ntid);
-            System.Threading.Thread.CurrentPrincipal = new GenericPrincipal(identity, new string[] { });
+            return result;
         }
     }
 }
