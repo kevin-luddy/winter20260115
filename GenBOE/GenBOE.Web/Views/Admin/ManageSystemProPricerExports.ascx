@@ -3,6 +3,8 @@
     ICollection<string> customFieldNames = (ICollection<string>)ViewData["CustomFieldNames"];
     %>
 <script type="text/javascript">
+    var separatorField = '<%:ExportToProPricerModelView.CUSTOM_FIELD_ID_DESCRIPTION_SEPARATOR%>';
+
     var ManageSystemProPricerExportsWidget = new Widget('ManageSystemProPricerExports', false);
 
     ManageSystemProPricerExportsWidget.ExportToProPricerElementDialog = {};
@@ -185,12 +187,12 @@
     ManageSystemProPricerExportsWidget.SaveCustomField = function () {
         // Validate name is set and not a duplicate
         var name = $("#NewCustomFieldName").val();
-        var re = new RegExp("[a-zA-Z0-9/ \_]{0,}");
+        var re = new RegExp("[a-zA-Z0-9/ \_-]{0,}");
         var original = $("#OriginalCustomFieldName").val();
 
         if (name != name.match(re)) {
             // alert for bad input
-            GenSession.alertDialog('Save Changes', 'The custom field name must be aphanumeric with blanks and underscores allowed.');
+            GenSession.alertDialog('Save Changes', 'The custom field name must be alphanumeric with blanks, dashes and underscores allowed.');
         } else {
             if (name && name.length > 0) {
                 // check if duplicate
@@ -210,10 +212,10 @@
                         // Add to Lists
                         var taskList = $('#ExportToProPricerElementDialog #TasksUnselected');
                         var resourceList = $('#ExportToProPricerElementDialog #ResourcesUnselected')
-                        taskList.append('<option value="' + name + '-1">' + name + ' ID</option>');
-                        taskList.append('<option value="' + name + '-2">' + name + ' Description</option>');
-                        resourceList.append('<option value="' + name + '-1">' + name + ' ID</option>');
-                        resourceList.append('<option value="' + name + '-2">' + name + ' Description</option>');
+                        taskList.append('<option value="' + name + separatorField + '1">' + name + ' ID</option>');
+                        taskList.append('<option value="' + name + separatorField + '2">' + name + ' Description</option>');
+                        resourceList.append('<option value="' + name + separatorField + '1">' + name + ' ID</option>');
+                        resourceList.append('<option value="' + name + separatorField + '2">' + name + ' Description</option>');
                         $('#SystemCustomFieldTable tbody').append('<tr><td custom=' + name + '>' + name + '</td></tr>');
                         // Resort the lists
                         ManageSystemProPricerExportsWidget.SortSelectList(taskList);
@@ -245,14 +247,14 @@
                                 var resourceList = $('#ExportToProPricerElementDialog #ResourcesUnselected');
                                 var taskListOptions = $('#ExportToProPricerElementDialog #TasksUnselected option');
                                 var resourceListOptions = $('#ExportToProPricerElementDialog #ResourcesUnselected option');
-                                taskListOptions.filter("[value='" + original + "-1']").remove();
-                                taskListOptions.filter("[value='" + original + "-2']").remove();
-                                resourceListOptions.filter("[value='" + original + "-1']").remove();
-                                resourceListOptions.filter("[value='" + original + "-2']").remove();
-                                taskList.append('<option value="' + name + '-1">' + name + ' ID</option>');
-                                taskList.append('<option value="' + name + '-2">' + name + ' Description</option>');
-                                resourceList.append('<option value="' + name + '-1">' + name + ' ID</option>');
-                                resourceList.append('<option value="' + name + '-2">' + name + ' Description</option>');
+                                taskListOptions.filter("[value='" + original + separatorField + "1']").remove();
+                                taskListOptions.filter("[value='" + original + separatorField + "2']").remove();
+                                resourceListOptions.filter("[value='" + original + separatorField + "1']").remove();
+                                resourceListOptions.filter("[value='" + original + separatorField + "2']").remove();
+                                taskList.append('<option value="' + name + separatorField + '1">' + name + ' ID</option>');
+                                taskList.append('<option value="' + name + separatorField + '2">' + name + ' Description</option>');
+                                resourceList.append('<option value="' + name + separatorField + '1">' + name + ' ID</option>');
+                                resourceList.append('<option value="' + name + separatorField + '2">' + name + ' Description</option>');
                                 var customTd = $('#SystemCustomFieldTable tbody tr td[custom="' + original + '"');
                                 customTd.text(name);
                                 customTd.attr('custom', name);
@@ -419,9 +421,9 @@
             var taskToSave = {};
             var taskValue = $(this).val();
 
-            if (taskValue.indexOf('-') != -1) {
-                taskToSave.CustomFieldName = taskValue.split('-')[0];
-                taskToSave.Selection = taskValue.split('-')[1];
+            if (taskValue.indexOf(separatorField) != -1) {
+                taskToSave.CustomFieldName = taskValue.split(separatorField)[0];
+                taskToSave.Selection = taskValue.split(separatorField)[1];
             }
             else {
                 taskToSave.Task = taskValue;
@@ -438,9 +440,9 @@
             var resourceToSave = {};
             var resourceValue = $(this).val();
 
-            if (resourceValue.indexOf('-') != -1) {
-                resourceToSave.CustomFieldName = resourceValue.split('-')[0];
-                resourceToSave.Selection = resourceValue.split('-')[1];
+            if (resourceValue.indexOf(separatorField) != -1) {
+                resourceToSave.CustomFieldName = resourceValue.split(separatorField)[0];
+                resourceToSave.Selection = resourceValue.split(separatorField)[1];
             }
             else {
                 resourceToSave.Resource = $(this).val();
