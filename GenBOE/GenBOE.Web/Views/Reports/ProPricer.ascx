@@ -4,6 +4,7 @@
 %>
 <script type="text/javascript">
     var ExportToProPricerWidget = new Widget('ExportToProPricer');
+    var separatorField = '<%:ExportToProPricerModelView.CUSTOM_FIELD_ID_DESCRIPTION_SEPARATOR%>';
 
     ExportToProPricerWidget.Module = {};
     ExportToProPricerWidget.ExportToProPricerElementDialog = {};
@@ -326,9 +327,9 @@
                 var taskToSave = {};
                 var taskValue = $(this).val();
 
-                if (taskValue.indexOf('-') != -1) {
-                    taskToSave.CustomFieldID = taskValue.split('-')[0];
-                    taskToSave.Selection = taskValue.split('-')[1];
+                if (taskValue.indexOf(separatorField) != -1) {
+                    taskToSave.CustomFieldID = taskValue.split(separatorField)[0];
+                    taskToSave.Selection = taskValue.split(separatorField)[1];
                 }
                 else {
                     taskToSave.Task = taskValue;
@@ -345,9 +346,9 @@
                 var resourceToSave = {};
                 var resourceValue = $(this).val();
 
-                if (resourceValue.indexOf('-') != -1) {
-                    resourceToSave.CustomFieldID = resourceValue.split('-')[0];
-                    resourceToSave.Selection = resourceValue.split('-')[1];
+                if (resourceValue.indexOf(separatorField) != -1) {
+                    resourceToSave.CustomFieldID = resourceValue.split(separatorField)[0];
+                    resourceToSave.Selection = resourceValue.split(separatorField)[1];
                 }
                 else {
                     resourceToSave.Resource = $(this).val();
