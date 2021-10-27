@@ -52,3 +52,23 @@ window.addEventListener('message', function (e) {
             break;
     }
 }, false);
+
+/*
+ * This is going to be a custom RPM method to get the Max Year used for data filtering.
+ * The method will return current year, if the date is in the first 3 Quarters
+ * When we get into the 4th Quarter (October / November / December), it will return current year + 1
+ * 
+ * Input is d, a Date object, which can be created by "new Date()"
+ */
+var getMaxYearForDataFiltering = function (d) {
+    var year = d.getFullYear();
+
+    // getMonth starts at 0, so January = 0, October = 9.
+    var currentMonth = d.getMonth() + 1;
+
+    if (currentMonth >= 10) {
+        ++year;
+    }
+
+    return year;
+}
