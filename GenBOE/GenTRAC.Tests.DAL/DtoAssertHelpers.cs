@@ -315,9 +315,9 @@ namespace GenTRAC.Tests.DAL
 
             Assert.AreEqual(expectedResult.TravelCost, actualResult.TravelCost);
             Assert.AreEqual(expectedResult.OtherDirectCosts, actualResult.OtherDirectCosts);
-            Assert.AreEqual(expectedResult.ProfitFeeCOM, actualResult.ProfitFeeCOM);
-            Assert.AreEqual(expectedResult.ProfitFee, actualResult.ProfitFee);
-            Assert.AreEqual(expectedResult.COM, actualResult.COM);
+            Assert.AreEqual(expectedResult.ProfitFeeWithCom, actualResult.ProfitFeeWithCom);
+            Assert.AreEqual(expectedResult.Profit, actualResult.Profit);
+            Assert.AreEqual(expectedResult.Com, actualResult.Com);
 
             Assert.AreEqual(expectedResult.AbsoluteValue, actualResult.AbsoluteValue);
             Assert.AreEqual(expectedResult.ProposalID, actualResult.ProposalID);

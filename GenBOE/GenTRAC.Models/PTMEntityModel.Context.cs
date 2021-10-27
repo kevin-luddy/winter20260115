@@ -61,7 +61,6 @@ namespace GenTRAC.Models
         public virtual DbSet<genTracData> genTracDatas { get; set; }
         public virtual DbSet<ContractTypeGroupLU> ContractTypeGroupLUs { get; set; }
         public virtual DbSet<ContractTypeLU> ContractTypeLUs { get; set; }
-        public virtual DbSet<ProposalChecklist> ProposalChecklists { get; set; }
         public virtual DbSet<LineOfBusinessLU> LineOfBusinessLUs { get; set; }
         public virtual DbSet<ProgramAreaLU> ProgramAreaLUs { get; set; }
         public virtual DbSet<CutOffDateUtilizationLU> CutOffDateUtilizationLUs { get; set; }
@@ -69,6 +68,7 @@ namespace GenTRAC.Models
         public virtual DbSet<DataMartEmployee> DataMartEmployees { get; set; }
         public virtual DbSet<ProposalsAttachment> ProposalsAttachments { get; set; }
         public virtual DbSet<Attachment> Attachments { get; set; }
+        public virtual DbSet<ProposalChecklist> ProposalChecklists { get; set; }
     
         public virtual ObjectResult<Nullable<int>> archiveProposal(Nullable<System.DateTime> createStartDate, Nullable<System.DateTime> createEndDate, string lineOfBusinessID, string programAreaID)
         {
@@ -905,7 +905,7 @@ namespace GenTRAC.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertProposal", proposalIDParameter, updateDateParameter, proposalTitleParameter, oTISOpportunityIDParameter, proposalStatusIDParameter, proposalTypeIDParameter, isIWTAParameter, programNameParameter, customerParameter, customerTypeIDParameter, iSGSRoleIDParameter, requestTypeIDParameter, rFPNumberParameter, lineOfBusinessIDParameter, programAreaIDParameter, pricingToolIDParameter, bOEToolIDParameter, anticipatedDeliveryDateParameter, proposalCostElementXREFParameter, estimatedProposalValueParameter, proposalContractTypeXREFParameter, dateAssignedParameter, createdByUserIDParameter, rFPIssuedDateParameter, rFPReceivedDateParameter, commentsParameter, contractTypeGroupIDParameter, isScheduleProposalParameter, proposalLocationIDParameter, proposalLocationNameParameter, bOEToolNameParameter, pricingToolNameParameter, proposalChecklistTypeIDParameter, changeChecklistFlagParameter, programProposalStatusIDParameter, proposalClassIDParameter, workflowStatusParameter, workflowStatusLastUpdatedParameter, leadEstimatorSignedDTParameter, leadEstimatorSignCommentParameter, coverSheetApproverSignedDTParameter, coverSheetApproverSignCommentParameter, pricingVerifierSignedDTParameter, pricingVerifierSignCommentParameter, independentReviewerSignedDTParameter, independentReviewerSignCommentParameter, lOBEstimatingLeadSignedDTParameter, lOBEstimatingLeadSignCommentParameter, approvalEmailTextParameter, revisedSubmittalDateParameter, cCPDRequiredParameter, costVolumeClassifiedParameter, documentIdParameter, forecastedTrackingIDParameter, trackingIDParameter, isForecastParameter, agreementDateParameter, certificationDateParameter, cutOffDateUtilizationParameter, certificationTimelineCompletedParameter, certificationLastEmailedParameter, noBidDateParameter, isRevisionParameter, revisionOfIdParameter, reasonCertificationNotRequiredParameter, otherReasonCommentParameter, setupCommentsParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertProposalChecklist(Nullable<int> proposalChecklistID, Nullable<System.DateTime> updateDate, Nullable<int> proposalID, Nullable<System.DateTime> proposalSubmittalDate, Nullable<long> iSGSTotalPrice, Nullable<long> profitFee, Nullable<decimal> rOSPercentage, Nullable<decimal> lMLaborHours, Nullable<long> lMLaborCost, Nullable<long> subcontractorCost, Nullable<long> materialCost, Nullable<long> iWTACost, Nullable<long> travelCost, Nullable<long> otherDirectCost, Nullable<bool> deliverChecklistDFARS, Nullable<long> absoluteValue)
+        public virtual ObjectResult<Nullable<int>> upsertProposalChecklist(Nullable<int> proposalChecklistID, Nullable<System.DateTime> updateDate, Nullable<int> proposalID, Nullable<System.DateTime> proposalSubmittalDate, Nullable<long> iSGSTotalPrice, Nullable<long> profit, Nullable<long> com, Nullable<long> profitFeeWithCom, Nullable<decimal> rOSPercentage, Nullable<decimal> lMLaborHours, Nullable<long> lMLaborCost, Nullable<long> subcontractorCost, Nullable<long> materialCost, Nullable<long> iWTACost, Nullable<long> travelCost, Nullable<long> otherDirectCost, Nullable<bool> deliverChecklistDFARS, Nullable<long> absoluteValue)
         {
             var proposalChecklistIDParameter = proposalChecklistID.HasValue ?
                 new ObjectParameter("ProposalChecklistID", proposalChecklistID) :
@@ -927,9 +927,17 @@ namespace GenTRAC.Models
                 new ObjectParameter("ISGSTotalPrice", iSGSTotalPrice) :
                 new ObjectParameter("ISGSTotalPrice", typeof(long));
     
-            var profitFeeParameter = profitFee.HasValue ?
-                new ObjectParameter("ProfitFee", profitFee) :
-                new ObjectParameter("ProfitFee", typeof(long));
+            var profitParameter = profit.HasValue ?
+                new ObjectParameter("Profit", profit) :
+                new ObjectParameter("Profit", typeof(long));
+    
+            var comParameter = com.HasValue ?
+                new ObjectParameter("Com", com) :
+                new ObjectParameter("Com", typeof(long));
+    
+            var profitFeeWithComParameter = profitFeeWithCom.HasValue ?
+                new ObjectParameter("ProfitFeeWithCom", profitFeeWithCom) :
+                new ObjectParameter("ProfitFeeWithCom", typeof(long));
     
             var rOSPercentageParameter = rOSPercentage.HasValue ?
                 new ObjectParameter("ROSPercentage", rOSPercentage) :
@@ -971,7 +979,7 @@ namespace GenTRAC.Models
                 new ObjectParameter("AbsoluteValue", absoluteValue) :
                 new ObjectParameter("AbsoluteValue", typeof(long));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertProposalChecklist", proposalChecklistIDParameter, updateDateParameter, proposalIDParameter, proposalSubmittalDateParameter, iSGSTotalPriceParameter, profitFeeParameter, rOSPercentageParameter, lMLaborHoursParameter, lMLaborCostParameter, subcontractorCostParameter, materialCostParameter, iWTACostParameter, travelCostParameter, otherDirectCostParameter, deliverChecklistDFARSParameter, absoluteValueParameter);
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertProposalChecklist", proposalChecklistIDParameter, updateDateParameter, proposalIDParameter, proposalSubmittalDateParameter, iSGSTotalPriceParameter, profitParameter, comParameter, profitFeeWithComParameter, rOSPercentageParameter, lMLaborHoursParameter, lMLaborCostParameter, subcontractorCostParameter, materialCostParameter, iWTACostParameter, travelCostParameter, otherDirectCostParameter, deliverChecklistDFARSParameter, absoluteValueParameter);
         }
     
         public virtual int upsertProposalChecklistTemplate(Nullable<int> proposalID, Nullable<int> proposalChecklistTypeID, Nullable<bool> changeChecklistFlag)

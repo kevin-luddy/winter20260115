@@ -78,8 +78,6 @@
         <AssociationConnector Association="genTRACModel.FK_Proposal_ContractTypeGroupLU" />
         <AssociationConnector Association="genTRACModel.ContractTypeGroupXREF" />
         <AssociationConnector Association="genTRACModel.ProposalContractTypeXREF" />
-        <EntityTypeShape EntityType="genTRACModel.ProposalChecklist" Width="1.5" PointX="5.25" PointY="17.25" />
-        <AssociationConnector Association="genTRACModel.FK_ProposalChecklist_Proposal" />
         <EntityTypeShape EntityType="genTRACModel.LineOfBusinessLU" Width="1.5" PointX="11.375" PointY="3.875" />
         <EntityTypeShape EntityType="genTRACModel.ProgramAreaLU" Width="1.5" PointX="13.625" PointY="3.875" />
         <AssociationConnector Association="genTRACModel.FK_ProgramAreaLU_LineOfBusinessLU" />
@@ -97,6 +95,8 @@
         <EntityTypeShape EntityType="genTRACModel.Attachment" Width="1.5" PointX="14.375" PointY="7.875" />
         <AssociationConnector Association="genTRACModel.FK__Proposals__Attac__5B4E756C" />
         <AssociationConnector Association="genTRACModel.FK_Proposal_Proposal" />
+        <EntityTypeShape EntityType="genTRACModel.ProposalChecklist" Width="1.5" PointX="5.25" PointY="16.75" />
+        <AssociationConnector Association="genTRACModel.FK_ProposalChecklist_Proposal" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

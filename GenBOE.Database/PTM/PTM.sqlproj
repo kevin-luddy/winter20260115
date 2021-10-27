@@ -98,6 +98,7 @@
     <Folder Include="Release Scripts\Release 2021.6" />
     <Folder Include="Release Scripts\Release 2021.7" />
     <Folder Include="Release Scripts\Release 2021.23" />
+    <Folder Include="Release Scripts\Release 2021.24" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Object Scripts\Stored Procedures\upsertProposalChecklistTemplate.sql" />
@@ -199,6 +200,7 @@
     <Build Include="Object Scripts\Stored Procedures\CopyCannedResponsesPAR.proc.sql" />
     <Build Include="Object Scripts\Functions\SplitString.function.sql" />
     <Build Include="Release Scripts\Release 2021.23\Release 2021.23.sql" />
+    <Build Include="Release Scripts\Release 2021.24\Release 2021.24.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />

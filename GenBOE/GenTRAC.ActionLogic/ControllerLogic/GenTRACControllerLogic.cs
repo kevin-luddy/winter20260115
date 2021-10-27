@@ -1081,9 +1081,9 @@ namespace GenTRAC.ActionLogic
                     EstimatingSubmitsToContractsDate = string.IsNullOrEmpty(checklistGeneralInfo.EstimatingSubmitsToContractsDate) ? (DateTime?)null : checklistGeneralInfo.EstimatingSubmitsToContractsDate.ToDateTime("MM/dd/yyyy"),
                     SubmittedValue = !string.IsNullOrEmpty(checklistGeneralInfo.SubmittedValue) ? long.Parse(checklistGeneralInfo.SubmittedValue.Replace(",", string.Empty)) : (long?)null,
                     AbsoluteValue = !string.IsNullOrEmpty(checklistGeneralInfo.AbsoluteValue) ? long.Parse(checklistGeneralInfo.AbsoluteValue.Replace(",", string.Empty)) : (long?)null,
-                    ProfitFeeCOM = !string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeComTotal) ? long.Parse(checklistProposalPricingData.ProfitFeeComTotal.Replace(",", string.Empty)) : (long?)null,
-                    ProfitFee = !string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeTotal) ? long.Parse(checklistProposalPricingData.ProfitFeeTotal.Replace(",", string.Empty)) : (long?)null,
-                    COM = !string.IsNullOrEmpty(checklistProposalPricingData.ComTotal) ? long.Parse(checklistProposalPricingData.ComTotal.Replace(",", string.Empty)) : (long?)null,
+                    ProfitFeeWithCom = !string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeComTotal) ? long.Parse(checklistProposalPricingData.ProfitFeeComTotal.Replace(",", string.Empty)) : (long?)null,
+                    Profit = !string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeTotal) ? long.Parse(checklistProposalPricingData.ProfitFeeTotal.Replace(",", string.Empty)) : (long?)null,
+                    Com = !string.IsNullOrEmpty(checklistProposalPricingData.ComTotal) ? long.Parse(checklistProposalPricingData.ComTotal.Replace(",", string.Empty)) : (long?)null,
                     ROSPercentage = string.IsNullOrEmpty(checklistProposalPricingData.ROSPercent) ? (decimal?)null : Convert.ToDecimal(checklistProposalPricingData.ROSPercent),
                     LMLaborHrs = string.IsNullOrEmpty(checklistProposalPricingData.LMLaborHrs) ? (decimal?)null : Convert.ToDecimal(checklistProposalPricingData.LMLaborHrs),
                     LMLaborCost = string.IsNullOrEmpty(checklistProposalPricingData.LMLaborCost) ? (long?)null : long.Parse(checklistProposalPricingData.LMLaborCost.Replace(",", string.Empty)),
@@ -1350,9 +1350,9 @@ namespace GenTRAC.ActionLogic
                 model.IWTACost = string.Format("{0:#,###0}", checklist.IWTACost);
                 model.TravelCost = string.Format("{0:#,###0}", checklist.TravelCost);
                 model.OtherDirectCosts = string.Format("{0:#,###0}", checklist.OtherDirectCosts);
-                model.ProfitFeeComTotal = string.Format("{0:#,###0}", checklist.ProfitFeeCOM);
-                model.ProfitFeeTotal = string.Format("{0:#,###0}", checklist.ProfitFee);
-                model.ComTotal = string.Format("{0:#,###0}", checklist.COM);
+                model.ProfitFeeComTotal = string.Format("{0:#,###0}", checklist.ProfitFeeWithCom);
+                model.ProfitFeeTotal = string.Format("{0:#,###0}", checklist.Profit);
+                model.ComTotal = string.Format("{0:#,###0}", checklist.Com);
                 model.SubmittedValue = string.Format("{0:#,###0}", checklist.SubmittedValue);
                 model.AbsoluteValue = string.Format("{0:#,###0}", checklist.AbsoluteValue);
                 model.ROSPercent = checklist.ROSPercentage.ToString();

@@ -23,6 +23,8 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **										BOEJ-4590 Add Material POC and Subcontracts POC
 **										BOEJ-4631 Add Reason Cert Not Required
 **		7/30/2020	Dusan				BOEJ-4639 Add Latest Revision
+**      10/13/2021  Koovackal           IES-181 DB Work -Added Profit, Com,
+**                                      ProfitFeeWithCon
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -63,7 +65,9 @@ SELECT
     PC.[TravelCost] AS [TravelCost],
     PC.[OtherDirectCost] AS [OtherDirectCost],
 	PC.[AbsoluteValue] AS [AbsoluteValue],
-	PC.[ProfitFee] AS [Profit/Fee + COM],	
+	PC.[Profit] AS [Profit/Fee],
+	PC.[Com] AS [Com],
+	PC.[ProfitFeeWithCom] AS [Profit/Fee + COM],
 	PC.[ISGSTotalPrice] AS [Total Price],
 	PC.[ROSPercentage] AS [ROS %],
 	CAST(PC.ProposalSubmittalDate AS DATE) AS [Actual Submittal Date],

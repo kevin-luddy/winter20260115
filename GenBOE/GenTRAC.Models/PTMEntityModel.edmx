@@ -314,7 +314,7 @@
           <Property Name="ProposalID" Type="int" Nullable="false" />
           <Property Name="ProposalSubmittalDate" Type="date" />
           <Property Name="ISGSTotalPrice" Type="bigint" />
-          <Property Name="ProfitFee" Type="bigint" />
+          <Property Name="ProfitFeeWithCom" Type="bigint" />
           <Property Name="ROSPercentage" Type="decimal" Precision="4" Scale="2" />
           <Property Name="LMLaborHours" Type="decimal" Precision="11" Scale="2" />
           <Property Name="LMLaborCost" Type="bigint" />
@@ -325,6 +325,8 @@
           <Property Name="OtherDirectCost" Type="bigint" />
           <Property Name="DeliverChecklistDFARS" Type="bit" Nullable="false" />
           <Property Name="AbsoluteValue" Type="bigint" />
+          <Property Name="Com" Type="bigint" />
+          <Property Name="Profit" Type="bigint" />
         </EntityType>
         <EntityType Name="ProposalChecklistComplete">
           <Key>
@@ -382,7 +384,7 @@
           <Property Name="IsActive" Type="bit" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genTrac.dbo.ProposalPARChecklistXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genTrac_Contacts.dbo.ProposalPARChecklistXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="ProposalPARChecklistXREF">
           <Key>
             <PropertyRef Name="ProposalID" />
@@ -399,7 +401,7 @@ warning 6002: The table/view 'genTrac.dbo.ProposalPARChecklistXREF' does not hav
           <Property Name="CannedResponseId" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genTrac.dbo.ProposalPPRChecklistXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genTrac_Contacts.dbo.ProposalPPRChecklistXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="ProposalPPRChecklistXREF">
           <Key>
             <PropertyRef Name="ProposalID" />
@@ -521,7 +523,7 @@ warning 6002: The table/view 'genTrac.dbo.ProposalPPRChecklistXREF' does not hav
           <Property Name="TextType" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <!--Errors Found During Generation:
-warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
         <EntityType Name="genTracData">
           <Key>
             <PropertyRef Name="genTracProposalID" />
@@ -1528,7 +1530,9 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="ProposalID" Type="int" Mode="In" />
           <Parameter Name="ProposalSubmittalDate" Type="date" Mode="In" />
           <Parameter Name="ISGSTotalPrice" Type="bigint" Mode="In" />
-          <Parameter Name="ProfitFee" Type="bigint" Mode="In" />
+          <Parameter Name="Profit" Type="bigint" Mode="In" />
+          <Parameter Name="Com" Type="bigint" Mode="In" />
+          <Parameter Name="ProfitFeeWithCom" Type="bigint" Mode="In" />
           <Parameter Name="ROSPercentage" Type="decimal" Mode="In" />
           <Parameter Name="LMLaborHours" Type="decimal" Mode="In" />
           <Parameter Name="LMLaborCost" Type="bigint" Mode="In" />
@@ -2090,7 +2094,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="ForecastEmailSent" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="ContractTypeGroupLU" Relationship="Self.FK_Proposal_ContractTypeGroupLU" FromRole="Proposal" ToRole="ContractTypeGroupLU" />
           <NavigationProperty Name="ContractTypeLUs" Relationship="Self.ProposalContractTypeXREF" FromRole="Proposal" ToRole="ContractTypeLU" />
-          <NavigationProperty Name="ProposalChecklists" Relationship="genTRACModel.FK_ProposalChecklist_Proposal" FromRole="Proposal" ToRole="ProposalChecklist" />
           <Property Name="ProgramAreaID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="LineOfBusinessLU" Relationship="genTRACModel.FK_Proposal_LineOfBusinessLU" FromRole="Proposal" ToRole="LineOfBusinessLU" />
           <NavigationProperty Name="ProgramAreaLU" Relationship="genTRACModel.FK_Proposal_ProgramAreaLU" FromRole="Proposal" ToRole="ProgramAreaLU" />
@@ -2110,6 +2113,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <NavigationProperty Name="Proposal2" Relationship="genTRACModel.FK_Proposal_Proposal" FromRole="Proposal1" ToRole="Proposal" />
           <Property Name="SetupComments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="InformationComments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ProposalChecklists" Relationship="genTRACModel.FK_ProposalChecklist_Proposal" FromRole="Proposal" ToRole="ProposalChecklist" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -3161,7 +3165,9 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="ProposalID" Mode="In" Type="Int32" />
             <Parameter Name="ProposalSubmittalDate" Mode="In" Type="DateTime" />
             <Parameter Name="ISGSTotalPrice" Mode="In" Type="Int64" />
-            <Parameter Name="ProfitFee" Mode="In" Type="Int64" />
+            <Parameter Name="Profit" Mode="In" Type="Int64" />
+            <Parameter Name="Com" Mode="In" Type="Int64" />
+            <Parameter Name="ProfitFeeWithCom" Mode="In" Type="Int64" />
             <Parameter Name="ROSPercentage" Mode="In" Type="Decimal" />
             <Parameter Name="LMLaborHours" Mode="In" Type="Decimal" />
             <Parameter Name="LMLaborCost" Mode="In" Type="Int64" />
@@ -3266,11 +3272,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <End Role="ContractTypeLU" EntitySet="ContractTypeLUs" />
             <End Role="Proposal" EntitySet="Proposals" />
           </AssociationSet>
-          <EntitySet Name="ProposalChecklists" EntityType="genTRACModel.ProposalChecklist" />
-          <AssociationSet Name="FK_ProposalChecklist_Proposal" Association="genTRACModel.FK_ProposalChecklist_Proposal">
-            <End Role="Proposal" EntitySet="Proposals" />
-            <End Role="ProposalChecklist" EntitySet="ProposalChecklists" />
-          </AssociationSet>
           <EntitySet Name="LineOfBusinessLUs" EntityType="genTRACModel.LineOfBusinessLU" />
           <EntitySet Name="ProgramAreaLUs" EntityType="genTRACModel.ProgramAreaLU" />
           <AssociationSet Name="FK_ProgramAreaLU_LineOfBusinessLU" Association="genTRACModel.FK_ProgramAreaLU_LineOfBusinessLU">
@@ -3332,6 +3333,11 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="UserAndGroupIDs" Mode="In" Type="String" />
             <Parameter Name="ProposalClassFilterID" Mode="In" Type="Int32" />
           </FunctionImport>
+          <EntitySet Name="ProposalChecklists" EntityType="genTRACModel.ProposalChecklist" />
+          <AssociationSet Name="FK_ProposalChecklist_Proposal" Association="genTRACModel.FK_ProposalChecklist_Proposal">
+            <End Role="Proposal" EntitySet="Proposals" />
+            <End Role="ProposalChecklist" EntitySet="ProposalChecklists" />
+          </AssociationSet>
         </EntityContainer>
         <ComplexType Name="CreatePARChecklistReport_Result">
           <Property Type="String" Name="QuestionNumber" Nullable="true" MaxLength="50" />
@@ -3555,40 +3561,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
         <Association Name="ProposalContractTypeXREF">
           <End Type="genTRACModel.ContractTypeLU" Role="ContractTypeLU" Multiplicity="*" />
           <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
-        </Association>
-        <EntityType Name="ProposalChecklist">
-          <Key>
-            <PropertyRef Name="ProposalChecklistID" />
-          </Key>
-          <Property Name="ProposalChecklistID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="ProposalID" Type="Int32" Nullable="false" />
-          <Property Name="ProposalSubmittalDate" Type="DateTime" Precision="0" />
-          <Property Name="ISGSTotalPrice" Type="Int64" />
-          <Property Name="ProfitFee" Type="Int64" />
-          <Property Name="ROSPercentage" Type="Decimal" Precision="4" Scale="2" />
-          <Property Name="LMLaborHours" Type="Decimal" Precision="11" Scale="2" />
-          <Property Name="LMLaborCost" Type="Int64" />
-          <Property Name="SubcontractorCost" Type="Int64" />
-          <Property Name="MaterialCost" Type="Int64" />
-          <Property Name="IWTACost" Type="Int64" />
-          <Property Name="TravelCost" Type="Int64" />
-          <Property Name="OtherDirectCost" Type="Int64" />
-          <Property Name="DeliverChecklistDFARS" Type="Boolean" Nullable="false" />
-          <Property Name="AbsoluteValue" Type="Int64" />
-          <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK_ProposalChecklist_Proposal" FromRole="ProposalChecklist" ToRole="Proposal" />
-        </EntityType>
-        <Association Name="FK_ProposalChecklist_Proposal">
-          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
-          <End Type="genTRACModel.ProposalChecklist" Role="ProposalChecklist" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Proposal">
-              <PropertyRef Name="ProposalID" />
-            </Principal>
-            <Dependent Role="ProposalChecklist">
-              <PropertyRef Name="ProposalID" />
-            </Dependent>
-          </ReferentialConstraint>
         </Association>
         <EntityType Name="LineOfBusinessLU">
           <Key>
@@ -3845,6 +3817,42 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Type="String" Name="ProposalClass" Nullable="false" MaxLength="50" />
           <Property Type="Int32" Name="HasOrIsRevision" Nullable="false" />
         </ComplexType>
+        <EntityType Name="ProposalChecklist">
+          <Key>
+            <PropertyRef Name="ProposalChecklistID" />
+          </Key>
+          <Property Name="ProposalChecklistID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="ProposalID" Type="Int32" Nullable="false" />
+          <Property Name="ProposalSubmittalDate" Type="DateTime" Precision="0" />
+          <Property Name="ISGSTotalPrice" Type="Int64" />
+          <Property Name="ProfitFeeWithCom" Type="Int64" />
+          <Property Name="ROSPercentage" Type="Decimal" Precision="4" Scale="2" />
+          <Property Name="LMLaborHours" Type="Decimal" Precision="11" Scale="2" />
+          <Property Name="LMLaborCost" Type="Int64" />
+          <Property Name="SubcontractorCost" Type="Int64" />
+          <Property Name="MaterialCost" Type="Int64" />
+          <Property Name="IWTACost" Type="Int64" />
+          <Property Name="TravelCost" Type="Int64" />
+          <Property Name="OtherDirectCost" Type="Int64" />
+          <Property Name="DeliverChecklistDFARS" Type="Boolean" Nullable="false" />
+          <Property Name="AbsoluteValue" Type="Int64" />
+          <Property Name="Com" Type="Int64" />
+          <Property Name="Profit" Type="Int64" />
+          <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK_ProposalChecklist_Proposal" FromRole="ProposalChecklist" ToRole="Proposal" />
+        </EntityType>
+        <Association Name="FK_ProposalChecklist_Proposal">
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
+          <End Type="genTRACModel.ProposalChecklist" Role="ProposalChecklist" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="ProposalChecklist">
+              <PropertyRef Name="ProposalID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -4414,28 +4422,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
               <ScalarProperty Name="ContractTypeID" ColumnName="ContractTypeID" />
             </EndProperty>
           </AssociationSetMapping>
-          <EntitySetMapping Name="ProposalChecklists">
-            <EntityTypeMapping TypeName="genTRACModel.ProposalChecklist">
-              <MappingFragment StoreEntitySet="ProposalChecklist">
-                <ScalarProperty Name="AbsoluteValue" ColumnName="AbsoluteValue" />
-                <ScalarProperty Name="DeliverChecklistDFARS" ColumnName="DeliverChecklistDFARS" />
-                <ScalarProperty Name="OtherDirectCost" ColumnName="OtherDirectCost" />
-                <ScalarProperty Name="TravelCost" ColumnName="TravelCost" />
-                <ScalarProperty Name="IWTACost" ColumnName="IWTACost" />
-                <ScalarProperty Name="MaterialCost" ColumnName="MaterialCost" />
-                <ScalarProperty Name="SubcontractorCost" ColumnName="SubcontractorCost" />
-                <ScalarProperty Name="LMLaborCost" ColumnName="LMLaborCost" />
-                <ScalarProperty Name="LMLaborHours" ColumnName="LMLaborHours" />
-                <ScalarProperty Name="ROSPercentage" ColumnName="ROSPercentage" />
-                <ScalarProperty Name="ProfitFee" ColumnName="ProfitFee" />
-                <ScalarProperty Name="ISGSTotalPrice" ColumnName="ISGSTotalPrice" />
-                <ScalarProperty Name="ProposalSubmittalDate" ColumnName="ProposalSubmittalDate" />
-                <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
-                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
-                <ScalarProperty Name="ProposalChecklistID" ColumnName="ProposalChecklistID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="LineOfBusinessLUs">
             <EntityTypeMapping TypeName="genTRACModel.LineOfBusinessLU">
               <MappingFragment StoreEntitySet="LineOfBusinessLU">
@@ -4591,6 +4577,30 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <EntitySetMapping Name="ProposalChecklists">
+            <EntityTypeMapping TypeName="genTRACModel.ProposalChecklist">
+              <MappingFragment StoreEntitySet="ProposalChecklist">
+                <ScalarProperty Name="Profit" ColumnName="Profit" />
+                <ScalarProperty Name="Com" ColumnName="Com" />
+                <ScalarProperty Name="AbsoluteValue" ColumnName="AbsoluteValue" />
+                <ScalarProperty Name="DeliverChecklistDFARS" ColumnName="DeliverChecklistDFARS" />
+                <ScalarProperty Name="OtherDirectCost" ColumnName="OtherDirectCost" />
+                <ScalarProperty Name="TravelCost" ColumnName="TravelCost" />
+                <ScalarProperty Name="IWTACost" ColumnName="IWTACost" />
+                <ScalarProperty Name="MaterialCost" ColumnName="MaterialCost" />
+                <ScalarProperty Name="SubcontractorCost" ColumnName="SubcontractorCost" />
+                <ScalarProperty Name="LMLaborCost" ColumnName="LMLaborCost" />
+                <ScalarProperty Name="LMLaborHours" ColumnName="LMLaborHours" />
+                <ScalarProperty Name="ROSPercentage" ColumnName="ROSPercentage" />
+                <ScalarProperty Name="ProfitFeeWithCom" ColumnName="ProfitFeeWithCom" />
+                <ScalarProperty Name="ISGSTotalPrice" ColumnName="ISGSTotalPrice" />
+                <ScalarProperty Name="ProposalSubmittalDate" ColumnName="ProposalSubmittalDate" />
+                <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ProposalChecklistID" ColumnName="ProposalChecklistID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
