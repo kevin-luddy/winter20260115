@@ -791,7 +791,7 @@
             // Add years for min to max year
             var d = new Date();
             var minYear = response.data.MinYear;
-            var maxYear = d.getFullYear();
+            var maxYear = getMaxYearForDataFiltering(d);
 
             for (i = minYear; i <= maxYear; i++) {
                 var yearString = i.toString();

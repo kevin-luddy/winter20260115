@@ -6,8 +6,8 @@
 
 namespace GenTRAC.Web.Controllers
 {
+    using System;
     using System.Collections.Generic;
-    using System.Configuration;
     using System.Linq;
     using System.Web.Http;
     using GenTRAC.DataBridge.Common.Security;
@@ -43,6 +43,11 @@ namespace GenTRAC.Web.Controllers
         private TokenHandling tokenHandler;
 
         /// <summary>
+        /// Logger
+        /// </summary>
+        private Logger logger = new Logger("PtmDataAPIController");
+
+        /// <summary>
         /// Ctor
         /// </summary>
         public PtmDataAPIController(ISecurityInformation security, IProposalLoader loader, ISecurityAccess securityAccess, TokenHandling tokenHandler)
@@ -51,7 +56,6 @@ namespace GenTRAC.Web.Controllers
             this.loader = loader;
             this.securityAccess = securityAccess;
             this.tokenHandler = tokenHandler;
-            TokenHandling.AuthDomain = ConfigurationManager.AppSettings["oAuthDomain"];
         }
 
         #endregion
@@ -75,8 +79,9 @@ namespace GenTRAC.Web.Controllers
                 ICollection<(string PtmTrackingNumber, string ProposalTitle)> data = this.loader.GetCostVolumeProposalData(security.ActiveUserNTID, isAdmin, searchString);
                 result = data.Select(x => new AcvProposalData() { PtmTrackingNumber = x.PtmTrackingNumber, ProposalTitle = x.ProposalTitle }).ToList();
             }
-            catch
+            catch(Exception ex)
             {
+                logger.Error(ex);
                 result = null;
             }
 

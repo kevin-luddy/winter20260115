@@ -7,6 +7,7 @@
 namespace IES.Common
 {
     using System;
+	using System.Configuration;
     using System.IdentityModel.Tokens.Jwt;
     using System.Linq;
     using System.Security.Principal;
@@ -24,13 +25,17 @@ namespace IES.Common
 		/// <summary>
 		/// Auth Domain
 		/// </summary>
-		public static string AuthDomain { get; set; }
+		private static string AuthDomain = ConfigurationManager.AppSettings["oAuthDomain"];
 
 		/// <summary>
 		/// This is one of those things.. This URL is something that is a part of the OAuth2 (I'm guessing), so we just need to use it.
 		/// </summary>
-		private string metadataAddressForAuthDomain = $"{AuthDomain}.well-known/openid-configuration";
+		private string metadataAddressForAuthDomain = AuthDomain + ".well-known/openid-configuration";
 
+		/// <summary>
+		/// Logger
+		/// </summary>
+		Logger logger = new Logger("GetNtidIfTokenIsValid");
 
 		/// <summary>
 		/// Validate a Token, retrieve NTID from it
@@ -47,7 +52,7 @@ namespace IES.Common
 			try
 			{
 				// We add "Bearer " to the token when we put it into the headers, so we then need to strip it out (in .Net Core this is done for us by our helpers)
-				token = token.Replace("Bearer ", string.Empty); 
+				token = token.Replace("Bearer ", string.Empty);
 
 				// This is "the way it's done" - that URL is something that must be a part of the OAuth2, just one of those things..
 				IConfigurationManager<OpenIdConnectConfiguration> configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(metadataAddressForAuthDomain, new OpenIdConnectConfigurationRetriever());
@@ -64,8 +69,9 @@ namespace IES.Common
 				// Validates the token first (throws if invalid). If valid, it searches all claims for the right one. Finally, the string is in the format of ntid@domain, so we strip out what we don't need.
 				userNtid = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out _).Claims.First(x => x.Type == "lmco_upn").Value.Split('@').First();
 			}
-			catch
+			catch(Exception ex)
 			{
+				logger.Error(ex);
 				throw new UnauthorizedAccessException();
 			}
 
@@ -79,7 +85,7 @@ namespace IES.Common
 		/// </summary>
 		public void AuthenticateUserFromAuthorizationToken()
 		{
-			string token = HttpContext.Current.Request.Headers["Authorization"];
+			string token = HttpContext.Current.Request.Headers["IES_Authorization"];
 
 			// Authenticate the call, and pull out the user's ntid.
 			string ntid = GetNtidIfTokenIsValid(token);

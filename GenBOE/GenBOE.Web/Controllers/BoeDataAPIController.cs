@@ -6,8 +6,8 @@
 
 namespace GenBOE.Web.Controllers
 {
+    using System;
     using System.Collections.Generic;
-    using System.Configuration;
     using System.Linq;
     using System.Web.Http;
     using GenBOE.DataBridge.DTO;
@@ -38,13 +38,17 @@ namespace GenBOE.Web.Controllers
         public BoeDataAPIController() { }
 
         /// <summary>
+        /// Logger
+        /// </summary>
+        private Logger logger = new Logger("BoeDataAPIController");
+
+        /// <summary>
         /// Ctor
         /// </summary>
         public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler)
         {
             this.loader = loader;
             this.tokenHandler = tokenHandler;
-            TokenHandling.AuthDomain = ConfigurationManager.AppSettings["oAuthDomain"];
         }
 
         #endregion
@@ -67,8 +71,9 @@ namespace GenBOE.Web.Controllers
                 ICollection<(int Id, string shortName, string longName)> data = this.loader.GetWorkspaceDataForProposal(ptmTrackingNumber);
                 result = data.Select(x => new AcvWorkspaceData() { Id = x.Id, ShortName = x.shortName, LongName = x.longName }).ToList();
             }
-            catch
+            catch (Exception ex)
             {
+                logger.Error(ex);
                 result = null;
             }
 
