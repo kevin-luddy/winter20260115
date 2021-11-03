@@ -26,6 +26,7 @@ namespace GenTRAC.Models
             this.ProposalsAttachments = new HashSet<ProposalsAttachment>();
             this.Proposal1 = new HashSet<Proposal>();
             this.ProposalChecklists = new HashSet<ProposalChecklist>();
+            this.ProposalContractsDatas = new HashSet<ProposalContractsData>();
         }
     
         public int ProposalID { get; set; }
@@ -129,5 +130,7 @@ namespace GenTRAC.Models
         public virtual Proposal Proposal2 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProposalChecklist> ProposalChecklists { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProposalContractsData> ProposalContractsDatas { get; set; }
     }
 }

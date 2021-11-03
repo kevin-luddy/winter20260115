@@ -97,6 +97,10 @@
         <AssociationConnector Association="genTRACModel.FK_Proposal_Proposal" />
         <EntityTypeShape EntityType="genTRACModel.ProposalChecklist" Width="1.5" PointX="5.25" PointY="16.75" />
         <AssociationConnector Association="genTRACModel.FK_ProposalChecklist_Proposal" />
+        <EntityTypeShape EntityType="genTRACModel.ProposalContractsData" Width="2" PointX="5.25" PointY="33.875" />
+        <EntityTypeShape EntityType="genTRACModel.ProposalContractsOffer" Width="3" PointX="8.375" PointY="33.875" IsExpanded="true" />
+        <AssociationConnector Association="genTRACModel.FK__ProposalC__Previ__467D75B8" />
+        <AssociationConnector Association="genTRACModel.FK__ProposalC__Contr__4959E263" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

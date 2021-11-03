@@ -201,6 +201,9 @@
     <Build Include="Object Scripts\Functions\SplitString.function.sql" />
     <Build Include="Release Scripts\Release 2021.23\Release 2021.23.sql" />
     <Build Include="Release Scripts\Release 2021.24\Release 2021.24.sql" />
+    <Build Include="Object Scripts\Stored Procedures\deleteProposalContractsOffer.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertProposalContractsOffer.sql" />
+    <Build Include="Object Scripts\Stored Procedures\upsertProposalContractsData.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />

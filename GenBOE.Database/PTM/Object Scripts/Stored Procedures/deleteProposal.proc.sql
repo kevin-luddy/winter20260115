@@ -28,6 +28,7 @@ AS
 **		--------	--------			---------------------------------------
 **		9/7/2017	twilson3			BOEJ-2459 Add Attachment table
 **		7/6/2020	Dusan				Attachment Proposals table
+**		11/2/2021	Koovackal			Contracts Data and Offer tables
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -44,6 +45,8 @@ SET NOCOUNT ON
 			DELETE FROM dbo.ProposalPPRChecklistXREF WHERE ProposalID = @ProposalID
 			DELETE FROM dbo.ProposalChecklist WHERE ProposalID = @ProposalID
 			DELETE FROM dbo.ProposalChecklistComplete WHERE ProposalID = @ProposalID
+			DELETE FROM dbo.ProposalContractsOffer WHERE ProposalContractsDataId IN (SELECT ProposalContractsDataId FROM dbo.ProposalContractsData WHERE ProposalID = @ProposalID)
+			DELETE FROM dbo.ProposalContractsData WHERE ProposalID = @ProposalID
 			DELETE FROM dbo.Proposal WHERE ProposalID = @ProposalID
 		END
 	ELSE

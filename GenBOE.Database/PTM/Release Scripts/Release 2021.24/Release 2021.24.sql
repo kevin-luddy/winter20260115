@@ -24,7 +24,34 @@ BEGIN
 END
 GO
 
--- TODO DB Work Part 2
+IF OBJECT_ID('dbo.ProposalContractsData', 'U') IS NULL
+BEGIN
+	CREATE TABLE dbo.ProposalContractsData (
+		ProposalContractsDataId			INT				PRIMARY KEY		IDENTITY(1,1),
+		UpdateDT						DATETIME2(7)	NOT NULL,
+		PreviouslySubmittedROM			INT				NOT NULL		REFERENCES Proposal(ProposalId),
+		CustomerSubmittalDate			DATE			NULL,
+		ContractsCorrespondLogNumber	VARCHAR(20)		NOT NULL,
+		FinalNegotiatedValue			BIGINT			NULL,
+		FinalNegotiatedDate				DATE			NULL,
+	); 
+END
+
+IF OBJECT_ID('dbo.ProposalContractsOffers', 'U') IS NULL
+BEGIN
+	CREATE TABLE dbo.ProposalContractsOffers (
+		ProposalContractsOffersId	INT				PRIMARY KEY			IDENTITY(1,1),
+		UpdateDT					DATETIME2(7)	NOT NULL,
+		ContractsDataId 			INT 			NOT NULL			REFERENCES ProposalContractsData(ProposalContractsDataId),
+		CustomerOfferAmount 		BIGINT			NOT NULL,
+		CustomerOfferDate 			DATE			NOT NULL,
+		LMCounterOfferDate 			DATE			NULL,
+		LMCounterOfferCost			BIGINT			NULL,
+		LMCounterOfferCOM			BIGINT			NULL,
+		LMCounterOfferProfitFee		BIGINT			NULL
+	); 
+END
+GO
 
 /*
 	10/27/2021 [Koovackal] - IES-442-DB-Work Part 1 and IES-181-DB-Work Part 2.
