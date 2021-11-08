@@ -633,7 +633,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     toReturn += "a Level of Effort (LOE):";
                     break;
                 case MOQType.SME:
-                    toReturn += "Subject Matter Expert (SME) Judgement:";
+                    toReturn += "Subject Matter Expert (SME) Judgment:";
                     break;
                 case MOQType.NonLabor:
                     toReturn = "This task is Non-Labor:";

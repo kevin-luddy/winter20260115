@@ -149,7 +149,7 @@
             <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>">{{PortionOfTask()}} Analogous Relationship. Please provide:</span>
             <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SOW%>">{{PortionOfTask()}} a Statement of Work (SOW) directive:</span>
             <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.LOE%>">{{PortionOfTask()}} a Level of Effort (LOE):</span>
-            <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>">{{PortionOfTask()}} Subject Matter Expert (SME) Judgement.</span>
+            <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>">{{PortionOfTask()}} Subject Matter Expert (SME) Judgment.</span>
             <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.NonLabor%>">This task is Non-Labor:</span>
         </div>
         <div data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>">
@@ -301,7 +301,7 @@
         </div>
         <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>">
             <div class="form-label">
-                <span>The SME selected Expert judgement for this basis of estimate for the following reasons: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.SMEReasonsSuffix);"></div>
+                <span>The SME selected Expert judgment for this basis of estimate for the following reasons: *</span><div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.SMEReasonsSuffix);"></div>
             </div>
             <div class="form-element">
                 <textarea data-ng-if="!ActualReadOnly()" cols="20" name="SmeReason_{{moqType.SelectedMOQType}}" data-ng-model="moqType.SmeReason"></textarea>

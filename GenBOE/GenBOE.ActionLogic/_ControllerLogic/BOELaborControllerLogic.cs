@@ -3476,10 +3476,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
             toReturn.LoeSkillMixSuffix = "Skill Mix Rationale - Level of Effort.docx";
 
             // SME
-            toReturn.SMEReasonsSuffix = "Reason for Selecting Expert Judgement - Subjetc Matter Expert (SME) Judgement.docx";
-            toReturn.SMEHoursLogicSuffix = "Logic and Assumptions Used to Estimate Hours - Subject Matter Expert (SME) Judgement.docx";
-            toReturn.SMEDurationLogicSuffix = "Logic and Assumptions Used to Estimate Duration - Subject Matter Expert (SME) Judgement.docx";
-            toReturn.SMETasksSuffix = "Following Tasks are Estimates in this BOE - Subjetc Matter Expert (SME) Judgement.docx";
+            toReturn.SMEReasonsSuffix = "Reason for Selecting Expert Judgment - Subjetc Matter Expert (SME) Judgment.docx";
+            toReturn.SMEHoursLogicSuffix = "Logic and Assumptions Used to Estimate Hours - Subject Matter Expert (SME) Judgment.docx";
+            toReturn.SMEDurationLogicSuffix = "Logic and Assumptions Used to Estimate Duration - Subject Matter Expert (SME) Judgment.docx";
+            toReturn.SMETasksSuffix = "Following Tasks are Estimates in this BOE - Subjetc Matter Expert (SME) Judgment.docx";
             toReturn.SmeSkillMixSuffix = "Skill Mix Rationale - Subject Matter Expert.docx";
 
             // Non-Labor

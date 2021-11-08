@@ -740,7 +740,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.SkillMixRationale, "Skill Mix Rationale", ws.RteSizeLimit, errorMessages);
                             break;
                         case (MOQType.SME):
-                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeReason, "The SME selected Expert judgement reasons", ws.RteSizeLimit, errorMessages);
+                            ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeReason, "The SME selected Expert judgment reasons", ws.RteSizeLimit, errorMessages);
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeHoursLogic, "The logic and assumptions used to estimate hours", ws.RteSizeLimit, errorMessages);
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeDurationLogic, "The logic and assumptions used to estimate duration", ws.RteSizeLimit, errorMessages);
                             ValidateRequiredField(moqType.SelectedMOQType, moqType.SmeTaskEstimates, "The SME tasks estimated in this BOE", ws.RteSizeLimit, errorMessages);
