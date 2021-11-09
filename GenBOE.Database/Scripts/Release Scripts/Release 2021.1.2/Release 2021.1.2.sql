@@ -10,7 +10,7 @@ GO
 IF COL_LENGTH ('dbo.MOQTypeSelectionTableData', 'WbsElement') IS NOT NULL
 BEGIN
     ALTER TABLE dbo.MOQTypeSelectionTableData
-    ALTER COLUMN WbsElement varchar(5000) NOT NULL
+        ALTER COLUMN WbsElement varchar(5000) NOT NULL
 END
 GO
 
