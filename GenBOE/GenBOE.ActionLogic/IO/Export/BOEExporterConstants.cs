@@ -377,8 +377,8 @@ namespace GenBOE.ActionLogic.IO.Export
         public const string ContentType_CSV = "text/csv";
         public const string ContentType_ZIP = "application/zip";
 
-        internal const string CONTENT_HEADER_NAME = "Content-Disposition";
-        internal const string CONTENT_HEADER_FORMAT_STRING = "attachment;filename={0}";
+        public const string CONTENT_HEADER_NAME = "Content-Disposition";
+        public const string CONTENT_HEADER_FORMAT_STRING = "attachment;filename={0}";
 
         #endregion
 
