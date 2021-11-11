@@ -126,7 +126,7 @@ namespace GenBOE.Web.Controllers
 		/// Export all BOEs given workspace 
 		/// </summary>
 		/// <param name="workspaceId">Id of workspace</param>
-		/// <returns></returns>
+		/// <returns>HttpResponseMessage</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
@@ -185,6 +185,7 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Is Service Alive?
 		/// </summary>
+		/// <returns>True/false</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public bool IsAlive()

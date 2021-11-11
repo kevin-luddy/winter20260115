@@ -65,7 +65,7 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="page">Security Page</param>
 		/// <param name="workspace">Workspace</param>
-		/// <returns></returns>
+		/// <returns>Security Authorization</returns>
 		protected SecurityAuthorization CheckPermission(SecurityPage page, WorkspaceDTO workspace)
 		{
 			Dictionary<SecurityPage, SecurityAuthorization> securityDictionary = new Dictionary<SecurityPage, SecurityAuthorization>();
