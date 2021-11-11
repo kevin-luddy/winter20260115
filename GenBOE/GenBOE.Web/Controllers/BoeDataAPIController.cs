@@ -134,7 +134,6 @@ namespace GenBOE.Web.Controllers
 		{
 			try
 			{
-
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
 				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceId);
