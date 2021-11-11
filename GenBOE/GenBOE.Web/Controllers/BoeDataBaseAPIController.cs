@@ -25,11 +25,25 @@ namespace GenBOE.Web.Controllers
 	/// </summary>
 	public class BoeDataBaseAPIController : ApiController
 	{
+		/// <summary>
+		/// Security Access
+		/// </summary>
 		protected ISecurityAccess SecurityAccess { get; set; }
-		protected IFullObjectFactory Factory { get; set; }
-		protected IUserDTODataLoader UserLoader { get; set; }
-		protected IPermissionsDTODataLoader PermissionsLoader { get; set; }
 
+		/// <summary>
+		/// Full object factory
+		/// </summary>
+		protected IFullObjectFactory Factory { get; set; }
+
+		/// <summary>
+		/// User loader
+		/// </summary>
+		protected IUserDTODataLoader UserLoader { get; set; }
+
+		/// <summary>
+		/// Permission loader
+		/// </summary>
+		protected IPermissionsDTODataLoader PermissionsLoader { get; set; }
 
 		/// <summary>
 		/// Ctor
