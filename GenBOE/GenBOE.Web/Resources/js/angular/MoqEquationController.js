@@ -207,7 +207,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
                     case 5009:
                         return 'Document any Non-Labor values used & why.';
                     case 5008:
-                        return 'For each task please provide task name, a description of the task and the number of hours.  In the SME judgement estimate please break estimated tasks into small enough chunks that customer can fully understand what is being estimated.';
+                        return 'For each task please provide task name, a description of the task and the number of hours.  In the SME judgment estimate please break estimated tasks into small enough chunks that customer can fully understand what is being estimated.';
                 }
                 break;
             case 'Location':

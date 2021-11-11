@@ -22,6 +22,7 @@ CREATE VIEW [genBOE].[genTracData] AS
 **		2/15/17		Dusan				Removed RoleType
 **		6/06/18		brunworg			BOEJ-3480 Renamed ProductLine and LineOfBusiness tables.
 **		11/19/19	twilson3			BOEJ-4312 Do not return Deleted Proposals
+**		10/29/21	Dusan				IES-460: Use Revised Anticipated Delivery Date when Available
 *******************************************************************************/
 SELECT DISTINCT
 	P.ProposalID AS [genTracProposalID],
@@ -39,8 +40,7 @@ SELECT DISTINCT
 	--per BOEJ-1546, replaced start/end dates with RFPReceivedDate & AnticpatedDeliveryDate
 
 	CAST(P.RFPReceivedDate AS DATE) AS [ProposalStartDate],
-	CAST(P.AnticipatedDeliveryDate AS DATE) AS [ProposalEndDate],
-
+	CASE WHEN p.RevisedSubmittalDate IS NOT NULL THEN CAST(p.RevisedSubmittalDate AS DATE) ELSE CAST(p.AnticipatedDeliveryDate AS DATE) END AS [ProposalEndDate],
 	CAST (P.DateCreated AS DATE) AS [CreatedDate],
 	CAST(PC.ProposalSubmittalDate AS DATE) AS [SubmittalDate],
 	
