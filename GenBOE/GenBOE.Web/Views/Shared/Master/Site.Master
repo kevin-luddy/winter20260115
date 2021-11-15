@@ -165,9 +165,6 @@
                             <div>Company Mode: <%: SystemConfiguration.Instance().CompanyMode.GetDescription() %></div>
                         <% } %> 
                     </div>
-                    <% } else 
-                        { %>
-                            <div>Estimating Transformation Initiative</div>
                     <% } %>
                     <div class="lmlogo"></div>
                 </div>
