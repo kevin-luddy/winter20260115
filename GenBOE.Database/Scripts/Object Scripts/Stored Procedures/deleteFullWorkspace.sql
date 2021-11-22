@@ -38,6 +38,7 @@ AS
 **		5/22/20		Dusan				BOEJ-4616 Cleanning up the method, as it was neglegted
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
+**		11/18/2021  e405721				IES-528: Process Soft Delete is Failing
 *******************************************************************************/
 SET NOCOUNT ON 
 	IF @WorkspaceID IS NULL
@@ -134,6 +135,12 @@ SET NOCOUNT ON
 			FROM dbo.BOELaborType LT 
 				INNER JOIN dbo.BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
 				INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
+				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
+		DELETE FROM dbo.[MOQTypeSelectionTableData]
+			FROM dbo.[MOQTypeSelectionTableData] Mtd
+				INNER JOIN dbo.MOQTypeSelection M ON M.MOQTypeSelectionId = Mtd.MOQTypeSelectionId
+				INNER JOIN dbo.BOETaskElement T ON M.TaskId = T.BOETaskElementID
+				INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
 				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
 		DELETE FROM dbo.MOQTypeSelection
 			FROM dbo.MOQTypeSelection M
