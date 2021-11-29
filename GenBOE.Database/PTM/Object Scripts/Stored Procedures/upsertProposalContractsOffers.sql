@@ -1,5 +1,5 @@
-﻿IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[upsertProposalContractsOffer]') AND type in (N'P', N'PC'))
-	DROP PROCEDURE [dbo].[upsertProposalContractsOffer];
+﻿IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[upsertProposalContractsOffers]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[upsertProposalContractsOffers];
 GO
 
 SET ANSI_NULLS ON
@@ -7,9 +7,9 @@ GO
 SET QUOTED_IDENTIFIER ON
 GO
 
-CREATE PROCEDURE [dbo].[upsertProposalContractsOffer]
+CREATE PROCEDURE [dbo].[upsertProposalContractsOffers]
 (
-	@ProposalContractsOfferId [int],
+	@ProposalContractsOffersId [int],
 	@UpdateDT [datetime2](7),
 	@ContractsDataId [int],
 	@CustomerOfferAmount [bigint],
@@ -22,8 +22,8 @@ CREATE PROCEDURE [dbo].[upsertProposalContractsOffer]
 AS
 /******************************************************************************
 **
-**		Name: [upsertProposalContractsOffer]
-**		Desc: Upsert Proposal Contracts Offer
+**		Name: [upsertProposalContractsOffers]
+**		Desc: Upsert Proposal Contracts Offers
 **
 **
 **		Auth: Ajay Koovackal
@@ -37,21 +37,21 @@ AS
 *******************************************************************************/
 SET NOCOUNT ON
 
-	IF @ProposalContractsOfferId < 0 -- Inserting a new
+	IF @ProposalContractsOffersId < 0 -- Inserting a new
 		BEGIN
 			DECLARE @Inserted AS Table (Id int)
-			INSERT INTO [dbo].[ProposalContractsOffer] (UpdateDT, ContractsDataId, CustomerOfferAmount, 
+			INSERT INTO [dbo].[ProposalContractsOffers] (UpdateDT, ContractsDataId, CustomerOfferAmount, 
 														CustomerOfferDate, LMCounterOfferDate, LMCounterOfferCost, 
 														LMCounterOfferCOM, LMCounterOfferProfitFee)
-				OUTPUT inserted.ProposalContractsOfferId INTO @Inserted
+				OUTPUT inserted.ProposalContractsOffersId INTO @Inserted
 				VALUES (GETDATE(),@ContractsDataId, @CustomerOfferAmount, @CustomerOfferDate, @LMCounterOfferDate, 
 						@LMCounterOfferCost, @LMCounterOfferCOM, @LMCounterOfferProfitFee)
-			SELECT @ProposalContractsOfferId = Id FROM @Inserted
+			SELECT @ProposalContractsOffersId = Id FROM @Inserted
 		END
 	ELSE -- updating an existing
 		BEGIN
-			IF (SELECT UpdateDT FROM ProposalContractsOffer WHERE ProposalContractsOfferId = @ProposalContractsOfferId) = @UpdateDT
-				UPDATE ProposalContractsOffer
+			IF (SELECT UpdateDT FROM ProposalContractsOffers WHERE ProposalContractsOffersId = @ProposalContractsOffersId) = @UpdateDT
+				UPDATE ProposalContractsOffers
 					SET UpdateDT = GETDATE(),
 						ContractsDataId = @ContractsDataId,
 						CustomerOfferAmount= @CustomerOfferAmount,
@@ -60,17 +60,17 @@ SET NOCOUNT ON
 						LMCounterOfferCost = @LMCounterOfferCost,
 						LMCounterOfferCOM = @LMCounterOfferCOM,
 						LMCounterOfferProfitFee = @LMCounterOfferProfitFee
-					WHERE ProposalContractsOfferIdId = ProposalContractsOfferId
+					WHERE ProposalContractsOffersId = @ProposalContractsOffersId
 			ELSE
 				BEGIN
 					DECLARE @ErrorMessage varchar (500)
-					SET @ErrorMessage = 'The ProposalContractsOffer with Id ' + CAST(@ProposalContractsOfferId AS varchar(10)) + ' has been updated and is out of sync with the data in your browser. Please refresh your data.'
+					SET @ErrorMessage = 'The ProposalContractsOffers with Id ' + CAST(@ProposalContractsOffersId AS varchar(10)) + ' has been updated and is out of sync with the data in your browser. Please refresh your data.'
 					RAISERROR (@ErrorMessage, 11, 1)
 					RETURN
 				END
 		END
 
 	IF @@ERROR = 0
-		SELECT @ProposalContractsOfferId as ProposalContractsOfferId
+		SELECT @ProposalContractsOffersId as ProposalContractsOffersId
 
 GO

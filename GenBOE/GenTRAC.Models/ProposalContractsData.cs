@@ -27,9 +27,11 @@ namespace GenTRAC.Models
         public string ContractsCorrespondLogNumber { get; set; }
         public Nullable<long> FinalNegotiatedValue { get; set; }
         public Nullable<System.DateTime> FinalNegotiatedDate { get; set; }
+        public int ProposalID { get; set; }
     
         public virtual Proposal Proposal { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProposalContractsOffer> ProposalContractsOffers { get; set; }
+        public virtual Proposal Proposal1 { get; set; }
     }
 }

@@ -370,6 +370,7 @@
           <Property Name="ContractsCorrespondLogNumber" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="FinalNegotiatedValue" Type="bigint" />
           <Property Name="FinalNegotiatedDate" Type="date" />
+          <Property Name="ProposalID" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="ProposalContractsOffers">
           <Key>
@@ -637,6 +638,18 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
             </Principal>
             <Dependent Role="ProposalContractsData">
               <PropertyRef Name="PreviouslySubmittedROM" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ProposalC__Propo__5006DFF2">
+          <End Role="Proposal" Type="Self.Proposal" Multiplicity="1" />
+          <End Role="ProposalContractsData" Type="Self.ProposalContractsData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="ProposalContractsData">
+              <PropertyRef Name="ProposalID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1349,8 +1362,8 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
         <Function Name="deleteProposalClass" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
         </Function>
-        <Function Name="deleteProposalContractsOffer" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="ProposalContractsOfferId" Type="int" Mode="In" />
+        <Function Name="deleteProposalContractsOffers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ProposalContractsOffersId" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
         <Function Name="deleteProposalRolesByProposalID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -1611,15 +1624,15 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
         <Function Name="upsertProposalContractsData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalContractsDataId" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
+          <Parameter Name="ProposalID" Type="int" Mode="In" />
           <Parameter Name="PreviouslySubmittedROM" Type="int" Mode="In" />
           <Parameter Name="CustomerSubmittalDate" Type="date" Mode="In" />
           <Parameter Name="ContractsCorrespondLogNumber" Type="varchar" Mode="In" />
           <Parameter Name="FinalNegotiatedValue" Type="bigint" Mode="In" />
           <Parameter Name="FinalNegotiatedDate" Type="date" Mode="In" />
-          <Parameter Name="ProposalId" Type="int" Mode="In" />
         </Function>
-        <Function Name="upsertProposalContractsOffer" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="ProposalContractsOfferId" Type="int" Mode="In" />
+        <Function Name="upsertProposalContractsOffers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ProposalContractsOffersId" Type="int" Mode="In" />
           <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
           <Parameter Name="ContractsDataId" Type="int" Mode="In" />
           <Parameter Name="CustomerOfferAmount" Type="bigint" Mode="In" />
@@ -1753,6 +1766,10 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
             <End Role="ProposalContractsOffers" EntitySet="ProposalContractsOffers" />
           </AssociationSet>
           <AssociationSet Name="FK__ProposalC__Previ__467D75B8" Association="Self.FK__ProposalC__Previ__467D75B8">
+            <End Role="Proposal" EntitySet="Proposal" />
+            <End Role="ProposalContractsData" EntitySet="ProposalContractsData" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ProposalC__Propo__5006DFF2" Association="Self.FK__ProposalC__Propo__5006DFF2">
             <End Role="Proposal" EntitySet="Proposal" />
             <End Role="ProposalContractsData" EntitySet="ProposalContractsData" />
           </AssociationSet>
@@ -2200,6 +2217,7 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <Property Name="InformationComments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="ProposalChecklists" Relationship="genTRACModel.FK_ProposalChecklist_Proposal" FromRole="Proposal" ToRole="ProposalChecklist" />
           <NavigationProperty Name="ProposalContractsDatas" Relationship="genTRACModel.FK__ProposalC__Previ__467D75B8" FromRole="Proposal" ToRole="ProposalContractsData" />
+          <NavigationProperty Name="ProposalContractsDatas1" Relationship="genTRACModel.FK__ProposalC__Propo__5006DFF2" FromRole="Proposal" ToRole="ProposalContractsData" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -3441,12 +3459,12 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <FunctionImport Name="upsertProposalContractsData" ReturnType="Collection(Int32)">
             <Parameter Name="ProposalContractsDataId" Mode="In" Type="Int32" />
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+            <Parameter Name="ProposalID" Mode="In" Type="Int32" />
             <Parameter Name="PreviouslySubmittedROM" Mode="In" Type="Int32" />
             <Parameter Name="CustomerSubmittalDate" Mode="In" Type="DateTime" />
             <Parameter Name="ContractsCorrespondLogNumber" Mode="In" Type="String" />
             <Parameter Name="FinalNegotiatedValue" Mode="In" Type="Int64" />
             <Parameter Name="FinalNegotiatedDate" Mode="In" Type="DateTime" />
-            <Parameter Name="ProposalId" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalContractsOffer">
             <Parameter Name="ProposalContractsOfferId" Mode="In" Type="Int32" />
@@ -3458,6 +3476,25 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
             <Parameter Name="LMCounterOfferCost" Mode="In" Type="Int64" />
             <Parameter Name="LMCounterOfferCOM" Mode="In" Type="Int64" />
             <Parameter Name="LMCounterOfferProfitFee" Mode="In" Type="Int64" />
+          </FunctionImport>
+          <AssociationSet Name="FK__ProposalC__Propo__5006DFF2" Association="genTRACModel.FK__ProposalC__Propo__5006DFF2">
+            <End Role="Proposal" EntitySet="Proposals" />
+            <End Role="ProposalContractsData" EntitySet="ProposalContractsDatas" />
+          </AssociationSet>
+          <FunctionImport Name="upsertProposalContractsOffers" ReturnType="Collection(Int32)">
+            <Parameter Name="ProposalContractsOffersId" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+            <Parameter Name="ContractsDataId" Mode="In" Type="Int32" />
+            <Parameter Name="CustomerOfferAmount" Mode="In" Type="Int64" />
+            <Parameter Name="CustomerOfferDate" Mode="In" Type="DateTime" />
+            <Parameter Name="LMCounterOfferDate" Mode="In" Type="DateTime" />
+            <Parameter Name="LMCounterOfferCost" Mode="In" Type="Int64" />
+            <Parameter Name="LMCounterOfferCOM" Mode="In" Type="Int64" />
+            <Parameter Name="LMCounterOfferProfitFee" Mode="In" Type="Int64" />
+          </FunctionImport>
+          <FunctionImport Name="deleteProposalContractsOffers">
+            <Parameter Name="ProposalContractsOffersId" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="CreatePARChecklistReport_Result">
@@ -3987,6 +4024,8 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <Property Name="FinalNegotiatedDate" Type="DateTime" Precision="0" />
           <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK__ProposalC__Previ__467D75B8" FromRole="ProposalContractsData" ToRole="Proposal" />
           <NavigationProperty Name="ProposalContractsOffers" Relationship="genTRACModel.FK__ProposalC__Contr__4959E263" FromRole="ProposalContractsData" ToRole="ProposalContractsOffer" />
+          <Property Name="ProposalID" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Proposal1" Relationship="genTRACModel.FK__ProposalC__Propo__5006DFF2" FromRole="ProposalContractsData" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="ProposalContractsOffer">
           <Key>
@@ -4024,6 +4063,18 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
             </Principal>
             <Dependent Role="ProposalContractsOffer">
               <PropertyRef Name="ContractsDataId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ProposalC__Propo__5006DFF2">
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
+          <End Type="genTRACModel.ProposalContractsData" Role="ProposalContractsData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="ProposalContractsData">
+              <PropertyRef Name="ProposalID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4778,6 +4829,7 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <EntitySetMapping Name="ProposalContractsDatas">
             <EntityTypeMapping TypeName="genTRACModel.ProposalContractsData">
               <MappingFragment StoreEntitySet="ProposalContractsData">
+                <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
                 <ScalarProperty Name="FinalNegotiatedDate" ColumnName="FinalNegotiatedDate" />
                 <ScalarProperty Name="FinalNegotiatedValue" ColumnName="FinalNegotiatedValue" />
                 <ScalarProperty Name="ContractsCorrespondLogNumber" ColumnName="ContractsCorrespondLogNumber" />
@@ -4803,9 +4855,9 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="deleteProposalContractsOffer" FunctionName="genTRACModel.Store.deleteProposalContractsOffer" />
           <FunctionImportMapping FunctionImportName="upsertProposalContractsData" FunctionName="genTRACModel.Store.upsertProposalContractsData" />
-          <FunctionImportMapping FunctionImportName="upsertProposalContractsOffer" FunctionName="genTRACModel.Store.upsertProposalContractsOffer" />
+          <FunctionImportMapping FunctionImportName="upsertProposalContractsOffers" FunctionName="genTRACModel.Store.upsertProposalContractsOffers" />
+          <FunctionImportMapping FunctionImportName="deleteProposalContractsOffers" FunctionName="genTRACModel.Store.deleteProposalContractsOffers" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

@@ -133,6 +133,10 @@
     <Compile Include="DTO\Checklist\ChecklistResponseItem.cs" />
     <Compile Include="DTO\Checklist\IProposalChecklistLoader.cs" />
     <Compile Include="DTO\Checklist\ProposalChecklistSaveInfo.cs" />
+    <Compile Include="DTO\Contracts\ContractsLoader.cs" />
+    <Compile Include="DTO\Contracts\ContractsDto.cs" />
+    <Compile Include="DTO\Contracts\ContractsOffersDto.cs" />
+    <Compile Include="DTO\Contracts\IContractsLoader.cs" />
     <Compile Include="DTO\Email\EmailInformationDto.cs" />
     <Compile Include="DTO\Email\EmailInformationLoader.cs" />
     <Compile Include="DTO\Email\IEmailInformationLoader.cs" />

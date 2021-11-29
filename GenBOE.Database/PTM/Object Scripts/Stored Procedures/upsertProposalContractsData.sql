@@ -11,12 +11,12 @@ CREATE PROCEDURE [dbo].[upsertProposalContractsData]
 (
 	@ProposalContractsDataId [int],
 	@UpdateDT [datetime2](7),
+	@ProposalID [int],
 	@PreviouslySubmittedROM [int],
 	@CustomerSubmittalDate [date],
 	@ContractsCorrespondLogNumber [varchar](20),
 	@FinalNegotiatedValue [bigint],
 	@FinalNegotiatedDate [date],
-	@ProposalId [int]
 )
 AS
 /******************************************************************************
@@ -36,21 +36,23 @@ AS
 *******************************************************************************/
 SET NOCOUNT ON
 
-	IF @ProposalContractsDataId < 0 -- Inserting a new
+	IF @ProposalContractsDataId < 0 -- Insert new
 		BEGIN
 			DECLARE @Inserted AS Table (Id int)
-			INSERT INTO [dbo].[ProposalContractsData] (UpdateDT, PreviouslySubmittedROM, CustomerSubmittalDate, 
+			INSERT INTO [dbo].[ProposalContractsData] (UpdateDT, ProposalID, PreviouslySubmittedROM, CustomerSubmittalDate,
 														ContractsCorrespondLogNumber, FinalNegotiatedValue, FinalNegotiatedDate)
 				OUTPUT inserted.ProposalContractsDataId INTO @Inserted
-				VALUES (GETDATE(), @PreviouslySubmittedROM, @CustomerSubmittalDate, @ContractsCorrespondLogNumber,
+				VALUES (GETDATE(), @ProposalID, @PreviouslySubmittedROM, @CustomerSubmittalDate, @ContractsCorrespondLogNumber,
 						@FinalNegotiatedValue, @FinalNegotiatedDate)
 			SELECT @ProposalContractsDataId = Id FROM @Inserted
 		END
-	ELSE -- updating an existing
+	ELSE -- updating existing
 		BEGIN
 			IF (SELECT UpdateDT FROM ProposalContractsData WHERE ProposalContractsDataId = @ProposalContractsDataId) = @UpdateDT
 				UPDATE ProposalContractsData
-					SET UpdateDT = GETDATE(), PreviouslySubmittedROM = @PreviouslySubmittedROM,
+					SET UpdateDT = GETDATE(),
+						ProposalID = @ProposalID,
+						PreviouslySubmittedROM = @PreviouslySubmittedROM,
 						CustomerSubmittalDate = @CustomerSubmittalDate,
 						ContractsCorrespondLogNumber = @ContractsCorrespondLogNumber,
 						FinalNegotiatedValue = @FinalNegotiatedValue, 

@@ -101,6 +101,7 @@
         <EntityTypeShape EntityType="genTRACModel.ProposalContractsOffer" Width="3" PointX="8.375" PointY="33.875" IsExpanded="true" />
         <AssociationConnector Association="genTRACModel.FK__ProposalC__Previ__467D75B8" />
         <AssociationConnector Association="genTRACModel.FK__ProposalC__Contr__4959E263" />
+        <AssociationConnector Association="genTRACModel.FK__ProposalC__Propo__5006DFF2" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

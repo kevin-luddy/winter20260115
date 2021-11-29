@@ -29,6 +29,7 @@ BEGIN
 	CREATE TABLE dbo.ProposalContractsData (
 		ProposalContractsDataId			INT				PRIMARY KEY		IDENTITY(1,1),
 		UpdateDT						DATETIME2(7)	NOT NULL,
+		ProposalID						INT				NOT NULL		REFERENCES Proposal(ProposalID),
 		PreviouslySubmittedROM			INT				NOT NULL		REFERENCES Proposal(ProposalId),
 		CustomerSubmittalDate			DATE			NULL,
 		ContractsCorrespondLogNumber	VARCHAR(20)		NOT NULL,

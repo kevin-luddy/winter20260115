@@ -45,7 +45,7 @@ SET NOCOUNT ON
 			DELETE FROM dbo.ProposalPPRChecklistXREF WHERE ProposalID = @ProposalID
 			DELETE FROM dbo.ProposalChecklist WHERE ProposalID = @ProposalID
 			DELETE FROM dbo.ProposalChecklistComplete WHERE ProposalID = @ProposalID
-			DELETE FROM dbo.ProposalContractsOffer WHERE ProposalContractsDataId IN (SELECT ProposalContractsDataId FROM dbo.ProposalContractsData WHERE ProposalID = @ProposalID)
+			DELETE FROM dbo.ProposalContractsOffers WHERE ContractsDataId IN (SELECT ProposalContractsDataId FROM dbo.ProposalContractsData WHERE ProposalID = @ProposalID)
 			DELETE FROM dbo.ProposalContractsData WHERE ProposalID = @ProposalID
 			DELETE FROM dbo.Proposal WHERE ProposalID = @ProposalID
 		END
