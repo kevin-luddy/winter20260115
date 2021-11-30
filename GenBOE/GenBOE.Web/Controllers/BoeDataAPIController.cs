@@ -48,22 +48,22 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Reports controller
 		/// </summary>
-		private IReportsControllerLogic reportsControllerLogic;
+		private readonly IReportsControllerLogic reportsControllerLogic;
 
 		/// <summary>
 		/// BOE Exporter
 		/// </summary>
-		private IBOEExporter boeExporter;
+		private readonly IBOEExporter boeExporter;
 
 		/// <summary>
 		/// BOE custom exporter
 		/// </summary>
-		private IBOECustomExporter boeCustomExporter;
+		private readonly IBOECustomExporter boeCustomExporter;
 
 		/// <summary>
-		/// Workspace Export fromat loader
+		/// Workspace Export format loader
 		/// </summary>
-		private IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader;
+		private readonly IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader;
 
 		/// <summary>
 		/// Logger
@@ -142,7 +142,7 @@ namespace GenBOE.Web.Controllers
 
 				if (permission < SecurityAuthorization.Read)
 				{
-					new HttpResponseMessage(HttpStatusCode.Unauthorized);
+					return new HttpResponseMessage(HttpStatusCode.Unauthorized);
 				}
 
 				HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
