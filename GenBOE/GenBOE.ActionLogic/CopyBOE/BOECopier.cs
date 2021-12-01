@@ -268,12 +268,12 @@ namespace GenBOE.ActionLogic.CopyBOE
 			Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
 			// Get a list of all in-use Resource IDs
-			IEnumerable<int> resourceIDs = from t in inSourceBOE.TaskElements
+			List<int> resourceIDs = (from t in inSourceBOE.TaskElements
                                          from l in t.taskElementLabors
                                          where l.ResourceID.HasValue
-                                         select l.ResourceID.Value;
+                                         select l.ResourceID.Value).ToList();
 
-			ICollection<ResourceDTO> resourcesToMap = this._IResourceDTODataLoader.GetByIds(resourceIDs.ToList());
+			ICollection<ResourceDTO> resourcesToMap = this._IResourceDTODataLoader.GetByIds(resourceIDs);
 
             if (resourcesToMap.Any())
             {
