@@ -1372,7 +1372,6 @@ namespace GenBOE
                                                                                                                             new ResolvedParameter(typeof(IBoeDTODataLoader)),
                                                                                                                             new ResolvedParameter(typeof(ICustomFieldValueDTODataLoader)),
                                                                                                                             new ResolvedParameter(typeof(IResourceDTODataLoader)),
-                                                                                                                            new ResolvedParameter(typeof(ITravelDTODataLoader)),
                                                                                                                             new ResolvedParameter(typeof(IBoeTaskElementMediator)),
                                                                                                                             new ResolvedParameter(typeof(IBoeMediator)),
                                                                                                                             new ResolvedParameter(typeof(VariableCircularReferenceChecker)),
