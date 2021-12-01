@@ -106,6 +106,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="newShortName">New unique short name for the workspace.</param>
         /// <param name="costVolumeLeadPricerId">Cost Volume Lead Pricer / Estimator Id</param>
         int ExactCopyWorkspace(int inWorkspaceIDtoCopy, string newWorkspaceName, string newShortName, int costVolumeLeadPricerId);
+
         /// <summary>
         /// Create a copy of a previous version of a workspace
         /// </summary>
