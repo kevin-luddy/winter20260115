@@ -39,6 +39,7 @@ AS
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 **		11/18/2021  e405721				IES-528: Process Soft Delete is Failing
+**		12/6/2021	Dusan				IES-666: Issue w/ order of deletions, failing due to FK constraints w/ MoqTypeTableCustomFieldValueXREF
 *******************************************************************************/
 SET NOCOUNT ON 
 	IF @WorkspaceID IS NULL
@@ -136,17 +137,6 @@ SET NOCOUNT ON
 				INNER JOIN dbo.BOETaskElement TE ON LT.BOETaskElementID = TE.BOETaskElementID
 				INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
 				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
-		DELETE FROM dbo.[MOQTypeSelectionTableData]
-			FROM dbo.[MOQTypeSelectionTableData] Mtd
-				INNER JOIN dbo.MOQTypeSelection M ON M.MOQTypeSelectionId = Mtd.MOQTypeSelectionId
-				INNER JOIN dbo.BOETaskElement T ON M.TaskId = T.BOETaskElementID
-				INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
-				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
-		DELETE FROM dbo.MOQTypeSelection
-			FROM dbo.MOQTypeSelection M
-				INNER JOIN dbo.BOETaskElement T ON M.TaskId = T.BOETaskElementID
-				INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
-				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
 				
 		DELETE FROM dbo.[MoqTypeTableCustomFieldValueXREF]
 			FROM dbo.[MoqTypeTableCustomFieldValueXREF] x
@@ -189,6 +179,19 @@ SET NOCOUNT ON
 				INNER JOIN dbo.BOETaskElement TE ON X.BOETaskElementID = TE.BOETaskElementID
 				INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
 				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
+
+		DELETE FROM dbo.[MOQTypeSelectionTableData]
+			FROM dbo.[MOQTypeSelectionTableData] Mtd
+				INNER JOIN dbo.MOQTypeSelection M ON M.MOQTypeSelectionId = Mtd.MOQTypeSelectionId
+				INNER JOIN dbo.BOETaskElement T ON M.TaskId = T.BOETaskElementID
+				INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
+				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
+		DELETE FROM dbo.MOQTypeSelection
+			FROM dbo.MOQTypeSelection M
+				INNER JOIN dbo.BOETaskElement T ON M.TaskId = T.BOETaskElementID
+				INNER JOIN dbo.BOE B ON T.BOEID = B.BOEID
+				INNER JOIN @MockWorkspace WS ON B.WorkspaceID = WS.WorkspaceID
+
 		DELETE FROM dbo.SumOfBOE_WorkspaceVariableXREF WHERE WorkspaceVariableId IN (SELECT WorkspaceVariableId FROM WorkspaceVariable WHERE WorkspaceId = @workspaceId);
 		DELETE FROM dbo.BOEUserRoleHistory
 				FROM dbo.BOEUserRoleHistory TE
