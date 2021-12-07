@@ -125,18 +125,18 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Export all BOEs given workspace 
 		/// </summary>
-		/// <param name="workspaceId">Id of workspace</param>
+		/// <param name="workspaceShortName">Short name of the workspace</param>
 		/// <returns>HttpResponseMessage</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public HttpResponseMessage ExportAllBOEs(string workspaceId)
+		public HttpResponseMessage ExportAllBOEs(string workspaceShortName)
 		{
 			try
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceId);
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
 
 				SecurityAuthorization permission = this.CheckPermission(SecurityPage.Reports, workspace);
 
