@@ -38,32 +38,32 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Proposal Loader
 		/// </summary>
-		private IWorkspaceDTODataLoader loader;
+		private readonly IWorkspaceDTODataLoader loader;
 
 		/// <summary>
 		/// Token Handling
 		/// </summary>
-		private TokenHandling tokenHandler;
+		private readonly TokenHandling tokenHandler;
 
 		/// <summary>
 		/// Reports controller
 		/// </summary>
-		private IReportsControllerLogic reportsControllerLogic;
+		private readonly IReportsControllerLogic reportsControllerLogic;
 
 		/// <summary>
 		/// BOE Exporter
 		/// </summary>
-		private IBOEExporter boeExporter;
+		private readonly IBOEExporter boeExporter;
 
 		/// <summary>
 		/// BOE custom exporter
 		/// </summary>
-		private IBOECustomExporter boeCustomExporter;
+		private readonly IBOECustomExporter boeCustomExporter;
 
 		/// <summary>
-		/// Workspace Export fromat loader
+		/// Workspace Export format loader
 		/// </summary>
-		private IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader;
+		private readonly IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader;
 
 		/// <summary>
 		/// Logger
@@ -142,7 +142,7 @@ namespace GenBOE.Web.Controllers
 
 				if (permission < SecurityAuthorization.Read)
 				{
-					new HttpResponseMessage(HttpStatusCode.Unauthorized);
+					return new HttpResponseMessage(HttpStatusCode.Unauthorized);
 				}
 
 				HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
@@ -151,7 +151,17 @@ namespace GenBOE.Web.Controllers
 
 				MemoryStream stream = new MemoryStream();
 
-				this.reportsControllerLogic.PrepareAllBOEsReport(workspace, this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(workspace.Id).Any(p => p.Role == Role.SubcontractorAuthor && p.ETIUserId == workspace.CurrentActiveUser.UserID), null, null, null, out bool isCustomExport, out WorkspaceExportFormatDTO wsExportFormatDTO, out BOEExportInputs exportInputs, out ICollection<BOEExportModelView> boeExportModelViews, out List<BOESummaryGridModelView> boeSummaryGridModelViews, false);
+				this.reportsControllerLogic.PrepareAllBOEsReport(workspace, this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(workspace.Id)
+																									.Any(p => p.Role == Role.SubcontractorAuthor && p.ETIUserId == workspace.CurrentActiveUser.UserID), 
+																												null, 
+																												null, 
+																												null, 
+																												out bool isCustomExport, 
+																												out WorkspaceExportFormatDTO wsExportFormatDTO, 
+																												out BOEExportInputs exportInputs, 
+																												out ICollection<BOEExportModelView> boeExportModelViews, 
+																												out List<BOESummaryGridModelView> boeSummaryGridModelViews, 
+																												false);
 
 				if (isCustomExport)
 				{

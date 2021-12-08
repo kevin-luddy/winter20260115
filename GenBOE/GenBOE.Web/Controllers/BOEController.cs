@@ -3115,7 +3115,7 @@ namespace GenBOE.Web.Controllers
             {
                 using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
                 {
-                    _BOECopier.CopyBOE(ws, copyBOEID, boeID, taskElementsToCopy, travelElementsToCopy);
+                    _BOECopier.CopyBOE(ws, copyBOEID, boeID, taskElementsToCopy);
 
                     scope.Complete();
                 }
