@@ -106,13 +106,19 @@ namespace GenBOE.ActionLogic.IO.Import
                     double lastCompleted;
                     if (double.TryParse(row[courseCompleteColumn], out lastCompleted))
                     {
-                        
+                        // For some reason Atlas prepends "E" for employees and "G" for subs, to the front of the id, that AD uses
+                        string userId = row[learnerIdColumn].ToUpper();
+                        if (userId.StartsWith("E") || userId.StartsWith("G"))
+						{
+                            userId = userId.Substring(1);
+						}
+
                         TrainingModelView model = new TrainingModelView
                         {
                             CourseId = courseId,
                             LastCompleted = DateTime.FromOADate(lastCompleted),
                             UserDisplayName = row[nameColumn],
-                            UserId = row[learnerIdColumn].ToUpper().Replace("E", string.Empty).Replace("G", string.Empty) // For some reason Atlas prepends "E" for employees and "G" for subs, to the front of the id, that AD uses
+                            UserId = userId 
                         };
 
                         modelList.Add(model);
