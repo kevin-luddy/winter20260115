@@ -6,34 +6,35 @@
 
 namespace GenBOE.Web.Controllers
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Diagnostics;
-    using System.IO;
-    using System.IO.Compression;
-    using System.Linq;
-    using System.Web.Mvc;
-    using ActionLogic.ModelView.BOE;
-    using DataBridge.Reference;
-    using GenBOE.ActionLogic;
-    using GenBOE.ActionLogic.Common;
-    using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.ActionLogic.Metrics;
-    using IES.Common;
-    using IES.Common.Exceptions;
-    using IES.Common.OfficeUtilities;
-    using GenBOE.DataBridge.Common;
-    using GenBOE.DataBridge.Common.Interfaces;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using GenBOE.Web.Common;
-    using GenBOE.Web.ModelView;
-    using IES.Common.PickList;
-    using System.Transactions;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Configuration;
+	using System.Diagnostics;
+	using System.IO;
+	using System.IO.Compression;
+	using System.Linq;
+	using System.Transactions;
+	using System.Web.Mvc;
+	using ActionLogic.ModelView.BOE;
+	using DataBridge.Reference;
+	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.Metrics;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.Common.Interfaces;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using GenBOE.Web.Common;
+	using GenBOE.Web.ModelView;
+	using IES.Common;
+	using IES.Common.Exceptions;
+	using IES.Common.OfficeUtilities;
+	using IES.Common.PickList;
 
-    public class BOEFormController : GenBOEController
+	public class BOEFormController : GenBOEController
     {
         Logger log = new Logger(typeof(BOEFormController));
         private IBOEFormControllerLogic boeFormControllerLogic = null;
@@ -237,6 +238,10 @@ namespace GenBOE.Web.Controllers
 
             modelView.InitialWorkspaceTitle = string.IsNullOrWhiteSpace(ws.ProposalTitle) ? ws.WorkspaceName : ws.ProposalTitle;
 
+            // We need to disable PBOE Forms (temporarily) for workspaces created on / after the shut off start date.
+            // ToDo: This is a temporary change. When we need to undo this, a list of changes is going to be in the comments of the task IES-684
+            ViewBag.DisablePboeForms = (ws.CreationDate ?? DateTime.MinValue).Date >= DateTime.Parse(ConfigurationManager.AppSettings["tempPboeShutoffStartDate"]).Date;
+
             FinalizeAction(log, "CreateForm", sw);
             return View(modelView);
         }
@@ -253,6 +258,7 @@ namespace GenBOE.Web.Controllers
             {
                 throw new ArgumentException("boeFormType must be set.");
             }
+
             if (String.IsNullOrEmpty(workspace))
             {
                 throw new ArgumentNullException(nameof(workspace));

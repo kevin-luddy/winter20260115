@@ -136,7 +136,12 @@
 	<parameterValidation kind="AllowEmpty" />
 	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthDomain']/@value">
 	</parameterentry>
-  </parameter>	
+  </parameter>
+  <parameter name="tempPboeShutoffStartDate" description="doesn't matter" defaultvalue="__tempPboeShutoffStartDate__" tags="">
+	<parameterValidation kind="AllowEmpty" />
+	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='tempPboeShutoffStartDate']/@value">
+	</parameterentry>
+  </parameter>
 
 	<!--system.web-->
   <parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
