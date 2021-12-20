@@ -88,6 +88,17 @@
     text-align: center;
 }
 
+@media only screen and (max-height: 925px) {
+    #logo-header {
+        zoom: 0.7;
+    }
+}
+@media only screen and (max-height: 850px) {
+    #logo-header {
+        zoom: 0.4;
+    }
+}
+
 .ies-logo {
     width: 100%;
     max-width: 350px;
