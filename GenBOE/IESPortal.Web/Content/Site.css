@@ -88,14 +88,21 @@
     text-align: center;
 }
 
-@media only screen and (max-height: 925px) {
-    #logo-header {
-        zoom: 0.7;
+.carousel-indicators{
+    bottom:0px;
+    display:none;
+}
+.carousel-running .carousel-indicators {
+    display: initial;
+}
+@media only screen and (max-height: 935px) {
+    #logo-header img{
+        height:200px
     }
 }
-@media only screen and (max-height: 850px) {
-    #logo-header {
-        zoom: 0.4;
+@media only screen and (max-height: 875px) {
+    #logo-header img {
+        height: 160px
     }
 }
 
