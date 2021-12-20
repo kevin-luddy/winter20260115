@@ -1968,9 +1968,9 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="isAdmin">Is the user System Admin</param>
         /// <param name="searchString">Optional search string</param>
         /// <returns>Proposal Data</returns>
-        public ICollection<(string PtmTrackingNumber, string ProposalTitle)> GetCostVolumeProposalData(string ntid, bool isAdmin, string searchString)
+        public ICollection<(string PtmTrackingNumber, string ProposalTitle, int ProposalId)> GetCostVolumeProposalData(string ntid, bool isAdmin, string searchString)
         {
-            List<(string PtmTrackingNumber, string ProposalTitle)> result;
+            List<(string PtmTrackingNumber, string ProposalTitle, int ProposalId)> result;
 
             searchString = (searchString ?? string.Empty).Trim().ToLower();
 
@@ -1982,8 +1982,8 @@ namespace GenTRAC.DataBridge.DTO
                                     x.ProposalStatusID == (int)ProposalStatus.InProgress
                                     && (isAdmin || x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid && (role.RoleID == (int)PtmRole.Pricer || role.RoleID == (int)PtmRole.BackupPricer)))
                                     && (string.IsNullOrEmpty(searchString) || x.ProposalTrackingID.ToLower().Contains(searchString) || x.ProposalTitle.ToLower().Contains(searchString)))
-                        .Select(entity => new { TrackingNumber = entity.ProposalTrackingID, ProposalTitle = entity.ProposalTitle}).Take(100).ToList()
-                        .Select(entity => (PtmTrackingNumber: entity.TrackingNumber, ProposalTitle: entity.ProposalTitle)).ToList();
+                        .Select(entity => new { TrackingNumber = entity.ProposalTrackingID, ProposalTitle = entity.ProposalTitle, ProposalId = entity.ProposalID }).Take(100).ToList()
+                        .Select(entity => (PtmTrackingNumber: entity.TrackingNumber, ProposalTitle: entity.ProposalTitle, ProposalId: entity.ProposalId)).ToList();
                 }
             }
 

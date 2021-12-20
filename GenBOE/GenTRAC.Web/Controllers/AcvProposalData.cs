@@ -20,5 +20,10 @@ namespace GenTRAC.Web.Controllers
         /// Proposal Title
         /// </summary>
         public string ProposalTitle { get; set; }
+
+        /// <summary>
+        /// Id of Proposal
+        /// </summary>
+        public int ProposalId { get; set; }
     }
 }

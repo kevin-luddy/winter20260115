@@ -76,8 +76,8 @@ namespace GenTRAC.Web.Controllers
                 tokenHandler.AuthenticateUserFromAuthorizationToken();
 
                 bool isAdmin = this.securityAccess.CurrentUserHasRole(PtmRole.Admin, null);
-                ICollection<(string PtmTrackingNumber, string ProposalTitle)> data = this.loader.GetCostVolumeProposalData(security.ActiveUserNTID, isAdmin, searchString);
-                result = data.Select(x => new AcvProposalData() { PtmTrackingNumber = x.PtmTrackingNumber, ProposalTitle = x.ProposalTitle }).ToList();
+                ICollection<(string PtmTrackingNumber, string ProposalTitle, int ProposalId)> data = this.loader.GetCostVolumeProposalData(security.ActiveUserNTID, isAdmin, searchString);
+                result = data.Select(x => new AcvProposalData() { PtmTrackingNumber = x.PtmTrackingNumber, ProposalTitle = x.ProposalTitle, ProposalId = x.ProposalId }).ToList();
             }
             catch(Exception ex)
             {
