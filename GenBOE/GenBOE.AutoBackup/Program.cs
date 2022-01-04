@@ -84,6 +84,7 @@ namespace GenBOE.AutoBackup
             }
             catch(Exception ex)
             {
+                SendEmail("FAILED -- GenBOE Auto Backup Executed", $"The GenBOE Auto Backup failed: {ex.Message}");
                 Console.WriteLine($"## FAILED {ex.Message} ##"); logger.Error(ex, "FAILED");
             }
 
@@ -137,7 +138,7 @@ namespace GenBOE.AutoBackup
         public static void ProcessFailedWorkspaces()
         {
             string errorText = string.Empty;
-            string emailSubject = "GenBOE Auto Emailer Executed";
+            string emailSubject = "GenBOE Auto Backup Executed";
 
             if (workspacesWhichFailed.Any())
             {
@@ -153,17 +154,27 @@ namespace GenBOE.AutoBackup
 
             if (!string.IsNullOrEmpty(errorText))
             {
-                try
-                {
-                    EmailContent email = new EmailContent() { Subject = emailSubject, Body = errorText };
+                SendEmail(emailSubject, errorText);
+            }
+        }
 
-                    Emailer em = new Emailer();
-                    em.SendEmail(email, emailTo, null, new string[0], new string[0], null, new UserData() { Email = emailTo });
-                }
-                catch (Exception ex)
-                {
-                    logger.Error(ex, $"ProcessFailedWorkspaces - Failed to send email. Contents: {errorText}");
-                }
+        /// <summary>
+        /// Send success/failure email
+        /// </summary>
+        /// <param name="emailSubject">Email subject</param>
+        /// <param name="emailBody">Email body/error text</param>
+        private static void SendEmail(string emailSubject, string emailBody)
+		{
+            try
+            {
+                EmailContent email = new EmailContent() { Subject = emailSubject, Body = emailBody };
+
+                Emailer em = new Emailer();
+                em.SendEmail(email, emailTo, null, new string[0], new string[0], null, new UserData() { Email = emailTo });
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, $"ProcessFailedWorkspaces - Failed to send email. Contents: {emailBody}");
             }
         }
     }
