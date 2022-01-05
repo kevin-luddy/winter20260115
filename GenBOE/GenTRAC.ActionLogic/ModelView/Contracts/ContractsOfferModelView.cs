@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -28,7 +28,7 @@ namespace GenTRAC.ActionLogic.ModelView
         /// <summary>
         /// Customer Offer Amount
         /// </summary>
-        public int? CustomerOfferAmmountInt { get; set; }
+        public int? CustomerOfferAmountInt { get; set; }
 
         /// <summary>
         /// LM Counter Offer Cost
@@ -48,18 +48,18 @@ namespace GenTRAC.ActionLogic.ModelView
         /// <summary>
         /// Customer Offer Date
         /// </summary>
-        private DateTime? customerOfferDt { get; set; }
+        public DateTime? CustomerOfferDt { get; set; }
 
         /// <summary>
         /// LM Counter Offer Date
         /// </summary>
-        private DateTime? lmCounterOfferDt { get; set; }
+        public DateTime? LmCounterOfferDt { get; set; }
 
         /// <summary>
         /// Customer Offer Amount String
         /// </summary>
         [Display(Name = "Customer Offer Amount")]
-        public string CustomerOfferAmmount => this.CustomerOfferAmmountInt?.ToString("C0");
+        public string CustomerOfferAmount => this.CustomerOfferAmountInt?.ToString("C0");
 
         /// <summary>
         /// LM Counter Offer Cost
@@ -102,14 +102,14 @@ namespace GenTRAC.ActionLogic.ModelView
         [Display(Name = "Customer Offer Date")]
         public string CustomerOfferDate
         {
-            get => this.customerOfferDt?.Date.ToShortDateString();
+            get => this.CustomerOfferDt?.Date.ToShortDateString();
 
             set
             {
-                this.customerOfferDt = null;
+                this.CustomerOfferDt = null;
                 if (DateTime.TryParse(value, out DateTime result))
                 {
-                    this.customerOfferDt = result.Normalize(DateTimePrecision.Day);
+                    this.CustomerOfferDt = result.Normalize(DateTimePrecision.Day);
                 }
             }
         }
@@ -120,14 +120,14 @@ namespace GenTRAC.ActionLogic.ModelView
         [Display(Name = "LM Counter Offer Date")]
         public string LMCounterOfferDate
         {
-            get => this.lmCounterOfferDt?.Date.ToShortDateString();
+            get => this.LmCounterOfferDt?.Date.ToShortDateString();
 
             set
             {
-                this.lmCounterOfferDt = null;
+                this.LmCounterOfferDt = null;
                 if (DateTime.TryParse(value, out DateTime result))
                 {
-                    this.lmCounterOfferDt = result.Normalize(DateTimePrecision.Day);
+                    this.LmCounterOfferDt = result.Normalize(DateTimePrecision.Day);
                 }
             }
         }

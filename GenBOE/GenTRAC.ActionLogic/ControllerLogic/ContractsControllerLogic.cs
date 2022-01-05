@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -8,17 +8,36 @@ namespace GenTRAC.ActionLogic
 {
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Transactions;
+    using System.Web.Configuration;
     using GenTRAC.ActionLogic.Mediator;
     using GenTRAC.ActionLogic.ModelView;
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
     using GenTRAC.Objects;
+    using IES.Common;
 
     /// <summary>
     /// Contracts controller logic
     /// </summary>
     public class ContractsControllerLogic : GenTRACControllerLogic
     {
+        #region properties
+
+        /// <summary>
+        /// The logger
+        /// </summary>
+        private Logger log = new Logger(typeof(ContractsControllerLogic));
+
+        /// <summary>
+        /// The Contracts Loader
+        /// </summary>
+        private IContractsLoader contractsLoader = null;
+
+        #endregion
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -30,10 +49,12 @@ namespace GenTRAC.ActionLogic
         /// <param name="proposalChecklistLoader">Proposal Checklist Loader</param>
         /// <param name="checklistMediator">Checklist Mediator</param>
         /// <param name="proposalMediator">Proposal Mediator</param>
+        /// <param name="contractsLoader">Contracts Loader</param>
         public ContractsControllerLogic(ISecurityAccess securityAccess, IProposalLoader proposalLoader, IUserMapper userMapper, IFullObjectFactory objectFactory, IApprovalsLoader approvalsLoader,
-            IProposalChecklistLoader proposalChecklistLoader, IChecklistMediator checklistMediator, IProposalMediator proposalMediator)
+            IProposalChecklistLoader proposalChecklistLoader, IChecklistMediator checklistMediator, IProposalMediator proposalMediator, IContractsLoader contractsLoader)
             : base(securityAccess, proposalLoader, userMapper, objectFactory, approvalsLoader, proposalChecklistLoader, checklistMediator, proposalMediator)
         {
+            this.contractsLoader = contractsLoader;
         }
 
         /// <summary>
@@ -41,41 +62,15 @@ namespace GenTRAC.ActionLogic
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
         /// <returns>Contracts Tab Data</returns>
-        public ContractsModelView GetContractsData(int proposalId)
+        public ContractsModelView GetDataForProposalContracts(int proposalId)
         {
-            if(proposalId < 0)
+            if (proposalId < 0)
             {
                 throw new ArgumentNullException(nameof(proposalId));
             }
-            
-            int i = 1;
-            ContractsModelView model = new ContractsModelView()
-            {
-                ContractsCorrespondenceLogNumber = "log #",
-                CustomerSubmittalDate = DateTime.Now.AddDays(-1).ToString(),
-                ContractOffers = new List<ContractsOfferModelView>()
-                {
-                    new ContractsOfferModelView()
-                    {
-                        Id = ++i,
-                        CustomerOfferAmmountInt = 100000,
-                        CustomerOfferDate = DateTime.Now.AddDays(-30).ToString(),
-                        LMCounterOfferCOMInt = 70000,
-                        LMCounterOfferCostInt = 20000,
-                        LMCounterOfferProfitFeeInt = 19000,
-                        LMCounterOfferDate = DateTime.Now.AddDays(-10).ToString()
-                    },
-                    new ContractsOfferModelView()
-                    {
-                        Id = ++i,
-                        CustomerOfferAmmountInt = 110000,
-                        CustomerOfferDate = DateTime.Now.AddDays(-3).ToString()
-                    }
-                },
-                FinalNegotiatedValueInt = 114000,
-                NegotiationsSubmitted = DateTime.Now.AddDays(-1).ToString(),
-                PreviouslySubmittedROM = 15212
-            };
+
+            ContractsDto dto = this.contractsLoader.GetContractForProposal(proposalId);
+            ContractsModelView model = ConvertContractsDtoToModel(dto);
 
             // Load additional values
             model.PreviouslySubmittedRoms = this.ProposalLoader.GetRomProposalOptions(model.PreviouslySubmittedROM);
@@ -86,9 +81,6 @@ namespace GenTRAC.ActionLogic
                 model.previousROMDt = previousRomDateAndValue?.Item1;
                 model.PreviousROMValueDecimal = previousRomDateAndValue?.Item2;
             }
-
-            // Add an extra dummy offer, for UI clone purposes. We will be throwing this one out when the data comes back into a save
-            model.ContractOffers.Add(new ContractsOfferModelView() { Id = ContractsOfferModelView.OFFER_TO_IGNORE_ID });
 
             return model;
         }
@@ -101,7 +93,135 @@ namespace GenTRAC.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         public Tuple<DateTime?, decimal?> GetRomDateAndValue(int proposalId)
         {
+            if (proposalId < 0)
+            {
+                throw new ArgumentNullException(nameof(proposalId));
+            }
+
             return this.ProposalLoader.GetRomDateAndValue(proposalId);
         }
+
+        #region Contract Validate / Save
+
+        /// <summary>
+        /// Saves the contract.
+        /// </summary>
+        /// <param name="proposalId">The proposal identifier.</param>
+        /// <param name="model">The model.</param>
+        public int? SaveContract(ContractsModelView model)
+        {
+            _ = model ?? throw new ArgumentNullException(nameof(model));
+
+            int? contractId = null;
+
+            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ContractsControllerLogic.SaveContract", this.log))
+            {
+                // TODO: this.ValidateContract(model, false);
+
+                ContractsDto contract = this.ConvertContractsModelToDto(model);
+
+                using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+                {
+                    contractId = this.contractsLoader.Save(contract);
+                    scope.Complete();
+                }
+            }
+
+            return contractId;
+        }
+
+        //private void ValidateContract(ContractsModelView model, bool isComplete)
+        //{
+        //    _ = model ?? throw new ArgumentNullException(nameof(model));
+
+        //    // TODO: Add Validation here
+        //}
+
+        /// <summary>
+        /// Converts the page viewmodel into the Dto
+        /// </summary>
+        /// <param name="model">Contracts Model View</param>
+        /// <param name="isComplete">Are we completing the proposal</param>
+        /// <returns>Contracts DTO</returns>
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "*")]
+        private ContractsDto ConvertContractsModelToDto(ContractsModelView model)
+        {
+            if (model == null)
+            {
+                return new ContractsDto();
+            }
+
+            ContractsDto dto = new ContractsDto();
+            dto.Updateable = UpdateType.Upsert;
+
+            dto.ProposalId = model.ProposalId;
+            dto.PreviouslySubmittedROM = model.PreviouslySubmittedROM;
+            dto.CustomerSubmittalDate = DateTime.Parse(model.CustomerSubmittalDate); 
+            dto.ContractsCorrespondenceLogNumber = model.ContractsCorrespondenceLogNumber;
+            dto.FinalNegotiatedValue = model.FinalNegotiatedValueInt;
+            dto.NegotiationsSubmitted = DateTime.Parse(model.NegotiationsSubmitted);
+
+            ContractsOffersDto offerToCopy = new ContractsOffersDto();
+
+            foreach (ContractsOfferModelView offer in model.ContractOffers)
+            {
+                if (offer != null)
+                {
+                    offerToCopy.CustomerOfferAmount = long.Parse(offer.CustomerOfferAmount);
+                    offerToCopy.CustomerOfferDate = DateTime.Parse(offer.CustomerOfferDate);
+                    offerToCopy.LMCounterOfferDate = DateTime.Parse(offer.LMCounterOfferDate);
+                    offerToCopy.LMCounterOfferCost = long.Parse(offer.LMCounterOfferCost);
+                    offerToCopy.LMCounterOfferCOM = long.Parse(offer.LMCounterOfferCOM);
+                    offerToCopy.LMCounterOfferProfitFee = long.Parse(offer.LMCounterOfferProfitFee);
+
+                    dto.ContractOffers.Add(offerToCopy);
+                }
+            };
+
+            return dto;
+        }
+
+        /// <summary>
+        /// Converts the dto to a page view model
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns>Contracts view model</returns>
+        [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "*")]
+        private ContractsModelView ConvertContractsDtoToModel(ContractsDto dto)
+        {
+            if (dto == null)
+            {
+                return new ContractsModelView();
+            }
+
+            ContractsModelView model = new ContractsModelView();
+
+            model.ProposalId = dto.ProposalId;
+            model.PreviouslySubmittedROM = dto.PreviouslySubmittedROM;
+            model.CustomerSubmittalDt = dto.CustomerSubmittalDate;
+            model.ContractsCorrespondenceLogNumber = dto.ContractsCorrespondenceLogNumber;
+            model.FinalNegotiatedValueInt = int.Parse(dto.FinalNegotiatedValue.ToString());
+            model.NegotiationsSubmittedDt = dto.NegotiationsSubmitted;
+
+            foreach (ContractsOffersDto offer in dto.ContractOffers)
+            {
+                if (offer != null)
+                {
+                    model.ContractOffers.Add(new ContractsOfferModelView()
+                    {
+                        CustomerOfferAmountInt = (int)offer.CustomerOfferAmount,
+                        CustomerOfferDt = offer.CustomerOfferDate,
+                        LmCounterOfferDt = offer.LMCounterOfferDate,
+                        LMCounterOfferCostInt = (int)offer.LMCounterOfferCost,
+                        LMCounterOfferCOMInt = (int)offer.LMCounterOfferCOM,
+                        LMCounterOfferProfitFeeInt = (int)offer.LMCounterOfferProfitFee
+                    });
+                }
+            };
+
+            return model;
+        }
+
+        #endregion Contract Validate / Save
     }
 }

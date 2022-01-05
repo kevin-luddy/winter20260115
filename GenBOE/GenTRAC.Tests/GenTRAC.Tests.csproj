@@ -103,6 +103,7 @@
     <Compile Include="ActionLogic\AdminControllerLogicTest.cs" />
     <Compile Include="ActionLogic\ApprovalsControllerLogicTest.cs" />
     <Compile Include="ActionLogic\ChecklistControllerLogicTest.cs" />
+    <Compile Include="ActionLogic\ContractsControllerLogicTest.cs" />
     <Compile Include="ActionLogic\GenTRACControllerLogicTest.cs" />
     <Compile Include="ActionLogic\HelpersTest.cs" />
     <Compile Include="ActionLogic\HomeControllerLogicTest.cs" />

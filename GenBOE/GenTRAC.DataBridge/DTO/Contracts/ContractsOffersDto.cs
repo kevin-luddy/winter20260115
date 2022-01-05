@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -14,7 +14,7 @@ namespace GenTRAC.DataBridge.DTO
     public class ContractsOffersDto : IES.Common.UpdateableDTO
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ContractsOffersDtomentDto"/> class.
+        /// Initializes a new instance of the <see cref="ContractsOffersDto"/> class.
         /// </summary>
         public ContractsOffersDto()
         {
@@ -22,22 +22,22 @@ namespace GenTRAC.DataBridge.DTO
         }
 
         /// <summary>
-        /// Contracts Data ID int
+        /// Contracts Data ID
         /// </summary>
         public int ContractsDataId { get; set; }
 
         /// <summary>
-        /// Customer Offer Amount String
+        /// Customer Offer Amount
         /// </summary>
         public long CustomerOfferAmount { get; set; }
 
         /// <summary>
-        /// Customer Offer Date String
+        /// Customer Offer Date
         /// </summary>
         public DateTime? CustomerOfferDate { get; set; }
 
         /// <summary>
-        /// LM Counter Offer Date String
+        /// LM Counter Offer Date
         /// </summary>
         public DateTime? LMCounterOfferDate { get; set; }
 

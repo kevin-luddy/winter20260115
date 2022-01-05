@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -18,6 +18,11 @@ namespace GenTRAC.ActionLogic.ModelView
     public class ContractsModelView
     {
         /// <summary>
+        /// Gets or sets the Proposal Id that this Contract is linked to.
+        /// </summary>
+        public int ProposalId { get; set; }
+
+        /// <summary>
         /// Previous ROM Date
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1044:PropertiesShouldNotBeWriteOnly")]
@@ -26,12 +31,12 @@ namespace GenTRAC.ActionLogic.ModelView
         /// <summary>
         /// Customer Submittal Date
         /// </summary>
-        private DateTime? customerSubmittalDt { get; set; }
+        public DateTime? CustomerSubmittalDt { get; set; }
 
         /// <summary>
         /// Date Confirmation of Negotiations Submitted
         /// </summary>
-        private DateTime? negotiationsSubmittedDt { get; set; }
+        public DateTime? NegotiationsSubmittedDt { get; set; }
 
         /// <summary>
         /// Final Negotiated Value
@@ -73,14 +78,14 @@ namespace GenTRAC.ActionLogic.ModelView
         [Display(Name = "Customer Submittal Date")]
         public string CustomerSubmittalDate
         {
-            get => this.customerSubmittalDt?.Date.ToShortDateString();
+            get => this.CustomerSubmittalDt?.Date.ToShortDateString();
 
             set
             {
-                this.customerSubmittalDt = null;
+                this.CustomerSubmittalDt = null;
                 if (DateTime.TryParse(value, out DateTime result))
                 {
-                    this.customerSubmittalDt = result.Normalize(DateTimePrecision.Day);
+                    this.CustomerSubmittalDt = result.Normalize(DateTimePrecision.Day);
                 }
             }
         }
@@ -103,14 +108,14 @@ namespace GenTRAC.ActionLogic.ModelView
         [Display(Name = "Date Confirmation of Negotiations Submitted")]
         public string NegotiationsSubmitted
         {
-            get => this.negotiationsSubmittedDt?.Date.ToShortDateString();
+            get => this.NegotiationsSubmittedDt?.Date.ToShortDateString();
 
             set
             {
-                this.negotiationsSubmittedDt = null;
+                this.NegotiationsSubmittedDt = null;
                 if (DateTime.TryParse(value, out DateTime result))
                 {
-                    this.negotiationsSubmittedDt = result.Normalize(DateTimePrecision.Day);
+                    this.NegotiationsSubmittedDt = result.Normalize(DateTimePrecision.Day);
                 }
             }
         }

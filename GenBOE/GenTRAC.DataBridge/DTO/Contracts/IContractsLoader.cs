@@ -1,17 +1,18 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
 namespace GenTRAC.DataBridge.DTO
 {
     using System.Collections.Generic;
+    using IES.Common;
 
     /// <summary>
     /// Contracts Loader interface
     /// </summary>
-    public interface IContractsLoader
+    public interface IContractsLoader : IDataLoader<ContractsDto>
     {
         /// <summary>
         /// Gets all Contracts for the proposal.

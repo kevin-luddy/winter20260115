@@ -87,9 +87,9 @@
             <div id="offer_@Model.ContractOffers.ElementAt(i).Id" @Model.ContractOffers.ElementAt(i).Hidden class="offerWrapper">
                 @Html.HiddenFor(x => x.ContractOffers.ElementAt(i).Id)
                 <div class="form-row">
-                    <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).CustomerOfferAmmount) *</div>
+                    <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).CustomerOfferAmount) *</div>
                     <div class="form-element">
-                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).CustomerOfferAmmount, new { @class = "half", id = "CustomerOfferAmmount_" + i.ToString() })
+                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).CustomerOfferAmount, new { @class = "half", id = "CustomerOfferAmount_" + i.ToString() })
                     </div>
                     <button type="button" class="ies-danger" style="margin-left:30px;" onclick="ContractsOfferWidget.deleteOffer(this)">Delete</button>
                 </div>

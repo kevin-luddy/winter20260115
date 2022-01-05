@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2020 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ namespace GenTRAC.Web.Controllers
         /// <summary>
         /// Contracts Logic
         /// </summary>
-        private ContractsControllerLogic logic;
+        private ContractsControllerLogic contractsLogic;
 
         /// <summary>
         /// Constructor
@@ -33,20 +33,20 @@ namespace GenTRAC.Web.Controllers
         public ContractsController(ContractsControllerLogic logic, SiteMasterUtilities siteMasterUtils, ISecurityInformation securityInformation)
             : base(securityInformation, logic, siteMasterUtils)
         {
-            this.logic = logic;
+            this.contractsLogic = logic;
         }
 
         /// <summary>
-        /// Display checklist index
+        /// Display Contracts index
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
-        /// <returns>create new proposal approval view</returns>
+        /// <returns>Create new proposal approval view</returns>
         public ViewResult DisplayContractsIndex(int proposalId)
         {
             this.ViewBag.ProposalId = proposalId.ToString();
             this.ViewBag.ReadOnly = false; // todo.. fix me
 
-            ContractsModelView model = this.logic.GetContractsData(proposalId);
+            ContractsModelView model = this.contractsLogic.GetDataForProposalContracts(proposalId);
 
             return this.View(WebConstants.View.CONTRACTS_INDEX, model);
         }
@@ -85,7 +85,7 @@ namespace GenTRAC.Web.Controllers
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "proposalId")]
         public JsonResult GetPreviouslySelectedRomData(int proposalId, int previousRomProposalId)
         {
-            Tuple<DateTime?, decimal?> data = this.logic.GetRomDateAndValue(previousRomProposalId);
+            Tuple<DateTime?, decimal?> data = this.contractsLogic.GetRomDateAndValue(previousRomProposalId);
 
             return Json(new { Date = data?.Item1?.ToShortDateString() ?? "N/A", Value = data?.Item2?.ToString("C") ?? "N/A" });
         }
@@ -114,11 +114,25 @@ namespace GenTRAC.Web.Controllers
         }
 
         /// <summary>
-        /// Performs contracts save
+        /// Saves the Contract.
         /// </summary>
-        public void SaveContracts()
+        /// <param name="proposalId">The proposal identifier.</param>
+        /// <param name="model">The model.</param>
+        /// <returns>Success or failure</returns>
+        /// <exception cref="System.ArgumentNullException">model</exception>
+        [HttpPost]
+        public JsonResult SaveContract(int proposalId, ContractsModelView model)
         {
-            // TODO: after 'IES-411 Permissions - Add a 2nd Role - Backup Contracts Lead Part 2'
+            if (proposalId < 0)
+            {
+                throw new ArgumentNullException(nameof(proposalId));
+            }
+
+            _ = model ?? throw new ArgumentNullException(nameof(model));
+
+            this.contractsLogic.SaveContract(model);
+
+            return this.Json(new { Status = true });
         }
     }
 }
