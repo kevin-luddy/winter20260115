@@ -757,6 +757,9 @@ namespace GenBOE.ActionLogic.CopyBOE
                     newMoq.Rationale = taskBeingCopied.MOQText;
                 }
 
+                // Clear the MOQ Text now that it has been set in the new location
+                taskBeingCopied.MOQText = string.Empty;
+
                 moqTypesToCopy = new List<MoqTypeSelection>() { newMoq };
             }
             else

@@ -194,6 +194,6 @@ namespace GenTRAC.DataBridge.DTO
         /// <param name="searchString">Optional search string</param>
         /// <returns>Proposal Data</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        ICollection<(string PtmTrackingNumber, string ProposalTitle)> GetCostVolumeProposalData(string ntid, bool isAdmin, string searchString);
+        ICollection<(string PtmTrackingNumber, string ProposalTitle, int ProposalId)> GetCostVolumeProposalData(string ntid, bool isAdmin, string searchString);
     }
 }

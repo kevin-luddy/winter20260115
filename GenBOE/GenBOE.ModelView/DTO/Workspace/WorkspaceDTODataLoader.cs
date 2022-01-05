@@ -472,7 +472,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    gbe.Database.CommandTimeout = 360;
+                    gbe.Database.CommandTimeout = 900; // 15 minutes
 
                     result = gbe.Workspaces.Where(x => 
                         x.WorkspaceStateID != (int)WorkspaceState.Complete && x.WorkspaceStateID != (int)WorkspaceState.Closed 
@@ -483,9 +483,6 @@ namespace GenBOE.DataBridge.DTO
                             x.BOEs.SelectMany(z => z.BOETaskElements).Select(z => z.UpdateDT).Max(),
                             x.BOEs.SelectMany(z => z.BOETaskElements).SelectMany(z => z.OrdinaryVariables).Select(z => z.UpdateDT).Max(),
                             x.BOEs.SelectMany(z => z.BOETaskElements).SelectMany(z => z.BOELaborTypes).Select(z => z.UpdateDT).Max(),
-                            x.BOEs.SelectMany(z => z.TravelTripTaskElements).Select(z => z.UpdateDT).Max(),
-                            x.BOEs.SelectMany(z => z.TravelTripTaskElements).SelectMany(z => z.MSTTravelTrips).Select(z => z.UpdateDT).Max(),
-                            x.BOEs.SelectMany(z => z.TravelTripTaskElements).SelectMany(z => z.TravelTrips).Select(z => z.UpdateDT).Max(),
                             x.BOEs.SelectMany(z => z.BOEApprovals).Select(z => z.UpdateDT).Max(),
                             x.BOEs.SelectMany(z => z.BOEApprovalHistories).Select(z => z.UpdateDT).Max(),
                             x.BOEs.SelectMany(z => z.BOEComments).Select(z => z.UpdateDT).Max(),
