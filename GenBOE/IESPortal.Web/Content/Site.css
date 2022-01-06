@@ -100,7 +100,7 @@
         height:200px;
     }
     #ies-home .button-img {
-        width: 215px
+        width: 200px
     }
 }
 @media only screen and (max-height: 875px) {
@@ -108,7 +108,7 @@
         height: 160px;
     }
     #ies-home .button-img {
-        width: 165px;
+        width: 150px;
     }
 }
 
