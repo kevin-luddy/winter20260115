@@ -1439,7 +1439,7 @@ namespace GenBOE.ActionLogic.IO.Export
                     this.ProcessLaborTaskHeader(document, containerElement, laborTaskElement, selectedComponents, exportInputs, ws, ref counters);
                     this.ProcessLaborTaskCustomFields(containerElement, laborTaskElement, exportInputs.CustomFields, selectedComponents, exportInputs);
                     this.ProcessLaborTaskResourceTable(containerElement, laborTaskElement, allLaborTaskElements, exportInputs.CustomFields, selectedComponents, exportInputs);
-                    this.ProcessLaborTaskHoursRollupTable(containerElement, laborTaskElement, allLaborTaskElements, selectedComponents, exportInputs, boeExportModelView, true);
+                    this.ProcessLaborTaskHoursRollupTable(containerElement, laborTaskElement, allLaborTaskElements, selectedComponents, exportInputs, boeExportModelView);
                     this.ProcessLaborTaskCostSpreadRollupTable(containerElement, exportInputs, boeExportModelView, laborTaskElement, allLaborTaskElements, selectedComponents, true);
                     this.ProcessLaborTaskCostSpreadRollupTable(containerElement, exportInputs, boeExportModelView, laborTaskElement, allLaborTaskElements, selectedComponents, false);
                     this.ProcessLaborTaskResources(containerElement, exportInputs, laborTaskElement, allLaborTaskElements, selectedComponents, exportBoe.IsMultiClinWbs);
@@ -2095,30 +2095,21 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="selectedComponents">Components selected for the output</param>
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelView">The boe export model view.</param>
-        /// <param name="useGfy">Should Government Fiscal Years be used</param>
         /// <exception cref="System.ArgumentNullException">selectedComponents</exception>
-        protected virtual void ProcessLaborTaskHoursRollupTable(SdtElement containerElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, bool useGfy)
+        protected virtual void ProcessLaborTaskHoursRollupTable(SdtElement containerElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView)
         {
             if (selectedComponents == null)
             {
                 throw new ArgumentNullException(nameof(selectedComponents));
             }
 
-            SdtElement laborHoursRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, 
-                useGfy ? BOEExporterConstants.Table_GfyLaborHoursRollup : BOEExporterConstants.Table_LaborHoursRollup);
-
-            bool byQuarter = false;
-            if (useGfy && laborHoursRollupTableTemplateElement == null)
-            {
-                laborHoursRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_GfyLaborHoursRollupByQuarter);
-                byQuarter = true;
-            }
+            SdtElement laborHoursRollupTableTemplateElement = WordUtilities.GetTaggedChildElement(containerElement, BOEExporterConstants.Table_LaborHoursRollup);
 
             if (laborHoursRollupTableTemplateElement != null)
             {
                 if (selectedComponents.Contains(BoeCustomReportComponent.TaskSpreadTables))
                 {
-                    this.PrepareLaborTaskHoursRollupTableData(laborHoursRollupTableTemplateElement, laborTaskElement, allLaborTaskElements, boeExportModelView, useGfy, byQuarter);
+                    this.PrepareLaborTaskHoursRollupTableData(laborHoursRollupTableTemplateElement, laborTaskElement, allLaborTaskElements, boeExportModelView, false, false);
                 }
                 else
                 {
