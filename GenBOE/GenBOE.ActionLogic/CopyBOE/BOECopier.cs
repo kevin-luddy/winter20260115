@@ -606,6 +606,11 @@ namespace GenBOE.ActionLogic.CopyBOE
                     }
 
                     ICollection<MoqTypeSelection> moqTypesToCopy = this.GetMoqTypesToCopy(inSourceBOE, taskElementOrig, inDestinationWorkspace.CreationDate, moveSingleMoqTypeToMultiple);
+                    if (moveSingleMoqTypeToMultiple)
+					{
+                        // Clear the MOQ Text now that it has been set in the new location
+                        taskElementCopy.MOQText = String.Empty;
+					}
 
                     ICollection<int> inUseMetricIDs = this._boeCopierCompany.GetMetricsUsedByTaskElement(taskElementCopy.Id);
                     
@@ -756,9 +761,6 @@ namespace GenBOE.ActionLogic.CopyBOE
                 {
                     newMoq.Rationale = taskBeingCopied.MOQText;
                 }
-
-                // Clear the MOQ Text now that it has been set in the new location
-                taskBeingCopied.MOQText = string.Empty;
 
                 moqTypesToCopy = new List<MoqTypeSelection>() { newMoq };
             }
