@@ -25,22 +25,18 @@ AS
 **		 
 **		Name: [CreateProposalLogReport]
 **		Desc: SSRS: Proposal Log Report
-**			
 **
-**
-**		Auth: Don Canuso
-**		Date: 7/2013
 *******************************************************************************
 **		Change History
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
-**		8/5/2019	twilson3			BOEJ-4274 Add LOB Manager Comments
 **		4/22/2020	ranzalon			BOEJ-4535 Add Lead Estimator Approval Date
 **		6/30/2020	Dusan				BOEJ-4639 Add Revision Type
 **										BOEJ-4590 Add Material POC and Subcontracts POC
 **										BOEJ-4631 Add Reason Cert Not Required
 **		7/30/2020	Dusan				BOEJ-4639 Add Latest Revision
+**		1/16/2022   Dusan				IES-174 Add Contract Data to the report
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -306,6 +302,23 @@ SELECT V.[ProposalID]
 	 ,V.MaterialPOC
 	 ,V.SubcontractsPOC
 	 ,V.IsLatestVersion
+	 -- Proposal Contract Data
+	 ,V.ContractsPreviouslySubmittedRomTrackingNumber
+	 ,V.ContractsPreviouslySubmittedRomDate
+	 ,V.ContractsPreviouslySubmittedRomValue
+	 ,V.ContractsCustomerSubmittalDate
+	 ,V.ContractsCorrespondLogNumber
+	 ,V.ContractsFinalNegotiatedValue
+	 ,V.ContractsFinalNegotiatedDate
+	 -- Proposal Offer Data
+	 ,V.OfferCustomerOfferAmount
+	 ,V.OfferCustomerOfferDate
+	 ,V.OfferLMCounterOfferDate
+	 ,V.OfferLMCounterOfferCost
+	 ,V.OfferLMCounterOfferCOM
+	 ,V.OfferLMCounterOfferProfitFee
+	 ,V.OfferLMCounterOfferTotalPrice
+	 ,V.OfferLMCounterOfferROS
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(

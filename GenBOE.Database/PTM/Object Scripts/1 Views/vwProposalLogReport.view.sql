@@ -6,25 +6,19 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 /******************************************************************************
 **		 
 **		Name: [vwProposalLogReport]
-**		Desc: 
+**		Desc: View that drives the Proposal Log Report
 **			
-**		
-**
-**		Auth: Unknown
-**		Date: Unknown
 *******************************************************************************
 **		Change History
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
-**		8/5/2019	twilson3			BOEJ-4274 Add LOB Manager Comments
-**		4/22/2020	ranzalon			BOEJ-4535 Add Lead Estimator Approval Date
 **		6/30/2020	Dusan				BOEJ-4639 Add Revision Type
 **										BOEJ-4590 Add Material POC and Subcontracts POC
 **										BOEJ-4631 Add Reason Cert Not Required
 **		7/30/2020	Dusan				BOEJ-4639 Add Latest Revision
-**      10/13/2021  Koovackal           IES-181 DB Work -Added Profit, Com,
-**                                      ProfitFeeWithCon
+**      10/13/2021  Koovackal           IES-181 DB Work -Added Profit, Com, ProfitFeeWithCon
+**		1/16/2022   Dusan				IES-174 Add Contract Data to the report
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -114,14 +108,14 @@ SELECT
 	CASE 
 		WHEN P.ProposalTrackingID IS NULL OR P.ProposalTrackingID = '' THEN P.ForecastedTrackingId
 		ELSE
-			CASE LEN(LEFT (IsNULL(ProposalTrackingID, ForecastedTrackingId), CHARINDEX ('-',IsNULL(ProposalTrackingID, ForecastedTrackingId)) -1))
+			CASE LEN(LEFT (IsNULL(P.ProposalTrackingID, P.ForecastedTrackingId), CHARINDEX ('-',IsNULL(P.ProposalTrackingID, P.ForecastedTrackingId)) -1))
 				WHEN 1 THEN P.ForecastedTrackingId
 				WHEN 4 THEN LTRIM(RTRIM(LEFT (IsNULL(P.ProposalTrackingID, P.ForecastedTrackingId), 10))) 
 				WHEN 2 THEN LTRIM(RTRIM(LEFT (IsNULL(P.ProposalTrackingID, P.ForecastedTrackingId), 8)))
 			END
 	END	AS MainProposalTrackingID,
-	CCPDRequired,
-	CostVolumeClassified,
+	P.CCPDRequired,
+	P.CostVolumeClassified,
 	ppsLU.ProgramProposalStatus,
 	pcLU.ProposalClass AS [Proposal Class],
 	CAST(P.[AgreementDate] AS DATE) AS [Agreement Date],
@@ -151,7 +145,24 @@ SELECT
 	CASE
 		WHEN p.ProposalStatusID = 8 THEN 'No'
 		ELSE 'Yes'
-	END AS IsLatestVersion
+	END AS IsLatestVersion,
+	-- Proposal Contract Data
+	previousRomProposal.ProposalTrackingID AS ContractsPreviouslySubmittedRomTrackingNumber,
+	previousRomChecklist.ProposalSubmittalDate AS ContractsPreviouslySubmittedRomDate,
+	previousRomChecklist.ISGSTotalPrice AS ContractsPreviouslySubmittedRomValue,
+	pCD.CustomerSubmittalDate AS ContractsCustomerSubmittalDate,
+	pCD.ContractsCorrespondLogNumber AS ContractsCorrespondLogNumber,
+	pCD.FinalNegotiatedValue AS ContractsFinalNegotiatedValue,
+	pCD.FinalNegotiatedDate AS ContractsFinalNegotiatedDate,	
+	-- Proposal Offer Data
+	pCo.CustomerOfferAmount AS OfferCustomerOfferAmount, 
+	pCo.CustomerOfferDate AS OfferCustomerOfferDate,
+	pCo.LMCounterOfferDate AS OfferLMCounterOfferDate,
+	pCo.LMCounterOfferCost AS OfferLMCounterOfferCost,
+	pCo.LMCounterOfferCOM AS OfferLMCounterOfferCOM,
+	pCo.LMCounterOfferProfitFee AS OfferLMCounterOfferProfitFee,
+	pCo.LMCounterOfferCost + pCo.LMCounterOfferCOM + pCo.LMCounterOfferProfitFee AS OfferLMCounterOfferTotalPrice,
+	CONVERT(DECIMAL, pCo.LMCounterOfferCOM + pCo.LMCounterOfferProfitFee) / (pCo.LMCounterOfferCost + pCo.LMCounterOfferCOM + pCo.LMCounterOfferProfitFee) AS OfferLMCounterOfferROS
   FROM [dbo].[Proposal] P
 	INNER JOIN [dbo].[ProgramAreaLU] PA ON P.ProgramAreaID = PA.ProgramAreaID
 	INNER JOIN [dbo].[LineOfBusinessLU] LOB ON P.LineOfBusinessID = LOB.LineOfBusinessID
@@ -268,4 +279,11 @@ SELECT
 			FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
 			WHERE PUR.RoleID = 7 
 	) SubcontractsPOC ON P.ProposalID = SubcontractsPOC.ProposalID
+
+	-- Proposal Contract / Offer Data
+	LEFT OUTER JOIN ProposalContractsData pCD ON pCD.ProposalID = p.ProposalID
+	LEFT OUTER JOIN Proposal previousRomProposal ON pCD.PreviouslySubmittedROM = previousRomProposal.ProposalID
+	LEFT OUTER JOIN ProposalChecklist previousRomChecklist ON pCD.PreviouslySubmittedROM = previousRomChecklist.ProposalID
+	LEFT OUTER JOIN ProposalContractsOffers pCo ON pCo.ProposalContractsOffersId = 
+								(SELECT MAX(ProposalContractsOffersId) FROM ProposalContractsOffers WHERE ContractsDataId = pCD.ProposalContractsDataId)
 GO
