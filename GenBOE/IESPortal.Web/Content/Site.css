@@ -99,10 +99,16 @@
     #logo-header img{
         height:200px;
     }
+    #ies-home .button-img {
+        width: 200px
+    }
 }
 @media only screen and (max-height: 875px) {
     #logo-header img {
         height: 160px;
+    }
+    #ies-home .button-img {
+        width: 150px;
     }
 }
 
