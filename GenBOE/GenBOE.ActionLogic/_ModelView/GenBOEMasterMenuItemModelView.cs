@@ -356,17 +356,17 @@ namespace GenBOE.ActionLogic.ModelView
         /// <summary>
         /// RMS Help URL - RMS BOE Gold Card
         /// </summary>
-        private const string RMS_HELP_GOLD_CARD_LINK = "COMPLIANCE/RMS_BOE_Gold%20Card.pptx?Web=1";
+        private const string RMS_HELP_GOLD_CARD_LINK = "SystemsResources/RMS_BOE_Gold%20Card.pptx";
 
         /// <summary>
         /// RMS Help URL - BOE Review Aid
         /// </summary>
-        private const string RMS_HELP_BOE_REVIEW_LINK = "COMPLIANCE/BOE_Review_Aide.docx?Web=1";
+        private const string RMS_HELP_BOE_REVIEW_LINK = "SystemsResources/BOE_Review_Aide.docx";
 
         /// <summary>
         /// RMS Help URL - BOE Writing Training
         /// </summary>
-        private const string RMS_HELP_BOE_WRITING_LINK = "COMPLIANCE/Training-BOE.pptx";
+        private const string RMS_HELP_BOE_WRITING_LINK = "Training/Training-BOE.pptx";
 
         /// <summary>
         /// Appends the help menu items to the menu
@@ -408,17 +408,17 @@ namespace GenBOE.ActionLogic.ModelView
                             new GenBOEMasterMenuItemModelView {
                                 securityPage = SecurityPage.Home,
                                 linkText = "RMS BOE Gold Card",
-                                linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLink") + RMS_HELP_GOLD_CARD_LINK)
+                                linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLinkNew") + RMS_HELP_GOLD_CARD_LINK)
                             },
                             new GenBOEMasterMenuItemModelView {
                                 securityPage = SecurityPage.Home,
                                 linkText = "BOE Review Aide",
-                                linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLink") + RMS_HELP_BOE_REVIEW_LINK)
+                                linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLinkNew") + RMS_HELP_BOE_REVIEW_LINK)
                             },
                             new GenBOEMasterMenuItemModelView {
                                 securityPage = SecurityPage.Home,
                                 linkText = "RMS BOE Writing Training",
-                                linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLink") + RMS_HELP_BOE_WRITING_LINK)
+                                linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLinkNew") + RMS_HELP_BOE_WRITING_LINK)
                             }
                         }
                     });
