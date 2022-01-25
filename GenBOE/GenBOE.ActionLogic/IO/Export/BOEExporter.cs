@@ -3018,10 +3018,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">Export inputs</param>
         private void PopulateResourceSummaryByResourceIDLaborCategoryLocationTable(SdtElement element, BOEExportModelView boeExportModelView, BOEExportInputs exportInputs)
         {
-            if (boeExportModelView == null)
-            {
-                throw new ArgumentNullException(nameof(boeExportModelView));
-            }
+            _ = boeExportModelView ?? throw new ArgumentNullException(nameof(boeExportModelView));
 
             if (boeExportModelView.TaskElements.Any(x => x.taskElementLabors.Any()))
             {
@@ -3084,10 +3081,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <returns>Collection of Resource Data</returns>
         protected virtual ICollection<ResourceSummaryRowData> GetTaskElementResourceDataWithLaborCategoryAndLocation(BOEExportModelView boeExportModelView, BOEExportInputs exportInputs)
         {
-            if (boeExportModelView == null)
-            {
-                throw new ArgumentNullException(nameof(boeExportModelView));
-            }
+            _ = boeExportModelView ?? throw new ArgumentNullException(nameof(boeExportModelView));
 
             ICollection<ResourceSummaryRowData> resourceData = new Collection<ResourceSummaryRowData>();
 
