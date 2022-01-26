@@ -155,6 +155,7 @@ namespace GenBOE.ActionLogic.IO.Export
         public const string FieldName_BOETitle = "BOE:BOETitle";
         public const string FieldName_GenBOEBOEID = "BOE:GenBOEBOEID";
         public const string FieldName_ResourceSummaryByResourceIDTable = "BOE:ResourceSummaryByResourceIDTable";
+        public const string FieldName_ResourceSummaryByResourceIDLaborCategoryLocationTable = "BOE:ResourceSummaryByResourceIDLaborCategoryLocationTable";
         public const string FieldName_ResourceSummaryContainer = "BOE:ResourceSummaryContainer";
         public const string FieldName_TaskID = "BOE:TaskID";
         public const string FieldName_GenBOETaskID = "BOE:GenBOETaskID";
@@ -306,6 +307,7 @@ namespace GenBOE.ActionLogic.IO.Export
         public const string FieldName_WSDescription = "WS:Description";
         private const string COMPANY_CUSTOM_FIELD = "Company";
         private const string LOCATION_CUSTOM_FIELD = "Location";
+        private const string LABOR_CATEGORY_CUSTOM_FIELD = "LaborCategory";
         private const string RIGHTS_IN_DATA_CUSTOM_FIELD = "Rights in Data";
         public const string FieldName_CustomField_RightsInData = "BOE:RightsInData";
 
@@ -1906,6 +1908,17 @@ namespace GenBOE.ActionLogic.IO.Export
                 }
             }
 
+            alias = boeElements.LastOrDefault(x => x.Val.Value == FieldName_ResourceSummaryByResourceIDLaborCategoryLocationTable);
+            if (alias != null)
+            {
+                SdtElement element = alias.Ancestors<SdtElement>().FirstOrDefault();
+                if (element != null)
+                {
+                    this.PopulateResourceSummaryByResourceIDLaborCategoryLocationTable(element, boeExportModelView, exportInputs);
+                    alias.RemoveIt();
+                }
+            }
+
             #region SOW Custom Field for Underseas Template (USS)
 
             alias = boeElements.LastOrDefault(x => x.Val.Value == FieldName_CustomField_SowId);
@@ -2998,6 +3011,41 @@ namespace GenBOE.ActionLogic.IO.Export
         }
 
         /// <summary>
+        /// Populate the version of the Resource Summary By Resource ID table that includes Labor Category and Location custom fields for RMS
+        /// </summary>
+        /// <param name="element">Element to set</param>
+        /// <param name="boeExportModelView">Export model view for the BOE</param>
+        /// <param name="exportInputs">Export inputs</param>
+        private void PopulateResourceSummaryByResourceIDLaborCategoryLocationTable(SdtElement element, BOEExportModelView boeExportModelView, BOEExportInputs exportInputs)
+        {
+            _ = boeExportModelView ?? throw new ArgumentNullException(nameof(boeExportModelView));
+
+            if (boeExportModelView.TaskElements.Any(x => x.taskElementLabors.Any()))
+            {
+                ICollection<ResourceSummaryRowData> resourceData = this.GetTaskElementResourceDataWithLaborCategoryAndLocation(boeExportModelView, exportInputs);
+
+                List<ResourceSummaryRowData> rollupData =
+                    resourceData
+                        .GroupBy(x => x.GroupKeyWithLaborCategoryAndLocation)
+                        .Select(g => new ResourceSummaryRowData
+                        {
+                            ResourceType = g.First().ResourceType,
+                            ResourceName = g.First().ResourceName,
+                            HoursTotal = g.Sum(x => x.HoursTotal),
+                            LaborCategory = g.First().LaborCategory,
+                            Location = g.First().Location
+                        })
+                        .OrderBy(x => x.GroupKeyWithLaborCategoryAndLocation).ToList();
+
+                this.PopulateResourceSummaryTable(element, rollupData);
+            }
+            else
+            {
+                element.RemoveIt();
+            }
+        }
+
+        /// <summary>
         /// Gets the resource data for the task elements using the task element labors of the export modelview
         /// </summary>
         /// <param name="boeExportModelView">BOE Export ModelView containing the task element labors</param>
@@ -3019,6 +3067,36 @@ namespace GenBOE.ActionLogic.IO.Export
                     ResourceName = taskElementLabor.ExportFields[FieldName_TaskTypeDescription],
                     CostTotal = taskElementLabor.Cost.HasValue ? taskElementLabor.Cost.Value : 0m,
                     HoursTotal = taskElementLabor.Hours.HasValue ? taskElementLabor.Hours.Value : 0m
+                });
+            }
+
+            return resourceData;
+        }
+
+        /// <summary>
+        /// Gets the resource data for the task elements using the task element labors of the export modelview
+        /// </summary>
+        /// <param name="boeExportModelView">BOE Export ModelView containing the task element labors</param>
+        /// <param name="exportInputs">Export Inputs</param>
+        /// <returns>Collection of Resource Data</returns>
+        protected virtual ICollection<ResourceSummaryRowData> GetTaskElementResourceDataWithLaborCategoryAndLocation(BOEExportModelView boeExportModelView, BOEExportInputs exportInputs)
+        {
+            _ = boeExportModelView ?? throw new ArgumentNullException(nameof(boeExportModelView));
+
+            ICollection<ResourceSummaryRowData> resourceData = new Collection<ResourceSummaryRowData>();
+
+            // This table only displays hours and custom fields, so Cost labors are excluded
+            foreach (BOEExportTaskElementLabor taskElementLabor in boeExportModelView.TaskElements.SelectMany(t => t.taskElementLabors).Where(x => x.Hours.HasValue))
+            {
+                // The custom field values for Labor Category and Location are stored in the Export Fields using GovtLaborCategory
+                // and KeyPersonnel from a previous item
+                resourceData.Add(new ResourceSummaryRowData()
+                {
+                    ResourceType = taskElementLabor.ExportFields[FieldName_ResourceElementOfCost],
+                    ResourceName = taskElementLabor.ExportFields[FieldName_TaskTypeDescription],
+                    HoursTotal = taskElementLabor.Hours.HasValue ? taskElementLabor.Hours.Value : 0m,
+                    LaborCategory = taskElementLabor.ExportFields[FieldName_GovtLaborCategory],
+                    Location = taskElementLabor.ExportFields[FieldName_KeyPersonnel]
                 });
             }
 
@@ -3100,6 +3178,8 @@ namespace GenBOE.ActionLogic.IO.Export
                         WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_MatSubIWTACost), matSubIwtaCost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this.CurrencyFormatter));
                         WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_OtherCost), otherCost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this.CurrencyFormatter));
                         WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, BOEExporterConstants.FieldName_Cost), cost.ToString(BOEExporterConstants.CURRENCY_FORMAT_NO_DECIMALS, this.CurrencyFormatter));
+                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, LABOR_CATEGORY_CUSTOM_FIELD), rollupRowData.LaborCategory);
+                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, LOCATION_CUSTOM_FIELD), rollupRowData.Location);
 
                         // add the row to the table
                         currentInsertionRow.InsertAfterSelf(tableRow);
