@@ -213,7 +213,6 @@ namespace IES.Common
                             metadata.BulkInsertStoredProcedureReturnsUpdateDate);
 
                         this.Log.Debug("End Insert: " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
-                        this.Log.Debug(JsonConvert.SerializeObject(insertResult));
                     }
                     catch (Exception ex)
                     {
