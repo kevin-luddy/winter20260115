@@ -1285,7 +1285,8 @@ namespace GenBOE.ActionLogic.IO.Import
                                     CustomFieldID = customField.Id,
                                     IsOpenEnded = customField.IsOpenEnded,
                                     OpenEndedValue = cfvDescription,
-                                    UpdateDate = DateTime.Now
+                                    // IES-665 - ensures database update time will not be less than creation
+                                    UpdateDate = DateTime.MinValue
                                 });
                             }
                         }
