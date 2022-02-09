@@ -151,7 +151,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="returnFilename">File name that will be passed to browser (for download)</param>
         /// <param name="templatePath">Server path to the export template</param>
         /// <param name="templateType">Template type</param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentNullException">if response or workspace is null</exception>
         public void ExportBOEsToZipFile(
             BOEExportInputs exportInputs,
             ICollection<BOEExportModelView> boeExportModelViews,
