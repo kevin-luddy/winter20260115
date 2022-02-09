@@ -15,6 +15,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using GenBOE.Dtos;
     using GenBOE.Objects;
     using IES.Common;
+    using IES.Common.Compression;
 
     /// <summary>
     /// This decorator determines the methods to be used for exporting templates in MST based on the template ID.
@@ -137,6 +138,102 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             //Same for both ISGS and MST Templates
             return this.mstExporter.ExportToExcelFile(templateFileLocation, workspace, blankTemplate);
+        }
+
+        /// <summary>
+        /// IES-707: Creates individual documents for reach BOE and compresses them into a single zip file.
+        /// </summary>
+        /// <param name="exportInputs">The export inputs</param>
+        /// <param name="boeExportModelViews">Collection of BOE View Models</param>
+        /// <param name="boeSummaryGridModelViews"></param>
+        /// <param name="workSpace">Full workspace</param>
+        /// <param name="response">What will ultimately be the response to the requester</param>
+        /// <param name="returnFilename">File name that will be passed to browser (for download)</param>
+        /// <param name="templatePath">Server path to the export template</param>
+        /// <param name="templateType">Template type</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public void ExportBOEsToZipFile(
+            BOEExportInputs exportInputs,
+            ICollection<BOEExportModelView> boeExportModelViews,
+            ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+            FullWorkspace workSpace,
+            HttpResponseBase response,
+            string returnFilename,
+            string templatePath,
+            ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
+        {
+            // TODO: make this shared
+            if (response == null)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            if (workSpace == null)
+            {
+                throw new ArgumentNullException(nameof(workSpace));
+            }
+
+            response.ContentType = "application/zip";  // TODO: make constant
+            response.Clear();
+            response.BufferOutput = true;
+            response.AppendHeader("Content-Disposition", $"attachment;filename={returnFilename}");
+
+
+            Dictionary<string, Stream> zipFiles = new Dictionary<string, Stream>();
+
+            if (boeExportModelViews != null)
+            {
+                foreach (BOEExportModelView model in boeExportModelViews)
+                {
+                    using (MemoryStream file = new MemoryStream())
+                    {
+                        // in order to reuse GenerateBOEToWordFileStream: we will create the expected list, but with just the single model
+                        ICollection<BOEExportModelView> boe = new List<BOEExportModelView>();
+                        boe.Add(model);
+
+                        string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle.Replace(" ", string.Empty), model.BoeID, workSpace.BOEExportSortByID);
+
+                        ExportBOEToWordFileStream(exportInputs, boe, boeSummaryGridModelViews, workSpace, templatePath, file, templateType);
+                        zipFiles.Add(fileName, new MemoryStream(file.ToArray()));
+                    }
+                }
+            }
+
+            // now, let's zip the files up
+            string savedZipFile = Zip.ZipFiles(zipFiles, HttpContext.Current.Server.MapPath("~/Templates/Export/")); // TODO: create constant for path
+
+            using (FileStream zipStream = new FileStream(savedZipFile, FileMode.Open))
+            {
+                zipStream.CopyTo(response.OutputStream);
+            }
+
+            // Remove zip from server now that we have the content in the response stream
+            File.Delete(savedZipFile);
+        }
+
+        /// <summary>
+        /// IES-707: Formats the BOE export file name depending on workspace sort order.
+        /// </summary>
+        /// <param name="wbsNumber"></param>
+        /// <param name="clin"></param>
+        /// <param name="boeTitle"></param>
+        /// <param name="boeId"></param>
+        /// <param name="exportSortOrder"></param>
+        /// <returns>String of properly formatted file name</returns>
+        private string GenerateExportFileName(string wbsNumber, string clin, string boeTitle, int boeId, int exportSortOrder)
+        {
+            string outFileName = string.Empty;
+
+            if (exportSortOrder == 1) // TODO: add constant to remove magic number
+            {
+                outFileName = $"{wbsNumber}_{clin}_{boeTitle}_{boeId}.docx";
+            }
+            else if (exportSortOrder == 2) // TODO: add constant to remove magic number
+            {
+                outFileName = $"{clin}_{wbsNumber}_{boeTitle}_{boeId}.docx";
+            }
+
+            return outFileName;
         }
     }
 }
