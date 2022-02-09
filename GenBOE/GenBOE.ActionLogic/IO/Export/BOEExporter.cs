@@ -424,6 +424,50 @@ namespace GenBOE.ActionLogic.IO.Export
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="exportInputs"></param>
+        /// <param name="boeExportModelViews"></param>
+        /// <param name="boeSummaryGridModelViews"></param>
+        /// <param name="ws"></param>
+        /// <param name="response"></param>
+        /// <param name="fileNameToDisplayToBrowser"></param>
+        /// <param name="templatePath"></param>
+        /// <param name="templateType"></param>
+        /// <exception cref="ArgumentNullException"></exception>
+        public void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+            FullWorkspace workSpace, HttpResponseBase response, string returnFilename, string templatePath, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
+        {
+            if (response == null)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            response.ContentType = CONTENT_TYPE_ZIP;
+            response.Clear();
+            response.BufferOutput = true;
+            response.AppendHeader("Content-Disposition", $"attachment;filename={returnFilename}");
+
+
+            Dictionary<string, Stream> zipFiles = new Dictionary<string, Stream>();
+
+            if (boeExportModelViews != null)
+            {
+                foreach (BOEExportModelView model in boeExportModelViews)
+                {
+                    using (MemoryStream file = new MemoryStream())
+                    {
+                        ICollection<BOEExportModelView> boe = new List<BOEExportModelView>();
+                        boe.Add(model);
+
+                        ExportBOEToWordFileStream(exportInputs, boe, boeSummaryGridModelViews, workSpace, templatePath, file, templateType);
+                        zipFiles.Add(model.BOETitle, new MemoryStream(file.ToArray()));
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Sets the WorkspaceDecimalPrecision and DefaultHoursFormat variables for the export
         /// </summary>
         /// <param name="workspace">Workspace containing BOE(s) in export</param>
