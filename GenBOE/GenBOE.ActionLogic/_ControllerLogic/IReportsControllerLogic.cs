@@ -49,8 +49,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="exportInputs">the export inputs</param>
         /// <param name="boeExportModelViews">the boe export model views</param>
         /// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
+        /// <param name="chunkedOutput">Should the output be broken into chunks and zipped</param>
         void ExportAllBOEsReport(FullWorkspace workspace, ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool isCustomExport,
-            WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, List<BOESummaryGridModelView> boeSummaryGridModelViews);
+            WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, List<BOESummaryGridModelView> boeSummaryGridModelViews,
+            bool chunkedOutput = false);
 
         /// <summary>
         /// Gets a boolen indicating if custom export is support per company configuration
