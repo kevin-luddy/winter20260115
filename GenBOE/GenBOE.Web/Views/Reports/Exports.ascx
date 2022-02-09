@@ -158,7 +158,7 @@
             }
 
             // The All BOEs and Workspace Data reports must be checked for discrepancies prior to being run.
-            if (reportID == '<%: (int)Reports.AllBOEs %>' || reportID == '<%: (int)Reports.WorkspaceData %>')
+            if (reportID == '<%: (int)Reports.AllBOEs %>' || reportID == '<%: (int)Reports.AllBOEsChunked %>' || reportID == '<%: (int)Reports.WorkspaceData %>')
             {
                 // Establish the function to run if there are no discrepancies or if the user elects to proceed.
                 var proceedWithExportFunction = function () {
