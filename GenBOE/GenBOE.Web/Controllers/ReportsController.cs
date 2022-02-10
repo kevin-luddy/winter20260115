@@ -1632,7 +1632,7 @@ namespace GenBOE.Web.Controllers
                 }
                 else if (reportID == (int)Reports.AllBOEsChunked)
                 {
-                    toReturn = this.ExportAllBOEsReport(ws, summarizeByCustomField, null, null, false, true);  // TODO: combine with above?
+                    toReturn = this.ExportAllBOEsReport(ws, summarizeByCustomField, null, null, false, true);
                 }
                 else if (reportID == (int)Reports.WorkspaceData)
                 {
