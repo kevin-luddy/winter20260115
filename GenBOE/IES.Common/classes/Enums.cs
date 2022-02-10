@@ -246,8 +246,8 @@ namespace IES.Common
         OffloadDetailedReport = 37,
         [Description("WBS Summary of Hours, ODC Costs")]
         WbsBoeReport = 38,
-        [Description("All BOEs broken down in chunks")]
-        AllBOEsChunked = 39
+        [Description("All BOEs broken down in segments")]
+        AllBOEsSegmented = 39
 
     }
 

@@ -55,7 +55,7 @@
                 '<%: WebConstants.ACTION_EXPORT %>',
                 'report/' + reportID);
 
-            if (reportID != <%:(int)Reports.AllBOEs%> && reportID != <%:(int)Reports.AllBOEsChunked%> && reportID != <%:(int)Reports.StandardReports%>) {
+            if (reportID != <%:(int)Reports.AllBOEs%> && reportID != <%:(int)Reports.AllBOEsSegmented%> && reportID != <%:(int)Reports.StandardReports%>) {
                 // Remove the old hidden iFrame, if it exists
                 $('#Exports-DownloadTarget').remove();
 
@@ -95,7 +95,7 @@
     ExportsWidget.ConfirmExport = function (reportName, reportID, ssrsUrl) {
         GenSession.confirmDialog("Export Report", "The export is a long running process. <br/>Please do not leave this page until the file is available to open/save. <br/>Continue with this export? <br/><br/>Please refrain from clicking the export link multiple times until the download is complete.",
             function () {
-                if ((reportID === '3' || reportID === '<%:(int)Reports.AllBOEsChunked%>' || reportID === '14' || reportID === '15' || reportID === '<%:(int)Reports.StandardReports%>' || reportID === '<%:(int)Reports.WbsBoeReport%>')) {
+                if ((reportID === '3' || reportID === '<%:(int)Reports.AllBOEsSegmented%>' || reportID === '14' || reportID === '15' || reportID === '<%:(int)Reports.StandardReports%>' || reportID === '<%:(int)Reports.WbsBoeReport%>')) {
                     ExportsWidget.doExport(reportName, reportID);
                 } else {
                     ExportsWidget.doExport(reportName, reportID, ssrsUrl);
@@ -158,7 +158,7 @@
             }
 
             // The All BOEs and Workspace Data reports must be checked for discrepancies prior to being run.
-            if (reportID == '<%: (int)Reports.AllBOEs %>' || reportID == '<%: (int)Reports.AllBOEsChunked %>' || reportID == '<%: (int)Reports.WorkspaceData %>')
+            if (reportID == '<%: (int)Reports.AllBOEs %>' || reportID == '<%: (int)Reports.AllBOEsSegmented %>' || reportID == '<%: (int)Reports.WorkspaceData %>')
             {
                 // Establish the function to run if there are no discrepancies or if the user elects to proceed.
                 var proceedWithExportFunction = function () {

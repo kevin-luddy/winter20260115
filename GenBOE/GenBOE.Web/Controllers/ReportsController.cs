@@ -232,7 +232,7 @@ namespace GenBOE.Web.Controllers
                             }
                         }
 
-                        if (theModelView.ReportID == (int)Reports.AllBOEsChunked)
+                        if (theModelView.ReportID == (int)Reports.AllBOEsSegmented)
                         {
                             WorkspaceExportFormatDTO exportFormat = ws.WorkspaceExportFormats.FirstOrDefault(x => x.Id == ws.TemplateID);
                             theModelView.Description = String.Format(theModelView.Description, exportFormat.ExportFormatName);
@@ -274,11 +274,11 @@ namespace GenBOE.Web.Controllers
             // find the position of "allBOEs"
             int? pos = theModelViews.Select((report, index) => new { report, index }).FirstOrDefault(x => x.report.ReportID == (int)Reports.AllBOEs)?.index;
             // insert Chunked Report after it if it exists
-            if (pos != null && theModelViews.FirstOrDefault(x => x.ReportID == (int)Reports.AllBOEsChunked) != null)
+            if (pos != null && theModelViews.FirstOrDefault(x => x.ReportID == (int)Reports.AllBOEsSegmented) != null)
             {
                 int newPosition = (int)pos + 1;
-                theModelViews.Insert(newPosition, theModelViews.First(x => x.ReportID == (int)Reports.AllBOEsChunked));
-                int? oldPos = theModelViews.Select((report, index) => new { report, index }).LastOrDefault(x => x.report.ReportID == (int)Reports.AllBOEsChunked)?.index;
+                theModelViews.Insert(newPosition, theModelViews.First(x => x.ReportID == (int)Reports.AllBOEsSegmented));
+                int? oldPos = theModelViews.Select((report, index) => new { report, index }).LastOrDefault(x => x.report.ReportID == (int)Reports.AllBOEsSegmented)?.index;
                 theModelViews.RemoveAt(oldPos.Value);
             }
 
@@ -1504,10 +1504,10 @@ namespace GenBOE.Web.Controllers
         /// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template.</param>
         /// <param name="selectedBOEs">List of BOEs to be included in the report; if null, then include ALL</param>
         /// <param name="selectedComponents">List of resources to be included in the report; if null, then include ALL</param>
-        /// <param name="chunked">Whether the output should be broken into chunks and zipped</param>
+        /// <param name="segmented">Whether the output should be broken into segments and zipped</param>
         /// <returns>Contents of the ALL BOEs report</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
-        private ActionResult ExportAllBOEsReport(FullWorkspace workspace, string summarizeByCustomField, ICollection<int> selectedBOEs, ICollection<BoeCustomReportComponent> selectedComponents, bool custom, bool chunked = false)
+        private ActionResult ExportAllBOEsReport(FullWorkspace workspace, string summarizeByCustomField, ICollection<int> selectedBOEs, ICollection<BoeCustomReportComponent> selectedComponents, bool custom, bool segmented = false)
         {
             ActionResult result = new EmptyResult();
 
@@ -1522,7 +1522,7 @@ namespace GenBOE.Web.Controllers
                 this.reportsControllerLogic.PrepareAllBOEsReport(workspace, IsSubcontractorUser(workspace), summarizeByCustomField, selectedBOEs, ViewData, out isCustomExport, 
                     out wsExportFormatDTO, out exportInputs, out boeExportModelViews, out boeSummaryGridModelViews, custom);
                 this.reportsControllerLogic.ExportAllBOEsReport(workspace, selectedComponents, Response, isCustomExport, wsExportFormatDTO, exportInputs, 
-                    boeExportModelViews, boeSummaryGridModelViews, chunked);
+                    boeExportModelViews, boeSummaryGridModelViews, segmented);
             }
             catch (GenValidationException ex)
             {
@@ -1630,7 +1630,7 @@ namespace GenBOE.Web.Controllers
                 {
                     toReturn = this.ExportAllBOEsReport(ws, summarizeByCustomField, null, null, false);
                 }
-                else if (reportID == (int)Reports.AllBOEsChunked)
+                else if (reportID == (int)Reports.AllBOEsSegmented)
                 {
                     toReturn = this.ExportAllBOEsReport(ws, summarizeByCustomField, null, null, false, true);
                 }

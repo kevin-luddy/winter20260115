@@ -33,6 +33,7 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="response">What will ultimately be the response to the requester</param>
 		/// <param name="returnFilename">File name that will be passed to browser (for download)</param>
 		/// <param name="templatePath">Server path to the export template</param>
+		/// <param name="getWordDocStream">Generic function that will convert the BOE data to a Word document</param>
 		/// <param name="templateType">Template type</param>
 		/// <exception cref="ArgumentNullException">if response or workspace is null</exception>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
@@ -94,7 +95,7 @@ namespace GenBOE.ActionLogic.Common
 		/// <param name="selectedComponents"></param>
 		/// <param name="returnFilename">File name that will be passed to browser (for download)</param>
 		/// <param name="exportFormat">Export Formatting DTO</param>
-		/// <param name="getWordDocStream">Function that will convert the BOE data to a Word document</param>
+		/// <param name="getWordDocStream">Generic function that will convert the BOE data to a Word document</param>
 		/// <typeparam name="T">Generic representing the return value of the passed in function</typeparam>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006: Do not nest generic types in member signatures")]
 		public static void ExportCustomComponentBOEsToZipFile<T>(
