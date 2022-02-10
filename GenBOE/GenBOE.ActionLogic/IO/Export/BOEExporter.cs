@@ -464,12 +464,13 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
         /// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
-        /// <param name="ws">Full WS</param>
+        /// <param name="ws">Full Workspace</param>
         /// <param name="templatePath">Physical path of the template to copy and populate.</param>
         /// <param name="returnStream">Output stream</param>
         /// <param name="templateType">Template type</param>
-        /// <exception cref="System.ArgumentNullException">workspace</exception>
+        /// <exception cref="System.ArgumentNullException">if exportInputs is null</exception>
         /// <exception cref="GeneralAppException"></exception>
+        /// <returns>true if successful, exception otherwise</returns>
         public bool ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
             FullWorkspace ws, string templatePath, Stream returnStream, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
         {
