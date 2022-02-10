@@ -18,6 +18,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using DocumentFormat.OpenXml;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Wordprocessing;
+    using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.ModelView;
@@ -438,33 +439,7 @@ namespace GenBOE.ActionLogic.IO.Export
         public void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
             FullWorkspace workSpace, HttpResponseBase response, string returnFilename, string templatePath, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
         {
-            if (response == null)
-            {
-                throw new ArgumentNullException(nameof(response));
-            }
-
-            response.ContentType = CONTENT_TYPE_ZIP;
-            response.Clear();
-            response.BufferOutput = true;
-            response.AppendHeader("Content-Disposition", $"attachment;filename={returnFilename}");
-
-
-            Dictionary<string, Stream> zipFiles = new Dictionary<string, Stream>();
-
-            if (boeExportModelViews != null)
-            {
-                foreach (BOEExportModelView model in boeExportModelViews)
-                {
-                    using (MemoryStream file = new MemoryStream())
-                    {
-                        ICollection<BOEExportModelView> boe = new List<BOEExportModelView>();
-                        boe.Add(model);
-
-                        ExportBOEToWordFileStream(exportInputs, boe, boeSummaryGridModelViews, workSpace, templatePath, file, templateType);
-                        zipFiles.Add(model.BOETitle, new MemoryStream(file.ToArray()));
-                    }
-                }
-            }
+            AllBOEExportHelper.ExportBOEsToZipFile<bool>(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workSpace, response, returnFilename, templatePath, ExportBOEToWordFileStream);
         }
 
         /// <summary>
@@ -496,7 +471,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="templateType">Template type</param>
         /// <exception cref="System.ArgumentNullException">workspace</exception>
         /// <exception cref="GeneralAppException"></exception>
-        public void ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+        public bool ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
             FullWorkspace ws, string templatePath, Stream returnStream, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
         {
             if (exportInputs == null)
@@ -514,6 +489,8 @@ namespace GenBOE.ActionLogic.IO.Export
                     this.PopulateDataExportBOE(exportInputs, boeExportModelViews, boeSummaryGridModelViews, ws, templateType, document);
                 }, returnStream);
             }
+
+            return true;
         }
 
         /// <summary>
@@ -7175,6 +7152,11 @@ namespace GenBOE.ActionLogic.IO.Export
 
             return htmlText.Replace("<p", "<div").Replace("</p>", "</div>");
         }
+
+        //void IBOEExporter.ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace ws, string templatePath, Stream returnStream, ExcelReportTemplateType templateType)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         #endregion Private Functions
     }
