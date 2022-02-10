@@ -78,6 +78,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="templateType">Template type</param>
         /// <exception cref="System.ArgumentNullException">workspace</exception>
         /// <exception cref="GeneralAppException"></exception>
+        /// <returns>true if successful, exception otherwise</returns>
         bool ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
             FullWorkspace ws, string templatePath, Stream returnStream, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet);
 

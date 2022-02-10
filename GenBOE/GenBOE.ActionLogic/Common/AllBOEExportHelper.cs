@@ -68,8 +68,7 @@ namespace GenBOE.ActionLogic.Common
 					using (MemoryStream file = new MemoryStream())
 					{
 						// in order to reuse GenerateBOEToWordFileStream: we will create the expected list, but with just the single model
-						ICollection<BOEExportModelView> boe = new List<BOEExportModelView>();
-						boe.Add(model);
+						ICollection<BOEExportModelView> boe = new List<BOEExportModelView>() { model };
 
 						string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle.Replace(" ", string.Empty), model.BoeID, workSpace.BOEExportSortByID);
 
@@ -137,8 +136,7 @@ namespace GenBOE.ActionLogic.Common
 					using (MemoryStream file = new MemoryStream())
 					{
 						// in order to reuse GenerateBOEToWordFileStream: we will create the expected list, but with just the single model
-						ICollection<BOEExportModelView> boe = new List<BOEExportModelView>();
-						boe.Add(model);
+						ICollection<BOEExportModelView> boe = new List<BOEExportModelView>() { model };
 
 						string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle.Replace(" ", string.Empty), model.BoeID, workSpace.BOEExportSortByID);
 

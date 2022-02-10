@@ -128,6 +128,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="components">List of selected components</param>
         /// <param name="returnStream">Output stream</param>
         /// <param name="exportFormat">Export file info</param>
+        /// <returns>true if successful, exception otherwise</returns>
         public bool ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace ws,
             ICollection<BoeCustomReportComponent> components, Stream returnStream, WorkspaceExportFormatDTO exportFormat)
         {

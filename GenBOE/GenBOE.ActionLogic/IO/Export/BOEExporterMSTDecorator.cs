@@ -114,6 +114,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="templatePath">Physical path of the template to copy and populate.</param>
         /// <param name="returnStream">Output stream</param>
         /// <param name="templateType">Template type</param>
+        /// <returns>true if successful</returns>
         public bool ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
             FullWorkspace ws, string templatePath, Stream returnStream, ExcelReportTemplateType templateType)
         {
