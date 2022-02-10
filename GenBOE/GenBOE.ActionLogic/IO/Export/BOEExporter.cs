@@ -7151,12 +7151,6 @@ namespace GenBOE.ActionLogic.IO.Export
 
             return htmlText.Replace("<p", "<div").Replace("</p>", "</div>");
         }
-
-        //void IBOEExporter.ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace ws, string templatePath, Stream returnStream, ExcelReportTemplateType templateType)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
         #endregion Private Functions
     }
 
