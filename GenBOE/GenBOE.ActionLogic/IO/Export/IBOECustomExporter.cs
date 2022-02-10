@@ -67,7 +67,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="boeExportModelViews">Collection of BOE View Models</param>
         /// <param name="boeSummaryGridModelViews"></param>
         /// <param name="workSpace">Full workspace</param>
-        /// <param name="selectedComponents"></param>
+        /// <param name="selectedComponents">Custom components</param>
         /// <param name="httpResponse">What will ultimately be the response to the requester</param>
         /// <param name="returnFilename">File name that will be passed to browser (for download)</param>
         /// <param name="exportFormat">Export parameters</param>
