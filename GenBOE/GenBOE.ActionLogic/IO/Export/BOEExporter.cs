@@ -18,6 +18,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using DocumentFormat.OpenXml;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Wordprocessing;
+    using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.ModelView;
@@ -424,6 +425,23 @@ namespace GenBOE.ActionLogic.IO.Export
         }
 
         /// <summary>
+        /// Export the BOEs as individual files and zip into single download.
+        /// </summary>
+        /// <param name="exportInputs">The export inputs</param>
+        /// <param name="boeExportModelViews">Collection of BOE View Models</param>
+        /// <param name="boeSummaryGridModelViews"></param>
+        /// <param name="ws">Full workspace</param>
+        /// <param name="response">What will ultimately be the response to the requester</param>
+        /// <param name="fileNameToDisplayToBrowser">File name that will be passed to browser (for download)</param>
+        /// <param name="templatePath">Path to the export template</param>
+        /// <param name="templateType">Type of the export template</param>
+        public void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+            FullWorkspace workSpace, HttpResponseBase response, string returnFilename, string templatePath, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
+        {
+            AllBOEExportHelper.ExportBOEsToZipFile<bool>(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workSpace, response, returnFilename, templatePath, ExportBOEToWordFileStream);
+        }
+
+        /// <summary>
         /// Sets the WorkspaceDecimalPrecision and DefaultHoursFormat variables for the export
         /// </summary>
         /// <param name="workspace">Workspace containing BOE(s) in export</param>
@@ -446,13 +464,14 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelViews">Object to hold most of the BOE's data</param>
         /// <param name="boeSummaryGridModelViews">Object to hold data for the BOE Summary Grid</param>
-        /// <param name="ws">Full WS</param>
+        /// <param name="ws">Full Workspace</param>
         /// <param name="templatePath">Physical path of the template to copy and populate.</param>
         /// <param name="returnStream">Output stream</param>
         /// <param name="templateType">Template type</param>
-        /// <exception cref="System.ArgumentNullException">workspace</exception>
+        /// <exception cref="System.ArgumentNullException">if exportInputs is null</exception>
         /// <exception cref="GeneralAppException"></exception>
-        public void ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+        /// <returns>true if successful, exception otherwise</returns>
+        public bool ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
             FullWorkspace ws, string templatePath, Stream returnStream, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
         {
             if (exportInputs == null)
@@ -470,6 +489,8 @@ namespace GenBOE.ActionLogic.IO.Export
                     this.PopulateDataExportBOE(exportInputs, boeExportModelViews, boeSummaryGridModelViews, ws, templateType, document);
                 }, returnStream);
             }
+
+            return true;
         }
 
         /// <summary>
@@ -7131,7 +7152,6 @@ namespace GenBOE.ActionLogic.IO.Export
 
             return htmlText.Replace("<p", "<div").Replace("</p>", "</div>");
         }
-
         #endregion Private Functions
     }
 

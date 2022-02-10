@@ -19,6 +19,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using DocumentFormat.OpenXml;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Wordprocessing;
+    using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.ModelView;
@@ -127,7 +128,8 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="components">List of selected components</param>
         /// <param name="returnStream">Output stream</param>
         /// <param name="exportFormat">Export file info</param>
-        public void ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace ws,
+        /// <returns>true if successful, exception otherwise</returns>
+        public bool ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace ws,
             ICollection<BoeCustomReportComponent> components, Stream returnStream, WorkspaceExportFormatDTO exportFormat)
         {
             if (exportInputs == null)
@@ -162,6 +164,8 @@ namespace GenBOE.ActionLogic.IO.Export
                     }, returnStream);
                 }
             }
+
+            return true;
         }
 
         /// <summary>
@@ -5873,6 +5877,30 @@ namespace GenBOE.ActionLogic.IO.Export
 
         }
 
+        /// <summary>
+        /// Export the BOEs as individual files and zip into single download.
+        /// </summary>
+        /// <param name="exportInputs">The export inputs</param>
+        /// <param name="boeExportModelViews">Collection of BOE View Models</param>
+        /// <param name="boeSummaryGridModelViews"></param>
+        /// <param name="workSpace">Full workspace</param>
+        /// <param name="components">Custom components</param>
+        /// <param name="response">What will ultimately be the response to the requester</param>
+        /// <param name="returnFilename">File name that will be passed to browser (for download)</param>
+        /// <param name="exportFormat">Export format DTO</param>
+        public void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace workSpace, ICollection<BoeCustomReportComponent> components, HttpResponseBase response, string returnFilename, WorkspaceExportFormatDTO exportFormat)
+        {
+            AllBOEExportHelper.ExportCustomComponentBOEsToZipFile<bool>(
+                exportInputs,
+                boeExportModelViews,
+                boeSummaryGridModelViews,
+                workSpace,
+                response,
+                components,
+                returnFilename,
+                exportFormat,
+                ExportBOEToWordFileStream);
+        }
         #endregion
     }
 }
