@@ -47,15 +47,8 @@ namespace GenBOE.ActionLogic.Common
 			Func<BOEExportInputs, ICollection<BOEExportModelView>, ICollection<BOESummaryGridModelView>, FullWorkspace, string, Stream, ExcelReportTemplateType, T> getWordDocStream,
 			ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
 		{
-			if (response == null)
-			{
-				throw new ArgumentNullException(nameof(response));
-			}
-
-			if (workSpace == null)
-			{
-				throw new ArgumentNullException(nameof(workSpace));
-			}
+			_ = response ?? throw new ArgumentNullException(nameof(response));
+			_ = workSpace ?? throw new ArgumentNullException(nameof(workSpace));
 
 			SetResponseProperties(response, returnFilename);
 
@@ -115,15 +108,8 @@ namespace GenBOE.ActionLogic.Common
 			WorkspaceExportFormatDTO exportFormat,
 			Func<BOEExportInputs, ICollection<BOEExportModelView>, ICollection<BOESummaryGridModelView>, FullWorkspace, ICollection<BoeCustomReportComponent>, Stream, WorkspaceExportFormatDTO, T> getWordDocStream)
 		{
-			if (response == null)
-			{
-				throw new ArgumentNullException(nameof(response));
-			}
-
-			if (workSpace == null)
-			{
-				throw new ArgumentNullException(nameof(workSpace));
-			}
+			_ = response ?? throw new ArgumentNullException(nameof(response));
+			_ = workSpace ?? throw new ArgumentNullException(nameof(workSpace));
 
 			SetResponseProperties(response, returnFilename);
 
