@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
-//using GenBOE.Web.Common;
 using GenBOE.ActionLogic.Common;
 using GenBOE.ActionLogic.IO.Export.BOE;
 using GenBOE.Dtos;
@@ -167,10 +166,5 @@ namespace GenBOE.ActionLogic.IO.Export
         {
             AllBOEExportHelper.ExportBOEsToZipFile<bool>(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workSpace, response, returnFilename, templatePath, ExportBOEToWordFileStream);
         }
-
-        //void IBOEExporter.ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace ws, string templatePath, Stream returnStream, ExcelReportTemplateType templateType)
-        //{
-        //    throw new NotImplementedException();
-        //}
     }
 }
