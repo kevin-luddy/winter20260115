@@ -51,7 +51,7 @@ namespace GenBOE.ActionLogic.IO.Export
             FullWorkspace ws, HttpResponseBase response, string fileNameToDisplayToBrowser, string templatePath, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet);
 
         /// <summary>
-        /// IES-707: Creates individual documents for reach BOE and compresses them into a single zip file.
+        /// IES-707: Creates individual word documents for each BOE and compresses them into a single zip file.
         /// </summary>
         /// <param name="exportInputs">The export inputs</param>
         /// <param name="boeExportModelViews">Collection of BOE View Models</param>
@@ -78,7 +78,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="templateType">Template type</param>
         /// <exception cref="System.ArgumentNullException">workspace</exception>
         /// <exception cref="GeneralAppException"></exception>
-        void ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+        bool ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
             FullWorkspace ws, string templatePath, Stream returnStream, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet);
 
         /// <summary>
