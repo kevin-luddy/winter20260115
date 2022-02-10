@@ -114,7 +114,7 @@ namespace GenBOE.ActionLogic.Common
 			ICollection<BoeCustomReportComponent> selectedComponents,
 			string returnFilename,			
 			WorkspaceExportFormatDTO exportFormat,
-            Func<BOEExportInputs, ICollection<BOEExportModelView>, ICollection<BOESummaryGridModelView>, FullWorkspace, ICollection<BoeCustomReportComponent>, Stream, WorkspaceExportFormatDTO, T> getWordDocStream)
+			Func<BOEExportInputs, ICollection<BOEExportModelView>, ICollection<BOESummaryGridModelView>, FullWorkspace, ICollection<BoeCustomReportComponent>, Stream, WorkspaceExportFormatDTO, T> getWordDocStream)
 		{
 			if (response == null)
 			{
