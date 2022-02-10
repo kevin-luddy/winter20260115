@@ -4,19 +4,20 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Web;
+//using GenBOE.Web.Common;
+using GenBOE.ActionLogic.Common;
+using GenBOE.ActionLogic.IO.Export.BOE;
+using GenBOE.Dtos;
+using GenBOE.Objects;
+using IES.Common;
+
 namespace GenBOE.ActionLogic.IO.Export
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Web;
-    using GenBOE.ActionLogic.IO.Export.BOE;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common;
-    using IES.Common.Compression;
-
     /// <summary>
     /// This decorator determines the methods to be used for exporting templates in MST based on the template ID.
     /// Due to ISGS templates being used in MST, it must be determined which version of certain methods is to be used due to certain ones being overridden for MST templates.
@@ -114,7 +115,7 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="templatePath">Physical path of the template to copy and populate.</param>
         /// <param name="returnStream">Output stream</param>
         /// <param name="templateType">Template type</param>
-        public void ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
+        public bool ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
             FullWorkspace ws, string templatePath, Stream returnStream, ExcelReportTemplateType templateType)
         {
             if((int)templateType < 1001)
@@ -125,6 +126,8 @@ namespace GenBOE.ActionLogic.IO.Export
             {
                 this.mstExporter.ExportBOEToWordFileStream(exportInputs, boeExportModelViews, boeSummaryGridModelViews, ws, templatePath, returnStream, templateType);
             }
+
+            return true;
         }
 
         /// <summary>
@@ -162,78 +165,12 @@ namespace GenBOE.ActionLogic.IO.Export
             string templatePath,
             ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
         {
-            // TODO: make this shared
-            if (response == null)
-            {
-                throw new ArgumentNullException(nameof(response));
-            }
-
-            if (workSpace == null)
-            {
-                throw new ArgumentNullException(nameof(workSpace));
-            }
-
-            response.ContentType = "application/zip";  // TODO: make constant
-            response.Clear();
-            response.BufferOutput = true;
-            response.AppendHeader("Content-Disposition", $"attachment;filename={returnFilename}");
-
-
-            Dictionary<string, Stream> zipFiles = new Dictionary<string, Stream>();
-
-            if (boeExportModelViews != null)
-            {
-                foreach (BOEExportModelView model in boeExportModelViews)
-                {
-                    using (MemoryStream file = new MemoryStream())
-                    {
-                        // in order to reuse GenerateBOEToWordFileStream: we will create the expected list, but with just the single model
-                        ICollection<BOEExportModelView> boe = new List<BOEExportModelView>();
-                        boe.Add(model);
-
-                        string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle.Replace(" ", string.Empty), model.BoeID, workSpace.BOEExportSortByID);
-
-                        ExportBOEToWordFileStream(exportInputs, boe, boeSummaryGridModelViews, workSpace, templatePath, file, templateType);
-                        zipFiles.Add(fileName, new MemoryStream(file.ToArray()));
-                    }
-                }
-            }
-
-            // now, let's zip the files up
-            string savedZipFile = Zip.ZipFiles(zipFiles, HttpContext.Current.Server.MapPath("~/Templates/Export/")); // TODO: create constant for path
-
-            using (FileStream zipStream = new FileStream(savedZipFile, FileMode.Open))
-            {
-                zipStream.CopyTo(response.OutputStream);
-            }
-
-            // Remove zip from server now that we have the content in the response stream
-            File.Delete(savedZipFile);
+            AllBOEExportHelper.ExportBOEsToZipFile<bool>(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workSpace, response, returnFilename, templatePath, ExportBOEToWordFileStream);
         }
 
-        /// <summary>
-        /// IES-707: Formats the BOE export file name depending on workspace sort order.
-        /// </summary>
-        /// <param name="wbsNumber"></param>
-        /// <param name="clin"></param>
-        /// <param name="boeTitle"></param>
-        /// <param name="boeId"></param>
-        /// <param name="exportSortOrder"></param>
-        /// <returns>String of properly formatted file name</returns>
-        private string GenerateExportFileName(string wbsNumber, string clin, string boeTitle, int boeId, int exportSortOrder)
-        {
-            string outFileName = string.Empty;
-
-            if (exportSortOrder == 1) // TODO: add constant to remove magic number
-            {
-                outFileName = $"{wbsNumber}_{clin}_{boeTitle}_{boeId}.docx";
-            }
-            else if (exportSortOrder == 2) // TODO: add constant to remove magic number
-            {
-                outFileName = $"{clin}_{wbsNumber}_{boeTitle}_{boeId}.docx";
-            }
-
-            return outFileName;
-        }
+        //void IBOEExporter.ExportBOEToWordFileStream(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews, FullWorkspace ws, string templatePath, Stream returnStream, ExcelReportTemplateType templateType)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
