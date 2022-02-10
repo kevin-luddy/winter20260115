@@ -11,6 +11,7 @@ namespace GenBOE.ActionLogic.Common
     public static class ImportExportConstants
     {
         public static readonly string PATH_TO_WORKOFFLINE_TEMPLATE = "~/Templates/Export/Workoffline.xlsm";
+        public static readonly string EXPORT_PATH = "~/Templates/Export/";
 
         // worksheet names
         public static readonly string OPTIONS_LISTS = "Options Lists";

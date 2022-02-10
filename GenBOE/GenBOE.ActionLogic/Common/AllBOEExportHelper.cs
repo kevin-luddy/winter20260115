@@ -80,7 +80,7 @@ namespace GenBOE.ActionLogic.Common
 			}
 
 			// now, let's zip the files up
-			string savedZipFile = Zip.ZipFiles(zipFiles, HttpContext.Current.Server.MapPath("~/Templates/Export/")); // TODO: create constant for path
+			string savedZipFile = Zip.ZipFiles(zipFiles, HttpContext.Current.Server.MapPath(ImportExportConstants.EXPORT_PATH));
 
 			using (FileStream zipStream = new FileStream(savedZipFile, FileMode.Open))
 			{
@@ -149,7 +149,7 @@ namespace GenBOE.ActionLogic.Common
 			}
 
 			// now, let's zip the files up
-			string savedZipFile = Zip.ZipFiles(zipFiles, HttpContext.Current.Server.MapPath("~/Templates/Export/")); // TODO: create constant for path
+			string savedZipFile = Zip.ZipFiles(zipFiles, HttpContext.Current.Server.MapPath(ImportExportConstants.EXPORT_PATH));
 
 			using (FileStream zipStream = new FileStream(savedZipFile, FileMode.Open))
 			{
