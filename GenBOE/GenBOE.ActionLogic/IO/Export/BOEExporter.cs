@@ -425,17 +425,16 @@ namespace GenBOE.ActionLogic.IO.Export
         }
 
         /// <summary>
-        /// 
+        /// Export the BOEs as individual files and zip into single download.
         /// </summary>
-        /// <param name="exportInputs"></param>
-        /// <param name="boeExportModelViews"></param>
+        /// <param name="exportInputs">The export inputs</param>
+        /// <param name="boeExportModelViews">Collection of BOE View Models</param>
         /// <param name="boeSummaryGridModelViews"></param>
-        /// <param name="ws"></param>
-        /// <param name="response"></param>
-        /// <param name="fileNameToDisplayToBrowser"></param>
-        /// <param name="templatePath"></param>
-        /// <param name="templateType"></param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <param name="ws">Full workspace</param>
+        /// <param name="response">What will ultimately be the response to the requester</param>
+        /// <param name="fileNameToDisplayToBrowser">File name that will be passed to browser (for download)</param>
+        /// <param name="templatePath">Path to the export template</param>
+        /// <param name="templateType">Type of the export template</param>
         public void ExportBOEsToZipFile(BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, ICollection<BOESummaryGridModelView> boeSummaryGridModelViews,
             FullWorkspace workSpace, HttpResponseBase response, string returnFilename, string templatePath, ExcelReportTemplateType templateType = ExcelReportTemplateType.NotSet)
         {
