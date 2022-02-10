@@ -271,6 +271,17 @@ namespace GenBOE.Web.Controllers
 
             this.ViewData["WorkspaceAdmins"] = adminNames;
 
+            // find the position of "allBOEs"
+            int? pos = theModelViews.Select((report, index) => new { report, index }).FirstOrDefault(x => x.report.ReportID == (int)Reports.AllBOEs)?.index;
+            // insert Chunked Report after it if it exists
+            if (pos != null && theModelViews.FirstOrDefault(x => x.ReportID == (int)Reports.AllBOEsChunked) != null)
+            {
+                int newPosition = (int)pos + 1;
+                theModelViews.Insert(newPosition, theModelViews.First(x => x.ReportID == (int)Reports.AllBOEsChunked));
+                int? oldPos = theModelViews.Select((report, index) => new { report, index }).LastOrDefault(x => x.report.ReportID == (int)Reports.AllBOEsChunked)?.index;
+                theModelViews.RemoveAt(oldPos.Value);
+            }
+
             ViewResult toReturn = View(WebConstants.VIEW_EXPORTS, theModelViews);
 
             // Finalize Action
