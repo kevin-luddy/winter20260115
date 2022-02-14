@@ -94,7 +94,7 @@ namespace IES.Common
         SOW = 5006,
         [Description("Level of Effort (LOE)")]
         LOE = 5007,
-        [Description("Subject Matter Expert (SME) Judgement")]
+        [Description("Subject Matter Expert (SME) Judgment")]
         SME = 5008,
         [Description("Non-Labor")]
         NonLabor = 5009

@@ -6,20 +6,19 @@
 
 namespace GenBOE.ActionLogic.Workspace.Creation
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using GenBOE.ActionLogic.BLL;
-    using GenBOE.ActionLogic.ModelView;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common;
-    using IES.Common.classes;
-    using Microsoft.Practices.ObjectBuilder2;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using GenBOE.ActionLogic.BLL;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using IES.Common;
+	using Microsoft.Practices.ObjectBuilder2;
 
-    public class WorkspaceCopier
+	public class WorkspaceCopier
     {
         private IWorkspaceVariableDTODataLoader _WorkspaceVariableLoader;
         private IPermissionsDTODataLoader _PermissionsLoader;
@@ -27,7 +26,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         private ICustomFieldDTODataLoader _CustomFieldDTODataLoader;
         private ICustomFieldValueDTODataLoader _CustomFieldValueDTODataLoader;
         private IBoeTaskElementDTODataLoader _BoeTaskElementLoader;
-        private ITravelDTODataLoader _TravelLoader;
         private IBoeMediator _BoeMediator;
         private IFullObjectFactory factory;
         private IClinDTODataLoader clinLoader;
@@ -36,12 +34,10 @@ namespace GenBOE.ActionLogic.Workspace.Creation
         private IPerformingOrgDTODataLoader perfOrgLoader;
         private IBOEFormIBOEDTODataLoader iboeDataLoader;
         private IBOEFormPBOEDTODataLoader pboeDataLoader;
-        private RMSZoneTravelRatesFeesDataLoader zoneTravelRatesLoader;
         private IRteTemplateDataLoader rteTemplateDataLoader;
         private IMoqTypeDataLoader moqTypeLoader;
 
         List<BoeTaskElementDTO> copiedFromTaskElements = new List<BoeTaskElementDTO>();
-        List<TravelDTO> copiedFromTravelElements = new List<TravelDTO>();
 
         public WorkspaceCopier(
             IWorkspaceVariableDTODataLoader inWorkspaceVariableLoader,
@@ -50,7 +46,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             ICustomFieldDTODataLoader inCustomFieldDTODataLoader,
             ICustomFieldValueDTODataLoader inCustomFieldValueDTODataLoader,
             IBoeTaskElementDTODataLoader inBoeTaskElementLoader,
-            ITravelDTODataLoader inTravelLoader,
             IBoeMediator inBoeMediator,
             IFullObjectFactory factory,
             IClinDTODataLoader clinLoader,
@@ -59,7 +54,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             IPerformingOrgDTODataLoader perfOrgLoader,
             IBOEFormIBOEDTODataLoader iboeDataLoader,
             IBOEFormPBOEDTODataLoader pboeDataLoader,
-            RMSZoneTravelRatesFeesDataLoader zoneTravelRatesLoader,
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeLoader)
         {
@@ -69,7 +63,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             this._CustomFieldDTODataLoader = inCustomFieldDTODataLoader;
             this._CustomFieldValueDTODataLoader = inCustomFieldValueDTODataLoader;
             this._BoeTaskElementLoader = inBoeTaskElementLoader;
-            this._TravelLoader = inTravelLoader;
             this._BoeMediator = inBoeMediator;
             this.factory = factory;
             this.clinLoader = clinLoader;
@@ -78,7 +71,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             this.perfOrgLoader = perfOrgLoader;
             this.iboeDataLoader = iboeDataLoader;
             this.pboeDataLoader = pboeDataLoader;
-            this.zoneTravelRatesLoader = zoneTravelRatesLoader;
             this.rteTemplateDataLoader = rteTemplateDataLoader;
             this.moqTypeLoader = moqTypeLoader;
         }
@@ -138,8 +130,7 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                 this.CopyPotentialPermissions(workspaceToCopy, newWorkspace);
             }
 
-            IDictionary<int, int> questionIdMapping;
-            IDictionary<int, int> templateIdMapping = this.CopyRteCustomTemplates(workspaceToCopy, newWorkspace, out questionIdMapping);
+            IDictionary<int, int> templateIdMapping = this.CopyRteCustomTemplates(workspaceToCopy, newWorkspace, out IDictionary<int, int> questionIdMapping);
 
             Dictionary<int, int> BOEIDMapping = this.CopyBOEs(newWorkspace, BOEToCopy, ClinIDMapping, WBSIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, workspaceToCopy.Id, templateIdMapping, questionIdMapping);
             Dictionary<int, int> VariableIDMapping = this.CopyWorkspaceVariables(workspaceToCopy, newWorkspace, BOEIDMapping, WBSIDMapping, ClinIDMapping);
@@ -156,7 +147,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             if (copyTasks)
             {
                 finishedCorrectly = this.CopyTasks(BOEIDMapping, WBSIDMapping, ClinIDMapping, VariableIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, resourceMapping, performingOrgMapping, workspaceToCopy.Id, templateIdMapping, questionIdMapping, workspaceToCopy.MoqTypeSelections.Where(x => BOEToCopy.Contains(x.BoeId)).ToList()) && finishedCorrectly;
-                finishedCorrectly = this.CopyTravelTasks(newWorkspace, BOEIDMapping, CustomFieldIDMapping, CustomFieldValueIDMapping, copyLaborSpreads, ClinIDMapping, WBSIDMapping, performingOrgMapping, resourceMapping) && finishedCorrectly;
             }
 
             return finishedCorrectly;
@@ -356,17 +346,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                                 task.CustomFieldValueContainers.Where(c => c.CustomFieldID == customField.Id).Select(y => y.CustomFieldValueID)
                                     .Contains(x.CustomFieldValueID)));
                         }
-                            if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-                            {
-                                ICollection<TravelDTO> travelTasks = boesToCopy.SelectMany(x => x.Travels).ToCollection();
-
-                                foreach (TravelDTO travelTask in travelTasks)
-                                {
-                                    toReturn.AddRange(allCustomFieldValues.Where(x =>
-                                        travelTask.CustomFieldValueContainers.Where(c => c.CustomFieldID == customField.Id).Select(y => y.CustomFieldValueID)
-                                            .Contains(x.CustomFieldValueID)));
-                                }
-                            }
                     }
 
                     break;
@@ -383,16 +362,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                         {
                             toReturn.AddRange(allCustomFieldValues.Where(x =>
                                 resourceType.CustomFieldValueContainers.Where(c => c.CustomFieldID == customField.Id).Select(y => y.CustomFieldValueID)
-                                    .Contains(x.CustomFieldValueID)));
-                        }
-
-                        ICollection<TravelDTO> travelTasks = boesToCopy.SelectMany(x => x.Travels).ToCollection();
-                        ICollection<MSTTravelTripType> trips = travelTasks.SelectMany(x => x.MSTTravelTrips).ToCollection();
-
-                        foreach (MSTTravelTripType trip in trips)
-                        {
-                            toReturn.AddRange(allCustomFieldValues.Where(x =>
-                                trip.CustomFieldValueContainers.Where(c => c.CustomFieldID == customField.Id).Select(y => y.CustomFieldValueID)
                                     .Contains(x.CustomFieldValueID)));
                         }
                     }
@@ -471,16 +440,10 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             Collection<PerformingOrgDTO> performingOrganizationsToSave = new Collection<PerformingOrgDTO>();
 
             // Get a list of all in-use Perf Org IDs
-            IEnumerable<int> taskOrganizationIDs = (from t in this.copiedFromTaskElements
+            IEnumerable<int> performingOrganizationIDs = (from t in this.copiedFromTaskElements
                                        from l in t.taskElementLabors
                                        where l.PerformingOrgID.HasValue
                                        select l.PerformingOrgID.Value).Distinct();
-
-            IEnumerable<int> ZoneTravelPerfOrgIDs = (from t in this.copiedFromTravelElements
-                                    from l in t.MSTTravelTrips
-                                    select l.PerfOrgID).Distinct();
-
-            List<int> performingOrganizationIDs = taskOrganizationIDs.Union(ZoneTravelPerfOrgIDs).ToList();
 
             // Create a mapping between old Perf Org IDs and new DTOs for the copied workspace
             IDictionary<int, PerformingOrgDTO> performingOrganizationIDMapping = new Dictionary<int, PerformingOrgDTO>();
@@ -555,17 +518,10 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             ICollection<ResourceDTO> resourcesToSave = new Collection<ResourceDTO>();
 
             // Get a list of all in-use Resource IDs
-            IEnumerable<int> LaborResourceIDs = (from r in this.copiedFromTaskElements
+            IEnumerable<int> resourceIDs = (from r in this.copiedFromTaskElements
                                     from e in r.taskElementLabors
                                     where e.ResourceID.HasValue
                                     select e.ResourceID.Value).Distinct();
-
-            IEnumerable<int> travelResourceIds = (from t in this.copiedFromTravelElements
-                                     from tt in t.MSTTravelTrips
-                                     where tt.NonZoneResourceID.HasValue
-                                     select tt.NonZoneResourceID.Value).Distinct();
-
-            IEnumerable<int> resourceIDs = LaborResourceIDs.Union(travelResourceIds);
 
             // Create a mapping between old Resource IDs and new DTOs for the copied workspace
             Dictionary<int, ResourceDTO> resourceIDMapping = new Dictionary<int, ResourceDTO>();
@@ -1030,7 +986,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
             this.copiedFromTaskElements = new List<BoeTaskElementDTO>();
-            this.copiedFromTravelElements = new List<TravelDTO>();
 
             if (BOEToCopy.Any())
             {
@@ -1042,22 +997,15 @@ namespace GenBOE.ActionLogic.Workspace.Creation
                 foreach (int boeID in BOEToCopy)
                 {
                     FullBoe boe = fullBoeObjects.First(x => x.Id == boeID);
-                    boe.LoadTravelRTEData();
                     boe.LoadTaskElementRTEData();
 
                     boe.CopySourceBoeId = boeID;
                     
                     IReadOnlyCollection<BoeTaskElementDTO> taskElements = boe.TaskElements;
-                    IReadOnlyCollection<TravelDTO> travelElements = boe.Travels;
 
                     if (taskElements.Any())
                     {
                         this.copiedFromTaskElements.AddRange(taskElements);
-                    }
-
-                    if (travelElements.Any() && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-                    {
-                        this.copiedFromTravelElements.AddRange(travelElements);
                     }
 
                     boe.Id = newItemID--;
@@ -1419,82 +1367,6 @@ namespace GenBOE.ActionLogic.Workspace.Creation
             });
 
             this.moqTypeLoader.Save(moqTypesToSave);
-        }
-
-        /// <summary>
-        /// Copies the Travel task 
-        /// </summary>
-        /// <param name="newWorkspace">New Workspace that is being copied too</param>
-        /// <param name="boeIDMapping">boe's that are being copied</param>
-        /// <param name="customFieldIDMapping">Workspace custom field id mappings</param>
-        /// <param name="customFieldValueIDMapping">Workspace customfield value id mappings </param>
-        /// <param name="copyLaborSpreads"></param>
-        /// <returns>Boolean indicating whether there was any bad data that the user should be notified about</returns>
-        private bool CopyTravelTasks(WorkspaceDTO newWorkspace, Dictionary<int, int> boeIDMapping, Dictionary<int, int> customFieldIDMapping, Dictionary<int, int> customFieldValueIDMapping, bool copyLaborSpreads, 
-            Dictionary<int, int> clinIdMapping, Dictionary<int, int> wbsIdMapping, Dictionary<int, int> perfOrgs, Dictionary<int, int> resources)
-        {
-            bool finishedCorrectly = true;
-
-            // only copy Zone Travel for RMS
-            if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-            {
-                // copy default fees & escalation rates into the WS (zone travel data)
-                this.zoneTravelRatesLoader.CopySystemDefaultFees(newWorkspace.Id);
-                this.zoneTravelRatesLoader.CopySystemDefaultRates(newWorkspace.Id);
-
-                int newItemID = -1;
-                
-                foreach (TravelDTO travelElement in this.copiedFromTravelElements)
-                {
-                    int newBoeID = boeIDMapping[travelElement.BoeID];
-
-                    travelElement.Id = newItemID--;
-                    travelElement.BoeID = newBoeID;
-                    travelElement.Updateable = UpdateType.Upsert;
-
-                    // if there are custom cross refs, let's copy them
-                    if (travelElement.CustomFieldValueContainers.Any())
-                    {
-                        foreach (CustomFieldValueContainer travelElementCustomFieldXRefToCopy in travelElement.CustomFieldValueContainers)
-                        {
-                            travelElementCustomFieldXRefToCopy.ContainerID = newItemID--;
-                            travelElementCustomFieldXRefToCopy.Updateable = UpdateType.Upsert;
-                            travelElementCustomFieldXRefToCopy.CustomFieldValueID = customFieldValueIDMapping[travelElementCustomFieldXRefToCopy.CustomFieldValueID];
-                            travelElementCustomFieldXRefToCopy.CustomFieldID = customFieldIDMapping[travelElementCustomFieldXRefToCopy.CustomFieldID];
-                        }
-                    }
-
-                    if (copyLaborSpreads)
-                    {
-                        #region RMS - Zone Travel Trips
-
-                        foreach (MSTTravelTripType zoneTrip in travelElement.MSTTravelTrips)
-                        {
-                            foreach (CustomFieldValueContainer mstTravelTripxrefToCopy in zoneTrip.CustomFieldValueContainers)
-                            {
-                                mstTravelTripxrefToCopy.ContainerID = newItemID--;
-                                mstTravelTripxrefToCopy.Updateable = UpdateType.Upsert;
-                                mstTravelTripxrefToCopy.CustomFieldValueID = customFieldValueIDMapping[mstTravelTripxrefToCopy.CustomFieldValueID];
-                                mstTravelTripxrefToCopy.CustomFieldID = customFieldIDMapping[mstTravelTripxrefToCopy.CustomFieldID];
-                            }
-
-                            zoneTrip.Id = newItemID--;
-                            zoneTrip.BoeID = newBoeID;
-                            zoneTrip.Updateable = UpdateType.Upsert;
-                            zoneTrip.PerfOrgID = perfOrgs[zoneTrip.PerfOrgID];
-                            if (zoneTrip.ClinId.HasValue) { zoneTrip.ClinId = clinIdMapping[zoneTrip.ClinId.Value]; }
-                            if (zoneTrip.WbsId.HasValue) { zoneTrip.WbsId = wbsIdMapping[zoneTrip.WbsId.Value]; }
-                            if (zoneTrip.NonZoneResourceID.HasValue) { zoneTrip.NonZoneResourceID = resources[zoneTrip.NonZoneResourceID.Value]; }
-                        }
-
-                        #endregion
-                    }
-
-                    this._TravelLoader.SaveTravels(new Collection<TravelDTO> { travelElement });
-                }
-            }
-
-            return finishedCorrectly;
         }
     }
 }

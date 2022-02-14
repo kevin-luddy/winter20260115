@@ -232,6 +232,19 @@ namespace GenBOE.Web.Controllers
                             }
                         }
 
+                        if (theModelView.ReportID == (int)Reports.AllBOEsSegmented)
+                        {
+                            WorkspaceExportFormatDTO exportFormat = ws.WorkspaceExportFormats.FirstOrDefault(x => x.Id == ws.TemplateID);
+                            theModelView.Description = String.Format(theModelView.Description, exportFormat.ExportFormatName);
+
+                            // Do we need to support the special Labor Hours Summary by Custom Field template?
+                            if (this.reportsControllerLogic.IsUsingSummarizeByCustomFieldTemplate(exportFormat.ExportFormatName))
+                            {
+                                this.ViewData["IsUsingSummarizeByCustomFieldTemplate"] = true;
+                                this.ViewData["SummarizeByCustomFieldOptions"] = this.reportsControllerLogic.SummarizeByCustomFieldOptions(ws.CustomFields);
+                            }
+                        }
+
                         if (!((report.ReportID == (int)Reports.TravelExtendedCost || report.ReportID == (int)Reports.TravelUnitCost) && !hasTravel))
                         {
                             theModelViews.Add(theModelView);
@@ -257,6 +270,17 @@ namespace GenBOE.Web.Controllers
             }
 
             this.ViewData["WorkspaceAdmins"] = adminNames;
+
+            // find the position of "allBOEs"
+            int? pos = theModelViews.Select((report, index) => new { report, index }).FirstOrDefault(x => x.report.ReportID == (int)Reports.AllBOEs)?.index;
+            // insert Chunked Report after it if it exists
+            if (pos != null && theModelViews.FirstOrDefault(x => x.ReportID == (int)Reports.AllBOEsSegmented) != null)
+            {
+                int newPosition = (int)pos + 1;
+                theModelViews.Insert(newPosition, theModelViews.First(x => x.ReportID == (int)Reports.AllBOEsSegmented));
+                int? oldPos = theModelViews.Select((report, index) => new { report, index }).LastOrDefault(x => x.report.ReportID == (int)Reports.AllBOEsSegmented)?.index;
+                theModelViews.RemoveAt(oldPos.Value);
+            }
 
             ViewResult toReturn = View(WebConstants.VIEW_EXPORTS, theModelViews);
 
@@ -1480,9 +1504,10 @@ namespace GenBOE.Web.Controllers
         /// <param name="summarizeByCustomField">Name of custom field to group by when running All BOEs report with special format template.</param>
         /// <param name="selectedBOEs">List of BOEs to be included in the report; if null, then include ALL</param>
         /// <param name="selectedComponents">List of resources to be included in the report; if null, then include ALL</param>
+        /// <param name="segmented">Whether the output should be broken into segments and zipped</param>
         /// <returns>Contents of the ALL BOEs report</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "The UI might hang indefinitely, never returning control to the user, unless all exceptions are handled.")]
-        private ActionResult ExportAllBOEsReport(FullWorkspace workspace, string summarizeByCustomField, ICollection<int> selectedBOEs, ICollection<BoeCustomReportComponent> selectedComponents, bool custom)
+        private ActionResult ExportAllBOEsReport(FullWorkspace workspace, string summarizeByCustomField, ICollection<int> selectedBOEs, ICollection<BoeCustomReportComponent> selectedComponents, bool custom, bool segmented = false)
         {
             ActionResult result = new EmptyResult();
 
@@ -1497,7 +1522,7 @@ namespace GenBOE.Web.Controllers
                 this.reportsControllerLogic.PrepareAllBOEsReport(workspace, IsSubcontractorUser(workspace), summarizeByCustomField, selectedBOEs, ViewData, out isCustomExport, 
                     out wsExportFormatDTO, out exportInputs, out boeExportModelViews, out boeSummaryGridModelViews, custom);
                 this.reportsControllerLogic.ExportAllBOEsReport(workspace, selectedComponents, Response, isCustomExport, wsExportFormatDTO, exportInputs, 
-                    boeExportModelViews, boeSummaryGridModelViews);
+                    boeExportModelViews, boeSummaryGridModelViews, segmented);
             }
             catch (GenValidationException ex)
             {
@@ -1604,6 +1629,10 @@ namespace GenBOE.Web.Controllers
                 else if (reportID == (int)Reports.AllBOEs || reportID == (int)Reports.StandardReports)
                 {
                     toReturn = this.ExportAllBOEsReport(ws, summarizeByCustomField, null, null, false);
+                }
+                else if (reportID == (int)Reports.AllBOEsSegmented)
+                {
+                    toReturn = this.ExportAllBOEsReport(ws, summarizeByCustomField, null, null, false, true);
                 }
                 else if (reportID == (int)Reports.WorkspaceData)
                 {

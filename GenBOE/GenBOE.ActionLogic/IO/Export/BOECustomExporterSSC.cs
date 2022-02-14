@@ -101,13 +101,12 @@ namespace GenBOE.ActionLogic.IO.Export
         /// <param name="selectedComponents">Components selected for the output</param>
         /// <param name="exportInputs">The export inputs.</param>
         /// <param name="boeExportModelView">The boe export model view.</param>
-        /// <param name="useGfy">Should Government Fiscal Years be used</param>
         /// <exception cref="System.ArgumentNullException">
         /// selectedComponents
         /// or
         /// exportInputs
         /// </exception>
-        protected override void ProcessLaborTaskHoursRollupTable(SdtElement containerElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView, bool useGfy)
+        protected override void ProcessLaborTaskHoursRollupTable(SdtElement containerElement, BOEExportTaskElement laborTaskElement, ICollection<BoeTaskElementDTO> allLaborTaskElements, ICollection<BoeCustomReportComponent> selectedComponents, BOEExportInputs exportInputs, BOEExportModelView boeExportModelView)
         {
             if (selectedComponents == null)
             {

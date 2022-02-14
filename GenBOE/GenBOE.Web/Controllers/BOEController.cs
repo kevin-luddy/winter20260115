@@ -629,8 +629,8 @@ namespace GenBOE.Web.Controllers
             // display when you are not a sub, the boe is not summary or multi & ODC items exist
             ViewData["displayODCTab"] = !(IsSubContractor || boe.IsMultiClinWbs) && boe.OtherDirectCosts.Any();
 
-            // display travel only when you are not a sub AND you running as RMS company or have Travel already (SSC no longer gets this for new BOEs)
-            ViewData["displayTravelTab"] = !IsSubContractor && (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST || boe.Travels.Any());
+            // display travel only when you are not a sub AND you have Travel data already
+            ViewData["displayTravelTab"] = !IsSubContractor && boe.Travels.Any();
 
             ViewResult toReturn = GetMasterView(WebConstants.VIEW_BOE_DETAILS, workspace);
 
@@ -3115,7 +3115,7 @@ namespace GenBOE.Web.Controllers
             {
                 using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
                 {
-                    _BOECopier.CopyBOE(ws, copyBOEID, boeID, taskElementsToCopy, travelElementsToCopy);
+                    _BOECopier.CopyBOE(ws, copyBOEID, boeID, taskElementsToCopy);
 
                     scope.Complete();
                 }

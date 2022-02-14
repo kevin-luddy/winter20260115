@@ -1051,7 +1051,7 @@
                 <div class="title">Step 2: Export the existing Resource Type file</div>
                 <div>Start by exporting the existing Resource Types. This file has the correct column headings and Resource Type IDs genBOE needs to import new Resource Types and updates.</div>
                 <div class="important">IMPORTANT: Unsaved Resource Types will not be included in this export.</div>
-                <div><a id="LTExportFromImportDialog">Export existing Resource Types</a></div>
+                <div><a onclick="angular.element(document.getElementById('TaskElementsComposite')).scope().tryExport()">Export existing Resource Types</a></div>
             </div>
             <div class="step three display-none" path="Existing">
                 <div class="title">Step 3: Enter/Update Resource Types in the file</div>

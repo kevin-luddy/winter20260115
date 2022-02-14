@@ -67,6 +67,15 @@ namespace GenBOE.DataBridge.DTO
         /// <returns>A list of fields that exceed the RTE limit</returns>
         ICollection<RTEValidationMV> GetRteFieldsExceedingLimit(int wsId);
 
+        /// <summary>
+        /// Get Workspace Data For Proposal
+        /// 
+        /// Used by ACV
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        [DbQuery]
+        ICollection<(int Id, string shortName, string longName)> GetWorkspaceDataForProposal(string ptmTrackingNumber);
+
         #endregion
 
         #region Restores and Copies
@@ -97,6 +106,7 @@ namespace GenBOE.DataBridge.DTO
         /// <param name="newShortName">New unique short name for the workspace.</param>
         /// <param name="costVolumeLeadPricerId">Cost Volume Lead Pricer / Estimator Id</param>
         int ExactCopyWorkspace(int inWorkspaceIDtoCopy, string newWorkspaceName, string newShortName, int costVolumeLeadPricerId);
+
         /// <summary>
         /// Create a copy of a previous version of a workspace
         /// </summary>

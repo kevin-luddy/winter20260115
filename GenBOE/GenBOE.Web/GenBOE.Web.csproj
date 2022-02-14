@@ -225,6 +225,7 @@
     <Compile Include="Common\LongModelBinder.cs" />
     <Compile Include="Common\ProPricerExportAccessAttribute.cs" />
     <Compile Include="Common\TitleModelBinder.cs" />
+    <Compile Include="Common\WebApiConfig.cs" />
     <Compile Include="Common\WorkspaceIdentificationBinderAttribute.cs" />
     <Compile Include="Common\CreateWorkspaceStepOneBinderAttribute.cs" />
     <Compile Include="Common\CreateWorkspaceBinderAttribute.cs" />
@@ -233,9 +234,12 @@
     <Compile Include="Common\SimpleFileDownloadResult.cs" />
     <Compile Include="Common\StringNonPrintableCharRemovalModelBinder.cs" />
     <Compile Include="Common\WorkspaceIdentificationModelBinder.cs" />
+    <Compile Include="Controllers\BoeDataBaseAPIController.cs" />
+    <Compile Include="ModelView\AcvWorkspaceData.cs" />
     <Compile Include="Controllers\BOEBulkSubmitController.cs" />
     <Compile Include="Controllers\BOEFormController.cs" />
     <Compile Include="Controllers\BOEZoneTravelController.cs" />
+    <Compile Include="Controllers\BoeDataAPIController.cs" />
     <Compile Include="Controllers\RTETemplatesController.cs" />
     <Compile Include="Controllers\DateShiftController.cs" />
     <Compile Include="ModelView\BOEFormMasterModelView.cs" />

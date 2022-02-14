@@ -22,17 +22,70 @@ namespace GenBOE.ActionLogic.IO.Export
     /// </summary>
     public class ResourceSummaryRowData
     {
+        /// <summary>
+        /// Resource Type
+        /// </summary>
         public string ResourceType { get; set; }
+
+        /// <summary>
+        /// Resource Name
+        /// </summary>
         public string ResourceName { get; set; }
+
+        /// <summary>
+        /// Resource Description
+        /// </summary>
         public string ResourceDescription { get; set; }
+
+        /// <summary>
+        /// Cost Total
+        /// </summary>
         public decimal? CostTotal { get; set; }
+
+        /// <summary>
+        /// Hours Total
+        /// </summary>
         public decimal? HoursTotal { get; set; }
+
+        /// <summary>
+        /// Resource Start Date
+        /// </summary>
         public DateTime? StartDate { get; set; }
+
+        /// <summary>
+        /// Resource End Date
+        /// </summary>
         public DateTime? EndDate { get; set; }
+
+        /// <summary>
+        /// Total People
+        /// </summary>
         public decimal? PeopleTotal { get; set; }
+
+        /// <summary>
+        /// Total Days
+        /// </summary>
         public decimal? DaysTotal { get; set; }
 
+        /// <summary>
+        /// Labor Category (from Function custom field)
+        /// </summary>
+		public string LaborCategory { get; set; }
+
+        /// <summary>
+        /// Location (from Field B custom field)
+        /// </summary>
+		public string Location { get; set; }
+
+        /// <summary>
+        /// Group key for grouping by resource type and name
+        /// </summary>
         public string GroupKey { get { return $"{this.ResourceType}::{this.ResourceName}"; } }
+
+        /// <summary>
+        /// Group key for grouping resources including Labor Category and Location
+        /// </summary>
+		public string GroupKeyWithLaborCategoryAndLocation { get { return $"{this.ResourceType}::{this.ResourceName}::{this.LaborCategory}::{this.Location}"; } }
     }
 
     /// <summary>

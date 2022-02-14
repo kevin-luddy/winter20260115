@@ -201,7 +201,7 @@ namespace GenBOE.ActionLogic.Workspace
 
                     if (moqType.SelectedMOQType == MOQType.SME)
                     {
-                        sb.AppendLine($"The SME selected Expert judgement for this basis of estimate for the following reasons: {RTEUtilities.TurnHTMLIntoPlainText(moqType.SmeReason)}");
+                        sb.AppendLine($"The SME selected Expert judgment for this basis of estimate for the following reasons: {RTEUtilities.TurnHTMLIntoPlainText(moqType.SmeReason)}");
                         sb.AppendLine($"The logic and assumptions used to estimate hours is: {RTEUtilities.TurnHTMLIntoPlainText(moqType.SmeHoursLogic)}");
                         sb.AppendLine($"The logic and assumptions used to estimate duration is: {RTEUtilities.TurnHTMLIntoPlainText(moqType.SmeDurationLogic)}");
                         sb.AppendLine($"The following tasks are estimates in this BOE: {RTEUtilities.TurnHTMLIntoPlainText(moqType.SmeTaskEstimates)}");

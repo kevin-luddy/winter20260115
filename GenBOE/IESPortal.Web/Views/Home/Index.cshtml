@@ -149,9 +149,11 @@
                 carouselRunning = !carouselRunning;
                 if (carouselRunning) {
                     $("#myCarousel").carousel(1);
+					$("#myCarousel").addClass("carousel-running");
                 } else {
                     $("#myCarousel").carousel('pause');
                     $("#myCarousel").carousel(0);
+					$("#myCarousel").removeClass("carousel-running");
                 }
             });
         });

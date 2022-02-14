@@ -32,6 +32,7 @@ AS
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
 **		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
+**		11/30/2021	Dusan				IES-461: Remove RMS Zone Travel copying
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -539,74 +540,6 @@ BOEID = @BOEID
 
 END
 
-IF EXISTS (SELECT 1 FROM [dbo].[LineOfBusiness] WHERE LineOfBusinessID > 2000)
-BEGIN
-	DECLARE @TravelTripTaskElement TABLE
-	(
-		[TravelTripTaskElementID] [int] NOT NULL,
-		[UpdateDT] [datetime2](7) NOT NULL,
-		[TravelTaskID] [varchar](3) NULL,
-		[TravelTaskTitle] [varchar](100) NOT NULL,
-		[TravelTaskDescription] [varchar](max),
-		[BOEID] [int] NOT NULL,
-		[TaskStartDate] [DATE],
-		[TaskEndDate] [DATE],
-		Processed bit DEFAULT 0,
-		NewTravelTripTaskElementID [int],
-		NewBOEID int,
-		[SortOrderID] INT
-	)
-	INSERT INTO @TravelTripTaskElement
-	SELECT TE.[TravelTripTaskElementID]
-		  ,TE.[UpdateDT]
-		  ,TE.[TravelTaskID]      
-		  ,TE.[TravelTaskTitle]
-		  ,TE.[TravelTaskDescription]
-		  ,TE.[BOEID]
-		  ,TE.[TaskStartDate]
-		  ,TE.[TaskEndDate]
-		  ,0
-		  ,NULL
-		  ,B.NewBOEID
-		  ,TE.[SortOrderID]
-	FROM [dbo].[TravelTripTaskElement] TE 
-	 INNER JOIN @BOE B ON TE.BOEID = B.BOEID
-
-	DECLARE @TravelTripTaskElementID [int] 
-	WHILE EXISTS (SELECT 1 FROM @TravelTripTaskElement WHERE Processed = 0)
-	BEGIN
-	SELECT TOP 1 @TravelTripTaskElementID = TravelTripTaskElementID  FROM @TravelTripTaskElement WHERE Processed = 0
-	INSERT INTO [dbo].[TravelTripTaskElement]
-			   ([UpdateDT]
-			   ,[TravelTaskTitle]
-			   ,[TravelTaskDescription]
-			   ,[BOEID]
-			   ,[TravelTaskID]
-			   ,[TaskStartDate]
-			   ,[TaskEndDate]
-			   ,[SortOrderID]
-			   )
-	SELECT tTE.[UpdateDT]
-		  ,tTE.[TravelTaskTitle]
-		  ,tTE.[TravelTaskDescription]
-		  ,tB.NewBOEID--[BOEID]
-		  ,tTE.[TravelTaskID]
-		  ,tTE.[TaskStartDate]
-		  ,tTE.[TaskEndDate]
-		  ,tTE.[SortOrderID]
-	  FROM @TravelTripTaskElement tTE 
-		INNER JOIN @BOE tB ON tTE.BOEID = tB.BOEID
-	WHERE TravelTripTaskElementID = @TravelTripTaskElementID
-
-	UPDATE @TravelTripTaskElement
-	SET	NewTravelTripTaskElementID = SCOPE_IDENTITY(),
-		Processed = 1
-	WHERE 
-		TravelTripTaskElementID  = @TravelTripTaskElementID	
-
-	END		
-END
-
 INSERT INTO [dbo].[WorkspaceOffloadRate]
 	([UpdateDT]
 	,[WorkspaceID]
@@ -1103,162 +1036,6 @@ SET	NewCLINID = SCOPE_IDENTITY(),
 	Processed = 1
 WHERE CLINID = @CLINID
 END
-
--- Start of "RMS Zone Travel" - MstTravelTrip
--- These changes are to be executed in RMS only. The way we can tell the environments apart is that SSC has LOBs in the range of 1000's. RMS is 2000+ and ISGS is 0-999
-IF EXISTS (SELECT 1 FROM [dbo].[LineOfBusiness] WHERE LineOfBusinessID > 2000)
-BEGIN
-	DECLARE @MstTravelTrip TABLE
-	(
-		[MSTTravelTripID] [int] NOT NULL,
-		[ModeID] [int] NOT NULL,
-		[TravelTripTaskElementID] [int] NOT NULL,
-		[UpdateDT] [datetime2](7) NOT NULL,
-		[GroupID] [int] NULL,
-		[SegmentID] [int] NOT NULL,
-		[Purpose] [varchar](35) NULL,
-		[PerformingOrganizationID] [int] NOT NULL,
-		[TripDate] [date] NOT NULL,
-		[EstimateDate] [date] NULL,
-		[NumPeople] DECIMAL(10,6) NOT NULL,
-		[NumDays] DECIMAL(10,6) NOT NULL,
-		[ZoneOriginID] [int] NULL,
-		[ZoneDestCity] [varchar](35) NULL,
-		[ZoneDestinationID] [int] NULL,
-		[ZoneResourceID] [int] NULL,
-		[NonZoneFrom] [varchar](150) NULL,
-		[NonZoneTo] [varchar](150) NULL,
-		[NonZoneAirFareEstimate] [money] NULL,
-		[NonZonePerDiemDaily] [money] NULL,
-		[NonZoneCarRentalTrans] [money] NULL,
-		[NonZoneNumCars] DECIMAL(10,6) NULL,
-		[NonZoneResourceID] int NULL,
-		[ClinId] INT NULL,
-		[WbsId] INT NULL,
-
-		NewTravelTripID int, -- this will be the new PK value
-		Processed bit DEFAULT 0, -- indicating whether the item was processed yet
-		NewTravelTripTaskElementID int -- new parent element id
-	)
-	INSERT INTO @MstTravelTrip
-		SELECT 
-			 tt.[MSTTravelTripID]
-			,tt.[ModeID]
-			,tt.[TravelTripTaskElementID]
-			,tt.[UpdateDT]
-			,tt.[GroupID]
-			,tt.[SegmentID]
-			,tt.[Purpose]
-			,CASE
-				WHEN PO.NewPerformingOrganizationID IS NOT NULL THEN PO.NewPerformingOrganizationID
-				ELSE tt.[PerformingOrganizationID]
-				END AS PerformingOrganizationID
-			,tt.[TripDate]
-			,tt.[EstimateDate]
-			,tt.[NumPeople]
-			,tt.[NumDays]
-			,tt.[ZoneOriginID]
-			,tt.[ZoneDestCity]
-			,tt.[ZoneDestinationID]
-			,tt.[ZoneResourceID]
-			,tt.[NonZoneFrom]
-			,tt.[NonZoneTo]
-			,tt.[NonZoneAirFareEstimate]
-			,tt.[NonZonePerDiemDaily]
-			,tt.[NonZoneCarRentalTrans]
-			,tt.[NonZoneNumCars]
-			,tt.[NonZoneResourceID]
-			,tt.[ClinId]
-			,tt.[WbsId]
-			,NULL -- new PK value
-			,0 -- not processed yet
-			,TE.NewTravelTripTaskElementID -- the new parent element id
-		FROM [dbo].[MSTTravelTrip] tt -- table containing data to copy
-			INNER JOIN @TravelTripTaskElement TE -- joining w/ the already copied parent element (so we can get the correct IDs)
-				ON tt.TravelTripTaskElementID = TE.TravelTripTaskElementID
-			LEFT OUTER JOIN @PerformingOrganization PO ON tt.PerformingOrganizationID = PO.PerformingOrganizationID
-
-
-	-- Update Wbs Ids based on the new IDs
-	UPDATE @MstTravelTrip
-		SET WbsId = W.NewWBSID
-		FROM  @MstTravelTrip tt INNER JOIN @WorkBreakdownStructure W ON tt.WbsId = W.WBSID
-
-	-- Update Clin Ids based on the new IDs
-	UPDATE @MstTravelTrip
-		SET ClinId = C.NewCLINID
-		FROM  @MstTravelTrip tt INNER JOIN @CLIN C ON tt.ClinId = C.CLINID
-
-	-- Update Resource Ids based on the new IDs
-	UPDATE @MstTravelTrip
-		SET NonZoneResourceID = R.NewResourceID
-		FROM @MstTravelTrip tt INNER JOIN @Resource R ON tt.NonZoneResourceID = R.ResourceID
-
-	DECLARE @MstTravelTripID int
-	WHILE EXISTS (SELECT 1 FROM @MstTravelTrip WHERE Processed = 0)
-	BEGIN
-		SELECT TOP 1 @MstTravelTripID = [MSTTravelTripID] FROM @MstTravelTrip WHERE Processed = 0
-
-		INSERT INTO [dbo].[MSTTravelTrip]
-			([ModeID]
-			,[TravelTripTaskElementID]
-			,[UpdateDT]
-			,[GroupID]
-			,[SegmentID]
-			,[Purpose]
-			,[PerformingOrganizationID]
-			,[TripDate]
-			,[EstimateDate]
-			,[NumPeople]
-			,[NumDays]
-			,[ZoneOriginID]
-			,[ZoneDestCity]
-			,[ZoneDestinationID]
-			,[ZoneResourceID]
-			,[NonZoneFrom]
-			,[NonZoneTo]
-			,[NonZoneAirFareEstimate]
-			,[NonZonePerDiemDaily]
-			,[NonZoneCarRentalTrans]
-			,[NonZoneNumCars]
-			,[NonZoneResourceID]
-			,[ClinId]
-			,[WbsId]
-			)
-		SELECT
-			 tt.[ModeID]
-			,tt.NewTravelTripTaskElementID -- the new parent id
-			,tt.[UpdateDT]
-			,tt.[GroupID]
-			,tt.[SegmentID]
-			,tt.[Purpose]
-			,tt.[PerformingOrganizationID]
-			,tt.[TripDate]
-			,tt.[EstimateDate]
-			,tt.[NumPeople]
-			,tt.[NumDays]
-			,tt.[ZoneOriginID]
-			,tt.[ZoneDestCity]
-			,tt.[ZoneDestinationID]
-			,tt.[ZoneResourceID]
-			,tt.[NonZoneFrom]
-			,tt.[NonZoneTo]
-			,tt.[NonZoneAirFareEstimate]
-			,tt.[NonZonePerDiemDaily]
-			,tt.[NonZoneCarRentalTrans]
-			,tt.[NonZoneNumCars]
-			,tt.[NonZoneResourceID]
-			,tt.[ClinId]
-			,tt.[WbsId]
-			FROM @MstTravelTrip tt
-				WHERE [MSTTravelTripID] = @MstTravelTripID  
-
-		UPDATE @MstTravelTrip
-			SET Processed = 1, NewTravelTripID = SCOPE_IDENTITY()			
-			WHERE [MSTTravelTripID] = @MstTravelTripID 
-	END
-END
--- End of "RMS Zone Travel" - MstTravelTrip
 
 DECLARE @WBS_CLIN_BOE_XREF TABLE
 (
@@ -2084,32 +1861,6 @@ INSERT INTO [dbo].[MoqTypeTableCustomFieldValueXREF] ([UpdateDT], [MoqTypeTableD
 		FROM [dbo].[MoqTypeTableCustomFieldValueXREF] X, @MOQTypeSelectionTableData t, @CustomFieldValue CFV
 		WHERE t.MoqTypeSelectionTableDataId = X.MoqTypeTableDataId AND X.CustomFieldValueID = CFV.CustomFieldValueID
 
--- These changes are to be executed in RMS only. The way we can tell the environments apart is that SSC has LOBs in the range of 1000's. RMS is 2000+ and ISGS is 0-999
-IF EXISTS (SELECT 1 FROM [dbo].[LineOfBusiness] WHERE LineOfBusinessID > 2000)
-BEGIN
-	INSERT INTO [dbo].[MSTTravelTripCustomFieldValueXREF]
-			   ([MSTTravelTripID]
-			   ,[MSTCustomFieldValueID]
-			   ,[UpdateDT])
-	SELECT TE.NewTravelTripID
-		  ,CFV.NewCustomFieldValueID
-		  ,X.[UpdateDT]
-	  FROM [dbo].[MSTTravelTripCustomFieldValueXREF] X
-		INNER JOIN @MstTravelTrip TE ON X.MSTTravelTripID = TE.MSTTravelTripID
-		INNER JOIN @CustomFieldValue CFV ON X.MSTCustomFieldValueID = CFV.CustomFieldValueID
-
-	INSERT INTO [dbo].[TravelTripTaskElementCustomFieldValueXREF]
-           ([TravelTripTaskElementID]
-           ,[CustomFieldValueID]
-           ,[UpdateDT])
-SELECT TE.NewTravelTripTaskElementID
-      ,CFV.NewCustomFieldValueID
-      ,X.[UpdateDT]
-  FROM [dbo].[TravelTripTaskElementCustomFieldValueXREF] X
-	INNER JOIN @TravelTripTaskElement TE ON X.TravelTripTaskElementID = TE.TravelTripTaskElementID
-	INNER JOIN @CustomFieldValue CFV ON X.CustomFieldValueID = CFV.CustomFieldValueID
-END
-
 /**** RTE Templates ****/
 INSERT INTO [dbo].[RteTemplate]
 			([UpdateDT],
@@ -2576,14 +2327,6 @@ INSERT INTO [dbo].[BOEFormPBOECLINsXREF]
 	FROM [dbo].[BOEFormPBOECLINsXREF] x
 		INNER JOIN @PBOE B ON B.[PBOEFormID] = x.[PBOEFormID]
 		INNER JOIN @CLIN C on C.[CLINID] = x.[CLINID]
-
-INSERT INTO [dbo].[WorkspaceRMSTravelNonzoneFeesAndCosts] ([UpdateDT], [WorkspaceID], ModeID, TravelAgencyFee, MiscOther)
-	SELECT [UpdateDT], @NewWorkspaceID, ModeID, TravelAgencyFee, MiscOther
-	FROM [dbo].[WorkspaceRMSTravelNonzoneFeesAndCosts] WHERE [WorkspaceID] = @CopyFromWorkspaceID
-
-INSERT INTO [dbo].[WorkspaceRMSTravelEscalationRate] ([UpdateDT], [WorkspaceID], [Year], [Escalation], [MiscRate], [PerDiemRate])
-	SELECT [UpdateDT], @NewWorkspaceID, [Year], [Escalation], [MiscRate], [PerDiemRate]
-	FROM [dbo].[WorkspaceRMSTravelEscalationRate] WHERE [WorkspaceID] = @CopyFromWorkspaceID
 
 IF @@ERROR = 0
 	BEGIN
