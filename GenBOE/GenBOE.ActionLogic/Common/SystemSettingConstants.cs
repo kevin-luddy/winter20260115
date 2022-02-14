@@ -10,6 +10,16 @@ namespace GenBOE.ActionLogic.Common
     {
         public static readonly string PROJECT_MAP_OFFLOAD_TEXT = "ProjectMapOffloadText";
         public static readonly string JUSTIFYING_PUBLICATION = "JustifyingPublication";
+
+        /// <summary>
+        /// The value for sorting by Work Breakdown Structure
+        /// </summary>
+        public static readonly int EXPORT_SORT_WBS = 1;
+
+        /// <summary>
+        /// The value for sorting by Contract Line Item Number
+        /// </summary>
+        public static readonly int EXPORT_SORT_CLIN = 2;
     }
 }
 

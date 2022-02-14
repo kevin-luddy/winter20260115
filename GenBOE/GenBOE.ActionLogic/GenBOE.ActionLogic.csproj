@@ -126,6 +126,7 @@
     <Compile Include="BOETransitions\DraftToDraftLockedTransition.cs" />
     <Compile Include="BOETransitions\IBOEStateMachine.cs" />
     <Compile Include="BOETransitions\IBOEStateTransition.cs" />
+    <Compile Include="Common\AllBOEExportHelper.cs" />
     <Compile Include="Common\Calculations\BoeTaskElementRecalculation.cs" />
     <Compile Include="Common\Calculations\FullWorkspaceRecalculation.cs" />
     <Compile Include="Common\Calculations\IBoeTaskElementRecalculation.cs" />

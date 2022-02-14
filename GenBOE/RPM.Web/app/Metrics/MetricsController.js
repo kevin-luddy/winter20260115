@@ -70,8 +70,11 @@
 
     /* builds up the years options for the select dropdown */
     buildYearsList = function () {
-        var currentYear = new Date().getFullYear();
-        for (var i = 2012; i <= currentYear; i++) {
+        var d = new Date();
+        var maxYear = getMaxYearForDataFiltering(d);
+        var currentYear = d.getFullYear();
+
+        for (var i = 2012; i <= maxYear; i++) {
             $scope.years.push(i);
         }
         

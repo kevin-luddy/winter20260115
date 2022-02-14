@@ -7,6 +7,7 @@
 namespace IES.Common
 {
     using System;
+    using System.Globalization;
 
     /// <summary>
     /// Base class for the Updateable DTOs
@@ -77,7 +78,7 @@ namespace IES.Common
             }
             if (!System.Diagnostics.Debugger.IsAttached && newUpdateDate.HasValue && this.UpdateDate > newUpdateDate.Value)
             {
-                throw new ArgumentException("Cannot perform Update when new Update Date is older than original update date for DTO Id: " + this.Id.ToString(), nameof(newUpdateDate));
+                throw new ArgumentException($"Cannot perform Update when new Update Date {newUpdateDate?.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)} is older than Original Update Date {this.UpdateDate.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)} for DTO Id: {this.Id.ToString()}", nameof(newUpdateDate));
             }
             if (this.Updateable == UpdateType.Upsert && this.Id > 0 && this.Id != newOrExistingId)
             {

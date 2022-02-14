@@ -18,6 +18,19 @@ namespace GenBOE.Web.ModelView
 
     public class ExportToProPricerModelView : PersistedDataModelView, IComparable
     {
+        /// <summary>
+        /// A string used to build a Custom Field Id/Description Id. 
+        /// 
+        /// The format in which it is used is [1][separator][2]
+        ///     1 -> Field Name
+        ///     2 -> integer representation of either Id or Description, which comes from the enum
+        ///     
+        /// Example:
+        ///     Field-A---1 (Field-A ID)
+        ///     Field-A---2 (Field-A Description)
+        /// </summary>
+        public static readonly string CUSTOM_FIELD_ID_DESCRIPTION_SEPARATOR = "---";
+
         public ExportToProPricerModelView()
             : base()
         {
@@ -175,12 +188,12 @@ namespace GenBOE.Web.ModelView
 
         public static string GetFormattedCustomFieldID(int fieldID, ProPricerCustomFieldSelection selection)
         {
-            return fieldID + "-" + (int)selection;
+            return fieldID + CUSTOM_FIELD_ID_DESCRIPTION_SEPARATOR + (int)selection;
         }
 
         public static string GetFormattedCustomFieldID(string customeFieldName, ProPricerCustomFieldSelection selection)
         {
-            return customeFieldName + "-" + (int)selection;
+            return customeFieldName + CUSTOM_FIELD_ID_DESCRIPTION_SEPARATOR + (int)selection;
         }
 
         public int ID { get; set; }

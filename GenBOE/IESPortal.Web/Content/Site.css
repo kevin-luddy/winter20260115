@@ -88,6 +88,30 @@
     text-align: center;
 }
 
+.carousel-indicators{
+    bottom:0px;
+    display:none;
+}
+.carousel-running .carousel-indicators {
+    display: initial;
+}
+@media only screen and (max-height: 935px) {
+    #logo-header img{
+        height:200px;
+    }
+    #ies-home .button-img {
+        width: 200px
+    }
+}
+@media only screen and (max-height: 875px) {
+    #logo-header img {
+        height: 160px;
+    }
+    #ies-home .button-img {
+        width: 150px;
+    }
+}
+
 .ies-logo {
     width: 100%;
     max-width: 350px;

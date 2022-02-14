@@ -12,6 +12,7 @@ namespace IES.Common
     using System.Collections.ObjectModel;
     using System.Data;
     using System.Data.Entity;
+    using System.Globalization;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -173,6 +174,8 @@ namespace IES.Common
                 throw new ArgumentNullException(nameof(metadata));
             }
 
+            Log.Debug("Bulk Insert starting.");
+
             ConcurrentDictionary<int, int> toReturn = new ConcurrentDictionary<int, int>();
 
             if (dtosToInsert.Any())
@@ -195,31 +198,57 @@ namespace IES.Common
                 using (DbContext objectContext = new DbContext(metadata.DbContextName))
                 {
                     this.Log.Debug("Executing the Bulk Insert");
-                    // Execute the bulk insert stored procedure
-                    ICollection<KeyValuePair<int, DateTime?>> insertResult = StoredProcedureHelper.ExecuteTableValueProcedure(
-                        objectContext,
-                        dataTable,
-                        metadata.BulkInsertStoredProcedureName,
-                        metadata.StoredProcedureTableTypeParameterName,
-                        metadata.DBTableTypeName,
-                        metadata.BulkInsertStoredProcedureReturnsUpdateDate);
+                    ICollection<KeyValuePair<int, DateTime?>> insertResult = null;
 
-                    this.Log.Debug("Updating child DTOs for new Ids.");
+                    try
+                    {
+                        this.Log.Debug("Start Insert: " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
+                        // Execute the bulk insert stored procedure and await result
+                        insertResult = StoredProcedureHelper.ExecuteTableValueProcedure(
+                            objectContext,
+                            dataTable,
+                            metadata.BulkInsertStoredProcedureName,
+                            metadata.StoredProcedureTableTypeParameterName,
+                            metadata.DBTableTypeName,
+                            metadata.BulkInsertStoredProcedureReturnsUpdateDate);
+
+                        this.Log.Debug("End Insert: " + DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture));
+                    }
+                    catch (Exception ex)
+                    {
+                        this.Log.Error(ex, $"Executing {metadata.BulkInsertStoredProcedureName} failed for {metadata.DBTableTypeName}");
+                        throw;
+                    }
+
+                    this.Log.Debug($"Updating {dtosToInsert.Count} child DTOs for new Ids.");
+
                     // iterate thru dtos and update with the new Id and new 'UpdateDate' 
                     // also update the task element id in each 'child'
                     Parallel.For(0, dtosToInsert.Count, i =>
                     {
-                        IUpdateableDTO dto = dtosToInsert.ElementAt(i);
-                        int originalId = origIds.ElementAt(i);
-                        KeyValuePair<int, DateTime?> kvp = insertResult.ElementAt(i);
+                        try
+                        {
+                            IUpdateableDTO dto = dtosToInsert.ElementAt(i);
+                            int originalId = origIds.ElementAt(i);
+                            KeyValuePair<int, DateTime?> kvp = insertResult.ElementAt(i);
 
-                        // now update the child DTOs in each collection to use the new parent Dto id
-                        dto.Update(kvp.Key, kvp.Value);
+                            // now update the child DTOs in each collection to use the new parent Dto id
+                            dto.Update(kvp.Key, kvp.Value);
 
-                        toReturn.TryAdd(originalId, kvp.Key);
+                            toReturn.TryAdd(originalId, kvp.Key);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error(ex, $"Update failed for item {i} with message {ex.Message}, originalId {origIds.ElementAt(i)}, key {dtosToInsert.ElementAt(i)?.Id}.");
+                            throw;
+                        }
                     });
+
+                    this.Log.Debug("Child DTO updates complete.");
                 }
             }
+
+            Log.Debug("Bulk Insert complete.");
 
             return toReturn.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
         }
@@ -241,6 +270,8 @@ namespace IES.Common
             {
                 throw new ArgumentNullException(nameof(metadata));
             }
+
+            Log.Debug("Executing Bulk Update.");
 
             Dictionary<int, int> toReturn = new Dictionary<int, int>();
 
@@ -290,6 +321,8 @@ namespace IES.Common
                     }
                 }
             }
+
+            Log.Debug("Bulk Update Complete.");
 
             return toReturn;
         }

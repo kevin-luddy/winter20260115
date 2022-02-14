@@ -72,7 +72,7 @@ namespace GenBOE.ActionLogic.ModelView
         public string DescriptionHoursRequired { get; set; }
 
         /// <summary>
-        /// The SME selected Expert judgement for this basis of estimate for the following reasons
+        /// The SME selected Expert judgment for this basis of estimate for the following reasons
         /// </summary>
         public string SmeReason { get; set; }
 

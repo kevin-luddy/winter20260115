@@ -87,7 +87,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 {
                     new TrainingCourseModelView
                     {
-                        CourseID = Constants.SHARED_BOE_WRITING_COURSE
+                        CourseID = Constants.SHARED_BOE_WRITING_COURSE,
+                        LastCompletedByDate = twoYearsAgo
                     },
                     new TrainingCourseModelView
                     {

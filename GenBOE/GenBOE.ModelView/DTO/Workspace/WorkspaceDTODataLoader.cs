@@ -472,7 +472,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    gbe.Database.CommandTimeout = 360;
+                    gbe.Database.CommandTimeout = 900; // 15 minutes
 
                     result = gbe.Workspaces.Where(x => 
                         x.WorkspaceStateID != (int)WorkspaceState.Complete && x.WorkspaceStateID != (int)WorkspaceState.Closed 
@@ -483,9 +483,6 @@ namespace GenBOE.DataBridge.DTO
                             x.BOEs.SelectMany(z => z.BOETaskElements).Select(z => z.UpdateDT).Max(),
                             x.BOEs.SelectMany(z => z.BOETaskElements).SelectMany(z => z.OrdinaryVariables).Select(z => z.UpdateDT).Max(),
                             x.BOEs.SelectMany(z => z.BOETaskElements).SelectMany(z => z.BOELaborTypes).Select(z => z.UpdateDT).Max(),
-                            x.BOEs.SelectMany(z => z.TravelTripTaskElements).Select(z => z.UpdateDT).Max(),
-                            x.BOEs.SelectMany(z => z.TravelTripTaskElements).SelectMany(z => z.MSTTravelTrips).Select(z => z.UpdateDT).Max(),
-                            x.BOEs.SelectMany(z => z.TravelTripTaskElements).SelectMany(z => z.TravelTrips).Select(z => z.UpdateDT).Max(),
                             x.BOEs.SelectMany(z => z.BOEApprovals).Select(z => z.UpdateDT).Max(),
                             x.BOEs.SelectMany(z => z.BOEApprovalHistories).Select(z => z.UpdateDT).Max(),
                             x.BOEs.SelectMany(z => z.BOEComments).Select(z => z.UpdateDT).Max(),
@@ -504,6 +501,29 @@ namespace GenBOE.DataBridge.DTO
                             x.UpdateDT }).Max()
                     ).Select(x => new { Item1 = x.WorkspaceID, Item2 = (WorkspaceState)x.WorkspaceStateID }).ToList()
                     .Select(x => new Tuple<int, WorkspaceState>(x.Item1, x.Item2) ).ToList();
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get Workspace Data For Proposal
+        /// 
+        /// Used by ACV
+        /// </summary>
+        [DbQuery]
+        public virtual ICollection<(int Id, string shortName, string longName)> GetWorkspaceDataForProposal(string ptmTrackingNumber)
+        {
+            ICollection<(int Id, string shortName, string longName)> result;
+
+            using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+            {
+                using (GenBoeEntities gbe = new GenBoeEntities())
+                {
+                    result = gbe.Workspaces.Where(x => x.TrackingNumber == ptmTrackingNumber)
+                                    .Select(x => new { Id = x.WorkspaceID, shortName = x.WorkspaceShortName, longName = x.WorkspaceName }).ToList()
+                                    .Select(x => (Id: x.Id, shortName: x.shortName, longName: x.longName)).ToList();
                 }
             }
 
