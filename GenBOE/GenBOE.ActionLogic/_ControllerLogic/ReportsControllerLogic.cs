@@ -237,8 +237,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="exportInputs">the export inputs</param>
         /// <param name="boeExportModelViews">the boe export model views</param>
         /// <param name="boeSummaryGridModelViews">the boe summary grid model veiws</param>
+        /// <param name="segmentedOutput">Should the output be broken into segments and zipped</param>
         public void ExportAllBOEsReport(FullWorkspace workspace, ICollection<BoeCustomReportComponent> selectedComponents, HttpResponseBase httpResponse, bool isCustomExport, 
-            WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, List<BOESummaryGridModelView> boeSummaryGridModelViews)
+            WorkspaceExportFormatDTO wsExportFormatDTO, BOEExportInputs exportInputs, ICollection<BOEExportModelView> boeExportModelViews, List<BOESummaryGridModelView> boeSummaryGridModelViews, bool segmentedOutput = false)
         {
             if (workspace == null)
             {
@@ -261,13 +262,44 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 // if legacy, use original MASTER, otherwise use selected template
                 WorkspaceExportFormatDTO exportFormat = wsExportFormatDTO.ExportFormat.ParentTemplateId < 9001 || wsExportFormatDTO.ExportFormat.ParentTemplateId >10000 || wsExportFormatDTO.ExportFormat.ParentTemplateId == null ? this.workspaceExportFormatDTOLoader.GetById((int)ExcelReportTemplateType.MASTER) : wsExportFormatDTO;
 
-                // Call the export function in the business layer and get back the file name of the populated template.
-                this.boeCustomExporter.ExportBOEToWordFile(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, selectedComponents, httpResponse, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty), exportFormat);
+                if (segmentedOutput)
+                {
+                    this.boeCustomExporter.ExportBOEsToZipFile(
+                        exportInputs,
+                        boeExportModelViews,
+                        boeSummaryGridModelViews,
+                        workspace,
+                        selectedComponents,
+                        httpResponse,
+                        string.Format("genBOEExport-{0}.zip", workspace.WorkspaceName).Replace(",", string.Empty),
+                        exportFormat);
+                }
+                else
+                {
+                    // Call the export function in the business layer and get back the file name of the populated template.
+                    this.boeCustomExporter.ExportBOEToWordFile(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, selectedComponents, httpResponse, string.Format("genBOECustomExport-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty), exportFormat);
+                }
             }
             else
             {
                 // Call the export function in the business layer and get back the file name of the populated template.
-                this.boeExporter.ExportBOEToWordFile(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, httpResponse, string.Format("genBOEExport-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty), wsExportFormatDTO.PhysicalFilePathCache, wsExportFormatDTO.ExportFormat.TemplateType);
+                if (segmentedOutput)
+                {
+                    this.boeExporter.ExportBOEsToZipFile(
+                        exportInputs,
+                        boeExportModelViews,
+                        boeSummaryGridModelViews,
+                        workspace,
+                        httpResponse,
+                        string.Format("genBOEExport-{0}.zip", workspace.WorkspaceName).Replace(",", string.Empty),
+                        wsExportFormatDTO.PhysicalFilePathCache,
+                        wsExportFormatDTO.ExportFormat.TemplateType
+                    );
+                }
+                else
+                {
+                    this.boeExporter.ExportBOEToWordFile(exportInputs, boeExportModelViews, boeSummaryGridModelViews, workspace, httpResponse, string.Format("genBOEExport-{0}.docx", workspace.WorkspaceName).Replace(",", string.Empty), wsExportFormatDTO.PhysicalFilePathCache, wsExportFormatDTO.ExportFormat.TemplateType);
+                }
             }
         }
 
