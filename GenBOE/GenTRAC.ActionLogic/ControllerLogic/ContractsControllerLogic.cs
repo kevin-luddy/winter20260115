@@ -166,7 +166,7 @@ namespace GenTRAC.ActionLogic
             dto.ContractsCorrespondenceLogNumber = model.ContractsCorrespondenceLogNumber;
             dto.FinalNegotiatedValue = model.FinalNegotiatedValueLong;
             dto.NegotiationsSubmitted = DateTime.Parse(model.NegotiationsSubmitted);
-            dto.UpdateDate = model.LastUpdatedDate;
+            dto.UpdateDateLong = model.LastUpdatedDateLong;
 
             ContractsOffersDto offerToCopy = new ContractsOffersDto();
 
@@ -210,7 +210,7 @@ namespace GenTRAC.ActionLogic
             model.ContractsCorrespondenceLogNumber = dto.ContractsCorrespondenceLogNumber;
             model.FinalNegotiatedValueLong = dto.FinalNegotiatedValue == null ? dto.FinalNegotiatedValue : long.Parse(dto.FinalNegotiatedValue.ToString());
             model.NegotiationsSubmittedDt = dto.NegotiationsSubmitted;
-            model.LastUpdatedDate = dto.UpdateDate;
+            model.LastUpdatedDateLong = dto.UpdateDateLong;
 
             foreach (ContractsOffersDto offer in dto.ContractOffers)
             {

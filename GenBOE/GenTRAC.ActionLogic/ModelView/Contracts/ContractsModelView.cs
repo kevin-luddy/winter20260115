@@ -139,7 +139,7 @@ namespace GenTRAC.ActionLogic.ModelView
         /// The date/time of the last update to the record
         /// </summary>
         [Display(Name = "The date and time of the last update to the record.")]
-        public DateTime LastUpdatedDate { get; set; }
+        public string LastUpdatedDateLong { get; set; }
 
         /// <summary>
         /// Contract Offers

@@ -139,10 +139,11 @@ namespace GenTRAC.Web.Controllers
                 GetModelStateErrors(response);
                 return Json(response);
             }
-
-            response.Status = true;
-
-            this.contractsLogic.SaveContract(model);
+            else
+            {
+                response.Status = true;
+                this.contractsLogic.SaveContract(model);
+            }            
 
             return this.Json(response);
         }
@@ -154,14 +155,11 @@ namespace GenTRAC.Web.Controllers
         /// <typeparam name="T">Type of model included in the response.</typeparam>
         private void GetModelStateErrors<T>(IESResponse<T> response)
         {
-            IEnumerable<ModelState> modelsWithErrors = ModelState.Values.Where(x => x.Errors.Count > 0);
+            List<ModelState> modelsWithErrors = ModelState.Values.Where(x => x.Errors.Any()).ToList();
 
-            foreach (ModelState model in modelsWithErrors)
+            foreach (ModelError model in modelsWithErrors.SelectMany(x => x.Errors))
             {
-                foreach (ModelError errorModel in model.Errors)
-                {
-                    response.Messages.Add(errorModel.ErrorMessage);
-                }
+                response.Messages.Add(model.ErrorMessage);                
             }
         }
     }
