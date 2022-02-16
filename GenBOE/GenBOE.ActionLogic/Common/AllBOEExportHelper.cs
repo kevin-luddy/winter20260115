@@ -171,9 +171,9 @@ namespace GenBOE.ActionLogic.Common
 		{
 			string outFileName = string.Empty;
 
-			char[] illegalCharacters = new[] {' ','/','\\','\n','\r','\'','"'};
-			string[] cleanedParts = boeTitle.Split(illegalCharacters, StringSplitOptions.RemoveEmptyEntries);
-			boeTitle = string.Join(".", cleanedParts);
+			boeTitle = StripIllegalFileNameCharacters(boeTitle);
+			wbsNumber = StripIllegalFileNameCharacters(wbsNumber);
+			clin = StripIllegalFileNameCharacters(clin);
 
 			if (exportSortOrder == SystemSettingConstants.EXPORT_SORT_WBS)
 			{
@@ -185,6 +185,19 @@ namespace GenBOE.ActionLogic.Common
 			}
 
 			return outFileName;
+		}
+
+		/// <summary>
+		/// Removes characters that cause issues when present in file names
+		/// </summary>
+		/// <param name="target">String to be cleaned</param>
+		/// <returns>String with illegal characters replaced</returns>
+		private static string StripIllegalFileNameCharacters(string target, string replacementValue=".")
+        {
+			char[] illegalCharacters = new[] { ' ', '/', '\\', '\n', '\r', '\'', '"' };
+			string[] cleanedParts = target.Split(illegalCharacters, StringSplitOptions.RemoveEmptyEntries);
+
+			return string.Join(replacementValue, cleanedParts);
 		}
 	}
 }
