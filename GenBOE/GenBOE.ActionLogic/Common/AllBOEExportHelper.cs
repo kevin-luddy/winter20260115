@@ -64,7 +64,7 @@ namespace GenBOE.ActionLogic.Common
 						// in order to reuse GenerateBOEToWordFileStream: we will create the expected list, but with just the single model
 						ICollection<BOEExportModelView> boe = new List<BOEExportModelView>() { model };
 
-						string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle.Replace(" ", string.Empty), model.BoeID, workSpace.BOEExportSortByID);
+						string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle, model.BoeID, workSpace.BOEExportSortByID);
 
 						getWordDocStream(exportInputs, boe, boeSummaryGridModelViews, workSpace, templatePath, file, templateType);
 						zipFiles.Add(fileName, new MemoryStream(file.ToArray()));
@@ -125,7 +125,7 @@ namespace GenBOE.ActionLogic.Common
 						// in order to reuse GenerateBOEToWordFileStream: we will create the expected list, but with just the single model
 						ICollection<BOEExportModelView> boe = new List<BOEExportModelView>() { model };
 
-						string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle.Replace(" ", string.Empty), model.BoeID, workSpace.BOEExportSortByID);
+						string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle, model.BoeID, workSpace.BOEExportSortByID);
 
 						getWordDocStream(exportInputs, boe, boeSummaryGridModelViews, workSpace, selectedComponents, file, exportFormat);
 						zipFiles.Add(fileName, new MemoryStream(file.ToArray()));
@@ -170,6 +170,10 @@ namespace GenBOE.ActionLogic.Common
 		private static string GenerateExportFileName(string wbsNumber, string clin, string boeTitle, int boeId, int exportSortOrder)
 		{
 			string outFileName = string.Empty;
+
+			char[] illegalCharacters = new[] {' ','/','\\','\n','\r','\'','"'};
+			string[] cleanedParts = boeTitle.Split(illegalCharacters, StringSplitOptions.RemoveEmptyEntries);
+			boeTitle = string.Join(".", cleanedParts);
 
 			if (exportSortOrder == SystemSettingConstants.EXPORT_SORT_WBS)
 			{
