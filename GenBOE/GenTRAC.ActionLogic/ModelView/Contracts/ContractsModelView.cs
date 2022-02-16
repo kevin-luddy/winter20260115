@@ -71,7 +71,7 @@ namespace GenTRAC.ActionLogic.ModelView
         /// Previously Submitted ROM (PTM record)
         /// </summary>
         [Display(Name= "Previously Submitted ROM")]
-        [Required(ErrorMessage = "Previously Submittied ROM is required.")]
+        [Required(ErrorMessage = "Previously Submitted ROM is required.")]
         public int? PreviouslySubmittedROM { get; set; }
 
         /// <summary>
