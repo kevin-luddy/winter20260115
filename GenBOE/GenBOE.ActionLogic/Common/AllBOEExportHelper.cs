@@ -64,7 +64,7 @@ namespace GenBOE.ActionLogic.Common
 						// in order to reuse GenerateBOEToWordFileStream: we will create the expected list, but with just the single model
 						ICollection<BOEExportModelView> boe = new List<BOEExportModelView>() { model };
 
-						string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle.Replace(" ", string.Empty), model.BoeID, workSpace.BOEExportSortByID);
+						string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle, model.BoeID, workSpace.BOEExportSortByID);
 
 						getWordDocStream(exportInputs, boe, boeSummaryGridModelViews, workSpace, templatePath, file, templateType);
 						zipFiles.Add(fileName, new MemoryStream(file.ToArray()));
@@ -125,7 +125,7 @@ namespace GenBOE.ActionLogic.Common
 						// in order to reuse GenerateBOEToWordFileStream: we will create the expected list, but with just the single model
 						ICollection<BOEExportModelView> boe = new List<BOEExportModelView>() { model };
 
-						string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle.Replace(" ", string.Empty), model.BoeID, workSpace.BOEExportSortByID);
+						string fileName = GenerateExportFileName(model.WBSNumber, model.CLINNumber, model.BOETitle, model.BoeID, workSpace.BOEExportSortByID);
 
 						getWordDocStream(exportInputs, boe, boeSummaryGridModelViews, workSpace, selectedComponents, file, exportFormat);
 						zipFiles.Add(fileName, new MemoryStream(file.ToArray()));
@@ -171,6 +171,10 @@ namespace GenBOE.ActionLogic.Common
 		{
 			string outFileName = string.Empty;
 
+			boeTitle = StripIllegalFileNameCharacters(boeTitle);
+			wbsNumber = StripIllegalFileNameCharacters(wbsNumber);
+			clin = StripIllegalFileNameCharacters(clin);
+
 			if (exportSortOrder == SystemSettingConstants.EXPORT_SORT_WBS)
 			{
 				outFileName = $"{wbsNumber}_{clin}_{boeTitle}_{boeId}.docx";
@@ -181,6 +185,20 @@ namespace GenBOE.ActionLogic.Common
 			}
 
 			return outFileName;
+		}
+
+		/// <summary>
+		/// Removes characters that cause issues when present in file names
+		/// </summary>
+		/// <param name="target">String to be cleaned</param>
+		/// <param name="replacementValue">Character to replace the illegal characters with. Defaults to "."</param>
+		/// <returns>String with illegal characters replaced</returns>
+		private static string StripIllegalFileNameCharacters(string target, string replacementValue=".")
+        {
+			char[] illegalCharacters = new[] { ' ', '/', '\\', '\n', '\r', '\'', '"' };
+			string[] cleanedParts = target.Split(illegalCharacters, StringSplitOptions.RemoveEmptyEntries);
+
+			return string.Join(replacementValue, cleanedParts);
 		}
 	}
 }
