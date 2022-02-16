@@ -18,6 +18,19 @@ namespace GenTRAC.ActionLogic.ModelView
     public class ContractsModelView
     {
         /// <summary>
+        /// ctor
+        /// </summary>
+        public ContractsModelView()
+        {
+            this.Id = -1;
+        }
+
+        /// <summary>
+        /// Id
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
         /// Gets or sets the Proposal Id that this Contract is linked to.
         /// </summary>
         public int ProposalId { get; set; }
@@ -41,7 +54,7 @@ namespace GenTRAC.ActionLogic.ModelView
         /// <summary>
         /// Final Negotiated Value
         /// </summary>
-        public int? FinalNegotiatedValueInt { get; set; }
+        public long? FinalNegotiatedValueLong { get; set; }
 
         /// <summary>
         /// Previous ROM Value
@@ -58,6 +71,7 @@ namespace GenTRAC.ActionLogic.ModelView
         /// Previously Submitted ROM (PTM record)
         /// </summary>
         [Display(Name= "Previously Submitted ROM")]
+        [Required(ErrorMessage = "Previously Submittied ROM is required.")]
         public int? PreviouslySubmittedROM { get; set; }
 
         /// <summary>
@@ -94,13 +108,14 @@ namespace GenTRAC.ActionLogic.ModelView
         /// Contracts Correspondence Log Number
         /// </summary>
         [Display(Name = "Contracts Correspondence Log Number")]
+        [Required(ErrorMessage = "Contracts Correspondence Log Number is required.")]
         public string ContractsCorrespondenceLogNumber { get; set; }
 
         /// <summary>
         /// Final Negotiated Value String
         /// </summary>
         [Display(Name = "Final Negotiated Value")]
-        public string FinalNegotiatedValue => this.FinalNegotiatedValueInt?.ToString("C");
+        public string FinalNegotiatedValue => this.FinalNegotiatedValueLong?.ToString("C");
 
         /// <summary>
         /// Date Confirmation of Negotiations Submitted String
@@ -119,6 +134,12 @@ namespace GenTRAC.ActionLogic.ModelView
                 }
             }
         }
+
+        /// <summary>
+        /// The date/time of the last update to the record
+        /// </summary>
+        [Display(Name = "The date and time of the last update to the record.")]
+        public DateTime LastUpdatedDate { get; set; }
 
         /// <summary>
         /// Contract Offers

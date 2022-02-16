@@ -32,6 +32,11 @@ namespace GenTRAC.ActionLogic
         private Logger log = new Logger(typeof(ContractsControllerLogic));
 
         /// <summary>
+        /// the name of the contracts information form, needed for validation
+        /// </summary>
+        public const string CONTRACTS_INFO_FORM = "contractsInfoForm";
+
+        /// <summary>
         /// The Contracts Loader
         /// </summary>
         private IContractsLoader contractsLoader = null;
@@ -154,12 +159,14 @@ namespace GenTRAC.ActionLogic
             ContractsDto dto = new ContractsDto();
             dto.Updateable = UpdateType.Upsert;
 
+            dto.Id = model.Id;
             dto.ProposalId = model.ProposalId;
             dto.PreviouslySubmittedROM = model.PreviouslySubmittedROM;
             dto.CustomerSubmittalDate = DateTime.Parse(model.CustomerSubmittalDate); 
             dto.ContractsCorrespondenceLogNumber = model.ContractsCorrespondenceLogNumber;
-            dto.FinalNegotiatedValue = model.FinalNegotiatedValueInt;
+            dto.FinalNegotiatedValue = model.FinalNegotiatedValueLong;
             dto.NegotiationsSubmitted = DateTime.Parse(model.NegotiationsSubmitted);
+            dto.UpdateDate = model.LastUpdatedDate;
 
             ContractsOffersDto offerToCopy = new ContractsOffersDto();
 
@@ -196,12 +203,14 @@ namespace GenTRAC.ActionLogic
 
             ContractsModelView model = new ContractsModelView();
 
+            model.Id = dto.Id;
             model.ProposalId = dto.ProposalId;
             model.PreviouslySubmittedROM = dto.PreviouslySubmittedROM;
             model.CustomerSubmittalDt = dto.CustomerSubmittalDate;
             model.ContractsCorrespondenceLogNumber = dto.ContractsCorrespondenceLogNumber;
-            model.FinalNegotiatedValueInt = int.Parse(dto.FinalNegotiatedValue.ToString());
+            model.FinalNegotiatedValueLong = dto.FinalNegotiatedValue == null ? dto.FinalNegotiatedValue : long.Parse(dto.FinalNegotiatedValue.ToString());
             model.NegotiationsSubmittedDt = dto.NegotiationsSubmitted;
+            model.LastUpdatedDate = dto.UpdateDate;
 
             foreach (ContractsOffersDto offer in dto.ContractOffers)
             {

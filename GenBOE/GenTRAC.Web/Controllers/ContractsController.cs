@@ -7,6 +7,7 @@
 namespace GenTRAC.Web.Controllers
 {
     using System;
+    using System.Linq;
     using System.Web.Mvc;
     using GenTRAC.ActionLogic;
     using GenTRAC.ActionLogic.ModelView;
@@ -130,9 +131,37 @@ namespace GenTRAC.Web.Controllers
 
             _ = model ?? throw new ArgumentNullException(nameof(model));
 
+            IESResponse<ContractsModelView> response = new IESResponse<ContractsModelView>();
+
+            if (!ModelState.IsValid)
+            {
+                GetModelStateErrors(response);
+                return Json(response);
+            }
+
+            response.Status = true;
+
             this.contractsLogic.SaveContract(model);
 
-            return this.Json(new { Status = true });
+            return this.Json(response);
+        }
+
+        /// <summary>
+        /// Extracts the error messages from ModelState
+        /// </summary>
+        /// <param name="response">Generic response object</param>
+        /// <typeparam name="T">Type of model included in the response.</typeparam>
+        private void GetModelStateErrors<T>(IESResponse<T> response)
+        {
+            var errors = ModelState.Values.Where(x => x.Errors.Count > 0);
+
+            foreach (var error in errors)
+            {
+                foreach (var errorModel in error.Errors)
+                {
+                    response.Messages.Add(errorModel.ErrorMessage);
+                }
+            }
         }
     }
 }
