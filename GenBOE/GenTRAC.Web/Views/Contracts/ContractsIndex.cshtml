@@ -47,7 +47,7 @@
 
         // Returns all of the data from the child widgets.
         ContractsIndexWidget.GetData = function () {
-            var dataToSave = {};
+            let dataToSave = {};
             dataToSave.model = ContractsInfoWidget.getForm("@GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM").getData();
             dataToSave.model.ContractOffers = [];
             dataToSave.model.FinalNegotiatedValueLong = parseFloat(dataToSave.model.FinalNegotiatedValue.replace(/\$|,/g, ''));
@@ -109,7 +109,7 @@
         ContractsIndexWidget.SaveSuccess = function (proposalId) {
             ContractsIndexWidget.cleanDirty();
 
-            var url =  GenSession.CreateUrl({
+            const url =  GenSession.CreateUrl({
                 controller: '@WebConstants.Controller.PROPOSAL',
                 action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
                 id: proposalId
