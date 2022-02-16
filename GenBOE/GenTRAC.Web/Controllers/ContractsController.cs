@@ -154,7 +154,7 @@ namespace GenTRAC.Web.Controllers
         /// <typeparam name="T">Type of model included in the response.</typeparam>
         private void GetModelStateErrors<T>(IESResponse<T> response)
         {
-            IEnumerable<ModelState> modelsWithErrors = ModelState.Values.Where(x => x.Errors.Count > 0).ToList();
+            IEnumerable<ModelState> modelsWithErrors = ModelState.Values.Where(x => x.Errors.Count > 0);
 
             foreach (ModelState model in modelsWithErrors)
             {
