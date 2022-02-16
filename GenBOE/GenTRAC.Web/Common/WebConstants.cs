@@ -448,7 +448,7 @@ namespace GenTRAC.Web.Common
             /// <summary>
             /// Save Contracts
             /// </summary>
-            public const string SAVE_CONTRACTS = "SaveContracts";
+            public const string SAVE_CONTRACT = "SaveContract";
 
             #endregion
 

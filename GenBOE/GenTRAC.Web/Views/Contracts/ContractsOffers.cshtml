@@ -4,7 +4,8 @@
     var ContractsOfferWidget;
     var i = 0;
 
-	$(function () {
+    // Setup the page
+    $(function () {
         var readOnly = @ViewBag.ReadOnly.ToString().ToLower();
         var widgetConfig = {};
         widgetConfig.ContextID = "contractsOffers";
@@ -15,7 +16,23 @@
         ContractsOfferWidget.getElement('button.offer-button').hide();
 
         ContractsOfferWidget.deleteOffer = function (item) {
-            $(item).closest('div.offerWrapper').remove();
+            var offerToDelete = $(item).closest('div.offerWrapper');
+            var offerToDeleteId = $(offerToDelete).find('[name="Id"]').val();
+
+            GenSession.confirmDialog(
+                "Confirm Deletion",
+                "Confirm you want to delete this offer?",
+                function ()
+                {
+                    // TODO: Pass offer Id to method that will keep track of offers to be deleted once the save button is hit. 
+                    // After Save is hit, send the the Offer Id a method that will delete that row from the database. 
+                    console.log(offerToDeleteId);
+
+                    // offerToDelete.remove();
+                    offerToDelete.hide();
+
+                }, null);
+
             ContractsOfferWidget.setDirty("contractsForm");
             ContractsOfferWidget.refreshModule();
         }
@@ -63,19 +80,24 @@
                     $(parent).find('[name="LMCounterOfferCost"]').val(response.Cost);
                     $(parent).find('[name="LMCounterOfferCOM"]').val(response.Com);
                     $(parent).find('[name="LMCounterOfferProfitFee"]').val(response.ProfitFee);
-
                     $(parent).find('[name="LMCounterOfferTotalPrice"]').text(response.TotalPrice);
                     $(parent).find('[name="LMCounterOfferROS"]').text(response.Ros);
                 }
             });
         }
 
+        // Retrieves offers objects
+        ContractsOfferWidget.getOffers = function () {
+            return $(".offerWrapper");
+        };
+
         if (!readOnly) {
             ContractsOfferWidget.getElement('input.date:visible').datepicker({ dateFormat: 'm/d/yy', onSelect: function () { ContractsOfferWidget.setDirty("contractsForm"); } });
             ContractsOfferWidget.getElement('button.offer-button').show();
         }
-	});
+    });
 </script>
+
 <div id="contractsOffers" class="composite module full">
     <ul class="validation-box"></ul>
     <div class="module-header-data">Offers
@@ -108,7 +130,7 @@
                 <div class="form-row">
                     <div class="form-label">@Html.LabelFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferCost)</div>
                     <div class="form-element">
-                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferCost, new { @class = "half", id = "LMCounterOfferCost_" + i.ToString(), onchange= "ContractsOfferWidget.recalculateOffer(this)" })
+                        @Html.TextBoxFor(x => x.ContractOffers.ElementAt(i).LMCounterOfferCost, new { @class = "half", id = "LMCounterOfferCost_" + i.ToString(), onchange = "ContractsOfferWidget.recalculateOffer(this)" })
                     </div>
                 </div>
                 <div class="form-row">

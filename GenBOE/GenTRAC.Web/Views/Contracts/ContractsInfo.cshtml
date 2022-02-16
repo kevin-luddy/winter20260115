@@ -39,56 +39,75 @@
             }
         }
 
-        if (!readOnly) {
-            ContractsInfoWidget.getElement('input.date').datepicker({ dateFormat: 'm/d/yy', onSelect: function () { ContractsOfferWidget.setDirty("contractsForm"); } });
-        }
-	});
+        const handleDateSelect = () => {
+            ContractsInfoWidget.setDirty("contractsForm");
+            $(this).blur();
+            $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+            $(this).next('button.ui-datepicker-trigger').focus();
+        };
+
+        ContractsInfoWidget.getElement('input[name="CustomerSubmittalDate"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: handleDateSelect
+        });
+
+        ContractsInfoWidget.getElement('input[name="NegotiationsSubmitted"]').datepicker({
+            dateFormat: 'mm/dd/yy',
+            onSelect: handleDateSelect
+        });
+    });
 </script>
 
 <div id="contractsInfo" class="composite module full">
     <div class="module-header-data">Contract Information</div>
     <div class="module-content-data expanded-content">
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.PreviouslySubmittedROM) *</div>
-            <div class="form-element">
-                @Html.DropDownListFor(x => x.PreviouslySubmittedROM, Model.PreviouslySubmittedRoms, string.Empty, new { @class = "half", onchange = "ContractsInfoWidget.romChanged()" })
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM, name = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM }))
+        {
+            @Html.HiddenFor(x => x.Id)
+            @Html.HiddenFor(x => x.ProposalId)
+            @Html.HiddenFor(x => x.LastUpdatedDateLong);
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.PreviouslySubmittedROM) *</div>
+                <div class="form-element">
+                    @Html.DropDownListFor(x => x.PreviouslySubmittedROM, Model.PreviouslySubmittedRoms, string.Empty, new { @class = "half", onchange = "ContractsInfoWidget.romChanged()" })
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.PreviousROMDate)</div>
-            <div class="form-element" name="PreviousROMDate">
-                @Html.DisplayFor(x => x.PreviousROMDate)
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.PreviousROMDate)</div>
+                <div class="form-element" name="PreviousROMDate">
+                    @Html.DisplayFor(x => x.PreviousROMDate)
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.PreviousROMValue)</div>
-            <div class="form-element" name="PreviousROMValue">
-                @Html.DisplayFor(x => x.PreviousROMValue)
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.PreviousROMValue)</div>
+                <div class="form-element" name="PreviousROMValue">
+                    @Html.DisplayFor(x => x.PreviousROMValue)
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.CustomerSubmittalDate)</div>
-            <div class="form-element">
-                @Html.TextBoxFor(x => x.CustomerSubmittalDate, new { @class = "date", placeholder = "mm/dd/yyyy" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.CustomerSubmittalDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.CustomerSubmittalDate, new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.ContractsCorrespondenceLogNumber) *</div>
-            <div class="form-element">
-                @Html.TextBoxFor(x => x.ContractsCorrespondenceLogNumber, new { @class = "half" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.ContractsCorrespondenceLogNumber) *</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.ContractsCorrespondenceLogNumber, new { @class = "half" })
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.FinalNegotiatedValue)</div>
-            <div class="form-element">
-                @Html.TextBoxFor(x => x.FinalNegotiatedValue, new { @class = "half" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.FinalNegotiatedValue)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.FinalNegotiatedValue, new { @class = "half" })
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.NegotiationsSubmitted)</div>
-            <div class="form-element">
-                @Html.TextBoxFor(x => x.NegotiationsSubmitted, new { @class = "date", placeholder = "mm/dd/yyyy" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.NegotiationsSubmitted)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.NegotiationsSubmitted, new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
             </div>
-        </div>
+        }
     </div>
 </div>
