@@ -191,6 +191,7 @@ namespace GenBOE.ActionLogic.Common
 		/// Removes characters that cause issues when present in file names
 		/// </summary>
 		/// <param name="target">String to be cleaned</param>
+		/// <param name="replacementValue">Character to replace the illegal characters with. Defaults to "."</param>
 		/// <returns>String with illegal characters replaced</returns>
 		private static string StripIllegalFileNameCharacters(string target, string replacementValue=".")
         {
