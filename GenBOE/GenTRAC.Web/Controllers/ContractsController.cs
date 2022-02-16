@@ -7,6 +7,7 @@
 namespace GenTRAC.Web.Controllers
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Web.Mvc;
     using GenTRAC.ActionLogic;
@@ -153,11 +154,11 @@ namespace GenTRAC.Web.Controllers
         /// <typeparam name="T">Type of model included in the response.</typeparam>
         private void GetModelStateErrors<T>(IESResponse<T> response)
         {
-            var errors = ModelState.Values.Where(x => x.Errors.Count > 0);
+            IEnumerable<ModelState> modelsWithErrors = ModelState.Values.Where(x => x.Errors.Count > 0).ToList();
 
-            foreach (var error in errors)
+            foreach (ModelState model in modelsWithErrors)
             {
-                foreach (var errorModel in error.Errors)
+                foreach (ModelError errorModel in model.Errors)
                 {
                     response.Messages.Add(errorModel.ErrorMessage);
                 }
