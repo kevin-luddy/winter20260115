@@ -676,9 +676,13 @@ namespace IES.Common
     /// </summary>
     public enum EppDelegationAuthority
     {
+        [Description("Program")]
         Program = 1,
+        [Description("Line of Business")]
         LoB = 2,
+        [Description("Space")]
         Space = 3,
+        [Description("Corporate")]
         Corporate = 4
     }
 

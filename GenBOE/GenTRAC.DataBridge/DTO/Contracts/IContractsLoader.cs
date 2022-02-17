@@ -7,6 +7,7 @@
 namespace GenTRAC.DataBridge.DTO
 {
     using System.Collections.Generic;
+    using System.Web.Mvc;
     using IES.Common;
 
     /// <summary>
@@ -32,5 +33,12 @@ namespace GenTRAC.DataBridge.DTO
         /// </returns>
         /// <exception cref="System.NotImplementedException">This method should never be called.</exception>
         ICollection<ContractsDto> GetByIds(ICollection<int> ids);
+
+        /// <summary>
+        /// Gets a list of select items representing the EppDelegationAuthority enumeration values
+        /// </summary>
+        /// <param name="selectedValue">Enum option that should be selected by default</param>
+        /// <returns>List of SelectListItems</returns>
+        ICollection<SelectListItem> GetEppSelectValues(EppDelegationAuthority selectedValue);
     }
 }

@@ -93,8 +93,8 @@ namespace GenTRAC.Web.Controllers
             }
             else
             {
-                response.Status = true;
                 this.contractsLogic.SaveContract(model);
+                response.Status = true;
             }            
 
             return this.Json(response);

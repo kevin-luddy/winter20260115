@@ -9,6 +9,7 @@ namespace GenTRAC.DataBridge.DTO
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Web.Mvc;
     using GenTRAC.Models;
     using IES.Common;
 
@@ -137,64 +138,32 @@ namespace GenTRAC.DataBridge.DTO
         }
 
         /// <summary>
-        /// Saves a Proposal Contract Offer
+        /// Gets a list of select items representing the EppDelegationAuthority enumeration values
         /// </summary>
-        /// <param name="contractOfferDtoToUpsert">Proposal Contract Offer to save.</param>
-        /// <returns>Id of the upserted item.</returns>
-        private int? UpsertContractsOffer(ContractsOffersDto contractOfferDtoToUpsert)
+        /// <param name="selectedValue">Enum option that should be selected by default</param>
+        /// <returns>List of SelectListItems</returns>
+        public ICollection<SelectListItem> GetEppSelectValues(EppDelegationAuthority selectedValue)
         {
-            int? toReturn = null;
+            ICollection<SelectListItem> result = new List<SelectListItem>();
 
-            using (StopwatchTimer sw = new StopwatchTimer("ContractsLoader.UpsertContractsOffers", Log))
+            EppDelegationAuthority[] enums = (EppDelegationAuthority[])Enum.GetValues(typeof(EppDelegationAuthority));
+
+            // add blank option
+            result.Add(new SelectListItem { Value = "0", Text = "(Select)", Selected = (int)selectedValue == 0 });
+
+            foreach (EppDelegationAuthority item in enums)
             {
-                if (contractOfferDtoToUpsert != null)
+                SelectListItem sl = new SelectListItem()
                 {
-                    // save
-                    using (genTRACEntities dbModel = new genTRACEntities())
-                    {
-                        toReturn = dbModel.upsertProposalContractsOffers(
-                            contractOfferDtoToUpsert.Id,
-                            contractOfferDtoToUpsert.UpdateDate,
-                            contractOfferDtoToUpsert.ContractsDataId,
-                            contractOfferDtoToUpsert.CustomerOfferAmount,
-                            contractOfferDtoToUpsert.CustomerOfferDate,
-                            contractOfferDtoToUpsert.LMCounterOfferDate,
-                            contractOfferDtoToUpsert.LMCounterOfferCost,
-                            contractOfferDtoToUpsert.LMCounterOfferCOM,
-                            contractOfferDtoToUpsert.LMCounterOfferProfitFee
-                            ).FirstOrDefault();
-                    }
-                }
+                    Value = item.ToString(),
+                    Text = item.GetDescription<EppDelegationAuthority>(),
+                    Selected = item == selectedValue
+                };
+
+                result.Add(sl);
             }
 
-            return toReturn;
-        }
-
-        /// <summary>
-        /// Deletes a Proposal Contract
-        /// </summary>
-        /// <param name="contractOfferDtoToDelete">Proposal Contract Offer to delete.</param>
-        /// <returns>Id of the deleted item.</returns>
-        private int? DeleteContractsOffer(ContractsOffersDto contractOfferDtoToDelete)
-        {
-            int? toReturn = null;
-
-            using (StopwatchTimer sw = new StopwatchTimer("ContractsLoader.DeleteContractsOffers", Log))
-            {
-                if (contractOfferDtoToDelete != null)
-                {
-                    // delete
-                    using (genTRACEntities dbModel = new genTRACEntities())
-                    {
-                        toReturn = dbModel.deleteProposalContractsOffers(
-                            contractOfferDtoToDelete.Id,
-                            contractOfferDtoToDelete.UpdateDate
-                            );
-                    }
-                }
-            }
-
-            return toReturn;
+            return result;
         }
     }
 }
