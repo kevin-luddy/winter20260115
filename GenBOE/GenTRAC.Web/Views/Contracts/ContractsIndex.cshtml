@@ -49,7 +49,6 @@
         ContractsIndexWidget.GetData = function () {
             let dataToSave = {};
             dataToSave.model = ContractsInfoWidget.getForm("@GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM").getData();
-            dataToSave.model.ContractOffers = [];
             dataToSave.model.FinalNegotiatedValueLong = parseFloat(dataToSave.model.FinalNegotiatedValue.replace(/\$|,/g, ''));
 
             return dataToSave;

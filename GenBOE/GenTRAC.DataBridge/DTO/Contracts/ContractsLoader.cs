@@ -52,24 +52,6 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.NegotiationsSubmitted
                             ).FirstOrDefault();
                     }
-
-                    foreach (ContractsOffersDto contractOffer in dtoToUpsert.ContractOffers)
-                    {
-                        contractOffer.ContractsDataId = toReturn.Value;
-
-                        if (contractOffer.Updateable == UpdateType.Upsert)
-                        {
-                            UpsertContractsOffer(contractOffer);
-                        }
-                        else if (contractOffer.Updateable == UpdateType.Deleted)
-                        {
-                            DeleteContractsOffer(contractOffer);
-                        }
-                        else
-                        {
-                            throw new ArgumentException("The dto did not specify the Updateable type.");
-                        }
-                    }
                 }
             }
 
@@ -114,18 +96,6 @@ namespace GenTRAC.DataBridge.DTO
                             ContractsCorrespondenceLogNumber = x.ContractsCorrespondLogNumber,
                             FinalNegotiatedValue = x.FinalNegotiatedValue,
                             NegotiationsSubmitted = x.FinalNegotiatedDate,
-                            ContractOffers = x.ProposalContractsOffers.Select(y => new ContractsOffersDto
-                            {
-                                Id = y.ProposalContractsOffersId,
-                                UpdateDate = y.UpdateDT,
-                                ContractsDataId = y.ContractsDataId,
-                                CustomerOfferAmount = y.CustomerOfferAmount,
-                                CustomerOfferDate = y.CustomerOfferDate,
-                                LMCounterOfferDate = (DateTime)y.LMCounterOfferDate,
-                                LMCounterOfferCost = (long)y.LMCounterOfferCost,
-                                LMCounterOfferCOM = (long)y.LMCounterOfferCOM,
-                                LMCounterOfferProfitFee = (long)y.LMCounterOfferProfitFee
-                            }).ToList()
                         }).FirstOrDefault();
                 }
             }
@@ -158,19 +128,7 @@ namespace GenTRAC.DataBridge.DTO
                             CustomerSubmittalDate = x.CustomerSubmittalDate,
                             ContractsCorrespondenceLogNumber = x.ContractsCorrespondLogNumber,
                             FinalNegotiatedValue = x.FinalNegotiatedValue,
-                            NegotiationsSubmitted = x.FinalNegotiatedDate,
-                            ContractOffers = x.ProposalContractsOffers.Select(y => new ContractsOffersDto
-                            {
-                                Id = y.ProposalContractsOffersId,
-                                UpdateDate = y.UpdateDT,
-                                ContractsDataId = y.ContractsDataId,
-                                CustomerOfferAmount = y.CustomerOfferAmount,
-                                CustomerOfferDate = y.CustomerOfferDate,
-                                LMCounterOfferDate = (DateTime)y.LMCounterOfferDate,
-                                LMCounterOfferCost = (long)y.LMCounterOfferCost,
-                                LMCounterOfferCOM = (long)y.LMCounterOfferCOM,
-                                LMCounterOfferProfitFee = (long)y.LMCounterOfferProfitFee
-                            }).ToList()
+                            NegotiationsSubmitted = x.FinalNegotiatedDate
                         }).ToList();
                 }
             }

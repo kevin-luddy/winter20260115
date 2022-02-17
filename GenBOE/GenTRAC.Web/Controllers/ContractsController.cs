@@ -54,31 +54,6 @@ namespace GenTRAC.Web.Controllers
         }
 
         /// <summary>
-        /// Calculates Offer Fields
-        /// </summary>
-        /// <param name="proposalId">Needed by MVC routing</param>
-        /// <param name="counterOfferCost">Counter Offer Cost</param>
-        /// <param name="counterOfferCom">Counter Offer COM</param>
-        /// <param name="counterOfferProfitFee">Counter Offer Profit / Fee</param>
-        /// <returns>Total Counter Offer Price and Counter Offer ROS</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "proposalId")]
-        public JsonResult CalculateOfferFields(int proposalId, string counterOfferCost, string counterOfferCom, string counterOfferProfitFee)
-        {
-            int? cost = this.ProcessOfferInput(counterOfferCost, "LM Counter Offer Cost");
-            int? com = this.ProcessOfferInput(counterOfferCom, "LM Counter Offer COM");
-            int? profitFee = this.ProcessOfferInput(counterOfferProfitFee, "LM Counter Offer Profit/Fee");
-
-            ContractsOfferModelView model = new ContractsOfferModelView()
-            {
-                LMCounterOfferCostInt = cost,
-                LMCounterOfferCOMInt = com,
-                LMCounterOfferProfitFeeInt = profitFee
-            };
-
-            return Json(new { Cost = model.LMCounterOfferCost, Com = model.LMCounterOfferCOM, ProfitFee = model.LMCounterOfferProfitFee, TotalPrice = model.LMCounterOfferTotalPrice, Ros = model.LMCounterOfferROS });
-        }
-
-        /// <summary>
         /// Get ROM Date and Value
         /// </summary>
         /// <param name="proposalId">Needed by MVC routing</param>
@@ -90,29 +65,6 @@ namespace GenTRAC.Web.Controllers
             Tuple<DateTime?, decimal?> data = this.contractsLogic.GetRomDateAndValue(previousRomProposalId);
 
             return Json(new { Date = data?.Item1?.ToShortDateString() ?? "N/A", Value = data?.Item2?.ToString("C") ?? "N/A" });
-        }
-
-        /// <summary>
-        /// Massages user inputs and attempts to convert them into a number
-        /// </summary>
-        /// <param name="fieldValue">Field value (to be converted into a number)</param>
-        /// <param name="fieldDisplayLabel">Field label, in case of a problem</param>
-        /// <returns>Null if blank, int if valid</returns>
-        private int? ProcessOfferInput(string fieldValue, string fieldDisplayLabel)
-        {
-            int? result = null;
-
-            if (!string.IsNullOrEmpty(fieldValue))
-            {
-                if (!decimal.TryParse(fieldValue.Replace("$", string.Empty).Replace(",", string.Empty), out decimal temp))
-                {
-                    throw new GenValidationException($"{fieldDisplayLabel} must be a valid number.");
-                }
-
-                result = decimal.ToInt32(temp);
-            }
-
-            return result;
         }
 
         /// <summary>

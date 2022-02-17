@@ -672,6 +672,17 @@ namespace IES.Common
     }
 
     /// <summary>
+    /// EPP Levels
+    /// </summary>
+    public enum EppDelegationAuthority
+    {
+        Program = 1,
+        LoB = 2,
+        Space = 3,
+        Corporate = 4
+    }
+
+    /// <summary>
     /// ProPricer Types
     /// </summary>
     public enum ProPricerType

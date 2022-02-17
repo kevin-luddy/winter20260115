@@ -52,10 +52,5 @@ namespace GenTRAC.DataBridge.DTO
         /// Date Confirmation of Negotiations Submitted String
         /// </summary>
         public DateTime? NegotiationsSubmitted { get; set; }
-
-        /// <summary>
-        /// Contract Offers
-        /// </summary>
-        public ICollection<ContractsOffersDto> ContractOffers { get; set; } = new List<ContractsOffersDto>();
     }
 }

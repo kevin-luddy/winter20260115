@@ -141,9 +141,26 @@ namespace GenTRAC.ActionLogic.ModelView
         [Display(Name = "The date and time of the last update to the record.")]
         public string LastUpdatedDateLong { get; set; }
 
-        /// <summary>
-        /// Contract Offers
-        /// </summary>
-        public ICollection<ContractsOfferModelView> ContractOffers { get; set; } = new List<ContractsOfferModelView>();
+        //IES-842
+        public EppDelegationAuthority EppDelegationAuthority { get; set; }
+
+        public DateTime? ProgramEppDate { get; set; }
+
+        public DateTime? LobEppDate { get; set; }
+
+        public DateTime? PreSpaceEppDate { get; set; }
+
+        public DateTime? SpaceEppDate { get; set; }
+
+        public DateTime PreCorporateEppDate { get; set; }
+
+        public DateTime? CorporateEppDate { get; set; }
+
+        [MaxLength(1000)]
+        public string EppRosDelegationNotes { get; set; }
+
+        public bool? LmWon { get; set; }
+
+        public DateTime? ModCompletedDate { get; set; }
     }
 }

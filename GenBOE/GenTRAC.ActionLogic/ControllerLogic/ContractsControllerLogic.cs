@@ -168,23 +168,6 @@ namespace GenTRAC.ActionLogic
             dto.NegotiationsSubmitted = DateTime.Parse(model.NegotiationsSubmitted);
             dto.UpdateDateLong = model.LastUpdatedDateLong;
 
-            ContractsOffersDto offerToCopy = new ContractsOffersDto();
-
-            foreach (ContractsOfferModelView offer in model.ContractOffers)
-            {
-                if (offer != null)
-                {
-                    offerToCopy.CustomerOfferAmount = long.Parse(offer.CustomerOfferAmount);
-                    offerToCopy.CustomerOfferDate = DateTime.Parse(offer.CustomerOfferDate);
-                    offerToCopy.LMCounterOfferDate = DateTime.Parse(offer.LMCounterOfferDate);
-                    offerToCopy.LMCounterOfferCost = long.Parse(offer.LMCounterOfferCost);
-                    offerToCopy.LMCounterOfferCOM = long.Parse(offer.LMCounterOfferCOM);
-                    offerToCopy.LMCounterOfferProfitFee = long.Parse(offer.LMCounterOfferProfitFee);
-
-                    dto.ContractOffers.Add(offerToCopy);
-                }
-            };
-
             return dto;
         }
 
@@ -211,22 +194,6 @@ namespace GenTRAC.ActionLogic
             model.FinalNegotiatedValueLong = dto.FinalNegotiatedValue == null ? dto.FinalNegotiatedValue : long.Parse(dto.FinalNegotiatedValue.ToString());
             model.NegotiationsSubmittedDt = dto.NegotiationsSubmitted;
             model.LastUpdatedDateLong = dto.UpdateDateLong;
-
-            foreach (ContractsOffersDto offer in dto.ContractOffers)
-            {
-                if (offer != null)
-                {
-                    model.ContractOffers.Add(new ContractsOfferModelView()
-                    {
-                        CustomerOfferAmountInt = (int)offer.CustomerOfferAmount,
-                        CustomerOfferDt = offer.CustomerOfferDate,
-                        LmCounterOfferDt = offer.LMCounterOfferDate,
-                        LMCounterOfferCostInt = (int)offer.LMCounterOfferCost,
-                        LMCounterOfferCOMInt = (int)offer.LMCounterOfferCOM,
-                        LMCounterOfferProfitFeeInt = (int)offer.LMCounterOfferProfitFee
-                    });
-                }
-            };
 
             return model;
         }

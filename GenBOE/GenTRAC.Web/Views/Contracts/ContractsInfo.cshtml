@@ -108,6 +108,13 @@
                     @Html.TextBoxFor(x => x.NegotiationsSubmitted, new { @class = "date", placeholder = "mm/dd/yyyy" })
                 </div>
             </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.EppDelegationAuthority)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.EppDelegationAuthority)
+                    @Html.DropDownListFor(model => model.EppDelegationAuthority, Model.EppDelegationAuthority, new { name = "EppDelegationAuthority" })
+                </div>
+            </div>
         }
     </div>
 </div>
