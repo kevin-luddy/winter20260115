@@ -2,6 +2,27 @@
 <script type="text/javascript">
     var ContractsInfoWidget;
 
+    const dateElements = [
+        'CustomerSubmittalDate',
+        'NegotiationsSubmitted',
+        'ProgramEppDate',
+        'LobEppDate',
+        'PreSpaceEppDate',
+        'SpaceEppDate',
+        'PreCorporateEppDate',
+        'CorporateEppDate',
+        'ModCompletedDate'
+    ];
+
+    const initDatePickerElements = handleDateSelect => {
+        dateElements.forEach(element => {
+            ContractsInfoWidget.getElement('input[name="' + element + '"]').datepicker({
+                dateFormat: 'mm/dd/yy',
+                onSelect: handleDateSelect
+            });
+        })
+    };
+
     $(function () {
         var readOnly = @ViewBag.ReadOnly.ToString().ToLower();
         var widgetConfig = {};
@@ -40,56 +61,13 @@
         }
 
         const handleDateSelect = () => {
-            ContractsInfoWidget.setDirty("contractsForm");
+            ContractsInfoWidget.setDirty('contractsForm');
             $(this).blur();
             $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
             $(this).next('button.ui-datepicker-trigger').focus();
         };
 
-        ContractsInfoWidget.getElement('input[name="CustomerSubmittalDate"]').datepicker({
-            dateFormat: 'mm/dd/yy',
-            onSelect: handleDateSelect
-        });
-
-        ContractsInfoWidget.getElement('input[name="NegotiationsSubmitted"]').datepicker({
-            dateFormat: 'mm/dd/yy',
-            onSelect: handleDateSelect
-        });
-
-        ContractsInfoWidget.getElement('input[name="ProgramEppDate"]').datepicker({
-            dateFormat: 'mm/dd/yy',
-            onSelect: handleDateSelect
-        });
-
-        ContractsInfoWidget.getElement('input[name="LobEppDate"]').datepicker({
-            dateFormat: 'mm/dd/yy',
-            onSelect: handleDateSelect
-        });
-
-        ContractsInfoWidget.getElement('input[name="PreSpaceEppDate"]').datepicker({
-            dateFormat: 'mm/dd/yy',
-            onSelect: handleDateSelect
-        });
-
-        ContractsInfoWidget.getElement('input[name="SpaceEppDate"]').datepicker({
-            dateFormat: 'mm/dd/yy',
-            onSelect: handleDateSelect
-        });
-
-        ContractsInfoWidget.getElement('input[name="PreCorporateEppDate"]').datepicker({
-            dateFormat: 'mm/dd/yy',
-            onSelect: handleDateSelect
-        });
-
-        ContractsInfoWidget.getElement('input[name="CorporateEppDate"]').datepicker({
-            dateFormat: 'mm/dd/yy',
-            onSelect: handleDateSelect
-        });
-
-        ContractsInfoWidget.getElement('input[name="ModCompletedDate"]').datepicker({
-            dateFormat: 'mm/dd/yy',
-            onSelect: handleDateSelect
-        });
+        initDatePickerElements(handleDateSelect);
     });
 </script>
 
