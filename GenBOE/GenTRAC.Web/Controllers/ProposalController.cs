@@ -336,15 +336,9 @@ namespace GenTRAC.Web.Controllers
         public JsonResult SaveProposal(int? proposalId, ProposalInformationModelView proposalInfo, ProposalGeneralInformationModelView proposalGeneralInfo,
             ProposalApprovalsModelView proposalApprovalsInfo, ProposalUserInformationModelView proposalUserInfo, ProposalCommentsModelView proposalComments, int? revisionOfId, bool isNewRevision = false)
         {
-            if (proposalGeneralInfo == null)
-            {
-                throw new ArgumentNullException(nameof(proposalGeneralInfo));
-            }
-
-            if (proposalApprovalsInfo == null)
-            {
-                throw new ArgumentNullException(nameof(proposalApprovalsInfo));
-            }
+            _ = proposalInfo ?? throw new ArgumentNullException(nameof(proposalInfo));
+            _ = proposalGeneralInfo ?? throw new ArgumentNullException(nameof(proposalGeneralInfo));
+            _ = proposalApprovalsInfo ?? throw new ArgumentNullException(nameof(proposalApprovalsInfo));
 
             if (isNewRevision)
             {
@@ -363,6 +357,12 @@ namespace GenTRAC.Web.Controllers
                 {
                     ProposalDto proposal = this.proposalLogic.GetByProposalId(revisionOfId.Value);
                     this.proposalLogic.SetProposalRevised(proposal.Id, proposal.UpdateDate);
+                }
+
+                // The new revision doesn't have an RDSB document associated with it, so we need to clear the DocumentId
+                if (isNewRevision)
+				{
+                    proposalInfo.DocumentId = null;
                 }
 
                 proposalId = this.proposalLogic.SaveProposal(proposalInfo, proposalGeneralInfo, proposalApprovalsInfo, proposalUserInfo, proposalComments, revisionOfId);
