@@ -17,6 +17,16 @@ CREATE PROCEDURE [dbo].[upsertProposalContractsData]
 	@ContractsCorrespondLogNumber [varchar](20),
 	@FinalNegotiatedValue [bigint],
 	@FinalNegotiatedDate [date],
+	@EPPDelegationAuthority [int],
+	@ProgramEppDate [date],
+	@LobEppDate [date],
+	@PreSpaceEppDate [date],
+	@SpaceEppDate [date],
+	@PreCorporateEppDate [date],
+	@CorporateEppDate [date],
+	@EppRosDelegationNotes [varchar](1000),
+	@LmWon [bit],
+	@ModCompletedDate [date]
 )
 AS
 /******************************************************************************
@@ -33,6 +43,7 @@ AS
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
 **		10/29/21    Koovackal			Creation
+**      02/16/22    Koovackal           Add upsert for EPP fields
 *******************************************************************************/
 SET NOCOUNT ON
 
@@ -40,10 +51,15 @@ SET NOCOUNT ON
 		BEGIN
 			DECLARE @Inserted AS Table (Id int)
 			INSERT INTO [dbo].[ProposalContractsData] (UpdateDT, ProposalID, PreviouslySubmittedROM, CustomerSubmittalDate,
-														ContractsCorrespondLogNumber, FinalNegotiatedValue, FinalNegotiatedDate)
+														ContractsCorrespondLogNumber, FinalNegotiatedValue, FinalNegotiatedDate,
+														EPPDelegationAuthority, ProgramEppDate, LobEppDate, PreSpaceEppDate, 
+														SpaceEppDate, PreCorporateEppDate, CorporateEppDate, EppRosDelegationNotes, 
+														LmWon, ModCompletedDate)
 				OUTPUT inserted.ProposalContractsDataId INTO @Inserted
 				VALUES (GETDATE(), @ProposalID, @PreviouslySubmittedROM, @CustomerSubmittalDate, @ContractsCorrespondLogNumber,
-						@FinalNegotiatedValue, @FinalNegotiatedDate)
+						@FinalNegotiatedValue, @FinalNegotiatedDate, @EPPDelegationAuthority, @ProgramEppDate, @LobEppDate, 
+						@PreSpaceEppDate, @SpaceEppDate, @PreCorporateEppDate, @CorporateEppDate, @EppRosDelegationNotes, @LmWon, 
+						@ModCompletedDate)
 			SELECT @ProposalContractsDataId = Id FROM @Inserted
 		END
 	ELSE -- updating existing
@@ -56,7 +72,18 @@ SET NOCOUNT ON
 						CustomerSubmittalDate = @CustomerSubmittalDate,
 						ContractsCorrespondLogNumber = @ContractsCorrespondLogNumber,
 						FinalNegotiatedValue = @FinalNegotiatedValue, 
-						FinalNegotiatedDate = @FinalNegotiatedDate
+						FinalNegotiatedDate = @FinalNegotiatedDate,
+						EPPDelegationAuthority = @EPPDelegationAuthority,
+						ProgramEppDate = @ProgramEppDate,
+						LobEppDate = @LobEppDate,
+						PreSpaceEppDate = @PreSpaceEppDate,
+						SpaceEppDate = @SpaceEppDate,
+						PreCorporateEppDate = @PreCorporateEppDate,
+						CorporateEppDate = @CorporateEppDate,
+						EppRosDelegationNotes = @EppRosDelegationNotes,
+						LmWon = @LmWon,
+						ModCompletedDate = @ModCompletedDate
+
 					WHERE ProposalContractsDataId = @ProposalContractsDataId
 			ELSE
 				BEGIN
