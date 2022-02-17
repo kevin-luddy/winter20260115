@@ -70,7 +70,10 @@ namespace GenTRAC.Models
         public virtual DbSet<Attachment> Attachments { get; set; }
         public virtual DbSet<ProposalChecklist> ProposalChecklists { get; set; }
         public virtual DbSet<ProposalContractsData> ProposalContractsDatas { get; set; }
-        public virtual DbSet<ProposalContractsOffer> ProposalContractsOffers { get; set; }
+        public virtual DbSet<AttachmentTypeLU> AttachmentTypeLUs { get; set; }
+        public virtual DbSet<BoeDatabaseVersion> BoeDatabaseVersions { get; set; }
+        public virtual DbSet<EppDelegationAuthorityLU> EppDelegationAuthorityLUs { get; set; }
+        public virtual DbSet<ReasonCertificationNotRequiredLU> ReasonCertificationNotRequiredLUs { get; set; }
     
         public virtual ObjectResult<Nullable<int>> archiveProposal(Nullable<System.DateTime> createStartDate, Nullable<System.DateTime> createEndDate, string lineOfBusinessID, string programAreaID)
         {
@@ -1312,7 +1315,7 @@ namespace GenTRAC.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteProposalContractsOffer", proposalContractsOfferIdParameter, updateDTParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertProposalContractsData(Nullable<int> proposalContractsDataId, Nullable<System.DateTime> updateDT, Nullable<int> proposalID, Nullable<int> previouslySubmittedROM, Nullable<System.DateTime> customerSubmittalDate, string contractsCorrespondLogNumber, Nullable<long> finalNegotiatedValue, Nullable<System.DateTime> finalNegotiatedDate)
+        public virtual ObjectResult<Nullable<int>> upsertProposalContractsData(Nullable<int> proposalContractsDataId, Nullable<System.DateTime> updateDT, Nullable<int> proposalID, Nullable<int> previouslySubmittedROM, Nullable<System.DateTime> customerSubmittalDate, string contractsCorrespondLogNumber, Nullable<long> finalNegotiatedValue, Nullable<System.DateTime> finalNegotiatedDate, Nullable<int> ePPDelegationAuthority, Nullable<System.DateTime> programEppDate, Nullable<System.DateTime> lobEppDate, Nullable<System.DateTime> preSpaceEppDate, Nullable<System.DateTime> spaceEppDate, Nullable<System.DateTime> preCorporateEppDate, Nullable<System.DateTime> corporateEppDate, string eppRosDelegationNotes, Nullable<bool> lmWon, Nullable<System.DateTime> modCompletedDate)
         {
             var proposalContractsDataIdParameter = proposalContractsDataId.HasValue ?
                 new ObjectParameter("ProposalContractsDataId", proposalContractsDataId) :
@@ -1346,7 +1349,47 @@ namespace GenTRAC.Models
                 new ObjectParameter("FinalNegotiatedDate", finalNegotiatedDate) :
                 new ObjectParameter("FinalNegotiatedDate", typeof(System.DateTime));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertProposalContractsData", proposalContractsDataIdParameter, updateDTParameter, proposalIDParameter, previouslySubmittedROMParameter, customerSubmittalDateParameter, contractsCorrespondLogNumberParameter, finalNegotiatedValueParameter, finalNegotiatedDateParameter);
+            var ePPDelegationAuthorityParameter = ePPDelegationAuthority.HasValue ?
+                new ObjectParameter("EPPDelegationAuthority", ePPDelegationAuthority) :
+                new ObjectParameter("EPPDelegationAuthority", typeof(int));
+    
+            var programEppDateParameter = programEppDate.HasValue ?
+                new ObjectParameter("ProgramEppDate", programEppDate) :
+                new ObjectParameter("ProgramEppDate", typeof(System.DateTime));
+    
+            var lobEppDateParameter = lobEppDate.HasValue ?
+                new ObjectParameter("LobEppDate", lobEppDate) :
+                new ObjectParameter("LobEppDate", typeof(System.DateTime));
+    
+            var preSpaceEppDateParameter = preSpaceEppDate.HasValue ?
+                new ObjectParameter("PreSpaceEppDate", preSpaceEppDate) :
+                new ObjectParameter("PreSpaceEppDate", typeof(System.DateTime));
+    
+            var spaceEppDateParameter = spaceEppDate.HasValue ?
+                new ObjectParameter("SpaceEppDate", spaceEppDate) :
+                new ObjectParameter("SpaceEppDate", typeof(System.DateTime));
+    
+            var preCorporateEppDateParameter = preCorporateEppDate.HasValue ?
+                new ObjectParameter("PreCorporateEppDate", preCorporateEppDate) :
+                new ObjectParameter("PreCorporateEppDate", typeof(System.DateTime));
+    
+            var corporateEppDateParameter = corporateEppDate.HasValue ?
+                new ObjectParameter("CorporateEppDate", corporateEppDate) :
+                new ObjectParameter("CorporateEppDate", typeof(System.DateTime));
+    
+            var eppRosDelegationNotesParameter = eppRosDelegationNotes != null ?
+                new ObjectParameter("EppRosDelegationNotes", eppRosDelegationNotes) :
+                new ObjectParameter("EppRosDelegationNotes", typeof(string));
+    
+            var lmWonParameter = lmWon.HasValue ?
+                new ObjectParameter("LmWon", lmWon) :
+                new ObjectParameter("LmWon", typeof(bool));
+    
+            var modCompletedDateParameter = modCompletedDate.HasValue ?
+                new ObjectParameter("ModCompletedDate", modCompletedDate) :
+                new ObjectParameter("ModCompletedDate", typeof(System.DateTime));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertProposalContractsData", proposalContractsDataIdParameter, updateDTParameter, proposalIDParameter, previouslySubmittedROMParameter, customerSubmittalDateParameter, contractsCorrespondLogNumberParameter, finalNegotiatedValueParameter, finalNegotiatedDateParameter, ePPDelegationAuthorityParameter, programEppDateParameter, lobEppDateParameter, preSpaceEppDateParameter, spaceEppDateParameter, preCorporateEppDateParameter, corporateEppDateParameter, eppRosDelegationNotesParameter, lmWonParameter, modCompletedDateParameter);
         }
     
         public virtual int upsertProposalContractsOffer(Nullable<int> proposalContractsOfferId, Nullable<System.DateTime> updateDT, Nullable<int> contractsDataId, Nullable<long> customerOfferAmount, Nullable<System.DateTime> customerOfferDate, Nullable<System.DateTime> lMCounterOfferDate, Nullable<long> lMCounterOfferCost, Nullable<long> lMCounterOfferCOM, Nullable<long> lMCounterOfferProfitFee)
@@ -1442,6 +1485,156 @@ namespace GenTRAC.Models
                 new ObjectParameter("UpdateDT", typeof(System.DateTime));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteProposalContractsOffers", proposalContractsOffersIdParameter, updateDTParameter);
+        }
+    
+        public virtual int CopyCannedResponsesPAR(Nullable<int> newChecklistId)
+        {
+            var newChecklistIdParameter = newChecklistId.HasValue ?
+                new ObjectParameter("newChecklistId", newChecklistId) :
+                new ObjectParameter("newChecklistId", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("CopyCannedResponsesPAR", newChecklistIdParameter);
+        }
+    
+        public virtual ObjectResult<CreateDfarsChecklistResponseReport_Result> CreateDfarsChecklistResponseReport(string lOB, string pA, Nullable<System.DateTime> startDate, Nullable<System.DateTime> endDate, string executionUserID)
+        {
+            var lOBParameter = lOB != null ?
+                new ObjectParameter("LOB", lOB) :
+                new ObjectParameter("LOB", typeof(string));
+    
+            var pAParameter = pA != null ?
+                new ObjectParameter("PA", pA) :
+                new ObjectParameter("PA", typeof(string));
+    
+            var startDateParameter = startDate.HasValue ?
+                new ObjectParameter("StartDate", startDate) :
+                new ObjectParameter("StartDate", typeof(System.DateTime));
+    
+            var endDateParameter = endDate.HasValue ?
+                new ObjectParameter("EndDate", endDate) :
+                new ObjectParameter("EndDate", typeof(System.DateTime));
+    
+            var executionUserIDParameter = executionUserID != null ?
+                new ObjectParameter("ExecutionUserID", executionUserID) :
+                new ObjectParameter("ExecutionUserID", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<CreateDfarsChecklistResponseReport_Result>("CreateDfarsChecklistResponseReport", lOBParameter, pAParameter, startDateParameter, endDateParameter, executionUserIDParameter);
+        }
+    
+        public virtual ObjectResult<string> rsCentralEstimator(string centralEstimator)
+        {
+            var centralEstimatorParameter = centralEstimator != null ?
+                new ObjectParameter("CentralEstimator", centralEstimator) :
+                new ObjectParameter("CentralEstimator", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("rsCentralEstimator", centralEstimatorParameter);
+        }
+    
+        public virtual ObjectResult<string> rsContractType(string contractType)
+        {
+            var contractTypeParameter = contractType != null ?
+                new ObjectParameter("ContractType", contractType) :
+                new ObjectParameter("ContractType", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("rsContractType", contractTypeParameter);
+        }
+    
+        public virtual ObjectResult<string> rsCustomerType(string customerType)
+        {
+            var customerTypeParameter = customerType != null ?
+                new ObjectParameter("CustomerType", customerType) :
+                new ObjectParameter("CustomerType", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("rsCustomerType", customerTypeParameter);
+        }
+    
+        public virtual ObjectResult<string> rsLineOfBusiness(string lOB)
+        {
+            var lOBParameter = lOB != null ?
+                new ObjectParameter("LOB", lOB) :
+                new ObjectParameter("LOB", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("rsLineOfBusiness", lOBParameter);
+        }
+    
+        public virtual ObjectResult<string> rsProgramArea(string pA)
+        {
+            var pAParameter = pA != null ?
+                new ObjectParameter("PA", pA) :
+                new ObjectParameter("PA", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("rsProgramArea", pAParameter);
+        }
+    
+        public virtual ObjectResult<string> rsProposalStatus(string proposalStatus)
+        {
+            var proposalStatusParameter = proposalStatus != null ?
+                new ObjectParameter("ProposalStatus", proposalStatus) :
+                new ObjectParameter("ProposalStatus", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("rsProposalStatus", proposalStatusParameter);
+        }
+    
+        public virtual int rsSegment(string segment)
+        {
+            var segmentParameter = segment != null ?
+                new ObjectParameter("Segment", segment) :
+                new ObjectParameter("Segment", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("rsSegment", segmentParameter);
+        }
+    
+        public virtual ObjectResult<string> rsYear(string year)
+        {
+            var yearParameter = year != null ?
+                new ObjectParameter("Year", year) :
+                new ObjectParameter("Year", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<string>("rsYear", yearParameter);
+        }
+    
+        [DbFunction("genTRACEntities", "SplitString")]
+        public virtual IQueryable<SplitString_Result> SplitString(string list, string delimiter, string emptyListItem)
+        {
+            var listParameter = list != null ?
+                new ObjectParameter("List", list) :
+                new ObjectParameter("List", typeof(string));
+    
+            var delimiterParameter = delimiter != null ?
+                new ObjectParameter("Delimiter", delimiter) :
+                new ObjectParameter("Delimiter", typeof(string));
+    
+            var emptyListItemParameter = emptyListItem != null ?
+                new ObjectParameter("EmptyListItem", emptyListItem) :
+                new ObjectParameter("EmptyListItem", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.CreateQuery<SplitString_Result>("[genTRACEntities].[SplitString](@List, @Delimiter, @EmptyListItem)", listParameter, delimiterParameter, emptyListItemParameter);
+        }
+    
+        public virtual int truncateTable(string p1, string p2)
+        {
+            var p1Parameter = p1 != null ?
+                new ObjectParameter("p1", p1) :
+                new ObjectParameter("p1", typeof(string));
+    
+            var p2Parameter = p2 != null ?
+                new ObjectParameter("p2", p2) :
+                new ObjectParameter("p2", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("truncateTable", p1Parameter, p2Parameter);
+        }
+    
+        public virtual int UpdateDbVersion(string dbVersion, string appVersion)
+        {
+            var dbVersionParameter = dbVersion != null ?
+                new ObjectParameter("DbVersion", dbVersion) :
+                new ObjectParameter("DbVersion", typeof(string));
+    
+            var appVersionParameter = appVersion != null ?
+                new ObjectParameter("AppVersion", appVersion) :
+                new ObjectParameter("AppVersion", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("UpdateDbVersion", dbVersionParameter, appVersionParameter);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace GenTRAC.DataBridge.DTO
         public int? PreviouslySubmittedROM { get; set; }
 
         /// <summary>
-        /// Customer Submittal Date String
+        /// Customer Submittal Date string
         /// </summary>
         public DateTime? CustomerSubmittalDate { get; set; }
 
@@ -44,18 +44,63 @@ namespace GenTRAC.DataBridge.DTO
         public string ContractsCorrespondenceLogNumber { get; set; }
 
         /// <summary>
-        /// Final Negotiated Value String
+        /// Final Negotiated Value string
         /// </summary>
         public long? FinalNegotiatedValue { get; set; }
 
         /// <summary>
-        /// Date Confirmation of Negotiations Submitted String
+        /// Date Confirmation of Negotiations Submitted string
         /// </summary>
         public DateTime? NegotiationsSubmitted { get; set; }
 
         /// <summary>
-        /// Contract Offers
+        /// EPP Delegation Authority ID
         /// </summary>
-        public ICollection<ContractsOffersDto> ContractOffers { get; set; } = new List<ContractsOffersDto>();
+        public int? EPPDelegationAuthority { get; set; }
+
+        /// <summary>
+        /// Program EPP Date
+        /// </summary>
+        public DateTime? ProgramEppDate { get; set; }
+
+        /// <summary>
+        /// LOB EPP Date
+        /// </summary>
+        public DateTime? LobEppDate { get; set; }
+
+        /// <summary>
+        /// Pre Space EPP Date
+        /// </summary>
+        public DateTime? PreSpaceEppDate { get; set; }
+
+        /// <summary>
+        /// Space EPP Date
+        /// </summary>
+        public DateTime? SpaceEppDate { get; set; }
+
+        /// <summary>
+        /// Pre Corporate EPP Date
+        /// </summary>
+        public DateTime? PreCorporateEppDate { get; set; }
+
+        /// <summary>
+        /// Corporate Epp Date
+        /// </summary>
+        public DateTime? CorporateEppDate { get; set; }
+
+        /// <summary>
+        /// EPP ROS Delegation Notes
+        /// </summary>
+        public string EppRosDelegationNotes { get; set; }
+
+        /// <summary>
+        /// LM Won contract
+        /// </summary>
+        public bool? LmWon { get; set; }
+
+        /// <summary>
+        /// Mod Completed Date
+        /// </summary>
+        public DateTime? ModCompletedDate { get; set; }
     }
 }

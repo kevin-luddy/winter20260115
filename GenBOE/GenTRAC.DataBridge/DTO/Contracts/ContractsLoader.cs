@@ -49,26 +49,18 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.CustomerSubmittalDate,
                             dtoToUpsert.ContractsCorrespondenceLogNumber,
                             dtoToUpsert.FinalNegotiatedValue,
-                            dtoToUpsert.NegotiationsSubmitted
+                            dtoToUpsert.NegotiationsSubmitted,
+                            dtoToUpsert.EPPDelegationAuthority,
+                            dtoToUpsert.ProgramEppDate,
+                            dtoToUpsert.LobEppDate,
+                            dtoToUpsert.PreSpaceEppDate,
+                            dtoToUpsert.SpaceEppDate,
+                            dtoToUpsert.PreCorporateEppDate,
+                            dtoToUpsert.CorporateEppDate,
+                            dtoToUpsert.EppRosDelegationNotes,
+                            dtoToUpsert.LmWon,
+                            dtoToUpsert.ModCompletedDate
                             ).FirstOrDefault();
-                    }
-
-                    foreach (ContractsOffersDto contractOffer in dtoToUpsert.ContractOffers)
-                    {
-                        contractOffer.ContractsDataId = toReturn.Value;
-
-                        if (contractOffer.Updateable == UpdateType.Upsert)
-                        {
-                            UpsertContractsOffer(contractOffer);
-                        }
-                        else if (contractOffer.Updateable == UpdateType.Deleted)
-                        {
-                            DeleteContractsOffer(contractOffer);
-                        }
-                        else
-                        {
-                            throw new ArgumentException("The dto did not specify the Updateable type.");
-                        }
                     }
                 }
             }
@@ -114,18 +106,16 @@ namespace GenTRAC.DataBridge.DTO
                             ContractsCorrespondenceLogNumber = x.ContractsCorrespondLogNumber,
                             FinalNegotiatedValue = x.FinalNegotiatedValue,
                             NegotiationsSubmitted = x.FinalNegotiatedDate,
-                            ContractOffers = x.ProposalContractsOffers.Select(y => new ContractsOffersDto
-                            {
-                                Id = y.ProposalContractsOffersId,
-                                UpdateDate = y.UpdateDT,
-                                ContractsDataId = y.ContractsDataId,
-                                CustomerOfferAmount = y.CustomerOfferAmount,
-                                CustomerOfferDate = y.CustomerOfferDate,
-                                LMCounterOfferDate = (DateTime)y.LMCounterOfferDate,
-                                LMCounterOfferCost = (long)y.LMCounterOfferCost,
-                                LMCounterOfferCOM = (long)y.LMCounterOfferCOM,
-                                LMCounterOfferProfitFee = (long)y.LMCounterOfferProfitFee
-                            }).ToList()
+                            EPPDelegationAuthority = x.EPPDelegationAuthority,
+                            ProgramEppDate = x.ProgramEppDate,
+                            LobEppDate = x.LobEppDate,
+                            PreSpaceEppDate = x.PreSpaceEppDate,
+                            SpaceEppDate = x.SpaceEppDate,
+                            PreCorporateEppDate = x.PreCorporateEppDate,
+                            CorporateEppDate = x.CorporateEppDate,
+                            EppRosDelegationNotes = x.EppRosDelegationNotes,
+                            LmWon = x.LmWon,
+                            ModCompletedDate = x.ModCompletedDate
                         }).FirstOrDefault();
                 }
             }
@@ -159,80 +149,17 @@ namespace GenTRAC.DataBridge.DTO
                             ContractsCorrespondenceLogNumber = x.ContractsCorrespondLogNumber,
                             FinalNegotiatedValue = x.FinalNegotiatedValue,
                             NegotiationsSubmitted = x.FinalNegotiatedDate,
-                            ContractOffers = x.ProposalContractsOffers.Select(y => new ContractsOffersDto
-                            {
-                                Id = y.ProposalContractsOffersId,
-                                UpdateDate = y.UpdateDT,
-                                ContractsDataId = y.ContractsDataId,
-                                CustomerOfferAmount = y.CustomerOfferAmount,
-                                CustomerOfferDate = y.CustomerOfferDate,
-                                LMCounterOfferDate = (DateTime)y.LMCounterOfferDate,
-                                LMCounterOfferCost = (long)y.LMCounterOfferCost,
-                                LMCounterOfferCOM = (long)y.LMCounterOfferCOM,
-                                LMCounterOfferProfitFee = (long)y.LMCounterOfferProfitFee
-                            }).ToList()
+                            EPPDelegationAuthority = x.EPPDelegationAuthority,
+                            ProgramEppDate = x.ProgramEppDate,
+                            LobEppDate = x.LobEppDate,
+                            PreSpaceEppDate = x.PreSpaceEppDate,
+                            SpaceEppDate = x.SpaceEppDate,
+                            PreCorporateEppDate = x.PreCorporateEppDate,
+                            CorporateEppDate = x.CorporateEppDate,
+                            EppRosDelegationNotes = x.EppRosDelegationNotes,
+                            LmWon = x.LmWon,
+                            ModCompletedDate = x.ModCompletedDate
                         }).ToList();
-                }
-            }
-
-            return toReturn;
-        }
-
-        /// <summary>
-        /// Saves a Proposal Contract Offer
-        /// </summary>
-        /// <param name="contractOfferDtoToUpsert">Proposal Contract Offer to save.</param>
-        /// <returns>Id of the upserted item.</returns>
-        private int? UpsertContractsOffer(ContractsOffersDto contractOfferDtoToUpsert)
-        {
-            int? toReturn = null;
-
-            using (StopwatchTimer sw = new StopwatchTimer("ContractsLoader.UpsertContractsOffers", Log))
-            {
-                if (contractOfferDtoToUpsert != null)
-                {
-                    // save
-                    using (genTRACEntities dbModel = new genTRACEntities())
-                    {
-                        toReturn = dbModel.upsertProposalContractsOffers(
-                            contractOfferDtoToUpsert.Id,
-                            contractOfferDtoToUpsert.UpdateDate,
-                            contractOfferDtoToUpsert.ContractsDataId,
-                            contractOfferDtoToUpsert.CustomerOfferAmount,
-                            contractOfferDtoToUpsert.CustomerOfferDate,
-                            contractOfferDtoToUpsert.LMCounterOfferDate,
-                            contractOfferDtoToUpsert.LMCounterOfferCost,
-                            contractOfferDtoToUpsert.LMCounterOfferCOM,
-                            contractOfferDtoToUpsert.LMCounterOfferProfitFee
-                            ).FirstOrDefault();
-                    }
-                }
-            }
-
-            return toReturn;
-        }
-
-        /// <summary>
-        /// Deletes a Proposal Contract
-        /// </summary>
-        /// <param name="contractOfferDtoToDelete">Proposal Contract Offer to delete.</param>
-        /// <returns>Id of the deleted item.</returns>
-        private int? DeleteContractsOffer(ContractsOffersDto contractOfferDtoToDelete)
-        {
-            int? toReturn = null;
-
-            using (StopwatchTimer sw = new StopwatchTimer("ContractsLoader.DeleteContractsOffers", Log))
-            {
-                if (contractOfferDtoToDelete != null)
-                {
-                    // delete
-                    using (genTRACEntities dbModel = new genTRACEntities())
-                    {
-                        toReturn = dbModel.deleteProposalContractsOffers(
-                            contractOfferDtoToDelete.Id,
-                            contractOfferDtoToDelete.UpdateDate
-                            );
-                    }
                 }
             }
 

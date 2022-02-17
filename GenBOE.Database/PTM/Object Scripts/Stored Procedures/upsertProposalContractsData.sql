@@ -83,7 +83,6 @@ SET NOCOUNT ON
 						EppRosDelegationNotes = @EppRosDelegationNotes,
 						LmWon = @LmWon,
 						ModCompletedDate = @ModCompletedDate
-
 					WHERE ProposalContractsDataId = @ProposalContractsDataId
 			ELSE
 				BEGIN
