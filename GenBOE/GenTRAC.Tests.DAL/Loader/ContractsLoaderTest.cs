@@ -72,7 +72,7 @@ namespace GenTRAC.Tests.DAL.Loader
             testContractActual.ContractsCorrespondenceLogNumber = "TestLogNumber2";
             testContractActual.FinalNegotiatedValue = 201;
             testContractActual.NegotiationsSubmitted = DateTime.Now;
-            testContractActual.EPPDelegationAuthority = 3;
+            testContractActual.EppDelegationAuthority = 3;
             testContractActual.ProgramEppDate = DateTime.Now;
             testContractActual.LobEppDate = DateTime.Now;
             testContractActual.PreSpaceEppDate = DateTime.Now;
@@ -116,7 +116,7 @@ namespace GenTRAC.Tests.DAL.Loader
                 ContractsCorrespondenceLogNumber = "Test LogNumber",
                 FinalNegotiatedValue = 222L,
                 NegotiationsSubmitted = DateTime.Now,
-                EPPDelegationAuthority = 3,
+                EppDelegationAuthority = 3,
                 ProgramEppDate = DateTime.Now,
                 LobEppDate = DateTime.Now,
                 PreSpaceEppDate = DateTime.Now,
@@ -143,7 +143,7 @@ namespace GenTRAC.Tests.DAL.Loader
             Assert.AreEqual(expected.ContractsCorrespondenceLogNumber, actual.ContractsCorrespondenceLogNumber);
             Assert.AreEqual(expected.FinalNegotiatedValue, actual.FinalNegotiatedValue);
             Assert.AreEqual(expected.NegotiationsSubmitted.Value.Date, actual.NegotiationsSubmitted.Value.Date);
-            Assert.AreEqual(expected.EPPDelegationAuthority, actual.EPPDelegationAuthority);
+            Assert.AreEqual(expected.EppDelegationAuthority, actual.EppDelegationAuthority);
             Assert.AreEqual(expected.ProgramEppDate.Value.Date, actual.ProgramEppDate.Value.Date);
             Assert.AreEqual(expected.LobEppDate.Value.Date, actual.LobEppDate.Value.Date);
             Assert.AreEqual(expected.PreSpaceEppDate.Value.Date, actual.PreSpaceEppDate.Value.Date);

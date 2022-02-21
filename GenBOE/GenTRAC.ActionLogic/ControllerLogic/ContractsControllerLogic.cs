@@ -172,7 +172,7 @@ namespace GenTRAC.ActionLogic
             dto.FinalNegotiatedValue = model.FinalNegotiatedValueLong;
             dto.NegotiationsSubmitted = DateTime.Parse(model.NegotiationsSubmitted);
             dto.UpdateDateLong = model.LastUpdatedDateLong;
-            dto.EPPDelegationAuthority = (int)model.EppDelegationAuthority;
+            dto.EppDelegationAuthority = (int)model.EppDelegationAuthority;
             dto.ProgramEppDate = model.ProgramEppDate;
             dto.LobEppDate = model.LobEppDate;
             dto.PreSpaceEppDate = model.PreSpaceEppDate;
@@ -209,7 +209,7 @@ namespace GenTRAC.ActionLogic
             model.FinalNegotiatedValueLong = dto.FinalNegotiatedValue == null ? dto.FinalNegotiatedValue : long.Parse(dto.FinalNegotiatedValue.ToString());
             model.NegotiationsSubmittedDt = dto.NegotiationsSubmitted;
             model.LastUpdatedDateLong = dto.UpdateDateLong;
-            model.EppDelegationAuthority = (EppDelegationAuthority)dto.EPPDelegationAuthority;
+            model.EppDelegationAuthority = (EppDelegationAuthority)dto.EppDelegationAuthority;
             model.ProgramEppDate = dto.ProgramEppDate;
             model.LobEppDate = dto.LobEppDate;
             model.PreSpaceEppDate = dto.PreSpaceEppDate;
