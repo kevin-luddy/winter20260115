@@ -95,7 +95,7 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    toReturn = dbModel.ProposalContractsDatas.Include("ProposalContractsOffers").Where(x => x.ProposalID == proposalId)
+                    toReturn = dbModel.ProposalContractsDatas
                         .Select(x => new ContractsDto()
                         {
                             Id = x.ProposalContractsDataId,
@@ -138,7 +138,7 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    toReturn = dbModel.ProposalContractsDatas.Include("ProposalContractsOffers").Where(x => ids.Contains(x.ProposalContractsDataId))
+                    toReturn = dbModel.ProposalContractsDatas
                         .Select(x => new ContractsDto
                         {
                             Id = x.ProposalContractsDataId,
