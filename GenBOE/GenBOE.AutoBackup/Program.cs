@@ -163,6 +163,7 @@ namespace GenBOE.AutoBackup
 		/// </summary>
 		/// <param name="emailSubject">Email subject</param>
 		/// <param name="emailBody">Email body/error text</param>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		private static void SendEmail(string emailSubject, string emailBody)
 		{
 			try
