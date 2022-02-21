@@ -172,6 +172,16 @@ namespace GenTRAC.ActionLogic
             dto.FinalNegotiatedValue = model.FinalNegotiatedValueLong;
             dto.NegotiationsSubmitted = DateTime.Parse(model.NegotiationsSubmitted);
             dto.UpdateDateLong = model.LastUpdatedDateLong;
+            dto.EPPDelegationAuthority = model.EPPDelegationAuthority;
+            dto.ProgramEppDate = model.ProgramEppDate;
+            dto.LobEppDate = model.LobEppDate;
+            dto.PreSpaceEppDate = model.PreSpaceEppDate;
+            dto.SpaceEppDate = model.SpaceEppDate;
+            dto.PreCorporateEppDate = model.PreCorporateEppDate;
+            dto.CorporateEppDate = model.CorporateEppDate;
+            dto.EppRosDelegationNotes = model.EppRosDelegationNotes;
+            dto.LmWon = model.LmWon;
+            dto.ModCompletedDate = model.ModCompletedDate;
 
             return dto;
         }
@@ -199,6 +209,16 @@ namespace GenTRAC.ActionLogic
             model.FinalNegotiatedValueLong = dto.FinalNegotiatedValue == null ? dto.FinalNegotiatedValue : long.Parse(dto.FinalNegotiatedValue.ToString());
             model.NegotiationsSubmittedDt = dto.NegotiationsSubmitted;
             model.LastUpdatedDateLong = dto.UpdateDateLong;
+            model.EPPDelegationAuthority = dto.EPPDelegationAuthority;
+            model.ProgramEppDate = dto.ProgramEppDate;
+            model.LobEppDate = dto.LobEppDate;
+            model.PreSpaceEppDate = dto.PreSpaceEppDate;
+            model.SpaceEppDate = dto.SpaceEppDate;
+            model.PreCorporateEppDate = dto.PreCorporateEppDate;
+            model.CorporateEppDate = dto.CorporateEppDate;
+            model.EppRosDelegationNotes = dto.EppRosDelegationNotes;
+            model.LmWon = dto.LmWon;
+            model.ModCompletedDate = dto.ModCompletedDate;
 
             return model;
         }

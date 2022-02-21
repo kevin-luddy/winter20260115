@@ -48,6 +48,22 @@
           <Property Name="Contents" Type="varbinary(max)" Nullable="false" />
           <Property Name="UploadedBy" Type="varchar" MaxLength="1000" Nullable="false" />
         </EntityType>
+        <EntityType Name="AttachmentTypeLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BoeDatabaseVersion">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DBVersion" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="AppVersion" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="BOEToolLU">
           <Key>
             <PropertyRef Name="BOEToolID" />
@@ -134,6 +150,13 @@
           <Property Name="TimeUtc" Type="datetime" Nullable="false" />
           <Property Name="Sequence" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="AllXml" Type="ntext" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EppDelegationAuthorityLU">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Text" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="genTRACUser">
           <Key>
@@ -365,26 +388,22 @@
           </Key>
           <Property Name="ProposalContractsDataId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="ProposalID" Type="int" Nullable="false" />
           <Property Name="PreviouslySubmittedROM" Type="int" Nullable="false" />
           <Property Name="CustomerSubmittalDate" Type="date" />
           <Property Name="ContractsCorrespondLogNumber" Type="varchar" MaxLength="20" Nullable="false" />
           <Property Name="FinalNegotiatedValue" Type="bigint" />
           <Property Name="FinalNegotiatedDate" Type="date" />
-          <Property Name="ProposalID" Type="int" Nullable="false" />
-        </EntityType>
-        <EntityType Name="ProposalContractsOffers">
-          <Key>
-            <PropertyRef Name="ProposalContractsOffersId" />
-          </Key>
-          <Property Name="ProposalContractsOffersId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
-          <Property Name="ContractsDataId" Type="int" Nullable="false" />
-          <Property Name="CustomerOfferAmount" Type="bigint" Nullable="false" />
-          <Property Name="CustomerOfferDate" Type="date" Nullable="false" />
-          <Property Name="LMCounterOfferDate" Type="date" />
-          <Property Name="LMCounterOfferCost" Type="bigint" />
-          <Property Name="LMCounterOfferCOM" Type="bigint" />
-          <Property Name="LMCounterOfferProfitFee" Type="bigint" />
+          <Property Name="EPPDelegationAuthority" Type="int" />
+          <Property Name="ProgramEppDate" Type="date" />
+          <Property Name="LobEppDate" Type="date" />
+          <Property Name="PreSpaceEppDate" Type="date" />
+          <Property Name="SpaceEppDate" Type="date" />
+          <Property Name="PreCorporateEppDate" Type="date" />
+          <Property Name="CorporateEppDate" Type="date" />
+          <Property Name="EppRosDelegationNotes" Type="varchar" MaxLength="1000" />
+          <Property Name="LmWon" Type="bit" />
+          <Property Name="ModCompletedDate" Type="date" />
         </EntityType>
         <EntityType Name="ProposalContractTypeXREF">
           <Key>
@@ -495,6 +514,13 @@ warning 6002: The table/view 'genTrac_Contacts.dbo.ProposalPPRChecklistXREF' doe
           <Property Name="RoleTypeID" Type="int" />
           <Property Name="UserID" Type="int" Nullable="false" />
         </EntityType>
+        <EntityType Name="ReasonCertificationNotRequiredLU">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Text" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
         <EntityType Name="RequestTypeLU">
           <Key>
             <PropertyRef Name="RequestTypeID" />
@@ -542,6 +568,26 @@ warning 6002: The table/view 'genTrac_Contacts.dbo.ProposalPPRChecklistXREF' doe
           <Property Name="UserID" Type="int" Nullable="false" />
           <Property Name="RoleID" Type="int" Nullable="false" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6013: The table/view 'genTrac_Contacts.dbo.TempPAR_International' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="TempPAR_International">
+          <Property Name="ChecklistText" Type="nvarchar" MaxLength="1000" />
+          <Property Name="TextTypeID" Type="nvarchar" MaxLength="1000" />
+          <Property Name="SortOrder" Type="nvarchar" MaxLength="1000" />
+          <Property Name="ColumnOrder" Type="nvarchar" MaxLength="1000" />
+          <Property Name="ProposalAdequacyreviewID" Type="nvarchar" MaxLength="1000" />
+          <Property Name="New Column for Checklist Type" Type="nvarchar" MaxLength="1000" />
+        </EntityType>-->
+        <!--Errors Found During Generation:
+warning 6013: The table/view 'genTrac_Contacts.dbo.TempPPR_International' does not have a primary key defined and no valid primary key could be inferred. This table/view has been excluded. To use the entity, you will need to review your schema, add the correct keys, and uncomment it.
+        <EntityType Name="TempPPR_International">
+          <Property Name="ChecklistText" Type="nvarchar" MaxLength="1000" />
+          <Property Name="TextTypeID" Type="nvarchar" MaxLength="1000" />
+          <Property Name="SortOrder" Type="nvarchar" MaxLength="1000" />
+          <Property Name="ColumnOrder" Type="nvarchar" MaxLength="1000" />
+          <Property Name="ProposalPricingreviewID" Type="nvarchar" MaxLength="1000" />
+          <Property Name="New Column for Checklist Type" Type="nvarchar" MaxLength="1000" />
+        </EntityType>-->
         <EntityType Name="TextTypeLU">
           <Key>
             <PropertyRef Name="TextTypeID" />
@@ -617,19 +663,31 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__ProposalC__Contr__4959E263">
-          <End Role="ProposalContractsData" Type="Self.ProposalContractsData" Multiplicity="1" />
-          <End Role="ProposalContractsOffers" Type="Self.ProposalContractsOffers" Multiplicity="*" />
+        <Association Name="FK__Proposal__Reason__04DA9AE4">
+          <End Role="ReasonCertificationNotRequiredLU" Type="Self.ReasonCertificationNotRequiredLU" Multiplicity="0..1" />
+          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="ProposalContractsData">
-              <PropertyRef Name="ProposalContractsDataId" />
+            <Principal Role="ReasonCertificationNotRequiredLU">
+              <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="ProposalContractsOffers">
-              <PropertyRef Name="ContractsDataId" />
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ReasonCertificationNotRequired" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__ProposalC__Previ__467D75B8">
+        <Association Name="FK__ProposalC__EPPDe__02925FBF">
+          <End Role="EppDelegationAuthorityLU" Type="Self.EppDelegationAuthorityLU" Multiplicity="0..1" />
+          <End Role="ProposalContractsData" Type="Self.ProposalContractsData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EppDelegationAuthorityLU">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProposalContractsData">
+              <PropertyRef Name="EPPDelegationAuthority" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ProposalC__Previ__019E3B86">
           <End Role="Proposal" Type="Self.Proposal" Multiplicity="1" />
           <End Role="ProposalContractsData" Type="Self.ProposalContractsData" Multiplicity="*" />
           <ReferentialConstraint>
@@ -641,7 +699,7 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__ProposalC__Propo__5006DFF2">
+        <Association Name="FK__ProposalC__Propo__00AA174D">
           <End Role="Proposal" Type="Self.Proposal" Multiplicity="1" />
           <End Role="ProposalContractsData" Type="Self.ProposalContractsData" Multiplicity="*" />
           <ReferentialConstraint>
@@ -674,6 +732,18 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
             </Principal>
             <Dependent Role="ProposalsAttachments">
               <PropertyRef Name="AttachmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Proposals__Attac__08AB2BC8">
+          <End Role="AttachmentTypeLU" Type="Self.AttachmentTypeLU" Multiplicity="1" />
+          <End Role="ProposalsAttachments" Type="Self.ProposalsAttachments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AttachmentTypeLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProposalsAttachments">
+              <PropertyRef Name="AttachmentType" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1301,6 +1371,16 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <Parameter Name="LineOfBusinessID" Type="varchar" Mode="In" />
           <Parameter Name="ProgramAreaID" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="CopyCannedResponsesPAR" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="newChecklistId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="CreateDfarsChecklistResponseReport" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="LOB" Type="varchar" Mode="In" />
+          <Parameter Name="PA" Type="varchar" Mode="In" />
+          <Parameter Name="StartDate" Type="date" Mode="In" />
+          <Parameter Name="EndDate" Type="date" Mode="In" />
+          <Parameter Name="ExecutionUserID" Type="varchar" Mode="In" />
+        </Function>
         <Function Name="CreatePARChecklistReport" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalID" Type="int" Mode="In" />
           <Parameter Name="ProposalAdequacyReviewID" Type="int" Mode="In" />
@@ -1361,10 +1441,6 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
         </Function>
         <Function Name="deleteProposalClass" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
-        </Function>
-        <Function Name="deleteProposalContractsOffers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="ProposalContractsOffersId" Type="int" Mode="In" />
-          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
         </Function>
         <Function Name="deleteProposalRolesByProposalID" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalID" Type="int" Mode="In" />
@@ -1437,10 +1513,59 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <Parameter Name="RoleID" Type="int" Mode="In" />
           <Parameter Name="LineOfBusinessID" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="rsCentralEstimator" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CentralEstimator" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="rsContractType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ContractType" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="rsCustomerType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CustomerType" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="rsLineOfBusiness" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="LOB" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="rsProgramArea" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="PA" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="rsProposalStatus" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ProposalStatus" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="rsSegment" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Segment" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="rsYear" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Year" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="SplitString" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="List" Type="varchar" Mode="In" />
+          <Parameter Name="Delimiter" Type="char" Mode="In" />
+          <Parameter Name="EmptyListItem" Type="varchar" Mode="In" />
+          <ReturnType>
+            <CollectionType>
+              <RowType>
+                <Property Name="ItemId" Type="int" Nullable="false" />
+                <Property Name="Item" Type="varchar" MaxLength="8000" />
+              </RowType>
+            </CollectionType>
+          </ReturnType>
+        </Function>
+        <Function Name="truncateTable" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="p1" Type="nvarchar" Mode="In" />
+          <Parameter Name="p2" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="udfCreateCommaSeparatedList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="varchar">
+          <Parameter Name="ProposalID" Type="int" Mode="In" />
+          <Parameter Name="ListTypeID" Type="int" Mode="In" />
+        </Function>
         <Function Name="unlockProposal" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalID" Type="int" Mode="In" />
           <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
           <Parameter Name="UnlockOptionID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="UpdateDbVersion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="DbVersion" Type="varchar" Mode="In" />
+          <Parameter Name="AppVersion" Type="varchar" Mode="In" />
         </Function>
         <Function Name="updateProposalForecastEmailSent" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalID" Type="int" Mode="In" />
@@ -1630,17 +1755,16 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <Parameter Name="ContractsCorrespondLogNumber" Type="varchar" Mode="In" />
           <Parameter Name="FinalNegotiatedValue" Type="bigint" Mode="In" />
           <Parameter Name="FinalNegotiatedDate" Type="date" Mode="In" />
-        </Function>
-        <Function Name="upsertProposalContractsOffers" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
-          <Parameter Name="ProposalContractsOffersId" Type="int" Mode="In" />
-          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
-          <Parameter Name="ContractsDataId" Type="int" Mode="In" />
-          <Parameter Name="CustomerOfferAmount" Type="bigint" Mode="In" />
-          <Parameter Name="CustomerOfferDate" Type="date" Mode="In" />
-          <Parameter Name="LMCounterOfferDate" Type="date" Mode="In" />
-          <Parameter Name="LMCounterOfferCost" Type="bigint" Mode="In" />
-          <Parameter Name="LMCounterOfferCOM" Type="bigint" Mode="In" />
-          <Parameter Name="LMCounterOfferProfitFee" Type="bigint" Mode="In" />
+          <Parameter Name="EPPDelegationAuthority" Type="int" Mode="In" />
+          <Parameter Name="ProgramEppDate" Type="date" Mode="In" />
+          <Parameter Name="LobEppDate" Type="date" Mode="In" />
+          <Parameter Name="PreSpaceEppDate" Type="date" Mode="In" />
+          <Parameter Name="SpaceEppDate" Type="date" Mode="In" />
+          <Parameter Name="PreCorporateEppDate" Type="date" Mode="In" />
+          <Parameter Name="CorporateEppDate" Type="date" Mode="In" />
+          <Parameter Name="EppRosDelegationNotes" Type="varchar" Mode="In" />
+          <Parameter Name="LmWon" Type="bit" Mode="In" />
+          <Parameter Name="ModCompletedDate" Type="date" Mode="In" />
         </Function>
         <Function Name="upsertProposalType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
@@ -1655,6 +1779,8 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
         <EntityContainer Name="genTRACModelStoreContainer">
           <EntitySet Name="DataMartEmployee" EntityType="Self.DataMartEmployee" Schema="DataMart" store:Type="Tables" />
           <EntitySet Name="Attachment" EntityType="Self.Attachment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AttachmentTypeLU" EntityType="Self.AttachmentTypeLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BoeDatabaseVersion" EntityType="Self.BoeDatabaseVersion" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BOEToolLU" EntityType="Self.BOEToolLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CannedResponsesPAR" EntityType="Self.CannedResponsesPAR" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChecklistTypeLU" EntityType="Self.ChecklistTypeLU" Schema="dbo" store:Type="Tables" />
@@ -1665,6 +1791,7 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <EntitySet Name="CustomerTypeLU" EntityType="Self.CustomerTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CutOffDateUtilizationLU" EntityType="Self.CutOffDateUtilizationLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ELMAH_Error" EntityType="Self.ELMAH_Error" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EppDelegationAuthorityLU" EntityType="Self.EppDelegationAuthorityLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="genTRACUser" EntityType="Self.genTRACUser" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISGSRoleLU" EntityType="Self.ISGSRoleLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LineOfBusinessLU" EntityType="Self.LineOfBusinessLU" Schema="dbo" store:Type="Tables" />
@@ -1681,7 +1808,6 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <EntitySet Name="ProposalChecklistTypeLU" EntityType="Self.ProposalChecklistTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalClassLU" EntityType="Self.ProposalClassLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalContractsData" EntityType="Self.ProposalContractsData" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="ProposalContractsOffers" EntityType="Self.ProposalContractsOffers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalContractTypeXREF" EntityType="Self.ProposalContractTypeXREF" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalCostElementXREF" EntityType="Self.ProposalCostElementXREF" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalLocationLU" EntityType="Self.ProposalLocationLU" Schema="dbo" store:Type="Tables" />
@@ -1691,6 +1817,7 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <EntitySet Name="ProposalTrackingGenerator" EntityType="Self.ProposalTrackingGenerator" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalTypeLU" EntityType="Self.ProposalTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalUserRole" EntityType="Self.ProposalUserRole" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ReasonCertificationNotRequiredLU" EntityType="Self.ReasonCertificationNotRequiredLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RequestTypeLU" EntityType="Self.RequestTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ResponseLU" EntityType="Self.ResponseLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ResponseTypeLU" EntityType="Self.ResponseTypeLU" Schema="dbo" store:Type="Tables" />
@@ -1761,15 +1888,19 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
             <End Role="PARChecklistContent" EntitySet="PARChecklistContent" />
             <End Role="CannedResponsesPAR" EntitySet="CannedResponsesPAR" />
           </AssociationSet>
-          <AssociationSet Name="FK__ProposalC__Contr__4959E263" Association="Self.FK__ProposalC__Contr__4959E263">
-            <End Role="ProposalContractsData" EntitySet="ProposalContractsData" />
-            <End Role="ProposalContractsOffers" EntitySet="ProposalContractsOffers" />
+          <AssociationSet Name="FK__Proposal__Reason__04DA9AE4" Association="Self.FK__Proposal__Reason__04DA9AE4">
+            <End Role="ReasonCertificationNotRequiredLU" EntitySet="ReasonCertificationNotRequiredLU" />
+            <End Role="Proposal" EntitySet="Proposal" />
           </AssociationSet>
-          <AssociationSet Name="FK__ProposalC__Previ__467D75B8" Association="Self.FK__ProposalC__Previ__467D75B8">
+          <AssociationSet Name="FK__ProposalC__EPPDe__02925FBF" Association="Self.FK__ProposalC__EPPDe__02925FBF">
+            <End Role="EppDelegationAuthorityLU" EntitySet="EppDelegationAuthorityLU" />
+            <End Role="ProposalContractsData" EntitySet="ProposalContractsData" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ProposalC__Previ__019E3B86" Association="Self.FK__ProposalC__Previ__019E3B86">
             <End Role="Proposal" EntitySet="Proposal" />
             <End Role="ProposalContractsData" EntitySet="ProposalContractsData" />
           </AssociationSet>
-          <AssociationSet Name="FK__ProposalC__Propo__5006DFF2" Association="Self.FK__ProposalC__Propo__5006DFF2">
+          <AssociationSet Name="FK__ProposalC__Propo__00AA174D" Association="Self.FK__ProposalC__Propo__00AA174D">
             <End Role="Proposal" EntitySet="Proposal" />
             <End Role="ProposalContractsData" EntitySet="ProposalContractsData" />
           </AssociationSet>
@@ -1779,6 +1910,10 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           </AssociationSet>
           <AssociationSet Name="FK__Proposals__Attac__07B7078F" Association="Self.FK__Proposals__Attac__07B7078F">
             <End Role="Attachment" EntitySet="Attachment" />
+            <End Role="ProposalsAttachments" EntitySet="ProposalsAttachments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Proposals__Attac__08AB2BC8" Association="Self.FK__Proposals__Attac__08AB2BC8">
+            <End Role="AttachmentTypeLU" EntitySet="AttachmentTypeLU" />
             <End Role="ProposalsAttachments" EntitySet="ProposalsAttachments" />
           </AssociationSet>
           <AssociationSet Name="FK__Proposals__Propo__06C2E356" Association="Self.FK__Proposals__Propo__06C2E356">
@@ -2218,6 +2353,7 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <NavigationProperty Name="ProposalChecklists" Relationship="genTRACModel.FK_ProposalChecklist_Proposal" FromRole="Proposal" ToRole="ProposalChecklist" />
           <NavigationProperty Name="ProposalContractsDatas" Relationship="genTRACModel.FK__ProposalC__Previ__467D75B8" FromRole="Proposal" ToRole="ProposalContractsData" />
           <NavigationProperty Name="ProposalContractsDatas1" Relationship="genTRACModel.FK__ProposalC__Propo__5006DFF2" FromRole="Proposal" ToRole="ProposalContractsData" />
+          <NavigationProperty Name="ReasonCertificationNotRequiredLU" Relationship="genTRACModel.FK__Proposal__Reason__04DA9AE4" FromRole="Proposal" ToRole="ReasonCertificationNotRequiredLU" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -3443,14 +3579,9 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
             <End Role="ProposalChecklist" EntitySet="ProposalChecklists" />
           </AssociationSet>
           <EntitySet Name="ProposalContractsDatas" EntityType="genTRACModel.ProposalContractsData" />
-          <EntitySet Name="ProposalContractsOffers" EntityType="genTRACModel.ProposalContractsOffer" />
           <AssociationSet Name="FK__ProposalC__Previ__467D75B8" Association="genTRACModel.FK__ProposalC__Previ__467D75B8">
             <End Role="Proposal" EntitySet="Proposals" />
             <End Role="ProposalContractsData" EntitySet="ProposalContractsDatas" />
-          </AssociationSet>
-          <AssociationSet Name="FK__ProposalC__Contr__4959E263" Association="genTRACModel.FK__ProposalC__Contr__4959E263">
-            <End Role="ProposalContractsData" EntitySet="ProposalContractsDatas" />
-            <End Role="ProposalContractsOffer" EntitySet="ProposalContractsOffers" />
           </AssociationSet>
           <FunctionImport Name="deleteProposalContractsOffer">
             <Parameter Name="ProposalContractsOfferId" Mode="In" Type="Int32" />
@@ -3465,6 +3596,16 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
             <Parameter Name="ContractsCorrespondLogNumber" Mode="In" Type="String" />
             <Parameter Name="FinalNegotiatedValue" Mode="In" Type="Int64" />
             <Parameter Name="FinalNegotiatedDate" Mode="In" Type="DateTime" />
+            <Parameter Name="EPPDelegationAuthority" Mode="In" Type="Int32" />
+            <Parameter Name="ProgramEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="LobEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="PreSpaceEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="SpaceEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="PreCorporateEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="CorporateEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="EppRosDelegationNotes" Mode="In" Type="String" />
+            <Parameter Name="LmWon" Mode="In" Type="Boolean" />
+            <Parameter Name="ModCompletedDate" Mode="In" Type="DateTime" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalContractsOffer">
             <Parameter Name="ProposalContractsOfferId" Mode="In" Type="Int32" />
@@ -3495,6 +3636,69 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <FunctionImport Name="deleteProposalContractsOffers">
             <Parameter Name="ProposalContractsOffersId" Mode="In" Type="Int32" />
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <EntitySet Name="AttachmentTypeLUs" EntityType="genTRACModel.AttachmentTypeLU" />
+          <EntitySet Name="BoeDatabaseVersions" EntityType="genTRACModel.BoeDatabaseVersion" />
+          <EntitySet Name="EppDelegationAuthorityLUs" EntityType="genTRACModel.EppDelegationAuthorityLU" />
+          <EntitySet Name="ReasonCertificationNotRequiredLUs" EntityType="genTRACModel.ReasonCertificationNotRequiredLU" />
+          <AssociationSet Name="FK__Proposals__Attac__08AB2BC8" Association="genTRACModel.FK__Proposals__Attac__08AB2BC8">
+            <End Role="AttachmentTypeLU" EntitySet="AttachmentTypeLUs" />
+            <End Role="ProposalsAttachment" EntitySet="ProposalsAttachments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ProposalC__EPPDe__02925FBF" Association="genTRACModel.FK__ProposalC__EPPDe__02925FBF">
+            <End Role="EppDelegationAuthorityLU" EntitySet="EppDelegationAuthorityLUs" />
+            <End Role="ProposalContractsData" EntitySet="ProposalContractsDatas" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Proposal__Reason__04DA9AE4" Association="genTRACModel.FK__Proposal__Reason__04DA9AE4">
+            <End Role="ReasonCertificationNotRequiredLU" EntitySet="ReasonCertificationNotRequiredLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <FunctionImport Name="CopyCannedResponsesPAR">
+            <Parameter Name="newChecklistId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="CreateDfarsChecklistResponseReport" ReturnType="Collection(genTRACModel.CreateDfarsChecklistResponseReport_Result)">
+            <Parameter Name="LOB" Mode="In" Type="String" />
+            <Parameter Name="PA" Mode="In" Type="String" />
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="EndDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ExecutionUserID" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsCentralEstimator" ReturnType="Collection(String)">
+            <Parameter Name="CentralEstimator" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsContractType" ReturnType="Collection(String)">
+            <Parameter Name="ContractType" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsCustomerType" ReturnType="Collection(String)">
+            <Parameter Name="CustomerType" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsLineOfBusiness" ReturnType="Collection(String)">
+            <Parameter Name="LOB" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsProgramArea" ReturnType="Collection(String)">
+            <Parameter Name="PA" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsProposalStatus" ReturnType="Collection(String)">
+            <Parameter Name="ProposalStatus" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsSegment">
+            <Parameter Name="Segment" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsYear" ReturnType="Collection(String)">
+            <Parameter Name="Year" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="SplitString" IsComposable="true" ReturnType="Collection(genTRACModel.SplitString_Result)">
+            <Parameter Name="List" Mode="In" Type="String" />
+            <Parameter Name="Delimiter" Mode="In" Type="String" />
+            <Parameter Name="EmptyListItem" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="truncateTable">
+            <Parameter Name="p1" Mode="In" Type="String" />
+            <Parameter Name="p2" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="UpdateDbVersion">
+            <Parameter Name="DbVersion" Mode="In" Type="String" />
+            <Parameter Name="AppVersion" Mode="In" Type="String" />
           </FunctionImport>
         </EntityContainer>
         <ComplexType Name="CreatePARChecklistReport_Result">
@@ -3880,6 +4084,7 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <Property Name="IsRevisionReference" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK__Proposals__Propo__5A5A5133" FromRole="ProposalsAttachment" ToRole="Proposal" />
           <NavigationProperty Name="Attachment" Relationship="genTRACModel.FK__Proposals__Attac__5B4E756C" FromRole="ProposalsAttachment" ToRole="Attachment" />
+          <NavigationProperty Name="AttachmentTypeLU" Relationship="genTRACModel.FK__Proposals__Attac__08AB2BC8" FromRole="ProposalsAttachment" ToRole="AttachmentTypeLU" />
         </EntityType>
         <Association Name="FK__Proposals__Propo__5A5A5133">
           <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
@@ -4023,24 +4228,19 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <Property Name="FinalNegotiatedValue" Type="Int64" />
           <Property Name="FinalNegotiatedDate" Type="DateTime" Precision="0" />
           <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK__ProposalC__Previ__467D75B8" FromRole="ProposalContractsData" ToRole="Proposal" />
-          <NavigationProperty Name="ProposalContractsOffers" Relationship="genTRACModel.FK__ProposalC__Contr__4959E263" FromRole="ProposalContractsData" ToRole="ProposalContractsOffer" />
           <Property Name="ProposalID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Proposal1" Relationship="genTRACModel.FK__ProposalC__Propo__5006DFF2" FromRole="ProposalContractsData" ToRole="Proposal" />
-        </EntityType>
-        <EntityType Name="ProposalContractsOffer">
-          <Key>
-            <PropertyRef Name="ProposalContractsOffersId" />
-          </Key>
-          <Property Name="ProposalContractsOffersId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="ContractsDataId" Type="Int32" Nullable="false" />
-          <Property Name="CustomerOfferAmount" Type="Int64" Nullable="false" />
-          <Property Name="CustomerOfferDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="LMCounterOfferDate" Type="DateTime" Precision="0" />
-          <Property Name="LMCounterOfferCost" Type="Int64" />
-          <Property Name="LMCounterOfferCOM" Type="Int64" />
-          <Property Name="LMCounterOfferProfitFee" Type="Int64" />
-          <NavigationProperty Name="ProposalContractsData" Relationship="genTRACModel.FK__ProposalC__Contr__4959E263" FromRole="ProposalContractsOffer" ToRole="ProposalContractsData" />
+          <Property Name="EPPDelegationAuthority" Type="Int32" />
+          <Property Name="ProgramEppDate" Type="DateTime" Precision="0" />
+          <Property Name="LobEppDate" Type="DateTime" Precision="0" />
+          <Property Name="PreSpaceEppDate" Type="DateTime" Precision="0" />
+          <Property Name="SpaceEppDate" Type="DateTime" Precision="0" />
+          <Property Name="PreCorporateEppDate" Type="DateTime" Precision="0" />
+          <Property Name="CorporateEppDate" Type="DateTime" Precision="0" />
+          <Property Name="EppRosDelegationNotes" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="LmWon" Type="Boolean" />
+          <Property Name="ModCompletedDate" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="EppDelegationAuthorityLU" Relationship="genTRACModel.FK__ProposalC__EPPDe__02925FBF" FromRole="ProposalContractsData" ToRole="EppDelegationAuthorityLU" />
         </EntityType>
         <Association Name="FK__ProposalC__Previ__467D75B8">
           <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
@@ -4051,18 +4251,6 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
             </Principal>
             <Dependent Role="ProposalContractsData">
               <PropertyRef Name="PreviouslySubmittedROM" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK__ProposalC__Contr__4959E263">
-          <End Type="genTRACModel.ProposalContractsData" Role="ProposalContractsData" Multiplicity="1" />
-          <End Type="genTRACModel.ProposalContractsOffer" Role="ProposalContractsOffer" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ProposalContractsData">
-              <PropertyRef Name="ProposalContractsDataId" />
-            </Principal>
-            <Dependent Role="ProposalContractsOffer">
-              <PropertyRef Name="ContractsDataId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4078,6 +4266,93 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="AttachmentTypeLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ProposalsAttachments" Relationship="genTRACModel.FK__Proposals__Attac__08AB2BC8" FromRole="AttachmentTypeLU" ToRole="ProposalsAttachment" />
+        </EntityType>
+        <EntityType Name="BoeDatabaseVersion">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DBVersion" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="AppVersion" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="EppDelegationAuthorityLU">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Text" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ProposalContractsDatas" Relationship="genTRACModel.FK__ProposalC__EPPDe__02925FBF" FromRole="EppDelegationAuthorityLU" ToRole="ProposalContractsData" />
+        </EntityType>
+        <EntityType Name="ReasonCertificationNotRequiredLU">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Text" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK__Proposal__Reason__04DA9AE4" FromRole="ReasonCertificationNotRequiredLU" ToRole="Proposal" />
+        </EntityType>
+        <Association Name="FK__Proposals__Attac__08AB2BC8">
+          <End Type="genTRACModel.AttachmentTypeLU" Role="AttachmentTypeLU" Multiplicity="1" />
+          <End Type="genTRACModel.ProposalsAttachment" Role="ProposalsAttachment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AttachmentTypeLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProposalsAttachment">
+              <PropertyRef Name="AttachmentType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ProposalC__EPPDe__02925FBF">
+          <End Type="genTRACModel.EppDelegationAuthorityLU" Role="EppDelegationAuthorityLU" Multiplicity="0..1" />
+          <End Type="genTRACModel.ProposalContractsData" Role="ProposalContractsData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EppDelegationAuthorityLU">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProposalContractsData">
+              <PropertyRef Name="EPPDelegationAuthority" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Proposal__Reason__04DA9AE4">
+          <End Type="genTRACModel.ReasonCertificationNotRequiredLU" Role="ReasonCertificationNotRequiredLU" Multiplicity="0..1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ReasonCertificationNotRequiredLU">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ReasonCertificationNotRequired" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="CreateDfarsChecklistResponseReport_Result">
+          <Property Type="String" Name="Tracking__" Nullable="true" MaxLength="13" />
+          <Property Type="String" Name="Proposal_Title" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="Proposal_Status" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Line_of_Business" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Program_Area_Name" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="LeadEstimatorName" Nullable="true" MaxLength="256" />
+          <Property Type="DateTime" Name="Actual_Submittal_Date" Nullable="true" />
+          <Property Type="DateTime" Name="Approval_Workflow_Completed_Date" Nullable="true" />
+          <Property Type="DateTime" Name="Certification_Completed_Date" Nullable="true" />
+          <Property Type="String" Name="Question__" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Question_Text" Nullable="true" />
+          <Property Type="String" Name="Comment" Nullable="true" MaxLength="500" />
+        </ComplexType>
+        <ComplexType Name="SplitString_Result">
+          <Property Type="Int32" Name="ItemId" Nullable="false" />
+          <Property Type="String" Name="Item" Nullable="true" MaxLength="8000" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -4829,6 +5104,16 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <EntitySetMapping Name="ProposalContractsDatas">
             <EntityTypeMapping TypeName="genTRACModel.ProposalContractsData">
               <MappingFragment StoreEntitySet="ProposalContractsData">
+                <ScalarProperty Name="ModCompletedDate" ColumnName="ModCompletedDate" />
+                <ScalarProperty Name="LmWon" ColumnName="LmWon" />
+                <ScalarProperty Name="EppRosDelegationNotes" ColumnName="EppRosDelegationNotes" />
+                <ScalarProperty Name="CorporateEppDate" ColumnName="CorporateEppDate" />
+                <ScalarProperty Name="PreCorporateEppDate" ColumnName="PreCorporateEppDate" />
+                <ScalarProperty Name="SpaceEppDate" ColumnName="SpaceEppDate" />
+                <ScalarProperty Name="PreSpaceEppDate" ColumnName="PreSpaceEppDate" />
+                <ScalarProperty Name="LobEppDate" ColumnName="LobEppDate" />
+                <ScalarProperty Name="ProgramEppDate" ColumnName="ProgramEppDate" />
+                <ScalarProperty Name="EPPDelegationAuthority" ColumnName="EPPDelegationAuthority" />
                 <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
                 <ScalarProperty Name="FinalNegotiatedDate" ColumnName="FinalNegotiatedDate" />
                 <ScalarProperty Name="FinalNegotiatedValue" ColumnName="FinalNegotiatedValue" />
@@ -4840,25 +5125,79 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="ProposalContractsOffers">
-            <EntityTypeMapping TypeName="genTRACModel.ProposalContractsOffer">
-              <MappingFragment StoreEntitySet="ProposalContractsOffers">
-                <ScalarProperty Name="LMCounterOfferProfitFee" ColumnName="LMCounterOfferProfitFee" />
-                <ScalarProperty Name="LMCounterOfferCOM" ColumnName="LMCounterOfferCOM" />
-                <ScalarProperty Name="LMCounterOfferCost" ColumnName="LMCounterOfferCost" />
-                <ScalarProperty Name="LMCounterOfferDate" ColumnName="LMCounterOfferDate" />
-                <ScalarProperty Name="CustomerOfferDate" ColumnName="CustomerOfferDate" />
-                <ScalarProperty Name="CustomerOfferAmount" ColumnName="CustomerOfferAmount" />
-                <ScalarProperty Name="ContractsDataId" ColumnName="ContractsDataId" />
-                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
-                <ScalarProperty Name="ProposalContractsOffersId" ColumnName="ProposalContractsOffersId" />
+          <FunctionImportMapping FunctionImportName="upsertProposalContractsData" FunctionName="genTRACModel.Store.upsertProposalContractsData" />
+          <EntitySetMapping Name="AttachmentTypeLUs">
+            <EntityTypeMapping TypeName="genTRACModel.AttachmentTypeLU">
+              <MappingFragment StoreEntitySet="AttachmentTypeLU">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="upsertProposalContractsData" FunctionName="genTRACModel.Store.upsertProposalContractsData" />
-          <FunctionImportMapping FunctionImportName="upsertProposalContractsOffers" FunctionName="genTRACModel.Store.upsertProposalContractsOffers" />
-          <FunctionImportMapping FunctionImportName="deleteProposalContractsOffers" FunctionName="genTRACModel.Store.deleteProposalContractsOffers" />
-        </EntityContainerMapping>
+          <EntitySetMapping Name="BoeDatabaseVersions">
+            <EntityTypeMapping TypeName="genTRACModel.BoeDatabaseVersion">
+              <MappingFragment StoreEntitySet="BoeDatabaseVersion">
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="AppVersion" ColumnName="AppVersion" />
+                <ScalarProperty Name="DBVersion" ColumnName="DBVersion" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EppDelegationAuthorityLUs">
+            <EntityTypeMapping TypeName="genTRACModel.EppDelegationAuthorityLU">
+              <MappingFragment StoreEntitySet="EppDelegationAuthorityLU">
+                <ScalarProperty Name="Text" ColumnName="Text" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ReasonCertificationNotRequiredLUs">
+            <EntityTypeMapping TypeName="genTRACModel.ReasonCertificationNotRequiredLU">
+              <MappingFragment StoreEntitySet="ReasonCertificationNotRequiredLU">
+                <ScalarProperty Name="Text" ColumnName="Text" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="CopyCannedResponsesPAR" FunctionName="genTRACModel.Store.CopyCannedResponsesPAR" />
+          <FunctionImportMapping FunctionImportName="CreateDfarsChecklistResponseReport" FunctionName="genTRACModel.Store.CreateDfarsChecklistResponseReport">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="genTRACModel.CreateDfarsChecklistResponseReport_Result">
+                <ScalarProperty Name="Tracking__" ColumnName="Tracking #" />
+                <ScalarProperty Name="Proposal_Title" ColumnName="Proposal Title" />
+                <ScalarProperty Name="Proposal_Status" ColumnName="Proposal Status" />
+                <ScalarProperty Name="Line_of_Business" ColumnName="Line of Business" />
+                <ScalarProperty Name="Program_Area_Name" ColumnName="Program Area Name" />
+                <ScalarProperty Name="LeadEstimatorName" ColumnName="LeadEstimatorName" />
+                <ScalarProperty Name="Actual_Submittal_Date" ColumnName="Actual Submittal Date" />
+                <ScalarProperty Name="Approval_Workflow_Completed_Date" ColumnName="Approval Workflow Completed Date" />
+                <ScalarProperty Name="Certification_Completed_Date" ColumnName="Certification Completed Date" />
+                <ScalarProperty Name="Question__" ColumnName="Question #" />
+                <ScalarProperty Name="Question_Text" ColumnName="Question Text" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="rsCentralEstimator" FunctionName="genTRACModel.Store.rsCentralEstimator" />
+          <FunctionImportMapping FunctionImportName="rsContractType" FunctionName="genTRACModel.Store.rsContractType" />
+          <FunctionImportMapping FunctionImportName="rsCustomerType" FunctionName="genTRACModel.Store.rsCustomerType" />
+          <FunctionImportMapping FunctionImportName="rsLineOfBusiness" FunctionName="genTRACModel.Store.rsLineOfBusiness" />
+          <FunctionImportMapping FunctionImportName="rsProgramArea" FunctionName="genTRACModel.Store.rsProgramArea" />
+          <FunctionImportMapping FunctionImportName="rsProposalStatus" FunctionName="genTRACModel.Store.rsProposalStatus" />
+          <FunctionImportMapping FunctionImportName="rsSegment" FunctionName="genTRACModel.Store.rsSegment" />
+          <FunctionImportMapping FunctionImportName="rsYear" FunctionName="genTRACModel.Store.rsYear" />
+          <FunctionImportMapping FunctionImportName="SplitString" FunctionName="genTRACModel.Store.SplitString">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="genTRACModel.SplitString_Result">
+                <ScalarProperty Name="ItemId" ColumnName="ItemId" />
+                <ScalarProperty Name="Item" ColumnName="Item" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="truncateTable" FunctionName="genTRACModel.Store.truncateTable" />
+          <FunctionImportMapping FunctionImportName="UpdateDbVersion" FunctionName="genTRACModel.Store.UpdateDbVersion" />
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

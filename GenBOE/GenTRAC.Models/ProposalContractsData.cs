@@ -14,12 +14,6 @@ namespace GenTRAC.Models
     
     public partial class ProposalContractsData
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public ProposalContractsData()
-        {
-            this.ProposalContractsOffers = new HashSet<ProposalContractsOffer>();
-        }
-    
         public int ProposalContractsDataId { get; set; }
         public System.DateTime UpdateDT { get; set; }
         public int PreviouslySubmittedROM { get; set; }
@@ -28,10 +22,19 @@ namespace GenTRAC.Models
         public Nullable<long> FinalNegotiatedValue { get; set; }
         public Nullable<System.DateTime> FinalNegotiatedDate { get; set; }
         public int ProposalID { get; set; }
+        public Nullable<int> EPPDelegationAuthority { get; set; }
+        public Nullable<System.DateTime> ProgramEppDate { get; set; }
+        public Nullable<System.DateTime> LobEppDate { get; set; }
+        public Nullable<System.DateTime> PreSpaceEppDate { get; set; }
+        public Nullable<System.DateTime> SpaceEppDate { get; set; }
+        public Nullable<System.DateTime> PreCorporateEppDate { get; set; }
+        public Nullable<System.DateTime> CorporateEppDate { get; set; }
+        public string EppRosDelegationNotes { get; set; }
+        public Nullable<bool> LmWon { get; set; }
+        public Nullable<System.DateTime> ModCompletedDate { get; set; }
     
         public virtual Proposal Proposal { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ProposalContractsOffer> ProposalContractsOffers { get; set; }
         public virtual Proposal Proposal1 { get; set; }
+        public virtual EppDelegationAuthorityLU EppDelegationAuthorityLU { get; set; }
     }
 }

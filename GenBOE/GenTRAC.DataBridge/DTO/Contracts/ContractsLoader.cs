@@ -50,7 +50,17 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.CustomerSubmittalDate,
                             dtoToUpsert.ContractsCorrespondenceLogNumber,
                             dtoToUpsert.FinalNegotiatedValue,
-                            dtoToUpsert.NegotiationsSubmitted
+                            dtoToUpsert.NegotiationsSubmitted,
+                            dtoToUpsert.EPPDelegationAuthority,
+                            dtoToUpsert.ProgramEppDate,
+                            dtoToUpsert.LobEppDate,
+                            dtoToUpsert.PreSpaceEppDate,
+                            dtoToUpsert.SpaceEppDate,
+                            dtoToUpsert.PreCorporateEppDate,
+                            dtoToUpsert.CorporateEppDate,
+                            dtoToUpsert.EppRosDelegationNotes,
+                            dtoToUpsert.LmWon,
+                            dtoToUpsert.ModCompletedDate
                             ).FirstOrDefault();
                     }
                 }
@@ -97,6 +107,16 @@ namespace GenTRAC.DataBridge.DTO
                             ContractsCorrespondenceLogNumber = x.ContractsCorrespondLogNumber,
                             FinalNegotiatedValue = x.FinalNegotiatedValue,
                             NegotiationsSubmitted = x.FinalNegotiatedDate,
+                            EPPDelegationAuthority = x.EPPDelegationAuthority,
+                            ProgramEppDate = x.ProgramEppDate,
+                            LobEppDate = x.LobEppDate,
+                            PreSpaceEppDate = x.PreSpaceEppDate,
+                            SpaceEppDate = x.SpaceEppDate,
+                            PreCorporateEppDate = x.PreCorporateEppDate,
+                            CorporateEppDate = x.CorporateEppDate,
+                            EppRosDelegationNotes = x.EppRosDelegationNotes,
+                            LmWon = x.LmWon,
+                            ModCompletedDate = x.ModCompletedDate
                         }).FirstOrDefault();
                 }
             }
@@ -129,7 +149,17 @@ namespace GenTRAC.DataBridge.DTO
                             CustomerSubmittalDate = x.CustomerSubmittalDate,
                             ContractsCorrespondenceLogNumber = x.ContractsCorrespondLogNumber,
                             FinalNegotiatedValue = x.FinalNegotiatedValue,
-                            NegotiationsSubmitted = x.FinalNegotiatedDate
+                            NegotiationsSubmitted = x.FinalNegotiatedDate,
+                            EPPDelegationAuthority = x.EPPDelegationAuthority,
+                            ProgramEppDate = x.ProgramEppDate,
+                            LobEppDate = x.LobEppDate,
+                            PreSpaceEppDate = x.PreSpaceEppDate,
+                            SpaceEppDate = x.SpaceEppDate,
+                            PreCorporateEppDate = x.PreCorporateEppDate,
+                            CorporateEppDate = x.CorporateEppDate,
+                            EppRosDelegationNotes = x.EppRosDelegationNotes,
+                            LmWon = x.LmWon,
+                            ModCompletedDate = x.ModCompletedDate
                         }).ToList();
                 }
             }
