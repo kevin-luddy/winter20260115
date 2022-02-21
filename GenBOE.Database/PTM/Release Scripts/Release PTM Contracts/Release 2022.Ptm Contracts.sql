@@ -49,7 +49,7 @@ BEGIN
 		ContractsCorrespondLogNumber	VARCHAR(20)		NOT NULL,
 		FinalNegotiatedValue			BIGINT			NULL,
 		FinalNegotiatedDate				DATE			NULL,
-		EPPDelegationAuthority			INT				NULL			FOREIGN KEY REFERENCES dbo.EppDelegationAuthorityLU(Id),
+		EppDelegationAuthority			INT				NULL			FOREIGN KEY REFERENCES dbo.EppDelegationAuthorityLU(Id),
 		ProgramEppDate					DATE			NULL,
 		LobEppDate						DATE			NULL,
 		PreSpaceEppDate					DATE			NULL,

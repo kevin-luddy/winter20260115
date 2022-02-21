@@ -130,7 +130,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ContractsCorrespondenceLogNumber = "Test_Log_Number",
                 FinalNegotiatedValue = 3,
                 NegotiationsSubmitted = DateTime.Now,
-                EPPDelegationAuthority = 3,
+                EppDelegationAuthority = 3,
                 ProgramEppDate = DateTime.Now,
                 LobEppDate = DateTime.Now,
                 PreSpaceEppDate = DateTime.Now,
@@ -177,7 +177,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(contractDto.NegotiationsSubmitted, contractsModelView.NegotiationsSubmittedDt);
             Assert.AreEqual(contractDto.PreviouslySubmittedROM.ToString(), contractsModelView.PreviouslySubmittedRoms.ElementAtOrDefault(0).Value);
             Assert.AreEqual(contractDto.PreviouslySubmittedROM, contractsModelView.PreviouslySubmittedROM);
-            Assert.AreEqual(contractDto.EPPDelegationAuthority, contractsModelView.EPPDelegationAuthority);
+            Assert.AreEqual(contractDto.EppDelegationAuthority, contractsModelView.EppDelegationAuthority);
             Assert.AreEqual(contractDto.ProgramEppDate, contractsModelView.ProgramEppDate);
             Assert.AreEqual(contractDto.LobEppDate, contractsModelView.LobEppDate);
             Assert.AreEqual(contractDto.PreSpaceEppDate, contractsModelView.PreSpaceEppDate);

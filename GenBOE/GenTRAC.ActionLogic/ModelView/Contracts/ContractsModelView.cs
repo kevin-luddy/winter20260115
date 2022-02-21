@@ -145,7 +145,7 @@ namespace GenTRAC.ActionLogic.ModelView
         /// <summary>
         /// EPP Delegation Authority ID
         /// </summary>
-        public int? EPPDelegationAuthority { get; set; }
+        public int? EppDelegationAuthority { get; set; }
 
         /// <summary>
         /// Program EPP Date

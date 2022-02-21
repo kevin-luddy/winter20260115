@@ -17,7 +17,7 @@ CREATE PROCEDURE [dbo].[upsertProposalContractsData]
 	@ContractsCorrespondLogNumber [varchar](20),
 	@FinalNegotiatedValue [bigint],
 	@FinalNegotiatedDate [date],
-	@EPPDelegationAuthority [int],
+	@EppDelegationAuthority [int],
 	@ProgramEppDate [date],
 	@LobEppDate [date],
 	@PreSpaceEppDate [date],
@@ -52,12 +52,12 @@ SET NOCOUNT ON
 			DECLARE @Inserted AS Table (Id int)
 			INSERT INTO [dbo].[ProposalContractsData] (UpdateDT, ProposalID, PreviouslySubmittedROM, CustomerSubmittalDate,
 														ContractsCorrespondLogNumber, FinalNegotiatedValue, FinalNegotiatedDate,
-														EPPDelegationAuthority, ProgramEppDate, LobEppDate, PreSpaceEppDate, 
+														EppDelegationAuthority, ProgramEppDate, LobEppDate, PreSpaceEppDate, 
 														SpaceEppDate, PreCorporateEppDate, CorporateEppDate, EppRosDelegationNotes, 
 														LmWon, ModCompletedDate)
 				OUTPUT inserted.ProposalContractsDataId INTO @Inserted
 				VALUES (GETDATE(), @ProposalID, @PreviouslySubmittedROM, @CustomerSubmittalDate, @ContractsCorrespondLogNumber,
-						@FinalNegotiatedValue, @FinalNegotiatedDate, @EPPDelegationAuthority, @ProgramEppDate, @LobEppDate, 
+						@FinalNegotiatedValue, @FinalNegotiatedDate, @EppDelegationAuthority, @ProgramEppDate, @LobEppDate, 
 						@PreSpaceEppDate, @SpaceEppDate, @PreCorporateEppDate, @CorporateEppDate, @EppRosDelegationNotes, @LmWon, 
 						@ModCompletedDate)
 			SELECT @ProposalContractsDataId = Id FROM @Inserted
@@ -73,7 +73,7 @@ SET NOCOUNT ON
 						ContractsCorrespondLogNumber = @ContractsCorrespondLogNumber,
 						FinalNegotiatedValue = @FinalNegotiatedValue, 
 						FinalNegotiatedDate = @FinalNegotiatedDate,
-						EPPDelegationAuthority = @EPPDelegationAuthority,
+						EppDelegationAuthority = @EppDelegationAuthority,
 						ProgramEppDate = @ProgramEppDate,
 						LobEppDate = @LobEppDate,
 						PreSpaceEppDate = @PreSpaceEppDate,
