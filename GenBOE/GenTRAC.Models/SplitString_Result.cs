@@ -10,17 +10,10 @@
 namespace GenTRAC.Models
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class ProposalsAttachment
+    public partial class SplitString_Result
     {
-        public int ProposalId { get; set; }
-        public int AttachmentId { get; set; }
-        public int AttachmentType { get; set; }
-        public bool IsRevisionReference { get; set; }
-    
-        public virtual Proposal Proposal { get; set; }
-        public virtual Attachment Attachment { get; set; }
-        public virtual AttachmentTypeLU AttachmentTypeLU { get; set; }
+        public int ItemId { get; set; }
+        public string Item { get; set; }
     }
 }

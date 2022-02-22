@@ -12,15 +12,11 @@ namespace GenTRAC.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class ProposalsAttachment
+    public partial class BoeDatabaseVersion
     {
-        public int ProposalId { get; set; }
-        public int AttachmentId { get; set; }
-        public int AttachmentType { get; set; }
-        public bool IsRevisionReference { get; set; }
-    
-        public virtual Proposal Proposal { get; set; }
-        public virtual Attachment Attachment { get; set; }
-        public virtual AttachmentTypeLU AttachmentTypeLU { get; set; }
+        public int Id { get; set; }
+        public string DBVersion { get; set; }
+        public string AppVersion { get; set; }
+        public System.DateTime UpdateDate { get; set; }
     }
 }

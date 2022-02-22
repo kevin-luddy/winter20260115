@@ -167,23 +167,16 @@ namespace GenTRAC.ActionLogic
             dto.FinalNegotiatedValue = model.FinalNegotiatedValueLong;
             dto.NegotiationsSubmitted = DateTime.Parse(model.NegotiationsSubmitted);
             dto.UpdateDateLong = model.LastUpdatedDateLong;
-
-            ContractsOffersDto offerToCopy = new ContractsOffersDto();
-
-            foreach (ContractsOfferModelView offer in model.ContractOffers)
-            {
-                if (offer != null)
-                {
-                    offerToCopy.CustomerOfferAmount = long.Parse(offer.CustomerOfferAmount);
-                    offerToCopy.CustomerOfferDate = DateTime.Parse(offer.CustomerOfferDate);
-                    offerToCopy.LMCounterOfferDate = DateTime.Parse(offer.LMCounterOfferDate);
-                    offerToCopy.LMCounterOfferCost = long.Parse(offer.LMCounterOfferCost);
-                    offerToCopy.LMCounterOfferCOM = long.Parse(offer.LMCounterOfferCOM);
-                    offerToCopy.LMCounterOfferProfitFee = long.Parse(offer.LMCounterOfferProfitFee);
-
-                    dto.ContractOffers.Add(offerToCopy);
-                }
-            };
+            dto.EppDelegationAuthority = model.EppDelegationAuthority;
+            dto.ProgramEppDate = model.ProgramEppDate;
+            dto.LobEppDate = model.LobEppDate;
+            dto.PreSpaceEppDate = model.PreSpaceEppDate;
+            dto.SpaceEppDate = model.SpaceEppDate;
+            dto.PreCorporateEppDate = model.PreCorporateEppDate;
+            dto.CorporateEppDate = model.CorporateEppDate;
+            dto.EppRosDelegationNotes = model.EppRosDelegationNotes;
+            dto.LmWon = model.LmWon;
+            dto.ModCompletedDate = model.ModCompletedDate;
 
             return dto;
         }
@@ -211,22 +204,16 @@ namespace GenTRAC.ActionLogic
             model.FinalNegotiatedValueLong = dto.FinalNegotiatedValue == null ? dto.FinalNegotiatedValue : long.Parse(dto.FinalNegotiatedValue.ToString());
             model.NegotiationsSubmittedDt = dto.NegotiationsSubmitted;
             model.LastUpdatedDateLong = dto.UpdateDateLong;
-
-            foreach (ContractsOffersDto offer in dto.ContractOffers)
-            {
-                if (offer != null)
-                {
-                    model.ContractOffers.Add(new ContractsOfferModelView()
-                    {
-                        CustomerOfferAmountInt = (int)offer.CustomerOfferAmount,
-                        CustomerOfferDt = offer.CustomerOfferDate,
-                        LmCounterOfferDt = offer.LMCounterOfferDate,
-                        LMCounterOfferCostInt = (int)offer.LMCounterOfferCost,
-                        LMCounterOfferCOMInt = (int)offer.LMCounterOfferCOM,
-                        LMCounterOfferProfitFeeInt = (int)offer.LMCounterOfferProfitFee
-                    });
-                }
-            };
+            model.EppDelegationAuthority = dto.EppDelegationAuthority;
+            model.ProgramEppDate = dto.ProgramEppDate;
+            model.LobEppDate = dto.LobEppDate;
+            model.PreSpaceEppDate = dto.PreSpaceEppDate;
+            model.SpaceEppDate = dto.SpaceEppDate;
+            model.PreCorporateEppDate = dto.PreCorporateEppDate;
+            model.CorporateEppDate = dto.CorporateEppDate;
+            model.EppRosDelegationNotes = dto.EppRosDelegationNotes;
+            model.LmWon = dto.LmWon;
+            model.ModCompletedDate = dto.ModCompletedDate;
 
             return model;
         }

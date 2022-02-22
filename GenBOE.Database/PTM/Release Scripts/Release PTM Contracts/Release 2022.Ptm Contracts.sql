@@ -24,6 +24,20 @@ BEGIN
 END
 GO
 
+IF OBJECT_ID('dbo.EppDelegationAuthorityLU', 'U') IS NULL
+BEGIN
+	CREATE TABLE dbo.EppDelegationAuthorityLU (
+		Id		INT				PRIMARY KEY		IDENTITY(1,1),
+		Text	VARCHAR(50)		NULL
+	); 
+
+	SET IDENTITY_INSERT dbo.EppDelegationAuthorityLU ON;
+	INSERT INTO dbo.EppDelegationAuthorityLU (Id, Text)
+		VALUES ('1', 'Program'), ('2', 'LOB'), ('3', 'Space'), ('4', 'Corporate');
+	SET IDENTITY_INSERT dbo.EppDelegationAuthorityLU OFF;
+END
+GO
+
 IF OBJECT_ID('dbo.ProposalContractsData', 'U') IS NULL
 BEGIN
 	CREATE TABLE dbo.ProposalContractsData (
@@ -35,21 +49,16 @@ BEGIN
 		ContractsCorrespondLogNumber	VARCHAR(20)		NOT NULL,
 		FinalNegotiatedValue			BIGINT			NULL,
 		FinalNegotiatedDate				DATE			NULL,
-	); 
-END
-
-IF OBJECT_ID('dbo.ProposalContractsOffers', 'U') IS NULL
-BEGIN
-	CREATE TABLE dbo.ProposalContractsOffers (
-		ProposalContractsOffersId	INT				PRIMARY KEY			IDENTITY(1,1),
-		UpdateDT					DATETIME2(7)	NOT NULL,
-		ContractsDataId 			INT 			NOT NULL			REFERENCES ProposalContractsData(ProposalContractsDataId),
-		CustomerOfferAmount 		BIGINT			NOT NULL,
-		CustomerOfferDate 			DATE			NOT NULL,
-		LMCounterOfferDate 			DATE			NULL,
-		LMCounterOfferCost			BIGINT			NULL,
-		LMCounterOfferCOM			BIGINT			NULL,
-		LMCounterOfferProfitFee		BIGINT			NULL
+		EppDelegationAuthority			INT				NULL			FOREIGN KEY REFERENCES dbo.EppDelegationAuthorityLU(Id),
+		ProgramEppDate					DATE			NULL,
+		LobEppDate						DATE			NULL,
+		PreSpaceEppDate					DATE			NULL,
+		SpaceEppDate					DATE			NULL,
+		PreCorporateEppDate				DATE			NULL,
+		CorporateEppDate				DATE			NULL,
+		EppRosDelegationNotes			VARCHAR(1000)	NULL,
+		LmWon							BIT				NULL,
+		ModCompletedDate				DATE			NULL
 	); 
 END
 GO

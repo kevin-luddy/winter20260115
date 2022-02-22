@@ -411,7 +411,6 @@
     <Content Include="Views\Proposal\ProposalComments.cshtml" />
     <Content Include="Views\Contracts\ContractsIndex.cshtml" />
     <Content Include="Views\Contracts\ContractsInfo.cshtml" />
-    <Content Include="Views\Contracts\ContractsOffers.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
