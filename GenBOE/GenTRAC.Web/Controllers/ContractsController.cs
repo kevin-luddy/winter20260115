@@ -68,29 +68,6 @@ namespace GenTRAC.Web.Controllers
         }
 
         /// <summary>
-        /// Massages user inputs and attempts to convert them into a number
-        /// </summary>
-        /// <param name="fieldValue">Field value (to be converted into a number)</param>
-        /// <param name="fieldDisplayLabel">Field label, in case of a problem</param>
-        /// <returns>Null if blank, int if valid</returns>
-        private int? ProcessOfferInput(string fieldValue, string fieldDisplayLabel)
-        {
-            int? result = null;
-
-            if (!string.IsNullOrEmpty(fieldValue))
-            {
-                if (!decimal.TryParse(fieldValue.Replace("$", string.Empty).Replace(",", string.Empty), out decimal temp))
-                {
-                    throw new GenValidationException($"{fieldDisplayLabel} must be a valid number.");
-                }
-
-                result = decimal.ToInt32(temp);
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// Saves the Contract.
         /// </summary>
         /// <param name="proposalId">The proposal identifier.</param>
@@ -116,8 +93,8 @@ namespace GenTRAC.Web.Controllers
             }
             else
             {
-                response.Status = true;
                 this.contractsLogic.SaveContract(model);
+                response.Status = true;
             }            
 
             return this.Json(response);

@@ -141,55 +141,70 @@ namespace GenTRAC.ActionLogic.ModelView
         [Display(Name = "The date and time of the last update to the record.")]
         public string LastUpdatedDateLong { get; set; }
 
-
         /// <summary>
-        /// EPP Delegation Authority ID
+        /// EPP Delegation Authority Level
         /// </summary>
-        public int? EppDelegationAuthority { get; set; }
+        [Display(Name = "EPP Delegation Authority")]
+        public EppDelegationAuthority EppDelegationAuthority { get; set; }
 
         /// <summary>
         /// Program EPP Date
         /// </summary>
+        [Display(Name = "Program EPP Date")]
         public DateTime? ProgramEppDate { get; set; }
 
         /// <summary>
-        /// LOB EPP Date
+        /// Line of Business EPP Date
         /// </summary>
+        [Display(Name = "Line of Business EPP Date")]
         public DateTime? LobEppDate { get; set; }
 
         /// <summary>
-        /// Pre Space EPP Date
+        /// Pre-Space EPP Date
         /// </summary>
+        [Display(Name = "Pre-Space EPP Date")]
         public DateTime? PreSpaceEppDate { get; set; }
 
         /// <summary>
         /// Space EPP Date
         /// </summary>
+        [Display(Name = "Space EPP Date")]
         public DateTime? SpaceEppDate { get; set; }
 
         /// <summary>
-        /// Pre Corporate EPP Date
+        /// Pre-Corporate EPP Date
         /// </summary>
+        [Display(Name = "Pre-Corporate EPP Date")]
         public DateTime? PreCorporateEppDate { get; set; }
 
         /// <summary>
-        /// Corporate Epp Date
+        /// Corporate EPP Date
         /// </summary>
+        [Display(Name = "Corporate EPP Date")]
         public DateTime? CorporateEppDate { get; set; }
 
         /// <summary>
         /// EPP ROS Delegation Notes
         /// </summary>
+        [Display(Name = "EPP ROS Delegation Notes")]
+        [MaxLength(1000)]
         public string EppRosDelegationNotes { get; set; }
 
         /// <summary>
-        /// LM Won contract
+        /// Lockheed Martin Contract Won?
         /// </summary>
+        [Display(Name = "Contract Won?")]
         public bool? LmWon { get; set; }
 
         /// <summary>
-        /// Mod Completed Date
+        /// MOD Completed Date
         /// </summary>
+        [Display(Name = "MOD Completed Date")]
         public DateTime? ModCompletedDate { get; set; }
+
+        /// <summary>
+        /// Select options for EPP
+        /// </summary>
+        public ICollection<SelectListItem> EppOptions { get; set; }
     }
 }

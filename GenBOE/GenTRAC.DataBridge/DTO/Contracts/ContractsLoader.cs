@@ -9,6 +9,7 @@ namespace GenTRAC.DataBridge.DTO
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Web.Mvc;
     using GenTRAC.Models;
     using IES.Common;
 
@@ -164,6 +165,33 @@ namespace GenTRAC.DataBridge.DTO
             }
 
             return toReturn;
+        }
+
+        /// <summary>
+        /// Gets a list of select items representing the EppDelegationAuthority enumeration values
+        /// </summary>
+        /// <param name="selectedValue">Enum option that should be selected by default</param>
+        /// <returns>List of SelectListItems</returns>
+        public ICollection<SelectListItem> GetEppSelectValues(EppDelegationAuthority selectedValue)
+        {
+            ICollection<SelectListItem> result = new List<SelectListItem>();
+
+            EppDelegationAuthority[] enums = (EppDelegationAuthority[])Enum.GetValues(typeof(EppDelegationAuthority));
+
+            // add blank option
+            result.Add(new SelectListItem { Value = "0", Text = "(Select)", Selected = (int)selectedValue == 0 });
+
+            foreach (EppDelegationAuthority item in enums)
+            {
+                result.Add(new SelectListItem
+                    {
+                        Value = item.ToString(),
+                        Text = item.GetDescription<EppDelegationAuthority>(),
+                        Selected = item == selectedValue
+                    });
+            }
+
+            return result;
         }
     }
 }

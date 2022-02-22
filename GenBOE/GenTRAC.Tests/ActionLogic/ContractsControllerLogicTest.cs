@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -177,7 +177,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(contractDto.NegotiationsSubmitted, contractsModelView.NegotiationsSubmittedDt);
             Assert.AreEqual(contractDto.PreviouslySubmittedROM.ToString(), contractsModelView.PreviouslySubmittedRoms.ElementAtOrDefault(0).Value);
             Assert.AreEqual(contractDto.PreviouslySubmittedROM, contractsModelView.PreviouslySubmittedROM);
-            Assert.AreEqual(contractDto.EppDelegationAuthority, contractsModelView.EppDelegationAuthority);
+            Assert.AreEqual(contractDto.EppDelegationAuthority, (int)contractsModelView.EppDelegationAuthority);
             Assert.AreEqual(contractDto.ProgramEppDate, contractsModelView.ProgramEppDate);
             Assert.AreEqual(contractDto.LobEppDate, contractsModelView.LobEppDate);
             Assert.AreEqual(contractDto.PreSpaceEppDate, contractsModelView.PreSpaceEppDate);
@@ -232,8 +232,8 @@ namespace GenTRAC.Tests.ActionLogic
         {
             // Create new Contracts Controller Logic object
             ContractsControllerLogic sut = this.CreateSystem();
-            
-            // TODO: SaveContract unit test. 
+
+            // TODO: SaveContract unit test.
             
             // Assert that the id return from the save is the one we expect.
             // Verify method - that it ran, but if we get an Id, may not be needed) 
