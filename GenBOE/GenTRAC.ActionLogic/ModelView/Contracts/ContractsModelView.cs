@@ -141,7 +141,6 @@ namespace GenTRAC.ActionLogic.ModelView
         [Display(Name = "The date and time of the last update to the record.")]
         public string LastUpdatedDateLong { get; set; }
 
-        //** IES-842
         /// <summary>
         /// EPP Delegation Authority Level
         /// </summary>
