@@ -131,10 +131,10 @@ namespace GenTRAC.Models
         public virtual Proposal Proposal2 { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProposalChecklist> ProposalChecklists { get; set; }
+        public virtual ReasonCertificationNotRequiredLU ReasonCertificationNotRequiredLU { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProposalContractsData> ProposalContractsDatas { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProposalContractsData> ProposalContractsDatas1 { get; set; }
-        public virtual ReasonCertificationNotRequiredLU ReasonCertificationNotRequiredLU { get; set; }
     }
 }

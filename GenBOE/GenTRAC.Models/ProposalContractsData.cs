@@ -16,13 +16,13 @@ namespace GenTRAC.Models
     {
         public int ProposalContractsDataId { get; set; }
         public System.DateTime UpdateDT { get; set; }
+        public int ProposalID { get; set; }
         public int PreviouslySubmittedROM { get; set; }
         public Nullable<System.DateTime> CustomerSubmittalDate { get; set; }
         public string ContractsCorrespondLogNumber { get; set; }
         public Nullable<long> FinalNegotiatedValue { get; set; }
         public Nullable<System.DateTime> FinalNegotiatedDate { get; set; }
-        public int ProposalID { get; set; }
-        public Nullable<int> EPPDelegationAuthority { get; set; }
+        public Nullable<int> EppDelegationAuthority { get; set; }
         public Nullable<System.DateTime> ProgramEppDate { get; set; }
         public Nullable<System.DateTime> LobEppDate { get; set; }
         public Nullable<System.DateTime> PreSpaceEppDate { get; set; }
@@ -33,8 +33,8 @@ namespace GenTRAC.Models
         public Nullable<bool> LmWon { get; set; }
         public Nullable<System.DateTime> ModCompletedDate { get; set; }
     
+        public virtual EppDelegationAuthorityLU EppDelegationAuthorityLU { get; set; }
         public virtual Proposal Proposal { get; set; }
         public virtual Proposal Proposal1 { get; set; }
-        public virtual EppDelegationAuthorityLU EppDelegationAuthorityLU { get; set; }
     }
 }
