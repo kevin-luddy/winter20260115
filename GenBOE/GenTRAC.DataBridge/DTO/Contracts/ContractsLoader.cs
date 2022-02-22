@@ -183,14 +183,12 @@ namespace GenTRAC.DataBridge.DTO
 
             foreach (EppDelegationAuthority item in enums)
             {
-                SelectListItem sl = new SelectListItem()
-                {
-                    Value = item.ToString(),
-                    Text = item.GetDescription<EppDelegationAuthority>(),
-                    Selected = item == selectedValue
-                };
-
-                result.Add(sl);
+                result.Add(new SelectListItem
+                    {
+                        Value = item.ToString(),
+                        Text = item.GetDescription<EppDelegationAuthority>(),
+                        Selected = item == selectedValue
+                    });
             }
 
             return result;
