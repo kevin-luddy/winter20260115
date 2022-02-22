@@ -121,26 +121,6 @@ namespace GenTRAC.Tests.ActionLogic
 
             int proposalId = 5;
 
-            ContractsOffersDto contractsOffersDto1 = new ContractsOffersDto()
-            {
-                CustomerOfferAmount = 1111,
-                CustomerOfferDate = DateTime.Now,
-                LMCounterOfferDate = DateTime.Now,
-                LMCounterOfferCost = 2222,
-                LMCounterOfferCOM = 3333,
-                LMCounterOfferProfitFee = 4444
-            };
-
-            ContractsOffersDto contractsOffersDto2 = new ContractsOffersDto()
-            {
-                CustomerOfferAmount = 5555,
-                CustomerOfferDate = DateTime.Now,
-                LMCounterOfferDate = DateTime.Now,
-                LMCounterOfferCost = 6666,
-                LMCounterOfferCOM = 7777,
-                LMCounterOfferProfitFee = 8888
-            };
-
             ContractsDto contractDto = new ContractsDto()
             {
                 Updateable = UpdateType.Upsert,
@@ -150,7 +130,16 @@ namespace GenTRAC.Tests.ActionLogic
                 ContractsCorrespondenceLogNumber = "Test_Log_Number",
                 FinalNegotiatedValue = 3,
                 NegotiationsSubmitted = DateTime.Now,
-                ContractOffers = new List<ContractsOffersDto> { contractsOffersDto1, contractsOffersDto2 }
+                EppDelegationAuthority = 3,
+                ProgramEppDate = DateTime.Now,
+                LobEppDate = DateTime.Now,
+                PreSpaceEppDate = DateTime.Now,
+                SpaceEppDate = DateTime.Now,
+                PreCorporateEppDate = DateTime.Now,
+                CorporateEppDate = DateTime.Now,
+                EppRosDelegationNotes = "Test EppRosDelegationNotes",
+                LmWon = false,
+                ModCompletedDate = DateTime.Now
             };
 
             ICollection<SelectListItem> getRomProposalOptions = new Collection<SelectListItem>()
@@ -188,12 +177,16 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(contractDto.NegotiationsSubmitted, contractsModelView.NegotiationsSubmittedDt);
             Assert.AreEqual(contractDto.PreviouslySubmittedROM.ToString(), contractsModelView.PreviouslySubmittedRoms.ElementAtOrDefault(0).Value);
             Assert.AreEqual(contractDto.PreviouslySubmittedROM, contractsModelView.PreviouslySubmittedROM);
-
-            Assert.AreEqual(contractDto.ContractOffers.Count, contractsModelView.ContractOffers.Count);
-            for (int i = 0; i < contractsModelView.ContractOffers.Count; i++)
-            {
-                this.CompareContractOffers(contractDto.ContractOffers.ElementAtOrDefault(i), contractsModelView.ContractOffers.ElementAtOrDefault(i));
-            }
+            Assert.AreEqual(contractDto.EppDelegationAuthority, contractsModelView.EppDelegationAuthority);
+            Assert.AreEqual(contractDto.ProgramEppDate, contractsModelView.ProgramEppDate);
+            Assert.AreEqual(contractDto.LobEppDate, contractsModelView.LobEppDate);
+            Assert.AreEqual(contractDto.PreSpaceEppDate, contractsModelView.PreSpaceEppDate);
+            Assert.AreEqual(contractDto.SpaceEppDate, contractsModelView.SpaceEppDate);
+            Assert.AreEqual(contractDto.PreCorporateEppDate, contractsModelView.PreCorporateEppDate);
+            Assert.AreEqual(contractDto.CorporateEppDate, contractsModelView.CorporateEppDate);
+            Assert.AreEqual(contractDto.EppRosDelegationNotes, contractsModelView.EppRosDelegationNotes);
+            Assert.AreEqual(contractDto.LmWon, contractsModelView.LmWon);
+            Assert.AreEqual(contractDto.ModCompletedDate, contractsModelView.ModCompletedDate);
         }
 
         /// <summary>
@@ -253,22 +246,6 @@ namespace GenTRAC.Tests.ActionLogic
         public void ValidateContractTest()
         {
             // TODO: After Validation methods are implemented
-        }
-
-        /// <summary>
-        /// Compare test for two contract offers
-        /// </summary>
-        /// <param name="expect">Expected Contracts Offer</param>
-        /// <param name="actual">Actual Contracts Offer</param>
-        private void CompareContractOffers(ContractsOffersDto expect, ContractsOfferModelView actual)
-        {
-            Assert.IsNotNull(actual);
-            Assert.AreEqual((int)expect.CustomerOfferAmount, actual.CustomerOfferAmountInt);
-            Assert.AreEqual(expect.CustomerOfferDate.Value.Date, actual.CustomerOfferDt.Value.Date);
-            Assert.AreEqual(expect.LMCounterOfferDate.Value.Date, actual.LmCounterOfferDt.Value.Date);
-            Assert.AreEqual((int)expect.LMCounterOfferCost, actual.LMCounterOfferCostInt);
-            Assert.AreEqual((int)expect.LMCounterOfferCOM, actual.LMCounterOfferCOMInt);
-            Assert.AreEqual((int)expect.LMCounterOfferProfitFee, actual.LMCounterOfferProfitFeeInt);
         }
     }
 }

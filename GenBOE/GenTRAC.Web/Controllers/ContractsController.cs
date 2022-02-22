@@ -54,31 +54,6 @@ namespace GenTRAC.Web.Controllers
         }
 
         /// <summary>
-        /// Calculates Offer Fields
-        /// </summary>
-        /// <param name="proposalId">Needed by MVC routing</param>
-        /// <param name="counterOfferCost">Counter Offer Cost</param>
-        /// <param name="counterOfferCom">Counter Offer COM</param>
-        /// <param name="counterOfferProfitFee">Counter Offer Profit / Fee</param>
-        /// <returns>Total Counter Offer Price and Counter Offer ROS</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "proposalId")]
-        public JsonResult CalculateOfferFields(int proposalId, string counterOfferCost, string counterOfferCom, string counterOfferProfitFee)
-        {
-            int? cost = this.ProcessOfferInput(counterOfferCost, "LM Counter Offer Cost");
-            int? com = this.ProcessOfferInput(counterOfferCom, "LM Counter Offer COM");
-            int? profitFee = this.ProcessOfferInput(counterOfferProfitFee, "LM Counter Offer Profit/Fee");
-
-            ContractsOfferModelView model = new ContractsOfferModelView()
-            {
-                LMCounterOfferCostInt = cost,
-                LMCounterOfferCOMInt = com,
-                LMCounterOfferProfitFeeInt = profitFee
-            };
-
-            return Json(new { Cost = model.LMCounterOfferCost, Com = model.LMCounterOfferCOM, ProfitFee = model.LMCounterOfferProfitFee, TotalPrice = model.LMCounterOfferTotalPrice, Ros = model.LMCounterOfferROS });
-        }
-
-        /// <summary>
         /// Get ROM Date and Value
         /// </summary>
         /// <param name="proposalId">Needed by MVC routing</param>

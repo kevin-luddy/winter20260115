@@ -201,8 +201,6 @@
     <Build Include="Object Scripts\Functions\SplitString.function.sql" />
     <Build Include="Release Scripts\Release 2021.23\Release 2021.23.sql" />
     <Build Include="Release Scripts\Release PTM Contracts\Release 2022.Ptm Contracts.sql" />
-    <Build Include="Object Scripts\Stored Procedures\deleteProposalContractsOffers.sql" />
-    <Build Include="Object Scripts\Stored Procedures\upsertProposalContractsOffers.sql" />
     <Build Include="Object Scripts\Stored Procedures\upsertProposalContractsData.sql" />
   </ItemGroup>
   <ItemGroup>
