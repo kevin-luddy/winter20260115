@@ -50,7 +50,7 @@ namespace GenBOE.ActionLogic.Common
 		{
 			_ = response ?? throw new ArgumentNullException(nameof(response));
 			_ = workSpace ?? throw new ArgumentNullException(nameof(workSpace));
-
+			
 			SetResponseProperties(response, returnFilename);
 
 			Dictionary<string, Stream> zipFiles = new Dictionary<string, Stream>();
@@ -111,9 +111,9 @@ namespace GenBOE.ActionLogic.Common
 		{
 			_ = response ?? throw new ArgumentNullException(nameof(response));
 			_ = workSpace ?? throw new ArgumentNullException(nameof(workSpace));
-
+			
 			SetResponseProperties(response, returnFilename);
-
+			
 			Dictionary<string, Stream> zipFiles = new Dictionary<string, Stream>();
 
 			if (boeExportModelViews != null && getWordDocStream != null)
@@ -195,7 +195,7 @@ namespace GenBOE.ActionLogic.Common
 		/// <returns>String with illegal characters replaced</returns>
 		private static string StripIllegalFileNameCharacters(string target, string replacementValue=".")
         {
-			char[] illegalCharacters = new[] { ' ', '/', '\\', '\n', '\r', '\'', '"' };
+			char[] illegalCharacters = new[] { ' ', '/', '\\', '\n', '\r', '\'', '"', '–', '%', '#', '$', '&', ')', '(', '!', ',' };
 			string[] cleanedParts = target.Split(illegalCharacters, StringSplitOptions.RemoveEmptyEntries);
 
 			return string.Join(replacementValue, cleanedParts);
