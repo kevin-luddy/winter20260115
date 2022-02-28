@@ -9,6 +9,7 @@ namespace GenTRAC.Web.Controllers
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Web.Mvc;
     using GenTRAC.ActionLogic;
     using GenTRAC.ActionLogic.ModelView;
@@ -48,7 +49,7 @@ namespace GenTRAC.Web.Controllers
             this.ViewBag.ProposalId = proposalId.ToString();
             this.ViewBag.ReadOnly = false; // todo.. fix me
 
-            ContractsModelView model = this.contractsLogic.GetDataForProposalContracts(proposalId);
+            ContractsModelView model = this.contractsLogic.GetDataForProposalContracts(proposalId).Result;
 
             return this.View(WebConstants.View.CONTRACTS_INDEX, model);
         }
@@ -65,6 +66,27 @@ namespace GenTRAC.Web.Controllers
             Tuple<DateTime?, decimal?> data = this.contractsLogic.GetRomDateAndValue(previousRomProposalId);
 
             return Json(new { Date = data?.Item1?.ToShortDateString() ?? "N/A", Value = data?.Item2?.ToString("C") ?? "N/A" });
+        }
+
+        /// <summary>
+        /// Sets the status to proposal lost and sends notification email(s)
+        /// </summary>
+        /// <param name="proposalId">Proposal to be updated</param>
+        /// <returns>Response object</returns>
+        public async Task<JsonResult> SetProposalLost(int proposalId)
+        {
+            IESResponse<ContractsModelView> response = new IESResponse<ContractsModelView>();
+            List<string> errMessages = new List<string>();
+
+            await this.contractsLogic.SetProposalLost(proposalId, errMessages);
+            response.Messages.AddRange(errMessages);
+
+            if (!errMessages.Any())
+            {
+                response.Status = true;
+            }
+
+            return Json(response);
         }
 
         /// <summary>
