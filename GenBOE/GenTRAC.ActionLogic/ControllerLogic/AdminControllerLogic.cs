@@ -641,7 +641,7 @@ namespace GenTRAC.ActionLogic
             manageProposalInfoDetailsView.Comments = fullProposal.ManageProposalInfoComments;
 
             // populate dates and price when Completed
-            if (fullProposal.ProposalStatus == ProposalStatus.Completed || fullProposal.ProposalStatus == ProposalStatus.Submitted)
+            if (fullProposal.ProposalStatus == ProposalStatus.Completed || fullProposal.ProposalStatus == ProposalStatus.PendingCertification)
             {
                 manageProposalInfoDetailsView.ShowCompletedSection = true;
 
@@ -813,7 +813,7 @@ namespace GenTRAC.ActionLogic
                 throw new ArgumentNullException(nameof(inValidationErrors));
             }
 
-            if (manageProposalInfo.OldStatus == ProposalStatus.Completed || manageProposalInfo.OldStatus == ProposalStatus.Submitted)
+            if (manageProposalInfo.OldStatus == ProposalStatus.Completed || manageProposalInfo.OldStatus == ProposalStatus.PendingCertification)
             {
                 if (string.IsNullOrEmpty(manageProposalInfo.EstimatingSubmitsToContractsDate))
                 {
@@ -934,7 +934,7 @@ namespace GenTRAC.ActionLogic
             validStates.Add(fullProposal.ProposalStatus);
 
             if (fullProposal.ProposalStatus == ProposalStatus.InProgress || fullProposal.ProposalStatus == ProposalStatus.Completed 
-                || fullProposal.ProposalStatus == ProposalStatus.Submitted || fullProposal.ProposalStatus == ProposalStatus.NoBid)
+                || fullProposal.ProposalStatus == ProposalStatus.PendingCertification || fullProposal.ProposalStatus == ProposalStatus.NoBid)
             { 
                 if(fullProposal.ProposalStatus == ProposalStatus.NoBid)
                 {

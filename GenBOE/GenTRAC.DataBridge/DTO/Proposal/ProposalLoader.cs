@@ -658,7 +658,7 @@ namespace GenTRAC.DataBridge.DTO
                                      select p.ProposalStatusID).First();
 
                     // as long as the proposal is not in progress, grab the approval completed date
-                    if (completed == (int)ProposalStatus.Completed || completed == (int)ProposalStatus.Submitted || completed == (int)ProposalStatus.Revised)
+                    if (completed == (int)ProposalStatus.Completed || completed == (int)ProposalStatus.PendingCertification || completed == (int)ProposalStatus.Revised)
                     {
                         toReturn = (from c in dbModel.ProposalChecklistCompletes
                                     where c.ProposalID == inProposalId
@@ -697,7 +697,7 @@ namespace GenTRAC.DataBridge.DTO
                     toReturn = (from p in dbModel.Proposals
                                 join c in dbModel.ProposalChecklistCompletes
                                 on p.ProposalID equals c.ProposalID
-                                where (p.ProposalStatusID == (int)ProposalStatus.Completed || p.ProposalStatusID == (int)ProposalStatus.Submitted)
+                                where (p.ProposalStatusID == (int)ProposalStatus.Completed || p.ProposalStatusID == (int)ProposalStatus.PendingCertification)
                                 && c.SubmitDate >= cutoffDate && c.ChecklistTypeID == (int)ProposalChecklistType.Default
                                 select new ProposalDto
                                 {
@@ -1489,7 +1489,7 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    toReturn = dbModel.Proposals.Where(p => p.ProposalStatusID == (int)ProposalStatus.Submitted &&
+                    toReturn = dbModel.Proposals.Where(p => p.ProposalStatusID == (int)ProposalStatus.PendingCertification &&
                     (p.CertificationLastEmailed == null || p.CertificationLastEmailed < thirtyDaysAgo) &&
                     (!p.ProposalChecklists.Any() || (p.ProposalChecklists.Select(c => c.ProposalSubmittalDate).Max() < sixtyDaysAgo)))
                         .Select(entity => new
@@ -1746,7 +1746,7 @@ namespace GenTRAC.DataBridge.DTO
                         : anticipatedDeliveryDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR)); 
                     break;
                 case ProposalStatus.Completed:
-                case ProposalStatus.Submitted:
+                case ProposalStatus.PendingCertification:
                 case ProposalStatus.Revised:
                     result = "Approval Workflow Completed: " + (maxCompleteDate?.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? "N/A");
                     break;
@@ -1777,7 +1777,7 @@ namespace GenTRAC.DataBridge.DTO
             }
             else if (cCoPDRequired == true)
             {
-                if (proposalStatus == ProposalStatus.Submitted)
+                if (proposalStatus == ProposalStatus.PendingCertification)
                 {
                     result = "Certification In Progress";
                 }
@@ -1801,7 +1801,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <returns>Should Certification Tab be displayed</returns>
         private bool DisplayCertificationTab(ProposalStatus proposalStatus, bool? cCoPDRequired)
         {
-            return (proposalStatus == ProposalStatus.Submitted || proposalStatus == ProposalStatus.Revised || proposalStatus == ProposalStatus.Completed) && cCoPDRequired == true;
+            return (proposalStatus == ProposalStatus.PendingCertification || proposalStatus == ProposalStatus.Revised || proposalStatus == ProposalStatus.Completed) && cCoPDRequired == true;
         }
 
         /// <summary>

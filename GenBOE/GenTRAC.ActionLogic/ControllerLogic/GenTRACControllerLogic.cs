@@ -1179,7 +1179,7 @@ namespace GenTRAC.ActionLogic
                     ProposalStatus newStatus = ProposalStatus.Completed;
                     if (fullProposalDto.IsCCPDRequired.HasValue && fullProposalDto.IsCCPDRequired.Value)
                     {
-                        newStatus = ProposalStatus.Submitted;
+                        newStatus = ProposalStatus.PendingCertification;
                     }
 
                     this.ProposalMediator.SaveProposalStatus(checklist.ProposalID, fullProposalDto.UpdateDate, newStatus);

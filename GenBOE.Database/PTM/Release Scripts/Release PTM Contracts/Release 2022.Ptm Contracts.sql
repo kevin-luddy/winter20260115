@@ -125,3 +125,26 @@ GO
 
 	## END ##
 */
+
+
+/*
+	02/23/2022 [Koovackal] - IES-845 Rename "Submitted" Proposal status.
+
+	## START ##
+*/
+
+IF EXISTS (SELECT ProposalStatus FROM dbo.ProposalStatusLU WHERE ProposalStatus = 'Submitted')
+BEGIN
+	UPDATE dbo.ProposalStatusLU
+SET
+	ProposalStatus = 'Pending Certification'
+WHERE
+	ProposalStatus = 'Submitted';
+END
+GO
+
+/*
+	02/23/2022 [Koovackal] - IES-845 Rename "Submitted" Proposal status.
+
+	## END ##
+*/

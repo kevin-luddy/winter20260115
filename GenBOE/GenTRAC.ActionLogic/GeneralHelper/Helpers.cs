@@ -26,7 +26,7 @@ namespace GenTRAC.ActionLogic.GeneralHelper
         /// <returns>True if the certification is considered missing and late</returns>
         public static bool IsProposalCertificationLate(ProposalStatus status, DateTime? submittedToContracts)
         {
-            return status == ProposalStatus.Submitted
+            return status == ProposalStatus.PendingCertification
                 && (!submittedToContracts.HasValue 
                     || DateTime.Now.Date > submittedToContracts.Value.AddDays(60).Date);
         }

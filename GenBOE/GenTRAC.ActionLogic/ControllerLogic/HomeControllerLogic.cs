@@ -211,7 +211,7 @@ namespace GenTRAC.ActionLogic
             if (filtersCookie.FilterOption == ProposalFilterOption.InProgress)
             {
                 statuses.Add((int)ProposalStatus.InProgress);
-                statuses.Add((int)ProposalStatus.Submitted);
+                statuses.Add((int)ProposalStatus.PendingCertification);
             }
             else if (filtersCookie.FilterOption == ProposalFilterOption.Completed)
             {

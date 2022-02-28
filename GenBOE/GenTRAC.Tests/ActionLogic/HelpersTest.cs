@@ -55,7 +55,7 @@ namespace GenTRAC.Tests.ActionLogic
         {
             bool expected = true;
             DateTime? submittalDate = null;
-            ProposalStatus status = ProposalStatus.Submitted;
+            ProposalStatus status = ProposalStatus.PendingCertification;
 
             bool actual = Helpers.IsProposalCertificationLate(status, submittalDate);
 
@@ -70,7 +70,7 @@ namespace GenTRAC.Tests.ActionLogic
         {
             bool expected = true;
             DateTime? submittalDate = DateTime.Now.AddDays(-61);
-            ProposalStatus status = ProposalStatus.Submitted;
+            ProposalStatus status = ProposalStatus.PendingCertification;
 
             bool actual = Helpers.IsProposalCertificationLate(status, submittalDate);
 
@@ -85,7 +85,7 @@ namespace GenTRAC.Tests.ActionLogic
         {
             bool expected = false;
             DateTime? submittalDate = DateTime.Now.AddDays(-60);
-            ProposalStatus status = ProposalStatus.Submitted;
+            ProposalStatus status = ProposalStatus.PendingCertification;
 
             bool actual = Helpers.IsProposalCertificationLate(status, submittalDate);
 

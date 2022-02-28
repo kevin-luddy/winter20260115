@@ -402,10 +402,10 @@ namespace IES.Common
         Deleted = 4,
 
         /// <summary>
-        /// Submitted
+        /// Pending Certification
         /// </summary>
-        [Description("Submitted")]
-        Submitted = 6,
+        [Description("Pending Certification")]
+        PendingCertification = 6,
 
         /// <summary>
         /// No Bid

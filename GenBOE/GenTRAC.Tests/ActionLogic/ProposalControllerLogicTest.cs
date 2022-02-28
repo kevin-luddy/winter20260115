@@ -3081,7 +3081,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3115,7 +3115,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3142,7 +3142,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3170,7 +3170,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3198,7 +3198,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3226,7 +3226,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3254,7 +3254,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3314,7 +3314,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3345,7 +3345,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3375,7 +3375,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3405,7 +3405,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3438,7 +3438,7 @@ namespace GenTRAC.Tests.ActionLogic
             {
                 Id = 1,
                 WorkflowStatus = WorkflowStatus.ProposalLocked,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(true);
@@ -3462,7 +3462,7 @@ namespace GenTRAC.Tests.ActionLogic
             {
                 Id = 1,
                 WorkflowStatus = WorkflowStatus.Started,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(true);
@@ -3529,7 +3529,7 @@ namespace GenTRAC.Tests.ActionLogic
             {
                 Id = 1,
                 WorkflowStatus = WorkflowStatus.ProposalLocked,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(false);
@@ -3573,7 +3573,7 @@ namespace GenTRAC.Tests.ActionLogic
                 UpdateDate = DateTime.Now,
                 TrackingNumber = "20-00001",
                 ProposalTitle = "Test",
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             FullProposal fullProposal = new FullProposal(proposal);
@@ -3617,7 +3617,7 @@ namespace GenTRAC.Tests.ActionLogic
                 UpdateDate = DateTime.Now,
                 TrackingNumber = baseTrackingNumber,
                 ProposalTitle = baseTitle,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             ProposalDto proposal = new ProposalDto()
@@ -3626,7 +3626,7 @@ namespace GenTRAC.Tests.ActionLogic
                 UpdateDate = DateTime.Now,
                 TrackingNumber = baseTrackingNumber + "-PR1",
                 ProposalTitle = baseTitle + "-PR1",
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             FullProposal fullProposal = new FullProposal(proposal);
@@ -3662,7 +3662,7 @@ namespace GenTRAC.Tests.ActionLogic
                 UpdateDate = DateTime.Now,
                 TrackingNumber = baseTrackingNumber,
                 ProposalTitle = baseTitle,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             ProposalDto proposal = new ProposalDto()
@@ -3671,7 +3671,7 @@ namespace GenTRAC.Tests.ActionLogic
                 UpdateDate = DateTime.Now,
                 TrackingNumber = baseTrackingNumber + "-PR1",
                 ProposalTitle = baseTitle + "-PR1",
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             FullProposal fullProposal = new FullProposal(proposal);
@@ -3812,7 +3812,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             sut.RevertRevisedProposal(proposal.Id);
 
-            this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Submitted), Times.Once());
+            this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.PendingCertification), Times.Once());
             this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Completed), Times.Never());
         }
 
@@ -3837,7 +3837,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             sut.RevertRevisedProposal(proposal.Id);
 
-            this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Submitted), Times.Never());
+            this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.PendingCertification), Times.Never());
             this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Completed), Times.Once());
         }
 
@@ -3927,7 +3927,7 @@ namespace GenTRAC.Tests.ActionLogic
             {
                 Id = 1,
                 RevisionOfId = 2,
-                ProposalStatus = ProposalStatus.Submitted,
+                ProposalStatus = ProposalStatus.PendingCertification,
                 DocumentId = null
             };
 

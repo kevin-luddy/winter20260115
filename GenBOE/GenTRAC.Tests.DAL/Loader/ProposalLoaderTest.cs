@@ -703,9 +703,9 @@ namespace GenTRAC.Tests.DAL.Loader
             Assert.IsNotNull(result.FirstOrDefault(x => x.Id == proposal.Id));
 
             // Change the status and test getting proposals by that status
-            sut.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Submitted);
+            sut.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.PendingCertification);
 
-            result = sut.GetProposalsByProposalStatus(ProposalStatus.Submitted);
+            result = sut.GetProposalsByProposalStatus(ProposalStatus.PendingCertification);
 
             Assert.IsNotNull(result.FirstOrDefault(x => x.Id == proposal.Id));
         }
@@ -721,7 +721,7 @@ namespace GenTRAC.Tests.DAL.Loader
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
             this.testData.SaveChecklistAsPricer(proposal.Id, null, true);
             this.testData.SetSubmitDate(proposal.Id, DateTime.Now);
-            this.testData.SetProposalStatus(proposal.Id, ProposalStatus.Submitted);
+            this.testData.SetProposalStatus(proposal.Id, ProposalStatus.PendingCertification);
 
             ICollection<ProposalDto> result = sut.GetAllCompletedProposalsAfterSubmitDate(DateTime.Now.AddMinutes(-1));
 
@@ -965,7 +965,7 @@ namespace GenTRAC.Tests.DAL.Loader
             Assert.AreEqual(expectedResultPrefix + maxCompleteDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR), result);
 
             // Test Submitted
-            result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.Submitted, anticipatedDeliveryDate, maxCompleteDate, null);
+            result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.PendingCertification, anticipatedDeliveryDate, maxCompleteDate, null);
             Assert.AreEqual(expectedResultPrefix + maxCompleteDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR), result);
 
             // Test Revised

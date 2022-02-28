@@ -310,7 +310,7 @@ namespace GenTRAC.ActionLogic
                     statusIds.Remove((int)ProposalReportStatus.Active);
                     statusIds.Add((int)ProposalStatus.InProgress);
                     statusIds.Add((int)ProposalStatus.Completed);
-                    statusIds.Add((int)ProposalStatus.Submitted);
+                    statusIds.Add((int)ProposalStatus.PendingCertification);
                 }
 
                 sb.Append(string.Format("&{0}={1}", Constants.Report.PROPOSAL_STATUS, string.Join(",", statusIds)));
@@ -586,7 +586,7 @@ namespace GenTRAC.ActionLogic
             {
                 ICollection<int> statusIds = new Collection<int>();
                 statusIds.Add((int)ProposalStatus.InProgress);
-                statusIds.Add((int)ProposalStatus.Submitted);
+                statusIds.Add((int)ProposalStatus.PendingCertification);
                 statusIds.Add((int)ProposalStatus.Completed);
                 sb.Append(string.Format("&{0}={1}", Constants.Report.PROPOSAL_STATUS, string.Join(",", statusIds)));
             }

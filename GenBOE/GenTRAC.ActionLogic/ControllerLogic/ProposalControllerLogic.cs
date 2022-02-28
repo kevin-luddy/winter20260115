@@ -888,7 +888,7 @@ namespace GenTRAC.ActionLogic
             // Determine visibility status of CertificationTimeline tab
             model.CertificationTimelineVisibility = SecurityAuthorization.None;
             if (fullProposalDto != null && fullProposalDto.IsCCPDRequired.HasValue && fullProposalDto.IsCCPDRequired.Value && 
-                (fullProposalDto.ProposalStatus == ProposalStatus.Submitted || fullProposalDto.ProposalStatus == ProposalStatus.Revised 
+                (fullProposalDto.ProposalStatus == ProposalStatus.PendingCertification || fullProposalDto.ProposalStatus == ProposalStatus.Revised 
                 || fullProposalDto.ProposalStatus == ProposalStatus.Completed))
             {
                 model.CertificationTimelineVisibility = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId).Authorization;
@@ -2158,7 +2158,7 @@ namespace GenTRAC.ActionLogic
         {
             bool readOnly = false;
 
-            if (fullProposal != null && fullProposal.ProposalStatus != ProposalStatus.InProgress && fullProposal.ProposalStatus != ProposalStatus.Completed && fullProposal.ProposalStatus != ProposalStatus.Submitted)
+            if (fullProposal != null && fullProposal.ProposalStatus != ProposalStatus.InProgress && fullProposal.ProposalStatus != ProposalStatus.Completed && fullProposal.ProposalStatus != ProposalStatus.PendingCertification)
             {
                 // proposal status is Archived, Deleted, or Revision - always read only
                 readOnly = true;
@@ -2311,7 +2311,7 @@ namespace GenTRAC.ActionLogic
             {
                 if(proposal.IsCCPDRequired.HasValue && proposal.IsCCPDRequired.Value)
                 {
-                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Submitted);
+                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.PendingCertification);
                 } 
                 else
                 {
@@ -2525,7 +2525,7 @@ namespace GenTRAC.ActionLogic
                 throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.COMPLETE_FAILED_PROPOSAL);
             }
 
-            if (model.ReasonCertificationNotRequired.HasValue && proposal.ProposalStatus != ProposalStatus.Submitted && proposal.ProposalStatus != ProposalStatus.Completed)
+            if (model.ReasonCertificationNotRequired.HasValue && proposal.ProposalStatus != ProposalStatus.PendingCertification && proposal.ProposalStatus != ProposalStatus.Completed)
             {
                 throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CERTIFICATION_NOT_REQUIRED_WRONG_STATE);
             }
@@ -2604,7 +2604,7 @@ namespace GenTRAC.ActionLogic
                 // Marking the proposal required (when it was not required before) resets the flow
                 if (proposal.ReasonCertificationNotRequired.HasValue)
                 {
-                    proposal.ProposalStatus = ProposalStatus.Submitted;
+                    proposal.ProposalStatus = ProposalStatus.PendingCertification;
                     proposal.CertificationTimelineCompleted = null;
                 }
 

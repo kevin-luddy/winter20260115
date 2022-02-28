@@ -292,7 +292,7 @@ namespace GenTRAC.ActionLogic.ModelView.Home
                     {
                         return Constants.SUBMITTED_LATE_BACKGROUND_CSS_CLASS_STRING;
                     }
-                    else if (this.Status.Equals(ProposalStatus.Submitted))
+                    else if (this.Status.Equals(ProposalStatus.PendingCertification))
                     {
                         return Constants.SUBMITTED_NOT_LATE_BACKGROUND_CSS_CLASS_STRING;
                     }

@@ -147,7 +147,7 @@ namespace IES.ActionLogic.ControllerLogic
 
             ICollection<ProposalDto> proposals = isAdmin ? this.proposalLoader.GetAllSlim() : this.proposalLoader.GetProposalsByUser(activeUserNtid);
             proposals = proposals.Where(p => 
-                    (p.ProposalStatus == ProposalStatus.InProgress || p.ProposalStatus == ProposalStatus.Submitted) 
+                    (p.ProposalStatus == ProposalStatus.InProgress || p.ProposalStatus == ProposalStatus.PendingCertification) 
                     && !p.DocumentId.HasValue
                     && !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.Revised
                     && p.CustomerType != CustomerType.Commercial && p.CustomerType != CustomerType.InternationalCommercial 
