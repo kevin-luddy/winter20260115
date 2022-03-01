@@ -321,8 +321,8 @@ namespace GenTRAC.ActionLogic
             ProposalApprovalsModelView modelApprovals = this.proposalLogic.GetDataForProposalApprovals(proposalId, false);
             ProposalUserInformationModelView modelUserInfo = this.proposalLogic.GetDataForProposalUserInformation(proposalId);
 
-            var leadEstimator = UserMapper.GetByNtid(modelApprovals.LeadEstimatorNtid);
-            var backupEstimator = UserMapper.GetByNtid(modelUserInfo.BackupPricerNtId);
+            UserDTO leadEstimator = UserMapper.GetByNtid(modelApprovals.LeadEstimatorNtid);
+            UserDTO backupEstimator = UserMapper.GetByNtid(modelUserInfo.BackupPricerNtId);
 
             // Send the email notifications
             this.emailer.SendEmail(emailContent, leadEstimator.EmailAddress, new Collection<UserDTO>(), subjectReplaceTokens, bodyReplaceTokens, null, " for: " + fullProposal.TrackingNumber);
