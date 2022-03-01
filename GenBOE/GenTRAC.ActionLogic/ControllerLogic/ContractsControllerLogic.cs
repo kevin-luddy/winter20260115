@@ -201,7 +201,6 @@ namespace GenTRAC.ActionLogic
 
             // return control and send email async
             SendProposalLostEmail(proposalId);
-
         }
 
         /// <summary>
