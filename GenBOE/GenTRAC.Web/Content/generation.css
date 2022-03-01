@@ -2802,3 +2802,23 @@ div.fake-cell
     text-align: center;
     margin-top: 5px;
 }
+
+.position-relative {
+    position: relative;
+}
+
+.button-right-container {
+    position: absolute;
+    right: 40px;
+    top: -20px;
+}
+
+#confirm-modal-input {
+    width:96%;
+}
+
+.confirm-modal-button-container {
+    width: 96%;
+    margin-top: 30px;
+    text-align: center;
+}

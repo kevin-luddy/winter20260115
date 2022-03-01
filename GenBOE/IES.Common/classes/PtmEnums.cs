@@ -417,7 +417,19 @@ namespace IES.Common
         /// Revised
         /// </summary>
         [Description("Revised")]
-        Revised = 8
+        Revised = 8,
+
+        /// <summary>
+        /// Pending Contractual Award
+        /// </summary>
+        [Description("Pending Contractual Award")]
+        PendingAward = 9,
+
+        /// <summary>
+        /// Lost
+        /// </summary>
+        [Description("Lost")]
+        Lost = 10
     }
 
     /// <summary>
@@ -1217,7 +1229,12 @@ namespace IES.Common
         /// <summary>
         /// The reminder email for when the optional document is missing
         /// </summary>
-        OptionalDocumentReminderEmail
+        OptionalDocumentReminderEmail,
+
+        /// <summary>
+        /// The proposal status has been set to "Lost"
+        /// </summary>
+        LostStatusSet
     }
 
     /// <summary>

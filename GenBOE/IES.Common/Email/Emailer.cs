@@ -578,6 +578,15 @@ namespace IES.Common
                 + "To upload the document, navigate to the <a href=\"{3}\">Post Submittal Attachments tab</a>."
         };
 
+        /// <summary>
+        /// Email sent when Proposal status is set to Lost
+        /// </summary>
+        public static readonly EmailContent STATUS_LOST_SET = new EmailContent
+        {
+            Subject = "{0} Notification", // [PTM Entry Number]
+            Body = "{0} was lost. {1}" // [PTM Entry Number], [Link to specific PTM entry]
+        };
+
         #endregion
     }
 

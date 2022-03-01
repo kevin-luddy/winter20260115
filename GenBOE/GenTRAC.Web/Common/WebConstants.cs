@@ -450,6 +450,11 @@ namespace GenTRAC.Web.Common
             /// </summary>
             public const string SAVE_CONTRACT = "SaveContract";
 
+            /// <summary>
+            /// Set Proposal Lost
+            /// </summary>
+            public const string SET_PROPOSAL_LOST = "SetProposalLost";
+
             #endregion
 
             #region Approvals

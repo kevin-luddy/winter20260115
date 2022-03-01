@@ -206,5 +206,10 @@ namespace GenTRAC.ActionLogic.ModelView
         /// Select options for EPP
         /// </summary>
         public ICollection<SelectListItem> EppOptions { get; set; }
+
+        /// <summary>
+        /// Should the "Set Lost" button be enabled
+        /// </summary>
+        public bool SetLostButtonEnabled { get; set; }
     }
 }

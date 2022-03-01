@@ -1,6 +1,7 @@
 ﻿@model GenTRAC.ActionLogic.ModelView.ContractsModelView
 <script type="text/javascript">
     var ContractsInfoWidget;
+    var modalWindow;
 
     const dateElements = [
         'CustomerSubmittalDate',
@@ -39,13 +40,13 @@
             ContractsInfoWidget.getElement('[name="PreviousROMValue"]').text('');
 
             if (previouslySubmittedROM) {
-                var contractsUrl = GenSession.CreateUrl({
+                const contractsUrl = GenSession.CreateUrl({
                     controller: '@WebConstants.Controller.CONTRACTS',
                     action: '@WebConstants.Action.GET_SELECTED_ROM_DATA',
                     id: '@ViewBag.ProposalId'
                 });
 
-                var data = { previousRomProposalId: previouslySubmittedROM };
+                const data = { previousRomProposalId: previouslySubmittedROM };
 
                 $.ajax({
                     type: "POST",
@@ -68,120 +69,201 @@
         };
 
         initDatePickerElements(handleDateSelect);
+
+        ContractsInfoWidget.setProposalLost = () => {
+            $('#confirm-modal-submit').prop('disabled', true);
+
+            const propLostUrl = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.CONTRACTS',
+                action: '@WebConstants.Action.SET_PROPOSAL_LOST',
+                id: '@ViewBag.ProposalId'
+            });
+
+            const data = { };
+
+            $.ajax({
+                type: "POST",
+                url: propLostUrl,
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    if (typeof (response.Status) !== 'undefined') {
+                        if (response.Status === true) {
+                            ContractsIndexWidget.SaveSuccess(@ViewBag.proposalid);
+                        } else {
+                            console.log(response);
+                            if (typeof (response.Messages) !== 'undefined' && response.Messages.length > 0) {
+                                response.Messages.forEach(message => {
+                                    $('#contractsInfoForm .validation-box').append('<li>' + message + '</li>');
+                                });
+                                modalWindow.dialog('close');
+                                $('#confirm-modal-input').val('');
+                                $('#confirm-modal-submit').text('Set Contract Lost');
+                                $('#confirm-modal-input').trigger('keyup');
+                                $('#contractsInfoForm .validation-box').show();
+                            }
+                        }
+                    }
+                }
+            });
+        };
+    });
+
+    $(document).ready(function () {
+        // set modal
+        modalWindow = $('#confirm-loss-modal').dialog({
+            autoOpen: false,
+            height: 190,
+            width: 350,
+            modal: true,
+            close: function () {
+                $('#proposal-lost').prop('disabled', false);
+            }
+        });
+
+        $('#proposal-lost').on('click', function () {
+            $(this).prop('disabled', true);
+            modalWindow.dialog('open');
+        })
+
+        $('#confirm-modal-input').keyup(function () {
+            if ($('#confirm-modal-input').val().trim() === 'LOST') {
+                $('#confirm-modal-submit').prop('disabled', false);
+            } else {
+                $('#confirm-modal-submit').prop('disabled', true);
+            }
+        });
+
+        $('#confirm-modal-submit').on('click', function () {
+            $(this).text('Please Wait...');
+            ContractsInfoWidget.setProposalLost();
+        });
     });
 </script>
 
 <div id="contractsInfo" class="composite module full">
     <div class="module-header-data">Contract Information</div>
-    <div class="module-content-data expanded-content">
+    
+    <div class="module-content-data expanded-content position-relative">
+        <div class="button-right-container">
+            <button id="proposal-lost" type="button" class="ies" @(Model.SetLostButtonEnabled ? "" : "disabled")>Proposal Lost</button>
+        </div>
         @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM, name = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM }))
         {
-        @Html.HiddenFor(x => x.Id)
-        @Html.HiddenFor(x => x.ProposalId)
-        @Html.HiddenFor(x => x.LastUpdatedDateLong);
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.PreviouslySubmittedROM) *</div>
-            <div class="form-element">
-                @Html.DropDownListFor(x => x.PreviouslySubmittedROM, Model.PreviouslySubmittedRoms, string.Empty, new { @class = "half", onchange = "ContractsInfoWidget.romChanged()" })
+            @Html.HiddenFor(x => x.Id)
+            @Html.HiddenFor(x => x.ProposalId)
+            @Html.HiddenFor(x => x.LastUpdatedDateLong);
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.PreviouslySubmittedROM) *</div>
+                <div class="form-element">
+                    @Html.DropDownListFor(x => x.PreviouslySubmittedROM, Model.PreviouslySubmittedRoms, string.Empty, new { @class = "half", onchange = "ContractsInfoWidget.romChanged()" })
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.PreviousROMDate)</div>
-            <div class="form-element" name="PreviousROMDate">
-                @Html.DisplayFor(x => x.PreviousROMDate)
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.PreviousROMDate)</div>
+                <div class="form-element" name="PreviousROMDate">
+                    @Html.DisplayFor(x => x.PreviousROMDate)
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.PreviousROMValue)</div>
-            <div class="form-element" name="PreviousROMValue">
-                @Html.DisplayFor(x => x.PreviousROMValue)
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.PreviousROMValue)</div>
+                <div class="form-element" name="PreviousROMValue">
+                    @Html.DisplayFor(x => x.PreviousROMValue)
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.CustomerSubmittalDate)</div>
-            <div class="form-element">
-                @Html.TextBoxFor(x => x.CustomerSubmittalDate, new { @class = "date", placeholder = "mm/dd/yyyy" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.CustomerSubmittalDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.CustomerSubmittalDate, new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.ContractsCorrespondenceLogNumber) *</div>
-            <div class="form-element">
-                @Html.TextBoxFor(x => x.ContractsCorrespondenceLogNumber, new { @class = "half" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.ContractsCorrespondenceLogNumber) *</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.ContractsCorrespondenceLogNumber, new { @class = "half" })
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.FinalNegotiatedValue)</div>
-            <div class="form-element">
-                @Html.TextBoxFor(x => x.FinalNegotiatedValue, new { @class = "half" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.FinalNegotiatedValue)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.FinalNegotiatedValue, new { @class = "half" })
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.NegotiationsSubmitted)</div>
-            <div class="form-element">
-                @Html.TextBoxFor(x => x.NegotiationsSubmitted, new { @class = "date", placeholder = "mm/dd/yyyy" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.NegotiationsSubmitted)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.NegotiationsSubmitted, new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.EppDelegationAuthority)</div>
-            <div class="form-element">
-                @Html.DropDownListFor(model => model.EppDelegationAuthority, Model.EppOptions, new { name = "EppDelegationAuthority" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.EppDelegationAuthority)</div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.EppDelegationAuthority, Model.EppOptions, new { name = "EppDelegationAuthority" })
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.ProgramEppDate)</div>
-            <div class="form-element">
-                @Html.TextBoxFor(x => x.ProgramEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.ProgramEppDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.ProgramEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.LobEppDate)</div>
-            <div class="form-element">
-                @Html.TextBoxFor(x => x.LobEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.LobEppDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.LobEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.PreSpaceEppDate)</div>
-            <div class="form-element">
-                @Html.TextBoxFor(x => x.PreSpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.PreSpaceEppDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.PreSpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.SpaceEppDate)</div>
-            <div class="form-element">
-                @Html.TextBoxFor(x => x.SpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.SpaceEppDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.SpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.PreCorporateEppDate)</div>
-            <div class="form-element">
-                @Html.TextBoxFor(x => x.PreCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.PreCorporateEppDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.PreCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.CorporateEppDate)</div>
-            <div class="form-element">
-                @Html.TextBoxFor(x => x.CorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.CorporateEppDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.CorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
             </div>
-        </div>
-        <div class="form-row" data-proposal-type="standard">
-            <div class="form-label">@Html.LabelFor(x => x.EppRosDelegationNotes)</div>
-            <div class="form-element">
-                <textarea id="EppRosDelegationNotes" name="EppRosDelegationNotes" rows="3">@Model.EppRosDelegationNotes</textarea>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">@Html.LabelFor(x => x.EppRosDelegationNotes)</div>
+                <div class="form-element">
+                    <textarea id="EppRosDelegationNotes" name="EppRosDelegationNotes" rows="3">@Model.EppRosDelegationNotes</textarea>
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.LmWon)</div>
-            <div class="form-element">
-                <label>Yes</label> @Html.RadioButtonFor(x => x.LmWon, true)
-                <label>No</label>  @Html.RadioButtonFor(x => x.LmWon, false)
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.LmWon)</div>
+                <div class="form-element">
+                    <label>Yes</label> @Html.RadioButtonFor(x => x.LmWon, true)
+                    <label>No</label>  @Html.RadioButtonFor(x => x.LmWon, false)
+                </div>
             </div>
-        </div>
-        <div class="form-row">
-            <div class="form-label">@Html.LabelFor(x => x.ModCompletedDate)</div>
-            <div class="form-element">
-                @Html.TextBoxFor(x => x.ModCompletedDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.ModCompletedDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.ModCompletedDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
             </div>
-        </div>
         }
+    </div>
+    <div id="confirm-loss-modal" title="Please Confirm" style="display: none;">
+        <p><strong>Are you sure the proposal is actually lost? This action cannot be undone.</strong></p>
+        <br />
+        <input type="text" id="confirm-modal-input" name="confirm-modal-input" placeholder="Type LOST to Continue" />
+        <div class="confirm-modal-button-container">
+            <button type="button" id="confirm-modal-submit" class="ies" disabled>Set Contract Lost</button>
+        </div>
     </div>
 </div>

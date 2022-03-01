@@ -248,6 +248,7 @@ namespace GenTRAC.Web.Common
             AddActionToController(WebConstants.Action.CALCULATE_OFFER_FIELDS, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsActions);
             AddActionToController(WebConstants.Action.GET_SELECTED_ROM_DATA, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsActions);
             AddActionToController(WebConstants.Action.SAVE_CONTRACT, PtmSecurityPage.Contracts, SecurityAuthorization.CreateReadUpdateDelete, contractsActions);
+            AddActionToController(WebConstants.Action.SET_PROPOSAL_LOST, PtmSecurityPage.Contracts, SecurityAuthorization.ReadUpdate, contractsActions);
 
             result.Add(WebConstants.Controller.CONTRACTS, contractsActions);
         }
