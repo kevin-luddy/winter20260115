@@ -185,22 +185,20 @@ namespace GenTRAC.ActionLogic
         /// <returns></returns>
         public async Task SetProposalLost(int proposalId, List<string> messages)
         {
-            if (! await this.CanUserSaveLostProposalStatus(proposalId, messages))
+            if (await this.CanUserSaveLostProposalStatus(proposalId, messages))
             {
-                return;
-            }
-
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ContractsControllerLogic.SetProposalLost", this.log))
-            {
-                using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+                using (StopwatchTimer sw = new StopwatchTimer("ContractsControllerLogic.SetProposalLost", this.log))
                 {
-                    this.SetProposalStatusToLost(proposalId);
-                    scope.Complete();
+                    using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+                    {
+                        this.SetProposalStatusToLost(proposalId);
+                        scope.Complete();
+                    }
                 }
-            }
 
-            // return control and send email async
-            SendProposalLostEmail(proposalId);
+                // return control and send email async
+                SendProposalLostEmail(proposalId);
+            }            
         }
 
         /// <summary>
