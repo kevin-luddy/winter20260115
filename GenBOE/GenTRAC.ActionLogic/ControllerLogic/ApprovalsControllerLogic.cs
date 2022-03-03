@@ -218,17 +218,6 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
-        /// Determines if the No Bid button will be enabled
-        /// </summary>
-        /// <param name="proposalId">Proposal ID</param>
-        /// <returns>True if user no bid should be enabled</returns>
-        public bool IsNoBidEnabled(int proposalId)
-        {
-            FullProposal proposal = this.GetFullProposalDto(proposalId);
-            return proposal.ProposalStatus == ProposalStatus.InProgress;
-        }
-
-        /// <summary>
         /// Validate that the Cover Sheet approver is still approved
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
@@ -436,20 +425,6 @@ namespace GenTRAC.ActionLogic
             }
 
             return toReturn;
-        }
-
-        /// <summary>
-        /// Determines if the user has access to set/revert No Bid
-        /// </summary>
-        /// <param name="proposalId">Proposal ID</param>
-        /// <returns>True if user has access, otherwise false</returns>
-        public bool HasAccessToSetNoBid(int proposalId)
-        {
-            FullProposal proposal = this.GetFullProposalDto(proposalId);
-            bool isLeadOrBackup = proposal.Permissions.Any(x => (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer) && x.UserId == proposal.CurrentUser.Id);
-            bool isAdmin = this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
-
-            return (isLeadOrBackup || isAdmin) && proposal.ProposalStatus != ProposalStatus.Revised;
         }
 
         /// <summary>

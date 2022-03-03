@@ -287,44 +287,6 @@
                 });
             });
         };
-        
-        ApproverSectionWidget.setNoBid = function () {
-            GenSession.confirmDialog("Confirm No Bid",
-                "If this Proposal is set as No Bid, it will no longer be able to be used to create new BOEs and RDSB records. Existing BOEs and RDSB records will not be affected. Are you sure you wish to continue?",
-                function () {
-                    $.ajax({
-                        type: 'POST',
-                        url: GenSession.CreateUrl({
-                            controller: '@WebConstants.Controller.APPROVALS',
-                            action: '@WebConstants.Action.SET_NO_BID',
-                            id: '@ViewBag.proposalid'
-                        }),
-                        contentType: 'application/json; charset=utf-8',
-                        success: function (response) {
-                            ApprovalsIndexWidget.SaveSuccess();
-                        }
-                    });
-            }, null);
-        };
-
-        ApproverSectionWidget.revertNoBid = function () {
-            GenSession.confirmDialog("Confirm Revert No Bid",
-                "If this Proposal is reverted from No Bid, the approval process will be reset. Are you sure you wish to continue?",
-                function () {
-                    $.ajax({
-                        type: 'POST',
-                        url: GenSession.CreateUrl({
-                            controller: '@WebConstants.Controller.APPROVALS',
-                            action: '@WebConstants.Action.REVERT_NO_BID',
-                            id: '@ViewBag.proposalid'
-                        }),
-                        contentType: 'application/json; charset=utf-8',
-                        success: function (response) {
-                            ApprovalsIndexWidget.SaveSuccess();
-                        }
-                    });
-            }, null);
-        };
     });
 </script>
 
@@ -333,21 +295,6 @@
     <div class="module-content-data expanded-content">
         @using (Html.BeginForm("", "", FormMethod.Post, new { id = "ApprovalForm", name = "ApprovalForm" }))
         {
-        if (Model.ApproverRole == PtmRole.Pricer && ViewBag.HasAccessToSetNoBid)
-        {
-            if (Model.IsNoBid)
-            {
-            <div id="revert-no-bid-container">
-                <button type="button" class="ies" title="Revert the status of this Proposal to In Progress" onclick="ApproverSectionWidget.revertNoBid()">Revert from No Bid to In Progress</button>
-            </div>
-            }
-            else
-            {
-            <div id="no-bid-container">
-                <button type="button" class="ies" title="Mark this Proposal as No Bid" onclick="ApproverSectionWidget.setNoBid()" @(ViewBag.IsNoBidEnabled ? string.Empty : "disabled")>No Bid</button>
-            </div>
-            }
-        }
         if (Model.ShowResetWorkflowButton)
         {
         <button type="button" id="ResetWorkflow" class="ies" title="@Html.Raw(@WebConstants.ApprovalDescription.RESET_WORKFLOW)">Reset Workflow</button>

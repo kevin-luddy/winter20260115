@@ -68,8 +68,6 @@ namespace GenTRAC.Web.Controllers
         {
             this.ViewBag.proposalid = proposalId.ToString();
             this.ViewBag.IsProposalDeletedOrArchived = this.approvalsLogic.IsProposalDeletedOrArchived(proposalId);
-            this.ViewBag.HasAccessToSetNoBid = this.approvalsLogic.HasAccessToSetNoBid(proposalId);
-            this.ViewBag.IsNoBidEnabled = this.approvalsLogic.IsNoBidEnabled(proposalId);
 
             ApprovalSectionModelView model = this.approvalsLogic.GetApprovalModel(proposalId, role);
             if (model != null)
