@@ -196,7 +196,7 @@
     
     <div class="module-content-data expanded-content position-relative">
         <div class="button-right-container">
-            @if (Model.HasAccessToSetNoBid) //initially there was an additional check (Model.ApproverRole == PtmRole.Pricer) which is contained in CanUserSaveNoBidProposalStatus 
+            @if (Model.HasAccessToSetNoBid) //initially there was an additional check (Model.ApproverRole == PtmRole.Pricer) which is contained in ValidForNoBidProposalStatusSave
             {
                 if (Model.IsNoBid)
                 {

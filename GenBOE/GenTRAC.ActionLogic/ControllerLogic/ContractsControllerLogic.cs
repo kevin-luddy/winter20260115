@@ -455,6 +455,13 @@ namespace GenTRAC.ActionLogic
             return isValid;
         }
 
+        /// <summary>
+        /// Ensures the proposal is in an acceptable status and the user has permission to set "No Bid"
+        /// </summary>
+        /// <param name="fullProposal">Full proposal object</param>
+        /// <param name="messages">List to which error messages will be added. If null, ignored</param>
+        /// <returns>true if the prosal is valid for the No Bid status</returns>
+        /// <exception cref="ArgumentNullException">if Full Proposal is null</exception>
         public bool ValidForNoBidProposalStatusSave(FullProposal fullProposal, List<string> messages)
         {
             _ = fullProposal ?? throw new ArgumentNullException(nameof(fullProposal));
@@ -480,6 +487,12 @@ namespace GenTRAC.ActionLogic
             return isValid;
         }
 
+        /// <summary>
+        /// Is the userId in the proposal's permissions as a Contracts administrator (lead/back-up)
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <param name="propPermissions">Permissions for the proposal</param>
+        /// <returns>True if the user is a Contracts admin</returns>
         private bool IsContractsUser(int userId, ICollection<ProposalPermissionDto> propPermissions)
         {
             return propPermissions.Any(x => (x.Role == PtmRole.ContractsPOC || x.Role == PtmRole.BackupContractsPOC) && x.UserId == userId);
