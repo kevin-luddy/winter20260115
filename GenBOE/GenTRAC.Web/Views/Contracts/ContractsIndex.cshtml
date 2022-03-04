@@ -69,8 +69,8 @@
                 contentType: 'application/json; charset=utf-8',
                 data: JSON.stringify(dataToSend),
                 success: function (response) {
-                    if (typeof response.Status !== 'undefined') {
-                        if (response.Status === true) {
+                    if (typeof response.IsSuccessful !== 'undefined') {
+                        if (response.IsSuccessful === true) {
                             ContractsIndexWidget.SaveSuccess(response.proposalId);
                         } else {
                             // show the error messages

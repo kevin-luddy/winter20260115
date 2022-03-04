@@ -426,42 +426,5 @@ namespace GenTRAC.ActionLogic
 
             return toReturn;
         }
-
-        /// <summary>
-        /// Set proposal to No Bid status
-        /// </summary>
-        /// <param name="proposalId">ID of Proposal</param>
-        public void SetProposalToNoBid(int proposalId)
-        {
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ApprovalsControllerLogic.SetProposalToNoBid", this.log))
-            {
-                // set status no bid
-                FullProposal proposal = this.GetFullProposalDto(proposalId);
-                proposal.ProposalStatus = ProposalStatus.NoBid;
-                proposal.NoBidDate = DateTime.Now;
-                proposal.Updateable = IES.Common.UpdateType.Upsert;
-                this.ProposalMediator.SaveProposal(proposal);
-            }
-        }
-
-        /// <summary>
-        /// Revert the Proposal from No Bid back to In Progress
-        /// </summary>
-        /// <param name="proposalId">ID of Proposal to revert</param>
-        public void RevertProposalFromNoBid(int proposalId)
-        {
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ApprovalsControllerLogic.RevertProposalFromNoBid", this.log))
-            {
-                // set status in progress
-                FullProposal proposal = this.GetFullProposalDto(proposalId);
-                proposal.ProposalStatus = ProposalStatus.InProgress;
-                proposal.NoBidDate = null;
-                proposal.Updateable = IES.Common.UpdateType.Upsert;
-                this.ProposalMediator.SaveProposal(proposal);
-            }
-
-            // reset workflow
-            this.ResetWorkflow(proposalId);
-        }
     }
 }

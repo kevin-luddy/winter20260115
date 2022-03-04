@@ -144,37 +144,5 @@ namespace GenTRAC.Web.Controllers
 
             return this.Json(new { Success = true });
         }
-
-        /// <summary>
-        /// Set Proposal to No Bid Status
-        /// </summary>
-        /// <param name="proposalId">Proposal ID</param>
-        /// <returns>json result</returns>
-        public JsonResult SetProposalAsNoBid(int proposalId)
-        {
-            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
-            {
-                this.approvalsLogic.SetProposalToNoBid(proposalId);
-                scope.Complete();
-            }
-
-            return this.Json(new { Success = true });
-        }
-
-        /// <summary>
-        /// Set Proposal to No Bid Status
-        /// </summary>
-        /// <param name="proposalId">Proposal ID</param>
-        /// <returns>json result</returns>
-        public JsonResult RevertProposalNoBidStatus(int proposalId)
-        {
-            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
-            {
-                this.approvalsLogic.RevertProposalFromNoBid(proposalId);
-                scope.Complete();
-            }
-
-            return this.Json(new { Success = true });
-        }
     }
 }

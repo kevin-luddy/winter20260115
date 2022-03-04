@@ -87,8 +87,8 @@
                 contentType: 'application/json; charset=utf-8',
                 data: JSON.stringify(data),
                 success: function (response) {
-                    if (typeof (response.Status) !== 'undefined') {
-                        if (response.Status === true) {
+                    if (typeof (response.IsSuccessful) !== 'undefined') {
+                        if (response.IsSuccessful === true) {
                             ContractsIndexWidget.SaveSuccess(@ViewBag.proposalid);
                         } else {
                             console.log(response);
@@ -115,13 +115,19 @@
                     $.ajax({
                         type: 'POST',
                         url: GenSession.CreateUrl({
-                            controller: '@WebConstants.Controller.APPROVALS',
+                            controller: '@WebConstants.Controller.CONTRACTS',
                             action: '@WebConstants.Action.SET_NO_BID',
                             id: '@ViewBag.proposalid'
                         }),
                         contentType: 'application/json; charset=utf-8',
                         success: function (response) {
-                            ContractsIndexWidget.SaveSuccess();
+                            if (typeof (response.IsSuccessful) !== 'undefined') {
+                                if (response.IsSuccessful) {
+                                    ContractsIndexWidget.SaveSuccess();
+                                } else {
+                                    console.log(response);
+                                }
+                            }
                         }
                     });
             }, null);
@@ -134,13 +140,19 @@
                     $.ajax({
                         type: 'POST',
                         url: GenSession.CreateUrl({
-                            controller: '@WebConstants.Controller.APPROVALS',
+                            controller: '@WebConstants.Controller.CONTRACTS',
                             action: '@WebConstants.Action.REVERT_NO_BID',
                             id: '@ViewBag.proposalid'
                         }),
                         contentType: 'application/json; charset=utf-8',
                         success: function (response) {
-                            ContractsIndexWidget.SaveSuccess();
+                            if (typeof (response.IsSuccessful) !== 'undefined') {
+                                if (response.IsSuccessful) {
+                                    ContractsIndexWidget.SaveSuccess();
+                                } else {
+                                    console.log(response);
+                                }
+                            }
                         }
                     });
             }, null);

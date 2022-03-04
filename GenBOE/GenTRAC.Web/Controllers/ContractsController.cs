@@ -10,6 +10,8 @@ namespace GenTRAC.Web.Controllers
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Transactions;
+    using System.Web.Configuration;
     using System.Web.Mvc;
     using GenTRAC.ActionLogic;
     using GenTRAC.ActionLogic.ModelView;
@@ -69,6 +71,47 @@ namespace GenTRAC.Web.Controllers
         }
 
         /// <summary>
+        /// Set Proposal to No Bid Status
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <returns>json result</returns>
+        public JsonResult SetProposalAsNoBid(int proposalId)
+        {
+            IESResponse<ContractsModelView> response = new IESResponse<ContractsModelView>();
+
+            if (this.contractsLogic.ValidForNoBidProposalStatusSave(this.contractsLogic.GetFullProposalAsync(proposalId).Result, (List<string>)response.Messages))
+            {
+                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+                {
+                    this.contractsLogic.SetProposalToNoBid(proposalId);
+                    scope.Complete();
+                    response.IsSuccessful = true;
+                }
+            }
+
+            return this.Json(response);
+        }
+
+        /// <summary>
+        /// Set Proposal to No Bid Status
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <returns>json result</returns>
+        public JsonResult RevertProposalNoBidStatus(int proposalId)
+        {
+            IESResponse<ContractsModelView> response = new IESResponse<ContractsModelView>();
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
+            {
+                this.contractsLogic.RevertProposalFromNoBid(proposalId);
+                scope.Complete();
+                response.IsSuccessful = true;
+            }
+
+            return this.Json(response);
+        }
+
+        /// <summary>
         /// Sets the status to proposal lost and sends notification email(s)
         /// </summary>
         /// <param name="proposalId">Proposal to be updated</param>
@@ -83,7 +126,7 @@ namespace GenTRAC.Web.Controllers
 
             if (!errMessages.Any())
             {
-                response.Status = true;
+                response.IsSuccessful = true;
             }
 
             return Json(response);
@@ -116,7 +159,7 @@ namespace GenTRAC.Web.Controllers
             else
             {
                 this.contractsLogic.SaveContract(model);
-                response.Status = true;
+                response.IsSuccessful = true;
             }            
 
             return this.Json(response);
