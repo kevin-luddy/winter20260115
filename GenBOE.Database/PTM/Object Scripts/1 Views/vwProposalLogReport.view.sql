@@ -19,6 +19,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		7/30/2020	Dusan				BOEJ-4639 Add Latest Revision
 **      10/13/2021  Koovackal           IES-181 DB Work -Added Profit, Com, ProfitFeeWithCon
 **		1/16/2022   Dusan				IES-174 Add Contract Data to the report
+**		3/7/2022	Dusan				IES-847 Modify Contracts Data data
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -153,16 +154,21 @@ SELECT
 	pCD.CustomerSubmittalDate AS ContractsCustomerSubmittalDate,
 	pCD.ContractsCorrespondLogNumber AS ContractsCorrespondLogNumber,
 	pCD.FinalNegotiatedValue AS ContractsFinalNegotiatedValue,
-	pCD.FinalNegotiatedDate AS ContractsFinalNegotiatedDate,	
-	-- Proposal Offer Data
-	pCo.CustomerOfferAmount AS OfferCustomerOfferAmount, 
-	pCo.CustomerOfferDate AS OfferCustomerOfferDate,
-	pCo.LMCounterOfferDate AS OfferLMCounterOfferDate,
-	pCo.LMCounterOfferCost AS OfferLMCounterOfferCost,
-	pCo.LMCounterOfferCOM AS OfferLMCounterOfferCOM,
-	pCo.LMCounterOfferProfitFee AS OfferLMCounterOfferProfitFee,
-	pCo.LMCounterOfferCost + pCo.LMCounterOfferCOM + pCo.LMCounterOfferProfitFee AS OfferLMCounterOfferTotalPrice,
-	CONVERT(DECIMAL, pCo.LMCounterOfferCOM + pCo.LMCounterOfferProfitFee) / (pCo.LMCounterOfferCost + pCo.LMCounterOfferCOM + pCo.LMCounterOfferProfitFee) AS OfferLMCounterOfferROS
+	pCD.FinalNegotiatedDate AS ContractsFinalNegotiatedDate,
+	eppLU.Text AS ContractsEppDelegationAuthority,
+	pCD.ProgramEppDate AS ContractsProgramEppDate,
+	pCD.LobEppDate AS ContractsLobEppDate,
+	pCD.PreSpaceEppDate AS ContractsPreSpaceEppDate,
+	pCD.SpaceEppDate AS ContractsSpaceEppDate,
+	pCD.PreCorporateEppDate AS ContractsPreCorporateEppDate,
+	pCD.CorporateEppDate AS ContractsCorporateEppDate,
+	pCD.EppRosDelegationNotes AS ContractsEppRosDelegationNotes,
+	CASE
+		WHEN pCD.LmWon = 1 THEN 'Yes'
+		WHEN pCD.LmWon = 0 THEN 'No'
+		ELSE NULL
+	END AS ContractsLmWon,
+	pCD.ModCompletedDate AS ContractsModCompletedDate
   FROM [dbo].[Proposal] P
 	INNER JOIN [dbo].[ProgramAreaLU] PA ON P.ProgramAreaID = PA.ProgramAreaID
 	INNER JOIN [dbo].[LineOfBusinessLU] LOB ON P.LineOfBusinessID = LOB.LineOfBusinessID
@@ -284,6 +290,5 @@ SELECT
 	LEFT OUTER JOIN ProposalContractsData pCD ON pCD.ProposalID = p.ProposalID
 	LEFT OUTER JOIN Proposal previousRomProposal ON pCD.PreviouslySubmittedROM = previousRomProposal.ProposalID
 	LEFT OUTER JOIN ProposalChecklist previousRomChecklist ON pCD.PreviouslySubmittedROM = previousRomChecklist.ProposalID
-	LEFT OUTER JOIN ProposalContractsOffers pCo ON pCo.ProposalContractsOffersId = 
-								(SELECT MAX(ProposalContractsOffersId) FROM ProposalContractsOffers WHERE ContractsDataId = pCD.ProposalContractsDataId)
+	LEFT OUTER JOIN EppDelegationAuthorityLU eppLU ON eppLU.Id = pCD.EppDelegationAuthority
 GO

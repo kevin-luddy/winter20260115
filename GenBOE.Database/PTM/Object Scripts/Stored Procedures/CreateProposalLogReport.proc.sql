@@ -37,6 +37,7 @@ AS
 **										BOEJ-4631 Add Reason Cert Not Required
 **		7/30/2020	Dusan				BOEJ-4639 Add Latest Revision
 **		1/16/2022   Dusan				IES-174 Add Contract Data to the report
+**		3/7/2022	Dusan				IES-847 Modify Contracts Data data
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -310,15 +311,16 @@ SELECT V.[ProposalID]
 	 ,V.ContractsCorrespondLogNumber
 	 ,V.ContractsFinalNegotiatedValue
 	 ,V.ContractsFinalNegotiatedDate
-	 -- Proposal Offer Data
-	 ,V.OfferCustomerOfferAmount
-	 ,V.OfferCustomerOfferDate
-	 ,V.OfferLMCounterOfferDate
-	 ,V.OfferLMCounterOfferCost
-	 ,V.OfferLMCounterOfferCOM
-	 ,V.OfferLMCounterOfferProfitFee
-	 ,V.OfferLMCounterOfferTotalPrice
-	 ,V.OfferLMCounterOfferROS
+	 ,V.ContractsEppDelegationAuthority
+ 	 ,V.ContractsProgramEppDate
+	 ,V.ContractsLobEppDate
+	 ,V.ContractsPreSpaceEppDate
+	 ,V.ContractsSpaceEppDate
+	 ,V.ContractsPreCorporateEppDate
+	 ,V.ContractsCorporateEppDate
+	 ,V.ContractsEppRosDelegationNotes
+	 ,V.ContractsLmWon
+	 ,V.ContractsModCompletedDate
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(
@@ -340,8 +342,7 @@ WHERE
 	(
 		(
 			@AllProposals = 1
-		) OR
-	
+		) OR	
 		(
 			@SpecificProposals = 1 AND
 				(
@@ -360,27 +361,19 @@ WHERE
 						)
 							
 				)
-		) OR
-		
+		) OR		
 		(
 			@SubmitStartDate IS NOT NULL AND
 			@SubmitEndDate IS NOT NULL AND
 			CAST([Actual Submittal Date] AS DATE) > = @SubmitStartDate AND
-			CAST([Actual Submittal Date] AS DATE) < = @SubmitEndDate			
-			
-			
-			
-		)  OR
-		
+			CAST([Actual Submittal Date] AS DATE) < = @SubmitEndDate
+		)  OR		
 		(
 			(
 				@TrackingNumber IS NOT NULL AND
 				([Tracking #] LIKE @TrackingNumber + '%' OR [ForecastedTracking#] LIKE @TrackingNumber + '%')
 			)			
-		)
-		
-		
-		
+		)	
 	)
 
 AND
