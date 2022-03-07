@@ -298,6 +298,7 @@ namespace GenTRAC.ActionLogic
         /// Determines whether the proposal is in a valid state to have "Set Lost" status set.
         /// </summary>
         /// <param name="proposalId">Proposal Id to be considered</param>
+        /// <param name="fullProposal">The full proposal object</param>
         /// <returns>true if valid for Lost status</returns>
         private bool IsValidForLostStatus(ContractsDto contractInfo, FullProposal fullProposal)
         {
@@ -312,6 +313,12 @@ namespace GenTRAC.ActionLogic
             return valid;
         }
 
+        /// <summary>
+        /// Determines whether the proposal is in a valid state to have "No Bid" status set. Can only be set if in In Progress,
+        /// Pending Certification, or Pending Contractual Award statuses.
+        /// </summary>
+        /// <param name="fullProposal">The full proposal object</param>
+        /// <returns>True if in a valid status</returns>
         private bool IsValidForNoBidStatus(FullProposal fullProposal)
         {
             return fullProposal.ProposalStatus == ProposalStatus.InProgress || fullProposal.ProposalStatus == ProposalStatus.PendingCertification || fullProposal.ProposalStatus == ProposalStatus.PendingAward;
@@ -391,7 +398,7 @@ namespace GenTRAC.ActionLogic
         /// <param name="proposalId">ID of Proposal</param>
         public void SetProposalToNoBid(int proposalId)
         {
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ApprovalsControllerLogic.SetProposalToNoBid", this.log))
+            using (StopwatchTimer sw = new IES.Common.StopwatchTimer("ContractsControllerLogic.SetProposalToNoBid", this.log))
             {
                 // set status no bid
                 FullProposal fullProposal = GetFullProposalAsync(proposalId).Result;
@@ -411,7 +418,7 @@ namespace GenTRAC.ActionLogic
         /// <param name="proposalId">ID of Proposal to revert</param>
         public void RevertProposalFromNoBid(int proposalId)
         {
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ApprovalsControllerLogic.RevertProposalFromNoBid", this.log))
+            using (StopwatchTimer sw = new IES.Common.StopwatchTimer("ContractsControllerLogic.RevertProposalFromNoBid", this.log))
             {
                 // set status in progress
                 FullProposal proposal = this.GetFullProposalDto(proposalId);
@@ -426,7 +433,9 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
-        /// Checks permissions and status to ensure that the proposal is valid for setting "Lost"
+        /// Checks permissions and status to ensure that the proposal is valid for setting "Lost" status.
+        /// a) Must have the primary or backup contracts role or be an administrator
+        /// b) The status must currently be Pending Certification or Pending Contractual Award.
         /// </summary>
         /// <param name="proposalId">Proposal ID</param>
         /// <param name="messages">Response object to be returned</param>
@@ -437,10 +446,10 @@ namespace GenTRAC.ActionLogic
 
             bool isValid = true;            
 
-            bool isLeadOrBackup = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions);
+            bool isLeadOrBackupContractsUser = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions);
             bool isAdmin = this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
 
-            if (!isLeadOrBackup && !isAdmin)
+            if (!isLeadOrBackupContractsUser && !isAdmin)
             {
                 messages?.Add("Insufficient permissions to set proposal as Lost.");
                 isValid = false;
@@ -468,10 +477,10 @@ namespace GenTRAC.ActionLogic
 
             bool isValid = true;
 
-            bool isLeadOrBackup = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions);
+            bool isLeadOrBackupContractsUser = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions);
             bool isAdmin = this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
 
-            if (!isLeadOrBackup && !isAdmin)
+            if (!isLeadOrBackupContractsUser && !isAdmin)
             {
                 messages?.Add("Insufficient permissions to set proposal as No Bid.");
                 isValid = false;
