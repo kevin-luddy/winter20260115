@@ -325,7 +325,7 @@
     <Content Include="Release Scripts\Release 2021.1.1\Release 2021.1.1.sql" />
     <Content Include="Release Scripts\Release 2021.1.2\Release 2021.1.2.sql" />
     <Content Include="Release Scripts\Release 2021.1\Release 2021.1.sql" />
-    <Content Include="Release Scripts\Release 2022.x\Release 2022.x.sql" />
+    <Content Include="Release Scripts\Release 2022.7\Release 2022.7.sql" />
     <Content Include="_Full Script Files For Specific Versions\BOE - 2021.1.1 Generated On 2_8_2021.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2021.1 Generated On 1_24_2021.sql" />
     <Content Include="_Full Script Files For Specific Versions\Older\BOE - 2020.3 Generated On 7_21_2020.sql" />
