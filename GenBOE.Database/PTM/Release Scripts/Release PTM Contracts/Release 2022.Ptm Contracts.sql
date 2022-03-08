@@ -136,15 +136,44 @@ GO
 IF EXISTS (SELECT ProposalStatus FROM dbo.ProposalStatusLU WHERE ProposalStatus = 'Submitted')
 BEGIN
 	UPDATE dbo.ProposalStatusLU
-SET
-	ProposalStatus = 'Pending Certification'
-WHERE
-	ProposalStatus = 'Submitted';
+	SET
+		ProposalStatus = 'Pending Certification'
+	WHERE
+		ProposalStatus = 'Submitted';
 END
 GO
 
 /*
 	02/23/2022 [Koovackal] - IES-845 Rename "Submitted" Proposal status.
+
+	## END ##
+*/
+
+
+/*
+	02/24/2022 [Koovackal] - IES-846 Create 2 new statuses
+
+	## START ##
+*/
+
+SET IDENTITY_INSERT dbo.ProposalStatusLU ON;
+IF NOT EXISTS (SELECT ProposalStatus FROM dbo.ProposalStatusLU WHERE ProposalStatusID = '9' AND ProposalStatus = 'Pending Contractual Award')
+BEGIN
+	INSERT INTO dbo.ProposalStatusLU (ProposalStatusID, ProposalStatus)
+	VALUES ('9', 'Pending Contractual Award');
+END
+GO
+
+IF NOT EXISTS (SELECT ProposalStatus FROM dbo.ProposalStatusLU WHERE ProposalStatusID = '10' AND ProposalStatus = 'Lost')
+BEGIN
+	INSERT INTO dbo.ProposalStatusLU (ProposalStatusID, ProposalStatus)
+	VALUES ('10', 'Lost');
+END
+GO
+SET IDENTITY_INSERT dbo.ProposalStatusLU OFF;
+
+/*
+	02/24/2022 [Koovackal] - IES-846 Create 2 new statuses
 
 	## END ##
 */

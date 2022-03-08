@@ -212,6 +212,7 @@ namespace GenTRAC.ActionLogic
             {
                 statuses.Add((int)ProposalStatus.InProgress);
                 statuses.Add((int)ProposalStatus.PendingCertification);
+                statuses.Add((int)ProposalStatus.PendingAward);
             }
             else if (filtersCookie.FilterOption == ProposalFilterOption.Completed)
             {
@@ -220,6 +221,10 @@ namespace GenTRAC.ActionLogic
             else if (filtersCookie.FilterOption == ProposalFilterOption.NoBid)
             {
                 statuses.Add((int)ProposalStatus.NoBid);
+            }
+            else if (filtersCookie.FilterOption == ProposalFilterOption.Lost)
+            {
+                statuses.Add((int)ProposalStatus.Lost);
             }
 
             // Get the Proposal Class filter option as appropriate.  If less than zero, use null (which returns all Proposal Classes).

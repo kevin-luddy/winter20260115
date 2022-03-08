@@ -38,6 +38,7 @@ AS
 **			7/15/2020	Dusan					BOEJ-4700: Pull Has / Is Revision Data
 **			8/14/2020	ranzalon				BOEJ-4676 - Use revised submittal date when available
 **			2/2/2021	ranzalon				BOEJ-4861 - Add submitted value
+**			2/28/2022	koovackal				IES-846 Create 2 new statuses
 ******************************************************************************/
 	SET NOCOUNT ON 
 
@@ -158,15 +159,16 @@ AS
 	WHERE
 	(
 		(
-			(@ProposalStatusID IS NULL AND P.ProposalStatusID IN (1/*In Progress*/,2/*Completed*/,6/*Submitted*/,7/*No Bid*/,8/*Revised*/)) 
+			(@ProposalStatusID IS NULL AND P.ProposalStatusID IN (1/*In Progress*/,2/*Completed*/,6/*Pending Certification*/,7/*No Bid*/,8/*Revised*/,
+																  9/*Pending Contractual Award*/,10/*Lost*/))
 			OR (@ProposalStatusID IS NOT NULL AND P.ProposalStatusID = @ProposalStatusID)
 		) AND (
 			(
-				(@ProposalStatusID = 1/*In Progress*/ OR @ProposalStatusID = 6/*Submitted*/ OR @ProposalStatusID = 8/*Revised*/) 
-				AND (@AssignedStart IS NULL OR CAST (P.DateAssigned AS Date) > = @AssignedStart) 
-				AND (@AssignedEnd IS NULL OR CAST (P.DateAssigned AS Date) < = @AssignedEnd) 
+				(@ProposalStatusID = 1/*In Progress*/ OR @ProposalStatusID = 6/*Pending Certification*/ OR @ProposalStatusID = 8/*Revised*/ OR @ProposalStatusID = 9/*Pending Contractual Award*/) 
+				AND (@AssignedStart IS NULL OR CAST (P.DateAssigned AS Date) > = @AssignedStart)
+				AND (@AssignedEnd IS NULL OR CAST (P.DateAssigned AS Date) < = @AssignedEnd)
 			) OR (
-				P.ProposalStatusID = 2/*Completed*/
+				P.ProposalStatusID = 2/*Completed*/ OR P.ProposalStatusID = 10/*Lost*/
 				AND (@AssignedStart IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) > = @AssignedStart) 
 				AND (@AssignedEnd IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) < = @AssignedEnd) 
 			) OR (

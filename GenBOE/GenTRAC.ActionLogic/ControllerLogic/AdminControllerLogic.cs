@@ -641,7 +641,8 @@ namespace GenTRAC.ActionLogic
             manageProposalInfoDetailsView.Comments = fullProposal.ManageProposalInfoComments;
 
             // populate dates and price when Completed
-            if (fullProposal.ProposalStatus == ProposalStatus.Completed || fullProposal.ProposalStatus == ProposalStatus.PendingCertification)
+            if (fullProposal.ProposalStatus == ProposalStatus.Completed || fullProposal.ProposalStatus == ProposalStatus.PendingCertification
+                || fullProposal.ProposalStatus == ProposalStatus.PendingAward)
             {
                 manageProposalInfoDetailsView.ShowCompletedSection = true;
 
@@ -813,7 +814,8 @@ namespace GenTRAC.ActionLogic
                 throw new ArgumentNullException(nameof(inValidationErrors));
             }
 
-            if (manageProposalInfo.OldStatus == ProposalStatus.Completed || manageProposalInfo.OldStatus == ProposalStatus.PendingCertification)
+            if (manageProposalInfo.OldStatus == ProposalStatus.Completed || manageProposalInfo.OldStatus == ProposalStatus.PendingCertification
+                || manageProposalInfo.OldStatus == ProposalStatus.Lost || manageProposalInfo.OldStatus == ProposalStatus.PendingAward)
             {
                 if (string.IsNullOrEmpty(manageProposalInfo.EstimatingSubmitsToContractsDate))
                 {
@@ -934,7 +936,8 @@ namespace GenTRAC.ActionLogic
             validStates.Add(fullProposal.ProposalStatus);
 
             if (fullProposal.ProposalStatus == ProposalStatus.InProgress || fullProposal.ProposalStatus == ProposalStatus.Completed 
-                || fullProposal.ProposalStatus == ProposalStatus.PendingCertification || fullProposal.ProposalStatus == ProposalStatus.NoBid)
+                || fullProposal.ProposalStatus == ProposalStatus.PendingCertification || fullProposal.ProposalStatus == ProposalStatus.NoBid
+                || fullProposal.ProposalStatus == ProposalStatus.PendingAward || fullProposal.ProposalStatus == ProposalStatus.Lost)
             { 
                 if(fullProposal.ProposalStatus == ProposalStatus.NoBid)
                 {

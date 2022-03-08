@@ -2158,7 +2158,8 @@ namespace GenTRAC.ActionLogic
         {
             bool readOnly = false;
 
-            if (fullProposal != null && fullProposal.ProposalStatus != ProposalStatus.InProgress && fullProposal.ProposalStatus != ProposalStatus.Completed && fullProposal.ProposalStatus != ProposalStatus.PendingCertification)
+            if (fullProposal != null && fullProposal.ProposalStatus != ProposalStatus.InProgress && fullProposal.ProposalStatus != ProposalStatus.Completed 
+                && fullProposal.ProposalStatus != ProposalStatus.PendingCertification && fullProposal.ProposalStatus != ProposalStatus.PendingAward)
             {
                 // proposal status is Archived, Deleted, or Revision - always read only
                 readOnly = true;
@@ -2315,7 +2316,7 @@ namespace GenTRAC.ActionLogic
                 } 
                 else
                 {
-                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Completed);
+                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.PendingAward);
                 }
             }
         }
@@ -2525,7 +2526,8 @@ namespace GenTRAC.ActionLogic
                 throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.COMPLETE_FAILED_PROPOSAL);
             }
 
-            if (model.ReasonCertificationNotRequired.HasValue && proposal.ProposalStatus != ProposalStatus.PendingCertification && proposal.ProposalStatus != ProposalStatus.Completed)
+            if (model.ReasonCertificationNotRequired.HasValue && proposal.ProposalStatus != ProposalStatus.PendingCertification && proposal.ProposalStatus != ProposalStatus.Completed
+                && proposal.ProposalStatus != ProposalStatus.PendingAward)
             {
                 throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CERTIFICATION_NOT_REQUIRED_WRONG_STATE);
             }

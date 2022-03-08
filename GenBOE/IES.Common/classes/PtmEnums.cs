@@ -841,10 +841,16 @@ namespace IES.Common
         NoBid = 2,
 
         /// <summary>
+        /// Lost
+        /// </summary>
+        [Description("Lost")]
+        Lost = 3,
+
+        /// <summary>
         /// All
         /// </summary>
         [Description("All")]
-        All = 3
+        All = 100
     }
 
     /// <summary>
@@ -1116,6 +1122,12 @@ namespace IES.Common
         /// </summary>
         [Description("Revised")]
         Revised = 8,
+
+        /// <summary>
+        /// Lost
+        /// </summary>
+        [Description("Lost")]
+        Lost = 10,
 
         /// <summary>
         /// All
