@@ -372,7 +372,10 @@ namespace GenTRAC.ActionLogic
         /// <param name="proposalId">Proposal Id</param>
         public async Task<FullProposal> GetFullProposalAsync(int proposalId)
         {
-            return await Task.Run<FullProposal>(() => this.GetFullProposalDto(proposalId));
+            Task<FullProposal> fullProposal = Task<FullProposal>.Run(() => this.GetFullProposalDto(proposalId));
+            fullProposal.Wait();
+            
+            return fullProposal.Result;
         }
 
         /// <summary>
