@@ -105,7 +105,8 @@ namespace GenTRAC.Tests.DAL.Loader
                                 prop.ProgramAreaId == proposal.ProgramAreaId && 
                                     (prop.ProposalStatus == ProposalStatus.InProgress || 
                                         prop.ProposalStatus == ProposalStatus.Completed ||
-                                        prop.ProposalStatus == ProposalStatus.PendingCertification))
+                                        prop.ProposalStatus == ProposalStatus.PendingCertification ||
+                                        prop.ProposalStatus == ProposalStatus.PendingAward))
                 {
                     ++manualCount;
                 }
@@ -130,7 +131,7 @@ namespace GenTRAC.Tests.DAL.Loader
             foreach (ProposalDto prop in allProposals)
             {
                 if (prop.DateCreated >= startDate && prop.LineOfBusinessID == int.Parse(lineOfBusiness) &&
-                    (prop.ProposalStatus == ProposalStatus.InProgress || prop.ProposalStatus == ProposalStatus.Completed || prop.ProposalStatus == ProposalStatus.PendingCertification))
+                    (prop.ProposalStatus == ProposalStatus.InProgress || prop.ProposalStatus == ProposalStatus.Completed || prop.ProposalStatus == ProposalStatus.PendingCertification || prop.ProposalStatus == ProposalStatus.PendingAward))
                 {
                     ++manualCount;
                 }
@@ -157,7 +158,7 @@ namespace GenTRAC.Tests.DAL.Loader
             foreach (ProposalDto prop in allProposals)
             {
                 if (prop.DateCreated >= startDate && prop.DateCreated <= endDate &&
-                        (prop.ProposalStatus == ProposalStatus.InProgress || prop.ProposalStatus == ProposalStatus.Completed || prop.ProposalStatus == ProposalStatus.PendingCertification))
+                        (prop.ProposalStatus == ProposalStatus.InProgress || prop.ProposalStatus == ProposalStatus.Completed || prop.ProposalStatus == ProposalStatus.PendingCertification || prop.ProposalStatus == ProposalStatus.PendingAward))
                 {
                     ++manualCount;
                 }
@@ -179,7 +180,7 @@ namespace GenTRAC.Tests.DAL.Loader
             manualCount = 0;
             foreach (ProposalDto prop in allProposals)
             {
-                if (prop.ProposalStatus == ProposalStatus.InProgress || prop.ProposalStatus == ProposalStatus.Completed || prop.ProposalStatus == ProposalStatus.PendingCertification)
+                if (prop.ProposalStatus == ProposalStatus.InProgress || prop.ProposalStatus == ProposalStatus.Completed || prop.ProposalStatus == ProposalStatus.PendingCertification || prop.ProposalStatus == ProposalStatus.PendingAward)
                 {
                     ++manualCount;
                 }
@@ -203,7 +204,7 @@ namespace GenTRAC.Tests.DAL.Loader
             foreach (ProposalDto prop in allProposals)
             {
                 if (prop.DateCreated >= startDate &&
-                    (prop.ProposalStatus == ProposalStatus.InProgress || prop.ProposalStatus == ProposalStatus.Completed || prop.ProposalStatus == ProposalStatus.PendingCertification))
+                    (prop.ProposalStatus == ProposalStatus.InProgress || prop.ProposalStatus == ProposalStatus.Completed || prop.ProposalStatus == ProposalStatus.PendingCertification || prop.ProposalStatus == ProposalStatus.PendingAward))
                 {
                     ++manualCount;
                 }
@@ -227,7 +228,7 @@ namespace GenTRAC.Tests.DAL.Loader
             foreach (ProposalDto prop in allProposals)
             {
                 if (prop.DateCreated <= endDate &&
-                    (prop.ProposalStatus == ProposalStatus.InProgress || prop.ProposalStatus == ProposalStatus.Completed || prop.ProposalStatus == ProposalStatus.PendingCertification))
+                    (prop.ProposalStatus == ProposalStatus.InProgress || prop.ProposalStatus == ProposalStatus.Completed || prop.ProposalStatus == ProposalStatus.PendingCertification || prop.ProposalStatus == ProposalStatus.PendingAward))
                 {
                     ++manualCount;
                 }
@@ -363,7 +364,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             ICollection<ProposalDto> proposalsBeingArchived = allProposals.Where(x => x.DateCreated >= startDate && x.DateCreated <= endDate &&
                     x.LineOfBusinessID == lineOfBusiness && x.ProgramAreaId == programArea && 
-                    (x.ProposalStatus == ProposalStatus.InProgress || x.ProposalStatus == ProposalStatus.Completed || x.ProposalStatus == ProposalStatus.PendingCertification)).ToList();
+                    (x.ProposalStatus == ProposalStatus.InProgress || x.ProposalStatus == ProposalStatus.Completed || x.ProposalStatus == ProposalStatus.PendingCertification || x.ProposalStatus == ProposalStatus.PendingAward)).ToList();
             int manualSearchCount = proposalsBeingArchived.Count();
 
             int? searchResults = sut.SearchBulkArchive(bulkArchiveDto);
@@ -404,7 +405,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             proposalsBeingArchived = allProposals.Where(x => x.DateCreated >= startDate &&
                     x.LineOfBusinessID == lineOfBusiness && x.ProgramAreaId == programArea &&
-                    (x.ProposalStatus == ProposalStatus.InProgress || x.ProposalStatus == ProposalStatus.Completed || x.ProposalStatus == ProposalStatus.PendingCertification)).ToList();
+                    (x.ProposalStatus == ProposalStatus.InProgress || x.ProposalStatus == ProposalStatus.Completed || x.ProposalStatus == ProposalStatus.PendingCertification || x.ProposalStatus == ProposalStatus.PendingAward)).ToList();
             manualSearchCount = proposalsBeingArchived.Count();
 
             searchResults = sut.SearchBulkArchive(bulkArchiveDto);
@@ -436,7 +437,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             proposalsBeingArchived = allProposals.Where(x => x.DateCreated <= endDate &&
                     x.LineOfBusinessID == lineOfBusiness && x.ProgramAreaId == programArea &&
-                    (x.ProposalStatus == ProposalStatus.InProgress || x.ProposalStatus == ProposalStatus.Completed || x.ProposalStatus == ProposalStatus.PendingCertification)).ToList();
+                    (x.ProposalStatus == ProposalStatus.InProgress || x.ProposalStatus == ProposalStatus.Completed || x.ProposalStatus == ProposalStatus.PendingCertification || x.ProposalStatus == ProposalStatus.PendingAward)).ToList();
 
             manualSearchCount = proposalsBeingArchived.Count();
 

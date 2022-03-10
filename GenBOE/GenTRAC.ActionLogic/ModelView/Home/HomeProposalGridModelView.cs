@@ -296,6 +296,10 @@ namespace GenTRAC.ActionLogic.ModelView.Home
                     {
                         return Constants.SUBMITTED_NOT_LATE_BACKGROUND_CSS_CLASS_STRING;
                     }
+                    else if (this.Status.Equals(ProposalStatus.PendingAward))
+                    {
+                        return Constants.PENDING_AWARD_BACKGROUND_CSS_CLASS_STRING;
+                    }
                     else
                     {
                         DateTime today = DateTime.Now.Date;

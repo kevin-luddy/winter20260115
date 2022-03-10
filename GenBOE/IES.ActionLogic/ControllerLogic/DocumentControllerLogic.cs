@@ -136,7 +136,8 @@ namespace IES.ActionLogic.ControllerLogic
         }
 
         /// <summary>
-        /// Gets the unlinked proposals the user has access to edit that are in progress or submitted.
+        /// Gets the unlinked proposals the user has access to edit that are in progress, 
+        /// pending certification, or pending contractual award.
         /// </summary>
         /// <param name="roles">Roles for the active user.</param>
         /// <param name="activeUserNtid">The active user's ntid</param>
@@ -147,7 +148,7 @@ namespace IES.ActionLogic.ControllerLogic
 
             ICollection<ProposalDto> proposals = isAdmin ? this.proposalLoader.GetAllSlim() : this.proposalLoader.GetProposalsByUser(activeUserNtid);
             proposals = proposals.Where(p => 
-                    (p.ProposalStatus == ProposalStatus.InProgress || p.ProposalStatus == ProposalStatus.PendingCertification) 
+                    (p.ProposalStatus == ProposalStatus.InProgress || p.ProposalStatus == ProposalStatus.PendingCertification || p.ProposalStatus == ProposalStatus.PendingAward) 
                     && !p.DocumentId.HasValue
                     && !p.IsForecastProposal && p.ProposalStatus != ProposalStatus.Revised
                     && p.CustomerType != CustomerType.Commercial && p.CustomerType != CustomerType.InternationalCommercial 

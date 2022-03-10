@@ -1176,7 +1176,7 @@ namespace GenTRAC.ActionLogic
                     // get the dto again to get latest update date
                     FullProposal fullProposalDto = this.GetFullProposalDto(checklist.ProposalID);
 
-                    ProposalStatus newStatus = ProposalStatus.Completed;
+                    ProposalStatus newStatus = ProposalStatus.PendingAward;
                     if (fullProposalDto.IsCCPDRequired.HasValue && fullProposalDto.IsCCPDRequired.Value)
                     {
                         newStatus = ProposalStatus.PendingCertification;
