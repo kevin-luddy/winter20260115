@@ -91,17 +91,7 @@
                         if (response.IsSuccessful === true) {
                             ContractsIndexWidget.SaveSuccess(@ViewBag.proposalid);
                         } else {
-                            console.log(response);
-                            if (typeof (response.Messages) !== 'undefined' && response.Messages.length > 0) {
-                                response.Messages.forEach(message => {
-                                    $('#contractsInfoForm .validation-box').append('<li>' + message + '</li>');
-                                });
-                                modalWindow.dialog('close');
-                                $('#confirm-modal-input').val('');
-                                $('#confirm-modal-submit').text('Set Contract Lost');
-                                $('#confirm-modal-input').trigger('keyup');
-                                $('#contractsInfoForm .validation-box').show();
-                            }
+                            processErrors(response);
                         }
                     }
                 }
@@ -125,12 +115,25 @@
                                 if (response.IsSuccessful) {
                                     ContractsIndexWidget.SaveSuccess();
                                 } else {
-                                    console.log(response);
+                                    processErrors(response);
                                 }
                             }
                         }
                     });
             }, null);
+        };
+
+        ContractsInfoWidget.processErrors(response) = function () {
+            if (typeof (response.Messages) !== 'undefined' && response.Messages.length > 0) {
+                response.Messages.forEach(message => {
+                    $('#contractsInfoForm .validation-box').append('<li>' + message + '</li>');
+                });
+                modalWindow.dialog('close');
+                $('#confirm-modal-input').val('');
+                $('#confirm-modal-submit').text('Set Contract Lost');
+                $('#confirm-modal-input').trigger('keyup');
+                $('#contractsInfoForm .validation-box').show();
+            }
         };
 
         ContractsInfoWidget.revertNoBid = function () {
@@ -150,7 +153,7 @@
                                 if (response.IsSuccessful) {
                                     ContractsIndexWidget.SaveSuccess();
                                 } else {
-                                    console.log(response);
+                                    processErrors(response);
                                 }
                             }
                         }
