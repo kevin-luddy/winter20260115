@@ -372,8 +372,7 @@ namespace GenTRAC.ActionLogic
         /// <param name="proposalId">Proposal Id</param>
         public async Task<FullProposal> GetFullProposalAsync(int proposalId)
         {
-            Task<FullProposal> task = Task<FullProposal>.Run(() => this.GetFullProposalDto(proposalId));            
-            return task.Result;
+            return await Task.Run<FullProposal>(() => this.GetFullProposalDto(proposalId));
         }
 
         /// <summary>
@@ -382,7 +381,7 @@ namespace GenTRAC.ActionLogic
         /// <param name="proposalId">ID of Proposal</param>
         private void SetProposalStatusToLost(int proposalId)
         {
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ContractsControllerLogic.SetProposalStatusToLost", this.log))
+            using (StopwatchTimer sw = new IES.Common.StopwatchTimer("ContractsControllerLogic.SetProposalStatusToLost", this.log))
             {
                 FullProposal fullProposal = GetFullProposalAsync(proposalId).Result;
                 fullProposal.ProposalStatus = ProposalStatus.Lost;

@@ -10,15 +10,22 @@ namespace GenTRAC.Tests.ActionLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Web.Mvc;
+    using GenBOE.DataBridge.DTO;
     using GenTRAC.ActionLogic;
+    using GenTRAC.ActionLogic.Email;
     using GenTRAC.ActionLogic.Mediator;
     using GenTRAC.ActionLogic.ModelView;
+    using GenTRAC.ActionLogic.ModelView.Proposals;
+    using GenTRAC.ActionLogic.Validation;
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
     using GenTRAC.Objects;
     using GenTRAC.Objects.FullObject;
+    using GenTRAC.Tests.Helper;
     using IES.Common;
+    using IES.Common.PickList;
     using Microsoft.Practices.Unity;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
@@ -86,6 +93,21 @@ namespace GenTRAC.Tests.ActionLogic
         /// </summary>
         private Mock<IContractsLoader> contractsLoader = null;
 
+        /// <summary>
+        /// Emailer
+        /// </summary>
+        private Mock<IPtmEmailer> emailer;
+
+        /// <summary>
+        /// Proposal Logic
+        /// </summary>
+        private Mock<ProposalControllerLogic> proposalLogic;
+
+        /// <summary>
+        /// Approvals Logic
+        /// </summary>
+        private Mock<ApprovalsControllerLogic> approvalsLogic;
+
         #endregion
 
         /// <summary>
@@ -104,10 +126,31 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalMediator = new Mock<IProposalMediator>();
             this.approvalsLoader = new Mock<IApprovalsLoader>();
             this.contractsLoader = new Mock<IContractsLoader>();
+            this.emailer = new Mock<IPtmEmailer>();
+            IES.Common.classes.GenBOEUnityContainer.Container.RegisterInstance(this.emailer.Object);
+            this.retriever = new Mock<IRetriever>();
+            IES.Common.classes.GenBOEUnityContainer.Container.RegisterInstance(this.retriever.Object);
+            this.proposalLogic = new Mock<ProposalControllerLogic>(this.securityAccess.Object, this.proposalLoader.Object, It.IsAny<IValidationMethods>(), this.proposalMediator.Object, this.userMapper.Object,
+                this.objectFactory.Object, It.IsAny<IOrgStructureDataMapper>(), It.IsAny<IProposalPermissionMediator>(), It.IsAny<ISecurityInformation>(), It.IsAny<ICacheDataLoader>(),
+                It.IsAny<IPickListMapper>(), It.IsAny<IUserLoader>(), this.approvalsLoader.Object, this.proposalChecklistLoader.Object, this.checklistMediator.Object, It.IsAny<IWorkspaceDTODataLoader>(),
+                It.IsAny<IPermissionsDTODataLoader>(), this.emailer.Object);
+            this.approvalsLogic = new Mock<ApprovalsControllerLogic>(this.securityAccess.Object, this.proposalLoader.Object, this.userMapper.Object, It.IsAny<IUserLoader>(), this.emailer.Object,
+                this.objectFactory.Object, this.approvalsLoader.Object, this.proposalMediator.Object, this.proposalChecklistLoader.Object, this.checklistMediator.Object, It.IsAny<ApprovalEmailer>(),
+                It.IsAny<IAttachmentLoader>(), It.IsAny<IActiveDirectoryUtilities>());
 
-            return new ContractsControllerLogic(this.securityAccess.Object, this.proposalLoader.Object, this.userMapper.Object,
+            ContractsControllerLogic logic;
+            try
+            {
+                logic = new ContractsControllerLogic(this.securityAccess.Object, this.proposalLoader.Object, this.userMapper.Object,
                 this.objectFactory.Object, this.approvalsLoader.Object, this.proposalChecklistLoader.Object, this.checklistMediator.Object,
-                this.proposalMediator.Object, this.contractsLoader.Object);
+                this.proposalMediator.Object, this.contractsLoader.Object, this.emailer.Object, this.proposalLogic.Object, this.approvalsLogic.Object);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return logic;
         }
 
         /// <summary>
@@ -166,7 +209,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.contractsLoader.Setup(x => x.GetContractForProposal(proposalId)).Returns(contractDto);
 
             ContractsModelView contractsModelView = null;
-            contractsModelView = sut.GetDataForProposalContracts(proposalId);
+            contractsModelView = sut.GetDataForProposalContracts(proposalId).Result;
 
             Assert.IsNotNull(contractsModelView);
             Assert.IsTrue(contractsModelView.ProposalId > 0);
@@ -222,6 +265,129 @@ namespace GenTRAC.Tests.ActionLogic
             ContractsControllerLogic sut = this.CreateSystem();
 
             Tuple<DateTime?, decimal?> getRomDateAndValue = sut.GetRomDateAndValue(-1);
+        }
+
+        /// <summary>
+        /// Test for setting the proposal status to Lost
+        /// </summary>
+        /// <returns>Async Task</returns>
+        [TestMethod]
+        public async Task SetProposalLostTest()
+        {
+            ContractsControllerLogic sut = this.CreateSystem();
+            FullProposal fp = TestProposalHelper.GetFullProposalForMocks(1, ProposalStatus.PendingCertification);
+            List<string> errors = new List<string>();
+
+            this.retriever.Setup(x => x.GetProposalPermissions(It.IsAny<int>())).Returns(TestProposalHelper.GetPermissionsForMocks());
+            this.retriever.Setup(x => x.GetCurrentUser()).Returns(TestProposalHelper.GetLeadContractsUserForMocks());
+            this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
+            this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
+            this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
+            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
+                        this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
+
+            await sut.SetProposalLost(fp.Id, errors);
+
+            Assert.IsTrue(fp.ProposalStatus == ProposalStatus.Lost);
+        }
+
+        /// <summary>
+        /// Tests to ensure setting "Lost" fails when not a Contracts PoC (or Backup)
+        /// </summary>
+        /// <returns>Async Task</returns>
+        [TestMethod]
+        public async Task SetProposalLostInsufficientAccessTest()
+        {
+            ContractsControllerLogic sut = this.CreateSystem();
+            FullProposal fp = TestProposalHelper.GetFullProposalForMocks(1, ProposalStatus.PendingCertification);
+            List<string> errors = new List<string>();
+
+            this.retriever.Setup(x => x.GetProposalPermissions(It.IsAny<int>())).Returns(TestProposalHelper.GetPermissionsForMocks());
+            this.retriever.Setup(x => x.GetCurrentUser()).Returns(TestProposalHelper.GetLeadEstimatorUserForMocks());
+            this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
+            this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
+            this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
+            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
+            this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
+
+            await sut.SetProposalLost(fp.Id, errors);
+
+            Assert.AreEqual(errors.First(), "Insufficient permissions to set proposal as Lost.");
+        }
+
+        /// <summary>
+        /// Tests to ensure setting "Lost" fails when in incorrect status
+        /// </summary>
+        /// <returns>Async Task</returns>
+        [TestMethod]
+        public async Task SetProposalLostWrongStatusTest()
+        {
+            ContractsControllerLogic sut = this.CreateSystem();
+            FullProposal fp = TestProposalHelper.GetFullProposalForMocks(1, ProposalStatus.NoBid);
+            List<string> errors = new List<string>();
+
+            this.retriever.Setup(x => x.GetProposalPermissions(It.IsAny<int>())).Returns(TestProposalHelper.GetPermissionsForMocks());
+            this.retriever.Setup(x => x.GetCurrentUser()).Returns(TestProposalHelper.GetLeadContractsUserForMocks());
+            this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
+            this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
+            this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
+            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
+            this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
+
+            await sut.SetProposalLost(fp.Id, errors);
+
+            Assert.AreEqual(errors.First(), "The proposal status must be in 'Pending Certification' or 'Pending Contractual Award' in order to set it to 'Proposal Lost'");
+        }
+
+        /// <summary>
+        /// Test for setting the proposal status to No Bid
+        /// </summary>
+        [TestMethod]
+        public void SetProposalNoBidTest()
+        {
+            ContractsControllerLogic sut = this.CreateSystem();
+            FullProposal fp = TestProposalHelper.GetFullProposalForMocks(1, ProposalStatus.PendingCertification);
+            List<string> errors = new List<string>();
+
+            this.retriever.Setup(x => x.GetProposalPermissions(It.IsAny<int>())).Returns(TestProposalHelper.GetPermissionsForMocks());
+            this.retriever.Setup(x => x.GetCurrentUser()).Returns(TestProposalHelper.GetLeadContractsUserForMocks());
+            this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
+            this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
+            this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
+            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
+            this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
+
+            sut.SetProposalToNoBid(fp.Id);
+
+            Assert.IsTrue(fp.ProposalStatus == ProposalStatus.NoBid);
+        }
+
+        /// <summary>
+        /// Test for reverting the proposal status from No Bid
+        /// </summary>
+        [TestMethod]
+        public void SetProposalRevertNoBidTest()
+        {
+            ContractsControllerLogic sut = this.CreateSystem();
+            FullProposal fp = TestProposalHelper.GetFullProposalForMocks(1, ProposalStatus.NoBid);
+            List<string> errors = new List<string>();
+
+            this.retriever.Setup(x => x.GetProposalPermissions(It.IsAny<int>())).Returns(TestProposalHelper.GetPermissionsForMocks());
+            this.retriever.Setup(x => x.GetCurrentUser()).Returns(TestProposalHelper.GetLeadContractsUserForMocks());
+            this.proposalLoader.Setup(x => x.GetById(1)).Returns(TestProposalHelper.GetProposalDtoForMocks(1));
+            this.proposalMediator.Setup(x => x.SaveProposal(It.IsAny<FullProposal>()));
+            this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
+            this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
+            this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
+            this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
+
+            sut.RevertProposalFromNoBid(fp.Id);
+
+            Assert.IsTrue(fp.ProposalStatus == ProposalStatus.InProgress);
         }
 
         /// <summary>
