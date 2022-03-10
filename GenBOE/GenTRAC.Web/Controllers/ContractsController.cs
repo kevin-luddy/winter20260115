@@ -87,6 +87,13 @@ namespace GenTRAC.Web.Controllers
                     scope.Complete();
                     response.IsSuccessful = true;
                 }
+
+                // email outside of transaction to ensure email send failure doesn't roll-back transaction.
+                if (response.IsSuccessful)
+                {
+                    // send email notifications (no await purposely)
+                    this.contractsLogic.SendContractsStatusChangeEmails(proposalId);
+                }
             }
 
             return this.Json(response);

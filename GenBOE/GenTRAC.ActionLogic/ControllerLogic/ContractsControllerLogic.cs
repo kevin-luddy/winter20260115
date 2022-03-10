@@ -214,7 +214,7 @@ namespace GenTRAC.ActionLogic
                 }
 
                 // return control and send email async
-                SendContractsStatusChangeEmails(proposalId);
+                this.SendContractsStatusChangeEmails(proposalId);
             }
         }
 
@@ -328,7 +328,7 @@ namespace GenTRAC.ActionLogic
         /// Sends templated email regarding the Lost status to the estimators
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
-        private async Task SendContractsStatusChangeEmails(int proposalId)
+        public async Task SendContractsStatusChangeEmails(int proposalId)
         {
             FullProposal fullProposal = await GetFullProposalAsync(proposalId);
             EmailInformationDto emailInfo = new EmailInformationDto();
@@ -405,9 +405,6 @@ namespace GenTRAC.ActionLogic
                 fullProposal.NoBidDate = DateTime.Now;
                 fullProposal.Updateable = IES.Common.UpdateType.Upsert;
                 this.ProposalMediator.SaveProposal(fullProposal);
-
-                // send email notifications (no await purposely)
-                this.SendContractsStatusChangeEmails(proposalId);
             }
         }
 
