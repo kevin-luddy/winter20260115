@@ -211,5 +211,25 @@ namespace GenTRAC.ActionLogic.ModelView
         /// Should the "Set Lost" button be enabled
         /// </summary>
         public bool SetLostButtonEnabled { get; set; }
+
+        /// <summary>
+        /// Should the "No Bid" button be enabled
+        /// </summary>
+        public bool NoBidButtonEnabled { get; set; }
+
+        /// <summary>
+        /// Has No Bid been set?
+        /// </summary>
+        public bool IsNoBid { get; set; }
+
+        /// <summary>
+        /// Does user have access to set No Bid?
+        /// </summary>
+        public bool HasAccessToSetNoBid { get; set; }
+
+        /// <summary>
+        /// Does user have access to set Lost?
+        /// </summary>
+        public bool HasAccessToSetLost { get; set; }
     }
 }

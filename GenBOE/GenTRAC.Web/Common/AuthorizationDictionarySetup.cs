@@ -204,8 +204,6 @@ namespace GenTRAC.Web.Common
             AddActionToController(WebConstants.Action.SAVE_APPROVAL, PtmSecurityPage.Approvals, SecurityAuthorization.ReadUpdate, approvalsControllerActions);
             AddActionToController(WebConstants.Action.RESET_WORKFLOW, PtmSecurityPage.Proposal, SecurityAuthorization.ReadUpdate, approvalsControllerActions);
             AddActionToController(WebConstants.Action.VALIDATE_COVER_SHEET_APPROVER, PtmSecurityPage.Approvals, SecurityAuthorization.Read, approvalsControllerActions);
-            AddActionToController(WebConstants.Action.SET_NO_BID, PtmSecurityPage.Approvals, SecurityAuthorization.ReadUpdate, approvalsControllerActions);
-            AddActionToController(WebConstants.Action.REVERT_NO_BID, PtmSecurityPage.Approvals, SecurityAuthorization.ReadUpdate, approvalsControllerActions);
             result.Add(WebConstants.Controller.APPROVALS, approvalsControllerActions);
         }
 
@@ -249,6 +247,8 @@ namespace GenTRAC.Web.Common
             AddActionToController(WebConstants.Action.GET_SELECTED_ROM_DATA, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsActions);
             AddActionToController(WebConstants.Action.SAVE_CONTRACT, PtmSecurityPage.Contracts, SecurityAuthorization.CreateReadUpdateDelete, contractsActions);
             AddActionToController(WebConstants.Action.SET_PROPOSAL_LOST, PtmSecurityPage.Contracts, SecurityAuthorization.ReadUpdate, contractsActions);
+            AddActionToController(WebConstants.Action.SET_NO_BID, PtmSecurityPage.Contracts, SecurityAuthorization.ReadUpdate, contractsActions);
+            AddActionToController(WebConstants.Action.REVERT_NO_BID, PtmSecurityPage.Contracts, SecurityAuthorization.ReadUpdate, contractsActions);
 
             result.Add(WebConstants.Controller.CONTRACTS, contractsActions);
         }

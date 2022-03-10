@@ -55,7 +55,12 @@ namespace GenTRAC.ActionLogic
         /// <summary>
         /// Injected Proposal Logic
         /// </summary>
-        private ProposalControllerLogic proposalLogic;
+        private readonly ProposalControllerLogic proposalLogic;
+
+        /// <summary>
+        /// Injected Approvals Logic service
+        /// </summary>
+        private readonly ApprovalsControllerLogic approvalsLogic;
 
         #endregion
 
@@ -73,6 +78,7 @@ namespace GenTRAC.ActionLogic
         /// <param name="contractsLoader">Contracts Loader</param>
         /// <param name="inEmailer">Emailer</param>
         /// <param name="inProposalLogic">Proposal logic</param>
+        /// <param name="inApprovalsLogic">Injected Approvals Logic</param>
         public ContractsControllerLogic(
             ISecurityAccess securityAccess,
             IProposalLoader proposalLoader,
@@ -84,12 +90,14 @@ namespace GenTRAC.ActionLogic
             IProposalMediator proposalMediator,
             IContractsLoader contractsLoader,
             IPtmEmailer inEmailer,
-            ProposalControllerLogic inProposalLogic)
+            ProposalControllerLogic inProposalLogic,
+            ApprovalsControllerLogic inApprovalsLogic)
             : base(securityAccess, proposalLoader, userMapper, objectFactory, approvalsLoader, proposalChecklistLoader, checklistMediator, proposalMediator)
         {
             this.contractsLoader = contractsLoader;
             this.emailer = inEmailer;
             this.proposalLogic = inProposalLogic;
+            this.approvalsLogic = inApprovalsLogic;
         }
 
         /// <summary>
@@ -104,10 +112,17 @@ namespace GenTRAC.ActionLogic
                 throw new ArgumentNullException(nameof(proposalId));
             }
 
+            FullProposal fullProposal = await GetFullProposalAsync(proposalId);
             ContractsDto dto = this.contractsLoader.GetContractForProposal(proposalId);
             ContractsModelView model = ConvertContractsDtoToModel(dto);
+
+            // populate calculated properties
             model.EppOptions = this.GetEppSelectOptions(model.EppDelegationAuthority);
-            model.SetLostButtonEnabled = await this.IsValidForLostStatus(proposalId);
+            model.SetLostButtonEnabled = this.IsValidForLostStatus(dto, fullProposal);
+            model.NoBidButtonEnabled = IsValidForNoBidStatus(fullProposal);
+            model.IsNoBid = fullProposal.ProposalStatus == ProposalStatus.NoBid;
+            model.HasAccessToSetNoBid = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions) || this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
+            model.HasAccessToSetLost = ValidForLostProposalStatusSave(fullProposal, null);
 
             // Load additional values
             model.PreviouslySubmittedRoms = this.ProposalLoader.GetRomProposalOptions(model.PreviouslySubmittedROM);
@@ -151,7 +166,7 @@ namespace GenTRAC.ActionLogic
 
             int? contractId = null;
 
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ContractsControllerLogic.SaveContract", this.log))
+            using (StopwatchTimer sw = new StopwatchTimer("ContractsControllerLogic.SaveContract", this.log))
             {
                 // TODO: this.ValidateContract(model, false);
 
@@ -185,7 +200,9 @@ namespace GenTRAC.ActionLogic
         /// <returns></returns>
         public async Task SetProposalLost(int proposalId, List<string> messages)
         {
-            if (await this.CanUserSaveLostProposalStatus(proposalId, messages))
+            FullProposal fullProposal = await GetFullProposalAsync(proposalId);
+
+            if (this.ValidForLostProposalStatusSave(fullProposal, messages))
             {
                 using (StopwatchTimer sw = new StopwatchTimer("ContractsControllerLogic.SetProposalLost", this.log))
                 {
@@ -197,8 +214,8 @@ namespace GenTRAC.ActionLogic
                 }
 
                 // return control and send email async
-                SendProposalLostEmail(proposalId);
-            }            
+                this.SendContractsStatusChangeEmails(proposalId);
+            }
         }
 
         /// <summary>
@@ -281,13 +298,12 @@ namespace GenTRAC.ActionLogic
         /// Determines whether the proposal is in a valid state to have "Set Lost" status set.
         /// </summary>
         /// <param name="proposalId">Proposal Id to be considered</param>
+        /// <param name="fullProposal">The full proposal object</param>
         /// <returns>true if valid for Lost status</returns>
-        private async Task<bool> IsValidForLostStatus(int proposalId)
+        private bool IsValidForLostStatus(ContractsDto contractInfo, FullProposal fullProposal)
         {
             bool valid = false;
-            FullProposal fullProposal = await GetFullProposalAsync(proposalId);
-            ContractsDto contractInfo = this.contractsLoader.GetContractForProposal(proposalId);
-
+            
             if ((fullProposal.ProposalStatus == ProposalStatus.PendingCertification || fullProposal.ProposalStatus == ProposalStatus.PendingAward)
                 && (!contractInfo.LmWon.HasValue || !contractInfo.LmWon.Value)) // null or false
             {
@@ -298,18 +314,42 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
+        /// Determines whether the proposal is in a valid state to have "No Bid" status set. Can only be set if in In Progress,
+        /// Pending Certification, or Pending Contractual Award statuses.
+        /// </summary>
+        /// <param name="fullProposal">The full proposal object</param>
+        /// <returns>True if in a valid status</returns>
+        private bool IsValidForNoBidStatus(FullProposal fullProposal)
+        {
+            return fullProposal.ProposalStatus == ProposalStatus.InProgress || fullProposal.ProposalStatus == ProposalStatus.PendingCertification || fullProposal.ProposalStatus == ProposalStatus.PendingAward;
+        }
+
+        /// <summary>
         /// Sends templated email regarding the Lost status to the estimators
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
-        private async Task SendProposalLostEmail(int proposalId)
+        public async Task SendContractsStatusChangeEmails(int proposalId)
         {
             FullProposal fullProposal = await GetFullProposalAsync(proposalId);
             EmailInformationDto emailInfo = new EmailInformationDto();
             emailInfo.ProposalId = proposalId;
 
             EmailContent emailContent = new EmailContent();
-            emailContent.Body = Emails.STATUS_LOST_SET.Body;
-            emailContent.Subject = Emails.STATUS_LOST_SET.Subject;
+            if (fullProposal.ProposalStatus == ProposalStatus.Lost)
+            {
+                emailContent.Body = Emails.STATUS_LOST_SET.Body;
+                emailContent.Subject = Emails.STATUS_LOST_SET.Subject;
+            }
+            else if (fullProposal.ProposalStatus == ProposalStatus.NoBid)
+            {
+                emailContent.Body = Emails.STATUS_NO_BID_SET.Body;
+                emailContent.Subject = Emails.STATUS_NO_BID_SET.Subject;
+            }
+            else
+            {
+                log.Error($"SendContractsStatusChangeEmails was called on a proposal in {fullProposal.ProposalStatus.GetDescription<ProposalStatus>()} status.");
+                throw new InvalidOperationException("Attempting to send an email for an invalid status.");
+            }
 
             // Set data to be used in the replacements
             string[] subjectReplaceTokens = new string[] { fullProposal.ProposalTitle };
@@ -330,10 +370,9 @@ namespace GenTRAC.ActionLogic
         /// Loads the Full Proposal data using thread pool versus the main
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
-        private async Task<FullProposal> GetFullProposalAsync(int proposalId)
+        public async Task<FullProposal> GetFullProposalAsync(int proposalId)
         {
-            Task<FullProposal> task = Task<FullProposal>.Run(() => this.GetFullProposalDto(proposalId));            
-            return task.Result;
+            return await Task.Run<FullProposal>(() => this.GetFullProposalDto(proposalId));
         }
 
         /// <summary>
@@ -342,7 +381,7 @@ namespace GenTRAC.ActionLogic
         /// <param name="proposalId">ID of Proposal</param>
         private void SetProposalStatusToLost(int proposalId)
         {
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ContractsControllerLogic.SetProposalStatusToLost", this.log))
+            using (StopwatchTimer sw = new IES.Common.StopwatchTimer("ContractsControllerLogic.SetProposalStatusToLost", this.log))
             {
                 FullProposal fullProposal = GetFullProposalAsync(proposalId).Result;
                 fullProposal.ProposalStatus = ProposalStatus.Lost;
@@ -353,35 +392,115 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
-        /// Checks permissions and status to ensure that the proposal is valid for setting "Lost"
+        /// Set proposal to No Bid status
+        /// </summary>
+        /// <param name="proposalId">ID of Proposal</param>
+        public void SetProposalToNoBid(int proposalId)
+        {
+            using (StopwatchTimer sw = new IES.Common.StopwatchTimer("ContractsControllerLogic.SetProposalToNoBid", this.log))
+            {
+                // set status no bid
+                FullProposal fullProposal = GetFullProposalAsync(proposalId).Result;
+                fullProposal.ProposalStatus = ProposalStatus.NoBid;
+                fullProposal.NoBidDate = DateTime.Now;
+                fullProposal.Updateable = IES.Common.UpdateType.Upsert;
+                this.ProposalMediator.SaveProposal(fullProposal);
+            }
+        }
+
+        /// <summary>
+        /// Revert the Proposal from No Bid back to In Progress
+        /// </summary>
+        /// <param name="proposalId">ID of Proposal to revert</param>
+        public void RevertProposalFromNoBid(int proposalId)
+        {
+            using (StopwatchTimer sw = new IES.Common.StopwatchTimer("ContractsControllerLogic.RevertProposalFromNoBid", this.log))
+            {
+                // set status in progress
+                FullProposal proposal = this.GetFullProposalDto(proposalId);
+                proposal.ProposalStatus = ProposalStatus.InProgress;
+                proposal.NoBidDate = null;
+                proposal.Updateable = IES.Common.UpdateType.Upsert;
+                this.ProposalMediator.SaveProposal(proposal);
+            }
+
+            // reset workflow
+            this.approvalsLogic.ResetWorkflow(proposalId);
+        }
+
+        /// <summary>
+        /// Checks permissions and status to ensure that the proposal is valid for setting "Lost" status.
+        /// a) Must have the primary or backup contracts role or be an administrator
+        /// b) The status must currently be Pending Certification or Pending Contractual Award.
         /// </summary>
         /// <param name="proposalId">Proposal ID</param>
         /// <param name="messages">Response object to be returned</param>
         /// <returns>true if valid for setting the status</returns>
-        private async Task<bool> CanUserSaveLostProposalStatus(int proposalId, List<string> messages)
+        public bool ValidForLostProposalStatusSave(FullProposal fullProposal, List<string> messages)
         {
-            messages = messages ?? new List<string>();
-            bool isValid = true;
+            _ = fullProposal ?? throw new ArgumentNullException(nameof(fullProposal));
 
-            FullProposal fullProposal = await GetFullProposalAsync(proposalId);
+            bool isValid = true;            
 
-            // check permissions? (Is this right?)
-            bool isLeadOrBackup = fullProposal.Permissions.Any(x => (x.Role == PtmRole.ContractsPOC || x.Role == PtmRole.BackupContractsPOC) && x.UserId == fullProposal.CurrentUser.Id);
+            bool isLeadOrBackupContractsUser = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions);
             bool isAdmin = this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
 
-            if (!isLeadOrBackup && !isAdmin)
+            if (!isLeadOrBackupContractsUser && !isAdmin)
             {
-                messages.Add("Insufficient permissions to set proposal as Lost.");
+                messages?.Add("Insufficient permissions to set proposal as Lost.");
                 isValid = false;
             }
 
             if (fullProposal.ProposalStatus != ProposalStatus.PendingCertification && fullProposal.ProposalStatus != ProposalStatus.PendingAward)
             {
-                messages.Add("The proposal status must be in 'Pending Certification' or 'Pending Contractual Award' in order to set it to 'Proposal Lost'");
+                messages?.Add("The proposal status must be in 'Pending Certification' or 'Pending Contractual Award' in order to set it to 'Proposal Lost'");
                 isValid = false;
             }
 
             return isValid;
+        }
+
+        /// <summary>
+        /// Ensures the proposal is in an acceptable status and the user has permission to set "No Bid"
+        /// </summary>
+        /// <param name="fullProposal">Full proposal object</param>
+        /// <param name="messages">List to which error messages will be added. If null, ignored</param>
+        /// <returns>true if the prosal is valid for the No Bid status</returns>
+        /// <exception cref="ArgumentNullException">if Full Proposal is null</exception>
+        public bool ValidForNoBidProposalStatusSave(FullProposal fullProposal, List<string> messages)
+        {
+            _ = fullProposal ?? throw new ArgumentNullException(nameof(fullProposal));
+
+            bool isValid = true;
+
+            bool isLeadOrBackupContractsUser = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions);
+            bool isAdmin = this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
+
+            if (!isLeadOrBackupContractsUser && !isAdmin)
+            {
+                messages?.Add("Insufficient permissions to set proposal as No Bid.");
+                isValid = false;
+            }
+
+            ProposalStatus currentStatus = fullProposal.ProposalStatus;
+            if (currentStatus != ProposalStatus.InProgress && currentStatus != ProposalStatus.PendingAward && currentStatus != ProposalStatus.PendingCertification)
+            {
+                messages?.Add($"{currentStatus} is not a valid status for setting No Bid.");
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Is the userId in the proposal's permissions as a Contracts administrator (lead/back-up)
+        /// </summary>
+        /// <param name="userId">User Id</param>
+        /// <param name="propPermissions">Permissions for the proposal</param>
+        /// <returns>True if the user is a Contracts admin</returns>
+        private bool IsContractsUser(int userId, ICollection<ProposalPermissionDto> propPermissions)
+        {
+            return propPermissions.Any(x => (x.Role == PtmRole.ContractsPOC || x.Role == PtmRole.BackupContractsPOC) && x.UserId == userId);
         }
 
         #endregion Contract Validate / Save

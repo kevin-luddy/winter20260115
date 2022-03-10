@@ -87,25 +87,78 @@
                 contentType: 'application/json; charset=utf-8',
                 data: JSON.stringify(data),
                 success: function (response) {
-                    if (typeof (response.Status) !== 'undefined') {
-                        if (response.Status === true) {
+                    if (typeof (response.IsSuccessful) !== 'undefined') {
+                        if (response.IsSuccessful === true) {
                             ContractsIndexWidget.SaveSuccess(@ViewBag.proposalid);
                         } else {
-                            console.log(response);
-                            if (typeof (response.Messages) !== 'undefined' && response.Messages.length > 0) {
-                                response.Messages.forEach(message => {
-                                    $('#contractsInfoForm .validation-box').append('<li>' + message + '</li>');
-                                });
-                                modalWindow.dialog('close');
-                                $('#confirm-modal-input').val('');
-                                $('#confirm-modal-submit').text('Set Contract Lost');
-                                $('#confirm-modal-input').trigger('keyup');
-                                $('#contractsInfoForm .validation-box').show();
-                            }
+                            processErrors(response);
                         }
                     }
                 }
             });
+        };
+
+        ContractsInfoWidget.setNoBid = function () {
+            GenSession.confirmDialog("Confirm No Bid",
+                "If this Proposal is set as No Bid, it will no longer be able to be used to create new BOEs and RDSB records. Existing BOEs and RDSB records will not be affected. Are you sure you wish to continue?",
+                function () {
+                    $.ajax({
+                        type: 'POST',
+                        url: GenSession.CreateUrl({
+                            controller: '@WebConstants.Controller.CONTRACTS',
+                            action: '@WebConstants.Action.SET_NO_BID',
+                            id: '@ViewBag.proposalid'
+                        }),
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (response) {
+                            if (typeof (response.IsSuccessful) !== 'undefined') {
+                                if (response.IsSuccessful) {
+                                    ContractsIndexWidget.SaveSuccess();
+                                } else {
+                                    processErrors(response);
+                                }
+                            }
+                        }
+                    });
+            }, null);
+        };
+
+        ContractsInfoWidget.processErrors(response) = function () {
+            if (typeof (response.Messages) !== 'undefined' && response.Messages.length > 0) {
+                response.Messages.forEach(message => {
+                    $('#contractsInfoForm .validation-box').append('<li>' + message + '</li>');
+                });
+                modalWindow.dialog('close');
+                $('#confirm-modal-input').val('');
+                $('#confirm-modal-submit').text('Set Contract Lost');
+                $('#confirm-modal-input').trigger('keyup');
+                $('#contractsInfoForm .validation-box').show();
+            }
+        };
+
+        ContractsInfoWidget.revertNoBid = function () {
+            GenSession.confirmDialog("Confirm Revert No Bid",
+                "If this Proposal is reverted from No Bid, the approval process will be reset. Are you sure you wish to continue?",
+                function () {
+                    $.ajax({
+                        type: 'POST',
+                        url: GenSession.CreateUrl({
+                            controller: '@WebConstants.Controller.CONTRACTS',
+                            action: '@WebConstants.Action.REVERT_NO_BID',
+                            id: '@ViewBag.proposalid'
+                        }),
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (response) {
+                            if (typeof (response.IsSuccessful) !== 'undefined') {
+                                if (response.IsSuccessful) {
+                                    ContractsIndexWidget.SaveSuccess();
+                                } else {
+                                    processErrors(response);
+                                }
+                            }
+                        }
+                    });
+            }, null);
         };
     });
 
@@ -146,7 +199,18 @@
     
     <div class="module-content-data expanded-content position-relative">
         <div class="button-right-container">
-            <button id="proposal-lost" type="button" class="ies" @(Model.SetLostButtonEnabled ? "" : "disabled")>Proposal Lost</button>
+            @if (Model.HasAccessToSetNoBid)
+            {
+                if (Model.IsNoBid)
+                {
+                    <button type="button" class="ies" title="Revert the status of this Proposal to In Progress" onclick="ContractsInfoWidget.revertNoBid()">Revert from No Bid to In Progress</button>
+                }
+                else
+                {
+                    <button type="button" class="ies" title="Mark this Proposal as No Bid" onclick="ContractsInfoWidget.setNoBid()" @(Model.NoBidButtonEnabled ? string.Empty : "disabled")>Mark Proposal as No Bid</button>
+                }
+            }
+            <button id="proposal-lost" type="button" class="ies" @(Model.SetLostButtonEnabled ? string.Empty : "disabled")>Proposal Lost</button>
         </div>
         @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM, name = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM }))
         {

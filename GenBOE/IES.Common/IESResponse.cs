@@ -17,7 +17,7 @@ namespace IES.Common
         /// <summary>
         /// True if the request succeeded, false otherwise.
         /// </summary>
-        public bool Status { get; set; }
+        public bool IsSuccessful { get; set; }
 
         /// <summary>
         /// Error or other informational messages
