@@ -1426,7 +1426,7 @@ namespace GenTRAC.ActionLogic
         /// <param name="proposalId">Proposal Id.  Can be null.</param>
         /// <param name="isNewRevision">Whether creating a new revision</param>
         /// <returns>Proposal Approvals Model View</returns>
-        public ProposalApprovalsModelView GetDataForProposalApprovals(int? proposalId, bool isNewRevision)
+        public virtual ProposalApprovalsModelView GetDataForProposalApprovals(int? proposalId, bool isNewRevision)
         {
             ProposalApprovalsModelView model = new ProposalApprovalsModelView();
 
@@ -1536,7 +1536,7 @@ namespace GenTRAC.ActionLogic
         /// </summary>
         /// <param name="proposalId">Proposal Id.  Can be null.</param>
         /// <returns>Proposal User Information Model View</returns>
-        public ProposalUserInformationModelView GetDataForProposalUserInformation(int? proposalId)
+        public virtual ProposalUserInformationModelView GetDataForProposalUserInformation(int? proposalId)
         {
             ProposalUserInformationModelView model = new ProposalUserInformationModelView();
 
