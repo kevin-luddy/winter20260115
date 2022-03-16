@@ -926,6 +926,188 @@ namespace GenTRAC.Tests.DAL.Loader
         }
 
         /// <summary>
+        /// Determine whether to send ModExecutionDate email reminder
+        /// Case: It has not been 15 days since setting CertificationDate, nothing to send
+        /// </summary>
+        [TestMethod]
+        public void MissingModExecutionDateNoInitialNotificationsTest()
+        {
+            ProposalLoader sut = this.CreateSystem();
+
+            ProposalDto proposal = testData.GetProposal();
+            ContractsDto contractsDto = new ContractsDto();
+
+            using (TransactionScope scope = new TransactionScope())
+            {   
+                proposal.CertificationDate = DateTime.Now;
+                proposal.Updateable = UpdateType.Upsert;
+
+                sut.Save(proposal);
+
+                ContractsLoader contractsLoader = new ContractsLoader();
+                contractsDto.ProposalId = proposal.Id;
+                contractsDto.PreviouslySubmittedROM = 15222; // FK, must exist (TODO: Create)
+                contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
+                contractsDto.Updateable = UpdateType.Upsert;
+                
+                contractsLoader.Save(contractsDto);
+
+                scope.Complete();
+            }
+
+            ICollection<ProposalDto> proposals = sut.GetModExecutedDateMissingNotifications();
+
+            Assert.IsNull(proposals.FirstOrDefault(x => x.Id == proposal.Id));
+        }
+
+        /// <summary>
+        /// Determine whether to send ModExecutionDate email reminder
+        /// Case: It has been 15 days since setting CertificationDate
+        /// and we have not sent the first reminder, Send.
+        /// </summary>
+        [TestMethod]
+        public void MissingModExecutionDateSendInitialNotificationsTest()
+        {
+            ProposalLoader sut = this.CreateSystem();
+
+            ProposalDto proposal = testData.GetProposal();
+            ContractsDto contractsDto = new ContractsDto();
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                proposal.CertificationDate = DateTime.Now.AddDays(-30);
+                proposal.Updateable = UpdateType.Upsert;
+
+                sut.Save(proposal);
+
+                ContractsLoader contractsLoader = new ContractsLoader();
+                contractsDto.ProposalId = proposal.Id;
+                contractsDto.PreviouslySubmittedROM = 15222; // FK, must exist (TODO: Create)
+                contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
+                contractsDto.Updateable = UpdateType.Upsert;
+
+                contractsLoader.Save(contractsDto);
+
+                scope.Complete();
+            }
+
+            ICollection<ProposalDto> proposals = sut.GetModExecutedDateMissingNotifications();
+
+            Assert.IsNotNull(proposals.FirstOrDefault(x => x.Id == proposal.Id));
+        }
+
+        /// <summary>
+        /// Determine whether to send ModExecutionDate email reminder
+        /// Case: It has been 15 days since setting CertificationDate,
+        /// and the last emailed date is greater than 7 days.  Send.
+        /// </summary>
+        [TestMethod]
+        public void MissingModExecutionDateReSendNotificationsTest()
+        {
+            ProposalLoader sut = this.CreateSystem();
+
+            ProposalDto proposal = testData.GetProposal();
+            ContractsDto contractsDto = new ContractsDto();
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                proposal.CertificationDate = DateTime.Now.AddDays(-30);
+                proposal.ModExecutedLastEmailed = DateTime.Now.AddDays(-8);
+                proposal.Updateable = UpdateType.Upsert;
+
+                sut.Save(proposal);
+
+                ContractsLoader contractsLoader = new ContractsLoader();
+                contractsDto.ProposalId = proposal.Id;
+                contractsDto.PreviouslySubmittedROM = 15222; // FK, must exist (TODO: Create)
+                contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
+                contractsDto.Updateable = UpdateType.Upsert;
+
+                contractsLoader.Save(contractsDto);
+
+                scope.Complete();
+            }
+
+            ICollection<ProposalDto> proposals = sut.GetModExecutedDateMissingNotifications();
+
+            Assert.IsNotNull(proposals.FirstOrDefault(x => x.Id == proposal.Id));
+        }
+
+        /// <summary>
+        /// Determine whether to send ModExecutionDate email reminder
+        /// Case: It has been 15 days since setting CertificationDate,
+        /// and the last emailed date is less than 7 days.  No send.
+        /// </summary>
+        [TestMethod]
+        public void MissingModExecutionDateNoReSendNotificationTest()
+        {
+            ProposalLoader sut = this.CreateSystem();
+
+            ProposalDto proposal = testData.GetProposal();
+            ContractsDto contractsDto = new ContractsDto();
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                proposal.CertificationDate = DateTime.Now.AddDays(-30);
+                proposal.ModExecutedLastEmailed = DateTime.Now.AddDays(-6);
+                proposal.Updateable = UpdateType.Upsert;
+
+                sut.Save(proposal);
+
+                ContractsLoader contractsLoader = new ContractsLoader();
+                contractsDto.ProposalId = proposal.Id;
+                contractsDto.PreviouslySubmittedROM = 15222; // FK, must exist (TODO: Create)
+                contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
+                contractsDto.Updateable = UpdateType.Upsert;
+
+                contractsLoader.Save(contractsDto);
+
+                scope.Complete();
+            }
+
+            ICollection<ProposalDto> proposals = sut.GetModExecutedDateMissingNotifications();
+
+            Assert.IsNull(proposals.FirstOrDefault(x => x.Id == proposal.Id));
+        }
+
+        /// <summary>
+        /// Determine whether to send ModExecutionDate email reminder
+        /// Case: The ModExecutionDate has been set.  No send.
+        /// </summary>
+        [TestMethod]
+        public void ModExecutionDateSendNotNeededTest()
+        {
+            ProposalLoader sut = this.CreateSystem();
+
+            ProposalDto proposal = testData.GetProposal();
+            ContractsDto contractsDto = new ContractsDto();
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                proposal.CertificationDate = DateTime.Now.AddDays(-30);
+                proposal.ModExecutedLastEmailed = DateTime.Now.AddDays(-8);
+                proposal.Updateable = UpdateType.Upsert;
+
+                sut.Save(proposal);
+
+                ContractsLoader contractsLoader = new ContractsLoader();
+                contractsDto.ProposalId = proposal.Id;
+                contractsDto.PreviouslySubmittedROM = 15222; // FK, must exist (TODO: Create)
+                contractsDto.ModCompletedDate = DateTime.Now;
+                contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
+                contractsDto.Updateable = UpdateType.Upsert;
+
+                contractsLoader.Save(contractsDto);
+
+                scope.Complete();
+            }
+
+            ICollection<ProposalDto> proposals = sut.GetModExecutedDateMissingNotifications();
+
+            Assert.IsNull(proposals.FirstOrDefault(x => x.Id == proposal.Id));
+        }
+
+        /// <summary>
         /// Tests GetWorkflowCompletedLineText for In Progress proposals
         /// </summary>
         [TestMethod]

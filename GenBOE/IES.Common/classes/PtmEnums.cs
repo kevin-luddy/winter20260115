@@ -1246,7 +1246,12 @@ namespace IES.Common
         /// <summary>
         /// The proposal status has been set to "Lost"
         /// </summary>
-        LostStatusSet
+        LostStatusSet,
+
+        /// <summary>
+        /// Reminder email that the Mod Execution Date is missing
+        /// </summary>
+        ModExecutionDateRequired
     }
 
     /// <summary>

@@ -192,7 +192,8 @@ namespace GenTRAC.DataBridge.DTO
                             entity.ReasonCertificationNotRequired,
                             entity.OtherReasonComment,
                             ProposalSetupComments = entity.SetupComments,
-                            InformationComments = entity.InformationComments
+                            InformationComments = entity.InformationComments,
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -261,7 +262,8 @@ namespace GenTRAC.DataBridge.DTO
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment,
                             ProposalSetupComments = entity.ProposalSetupComments,
-                            ManageProposalInfoComments = entity.InformationComments
+                            ManageProposalInfoComments = entity.InformationComments,
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
                         }).ToList();
                 }
             }
@@ -567,7 +569,8 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.RevisionOfId,
                             (int?)dtoToUpsert.ReasonCertificationNotRequired,
                             dtoToUpsert.OtherReasonComment,
-                            dtoToUpsert.ProposalSetupComments).FirstOrDefault();
+                            dtoToUpsert.ProposalSetupComments,
+                            dtoToUpsert.ModExecutedLastEmailed).FirstOrDefault();
                     }
                 }
             }
@@ -899,7 +902,8 @@ namespace GenTRAC.DataBridge.DTO
                         entity.ReasonCertificationNotRequired,
                         entity.OtherReasonComment,
                         ProposalSetupComments = entity.SetupComments,
-                        InformationComments = entity.InformationComments
+                        InformationComments = entity.InformationComments,
+                        ModExecutedLastEmailed = entity.ModExecutedLastEmailed
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -968,7 +972,8 @@ namespace GenTRAC.DataBridge.DTO
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment,
                             ProposalSetupComments = entity.ProposalSetupComments,
-                            ManageProposalInfoComments = entity.InformationComments
+                            ManageProposalInfoComments = entity.InformationComments,
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
                         }).ToList();
                 }
             }
@@ -1058,7 +1063,8 @@ namespace GenTRAC.DataBridge.DTO
                         entity.ReasonCertificationNotRequired,
                         entity.OtherReasonComment,
                         ProposalSetupComments = entity.SetupComments,
-                        InformationComments = entity.InformationComments
+                        InformationComments = entity.InformationComments,
+                        ModExecutedLastEmailed = entity.ModExecutedLastEmailed
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1127,7 +1133,8 @@ namespace GenTRAC.DataBridge.DTO
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment,
                             ProposalSetupComments = entity.ProposalSetupComments,
-                            ManageProposalInfoComments = entity.InformationComments
+                            ManageProposalInfoComments = entity.InformationComments,
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
                         }).ToList();
                 }
             }
@@ -1219,7 +1226,8 @@ namespace GenTRAC.DataBridge.DTO
                             entity.ReasonCertificationNotRequired,
                             entity.OtherReasonComment,
                             ProposalSetupComments = entity.SetupComments,
-                            InformationComments = entity.InformationComments
+                            InformationComments = entity.InformationComments,
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1288,7 +1296,8 @@ namespace GenTRAC.DataBridge.DTO
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment,
                             ProposalSetupComments = entity.ProposalSetupComments,
-                            ManageProposalInfoComments = entity.InformationComments
+                            ManageProposalInfoComments = entity.InformationComments,
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
                         }).ToList();
                 }
             }
@@ -1397,7 +1406,8 @@ namespace GenTRAC.DataBridge.DTO
                             entity.ReasonCertificationNotRequired,
                             entity.OtherReasonComment,
                             ProposalSetupComments = entity.SetupComments,
-                            InformationComments = entity.InformationComments
+                            InformationComments = entity.InformationComments,
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1466,9 +1476,111 @@ namespace GenTRAC.DataBridge.DTO
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment,
                             ProposalSetupComments = entity.ProposalSetupComments,
-                            ManageProposalInfoComments = entity.InformationComments
+                            ManageProposalInfoComments = entity.InformationComments,
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
                         }).ToList();
                 }
+            }
+
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Gets the list of proposals that require the Mod Execution Missing email
+        /// </summary>
+        /// <returns>List of proposal DTOs</returns>
+        [DbQuery]
+        public ICollection<ProposalDto> GetModExecutedDateMissingNotifications()
+        {
+            List<ProposalDto> toReturn = new List<ProposalDto>();
+            DateTime lastSentThreshold = DateTime.Now.AddDays(-7);
+            DateTime initialSendThreshold = DateTime.Now.AddDays(-15);
+
+            using (genTRACEntities context = new genTRACEntities())
+            {
+                var data = context.Proposals.GroupJoin(context.ProposalContractsDatas, p => p.ProposalID, c => c.ProposalID, (p, c) => new { p, c })
+                        .SelectMany(prop => prop.c.DefaultIfEmpty(), (prop, cont) => new { Proposals = prop.p, Contracts = cont })
+                        .Where(x => (x.Proposals.CertificationDate != null
+                                        && x.Contracts.ModCompletedDate == null
+                                        && x.Proposals.ModExecutedLastEmailed == null
+                                        && x.Proposals.CertificationDate <= initialSendThreshold
+                                    ) // initial send logic
+                            || (x.Contracts.ModCompletedDate == null
+                                    && x.Proposals.ModExecutedLastEmailed != null
+                                    && lastSentThreshold >= x.Proposals.ModExecutedLastEmailed)
+                               ) // re-send logic
+                        .ToList();
+
+                toReturn = data.Select(x => new ProposalDto
+                {
+                    Id = x.Proposals.ProposalID,
+                    TrackingNumber = x.Proposals.ProposalTrackingID,
+                    ProposalTitle = x.Proposals.ProposalTitle,
+                    OTISOpportunityID = x.Proposals.OTISOpportunityID,
+                    ProposalStatus = (ProposalStatus)x.Proposals.ProposalStatusID,
+                    UpdateDate = x.Proposals.UpdateDate,
+                    ProposalType = x.Proposals.ProposalTypeID,
+                    ProgramName = x.Proposals.ProgramName,
+                    Customer = x.Proposals.Customer,
+                    ISGSRole = (ISGSRole)x.Proposals.ISGSRoleID,
+                    Request = x.Proposals.RequestTypeID,
+                    ProposalClass = x.Proposals.ProposalClassID,
+                    RFPNumber = x.Proposals.RFPNumber,
+                    LineOfBusinessID = x.Proposals.LineOfBusinessID,
+                    ProgramAreaId = x.Proposals.ProgramAreaID,
+                    ProposalLocation = (ProposalLocation)x.Proposals.ProposalLocationID,
+                    ProposalLocationName = x.Proposals.ProposalLocationName,
+                    PricingTool = (PricingTool)x.Proposals.PricingToolID,
+                    PricingToolName = x.Proposals.PricingToolName,
+                    BoeTool = (BOETool)x.Proposals.BOEToolID,
+                    BoeToolName = x.Proposals.BOEToolName,
+                    DeliveryDate = x.Proposals.AnticipatedDeliveryDate,
+                    RevisedSubmittalDate = x.Proposals.RevisedSubmittalDate,
+                    EstimatedProposalValue = x.Proposals.EstimatedProposalValue,
+                    CustomerType = (CustomerType)x.Proposals.CustomerTypeID,
+                    DateAssigned = x.Proposals.DateAssigned,
+                    DateCreated = x.Proposals.DateCreated,
+                    RFPIssuedDate = x.Proposals.RFPIssuedDate,
+                    RFPReceivedDate = x.Proposals.RFPReceivedDate,
+                    Comments = x.Proposals.Comments,
+                    ContractTypeGroup = x.Proposals.ContractTypeGroupID.HasValue ? x.Proposals.ContractTypeGroupID.Value : 0, // 0 is Not Set
+                    CreatedByUserId = x.Proposals.CreatedByUserID,
+                    IsScheduleProposal = x.Proposals.IsScheduleProposal,
+                    ProgramProposalStatus = x.Proposals.ProgramProposalStatusID.HasValue ? (ProgramProposalStatus)x.Proposals.ProgramProposalStatusID.Value : ProgramProposalStatus.NotSet,
+                    WorkflowStatus = (WorkflowStatus)x.Proposals.WorkflowStatus,
+                    WorkflowStatusLastUpdated = x.Proposals.WorkflowStatusLastUpdated,
+                    LeadEstimatorSignedDate = x.Proposals.LeadEstimatorSignedDT,
+                    LeadEstimatorSignatureComment = x.Proposals.LeadEstimatorSignComment,
+                    CoverSheetApproverSignedDate = x.Proposals.CoverSheetApproverSignedDT,
+                    CoverSheetApproverSignatureComment = x.Proposals.CoverSheetApproverSignComment,
+                    PricingVerifierSignedDate = x.Proposals.PricingVerifierSignedDT,
+                    PricingVerifierSignatureComment = x.Proposals.PricingVerifierSignComment,
+                    IndependentReviewerSignedDate = x.Proposals.IndependentReviewerSignedDT,
+                    IndependentReviewerSignatureComment = x.Proposals.IndependentReviewerSignComment,
+                    LOBEstimatingLeadSignedDate = x.Proposals.LOBEstimatingLeadSignedDT,
+                    LOBEstimatingLeadSignatureComment = x.Proposals.LOBEstimatingLeadSignComment,
+                    ApprovalEmailText = x.Proposals.ApprovalEmailText,
+                    IsCCPDRequired = x.Proposals.CCPDRequired,
+                    IsCostVolumeClassified = x.Proposals.CostVolumeClassified,
+                    DocumentId = x.Proposals.DocumentId,
+                    ForecastedTrackingNumber = x.Proposals.ForecastedTrackingID,
+                    IsForecastProposal = x.Proposals.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                    ForecastEmailSent = x.Proposals.ForecastEmailSent,
+                    ContractTypeIds = x.Proposals.ContractTypeLUs.Select(y => y.ContractTypeID).ToList(),
+                    CostElementTypeIds = x.Proposals.CostElementLUs.Select(y => y.CostElementID).ToList(),
+                    AgreementDate = x.Proposals.AgreementDate,
+                    CertificationDate = x.Proposals.CertificationDate,
+                    CutOffDateUtilization = x.Proposals.CutOffDateUtilization == null ? (CutOffDateUtilization?)null : (CutOffDateUtilization)x.Proposals.CutOffDateUtilization,
+                    CertificationTimelineCompleted = x.Proposals.CertificationTimelineCompleted,
+                    CertificationLastEmailed = x.Proposals.CertificationLastEmailed,
+                    NoBidDate = x.Proposals.NoBidDate,
+                    RevisionOfId = x.Proposals.RevisionOfId,
+                    ReasonCertificationNotRequired = x.Proposals.ReasonCertificationNotRequired == null ? (ReasonCertificationNotRequired?)null : (ReasonCertificationNotRequired)x.Proposals.ReasonCertificationNotRequired,
+                    OtherReasonComment = x.Proposals.OtherReasonComment,
+                    ProposalSetupComments = x.Proposals.SetupComments,
+                    ManageProposalInfoComments = x.Proposals.InformationComments,
+                    ModExecutedLastEmailed = x.Proposals.ModExecutedLastEmailed
+                }).ToList();
             }
 
             return toReturn;
@@ -1560,7 +1672,8 @@ namespace GenTRAC.DataBridge.DTO
                             entity.ReasonCertificationNotRequired,
                             entity.OtherReasonComment,
                             ProposalSetupComments = entity.SetupComments,
-                            InformationComments = entity.InformationComments
+                            InformationComments = entity.InformationComments,
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1629,7 +1742,8 @@ namespace GenTRAC.DataBridge.DTO
                             ReasonCertificationNotRequired = (ReasonCertificationNotRequired?)entity.ReasonCertificationNotRequired,
                             OtherReasonComment = entity.OtherReasonComment,
                             ProposalSetupComments = entity.ProposalSetupComments,
-                            ManageProposalInfoComments = entity.InformationComments
+                            ManageProposalInfoComments = entity.InformationComments,
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
                         }).ToList();
                 }
             }
