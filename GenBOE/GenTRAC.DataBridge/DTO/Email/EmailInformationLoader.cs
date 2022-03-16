@@ -111,7 +111,7 @@ namespace GenTRAC.DataBridge.DTO
                     this.ProcessCertificationTimeline(emailList, this.ProposalLoader.GetProposalsCertificationTimelinePastDue());
 
                     // Process the Mod Execution Date emails
-                    this.ProcessModExecutionDateMissing(emailList, this.ProposalLoader.GetProposalsCertificationTimelinePastDue());
+                    this.ProcessModExecutionDateMissing(emailList, this.ProposalLoader.GetModExecutedDateMissingNotifications());
                 }
             }
 

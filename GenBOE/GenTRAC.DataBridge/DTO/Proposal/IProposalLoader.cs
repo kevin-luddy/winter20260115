@@ -210,5 +210,11 @@ namespace GenTRAC.DataBridge.DTO
         /// <returns>Proposal Data</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         ICollection<(string PtmTrackingNumber, string ProposalTitle, int ProposalId)> GetCostVolumeProposalData(string ntid, bool isAdmin, string searchString);
+
+        /// <summary>
+        /// Gets a list of proposals that are missing mod executed date, and meet the waiting period.
+        /// </summary>
+        /// <returns>Collection of proposals meeting the send criteria</returns>
+        ICollection<ProposalDto> GetModExecutedDateMissingNotifications();
     }
 }
