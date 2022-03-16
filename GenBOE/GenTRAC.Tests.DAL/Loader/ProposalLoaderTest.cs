@@ -946,7 +946,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = 15222; // FK, must exist (TODO: Create)
+                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id; // FK, must exist
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
                 
@@ -982,7 +982,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = 15222; // FK, must exist (TODO: Create)
+                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
 
@@ -1019,7 +1019,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = 15222; // FK, must exist (TODO: Create)
+                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
 
@@ -1056,7 +1056,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = 15222; // FK, must exist (TODO: Create)
+                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
 
@@ -1092,7 +1092,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = 15222; // FK, must exist (TODO: Create)
+                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
                 contractsDto.ModCompletedDate = DateTime.Now;
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
