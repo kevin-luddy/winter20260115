@@ -20,6 +20,8 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **      10/13/2021  Koovackal           IES-181 DB Work -Added Profit, Com, ProfitFeeWithCon
 **		1/16/2022   Dusan				IES-174 Add Contract Data to the report
 **		3/7/2022	Dusan				IES-847 Modify Contracts Data data
+**      3/8/2022	Koovackal			IES-849 Changes to "Revise" button. 
+**										Removed contract offer code.
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -286,7 +288,7 @@ SELECT
 			WHERE PUR.RoleID = 7 
 	) SubcontractsPOC ON P.ProposalID = SubcontractsPOC.ProposalID
 
-	-- Proposal Contract / Offer Data
+	-- Proposal Contract Data
 	LEFT OUTER JOIN ProposalContractsData pCD ON pCD.ProposalID = p.ProposalID
 	LEFT OUTER JOIN Proposal previousRomProposal ON pCD.PreviouslySubmittedROM = previousRomProposal.ProposalID
 	LEFT OUTER JOIN ProposalChecklist previousRomChecklist ON pCD.PreviouslySubmittedROM = previousRomChecklist.ProposalID

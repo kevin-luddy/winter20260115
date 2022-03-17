@@ -34,6 +34,7 @@ AS
 **			5/31/2018	ranzalon				BOJE-3405 - remove TempProposalSubmittalDate
 **			9/5/2018	twilson3				BOEJ-3761 Remove id for new Submitted status
 **			9/11/2018	twilson3				BOEJ-3818 Change status to In progress if submitted
+**          3/3/2022    koovackal               IES-849 Changes to "Revise" button
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -96,14 +97,15 @@ IF (SELECT UpdateDate FROM [dbo].[Proposal] WHERE ProposalID = @ProposalID) = @U
 
 
 /*
-Completed/Submitted States would change to InProgess
+Completed, Pending Certification, Pending Contractual Award states would change to InProgess
 */
 UPDATE [dbo].[Proposal] 
     SET  [ProposalStatusID] = 1 /*In Progress*/
-     WHERE 
+     WHERE
           ProposalID = @ProposalID AND
           (ProposalStatusID = 2 /*Completed*/ OR
-		   ProposalStatusID = 6) /*Submitted*/
+		   ProposalStatusID = 6 /*Pending Certification*/ OR
+		   ProposalStatusID = 9) /*Pending Contractual Award*/
 
 
 /*Update Date for the Proposal gets updated*/
