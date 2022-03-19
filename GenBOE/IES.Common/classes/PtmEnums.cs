@@ -1340,9 +1340,6 @@ namespace IES.Common
     /// </summary>
     public enum ReasonCertificationNotRequired
     {
-        [Description("Lost / Not Awarded")]
-        LostNotAwarded = 1,
-
         [Description("Awarded Under Threshold")]
         AwardedUnderThreshold = 2,
 

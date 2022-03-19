@@ -178,6 +178,35 @@ SET IDENTITY_INSERT dbo.ProposalStatusLU OFF;
 	## END ##
 */
 
+
+/*
+	03/14/2022 [Koovackal] - IES-919 Remove "Lost / Not Awarded" 2of2
+
+	## START ##
+*/
+
+-- Migrate existing data that had "Lost / Not Awarded" selected
+IF EXISTS (SELECT * FROM dbo.Proposal WHERE ReasonCertificationNotRequired = '1'/*Lost / Not Awarded*/ AND ProposalStatusID = '2'/*Completed*/)
+BEGIN
+	UPDATE dbo.Proposal
+	SET ReasonCertificationNotRequired = NULL, ProposalStatusID = '10'/*Lost*/
+	WHERE ReasonCertificationNotRequired = '1'/*Lost / Not Awarded*/ AND ProposalStatusID = '2'/*Completed*/;
+END
+GO
+
+IF EXISTS (SELECT Text FROM dbo.ReasonCertificationNotRequiredLU WHERE Id = '1' AND Text = 'Lost / Not Awarded')
+BEGIN
+	DELETE FROM dbo.ReasonCertificationNotRequiredLU WHERE Text = 'Lost / Not Awarded';
+END
+GO
+
+/*
+	03/14/2022 [Koovackal] - IES-919 Remove "Lost / Not Awarded" 2of2
+
+	## END ##
+*/
+*/
+
 /*
 	03/10/2022 [Quijano] - IES-854 Create New Contracts Email
 

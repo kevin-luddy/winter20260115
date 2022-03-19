@@ -63,7 +63,7 @@ SELECT
 	LEFT OUTER JOIN dbo.ProposalAdequacyReview PAR ON PAR.ProposalAdequacyReviewID = ParCC.ProposalAdequacyReviewID
 	WHERE RLU.[ResponseID] = 2 --'No' Response
 		AND PAR.ChecklistVersion >= 12 --Earliest version with Canned Responses
-		AND (PS.ProposalStatusID = 2 OR PS.ProposalStatusID = 6) --'Completed' or 'Submitted' Status
+		AND (PS.ProposalStatusID = 2 OR PS.ProposalStatusID = 6 OR PS.ProposalStatusID = 9) --'Completed', 'Pending Certification', 'Pending Contractual Award' Status
 		AND PPCX.[CannedResponseId] is NULL --Other is Selected, so response ID is null
 		AND PCC.[ChecklistTypeID] = 1 --Default Checklist Type
 
