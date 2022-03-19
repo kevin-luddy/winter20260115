@@ -205,3 +205,16 @@ GO
 
 	## END ##
 */
+*/
+
+/*
+	03/10/2022 [Quijano] - IES-854 Create New Contracts Email
+
+	## START ##
+*/
+
+IF COL_LENGTH ('dbo.Proposal','ModExecutedLastEmailed') IS NULL
+BEGIN
+	ALTER TABLE dbo.Proposal ADD ModExecutedLastEmailed datetime2(7) NULL;
+END
+GO

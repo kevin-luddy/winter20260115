@@ -318,6 +318,7 @@
           <Property Name="ReasonCertificationNotRequired" Type="int" />
           <Property Name="SetupComments" Type="varchar(max)" />
           <Property Name="InformationComments" Type="varchar(max)" />
+		  <Property Name="ModExecutedLastEmailed" Type="datetime2" Precision="7" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -1695,6 +1696,7 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <Parameter Name="ReasonCertificationNotRequired" Type="int" Mode="In" />
           <Parameter Name="OtherReasonComment" Type="varchar" Mode="In" />
           <Parameter Name="SetupComments" Type="varchar(max)" Mode="In" />
+		  <Parameter Name="ModExecutedLastEmailed" Type="datetime2" Mode="In" />
         </Function>
         <Function Name="upsertProposalChecklist" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalChecklistID" Type="int" Mode="In" />
@@ -2334,6 +2336,7 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
           <NavigationProperty Name="ReasonCertificationNotRequiredLU" Relationship="genTRACModel.FK__Proposal__Reason__04DA9AE4" FromRole="Proposal" ToRole="ReasonCertificationNotRequiredLU" />
           <NavigationProperty Name="ProposalContractsDatas" Relationship="genTRACModel.FK__ProposalC__Previ__019E3B86" FromRole="Proposal" ToRole="ProposalContractsData" />
           <NavigationProperty Name="ProposalContractsDatas1" Relationship="genTRACModel.FK__ProposalC__Propo__00AA174D" FromRole="Proposal" ToRole="ProposalContractsData" />
+          <Property Name="ModExecutedLastEmailed" Type="DateTime" Precision="7" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -3378,6 +3381,7 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
             <Parameter Name="ReasonCertificationNotRequired" Mode="In" Type="Int32" />
             <Parameter Name="OtherReasonComment" Mode="In" Type="String" />
             <Parameter Name="SetupComments" Mode="In" Type="String" />
+			<Parameter Name="ModExecutedLastEmailed" Mode="In" Type="DateTime" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalChecklist" ReturnType="Collection(Int32)">
             <Parameter Name="ProposalChecklistID" Mode="In" Type="Int32" />
@@ -4532,6 +4536,7 @@ warning 6002: The table/view 'genTrac_Contacts.genBOE.genTracData' does not have
                 <ScalarProperty Name="IndependentReviewerSignComment" ColumnName="IndependentReviewerSignComment" />
                 <ScalarProperty Name="LOBEstimatingLeadSignedDT" ColumnName="LOBEstimatingLeadSignedDT" />
                 <ScalarProperty Name="LOBEstimatingLeadSignComment" ColumnName="LOBEstimatingLeadSignComment" />
+				<ScalarProperty Name="ModExecutedLastEmailed" ColumnName="ModExecutedLastEmailed" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

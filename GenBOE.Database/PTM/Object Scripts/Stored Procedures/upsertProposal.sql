@@ -77,7 +77,8 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @RevisionOfId int,
 	  @ReasonCertificationNotRequired INT = 1,
 	  @OtherReasonComment VARCHAR(1000) = NULL,
-	  @SetupComments VARCHAR(MAX) = NULL
+	  @SetupComments VARCHAR(MAX) = NULL,
+	  @ModExecutedLastEmailed datetime2 = NULL
 )
 AS
 /******************************************************************************
@@ -112,6 +113,7 @@ AS
 **			6/23/2020	ranzalon				BOEJ-4669 No new tracking number when IsRevision 
 **			7/2/2020	ranzalon				BOEJ-4687 Link Revisions to Revised Proposal
 **			7/31/2020	ranzalon				BOEJ-4648 Proposal Setup Comments
+**          3/10/2022   jquijano                IES-854 Add new email (Mod)
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -181,7 +183,7 @@ ELSE
 	END
 
 /*
-<ProposalID> +” – “ + <Proposal Title>
+<ProposalID> +ï¿½ ï¿½ ï¿½ + <Proposal Title>
 
 Proposal ID is (<YYYY>-<5-digit sequence starting at 00001><Rev #) 
 2013-10001Rnn
@@ -254,6 +256,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,[ReasonCertificationNotRequired]
 		,[OtherReasonComment]
 		,[SetupComments]
+		,[ModExecutedLastEmailed]
 		)
 	OUTPUT inserted.ProposalID INTO @Inserted
 	VALUES
@@ -319,6 +322,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@ReasonCertificationNotRequired
 		,@OtherReasonComment
 		,@SetupComments
+		,@ModExecutedLastEmailed
 		)
 
 		SELECT @ProposalID = ID FROM @Inserted
@@ -418,6 +422,7 @@ ELSE
 						,[ReasonCertificationNotRequired] = @ReasonCertificationNotRequired
 						,[OtherReasonComment] = @OtherReasonComment
 						,[SetupComments] = @SetupComments
+						,[ModExecutedLastEmailed] = @ModExecutedLastEmailed
 
 						WHERE 
 							ProposalID = @ProposalID;

@@ -596,6 +596,15 @@ namespace IES.Common
             Body = "{0} was a No Bid. {1}" // [PTM Entry Number], [Link to specific PTM entry.]
         };
 
+        /// <summary>
+        /// Email sent to remind the contracts leads to enter the Mod Executed Date
+        /// </summary>
+        public static readonly EmailContent MISSING_MOD_CERTIFICATION_DATE = new EmailContent
+        {
+            Subject = "{0} Notification", // [PTM Entry Number]
+            Body = "{0} requires the Mod Executed Date, which is necessary to complete the entry. Please visit the Contracts tab and enter the date. Your prompt response is appreciated, thank you. {1}" // [PTM Entry Number], [Link to specific PTM entry.]
+        };
+
         #endregion
     }
 

@@ -16,13 +16,13 @@
         <EntityTypeShape EntityType="genTRACModel.PPRChecklistContent" Width="1.5" PointX="6" PointY="29.375" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.PricingToolLU" Width="1.5" PointX="0.75" PointY="45.25" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProgramProposalStatusLU" Width="1.5" PointX="0.75" PointY="47.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="genTRACModel.Proposal" Width="1.5" PointX="3" PointY="6.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="genTRACModel.Proposal" Width="1.5" PointX="3.125" PointY="8.375" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProposalAdequacyReview" Width="1.5" PointX="3.75" PointY="3.875" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProposalChecklistComplete" Width="1.5" PointX="8.25" PointY="13" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProposalChecklistTypeLU" Width="1.5" PointX="1.625" PointY="3.5" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProposalClassLU" Width="1.5" PointX="0.75" PointY="50.125" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProposalLocationLU" Width="1.5" PointX="0.75" PointY="52.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="genTRACModel.ProposalPricingReview" Width="1.5" PointX="3.75" PointY="29.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="genTRACModel.ProposalPricingReview" Width="1.5" PointX="3.125" PointY="31.75" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProposalStatusLU" Width="1.5" PointX="0.75" PointY="55.125" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProposalTrackingGenerator" Width="1.5" PointX="8.75" PointY="6.25" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProposalTypeLU" Width="1.5" PointX="0.75" PointY="57.5" IsExpanded="true" />
@@ -30,8 +30,8 @@
         <EntityTypeShape EntityType="genTRACModel.RequestTypeLU" Width="1.5" PointX="0.75" PointY="60" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ResponseLU" Width="1.5" PointX="6" PointY="6" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ResponseTypeLU" Width="1.5" PointX="6" PointY="22.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="genTRACModel.RoleLU" Width="1.5" PointX="3" PointY="23.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="genTRACModel.RoleTypeLU" Width="1.5" PointX="3" PointY="26.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="genTRACModel.RoleLU" Width="1.5" PointX="3.125" PointY="27.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="genTRACModel.RoleTypeLU" Width="1.5" PointX="3.125" PointY="29.875" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.SystemUserRole" Width="1.5" PointX="6" PointY="13.5" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.TextTypeLU" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProposalPARChecklistXREF" Width="1.5" PointX="8.25" PointY="9.25" IsExpanded="true" />
