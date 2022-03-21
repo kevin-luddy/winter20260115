@@ -36,20 +36,8 @@ namespace GenTRAC.ActionLogic.ControllerLogic
         private readonly Logger log = new Logger(typeof(ContractsControllerLogic));
 
         /// <summary>
-        /// PTM Emailer
+        /// Injected contracts logic service
         /// </summary>
-        // private readonly IPtmEmailer emailer;
-
-        /// <summary>
-        /// Injected Proposal Logic
-        /// </summary>
-        // private readonly ProposalControllerLogic proposalLogic;
-
-        /// <summary>
-        /// Injected proposal mediator
-        /// </summary>
-        // private readonly IProposalMediator proposalMediator;
-
         private readonly ContractsControllerLogic contractsLogic;
 
         #endregion
@@ -57,14 +45,15 @@ namespace GenTRAC.ActionLogic.ControllerLogic
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="securityAccess">asdf</param>
-        /// <param name="proposalLoader">asdf</param>
-        /// <param name="userMapper">asdf</param>
-        /// <param name="objectFactory">asdf</param>
-        /// <param name="approvalsLoader">asdf</param>
-        /// <param name="proposalChecklistLoader">asdf</param>
-        /// <param name="checklistMediator">asdf</param>
-        /// <param name="inContractsLogic">Injected </param>
+        /// <param name="securityAccess">security access service</param>
+        /// <param name="proposalLoader">proposal loader</param>
+        /// <param name="userMapper">user mapper</param>
+        /// <param name="objectFactory">object factory</param>
+        /// <param name="approvalsLoader">approvals loader</param>
+        /// <param name="proposalChecklistLoader">proposal checklist loader</param>
+        /// <param name="checklistMediator">checklist mediator</param>
+        /// <param name="proposalMediator"">proposal mediator</param>
+        /// <param name="inContractsLogic">Injected contracts logic</param>
         public CompletionControllerLogic(
             ISecurityAccess securityAccess,
             IProposalLoader proposalLoader,
@@ -74,14 +63,9 @@ namespace GenTRAC.ActionLogic.ControllerLogic
             IProposalChecklistLoader proposalChecklistLoader,
             IChecklistMediator checklistMediator,
             IProposalMediator proposalMediator,
-            //IPtmEmailer inEmailer,
-            //ProposalControllerLogic inProposalLogic,
             ContractsControllerLogic inContractsLogic
         ) : base(securityAccess, proposalLoader, userMapper, objectFactory, approvalsLoader, proposalChecklistLoader, checklistMediator, proposalMediator)
         {
-            //this.emailer = inEmailer;
-            //this.proposalLogic = inProposalLogic;
-            //this.proposalMediator = proposalMediator;
             this.contractsLogic = inContractsLogic;
         }
 
