@@ -1,11 +1,11 @@
 /*
 	### DO NOT EXECUTE AS A PART OF ANY RELEASE ###
 	
-	This scrubs out data from genBOE database (2021.4).
-	
+	This scrubs out data from genBOE database (2022.7).	
 */
 
 /* <==== Remove this line, to make this script run. this is a precaution.. just in case.....
+
 
 DELETE FROM ELMAH_Error;
 
@@ -92,11 +92,23 @@ DELETE FROM WorkspaceUserRole;
 DELETE FROM WorkspaceVariable;
 DELETE FROM WorkspaceVersion;
 DELETE FROM WS_Copy_Stage;
+DELETE FROM MSTTravelTrip;
 DELETE FROM TravelTripTaskElement;
 
-DELETE FROM BOETaskElement;
-DELETE FROM BOE;
-DELETE FROM Workspace;
+WHILE EXISTS (SELECT 1 FROM BOETaskElement)
+BEGIN
+	DELETE FROM BOETaskElement WHERE BOETaskElementID IN (SELECT TOP 10000 BOETaskElementID FROM BOETaskElement);
+END
+
+WHILE EXISTS (SELECT 1 FROM BOE)
+BEGIN
+	DELETE FROM BOE WHERE BOEId IN (SELECT TOP 10000 BOEId FROM BOE);
+END
+
+WHILE EXISTS (SELECT 1 FROM Workspace)
+BEGIN
+	DELETE FROM Workspace WHERE WorkspaceId IN (SELECT TOP 500 WorkspaceId FROM Workspace);
+END
 
 DELETE FROM SystemUserRole;
 DELETE FROM ETIGroup;
