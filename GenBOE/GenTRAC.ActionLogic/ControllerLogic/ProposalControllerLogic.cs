@@ -1311,6 +1311,7 @@ namespace GenTRAC.ActionLogic
                 model.Comments = fullProposalDto.Comments;
                 model.DisplayCertificationReset = string.Equals(model.IsReadOnly.ToLower(), "true") && model.ReasonCertificationNotRequired.HasValue && this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
                 model.DisableCompleteButton = fullProposalDto.ProposalStatus == ProposalStatus.Completed;
+                model.DisableCertificationReset = fullProposalDto.ProposalStatus == ProposalStatus.Completed;
             }
 
             return model;

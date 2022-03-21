@@ -605,6 +605,15 @@ namespace IES.Common
             Body = "{0} requires the Mod Executed Date, which is necessary to complete the entry. Please visit the Contracts tab and enter the date. Your prompt response is appreciated, thank you. {1}" // [PTM Entry Number], [Link to specific PTM entry.]
         };
 
+        /// <summary>
+        /// Email sent when Proposal status is set to Completed
+        /// </summary>
+        public static readonly EmailContent STATUS_COMPLETED_SET = new EmailContent
+        {
+            Subject = "{0} Notification", // [PTM Entry Number]
+            Body = "{0} was completed and placed on contract. {1}" // [PTM Entry Number], [Link to specific PTM entry.]
+        };
+
         #endregion
     }
 

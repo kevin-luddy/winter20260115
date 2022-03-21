@@ -586,6 +586,15 @@ namespace GenTRAC.Web.Common
             public const string COMPLETE_CERTIFICATION_TIMELINE = "CompleteCertificationTimeline";
 
             #endregion Certification Timeline
+
+            #region Completion
+
+            /// <summary>
+            /// Sets the proposal status to Complete
+            /// </summary>
+            public const string COMPLETE_PROPOSAL = "SetCompleteStatus";
+            
+            #endregion
         }
 
         #endregion Action
@@ -651,6 +660,11 @@ namespace GenTRAC.Web.Common
             /// The Certification timeline
             /// </summary>
             public const string CERTIFICATION_TIMELINE = "certificationtimeline";
+
+            /// <summary>
+            /// Proposal Completion
+            /// </summary>
+            public const string COMPLETION = "completion";
         }
         #endregion Controller
 

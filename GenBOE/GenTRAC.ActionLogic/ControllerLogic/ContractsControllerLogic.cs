@@ -53,11 +53,6 @@ namespace GenTRAC.ActionLogic
         private readonly IPtmEmailer emailer;
 
         /// <summary>
-        /// Injected Proposal Logic
-        /// </summary>
-        private readonly ProposalControllerLogic proposalLogic;
-
-        /// <summary>
         /// Injected Approvals Logic service
         /// </summary>
         private readonly ApprovalsControllerLogic approvalsLogic;
@@ -77,7 +72,6 @@ namespace GenTRAC.ActionLogic
         /// <param name="proposalMediator">Proposal Mediator</param>
         /// <param name="contractsLoader">Contracts Loader</param>
         /// <param name="inEmailer">Emailer</param>
-        /// <param name="inProposalLogic">Proposal logic</param>
         /// <param name="inApprovalsLogic">Injected Approvals Logic</param>
         public ContractsControllerLogic(
             ISecurityAccess securityAccess,
@@ -90,13 +84,11 @@ namespace GenTRAC.ActionLogic
             IProposalMediator proposalMediator,
             IContractsLoader contractsLoader,
             IPtmEmailer inEmailer,
-            ProposalControllerLogic inProposalLogic,
             ApprovalsControllerLogic inApprovalsLogic)
             : base(securityAccess, proposalLoader, userMapper, objectFactory, approvalsLoader, proposalChecklistLoader, checklistMediator, proposalMediator)
         {
             this.contractsLoader = contractsLoader;
             this.emailer = inEmailer;
-            this.proposalLogic = inProposalLogic;
             this.approvalsLogic = inApprovalsLogic;
         }
 
@@ -119,10 +111,12 @@ namespace GenTRAC.ActionLogic
             // populate calculated properties
             model.EppOptions = this.GetEppSelectOptions(model.EppDelegationAuthority);
             model.SetLostButtonEnabled = this.IsValidForLostStatus(dto, fullProposal);
-            model.NoBidButtonEnabled = IsValidForNoBidStatus(fullProposal);
+            model.NoBidButtonEnabled = this.IsValidForNoBidStatus(fullProposal);
+            model.CompleteButtonEnabled = this.IsValidForCompleteStatus(dto, fullProposal); 
             model.IsNoBid = fullProposal.ProposalStatus == ProposalStatus.NoBid;
             model.HasAccessToSetNoBid = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions) || this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
             model.HasAccessToSetLost = ValidForLostProposalStatusSave(fullProposal, null);
+            model.IsReadOnly = fullProposal.ProposalStatus == ProposalStatus.Completed;
 
             // Load additional values
             model.PreviouslySubmittedRoms = this.ProposalLoader.GetRomProposalOptions(model.PreviouslySubmittedROM);
@@ -297,7 +291,7 @@ namespace GenTRAC.ActionLogic
         /// <summary>
         /// Determines whether the proposal is in a valid state to have "Set Lost" status set.
         /// </summary>
-        /// <param name="proposalId">Proposal Id to be considered</param>
+        /// <param name="contractInfo">Contract data object</param>
         /// <param name="fullProposal">The full proposal object</param>
         /// <returns>true if valid for Lost status</returns>
         private bool IsValidForLostStatus(ContractsDto contractInfo, FullProposal fullProposal)
@@ -325,6 +319,17 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
+        /// Determines whether the proposal is in a valid state to have the "Complete" status set. 
+        /// </summary>
+        /// <param name="contractInfo">Contract data object</param>
+        /// <param name="fullProposal">The full proposal object</param>
+        /// <returns>true if button should be enabled.</returns>
+        private bool IsValidForCompleteStatus(ContractsDto dto, FullProposal fullProposal)
+        {
+            return this.ValidForCompleteProposalSave(dto, fullProposal, null) && dto.LmWon.HasValue && dto.LmWon.Value && fullProposal.ProposalStatus == ProposalStatus.PendingAward;
+        }
+
+        /// <summary>
         /// Sends templated email regarding the Lost status to the estimators
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
@@ -345,6 +350,11 @@ namespace GenTRAC.ActionLogic
                 emailContent.Body = Emails.STATUS_NO_BID_SET.Body;
                 emailContent.Subject = Emails.STATUS_NO_BID_SET.Subject;
             }
+            else if (fullProposal.ProposalStatus == ProposalStatus.Completed)
+            {
+                emailContent.Body = Emails.STATUS_COMPLETED_SET.Body;
+                emailContent.Subject = Emails.STATUS_COMPLETED_SET.Subject;
+            }
             else
             {
                 log.Error($"SendContractsStatusChangeEmails was called on a proposal in {fullProposal.ProposalStatus.GetDescription<ProposalStatus>()} status.");
@@ -355,15 +365,18 @@ namespace GenTRAC.ActionLogic
             string[] subjectReplaceTokens = new string[] { fullProposal.ProposalTitle };
             string[] bodyReplaceTokens = new string[] { fullProposal.ProposalTitle, emailInfo.ProposalContractsUrl.ToString() };
 
-            ProposalApprovalsModelView modelApprovals = this.proposalLogic.GetDataForProposalApprovals(proposalId, false);
-            ProposalUserInformationModelView modelUserInfo = this.proposalLogic.GetDataForProposalUserInformation(proposalId);
-
-            UserDTO leadEstimator = UserMapper.GetByNtid(modelApprovals.LeadEstimatorNtid);
-            UserDTO backupEstimator = UserMapper.GetByNtid(modelUserInfo.BackupPricerNtId);
+            ProposalPermissionDto leadPricer = fullProposal.Permissions.First(x => x.Role == PtmRole.Pricer);
+            ProposalPermissionDto backUpPricer = fullProposal.Permissions.FirstOrDefault(x => x.Role == PtmRole.BackupPricer);
 
             // Send the email notifications
+            UserDTO leadEstimator = UserMapper.GetById(leadPricer.UserId);
             this.emailer.SendEmail(emailContent, leadEstimator.EmailAddress, new Collection<UserDTO>(), subjectReplaceTokens, bodyReplaceTokens, null, " for: " + fullProposal.TrackingNumber);
-            this.emailer.SendEmail(emailContent, backupEstimator.EmailAddress, new Collection<UserDTO>(), subjectReplaceTokens, bodyReplaceTokens, null, " for: " + fullProposal.TrackingNumber);
+
+            if (backUpPricer != null)
+            {
+                UserDTO backupEstimator = UserMapper.GetById(backUpPricer.UserId);
+                this.emailer.SendEmail(emailContent, backupEstimator.EmailAddress, new Collection<UserDTO>(), subjectReplaceTokens, bodyReplaceTokens, null, " for: " + fullProposal.TrackingNumber);
+            }
         }
 
         /// <summary>
@@ -491,6 +504,29 @@ namespace GenTRAC.ActionLogic
                 messages?.Add($"{currentStatus} is not a valid status for setting No Bid.");
                 isValid = false;
             }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Validates whether the proposal is valid for Completed Status
+        /// </summary>
+        /// <param name="dto">Contracts data</param>
+        /// <param name="fullProposal">Proposal data</param>
+        /// <param name="messages">Validation error messages (out)</param>
+        /// <returns>True if valid</returns>
+        /// <exception cref="ArgumentNullException">Data missing</exception>
+        public bool ValidForCompleteProposalSave(ContractsDto dto, FullProposal fullProposal, List<string> messages)
+        {
+            _ = fullProposal ?? throw new ArgumentNullException(nameof(fullProposal));
+            _ = dto ?? throw new ArgumentNullException(nameof(dto));
+
+            bool isValid = true;
+
+            messages = new List<string>(); // TODO: remove this
+            messages.Add("RemoveMe");
+
+            // TODO: complete in IES-844
 
             return isValid;
         }

@@ -25,7 +25,7 @@
     };
 
     $(function () {
-        var readOnly = @ViewBag.ReadOnly.ToString().ToLower();
+        var readOnly = ContractsIndexWidget.readOnly;
         var widgetConfig = {};
         widgetConfig.ContextID = "contractsInfo";
         widgetConfig.IsModule = true;
@@ -68,7 +68,23 @@
             $(this).next('button.ui-datepicker-trigger').focus();
         };
 
-        initDatePickerElements(handleDateSelect);
+        if (ContractsIndexWidget.readOnly === false) {
+            initDatePickerElements(handleDateSelect);
+        }
+
+        ContractsInfoWidget.setProposalComplete = () => {
+            $('#proposal-complete').prop('disabled', true);
+
+            const propCompleteUrl = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.COMPLETION',
+                action: '@WebConstants.Action.COMPLETE_PROPOSAL',
+                id: '@ViewBag.ProposalId'
+            });
+
+            const data = { };
+
+            ContractsInfoWidget.postData(propCompleteUrl, data);
+        };
 
         ContractsInfoWidget.setProposalLost = () => {
             $('#confirm-modal-submit').prop('disabled', true);
@@ -81,21 +97,7 @@
 
             const data = { };
 
-            $.ajax({
-                type: "POST",
-                url: propLostUrl,
-                contentType: 'application/json; charset=utf-8',
-                data: JSON.stringify(data),
-                success: function (response) {
-                    if (typeof (response.IsSuccessful) !== 'undefined') {
-                        if (response.IsSuccessful === true) {
-                            ContractsIndexWidget.SaveSuccess(@ViewBag.proposalid);
-                        } else {
-                            processErrors(response);
-                        }
-                    }
-                }
-            });
+            ContractsInfoWidget.postData(propCompleteUrl, data);
         };
 
         ContractsInfoWidget.setNoBid = function () {
@@ -115,7 +117,7 @@
                                 if (response.IsSuccessful) {
                                     ContractsIndexWidget.SaveSuccess();
                                 } else {
-                                    processErrors(response);
+                                    ContractsInfoWidget.processErrors(response);
                                 }
                             }
                         }
@@ -136,6 +138,25 @@
             }
         };
 
+        ContractsInfoWidget.postData = function (url, data) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    console.log(response);
+                    if (typeof (response.IsSuccessful) !== 'undefined') {
+                        if (response.IsSuccessful === true) {
+                            ContractsIndexWidget.SaveSuccess(@ViewBag.proposalid);
+                        } else {
+                            ContractsInfoWidget.processErrors(response);
+                        }
+                    }
+                }
+            });
+        }
+
         ContractsInfoWidget.revertNoBid = function () {
             GenSession.confirmDialog("Confirm Revert No Bid",
                 "If this Proposal is reverted from No Bid, the approval process will be reset. Are you sure you wish to continue?",
@@ -153,7 +174,7 @@
                                 if (response.IsSuccessful) {
                                     ContractsIndexWidget.SaveSuccess();
                                 } else {
-                                    processErrors(response);
+                                    ContractsInfoWidget.processErrors(response);
                                 }
                             }
                         }
@@ -177,7 +198,12 @@
         $('#proposal-lost').on('click', function () {
             $(this).prop('disabled', true);
             modalWindow.dialog('open');
-        })
+        });
+
+        $('#proposal-complete').on('click', function () {
+            $(this).text('Please Wait...');
+            ContractsInfoWidget.setProposalComplete();
+        });
 
         $('#confirm-modal-input').keyup(function () {
             if ($('#confirm-modal-input').val().trim() === 'LOST') {
@@ -211,6 +237,7 @@
                 }
             }
             <button id="proposal-lost" type="button" class="ies" @(Model.SetLostButtonEnabled ? string.Empty : "disabled")>Proposal Lost</button>
+            <button id="proposal-complete" type="button" class="ies" @(Model.CompleteButtonEnabled ? string.Empty : "disabled")>Complete</button>
         </div>
         @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM, name = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM }))
         {

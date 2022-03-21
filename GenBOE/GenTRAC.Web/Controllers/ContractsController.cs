@@ -49,8 +49,7 @@ namespace GenTRAC.Web.Controllers
         public ViewResult DisplayContractsIndex(int proposalId)
         {
             this.ViewBag.ProposalId = proposalId.ToString();
-            this.ViewBag.ReadOnly = false; // todo.. fix me
-
+            
             ContractsModelView model = this.contractsLogic.GetDataForProposalContracts(proposalId).Result;
 
             return this.View(WebConstants.View.CONTRACTS_INDEX, model);
