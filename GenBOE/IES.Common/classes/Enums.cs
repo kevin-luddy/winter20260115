@@ -1254,9 +1254,9 @@ namespace IES.Common
         StandardWithoutOffload = 1,
         [Description("Standard with Offload")]
         StandardWithOffload = 2,
-        [Description("SAC Non-Time-Phased Project Map")]
+        [Description("Non-Time-Phased Project Map")]
         NonTimePhasedProjectMap = 3,
-        [Description("SAC Time-Phased Project Map")]
+        [Description("Time-Phased Project Map")]
         TimePhasedProjectMap = 4
     }
 
