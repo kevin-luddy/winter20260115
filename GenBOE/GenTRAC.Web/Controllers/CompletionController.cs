@@ -39,10 +39,10 @@ namespace GenTRAC.Web.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Set the proposal to complete and sends notificatino email(s)
         /// </summary>
-        /// <param name="proposalId"></param>
-        /// <returns></returns>
+        /// <param name="proposalId">proposal Id to update</param>
+        /// <returns>JSON encoded response object</returns>
         public async Task<JsonResult> SetCompleteStatus(int proposalId)
         {
             IESResponse<bool> result = new IESResponse<bool>();
@@ -53,14 +53,6 @@ namespace GenTRAC.Web.Controllers
             result.Data.Add(success);
             result.IsSuccessful = success;
             result.Messages.AddRange(messages);
-
-            //record the date the way we used to(IES - 855 removed the code)
-            //contracts tab goes read only(this will need to be implemented)
-            //Certification tab remains editable, but disable "Reset Certification Not Required" button.
-            //send out an email:
-            //  Recipients: Est Lead and Backup EL.
-            //  Subject: [PTM Entry Number] Notification
-            //  Body: [PTM Entry Number] was completed and placed on contract. [Link to specific PTM entry]
 
             return Json(result);
         }
