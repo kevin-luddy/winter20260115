@@ -133,7 +133,8 @@ namespace GenTRAC.Tests.DAL.Loader
                 RevisionOfId = null,
                 ReasonCertificationNotRequired = ReasonCertificationNotRequired.Other,
                 OtherReasonComment = "Other comment",
-                ProposalSetupComments = "Setup comment"
+                ProposalSetupComments = "Setup comment",
+                ModExecutedLastEmailed = DateTime.UtcNow
             };
 
             int? newProposalID;
@@ -970,7 +971,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
-            ProposalDto proposal = testData.GetProposal();
+            ProposalDto proposal = testData.GetProposal(true);
             ContractsDto contractsDto = new ContractsDto();
 
             using (TransactionScope scope = new TransactionScope())
@@ -1006,7 +1007,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
-            ProposalDto proposal = testData.GetProposal();
+            ProposalDto proposal = testData.GetProposal(true);
             ContractsDto contractsDto = new ContractsDto();
 
             using (TransactionScope scope = new TransactionScope())
@@ -1043,7 +1044,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
-            ProposalDto proposal = testData.GetProposal();
+            ProposalDto proposal = testData.GetProposal(true);
             ContractsDto contractsDto = new ContractsDto();
 
             using (TransactionScope scope = new TransactionScope())
@@ -1079,7 +1080,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
-            ProposalDto proposal = testData.GetProposal();
+            ProposalDto proposal = testData.GetProposal(true);
             ContractsDto contractsDto = new ContractsDto();
 
             using (TransactionScope scope = new TransactionScope())
@@ -1209,7 +1210,7 @@ namespace GenTRAC.Tests.DAL.Loader
             
             foreach(int id in result.Select(x => x.ProposalId).ToList())
             {
-                Assert.IsTrue(permissionsLoader.GetByIds(permissionsLoader.GetIdsByProposalId(id)).Any(x => x.UserId == userId && x.Role == PtmRole.ContractsPOC));
+                Assert.IsTrue(permissionsLoader.GetByIds(permissionsLoader.GetIdsByProposalId(id)).Any(x => x.UserId == userId && (x.Role == PtmRole.ContractsPOC || x.Role == PtmRole.BackupContractsPOC)));
             }
         }
 

@@ -140,6 +140,10 @@ namespace GenTRAC.DataBridge.Common.Security
             // Contracts Tab.. read is done w/ Proposal
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Contracts, PtmSecurityPage.CertificationTimeline },
                 new PtmRole[] { PtmRole.Admin, PtmRole.ContractsPOC, PtmRole.BackupContractsPOC }, SecurityAuthorization.CreateReadUpdateDelete);
+
+            // Proposal Completion Endpoints
+            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Completion },
+                new PtmRole[] { PtmRole.Admin, PtmRole.ContractsPOC, PtmRole.BackupContractsPOC }, SecurityAuthorization.CreateReadUpdateDelete);
         }
 
         /// <summary>
@@ -238,6 +242,7 @@ namespace GenTRAC.DataBridge.Common.Security
                 case PtmSecurityPage.CertificationTimeline:
                 case PtmSecurityPage.RevisionHistory:
                 case PtmSecurityPage.Contracts:
+                case PtmSecurityPage.Completion:
                     proposalRequired = true;
                     break;
                 default:

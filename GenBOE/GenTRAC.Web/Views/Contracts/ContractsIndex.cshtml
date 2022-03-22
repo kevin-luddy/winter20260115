@@ -40,7 +40,7 @@
 
         var widgetConfig = {};
         widgetConfig.ContextID = "contractsIndex";
-        widgetConfig.isReadOnly = @ViewBag.ReadOnly.ToString().ToLower();
+        widgetConfig.isReadOnly = @(Model.IsReadOnly.ToString().ToLower());
         widgetConfig.FormConfigs = FormConfigs;
 
         ContractsIndexWidget = new GenWidget(widgetConfig);

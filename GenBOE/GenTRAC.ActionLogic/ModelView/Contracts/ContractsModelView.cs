@@ -207,6 +207,7 @@ namespace GenTRAC.ActionLogic.ModelView
         /// </summary>
         public ICollection<SelectListItem> EppOptions { get; set; }
 
+#region Buttons
         /// <summary>
         /// Should the "Set Lost" button be enabled
         /// </summary>
@@ -218,9 +219,21 @@ namespace GenTRAC.ActionLogic.ModelView
         public bool NoBidButtonEnabled { get; set; }
 
         /// <summary>
+        /// Should the "Complete" button be enabled
+        /// </summary>
+        public bool CompleteButtonEnabled { get; set; }
+
+ #endregion
+
+        /// <summary>
         /// Has No Bid been set?
         /// </summary>
         public bool IsNoBid { get; set; }
+
+        /// <summary>
+        /// Should the data be read only, i.e. the proposal is completed
+        /// </summary>
+        public bool IsReadOnly { get; set; }
 
         /// <summary>
         /// Does user have access to set No Bid?

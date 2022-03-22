@@ -37,6 +37,7 @@ namespace GenTRAC.Web.Common
             AddPostSubmittalAttachmentsControllerActions(result);
             AddCertificationTimelineControllerActions(result);
             AddContractsControllerActions(result);
+            AddCompletionControllerActions(result);
 
             return result;
         }
@@ -251,6 +252,18 @@ namespace GenTRAC.Web.Common
             AddActionToController(WebConstants.Action.REVERT_NO_BID, PtmSecurityPage.Contracts, SecurityAuthorization.ReadUpdate, contractsActions);
 
             result.Add(WebConstants.Controller.CONTRACTS, contractsActions);
+        }
+
+        /// <summary>
+        /// Generates actions/items from the completion controller
+        /// </summary>
+        /// <param name="result">The result</param>
+        private static void AddCompletionControllerActions(Dictionary<string, Dictionary<string, SecurityPageAndAuthorization>> result)
+        {
+            Dictionary<string, SecurityPageAndAuthorization> completionActions = new Dictionary<string, SecurityPageAndAuthorization>();
+            AddActionToController(WebConstants.Action.COMPLETE_PROPOSAL, PtmSecurityPage.Completion, SecurityAuthorization.ReadUpdate, completionActions);
+
+            result.Add(WebConstants.Controller.COMPLETION, completionActions);
         }
 
         #endregion

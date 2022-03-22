@@ -72,7 +72,12 @@ namespace IES.Common
         /// <summary>
         /// Contracts Tab
         /// </summary>
-        Contracts = 13
+        Contracts = 13,
+
+        /// <summary>
+        /// Completion AJAX actions
+        /// </summary>
+        Completion = 14
     }
 
     /// <summary>
