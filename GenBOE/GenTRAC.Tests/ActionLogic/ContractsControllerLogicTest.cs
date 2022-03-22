@@ -44,11 +44,6 @@ namespace GenTRAC.Tests.ActionLogic
         private Mock<ISecurityAccess> securityAccess = null;
 
         /// <summary>
-        /// Active Directory Utilities
-        /// </summary>
-        private Mock<IES.Common.IActiveDirectoryUtilities> adUtils = null;
-
-        /// <summary>
         /// Proposal Loader
         /// </summary>
         private Mock<IProposalLoader> proposalLoader = null;
@@ -118,7 +113,6 @@ namespace GenTRAC.Tests.ActionLogic
         {
             this.securityAccess = new Mock<ISecurityAccess>();
             this.proposalLoader = new Mock<IProposalLoader>();
-            this.adUtils = new Mock<IES.Common.IActiveDirectoryUtilities>();
             this.userMapper = new Mock<IUserMapper>();
             this.objectFactory = new Mock<IFullObjectFactory>();
             this.checklistMediator = new Mock<IChecklistMediator>();
@@ -139,16 +133,10 @@ namespace GenTRAC.Tests.ActionLogic
                 It.IsAny<IAttachmentLoader>(), It.IsAny<IActiveDirectoryUtilities>());
 
             ContractsControllerLogic logic;
-            try
-            {
-                logic = new ContractsControllerLogic(this.securityAccess.Object, this.proposalLoader.Object, this.userMapper.Object,
-                this.objectFactory.Object, this.approvalsLoader.Object, this.proposalChecklistLoader.Object, this.checklistMediator.Object,
-                this.proposalMediator.Object, this.contractsLoader.Object, this.emailer.Object, this.approvalsLogic.Object);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+
+            logic = new ContractsControllerLogic(this.securityAccess.Object, this.proposalLoader.Object, this.userMapper.Object,
+                        this.objectFactory.Object, this.approvalsLoader.Object, this.proposalChecklistLoader.Object, this.checklistMediator.Object,
+                        this.proposalMediator.Object, this.contractsLoader.Object, this.emailer.Object, this.approvalsLogic.Object);
 
             return logic;
         }
@@ -264,7 +252,7 @@ namespace GenTRAC.Tests.ActionLogic
             // Create new Contracts Controller Logic object
             ContractsControllerLogic sut = this.CreateSystem();
 
-            Tuple<DateTime?, decimal?> getRomDateAndValue = sut.GetRomDateAndValue(-1);
+            _ = sut.GetRomDateAndValue(-1);
         }
 
         /// <summary>
@@ -350,7 +338,6 @@ namespace GenTRAC.Tests.ActionLogic
         {
             ContractsControllerLogic sut = this.CreateSystem();
             FullProposal fp = TestProposalHelper.GetFullProposalForMocks(1, ProposalStatus.PendingCertification);
-            List<string> errors = new List<string>();
 
             this.retriever.Setup(x => x.GetProposalPermissions(It.IsAny<int>())).Returns(TestProposalHelper.GetPermissionsForMocks());
             this.retriever.Setup(x => x.GetCurrentUser()).Returns(TestProposalHelper.GetLeadContractsUserForMocks());
@@ -374,7 +361,6 @@ namespace GenTRAC.Tests.ActionLogic
         {
             ContractsControllerLogic sut = this.CreateSystem();
             FullProposal fp = TestProposalHelper.GetFullProposalForMocks(1, ProposalStatus.NoBid);
-            List<string> errors = new List<string>();
 
             this.retriever.Setup(x => x.GetProposalPermissions(It.IsAny<int>())).Returns(TestProposalHelper.GetPermissionsForMocks());
             this.retriever.Setup(x => x.GetCurrentUser()).Returns(TestProposalHelper.GetLeadContractsUserForMocks());
@@ -397,7 +383,7 @@ namespace GenTRAC.Tests.ActionLogic
         public void SaveContractTest()
         {
             // Create new Contracts Controller Logic object
-            ContractsControllerLogic sut = this.CreateSystem();
+            // ContractsControllerLogic sut = this.CreateSystem();
 
             // TODO: SaveContract unit test.
             
