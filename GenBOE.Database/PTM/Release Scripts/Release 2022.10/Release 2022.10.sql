@@ -1,4 +1,4 @@
-﻿EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2022.PtmContracts';
+﻿EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2022.10';
 GO
 
 /*
@@ -204,7 +204,6 @@ GO
 	03/14/2022 [Koovackal] - IES-919 Remove "Lost / Not Awarded" 2of2
 
 	## END ##
-*/
 */
 
 /*
