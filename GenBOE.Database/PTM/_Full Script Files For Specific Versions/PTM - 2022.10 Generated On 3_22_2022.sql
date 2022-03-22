@@ -1,137 +1,232 @@
 PRINT '###### SCRIPT IS STARTING ######';
 /*
-    This file was auto-generated for Release: 2020.4, on 7/16/2020.
+    This file was auto-generated for Release: 2022.10, on 3/22/2022.
     It contains all of the Release specific scripts, modifying data/tables as well as all of the Stored Procedures and User Defined Table Types.
 */
 
 /*
-    File: \Release 2020.4\Release 2020.4.sql
+    File: \Release 2022.10\Release 2022.10.sql
 */
-PRINT '### Starting file: \Release 2020.4\Release 2020.4.sql';
-EXEC dbo.[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2020.4';
+PRINT '### Starting file: \Release 2022.10\Release 2022.10.sql';
+EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2022.10';
 GO
 
 /*
 	## START ##
 
-	6/15/2020 [ranzalon] - BOEJ-4634 - New Revision 
+	10/27/2021 [Koovackal] - IES-442-DB-Work Part 1 and IES-181-DB-Work Part 2.
+	                         Update Proposal Checklist table and implement Contracts tab table.
 */
 
-IF NOT EXISTS (SELECT 1 
-		FROM dbo.[ProposalStatusLU]
-		WHERE [ProposalStatus] = 'Revised')
+IF COL_LENGTH ('dbo.ProposalChecklist', 'ProfitFee') IS NOT NULL
 BEGIN
-SET IDENTITY_INSERT dbo.[ProposalStatusLU] ON
-
-INSERT INTO dbo.[ProposalStatusLU]
-(ProposalStatusID, ProposalStatus)
-VALUES (8, 'Revised');
-
-SET IDENTITY_INSERT dbo.[ProposalStatusLU] OFF
+	EXEC sp_rename 'dbo.ProposalChecklist.ProfitFee', 'ProfitFeeWithCom', 'COLUMN';
 END
 
-IF NOT EXISTS (SELECT * FROM sys.all_columns C INNER JOIN sys.tables T on C.object_id = T.object_id INNER JOIN sys.schemas S ON T.schema_id = S.schema_id WHERE S.name = 'dbo' AND 
-	T.name = 'Proposal' AND C.name = 'RevisionOfId')
-BEGIN 
-
-ALTER TABLE dbo.[Proposal]
-ADD [RevisionOfId] int NULL;
-
-ALTER TABLE dbo.[Proposal]
-ADD CONSTRAINT [FK_Proposal_Proposal]
-FOREIGN KEY ([RevisionOfId]) REFERENCES dbo.[Proposal]([ProposalID]);
-
-ALTER TABLE dbo.[Proposal]
-CHECK CONSTRAINT [FK_Proposal_Proposal];
-
-END
-
-/*
-	6/15/2020 [ranzalon] - BOEJ-4634 - New Revision 
-
-	## END ##
-*/
-
-/*
-	## START ##
-
-	6/23/2020 [Dusan]	BOEJ-4626 Add Certification Not Required
-*/
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ReasonCertificationNotRequiredLU]') AND type in (N'U'))
-	BEGIN
-		CREATE TABLE dbo.ReasonCertificationNotRequiredLU (
-			Id		INT				PRIMARY KEY,
-			Text	VARCHAR(50)		NOT NULL
-		);
-	END
-GO
-
-IF NOT EXISTS (SELECT 1 FROM dbo.ReasonCertificationNotRequiredLU)
-	BEGIN
-		INSERT INTO dbo.ReasonCertificationNotRequiredLU
-			VALUES	(1, 'Lost / Not Awarded'),
-					(2, 'Awarded Under Threshold'),
-					(3, 'Other');
-	END
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.all_columns C INNER JOIN sys.tables T on C.object_id = T.object_id INNER JOIN sys.schemas S ON T.schema_id = S.schema_id WHERE S.name = 'dbo' AND T.name = 'Proposal' AND C.name = 'OtherReasonComment')
-	BEGIN
-		ALTER TABLE Proposal ADD OtherReasonComment VARCHAR(1000);
-	END
-GO
-
-IF NOT EXISTS (SELECT * FROM sys.all_columns C INNER JOIN sys.tables T on C.object_id = T.object_id INNER JOIN sys.schemas S ON T.schema_id = S.schema_id WHERE S.name = 'dbo' AND T.name = 'Proposal' AND C.name = 'ReasonCertificationNotRequired')
-	BEGIN
-		ALTER TABLE Proposal ADD ReasonCertificationNotRequired INT REFERENCES dbo.ReasonCertificationNotRequiredLU(Id)
-	END
-GO
-/*
-	6/23/2020 [Dusan]	BOEJ-4626 Add Certification Not Required
-
-	## END ##
-*/
-
-/*
-	## START ##
-
-	7/1/2020 [Dusan]	BOEJ-4638 Post submittal attachments working with Revisioned Proposal
-*/
-IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[ProposalsAttachments]') AND type in (N'U'))
+IF COL_LENGTH ('dbo.ProposalChecklist', 'Profit') IS NULL
 BEGIN
-	CREATE TABLE dbo.ProposalsAttachments (
-		ProposalId			INT		REFERENCES dbo.Proposal(ProposalId)		NOT NULL,
-		AttachmentId		INT		REFERENCES dbo.Attachment(Id)			NOT NULL,
-		AttachmentType		INT		REFERENCES dbo.AttachmentTypeLU(Id)		NOT NULL,
-		IsRevisionReference	BIT		NOT NULL
-	);
-	ALTER TABLE dbo.ProposalsAttachments ADD CONSTRAINT PK_ProposalsAttachments PRIMARY KEY (ProposalId, AttachmentId);
+	ALTER TABLE dbo.ProposalChecklist ADD Profit BIGINT NULL;
+END
+
+IF COL_LENGTH ('dbo.ProposalChecklist', 'Com') IS NULL
+BEGIN
+	ALTER TABLE dbo.ProposalChecklist ADD Com BIGINT NULL;
 END
 GO
 
-BEGIN TRY
-	BEGIN TRAN AttachmentDataMigration
-		INSERT INTO dbo.ProposalsAttachments(ProposalId, AttachmentId, AttachmentType, IsRevisionReference)
-			SELECT ProposalId, Id, AttachmentType, 0 FROM dbo.Attachment;
+IF OBJECT_ID('dbo.EppDelegationAuthorityLU', 'U') IS NULL
+BEGIN
+	CREATE TABLE dbo.EppDelegationAuthorityLU (
+		Id		INT				PRIMARY KEY		IDENTITY(1,1),
+		Text	VARCHAR(50)		NULL
+	); 
 
-		DROP INDEX Attachment.[IX_Attachment_ProposalID];
-		ALTER TABLE dbo.Attachment DROP [FK_Proposal_Attachment];
-		ALTER TABLE dbo.Attachment DROP [FK_AttachmentType];
-		ALTER TABLE dbo.Attachment DROP COLUMN ProposalId;
-		ALTER TABLE dbo.Attachment DROP COLUMN AttachmentType;
-	COMMIT TRAN AttachmentDataMigration;
-END TRY
-BEGIN CATCH
-	ROLLBACK TRAN AttachmentDataMigration;
-	PRINT '!!! FAILED AttachmentDataMigration !!!';
-END CATCH
+	SET IDENTITY_INSERT dbo.EppDelegationAuthorityLU ON;
+	INSERT INTO dbo.EppDelegationAuthorityLU (Id, Text)
+		VALUES ('1', 'Program'), ('2', 'LOB'), ('3', 'Space'), ('4', 'Corporate');
+	SET IDENTITY_INSERT dbo.EppDelegationAuthorityLU OFF;
+END
+GO
+
+IF OBJECT_ID('dbo.ProposalContractsData', 'U') IS NULL
+BEGIN
+	CREATE TABLE dbo.ProposalContractsData (
+		ProposalContractsDataId			INT				PRIMARY KEY		IDENTITY(1,1),
+		UpdateDT						DATETIME2(7)	NOT NULL,
+		ProposalID						INT				NOT NULL		REFERENCES Proposal(ProposalID),
+		PreviouslySubmittedROM			INT				NOT NULL		REFERENCES Proposal(ProposalId),
+		CustomerSubmittalDate			DATE			NULL,
+		ContractsCorrespondLogNumber	VARCHAR(20)		NOT NULL,
+		FinalNegotiatedValue			BIGINT			NULL,
+		FinalNegotiatedDate				DATE			NULL,
+		EppDelegationAuthority			INT				NULL			FOREIGN KEY REFERENCES dbo.EppDelegationAuthorityLU(Id),
+		ProgramEppDate					DATE			NULL,
+		LobEppDate						DATE			NULL,
+		PreSpaceEppDate					DATE			NULL,
+		SpaceEppDate					DATE			NULL,
+		PreCorporateEppDate				DATE			NULL,
+		CorporateEppDate				DATE			NULL,
+		EppRosDelegationNotes			VARCHAR(1000)	NULL,
+		LmWon							BIT				NULL,
+		ModCompletedDate				DATE			NULL
+	); 
+END
 GO
 
 /*
-	7/1/2020 [Dusan]	BOEJ-4638 Post submittal attachments working with Revisioned Proposal
+	10/27/2021 [Koovackal] - IES-442-DB-Work Part 1 and IES-181-DB-Work Part 2.
+	                         Update Proposal Checklist table and implement Contracts tab table.
 
 	## END ##
 */
+
+
+/*
+	## START ##
+
+	1/17/2022 [Dusan] - IES-180: Create a new revision, related to PTM Contracts data
+*/
+
+-- New Checklist version 14, ID 15
+DECLARE @newChecklistId INT = 15;
+
+IF NOT EXISTS (SELECT 1 FROM ProposalAdequacyReview WHERE ProposalAdequacyReviewID = @newChecklistId)
+BEGIN
+	UPDATE ProposalAdequacyReview SET IsCurrent = 0;
+
+    SET IDENTITY_INSERT ProposalAdequacyReview ON;
+	INSERT INTO ProposalAdequacyReview (ProposalAdequacyReviewID, ChecklistVersion, IsCurrent, ProposalChecklistTypeID)
+		VALUES (@newChecklistId, @newChecklistId - 1, 1, 1);
+    SET IDENTITY_INSERT ProposalAdequacyReview OFF;
+
+	INSERT INTO PARChecklistContent (ChecklistText, TextTypeID, SortOrder, ColumnOrder, ProposalAdequacyReviewID, QuestionNumber, Reference, SubmissionItem, YesOnly)
+		SELECT ChecklistText, TextTypeID, SortOrder, ColumnOrder, @newChecklistId, QuestionNumber, Reference, SubmissionItem, YesOnly
+			FROM PARChecklistContent
+			WHERE ProposalAdequacyReviewId = @newChecklistId - 1;
+
+	EXEC CopyCannedResponsesPAR @newChecklistId;
+END
+
+IF NOT EXISTS (SELECT 1 FROM ProposalPricingReview WHERE ProposalPricingReviewID = @newChecklistId)
+BEGIN
+	UPDATE ProposalPricingReview SET IsCurrent = 0;
+
+    SET IDENTITY_INSERT ProposalPricingReview ON;
+	INSERT INTO ProposalPricingReview (ProposalPricingReviewID, ChecklistVersion, IsCurrent, ProposalChecklistTypeID)
+		VALUES (@newChecklistId, @newChecklistId - 1, 1, 1);
+    SET IDENTITY_INSERT ProposalPricingReview OFF;
+
+	INSERT INTO PPRChecklistContent (ChecklistText, TextTypeID, SortOrder, ColumnOrder, ProposalPricingReviewID)
+		SELECT ChecklistText, TextTypeID, SortOrder, ColumnOrder, @newChecklistId
+			FROM PPRChecklistContent
+			WHERE ProposalPricingReviewID = @newChecklistId - 1;
+
+	UPDATE PPRChecklistContent
+		SET SortOrder = 14 
+		WHERE SortOrder = 13 AND ProposalPricingReviewID = @newChecklistId;
+
+	INSERT INTO PPRChecklistContent(ChecklistText, TextTypeID, SortOrder, ColumnOrder, ProposalPricingReviewID)
+		VALUES ('<p>10. Are closeout Costs Included in Price?</p>', 4, 13, 1, @newChecklistId);
+END
+GO
+
+/*
+	1/17/2022 [Dusan] - IES-180: Create a new revision, related to PTM Contracts data
+
+	## END ##
+*/
+
+
+/*
+	02/23/2022 [Koovackal] - IES-845 Rename "Submitted" Proposal status.
+
+	## START ##
+*/
+
+IF EXISTS (SELECT ProposalStatus FROM dbo.ProposalStatusLU WHERE ProposalStatus = 'Submitted')
+BEGIN
+	UPDATE dbo.ProposalStatusLU
+	SET
+		ProposalStatus = 'Pending Certification'
+	WHERE
+		ProposalStatus = 'Submitted';
+END
+GO
+
+/*
+	02/23/2022 [Koovackal] - IES-845 Rename "Submitted" Proposal status.
+
+	## END ##
+*/
+
+
+/*
+	02/24/2022 [Koovackal] - IES-846 Create 2 new statuses
+
+	## START ##
+*/
+
+SET IDENTITY_INSERT dbo.ProposalStatusLU ON;
+IF NOT EXISTS (SELECT ProposalStatus FROM dbo.ProposalStatusLU WHERE ProposalStatusID = '9' AND ProposalStatus = 'Pending Contractual Award')
+BEGIN
+	INSERT INTO dbo.ProposalStatusLU (ProposalStatusID, ProposalStatus)
+	VALUES ('9', 'Pending Contractual Award');
+END
+GO
+
+IF NOT EXISTS (SELECT ProposalStatus FROM dbo.ProposalStatusLU WHERE ProposalStatusID = '10' AND ProposalStatus = 'Lost')
+BEGIN
+	INSERT INTO dbo.ProposalStatusLU (ProposalStatusID, ProposalStatus)
+	VALUES ('10', 'Lost');
+END
+GO
+SET IDENTITY_INSERT dbo.ProposalStatusLU OFF;
+
+/*
+	02/24/2022 [Koovackal] - IES-846 Create 2 new statuses
+
+	## END ##
+*/
+
+
+/*
+	03/14/2022 [Koovackal] - IES-919 Remove "Lost / Not Awarded" 2of2
+
+	## START ##
+*/
+
+-- Migrate existing data that had "Lost / Not Awarded" selected
+IF EXISTS (SELECT * FROM dbo.Proposal WHERE ReasonCertificationNotRequired = '1'/*Lost / Not Awarded*/ AND ProposalStatusID = '2'/*Completed*/)
+BEGIN
+	UPDATE dbo.Proposal
+	SET ReasonCertificationNotRequired = NULL, ProposalStatusID = '10'/*Lost*/
+	WHERE ReasonCertificationNotRequired = '1'/*Lost / Not Awarded*/ AND ProposalStatusID = '2'/*Completed*/;
+END
+GO
+
+IF EXISTS (SELECT Text FROM dbo.ReasonCertificationNotRequiredLU WHERE Id = '1' AND Text = 'Lost / Not Awarded')
+BEGIN
+	DELETE FROM dbo.ReasonCertificationNotRequiredLU WHERE Text = 'Lost / Not Awarded';
+END
+GO
+
+/*
+	03/14/2022 [Koovackal] - IES-919 Remove "Lost / Not Awarded" 2of2
+
+	## END ##
+*/
+
+/*
+	03/10/2022 [Quijano] - IES-854 Create New Contracts Email
+
+	## START ##
+*/
+
+IF COL_LENGTH ('dbo.Proposal','ModExecutedLastEmailed') IS NULL
+BEGIN
+	ALTER TABLE dbo.Proposal ADD ModExecutedLastEmailed datetime2(7) NULL;
+END
+GO
 
 /*
     File: \1 Views\genTracData.view.sql
@@ -161,6 +256,7 @@ CREATE VIEW [genBOE].[genTracData] AS
 **		2/15/17		Dusan				Removed RoleType
 **		6/06/18		brunworg			BOEJ-3480 Renamed ProductLine and LineOfBusiness tables.
 **		11/19/19	twilson3			BOEJ-4312 Do not return Deleted Proposals
+**		10/29/21	Dusan				IES-460: Use Revised Anticipated Delivery Date when Available
 *******************************************************************************/
 SELECT DISTINCT
 	P.ProposalID AS [genTracProposalID],
@@ -178,8 +274,7 @@ SELECT DISTINCT
 	--per BOEJ-1546, replaced start/end dates with RFPReceivedDate & AnticpatedDeliveryDate
 
 	CAST(P.RFPReceivedDate AS DATE) AS [ProposalStartDate],
-	CAST(P.AnticipatedDeliveryDate AS DATE) AS [ProposalEndDate],
-
+	CASE WHEN p.RevisedSubmittalDate IS NOT NULL THEN CAST(p.RevisedSubmittalDate AS DATE) ELSE CAST(p.AnticipatedDeliveryDate AS DATE) END AS [ProposalEndDate],
 	CAST (P.DateCreated AS DATE) AS [CreatedDate],
 	CAST(PC.ProposalSubmittalDate AS DATE) AS [SubmittalDate],
 	
@@ -450,7 +545,7 @@ SELECT
 	LEFT OUTER JOIN dbo.ProposalAdequacyReview PAR ON PAR.ProposalAdequacyReviewID = ParCC.ProposalAdequacyReviewID
 	WHERE RLU.[ResponseID] = 2 --'No' Response
 		AND PAR.ChecklistVersion >= 12 --Earliest version with Canned Responses
-		AND (PS.ProposalStatusID = 2 OR PS.ProposalStatusID = 6) --'Completed' or 'Submitted' Status
+		AND (PS.ProposalStatusID = 2 OR PS.ProposalStatusID = 6 OR PS.ProposalStatusID = 9) --'Completed', 'Pending Certification', 'Pending Contractual Award' Status
 		AND PPCX.[CannedResponseId] is NULL --Other is Selected, so response ID is null
 		AND PCC.[ChecklistTypeID] = 1 --Default Checklist Type
 
@@ -671,22 +766,22 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 /******************************************************************************
 **		 
 **		Name: [vwProposalLogReport]
-**		Desc: 
+**		Desc: View that drives the Proposal Log Report
 **			
-**		
-**
-**		Auth: Unknown
-**		Date: Unknown
 *******************************************************************************
 **		Change History
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
-**		8/5/2019	twilson3			BOEJ-4274 Add LOB Manager Comments
-**		4/22/2020	ranzalon			BOEJ-4535 Add Lead Estimator Approval Date
 **		6/30/2020	Dusan				BOEJ-4639 Add Revision Type
 **										BOEJ-4590 Add Material POC and Subcontracts POC
 **										BOEJ-4631 Add Reason Cert Not Required
+**		7/30/2020	Dusan				BOEJ-4639 Add Latest Revision
+**      10/13/2021  Koovackal           IES-181 DB Work -Added Profit, Com, ProfitFeeWithCon
+**		1/16/2022   Dusan				IES-174 Add Contract Data to the report
+**		3/7/2022	Dusan				IES-847 Modify Contracts Data data
+**      3/8/2022	Koovackal			IES-849 Changes to "Revise" button. 
+**										Removed contract offer code.
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -727,7 +822,9 @@ SELECT
     PC.[TravelCost] AS [TravelCost],
     PC.[OtherDirectCost] AS [OtherDirectCost],
 	PC.[AbsoluteValue] AS [AbsoluteValue],
-	PC.[ProfitFee] AS [Profit/Fee + COM],	
+	PC.[Profit] AS [Profit/Fee],
+	PC.[Com] AS [Com],
+	PC.[ProfitFeeWithCom] AS [Profit/Fee + COM],
 	PC.[ISGSTotalPrice] AS [Total Price],
 	PC.[ROSPercentage] AS [ROS %],
 	CAST(PC.ProposalSubmittalDate AS DATE) AS [Actual Submittal Date],
@@ -774,14 +871,14 @@ SELECT
 	CASE 
 		WHEN P.ProposalTrackingID IS NULL OR P.ProposalTrackingID = '' THEN P.ForecastedTrackingId
 		ELSE
-			CASE LEN(LEFT (IsNULL(ProposalTrackingID, ForecastedTrackingId), CHARINDEX ('-',IsNULL(ProposalTrackingID, ForecastedTrackingId)) -1))
+			CASE LEN(LEFT (IsNULL(P.ProposalTrackingID, P.ForecastedTrackingId), CHARINDEX ('-',IsNULL(P.ProposalTrackingID, P.ForecastedTrackingId)) -1))
 				WHEN 1 THEN P.ForecastedTrackingId
 				WHEN 4 THEN LTRIM(RTRIM(LEFT (IsNULL(P.ProposalTrackingID, P.ForecastedTrackingId), 10))) 
 				WHEN 2 THEN LTRIM(RTRIM(LEFT (IsNULL(P.ProposalTrackingID, P.ForecastedTrackingId), 8)))
 			END
 	END	AS MainProposalTrackingID,
-	CCPDRequired,
-	CostVolumeClassified,
+	P.CCPDRequired,
+	P.CostVolumeClassified,
 	ppsLU.ProgramProposalStatus,
 	pcLU.ProposalClass AS [Proposal Class],
 	CAST(P.[AgreementDate] AS DATE) AS [Agreement Date],
@@ -802,12 +899,38 @@ SELECT
 		WHEN 3 THEN p.OtherReasonComment -- Other
 		ELSE rCNR.Text
 	END AS ReasonCertificationNotRequired,
-	CASE p.RevisionOfId
-		WHEN NULL THEN 'Original'
+	CASE 
+		WHEN p.RevisionOfId IS NULL THEN 'Original'
 		ELSE 'Proposal Revision'
 	END AS RevisionType,
 	MaterialPOC.DisplayName AS MaterialPOC,
-	SubcontractsPOC.DisplayName AS SubcontractsPOC
+	SubcontractsPOC.DisplayName AS SubcontractsPOC,
+	CASE
+		WHEN p.ProposalStatusID = 8 THEN 'No'
+		ELSE 'Yes'
+	END AS IsLatestVersion,
+	-- Proposal Contract Data
+	previousRomProposal.ProposalTrackingID AS ContractsPreviouslySubmittedRomTrackingNumber,
+	previousRomChecklist.ProposalSubmittalDate AS ContractsPreviouslySubmittedRomDate,
+	previousRomChecklist.ISGSTotalPrice AS ContractsPreviouslySubmittedRomValue,
+	pCD.CustomerSubmittalDate AS ContractsCustomerSubmittalDate,
+	pCD.ContractsCorrespondLogNumber AS ContractsCorrespondLogNumber,
+	pCD.FinalNegotiatedValue AS ContractsFinalNegotiatedValue,
+	pCD.FinalNegotiatedDate AS ContractsFinalNegotiatedDate,
+	eppLU.Text AS ContractsEppDelegationAuthority,
+	pCD.ProgramEppDate AS ContractsProgramEppDate,
+	pCD.LobEppDate AS ContractsLobEppDate,
+	pCD.PreSpaceEppDate AS ContractsPreSpaceEppDate,
+	pCD.SpaceEppDate AS ContractsSpaceEppDate,
+	pCD.PreCorporateEppDate AS ContractsPreCorporateEppDate,
+	pCD.CorporateEppDate AS ContractsCorporateEppDate,
+	pCD.EppRosDelegationNotes AS ContractsEppRosDelegationNotes,
+	CASE
+		WHEN pCD.LmWon = 1 THEN 'Yes'
+		WHEN pCD.LmWon = 0 THEN 'No'
+		ELSE NULL
+	END AS ContractsLmWon,
+	pCD.ModCompletedDate AS ContractsModCompletedDate
   FROM [dbo].[Proposal] P
 	INNER JOIN [dbo].[ProgramAreaLU] PA ON P.ProgramAreaID = PA.ProgramAreaID
 	INNER JOIN [dbo].[LineOfBusinessLU] LOB ON P.LineOfBusinessID = LOB.LineOfBusinessID
@@ -924,6 +1047,12 @@ SELECT
 			FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
 			WHERE PUR.RoleID = 7 
 	) SubcontractsPOC ON P.ProposalID = SubcontractsPOC.ProposalID
+
+	-- Proposal Contract Data
+	LEFT OUTER JOIN ProposalContractsData pCD ON pCD.ProposalID = p.ProposalID
+	LEFT OUTER JOIN Proposal previousRomProposal ON pCD.PreviouslySubmittedROM = previousRomProposal.ProposalID
+	LEFT OUTER JOIN ProposalChecklist previousRomChecklist ON pCD.PreviouslySubmittedROM = previousRomChecklist.ProposalID
+	LEFT OUTER JOIN EppDelegationAuthorityLU eppLU ON eppLU.Id = pCD.EppDelegationAuthority
 GO
 
 
@@ -1257,6 +1386,7 @@ AS
 **          --------    --------                ------------------------------
 **			6/06/18		brunworg				BOEJ-3480 Renamed ProductLine and LineOfBusiness tables.
 **			6/20/18		ranzalon				BOEJ-4114 - Updated for Submitted Status
+**			3/3/22		koovackal				IES-849 Changes to "Revise" button
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -1336,9 +1466,48 @@ WHERE
 	P.ProposalStatusID IN  (
 							1, /*In Progress*/
 							2, /*Completed*/
-							6  /*Submitted*/
+							6,  /*Pending Certification*/
+							9  /*Pending Contractual Award*/
 						   )
 
+GO
+
+/*
+    File: \Stored Procedures\CopyCannedResponsesPAR.proc.sql
+*/
+PRINT '### Starting file: \Stored Procedures\CopyCannedResponsesPAR.proc.sql';
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[CopyCannedResponsesPAR]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[CopyCannedResponsesPAR];
+GO
+
+CREATE PROCEDURE dbo.CopyCannedResponsesPAR
+/******************************************************************************
+**		 
+**		Name: CopyCannedResponsesPAR
+**		Desc: Copies Canned Responses into a new Checklist version. This is executed manually.
+**
+**		Auth: Dusan
+**		Date: 4/13/21
+*******************************************************************************
+**		Change History
+*******************************************************************************
+**		Date:		Author:				Description:
+**		--------	--------			---------------------------------------
+*******************************************************************************/
+(@newChecklistId AS INT) AS
+BEGIN
+	IF NOT EXISTS (SELECT 1 FROM dbo.CannedResponsesPAR cR INNER JOIN PARChecklistContent pCC ON pCC.PARChecklistContentID = cR.QuestionId WHERE pCC.ProposalAdequacyReviewID = @newChecklistId)
+	BEGIN
+		DECLARE @oldChecklistId INT = @newChecklistId - 1;
+
+		INSERT INTO dbo.CannedResponsesPAR
+		SELECT cR.Text, new.PARChecklistContentID
+			FROM dbo.CannedResponsesPAR cR 
+				INNER JOIN PARChecklistContent old ON old.PARChecklistContentID = cR.QuestionId AND old.ProposalAdequacyReviewID = @oldChecklistId
+				INNER JOIN PARChecklistContent new ON old.QuestionNumber = new.QuestionNumber AND new.ProposalAdequacyReviewID = @newChecklistId;
+
+	END
+END
 GO
 
 /*
@@ -1956,21 +2125,19 @@ AS
 **		 
 **		Name: [CreateProposalLogReport]
 **		Desc: SSRS: Proposal Log Report
-**			
 **
-**
-**		Auth: Don Canuso
-**		Date: 7/2013
 *******************************************************************************
 **		Change History
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
-**		8/5/2019	twilson3			BOEJ-4274 Add LOB Manager Comments
 **		4/22/2020	ranzalon			BOEJ-4535 Add Lead Estimator Approval Date
 **		6/30/2020	Dusan				BOEJ-4639 Add Revision Type
 **										BOEJ-4590 Add Material POC and Subcontracts POC
 **										BOEJ-4631 Add Reason Cert Not Required
+**		7/30/2020	Dusan				BOEJ-4639 Add Latest Revision
+**		1/16/2022   Dusan				IES-174 Add Contract Data to the report
+**		3/7/2022	Dusan				IES-847 Modify Contracts Data data
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -2235,6 +2402,25 @@ SELECT V.[ProposalID]
 	 ,V.RevisionType
 	 ,V.MaterialPOC
 	 ,V.SubcontractsPOC
+	 ,V.IsLatestVersion
+	 -- Proposal Contract Data
+	 ,V.ContractsPreviouslySubmittedRomTrackingNumber
+	 ,V.ContractsPreviouslySubmittedRomDate
+	 ,V.ContractsPreviouslySubmittedRomValue
+	 ,V.ContractsCustomerSubmittalDate
+	 ,V.ContractsCorrespondLogNumber
+	 ,V.ContractsFinalNegotiatedValue
+	 ,V.ContractsFinalNegotiatedDate
+	 ,V.ContractsEppDelegationAuthority
+ 	 ,V.ContractsProgramEppDate
+	 ,V.ContractsLobEppDate
+	 ,V.ContractsPreSpaceEppDate
+	 ,V.ContractsSpaceEppDate
+	 ,V.ContractsPreCorporateEppDate
+	 ,V.ContractsCorporateEppDate
+	 ,V.ContractsEppRosDelegationNotes
+	 ,V.ContractsLmWon
+	 ,V.ContractsModCompletedDate
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(
@@ -2256,8 +2442,7 @@ WHERE
 	(
 		(
 			@AllProposals = 1
-		) OR
-	
+		) OR	
 		(
 			@SpecificProposals = 1 AND
 				(
@@ -2276,27 +2461,19 @@ WHERE
 						)
 							
 				)
-		) OR
-		
+		) OR		
 		(
 			@SubmitStartDate IS NOT NULL AND
 			@SubmitEndDate IS NOT NULL AND
 			CAST([Actual Submittal Date] AS DATE) > = @SubmitStartDate AND
-			CAST([Actual Submittal Date] AS DATE) < = @SubmitEndDate			
-			
-			
-			
-		)  OR
-		
+			CAST([Actual Submittal Date] AS DATE) < = @SubmitEndDate
+		)  OR		
 		(
 			(
 				@TrackingNumber IS NOT NULL AND
 				([Tracking #] LIKE @TrackingNumber + '%' OR [ForecastedTracking#] LIKE @TrackingNumber + '%')
 			)			
-		)
-		
-		
-		
+		)	
 	)
 
 AND
@@ -2733,6 +2910,8 @@ AS
 **		--------	--------			---------------------------------------
 **		9/7/2017	twilson3			BOEJ-2459 Add Attachment table
 **		7/6/2020	Dusan				Attachment Proposals table
+**		11/2/2021	Koovackal			Contracts Data and Offer tables
+**      2/15/2022   Koovackal           Remove Contracts Offer table deletion
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -2749,6 +2928,7 @@ SET NOCOUNT ON
 			DELETE FROM dbo.ProposalPPRChecklistXREF WHERE ProposalID = @ProposalID
 			DELETE FROM dbo.ProposalChecklist WHERE ProposalID = @ProposalID
 			DELETE FROM dbo.ProposalChecklistComplete WHERE ProposalID = @ProposalID
+			DELETE FROM dbo.ProposalContractsData WHERE ProposalID = @ProposalID
 			DELETE FROM dbo.Proposal WHERE ProposalID = @ProposalID
 		END
 	ELSE
@@ -3207,6 +3387,9 @@ AS
 **			6/5/2020	Dusan					BOEJ-4657: Adding Forecasted proposals into field for search; cleaned up some formatting on text
 **			6/18/2020	ranzalon				BOEJ-4636 - Revised Proposals in All
 **			7/15/2020	Dusan					BOEJ-4700: Pull Has / Is Revision Data
+**			8/14/2020	ranzalon				BOEJ-4676 - Use revised submittal date when available
+**			2/2/2021	ranzalon				BOEJ-4861 - Add submitted value
+**			2/28/2022	koovackal				IES-846 Create 2 new statuses
 ******************************************************************************/
 	SET NOCOUNT ON 
 
@@ -3241,6 +3424,7 @@ AS
 		P.Customer AS [Customer],
 		P.CustomerTypeId As [CustomerTypeId],
 		P.EstimatedProposalValue AS [Estimated Value],
+		PC.ISGSTotalPrice as [Submitted Value],
 		CaptureManager.DisplayName AS [Capture Manager],
 		LeadEstimator.DisplayName AS [Pricer Name],
 		PeerReviewer.DisplayName AS [Peer Reviewer],
@@ -3264,7 +3448,7 @@ AS
 		LeadEstimator.NTID  AS LeadEstimatorNtId,
 		LeadEstimator.DisplayName AS LeadEstimatorName,
 		P.DateAssigned AS [Date Assigned],
-		P.AnticipatedDeliveryDate AS [Estimated Ship Date (Due Date)],
+		CASE WHEN P.RevisedSubmittalDate IS NOT NULL THEN P.RevisedSubmittalDate ELSE P.AnticipatedDeliveryDate END AS [Estimated Ship Date (Due Date)],
 		CAST(CC.ChecklistCompleteDate AS DATE) AS [ChecklistCompleteDate],
 		CAST(PC.ProposalSubmittalDate AS DATE) AS [Proposal Submit Date],
 		S.ProposalStatus AS [Proposal Status],
@@ -3326,15 +3510,16 @@ AS
 	WHERE
 	(
 		(
-			(@ProposalStatusID IS NULL AND P.ProposalStatusID IN (1/*In Progress*/,2/*Completed*/,6/*Submitted*/,7/*No Bid*/,8/*Revised*/)) 
+			(@ProposalStatusID IS NULL AND P.ProposalStatusID IN (1/*In Progress*/,2/*Completed*/,6/*Pending Certification*/,7/*No Bid*/,8/*Revised*/,
+																  9/*Pending Contractual Award*/,10/*Lost*/))
 			OR (@ProposalStatusID IS NOT NULL AND P.ProposalStatusID = @ProposalStatusID)
 		) AND (
 			(
-				(@ProposalStatusID = 1/*In Progress*/ OR @ProposalStatusID = 6/*Submitted*/ OR @ProposalStatusID = 8/*Revised*/) 
-				AND (@AssignedStart IS NULL OR CAST (P.DateAssigned AS Date) > = @AssignedStart) 
-				AND (@AssignedEnd IS NULL OR CAST (P.DateAssigned AS Date) < = @AssignedEnd) 
+				(@ProposalStatusID = 1/*In Progress*/ OR @ProposalStatusID = 6/*Pending Certification*/ OR @ProposalStatusID = 8/*Revised*/ OR @ProposalStatusID = 9/*Pending Contractual Award*/) 
+				AND (@AssignedStart IS NULL OR CAST (P.DateAssigned AS Date) > = @AssignedStart)
+				AND (@AssignedEnd IS NULL OR CAST (P.DateAssigned AS Date) < = @AssignedEnd)
 			) OR (
-				P.ProposalStatusID = 2/*Completed*/
+				P.ProposalStatusID = 2/*Completed*/ OR P.ProposalStatusID = 10/*Lost*/
 				AND (@AssignedStart IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) > = @AssignedStart) 
 				AND (@AssignedEnd IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) < = @AssignedEnd) 
 			) OR (
@@ -4354,6 +4539,7 @@ AS
 **			5/31/2018	ranzalon				BOJE-3405 - remove TempProposalSubmittalDate
 **			9/5/2018	twilson3				BOEJ-3761 Remove id for new Submitted status
 **			9/11/2018	twilson3				BOEJ-3818 Change status to In progress if submitted
+**          3/3/2022    koovackal               IES-849 Changes to "Revise" button
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -4416,14 +4602,15 @@ IF (SELECT UpdateDate FROM [dbo].[Proposal] WHERE ProposalID = @ProposalID) = @U
 
 
 /*
-Completed/Submitted States would change to InProgess
+Completed, Pending Certification, Pending Contractual Award states would change to InProgess
 */
 UPDATE [dbo].[Proposal] 
     SET  [ProposalStatusID] = 1 /*In Progress*/
-     WHERE 
+     WHERE
           ProposalID = @ProposalID AND
           (ProposalStatusID = 2 /*Completed*/ OR
-		   ProposalStatusID = 6) /*Submitted*/
+		   ProposalStatusID = 6 /*Pending Certification*/ OR
+		   ProposalStatusID = 9) /*Pending Contractual Award*/
 
 
 /*Update Date for the Proposal gets updated*/
@@ -4574,7 +4761,8 @@ CREATE PROCEDURE [dbo].[updateProposalInformation]
       @ProposalSubmittalDate [date],
       @ISGSTotalPrice [bigint],
       @PricerChecklistSubmittalDate [date],
-      @PeerChecklistSubmittalDate [date]
+      @PeerChecklistSubmittalDate [date],
+	  @InformationComments VARCHAR(MAX) = NULL
 )
 AS
 /******************************************************************************
@@ -4597,6 +4785,7 @@ AS
 **			1/12/2017	gbrunwo					BOEJ-1688 Update PTM SPs to not 
 **												display technical details to the user
 **			5/31/2018	ranzalon				BOEJ-3405 - remove TempProposalSubmittalDate
+**			8/10/2020	ranzalon				BOEJ-4649 Manage Proposal Info Comments
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -4648,6 +4837,15 @@ IF (SELECT UpdateDate FROM [dbo].[Proposal] WHERE ProposalID = @ProposalID) = @U
 					ProposalID = @ProposalID AND
 					ResponseTypeID = 2 /*Peer*/
 			END
+
+		IF @InformationComments IS NOT NULL
+		  BEGIN                  
+			  UPDATE [dbo].[Proposal]
+					SET  [UpdateDate] = @UpdateDate
+						,[InformationComments] = @InformationComments
+					 WHERE 
+						  ProposalID = @ProposalID
+		  END
     
       END
       
@@ -5704,7 +5902,9 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @IsRevision bit,
 	  @RevisionOfId int,
 	  @ReasonCertificationNotRequired INT = 1,
-	  @OtherReasonComment VARCHAR(1000) = NULL
+	  @OtherReasonComment VARCHAR(1000) = NULL,
+	  @SetupComments VARCHAR(MAX) = NULL,
+	  @ModExecutedLastEmailed datetime2 = NULL
 )
 AS
 /******************************************************************************
@@ -5738,6 +5938,8 @@ AS
 **			6/23/2020	Dusan					BOEJ-4626 Add Certification Not Required
 **			6/23/2020	ranzalon				BOEJ-4669 No new tracking number when IsRevision 
 **			7/2/2020	ranzalon				BOEJ-4687 Link Revisions to Revised Proposal
+**			7/31/2020	ranzalon				BOEJ-4648 Proposal Setup Comments
+**          3/10/2022   jquijano                IES-854 Add new email (Mod)
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -5879,6 +6081,8 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,[RevisionOfId]
 		,[ReasonCertificationNotRequired]
 		,[OtherReasonComment]
+		,[SetupComments]
+		,[ModExecutedLastEmailed]
 		)
 	OUTPUT inserted.ProposalID INTO @Inserted
 	VALUES
@@ -5943,6 +6147,8 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@RevisionOfId
 		,@ReasonCertificationNotRequired
 		,@OtherReasonComment
+		,@SetupComments
+		,@ModExecutedLastEmailed
 		)
 
 		SELECT @ProposalID = ID FROM @Inserted
@@ -6041,6 +6247,8 @@ ELSE
 						,[RevisionOfId] = @RevisionOfId
 						,[ReasonCertificationNotRequired] = @ReasonCertificationNotRequired
 						,[OtherReasonComment] = @OtherReasonComment
+						,[SetupComments] = @SetupComments
+						,[ModExecutedLastEmailed] = @ModExecutedLastEmailed
 
 						WHERE 
 							ProposalID = @ProposalID;
@@ -6159,7 +6367,9 @@ CREATE PROCEDURE [dbo].[upsertProposalChecklist]
 	@ProposalID [int],
 	@ProposalSubmittalDate [date],
 	@ISGSTotalPrice [bigint],
-	@ProfitFee [bigint],
+	@Profit [bigint],
+	@Com [bigint],
+	@ProfitFeeWithCom [bigint],
 	@ROSPercentage [decimal](4, 2),
 	@LMLaborHours [decimal](11, 2),
 	@LMLaborCost [bigint],
@@ -6207,6 +6417,8 @@ AS
 **		02/02/17	tglick				added new field [AbsoluteValue]
 **		3/20/2017	twilson3			BOEJ-1957 Move CCPD from Checklist to Proposal
 **		5/31/2018	ranzalon			BOEJ-3405 - remove TempProposalSubmittalDate
+**      10/13/2021  Koovackal           IES-181 DB Work - Added Profit, Com,
+**                                      ProfitFeeWithCom
 *******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -6221,7 +6433,9 @@ INSERT INTO [dbo].[ProposalChecklist]
            ,[ProposalID]
            ,[ProposalSubmittalDate]
            ,[ISGSTotalPrice]
-           ,[ProfitFee]
+           ,[Profit]
+           ,[Com]
+           ,[ProfitFeeWithCom]
            ,[ROSPercentage]
            ,[LMLaborHours]
            ,[LMLaborCost]
@@ -6240,7 +6454,9 @@ INSERT INTO [dbo].[ProposalChecklist]
             ,@ProposalID
             ,@ProposalSubmittalDate
             ,@ISGSTotalPrice
-			,@ProfitFee
+			,@Profit
+			,@Com
+			,@ProfitFeeWithCom
 			,@ROSPercentage
 			,@LMLaborHours
 			,@LMLaborCost
@@ -6272,7 +6488,9 @@ ELSE
 			  ,[ProposalID] = @ProposalID
 			  ,[ProposalSubmittalDate] = @ProposalSubmittalDate
 			  ,[ISGSTotalPrice] = @ISGSTotalPrice
-			  ,[ProfitFee] = @ProfitFee
+			  ,[Profit] = @Profit
+			  ,[Com] = @Com
+			  ,[ProfitFeeWithCom] = @ProfitFeeWithCom
 			  ,[ROSPercentage] = @ROSPercentage
 			  ,[LMLaborHours] = @LMLaborHours
 			  ,[LMLaborCost] = @LMLaborCost
@@ -6568,6 +6786,110 @@ AS
 
 	IF @@ERROR = 0
 		SELECT @Id AS NewId
+
+GO
+
+/*
+    File: \Stored Procedures\upsertProposalContractsData.sql
+*/
+PRINT '### Starting file: \Stored Procedures\upsertProposalContractsData.sql';
+IF  EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[upsertProposalContractsData]') AND type in (N'P', N'PC'))
+	DROP PROCEDURE [dbo].[upsertProposalContractsData];
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[upsertProposalContractsData]
+(
+	@ProposalContractsDataId [int],
+	@UpdateDT [datetime2](7),
+	@ProposalID [int],
+	@PreviouslySubmittedROM [int],
+	@CustomerSubmittalDate [date],
+	@ContractsCorrespondLogNumber [varchar](20),
+	@FinalNegotiatedValue [bigint],
+	@FinalNegotiatedDate [date],
+	@EppDelegationAuthority [int],
+	@ProgramEppDate [date],
+	@LobEppDate [date],
+	@PreSpaceEppDate [date],
+	@SpaceEppDate [date],
+	@PreCorporateEppDate [date],
+	@CorporateEppDate [date],
+	@EppRosDelegationNotes [varchar](1000),
+	@LmWon [bit],
+	@ModCompletedDate [date]
+)
+AS
+/******************************************************************************
+**
+**		Name: [upsertProposalContractsData]
+**		Desc: Upsert Proposal Contracts Data
+**
+**
+**		Auth: Ajay Koovackal
+**		Date: 10/29/21
+*******************************************************************************
+**		Change History
+*******************************************************************************
+**		Date:		Author:				Description:
+**		--------	--------			---------------------------------------
+**		10/29/21    Koovackal			Creation
+**      02/16/22    Koovackal           Add upsert for EPP fields
+*******************************************************************************/
+SET NOCOUNT ON
+
+	IF @ProposalContractsDataId < 0 -- Insert new
+		BEGIN
+			DECLARE @Inserted AS Table (Id int)
+			INSERT INTO [dbo].[ProposalContractsData] (UpdateDT, ProposalID, PreviouslySubmittedROM, CustomerSubmittalDate,
+														ContractsCorrespondLogNumber, FinalNegotiatedValue, FinalNegotiatedDate,
+														EppDelegationAuthority, ProgramEppDate, LobEppDate, PreSpaceEppDate, 
+														SpaceEppDate, PreCorporateEppDate, CorporateEppDate, EppRosDelegationNotes, 
+														LmWon, ModCompletedDate)
+				OUTPUT inserted.ProposalContractsDataId INTO @Inserted
+				VALUES (GETDATE(), @ProposalID, @PreviouslySubmittedROM, @CustomerSubmittalDate, @ContractsCorrespondLogNumber,
+						@FinalNegotiatedValue, @FinalNegotiatedDate, @EppDelegationAuthority, @ProgramEppDate, @LobEppDate, 
+						@PreSpaceEppDate, @SpaceEppDate, @PreCorporateEppDate, @CorporateEppDate, @EppRosDelegationNotes, @LmWon, 
+						@ModCompletedDate)
+			SELECT @ProposalContractsDataId = Id FROM @Inserted
+		END
+	ELSE -- updating existing
+		BEGIN
+			IF (SELECT UpdateDT FROM ProposalContractsData WHERE ProposalContractsDataId = @ProposalContractsDataId) = @UpdateDT
+				UPDATE ProposalContractsData
+					SET UpdateDT = GETDATE(),
+						ProposalID = @ProposalID,
+						PreviouslySubmittedROM = @PreviouslySubmittedROM,
+						CustomerSubmittalDate = @CustomerSubmittalDate,
+						ContractsCorrespondLogNumber = @ContractsCorrespondLogNumber,
+						FinalNegotiatedValue = @FinalNegotiatedValue, 
+						FinalNegotiatedDate = @FinalNegotiatedDate,
+						EppDelegationAuthority = @EppDelegationAuthority,
+						ProgramEppDate = @ProgramEppDate,
+						LobEppDate = @LobEppDate,
+						PreSpaceEppDate = @PreSpaceEppDate,
+						SpaceEppDate = @SpaceEppDate,
+						PreCorporateEppDate = @PreCorporateEppDate,
+						CorporateEppDate = @CorporateEppDate,
+						EppRosDelegationNotes = @EppRosDelegationNotes,
+						LmWon = @LmWon,
+						ModCompletedDate = @ModCompletedDate
+					WHERE ProposalContractsDataId = @ProposalContractsDataId
+			ELSE
+				BEGIN
+					DECLARE @ErrorMessage varchar (500)
+					SET @ErrorMessage = 'The ProposalContractsData with Id ' + CAST(@ProposalContractsDataId  AS varchar(10)) + ' has been updated and is out of sync with the data in your browser. Please refresh your data.'
+					RAISERROR (@ErrorMessage, 11, 1)
+					RETURN
+				END
+		END
+
+	IF @@ERROR = 0
+		SELECT @ProposalContractsDataId as ProposalContractsDataId
 
 GO
 
