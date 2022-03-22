@@ -143,7 +143,7 @@ namespace GenTRAC.Tests.ActionLogic
             {
                 logic = new ContractsControllerLogic(this.securityAccess.Object, this.proposalLoader.Object, this.userMapper.Object,
                 this.objectFactory.Object, this.approvalsLoader.Object, this.proposalChecklistLoader.Object, this.checklistMediator.Object,
-                this.proposalMediator.Object, this.contractsLoader.Object, this.emailer.Object, this.proposalLogic.Object, this.approvalsLogic.Object);
+                this.proposalMediator.Object, this.contractsLoader.Object, this.emailer.Object, this.approvalsLogic.Object);
             }
             catch (Exception ex)
             {
