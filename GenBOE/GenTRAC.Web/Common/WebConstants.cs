@@ -428,6 +428,45 @@ namespace GenTRAC.Web.Common
 
             #endregion
 
+            #region Contracts
+
+            /// <summary>
+            /// Display Contracts
+            /// </summary>
+            public const string DISPLAY_CONTRACTS_INDEX = "DisplayContractsIndex";
+
+            /// <summary>
+            /// Display Contracts
+            /// </summary>
+            public const string CALCULATE_OFFER_FIELDS = "CalculateOfferFields";
+
+            /// <summary>
+            /// Display Contracts
+            /// </summary>
+            public const string GET_SELECTED_ROM_DATA = "GetPreviouslySelectedRomData";
+
+            /// <summary>
+            /// Save Contracts
+            /// </summary>
+            public const string SAVE_CONTRACT = "SaveContract";
+
+            /// <summary>
+            /// Set Proposal Lost
+            /// </summary>
+            public const string SET_PROPOSAL_LOST = "SetProposalLost";
+
+            /// <summary>
+            /// Sets the Proposal as No Bid
+            /// </summary>
+            public const string SET_NO_BID = "SetProposalAsNoBid";
+
+            /// <summary>
+            /// Reverts the Proposal No Bid status
+            /// </summary>
+            public const string REVERT_NO_BID = "RevertProposalNoBidStatus";
+
+            #endregion
+
             #region Approvals
             /// <summary>
             /// approvals
@@ -448,16 +487,6 @@ namespace GenTRAC.Web.Common
             /// Resets the workflow for a proposal.
             /// </summary>
             public const string RESET_WORKFLOW = "ResetWorkflow";
-
-            /// <summary>
-            /// Sets the Proposal as No Bid
-            /// </summary>
-            public const string SET_NO_BID = "SetProposalAsNoBid";
-
-            /// <summary>
-            /// Reverts the Proposal No Bid status
-            /// </summary>
-            public const string REVERT_NO_BID = "RevertProposalNoBidStatus";
 
             #endregion
 
@@ -557,6 +586,15 @@ namespace GenTRAC.Web.Common
             public const string COMPLETE_CERTIFICATION_TIMELINE = "CompleteCertificationTimeline";
 
             #endregion Certification Timeline
+
+            #region Completion
+
+            /// <summary>
+            /// Sets the proposal status to Complete
+            /// </summary>
+            public const string COMPLETE_PROPOSAL = "SetCompleteStatus";
+            
+            #endregion
         }
 
         #endregion Action
@@ -604,6 +642,11 @@ namespace GenTRAC.Web.Common
             public const string APPROVALS = "approvals";
 
             /// <summary>
+            /// Contracts
+            /// </summary>
+            public const string CONTRACTS = "contracts";
+
+            /// <summary>
             /// Revision
             /// </summary>
             public const string REVISION = "revision";
@@ -617,6 +660,11 @@ namespace GenTRAC.Web.Common
             /// The Certification timeline
             /// </summary>
             public const string CERTIFICATION_TIMELINE = "certificationtimeline";
+
+            /// <summary>
+            /// Proposal Completion
+            /// </summary>
+            public const string COMPLETION = "completion";
         }
         #endregion Controller
 
@@ -899,6 +947,15 @@ namespace GenTRAC.Web.Common
             public const string PROPOSAL_COMMENTS = "ProposalComments";
 
             #endregion Proposal
+
+            #region Contracts
+
+            /// <summary>
+            /// Approvals index
+            /// </summary>
+            public const string CONTRACTS_INDEX = "ContractsIndex";
+
+            #endregion
 
             #region Approvals
 

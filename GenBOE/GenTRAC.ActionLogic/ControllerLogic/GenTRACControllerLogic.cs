@@ -498,11 +498,11 @@ namespace GenTRAC.ActionLogic
             if (checklistGeneralInfo.ShowChecklistResponse == ShowChecklistResponse.Pricer)
             {
                 // the following validation checks are always done regardless if this is a save or submit
-                if (!string.IsNullOrEmpty(checklistGeneralInfo.SubmittalDate))
+                if (!string.IsNullOrEmpty(checklistGeneralInfo.EstimatingSubmitsToContractsDate))
                 {
                     try
                     {
-                        checklistGeneralInfo.SubmittalDate.ToDateTime("MM/dd/yyyy");
+                        checklistGeneralInfo.EstimatingSubmitsToContractsDate.ToDateTime("MM/dd/yyyy");
                     }
                     catch (FormatException)
                     {
@@ -518,9 +518,9 @@ namespace GenTRAC.ActionLogic
                 // only do the general info validation if its the pricer saving
                 if (checklistGeneralInfo.ShowChecklistResponse == ShowChecklistResponse.Pricer)
                 {
-                    if (string.IsNullOrEmpty(checklistGeneralInfo.SubmittalDate))
+                    if (string.IsNullOrEmpty(checklistGeneralInfo.EstimatingSubmitsToContractsDate))
                     {
-                        inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.SUBMITTAL_DATE_REQUIRED));
+                        inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.ESTIMATING_SUBMITS_TO_CONTRACTS_DATE_REQUIRED));
                     }
 
                     if (string.IsNullOrEmpty(checklistGeneralInfo.SubmittedValue))
@@ -1078,10 +1078,12 @@ namespace GenTRAC.ActionLogic
                     Updateable = IES.Common.UpdateType.Upsert,
                     UpdateDate = checklistGeneralInfo.UpdateDate,
                     ProposalID = checklistGeneralInfo.ProposalID,
-                    ProposalSubmittalDate = string.IsNullOrEmpty(checklistGeneralInfo.SubmittalDate) ? (DateTime?)null : checklistGeneralInfo.SubmittalDate.ToDateTime("MM/dd/yyyy"),
+                    EstimatingSubmitsToContractsDate = string.IsNullOrEmpty(checklistGeneralInfo.EstimatingSubmitsToContractsDate) ? (DateTime?)null : checklistGeneralInfo.EstimatingSubmitsToContractsDate.ToDateTime("MM/dd/yyyy"),
                     SubmittedValue = !string.IsNullOrEmpty(checklistGeneralInfo.SubmittedValue) ? long.Parse(checklistGeneralInfo.SubmittedValue.Replace(",", string.Empty)) : (long?)null,
                     AbsoluteValue = !string.IsNullOrEmpty(checklistGeneralInfo.AbsoluteValue) ? long.Parse(checklistGeneralInfo.AbsoluteValue.Replace(",", string.Empty)) : (long?)null,
-                    ProfitFee = !string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeComTotal) ? long.Parse(checklistProposalPricingData.ProfitFeeComTotal.Replace(",", string.Empty)) : (long?)null,
+                    ProfitFeeWithCom = !string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeComTotal) ? long.Parse(checklistProposalPricingData.ProfitFeeComTotal.Replace(",", string.Empty)) : (long?)null,
+                    Profit = !string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeTotal) ? long.Parse(checklistProposalPricingData.ProfitFeeTotal.Replace(",", string.Empty)) : (long?)null,
+                    Com = !string.IsNullOrEmpty(checklistProposalPricingData.ComTotal) ? long.Parse(checklistProposalPricingData.ComTotal.Replace(",", string.Empty)) : (long?)null,
                     ROSPercentage = string.IsNullOrEmpty(checklistProposalPricingData.ROSPercent) ? (decimal?)null : Convert.ToDecimal(checklistProposalPricingData.ROSPercent),
                     LMLaborHrs = string.IsNullOrEmpty(checklistProposalPricingData.LMLaborHrs) ? (decimal?)null : Convert.ToDecimal(checklistProposalPricingData.LMLaborHrs),
                     LMLaborCost = string.IsNullOrEmpty(checklistProposalPricingData.LMLaborCost) ? (long?)null : long.Parse(checklistProposalPricingData.LMLaborCost.Replace(",", string.Empty)),
@@ -1174,10 +1176,10 @@ namespace GenTRAC.ActionLogic
                     // get the dto again to get latest update date
                     FullProposal fullProposalDto = this.GetFullProposalDto(checklist.ProposalID);
 
-                    ProposalStatus newStatus = ProposalStatus.Completed;
+                    ProposalStatus newStatus = ProposalStatus.PendingAward;
                     if (fullProposalDto.IsCCPDRequired.HasValue && fullProposalDto.IsCCPDRequired.Value)
                     {
-                        newStatus = ProposalStatus.Submitted;
+                        newStatus = ProposalStatus.PendingCertification;
                     }
 
                     this.ProposalMediator.SaveProposalStatus(checklist.ProposalID, fullProposalDto.UpdateDate, newStatus);
@@ -1304,9 +1306,9 @@ namespace GenTRAC.ActionLogic
                 ProposalChecklistDto checklist = checklists.First();
                 model.ProposalChecklistID = checklist.Id;
 
-                if (checklist.ProposalSubmittalDate.HasValue)
+                if (checklist.EstimatingSubmitsToContractsDate.HasValue)
                 {
-                    model.SubmittalDate = checklist.ProposalSubmittalDate.Value.ToString("MM/dd/yyyy");
+                    model.EstimatingSubmitsToContractsDate = checklist.EstimatingSubmitsToContractsDate.Value.ToString("MM/dd/yyyy");
                 }
 
                 // submitted value is SSC total price
@@ -1327,42 +1329,19 @@ namespace GenTRAC.ActionLogic
         /// <returns>Checklist Proposal Pricing Data Model View</returns>
         public ChecklistProposalPricingDataModelView GetDataForChecklistProposalPricingData(int proposalId)
         {
-            ChecklistProposalPricingDataModelView model = new ChecklistProposalPricingDataModelView();
-
-            // set which role is trying to view general info
-            if (this.SecurityAccess.CurrentUserHasRole(PtmRole.Pricer, proposalId) || this.SecurityAccess.CurrentUserHasRole(PtmRole.BackupPricer, proposalId))
+            FullProposal proposal = this.GetFullProposalDto(proposalId);
+            ChecklistProposalPricingDataModelView model = new ChecklistProposalPricingDataModelView()
             {
-                model.ShowChecklistResponse = ShowChecklistResponse.Pricer;
-            }
-            else if (this.SecurityAccess.CurrentUserHasRole(PtmRole.PeerReviewer, proposalId))
-            {
-                model.ShowChecklistResponse = ShowChecklistResponse.Peer;
-            }
-            else
-            {
-                // all other roles get show both
-                model.ShowChecklistResponse = ShowChecklistResponse.ShowBoth;
-            }
+                ProposalID = proposal.Id,
+                SplitProfitFeeCOM = (proposal.DateCreated ?? DateTime.Now) >= ConfigurationUtilities.GetAppSetting<DateTime>("ProfitFeeComSplitStartDate"),
+                IsReadOnly = this.IsProposalChecklistReadOnly(proposal),
+                ShowChecklistResponse = this.GetShowChecklistResponse(proposal)
+            };
 
-            FullProposal fullProposalDto = this.GetFullProposalDto(proposalId);
-            model.IsReadOnly = this.IsProposalChecklistReadOnly(fullProposalDto);
-
-            model.ProposalID = fullProposalDto.Id;
-
-            bool isPTMChecklistUIEnabled = (fullProposalDto.ProposalChecklistPPRData == null) ? true : this.IsPTMChecklistUIEnabled(fullProposalDto.ProposalChecklistPPRData.Version);
-            // if this is a PTM checklist, only show Estimator (Pricer) response column.
-            if (isPTMChecklistUIEnabled)
-            {
-                model.ShowChecklistResponse = ShowChecklistResponse.Pricer;
-            }
-
-            // even though a collection is returned, we know that one proposal can only contain one of these dtos
-            var checklists = fullProposalDto.ProposalChecklistData;
-
-            if (checklists != null && checklists.Any())
+            if (proposal.ProposalChecklistData != null && proposal.ProposalChecklistData.Any())
             {
                 // there is really only one checklist per proposal so just grab it
-                ProposalChecklistDto checklist = checklists.First();
+                ProposalChecklistDto checklist = proposal.ProposalChecklistData.First();
                 model.ProposalChecklistID = checklist.Id;
                 model.LMLaborHrs = string.Format("{0:#,###0.##}", checklist.LMLaborHrs);
                 model.LMLaborCost = string.Format("{0:#,###0}", checklist.LMLaborCost);
@@ -1371,7 +1350,9 @@ namespace GenTRAC.ActionLogic
                 model.IWTACost = string.Format("{0:#,###0}", checklist.IWTACost);
                 model.TravelCost = string.Format("{0:#,###0}", checklist.TravelCost);
                 model.OtherDirectCosts = string.Format("{0:#,###0}", checklist.OtherDirectCosts);
-                model.ProfitFeeComTotal = string.Format("{0:#,###0}", checklist.ProfitFee);
+                model.ProfitFeeComTotal = string.Format("{0:#,###0}", checklist.ProfitFeeWithCom);
+                model.ProfitFeeTotal = string.Format("{0:#,###0}", checklist.Profit);
+                model.ComTotal = string.Format("{0:#,###0}", checklist.Com);
                 model.SubmittedValue = string.Format("{0:#,###0}", checklist.SubmittedValue);
                 model.AbsoluteValue = string.Format("{0:#,###0}", checklist.AbsoluteValue);
                 model.ROSPercent = checklist.ROSPercentage.ToString();
@@ -1379,6 +1360,30 @@ namespace GenTRAC.ActionLogic
             }
 
             return model;
+        }
+
+        /// <summary>
+        /// Gets the value for the ShowChecklistResponse field, for ChecklistProposalPricingDataModelView
+        /// </summary>
+        /// <param name="proposal">Proposal</param>
+        /// <returns>ChecklistProposalPricingDataModelView.ShowChecklistResponse value</returns>
+        private ShowChecklistResponse GetShowChecklistResponse(FullProposal proposal)
+        {
+            ShowChecklistResponse result = ShowChecklistResponse.ShowBoth;
+
+            // set which role is trying to view general info
+            if (this.SecurityAccess.CurrentUserHasRole(PtmRole.Pricer, proposal.Id) 
+                || this.SecurityAccess.CurrentUserHasRole(PtmRole.BackupPricer, proposal.Id) 
+                || (proposal.ProposalChecklistPPRData == null) ? true : this.IsPTMChecklistUIEnabled(proposal.ProposalChecklistPPRData.Version))
+            {
+                result = ShowChecklistResponse.Pricer;
+            }
+            else if (this.SecurityAccess.CurrentUserHasRole(PtmRole.PeerReviewer, proposal.Id))
+            {
+                result = ShowChecklistResponse.Peer;
+            }
+
+            return result;
         }
 
         /// <summary>

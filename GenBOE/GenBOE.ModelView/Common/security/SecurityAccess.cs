@@ -716,11 +716,15 @@ namespace GenBOE.DataBridge.Common
 
             List<SecurityPermissionsResponse> userRoles = rolesForUser.ToList();
 
-            // If you aren't allowed to have a WS Admin permission (controlled via Create WS Permissions), you shouldn't have it. 
-            // This is horrid, but it's necessary because you can assign a role to an AD group, hence the secondary check being necessary
-            if (!userRoles.Any(x => x.AuthorizedRole == Role.CreateWorkspacePermissions))
+            // RMS is temporarily not using this.. BOEJ-5305
+            if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
             {
-                userRoles = userRoles.Where(x => x.AuthorizedRole != Role.WorkspaceAdmin).ToList();
+                // If you aren't allowed to have a WS Admin permission (controlled via Create WS Permissions), you shouldn't have it. 
+                // This is horrid, but it's necessary because you can assign a role to an AD group, hence the secondary check being necessary
+                if (!userRoles.Any(x => x.AuthorizedRole == Role.CreateWorkspacePermissions))
+                {
+                    userRoles = userRoles.Where(x => x.AuthorizedRole != Role.WorkspaceAdmin).ToList();
+                }
             }
 
             SecurityAuthorization authorization = GetAuthorizationsRoles(inPermissions, userRoles, workspace);

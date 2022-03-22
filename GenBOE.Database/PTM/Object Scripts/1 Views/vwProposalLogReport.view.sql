@@ -6,23 +6,22 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 /******************************************************************************
 **		 
 **		Name: [vwProposalLogReport]
-**		Desc: 
+**		Desc: View that drives the Proposal Log Report
 **			
-**		
-**
-**		Auth: Unknown
-**		Date: Unknown
 *******************************************************************************
 **		Change History
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			---------------------------------------
-**		8/5/2019	twilson3			BOEJ-4274 Add LOB Manager Comments
-**		4/22/2020	ranzalon			BOEJ-4535 Add Lead Estimator Approval Date
 **		6/30/2020	Dusan				BOEJ-4639 Add Revision Type
 **										BOEJ-4590 Add Material POC and Subcontracts POC
 **										BOEJ-4631 Add Reason Cert Not Required
 **		7/30/2020	Dusan				BOEJ-4639 Add Latest Revision
+**      10/13/2021  Koovackal           IES-181 DB Work -Added Profit, Com, ProfitFeeWithCon
+**		1/16/2022   Dusan				IES-174 Add Contract Data to the report
+**		3/7/2022	Dusan				IES-847 Modify Contracts Data data
+**      3/8/2022	Koovackal			IES-849 Changes to "Revise" button. 
+**										Removed contract offer code.
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -63,7 +62,9 @@ SELECT
     PC.[TravelCost] AS [TravelCost],
     PC.[OtherDirectCost] AS [OtherDirectCost],
 	PC.[AbsoluteValue] AS [AbsoluteValue],
-	PC.[ProfitFee] AS [Profit/Fee + COM],	
+	PC.[Profit] AS [Profit/Fee],
+	PC.[Com] AS [Com],
+	PC.[ProfitFeeWithCom] AS [Profit/Fee + COM],
 	PC.[ISGSTotalPrice] AS [Total Price],
 	PC.[ROSPercentage] AS [ROS %],
 	CAST(PC.ProposalSubmittalDate AS DATE) AS [Actual Submittal Date],
@@ -110,14 +111,14 @@ SELECT
 	CASE 
 		WHEN P.ProposalTrackingID IS NULL OR P.ProposalTrackingID = '' THEN P.ForecastedTrackingId
 		ELSE
-			CASE LEN(LEFT (IsNULL(ProposalTrackingID, ForecastedTrackingId), CHARINDEX ('-',IsNULL(ProposalTrackingID, ForecastedTrackingId)) -1))
+			CASE LEN(LEFT (IsNULL(P.ProposalTrackingID, P.ForecastedTrackingId), CHARINDEX ('-',IsNULL(P.ProposalTrackingID, P.ForecastedTrackingId)) -1))
 				WHEN 1 THEN P.ForecastedTrackingId
 				WHEN 4 THEN LTRIM(RTRIM(LEFT (IsNULL(P.ProposalTrackingID, P.ForecastedTrackingId), 10))) 
 				WHEN 2 THEN LTRIM(RTRIM(LEFT (IsNULL(P.ProposalTrackingID, P.ForecastedTrackingId), 8)))
 			END
 	END	AS MainProposalTrackingID,
-	CCPDRequired,
-	CostVolumeClassified,
+	P.CCPDRequired,
+	P.CostVolumeClassified,
 	ppsLU.ProgramProposalStatus,
 	pcLU.ProposalClass AS [Proposal Class],
 	CAST(P.[AgreementDate] AS DATE) AS [Agreement Date],
@@ -147,7 +148,29 @@ SELECT
 	CASE
 		WHEN p.ProposalStatusID = 8 THEN 'No'
 		ELSE 'Yes'
-	END AS IsLatestVersion
+	END AS IsLatestVersion,
+	-- Proposal Contract Data
+	previousRomProposal.ProposalTrackingID AS ContractsPreviouslySubmittedRomTrackingNumber,
+	previousRomChecklist.ProposalSubmittalDate AS ContractsPreviouslySubmittedRomDate,
+	previousRomChecklist.ISGSTotalPrice AS ContractsPreviouslySubmittedRomValue,
+	pCD.CustomerSubmittalDate AS ContractsCustomerSubmittalDate,
+	pCD.ContractsCorrespondLogNumber AS ContractsCorrespondLogNumber,
+	pCD.FinalNegotiatedValue AS ContractsFinalNegotiatedValue,
+	pCD.FinalNegotiatedDate AS ContractsFinalNegotiatedDate,
+	eppLU.Text AS ContractsEppDelegationAuthority,
+	pCD.ProgramEppDate AS ContractsProgramEppDate,
+	pCD.LobEppDate AS ContractsLobEppDate,
+	pCD.PreSpaceEppDate AS ContractsPreSpaceEppDate,
+	pCD.SpaceEppDate AS ContractsSpaceEppDate,
+	pCD.PreCorporateEppDate AS ContractsPreCorporateEppDate,
+	pCD.CorporateEppDate AS ContractsCorporateEppDate,
+	pCD.EppRosDelegationNotes AS ContractsEppRosDelegationNotes,
+	CASE
+		WHEN pCD.LmWon = 1 THEN 'Yes'
+		WHEN pCD.LmWon = 0 THEN 'No'
+		ELSE NULL
+	END AS ContractsLmWon,
+	pCD.ModCompletedDate AS ContractsModCompletedDate
   FROM [dbo].[Proposal] P
 	INNER JOIN [dbo].[ProgramAreaLU] PA ON P.ProgramAreaID = PA.ProgramAreaID
 	INNER JOIN [dbo].[LineOfBusinessLU] LOB ON P.LineOfBusinessID = LOB.LineOfBusinessID
@@ -264,4 +287,10 @@ SELECT
 			FROM ProposalUserRole PUR JOIN genTRACUser U ON PUR.UserID = U.UserID
 			WHERE PUR.RoleID = 7 
 	) SubcontractsPOC ON P.ProposalID = SubcontractsPOC.ProposalID
+
+	-- Proposal Contract Data
+	LEFT OUTER JOIN ProposalContractsData pCD ON pCD.ProposalID = p.ProposalID
+	LEFT OUTER JOIN Proposal previousRomProposal ON pCD.PreviouslySubmittedROM = previousRomProposal.ProposalID
+	LEFT OUTER JOIN ProposalChecklist previousRomChecklist ON pCD.PreviouslySubmittedROM = previousRomChecklist.ProposalID
+	LEFT OUTER JOIN EppDelegationAuthorityLU eppLU ON eppLU.Id = pCD.EppDelegationAuthority
 GO

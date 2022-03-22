@@ -8,6 +8,7 @@ namespace GenTRAC.DataBridge.DTO
 {
     using System;
     using System.Collections.Generic;
+    using System.Web.Mvc;
     using IES.Common;
 
     /// <summary>
@@ -180,6 +181,20 @@ namespace GenTRAC.DataBridge.DTO
         EppProposalData GetEppProposalDataByProposalTrackingNumber(string ntid, bool isAdmin, string trackingNumber);
 
         /// <summary>
+        /// Get options for the Previously Submitted ROM field in the Contracts Tab
+        /// </summary>
+        /// <param name="selectedValue">Selected option</param>
+        /// <returns>Values for dropdown</returns>
+        ICollection<SelectListItem> GetRomProposalOptions(int? selectedValue);
+
+        /// <summary>
+        /// Gets ROM Proposal's Previously Submitted ROM Value and Previously Submitted ROM Date
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Submitted Date and Submitted Value</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        Tuple<DateTime?, decimal?> GetRomDateAndValue(int proposalId);
+        
         /// Gets Proposal Data for ACV application, when the user is searching for a PTM record
         /// 
         /// Search criteria:
@@ -195,5 +210,11 @@ namespace GenTRAC.DataBridge.DTO
         /// <returns>Proposal Data</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         ICollection<(string PtmTrackingNumber, string ProposalTitle, int ProposalId)> GetCostVolumeProposalData(string ntid, bool isAdmin, string searchString);
+
+        /// <summary>
+        /// Gets a list of proposals that are missing mod executed date, and meet the waiting period.
+        /// </summary>
+        /// <returns>Collection of proposals meeting the send criteria</returns>
+        ICollection<ProposalDto> GetModExecutedDateMissingNotifications();
     }
 }

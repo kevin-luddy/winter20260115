@@ -225,7 +225,9 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\ApprovalsController.cs" />
     <Compile Include="Controllers\ChecklistController.cs" />
+    <Compile Include="Controllers\CompletionController.cs" />
     <Compile Include="Controllers\EeppDataController.cs" />
+    <Compile Include="Controllers\ContractsController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\CertificationTimelineController.cs" />
     <Compile Include="Controllers\PostSubmittalAttachmentsController.cs" />
@@ -408,6 +410,8 @@
     <Content Include="Views\Reports\DfarsReportParameters.cshtml" />
     <Content Include="Views\Proposal\RevisionHistory.cshtml" />
     <Content Include="Views\Proposal\ProposalComments.cshtml" />
+    <Content Include="Views\Contracts\ContractsIndex.cshtml" />
+    <Content Include="Views\Contracts\ContractsInfo.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

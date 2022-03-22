@@ -77,6 +77,9 @@ namespace GenTRAC.ActionLogic.Email
                         // no url for email
                         proposalUrl = string.Empty;
                         break;
+                    case EmailType.ModExecutionDateRequired:
+                        proposalUrl = email.ProposalContractsUrl.ToString();
+                        break;
                     default:
                         proposalUrl = email.ProposalApprovalUrl.ToString();
                         break;
@@ -88,6 +91,11 @@ namespace GenTRAC.ActionLogic.Email
                 {
                     subjectReplaceTokens = new string[2] { email.TrackingNumber, email.ProposalTitle };
                     bodyReplaceTokens = new string[2] { email.TrackingNumber, email.ProposalTitle };
+                }
+                else if (email.ProposalEmailType == EmailType.ModExecutionDateRequired)
+                {
+                    subjectReplaceTokens = new string[1] { email.TrackingNumber };
+                    bodyReplaceTokens = new string[2] { email.TrackingNumber, proposalUrl };
                 }
                 else
                 {
@@ -146,6 +154,9 @@ namespace GenTRAC.ActionLogic.Email
                     break;
                 case EmailType.CertificationTimelineEmail:
                     returnValue = Emails.CERTIFICATION_TIMELINE_EMAIL;
+                    break;
+                case EmailType.ModExecutionDateRequired:
+                    returnValue = Emails.MISSING_MOD_CERTIFICATION_DATE;
                     break;
                 default:
                     returnValue = Emails.APPROVAL_EMAIL;

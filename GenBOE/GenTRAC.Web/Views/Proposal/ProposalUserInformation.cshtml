@@ -98,20 +98,6 @@
             }
         });
 
-        $('#contractsPOCDisplayName').lookupUser({
-            accountNameElementId: 'contractsPOCNtId',
-            accountNameInitial: '@Model.ContractsPOCNtId',
-            accountDisplayNameInitial: '@Html.Encode(HttpUtility.JavaScriptStringEncode(Model.ContractsPOCDisplayName))',
-            enabled: true,
-            allowGroups: true,
-            fieldDisplayName: 'Contracts POC',
-            checkNameCallbackHandler: function (valid) {
-                if (valid) {
-                    ProposalIndexWidget.refreshModule();
-                }
-            }
-        });
-
         $('#backupPricerDisplayName').lookupUser({
             accountNameElementId: 'backupPricerNtId',
             accountNameInitial: '@Model.BackupPricerNtId',
@@ -119,20 +105,6 @@
             enabled: true,
             allowGroups: true,
             fieldDisplayName: 'Backup Estimator',
-            checkNameCallbackHandler: function (valid) {
-                if (valid) {
-                    ProposalIndexWidget.refreshModule();
-                }
-            }
-        });
-
-        $('#contractsPOCDisplayName').lookupUser({
-            accountNameElementId: 'contractsPOCNtId',
-            accountNameInitial: '@Model.ContractsPOCNtId',
-            accountDisplayNameInitial: '@Html.Encode(HttpUtility.JavaScriptStringEncode(Model.ContractsPOCDisplayName))',
-            enabled: true,
-            allowGroups: true,
-            fieldDisplayName: 'Contracts POC',
             checkNameCallbackHandler: function (valid) {
                 if (valid) {
                     ProposalIndexWidget.refreshModule();
@@ -255,7 +227,7 @@
                 <div class="form-label">GenBOE Workspace Creator</div>
                 <div class="form-element"></div>
                 <div class="form-element">
-                    @Html.DropDownListFor(model => model.GenBoeWorkspaceCreatorNtid, Model.GenBoeWorkspaceCreatorList, new { name = "GenBoeWorkspaceCreator" })
+                    @Html.DropDownListFor(model => model.GenBoeWorkspaceCreatorNtid, Model.GenBoeWorkspaceCreatorList, new { name = "GenBoeWorkspaceCreator", @class = "UserInformationDropDown"})
                 </div>
             </div>
             <div class="form-row">
@@ -276,7 +248,14 @@
                 <div class="form-label">Contracts Lead *</div>
                 <div class="form-element"></div>
                 <div class="form-element">
-                    <input id="contractsPOCDisplayName" name="contractsPOCDisplayName" type="text" class="half" size="50" placeholder="NTID" />
+                    @Html.DropDownListFor(model => model.ContractsPOCNtId, Model.ContractLeadList, new { name = "ContractsPoc", @class = "UserInformationDropDown" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">Backup Contracts Lead *</div>
+                <div class="form-element"></div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.BackupContractsPOCNtId, Model.BackupContractLeadList, new { name = "BackupContractsPoc", @class = "UserInformationDropDown" })
                 </div>
             </div>
             <div class="form-row">

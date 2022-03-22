@@ -83,19 +83,13 @@ namespace GenTRAC.DataBridge.Common.Security
             }
 
             // Home
-            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Home },
-                     new PtmRole[] { PtmRole.NotSet },
-                     SecurityAuthorization.CreateReadUpdateDelete);
+            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Home }, new PtmRole[] { PtmRole.NotSet }, SecurityAuthorization.CreateReadUpdateDelete);
 
             // Admin
-            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Admin },
-                new PtmRole[] { PtmRole.Admin },
-                SecurityAuthorization.CreateReadUpdateDelete);
+            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Admin }, new PtmRole[] { PtmRole.Admin }, SecurityAuthorization.CreateReadUpdateDelete);
 
             // Reports
-            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Reports },
-                new PtmRole[] { PtmRole.Admin, PtmRole.Viewer, PtmRole.SystemPricer },
-                SecurityAuthorization.Read);
+            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Reports }, new PtmRole[] { PtmRole.Admin, PtmRole.Viewer, PtmRole.SystemPricer }, SecurityAuthorization.Read);
 
             // Proposals
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Proposal },
@@ -107,9 +101,10 @@ namespace GenTRAC.DataBridge.Common.Security
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Proposal },
                 new PtmRole[] { PtmRole.CostVolumeLead, PtmRole.AdditionalPricingResource1, PtmRole.AdditionalPricingResource2, PtmRole.BackupPricer, PtmRole.ProposalSetupAdmin }, SecurityAuthorization.ReadUpdate);
 
-            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Proposal },
-                new PtmRole[] { PtmRole.CaptureManager, PtmRole.AdditionalUser, PtmRole.PeerReviewer, PtmRole.ContractsPOC, PtmRole.SupplyChainPOCMatl, PtmRole.SupplyChainPOCSubs, PtmRole.Viewer, PtmRole.CoverSheetApprover, PtmRole.PricingVerification },
-                SecurityAuthorization.Read);
+            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Proposal, PtmSecurityPage.CertificationTimeline, PtmSecurityPage.Contracts },
+                new PtmRole[] { PtmRole.CaptureManager, PtmRole.AdditionalUser, PtmRole.PeerReviewer, PtmRole.ContractsPOC, PtmRole.BackupContractsPOC, PtmRole.SupplyChainPOCMatl, PtmRole.SupplyChainPOCSubs, PtmRole.Viewer,
+                                PtmRole.CoverSheetApprover, PtmRole.PricingVerification },
+                    SecurityAuthorization.Read);
 
             // Checklist
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Checklist },
@@ -119,8 +114,9 @@ namespace GenTRAC.DataBridge.Common.Security
                 new PtmRole[] { PtmRole.Admin, PtmRole.BackupPricer }, SecurityAuthorization.ReadUpdate);
 
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Checklist },
-                new PtmRole[] { PtmRole.PeerReviewer, PtmRole.AdditionalPricingResource1, PtmRole.AdditionalPricingResource2, PtmRole.AdditionalUser, PtmRole.CaptureManager, PtmRole.ContractsPOC, PtmRole.CostVolumeLead, PtmRole.SupplyChainPOCMatl, PtmRole.SupplyChainPOCSubs, PtmRole.SystemPricer, PtmRole.Viewer, PtmRole.CoverSheetApprover, PtmRole.PricingVerification, PtmRole.LOBEstLead },
-                SecurityAuthorization.Read);
+                new PtmRole[] { PtmRole.PeerReviewer, PtmRole.AdditionalPricingResource1, PtmRole.AdditionalPricingResource2, PtmRole.AdditionalUser, PtmRole.CaptureManager, PtmRole.ContractsPOC, PtmRole.BackupContractsPOC, PtmRole.CostVolumeLead,
+                                PtmRole.SupplyChainPOCMatl, PtmRole.SupplyChainPOCSubs, PtmRole.SystemPricer, PtmRole.Viewer, PtmRole.CoverSheetApprover, PtmRole.PricingVerification, PtmRole.LOBEstLead },
+                    SecurityAuthorization.Read);
 
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.ChecklistReport }, new PtmRole[] { PtmRole.Pricer, PtmRole.BackupPricer, PtmRole.Admin }, SecurityAuthorization.Read);
 
@@ -128,29 +124,26 @@ namespace GenTRAC.DataBridge.Common.Security
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Approvals },
                 new PtmRole[] { PtmRole.Pricer, PtmRole.CoverSheetApprover, PtmRole.PricingVerification, PtmRole.PeerReviewer, PtmRole.LOBEstLead }, SecurityAuthorization.ReadUpdate);
 
-            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Approvals }, new PtmRole[] { PtmRole.Admin, PtmRole.Viewer }, SecurityAuthorization.Read);
+            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Approvals }, new PtmRole[] { PtmRole.Admin, PtmRole.Viewer, PtmRole.ContractsPOC, PtmRole.BackupContractsPOC }, SecurityAuthorization.Read);
 
             // Post Submittal Attachments
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.PostSubmittalAttachments },
-                new[] { PtmRole.Admin, PtmRole.Pricer, PtmRole.BackupPricer, PtmRole.CostVolumeLead },
-                SecurityAuthorization.CreateReadUpdateDelete);
+                new[] { PtmRole.Admin, PtmRole.Pricer, PtmRole.BackupPricer, PtmRole.CostVolumeLead }, SecurityAuthorization.CreateReadUpdateDelete);
 
             this.InitializeMatrix(new[] { PtmSecurityPage.PostSubmittalAttachments },
-                new[] { PtmRole.CoverSheetApprover, PtmRole.PricingVerification, PtmRole.PeerReviewer, PtmRole.LOBEstLead, PtmRole.Viewer },
-                SecurityAuthorization.Read);
-
-            // Certificate Timeline
-            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.CertificationTimeline },
-                new[] { PtmRole.Admin, PtmRole.Pricer, PtmRole.BackupPricer, PtmRole.CostVolumeLead, PtmRole.LOBEstLead },
-                SecurityAuthorization.CreateReadUpdateDelete);
-
-            this.InitializeMatrix(new[] { PtmSecurityPage.CertificationTimeline },
-                new[] { PtmRole.CoverSheetApprover, PtmRole.PricingVerification, PtmRole.PeerReviewer, PtmRole.Viewer },
-                SecurityAuthorization.Read);
+                new[] { PtmRole.CoverSheetApprover, PtmRole.PricingVerification, PtmRole.PeerReviewer, PtmRole.LOBEstLead, PtmRole.Viewer, PtmRole.ContractsPOC, PtmRole.BackupContractsPOC }, SecurityAuthorization.Read);
 
             // Revision History
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.RevisionHistory },
-                new PtmRole[] { PtmRole.Admin, PtmRole.CostVolumeLead, PtmRole.Pricer, PtmRole.BackupPricer, PtmRole.CaptureManager, PtmRole.CostVolumeLead }, SecurityAuthorization.Read);
+                new PtmRole[] { PtmRole.Admin, PtmRole.CostVolumeLead, PtmRole.Pricer, PtmRole.BackupPricer, PtmRole.CaptureManager, PtmRole.ContractsPOC, PtmRole.BackupContractsPOC }, SecurityAuthorization.Read);
+
+            // Contracts Tab.. read is done w/ Proposal
+            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Contracts, PtmSecurityPage.CertificationTimeline },
+                new PtmRole[] { PtmRole.Admin, PtmRole.ContractsPOC, PtmRole.BackupContractsPOC }, SecurityAuthorization.CreateReadUpdateDelete);
+
+            // Proposal Completion Endpoints
+            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Completion },
+                new PtmRole[] { PtmRole.Admin, PtmRole.ContractsPOC, PtmRole.BackupContractsPOC }, SecurityAuthorization.CreateReadUpdateDelete);
         }
 
         /// <summary>
@@ -248,6 +241,8 @@ namespace GenTRAC.DataBridge.Common.Security
                 case PtmSecurityPage.PostSubmittalAttachments:
                 case PtmSecurityPage.CertificationTimeline:
                 case PtmSecurityPage.RevisionHistory:
+                case PtmSecurityPage.Contracts:
+                case PtmSecurityPage.Completion:
                     proposalRequired = true;
                     break;
                 default:
@@ -284,6 +279,7 @@ namespace GenTRAC.DataBridge.Common.Security
                     case PtmRole.CaptureManager:
                     case PtmRole.CostVolumeLead:
                     case PtmRole.ContractsPOC:
+                    case PtmRole.BackupContractsPOC:
                     case PtmRole.PeerReviewer:
                     case PtmRole.Pricer:
                     case PtmRole.SupplyChainPOCMatl:

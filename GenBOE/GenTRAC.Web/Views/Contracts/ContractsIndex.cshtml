@@ -1,0 +1,156 @@
+﻿@model GenTRAC.ActionLogic.ModelView.ContractsModelView
+@{ ViewBag.Title = "Contracts Index"; }
+
+<script type="text/javascript">
+    var ContractsIndexWidget;
+
+    $(function () {
+        var FormConfigs = [];
+        FormConfigs.push({
+            ElementID: "contractsForm",
+            Buttons: [
+                {
+                    ButtonClass: 'ies-action',
+                    ButtonText: 'Save',
+                    ButtonName: "save-button",
+                    ButtonAction: function (buttonPressed) {
+                        ContractsIndexWidget.saveFullPage(buttonPressed);
+                    },
+                    Stateful: true
+                },
+                {
+                    ButtonClass: 'ies',
+                    ButtonText: 'Cancel',
+                    ButtonName: "cancel-button",
+                    ButtonAction: function () {
+                        if (GenSession.isDirty()) {
+                            GenSession.confirmDialog(
+                                "Unsaved Changes",
+                                "You have selected to leave this tab without saving your current changes.  If you wish to leave the unsaved changes select Yes.  To stay on the page select No.",
+                                ContractsIndexWidget.RedirectHomeDirty,
+                                null);
+                        } else {
+                            ContractsIndexWidget.RedirectHome();
+                        }
+                    }
+                }],
+            ContainsOCI: "true",
+            IsClassEnvironment: isClassEnvironment
+        });
+
+        var widgetConfig = {};
+        widgetConfig.ContextID = "contractsIndex";
+        widgetConfig.isReadOnly = @(Model.IsReadOnly.ToString().ToLower());
+        widgetConfig.FormConfigs = FormConfigs;
+
+        ContractsIndexWidget = new GenWidget(widgetConfig);
+
+        // Returns all of the data from the child widgets.
+        ContractsIndexWidget.GetData = function () {
+            let dataToSave = {};
+            dataToSave.model = ContractsInfoWidget.getForm("@GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM").getData();
+            dataToSave.model.FinalNegotiatedValueLong = parseFloat(dataToSave.model.FinalNegotiatedValue.replace(/\$|,/g, ''));
+
+            return dataToSave;
+        };
+
+        ContractsIndexWidget.saveFullPage = function (buttonPressed) {
+            GenSession.ShowLoadingBox();
+            const dataToSend = ContractsIndexWidget.GetData();
+
+            // Make the call
+            ContractsIndexWidget.saveRequest({
+                type: 'POST',
+                url: GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.CONTRACTS',
+                    action: '@WebConstants.Action.SAVE_CONTRACT',
+                    id: '@ViewBag.proposalid'
+                }),
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(dataToSend),
+                success: function (response) {
+                    if (typeof response.IsSuccessful !== 'undefined') {
+                        if (response.IsSuccessful === true) {
+                            ContractsIndexWidget.SaveSuccess(response.proposalId);
+                        } else {
+                            // show the error messages
+                            for (var i = 0; i < response.Messages.length; i++) {
+                                $('#contractsInfoForm .validation-box').append('<li>' + response.Messages[i] + '</li>');
+                            }
+
+                            $('#contractsInfoForm .validation-box').show();
+                            ContractsInfoWidget.refreshModule();
+                            ContractsIndexWidget.refreshModule();
+
+                            // open the screen back up for data entry
+                            GenSession.HideLoadingBox();
+                            $('.full-screen-overlay').remove();
+                            $(buttonPressed).removeClass('disabled loader').attr('disabled', false);
+                        }
+                    }
+                    else {
+                        // WHAT?
+                    }
+                },
+                error: function () {
+                    ContractsIndexWidget.ShouldHideLoadingBox();
+                    ContractsIndexWidget.refreshModule2();
+                }
+            }, buttonPressed);
+        };
+
+        // Cleans all the dirty forms then redirects home
+        ContractsIndexWidget.RedirectHomeDirty = function () {
+            ContractsIndexWidget.cleanDirty();
+            ContractsIndexWidget.RedirectHome();
+        };
+
+        ContractsIndexWidget.SaveSuccess = function (proposalId) {
+            ContractsIndexWidget.cleanDirty();
+
+            const url =  GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.PROPOSAL',
+                action: '@WebConstants.Action.DISPLAY_PROPOSAL_DETAILS',
+                id: proposalId
+            })
+            window.location = url + '#Contracts';
+
+            window.location.reload();
+        };
+
+        ContractsIndexWidget.RedirectHome = function () {
+            window.location = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.HOME',
+                action: '@WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME'
+            });
+        };
+	});
+</script>
+
+<style type="text/css">
+    #contractsIndex .form-label {
+        width: 230px;
+    }
+
+    #contractsIndex .module-header-data,
+    #contractsIndex .module-content-data {
+        width: 962px;
+        display: inline-block;
+    }
+
+    hr {
+        width: 60%;
+        margin: 10px 0;
+    }
+</style>
+
+<div id="contractsIndex" class="composite module full" style="min-height:800px;">
+    @Html.Partial("ContractsInfo", Model)
+
+    <div class="module-content-data contracts">
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = "contractsForm", name = "contractsForm" }))
+        {
+            <div class="required-note"> * required for saving.</div>
+        }
+    </div>
+</div>

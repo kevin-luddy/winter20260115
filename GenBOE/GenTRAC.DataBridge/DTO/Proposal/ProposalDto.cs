@@ -387,5 +387,10 @@ namespace GenTRAC.DataBridge.DTO
         /// Comments from the Manage Proposal Info Page
         /// </summary>
         public string ManageProposalInfoComments { get; set; }
+
+        /// <summary>
+        /// The timestamp of the last time this proposal sent Mod Executed Date Reminders
+        /// </summary>
+        public DateTime? ModExecutedLastEmailed { get; set; }
     }
 }

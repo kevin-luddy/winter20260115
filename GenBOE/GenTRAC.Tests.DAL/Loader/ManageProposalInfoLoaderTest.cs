@@ -111,7 +111,7 @@ namespace GenTRAC.Tests.DAL.Loader
                 UpdateDate = proposal.UpdateDate,
                 NewProposalStatus = ProposalStatus.Completed,
                 TotalPrice = 555555,
-                ProposalSubmittalDate = new DateTime(2015, 1, 1),
+                EstimatingSubmitsToContractsDate = new DateTime(2015, 1, 1),
                 ChecklistSubmittedDatePricer = new DateTime(2015, 2, 2),
                 ChecklistSubmittedDatePeer = new DateTime(2015, 3, 3),
                 Comments = comments
@@ -126,7 +126,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             checklist = proposalChecklistLoader.GetByProposalIds(new Collection<int>() { proposal.Id }).FirstOrDefault();
             Assert.AreEqual(manageProposalInfo.TotalPrice, checklist.SubmittedValue);
-            Assert.AreEqual(manageProposalInfo.ProposalSubmittalDate, checklist.ProposalSubmittalDate);
+            Assert.AreEqual(manageProposalInfo.EstimatingSubmitsToContractsDate, checklist.EstimatingSubmitsToContractsDate);
 
             ICollection<ProposalChecklistSaveInfo> saveInfo = proposalChecklistLoader.GetAllChecklistSaveInfo(proposal.Id);
             saveInfo.Where(x => x.ResponseType == ChecklistResponseType.Pricer).ToList().ForEach(x => Assert.AreEqual(manageProposalInfo.ChecklistSubmittedDatePricer, x.SubmitDate));

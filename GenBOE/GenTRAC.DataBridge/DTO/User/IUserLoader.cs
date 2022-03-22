@@ -38,7 +38,7 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="inGroupId">group id to locate users for</param>
         /// <returns>user IDs found, null if not found</returns>
-        System.Collections.Generic.ICollection<int> GetIdsByGroupId(int inGroupId);
+        ICollection<int> GetIdsByGroupId(int inGroupId);
 
         /// <summary>
         /// See if a user exists
@@ -64,8 +64,7 @@ namespace GenTRAC.DataBridge.DTO
         /// GetUserDTOsByADGroup
         /// </summary>
         /// <param name="inADGroup">inADGroup</param>
-        /// <param name="inADDomain">inADDomain</param>
         /// <returns>userDTOs based on ADGroup</returns>
-        ICollection<UserDTO> GetUserDTOsByADGroup(string inADGroup, string inADDomain);
+        ICollection<UserDTO> GetUserDTOsByADGroup(string inADGroup);
     }
 }

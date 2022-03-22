@@ -625,9 +625,11 @@ namespace GenTRAC.Tests.DAL
                     {
                         UserID = this.GetUser().Id
                     });
-                    newChecklist.ProfitFee = 0;
+                    newChecklist.ProfitFeeWithCom = 0;
+                    newChecklist.Profit = 0;
+                    newChecklist.Com = 0;
                     newChecklist.ProposalID = proposalId;
-                    newChecklist.ProposalSubmittalDate = DateTime.Now;
+                    newChecklist.EstimatingSubmitsToContractsDate = DateTime.Now;
                     newChecklist.ROSPercentage = 0;
                     newChecklist.SubmittedValue = 0;
                     newChecklist.LMLaborHrs = 0;

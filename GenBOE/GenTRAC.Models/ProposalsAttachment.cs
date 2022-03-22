@@ -21,5 +21,6 @@ namespace GenTRAC.Models
     
         public virtual Proposal Proposal { get; set; }
         public virtual Attachment Attachment { get; set; }
+        public virtual AttachmentTypeLU AttachmentTypeLU { get; set; }
     }
 }

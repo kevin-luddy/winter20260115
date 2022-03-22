@@ -1,0 +1,360 @@
+﻿@model GenTRAC.ActionLogic.ModelView.ContractsModelView
+<script type="text/javascript">
+    var ContractsInfoWidget;
+    var modalWindow;
+
+    const dateElements = [
+        'CustomerSubmittalDate',
+        'NegotiationsSubmitted',
+        'ProgramEppDate',
+        'LobEppDate',
+        'PreSpaceEppDate',
+        'SpaceEppDate',
+        'PreCorporateEppDate',
+        'CorporateEppDate',
+        'ModCompletedDate'
+    ];
+
+    const initDatePickerElements = handleDateSelect => {
+        dateElements.forEach(element => {
+            ContractsInfoWidget.getElement('input[name="' + element + '"]').datepicker({
+                dateFormat: 'mm/dd/yy',
+                onSelect: handleDateSelect
+            });
+        })
+    };
+
+    $(function () {
+        var readOnly = ContractsIndexWidget.readOnly;
+        var widgetConfig = {};
+        widgetConfig.ContextID = "contractsInfo";
+        widgetConfig.IsModule = true;
+        widgetConfig.isReadOnly = readOnly;
+
+        ContractsInfoWidget = new GenWidget(widgetConfig);
+
+        ContractsInfoWidget.romChanged = function () {
+            var previouslySubmittedROM = ContractsInfoWidget.getElement('#PreviouslySubmittedROM').val();
+
+            ContractsInfoWidget.getElement('[name="PreviousROMDate"]').text('');
+            ContractsInfoWidget.getElement('[name="PreviousROMValue"]').text('');
+
+            if (previouslySubmittedROM) {
+                const contractsUrl = GenSession.CreateUrl({
+                    controller: '@WebConstants.Controller.CONTRACTS',
+                    action: '@WebConstants.Action.GET_SELECTED_ROM_DATA',
+                    id: '@ViewBag.ProposalId'
+                });
+
+                const data = { previousRomProposalId: previouslySubmittedROM };
+
+                $.ajax({
+                    type: "POST",
+                    url: contractsUrl,
+                    contentType: 'application/json; charset=utf-8',
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        ContractsInfoWidget.getElement('[name="PreviousROMDate"]').text(response.Date);
+                        ContractsInfoWidget.getElement('[name="PreviousROMValue"]').text(response.Value);
+                    }
+                });
+            }
+        }
+
+        const handleDateSelect = () => {
+            ContractsInfoWidget.setDirty('contractsForm');
+            $(this).blur();
+            $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
+            $(this).next('button.ui-datepicker-trigger').focus();
+        };
+
+        if (ContractsIndexWidget.readOnly === false) {
+            initDatePickerElements(handleDateSelect);
+        }
+
+        ContractsInfoWidget.setProposalComplete = () => {
+            $('#proposal-complete').prop('disabled', true);
+
+            const propCompleteUrl = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.COMPLETION',
+                action: '@WebConstants.Action.COMPLETE_PROPOSAL',
+                id: '@ViewBag.ProposalId'
+            });
+
+            const data = { };
+
+            ContractsInfoWidget.postData(propCompleteUrl, data);
+        };
+
+        ContractsInfoWidget.setProposalLost = () => {
+            $('#confirm-modal-submit').prop('disabled', true);
+
+            const propLostUrl = GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.CONTRACTS',
+                action: '@WebConstants.Action.SET_PROPOSAL_LOST',
+                id: '@ViewBag.ProposalId'
+            });
+
+            const data = { };
+
+            ContractsInfoWidget.postData(propCompleteUrl, data);
+        };
+
+        ContractsInfoWidget.setNoBid = function () {
+            GenSession.confirmDialog("Confirm No Bid",
+                "If this Proposal is set as No Bid, it will no longer be able to be used to create new BOEs and RDSB records. Existing BOEs and RDSB records will not be affected. Are you sure you wish to continue?",
+                function () {
+                    $.ajax({
+                        type: 'POST',
+                        url: GenSession.CreateUrl({
+                            controller: '@WebConstants.Controller.CONTRACTS',
+                            action: '@WebConstants.Action.SET_NO_BID',
+                            id: '@ViewBag.proposalid'
+                        }),
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (response) {
+                            if (typeof (response.IsSuccessful) !== 'undefined') {
+                                if (response.IsSuccessful) {
+                                    ContractsIndexWidget.SaveSuccess();
+                                } else {
+                                    ContractsInfoWidget.processErrors(response);
+                                }
+                            }
+                        }
+                    });
+            }, null);
+        };
+
+        ContractsInfoWidget.processErrors = function (response) {
+            if (typeof (response.Messages) !== 'undefined' && response.Messages.length > 0) {
+                response.Messages.forEach(message => {
+                    $('#contractsInfoForm .validation-box').append('<li>' + message + '</li>');
+                });
+                modalWindow.dialog('close');
+                $('#confirm-modal-input').val('');
+                $('#confirm-modal-submit').text('Set Contract Lost');
+                $('#confirm-modal-input').trigger('keyup');
+                $('#contractsInfoForm .validation-box').show();
+            }
+        };
+
+        ContractsInfoWidget.postData = function (url, data) {
+            $.ajax({
+                type: "POST",
+                url: url,
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    console.log(response);
+                    if (typeof (response.IsSuccessful) !== 'undefined') {
+                        if (response.IsSuccessful === true) {
+                            ContractsIndexWidget.SaveSuccess(@ViewBag.proposalid);
+                        } else {
+                            ContractsInfoWidget.processErrors(response);
+                        }
+                    }
+                }
+            });
+        }
+
+        ContractsInfoWidget.revertNoBid = function () {
+            GenSession.confirmDialog("Confirm Revert No Bid",
+                "If this Proposal is reverted from No Bid, the approval process will be reset. Are you sure you wish to continue?",
+                function () {
+                    $.ajax({
+                        type: 'POST',
+                        url: GenSession.CreateUrl({
+                            controller: '@WebConstants.Controller.CONTRACTS',
+                            action: '@WebConstants.Action.REVERT_NO_BID',
+                            id: '@ViewBag.proposalid'
+                        }),
+                        contentType: 'application/json; charset=utf-8',
+                        success: function (response) {
+                            if (typeof (response.IsSuccessful) !== 'undefined') {
+                                if (response.IsSuccessful) {
+                                    ContractsIndexWidget.SaveSuccess();
+                                } else {
+                                    ContractsInfoWidget.processErrors(response);
+                                }
+                            }
+                        }
+                    });
+            }, null);
+        };
+    });
+
+    $(document).ready(function () {
+        // set modal
+        modalWindow = $('#confirm-loss-modal').dialog({
+            autoOpen: false,
+            height: 190,
+            width: 350,
+            modal: true,
+            close: function () {
+                $('#proposal-lost').prop('disabled', false);
+            }
+        });
+
+        $('#proposal-lost').on('click', function () {
+            $(this).prop('disabled', true);
+            modalWindow.dialog('open');
+        });
+
+        $('#proposal-complete').on('click', function () {
+            $(this).text('Please Wait...');
+            ContractsInfoWidget.setProposalComplete();
+        });
+
+        $('#confirm-modal-input').keyup(function () {
+            if ($('#confirm-modal-input').val().trim() === 'LOST') {
+                $('#confirm-modal-submit').prop('disabled', false);
+            } else {
+                $('#confirm-modal-submit').prop('disabled', true);
+            }
+        });
+
+        $('#confirm-modal-submit').on('click', function () {
+            $(this).text('Please Wait...');
+            ContractsInfoWidget.setProposalLost();
+        });
+    });
+</script>
+
+<div id="contractsInfo" class="composite module full">
+    <div class="module-header-data">Contract Information</div>
+    
+    <div class="module-content-data expanded-content position-relative">
+        <div class="button-right-container">
+            @if (Model.HasAccessToSetNoBid)
+            {
+                if (Model.IsNoBid)
+                {
+                    <button type="button" class="ies" title="Revert the status of this Proposal to In Progress" onclick="ContractsInfoWidget.revertNoBid()">Revert from No Bid to In Progress</button>
+                }
+                else
+                {
+                    <button type="button" class="ies" title="Mark this Proposal as No Bid" onclick="ContractsInfoWidget.setNoBid()" @(Model.NoBidButtonEnabled ? string.Empty : "disabled")>Mark Proposal as No Bid</button>
+                }
+            }
+            <button id="proposal-lost" type="button" class="ies" @(Model.SetLostButtonEnabled ? string.Empty : "disabled")>Proposal Lost</button>
+            <button id="proposal-complete" type="button" class="ies" @(Model.CompleteButtonEnabled ? string.Empty : "disabled")>Complete</button>
+        </div>
+        @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM, name = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM }))
+        {
+            @Html.HiddenFor(x => x.Id)
+            @Html.HiddenFor(x => x.ProposalId)
+            @Html.HiddenFor(x => x.LastUpdatedDateLong);
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.PreviouslySubmittedROM) *</div>
+                <div class="form-element">
+                    @Html.DropDownListFor(x => x.PreviouslySubmittedROM, Model.PreviouslySubmittedRoms, string.Empty, new { @class = "half", onchange = "ContractsInfoWidget.romChanged()" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.PreviousROMDate)</div>
+                <div class="form-element" name="PreviousROMDate">
+                    @Html.DisplayFor(x => x.PreviousROMDate)
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.PreviousROMValue)</div>
+                <div class="form-element" name="PreviousROMValue">
+                    @Html.DisplayFor(x => x.PreviousROMValue)
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.CustomerSubmittalDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.CustomerSubmittalDate, new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.ContractsCorrespondenceLogNumber) *</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.ContractsCorrespondenceLogNumber, new { @class = "half" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.FinalNegotiatedValue)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.FinalNegotiatedValue, new { @class = "half" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.NegotiationsSubmitted)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.NegotiationsSubmitted, new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.EppDelegationAuthority)</div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.EppDelegationAuthority, Model.EppOptions, new { name = "EppDelegationAuthority" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.ProgramEppDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.ProgramEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.LobEppDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.LobEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.PreSpaceEppDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.PreSpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.SpaceEppDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.SpaceEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.PreCorporateEppDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.PreCorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.CorporateEppDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.CorporateEppDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">@Html.LabelFor(x => x.EppRosDelegationNotes)</div>
+                <div class="form-element">
+                    <textarea id="EppRosDelegationNotes" name="EppRosDelegationNotes" rows="3">@Model.EppRosDelegationNotes</textarea>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.LmWon)</div>
+                <div class="form-element">
+                    <label>Yes</label> @Html.RadioButtonFor(x => x.LmWon, true)
+                    <label>No</label>  @Html.RadioButtonFor(x => x.LmWon, false)
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">@Html.LabelFor(x => x.ModCompletedDate)</div>
+                <div class="form-element">
+                    @Html.TextBoxFor(x => x.ModCompletedDate, "{0:M/d/yyyy}", new { @class = "date", placeholder = "mm/dd/yyyy" })
+                </div>
+            </div>
+        }
+    </div>
+    <div id="confirm-loss-modal" title="Please Confirm" style="display: none;">
+        <p><strong>Are you sure the proposal is actually lost? This action cannot be undone.</strong></p>
+        <br />
+        <input type="text" id="confirm-modal-input" name="confirm-modal-input" placeholder="Type LOST to Continue" />
+        <div class="confirm-modal-button-container">
+            <button type="button" id="confirm-modal-submit" class="ies" disabled>Set Contract Lost</button>
+        </div>
+    </div>
+</div>

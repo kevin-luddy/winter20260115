@@ -155,6 +155,11 @@ namespace IES.Common
         public const string SUBMITTED_NOT_LATE_BACKGROUND_CSS_CLASS_STRING = "background-color: #0099ff";
 
         /// <summary>
+        /// CSS used for pending contractual award
+        /// </summary>
+        public const string PENDING_AWARD_BACKGROUND_CSS_CLASS_STRING = "background-color: #89cdfa";
+
+        /// <summary>
         /// Class used to make the background green color
         /// </summary>
         public const string GREEN_BACKGROUND_CSS_CLASS_STRING = "background-color: #92D050";

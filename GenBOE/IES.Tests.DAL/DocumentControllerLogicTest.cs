@@ -415,8 +415,8 @@ namespace IES.Tests
                 Assert.IsTrue(proposals.Any(pr => pr.Id == p.Id));
             }
 
-            Assert.IsFalse(proposals.Any(p => p.ProposalStatus != ProposalStatus.InProgress && p.ProposalStatus != ProposalStatus.Submitted));
-            Assert.IsFalse(nonAdminProposals.Any(p => p.ProposalStatus != ProposalStatus.InProgress && p.ProposalStatus != ProposalStatus.Submitted));
+            Assert.IsFalse(proposals.Any(p => p.ProposalStatus != ProposalStatus.InProgress && p.ProposalStatus != ProposalStatus.PendingCertification && p.ProposalStatus != ProposalStatus.PendingAward));
+            Assert.IsFalse(nonAdminProposals.Any(p => p.ProposalStatus != ProposalStatus.InProgress && p.ProposalStatus != ProposalStatus.PendingCertification && p.ProposalStatus != ProposalStatus.PendingAward));
 
             Assert.IsFalse(proposals.Any(p => p.DocumentId.HasValue));
             Assert.IsFalse(nonAdminProposals.Any(p => p.DocumentId.HasValue));

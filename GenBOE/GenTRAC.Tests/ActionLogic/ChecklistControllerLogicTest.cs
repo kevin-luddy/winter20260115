@@ -158,7 +158,7 @@ namespace GenTRAC.Tests.ActionLogic
                 Id = checklistID,
                 ProposalID = proposal.Id,
                 UpdateDate = DateTime.Now,
-                ProposalSubmittalDate = new DateTime(2014, 5, 2),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22
             };
 
@@ -198,9 +198,9 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(checklistGeneralInfo.ProposalID, proposalChecklist.ProposalID);
             Assert.AreEqual(checklistGeneralInfo.PricerDisplayName, peerReviewer.DisplayName);
             Assert.AreEqual(checklistGeneralInfo.SubmittedValue, proposalChecklist.SubmittedValue.ToString());
-            if (proposalChecklist.ProposalSubmittalDate.HasValue)
+            if (proposalChecklist.EstimatingSubmitsToContractsDate.HasValue)
             {
-                Assert.AreEqual(checklistGeneralInfo.SubmittalDate, proposalChecklist.ProposalSubmittalDate.Value.ToString("MM/dd/yyyy"));
+                Assert.AreEqual(checklistGeneralInfo.EstimatingSubmitsToContractsDate, proposalChecklist.EstimatingSubmitsToContractsDate.Value.ToString("MM/dd/yyyy"));
             }
         }
 
@@ -228,7 +228,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalChecklistID = checklistID,
                 ProposalID = proposalId,
                 UpdateDate = DateTime.Now,
-                SubmittalDate = new DateTime(2014, 05, 02).ToShortDateString()
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 05, 02).ToShortDateString()
             };
 
             ChecklistProposalPricingDataModelView checklistProposalPricingData = new ChecklistProposalPricingDataModelView();
@@ -274,7 +274,8 @@ namespace GenTRAC.Tests.ActionLogic
                 Request = 1,
                 ProposalClass = 1,
                 RFPNumber = "myRFP",
-                UpdateDate = DateTime.Now
+                UpdateDate = DateTime.Now,
+                DateCreated = new DateTime(2021, 1, 1)
             };
 
             ProposalChecklistDto proposalChecklist = new ProposalChecklistDto()
@@ -282,7 +283,7 @@ namespace GenTRAC.Tests.ActionLogic
                 Id = checklistID,
                 ProposalID = proposal.Id,
                 UpdateDate = DateTime.Now,
-                ProposalSubmittalDate = new DateTime(2014, 5, 2),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 5, 2),
                 LMLaborHrs = -2.22m,
                 LMLaborCost = 22,
                 SubcontractorCost = -22,
@@ -291,7 +292,7 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = -22,
                 OtherDirectCosts = 22,
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeWithCom = 7777,
                 ROSPercentage = -98.89m
             };
 
@@ -313,8 +314,55 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(checklistProposalPricingData.IWTACost, proposalChecklist.IWTACost.ToString());
             Assert.AreEqual(checklistProposalPricingData.TravelCost, proposalChecklist.TravelCost.ToString());
             Assert.AreEqual(checklistProposalPricingData.OtherDirectCosts, proposalChecklist.OtherDirectCosts.ToString());
-            Assert.AreEqual(checklistProposalPricingData.ProfitFeeComTotal, string.Format("{0:#,###0}", proposalChecklist.ProfitFee));
+            Assert.AreEqual(checklistProposalPricingData.ProfitFeeComTotal, string.Format("{0:#,###0}", proposalChecklist.ProfitFeeWithCom));
+            Assert.AreEqual(checklistProposalPricingData.ProfitFeeTotal, string.Format("{0:#,###0}", proposalChecklist.Profit));
+            Assert.AreEqual(checklistProposalPricingData.ComTotal, string.Format("{0:#,###0}", proposalChecklist.Com));
             Assert.AreEqual(checklistProposalPricingData.ROSPercent, proposalChecklist.ROSPercentage.ToString());
+            Assert.IsFalse(checklistProposalPricingData.SplitProfitFeeCOM);
+        }
+
+        /// <summary>
+        /// test GetDataForChecklistProposalPricingData.. Only check here is that SplitProfitFeeCom = true
+        /// </summary>
+        [TestMethod]
+        public void C_GetDataForChecklistProposalPricingDataTest_2()
+        {
+            var sut = this.CreateSystem();
+
+            int proposalId = 5;
+
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = proposalId,
+                DeliveryDate = new DateTime(2014, 1, 1),
+                BoeTool = BOETool.Excel,
+                ContractTypeIds = new List<int> { 1, 2, 3 },
+                CostElementTypeIds = new List<int> { 1, 2, 3 },
+                Customer = "myCustomer",
+                CustomerType = CustomerType.InternationalCommercial,
+                EstimatedProposalValue = 400,
+                ISGSRole = ISGSRole.Prime,
+                ProgramAreaId = 3,
+                PricingTool = PricingTool.Excel,
+                LineOfBusinessID = 2,
+                ProgramName = "myProgram",
+                ProposalType = 3,
+                Request = 1,
+                ProposalClass = 1,
+                RFPNumber = "myRFP",
+                UpdateDate = DateTime.Now,
+                DateCreated = new DateTime(2021, 8, 1)
+            };
+
+            FullProposal fullProposal = new FullProposal(proposal);
+
+            this.objectFactory.Setup(x => x.CreateFullProposal(proposal)).Returns(fullProposal);
+            this.proposalLoader.Setup(x => x.GetById(proposalId)).Returns(proposal);
+            this.securityAccess.Setup(x => x.CurrentUserHasRole(PtmRole.Pricer, proposalId)).Returns(true);
+            this.retriever.Setup(x => x.GetAllChecklistSaveInfo(proposalId)).Returns(new Collection<ProposalChecklistSaveInfo>());
+
+            ChecklistProposalPricingDataModelView checklistProposalPricingData = sut.GetDataForChecklistProposalPricingData(proposalId);
+            Assert.IsTrue(checklistProposalPricingData.SplitProfitFeeCOM);
         }
 
         /// <summary>
@@ -336,6 +384,8 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = "-999,999,999,999",
                 OtherDirectCosts = "-999,999,999,999",
                 ProfitFeeComTotal = "-999,999,999,999",
+                ProfitFeeTotal = "-999,999,999,999",
+                ComTotal = "-999,999,999,999",
                 ROSPercent = "-99.99"
             };
 
@@ -363,13 +413,15 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = "-abc,def,ghi,jkl",
                 OtherDirectCosts = "-abc,def,ghi,jkl",
                 ProfitFeeComTotal = "-abc,def,ghi,jkl",
+                ProfitFeeTotal = "-abc,def,ghi,jkl",
+                ComTotal = "-abc,def,ghi,jkl",
                 ROSPercent = "-100.999"
             };
 
             ctx = new ValidationContext(checkList, null, null);
             result = Validator.TryValidateObject(checkList, ctx, validationResults, true);
             Assert.IsFalse(result);
-            Assert.AreEqual(9, validationResults.Count);
+            Assert.AreEqual(11, validationResults.Count);
         }
 
         /// <summary>
@@ -467,7 +519,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalChecklistID = checklistID,
                 ProposalID = proposalId,
                 UpdateDate = DateTime.Now,
-                SubmittalDate = new DateTime(2014, 05, 02).ToShortDateString()
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 05, 02).ToShortDateString()
             };
 
             ChecklistProposalPricingDataModelView checklistProposalPricingData = new ChecklistProposalPricingDataModelView()
@@ -476,6 +528,8 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalID = proposalId,
                 UpdateDate = DateTime.Now,
                 ProfitFeeComTotal = "7777",
+                ProfitFeeTotal = "777",
+                ComTotal = "77",
                 ROSPercent = "98989"
             };
 
@@ -586,9 +640,9 @@ namespace GenTRAC.Tests.ActionLogic
                 Id = checklistID,
                 ProposalID = proposal.Id,
                 UpdateDate = DateTime.Now,
-                ProposalSubmittalDate = new DateTime(2014, 5, 2),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeWithCom = 7777,
                 AbsoluteValue = 1500,
                 ROSPercentage = 98989,
                 PPRResponses = responses
@@ -800,10 +854,10 @@ namespace GenTRAC.Tests.ActionLogic
                 Id = checklistID,
                 ProposalID = proposal.Id,
                 UpdateDate = DateTime.Now,
-                ProposalSubmittalDate = new DateTime(2014, 5, 2),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 5, 2),
                 AbsoluteValue = 1500,
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeWithCom = 7777,
                 ROSPercentage = 98989,
                 PARResponses = responses,
                 ResponseType = ChecklistResponseType.Pricer
@@ -1126,7 +1180,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalChecklistID = checklistID,
                 ProposalID = proposalId,
                 UpdateDate = DateTime.Now,
-                SubmittalDate = "05062013",
+                EstimatingSubmitsToContractsDate = "05062013",
                 PricerId = peerReviewerID,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -1137,6 +1191,8 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalID = proposalId,
                 UpdateDate = DateTime.Now,
                 ProfitFeeComTotal = string.Empty,
+                ProfitFeeTotal = string.Empty,
+                ComTotal = string.Empty,
                 ROSPercent = string.Empty,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -1180,7 +1236,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalChecklistID = checklistID,
                 ProposalID = proposalId,
                 UpdateDate = DateTime.Now,
-                SubmittalDate = new DateTime(2014, 05, 02).ToShortDateString(),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 05, 02).ToShortDateString(),
                 PricerId = 14,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -1209,7 +1265,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalChecklistID = checklistID,
                 ProposalID = proposalId,
                 UpdateDate = DateTime.Now,
-                SubmittalDate = string.Empty,
+                EstimatingSubmitsToContractsDate = string.Empty,
                 PricerId = 15,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -1227,6 +1283,8 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = string.Empty,
                 OtherDirectCosts = string.Empty,
                 ProfitFeeComTotal = string.Empty,
+                ProfitFeeTotal = string.Empty,
+                ComTotal = string.Empty,
                 ROSPercent = string.Empty,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -1305,9 +1363,9 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalID = proposal.Id,
                 UpdateDate = DateTime.Now,
                 AbsoluteValue = 1500,
-                ProposalSubmittalDate = new DateTime(2014, 5, 2),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeWithCom = 7777,
                 ROSPercentage = 98989
             };
 
@@ -1327,7 +1385,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(validationMessages.Any());
             var validationIssues = (from v in validationMessages
                                     select v.ValidationIssue).ToList();
-            Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.SUBMITTAL_DATE_REQUIRED));
+            Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ESTIMATING_SUBMITS_TO_CONTRACTS_DATE_REQUIRED));
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ALL_PAR_MUST_BE_ANSWERED));
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ALL_PPR_MUST_BE_ANSWERED));
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.PRICER_COMMENT_NEEDED));
@@ -1342,7 +1400,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalChecklistID = checklistID,
                 ProposalID = proposalId,
                 UpdateDate = DateTime.Now,
-                SubmittalDate = new DateTime(2014, 05, 02).ToShortDateString(),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 05, 02).ToShortDateString(),
                 PricerId = 14,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer,
                 SubmittedValue = "10"
@@ -1361,6 +1419,8 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = "22",
                 OtherDirectCosts = "22",
                 ProfitFeeComTotal = "234",
+                ProfitFeeTotal = "34",
+                ComTotal = "24",
                 ROSPercent = "22.56",
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -1470,7 +1530,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalChecklistID = checklistID,
                 ProposalID = proposalId,
                 UpdateDate = DateTime.Now,
-                SubmittalDate = string.Empty,
+                EstimatingSubmitsToContractsDate = string.Empty,
                 PricerId = 15,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer,
                 DeliverChecklistDFARS = true
@@ -1489,6 +1549,8 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = string.Empty,
                 OtherDirectCosts = string.Empty,
                 ProfitFeeComTotal = string.Empty,
+                ProfitFeeTotal = string.Empty,
+                ComTotal = string.Empty,
                 ROSPercent = string.Empty,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -1568,9 +1630,9 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalID = proposal.Id,
                 UpdateDate = DateTime.Now,
                 AbsoluteValue = 1500,
-                ProposalSubmittalDate = new DateTime(2014, 5, 2),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeWithCom = 7777,
                 ROSPercentage = 98989
             };
 
@@ -1590,7 +1652,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(validationMessages.Any());
             var validationIssues = (from v in validationMessages
                                     select v.ValidationIssue).ToList();
-            Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.SUBMITTAL_DATE_REQUIRED));
+            Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ESTIMATING_SUBMITS_TO_CONTRACTS_DATE_REQUIRED));
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ALL_PAR_MUST_BE_ANSWERED));
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ALL_PPR_MUST_BE_ANSWERED));
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.PRICER_COMMENT_NEEDED));
@@ -1610,7 +1672,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalChecklistID = checklistID,
                 ProposalID = proposalId,
                 UpdateDate = DateTime.Now,
-                SubmittalDate = new DateTime(2014, 05, 02).ToShortDateString(),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 05, 02).ToShortDateString(),
                 PricerId = 14,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer,
                 SubmittedValue = "10"
@@ -1629,6 +1691,8 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = "22",
                 OtherDirectCosts = "22",
                 ProfitFeeComTotal = "234",
+                ProfitFeeTotal = "4",
+                ComTotal = "2354",
                 ROSPercent = "22.56",
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -1743,7 +1807,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalChecklistID = checklistID,
                 ProposalID = proposalId,
                 UpdateDate = DateTime.Now,
-                SubmittalDate = string.Empty,
+                EstimatingSubmitsToContractsDate = string.Empty,
                 PricerId = 15,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer,
                 DeliverChecklistDFARS = true
@@ -1762,6 +1826,8 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = string.Empty,
                 OtherDirectCosts = string.Empty,
                 ProfitFeeComTotal = string.Empty,
+                ProfitFeeTotal = string.Empty,
+                ComTotal = string.Empty,
                 ROSPercent = string.Empty,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -1842,9 +1908,9 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalID = proposal.Id,
                 UpdateDate = DateTime.Now,
                 AbsoluteValue = 1500,
-                ProposalSubmittalDate = new DateTime(2014, 5, 2),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeWithCom = 7777,
                 ROSPercentage = 98989
             };
 
@@ -1864,7 +1930,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(validationMessages.Any());
             var validationIssues = (from v in validationMessages
                                     select v.ValidationIssue).ToList();
-            Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.SUBMITTAL_DATE_REQUIRED));
+            Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ESTIMATING_SUBMITS_TO_CONTRACTS_DATE_REQUIRED));
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ALL_PAR_MUST_BE_ANSWERED));
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ALL_PPR_MUST_BE_ANSWERED));
             Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.PRICER_COMMENT_NEEDED));
@@ -1885,7 +1951,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(validationMessages.Any());
             validationIssues = (from v in validationMessages
                                 select v.ValidationIssue).ToList();
-            Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.SUBMITTAL_DATE_REQUIRED));
+            Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.ESTIMATING_SUBMITS_TO_CONTRACTS_DATE_REQUIRED));
 
             // clear out existing validation messages
             validationMessages = new Collection<ValidationMessage>();
@@ -1898,7 +1964,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalChecklistID = checklistID,
                 ProposalID = proposalId,
                 UpdateDate = DateTime.Now,
-                SubmittalDate = new DateTime(2014, 05, 02).ToShortDateString(),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 05, 02).ToShortDateString(),
                 PricerId = 14,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer,
                 SubmittedValue = "10"
@@ -1917,6 +1983,8 @@ namespace GenTRAC.Tests.ActionLogic
                 TravelCost = "22",
                 OtherDirectCosts = "22",
                 ProfitFeeComTotal = "234",
+                ProfitFeeTotal = "6875",
+                ComTotal = "41",
                 ROSPercent = "22.56",
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
@@ -2232,9 +2300,9 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalID = proposal.Id,
                 UpdateDate = DateTime.Now,
                 AbsoluteValue = 1500,
-                ProposalSubmittalDate = new DateTime(2014, 5, 2),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeWithCom = 7777,
                 ROSPercentage = 98989
             };
 
@@ -2380,9 +2448,9 @@ namespace GenTRAC.Tests.ActionLogic
                 ProposalID = proposal.Id,
                 AbsoluteValue = 1500,
                 UpdateDate = DateTime.Now,
-                ProposalSubmittalDate = new DateTime(2014, 5, 2),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeWithCom = 7777,
                 ROSPercentage = 98989
             };
 
@@ -2529,9 +2597,9 @@ namespace GenTRAC.Tests.ActionLogic
                 AbsoluteValue = 1500,
                 ProposalID = proposal.Id,
                 UpdateDate = DateTime.Now,
-                ProposalSubmittalDate = new DateTime(2014, 5, 2),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeWithCom = 7777,
                 ROSPercentage = 98989
             };
 
@@ -2675,9 +2743,9 @@ namespace GenTRAC.Tests.ActionLogic
                 Id = checklistID,
                 ProposalID = proposal.Id,
                 UpdateDate = DateTime.Now,
-                ProposalSubmittalDate = new DateTime(2014, 5, 2),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
-                ProfitFee = 7777,
+                ProfitFeeWithCom = 7777,
                 AbsoluteValue = 1500,
                 ROSPercentage = 98989
             };
@@ -2896,10 +2964,10 @@ namespace GenTRAC.Tests.ActionLogic
                 Id = checklistID,
                 ProposalID = proposal.Id,
                 UpdateDate = DateTime.Now,
-                ProposalSubmittalDate = new DateTime(2014, 5, 2),
+                EstimatingSubmitsToContractsDate = new DateTime(2014, 5, 2),
                 SubmittedValue = 22,
                 AbsoluteValue = 1500,
-                ProfitFee = 7777,
+                ProfitFeeWithCom = 7777,
                 ROSPercentage = 98989
             };
 
