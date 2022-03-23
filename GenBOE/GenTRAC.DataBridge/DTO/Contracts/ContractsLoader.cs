@@ -117,7 +117,7 @@ namespace GenTRAC.DataBridge.DTO
                             EppRosDelegationNotes = x.EppRosDelegationNotes,
                             LmWon = x.LmWon,
                             ModCompletedDate = x.ModCompletedDate
-                        }).FirstOrDefault();
+                        }).FirstOrDefault(x => x.ProposalId == proposalId);
                 }
             }
 
