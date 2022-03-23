@@ -108,6 +108,12 @@ namespace GenTRAC.ActionLogic
             ContractsDto dto = this.contractsLoader.GetContractForProposal(proposalId);
             ContractsModelView model = ConvertContractsDtoToModel(dto);
 
+            // in the event that a contract entry hasn't yet been created for the proposal, create a blank one for the evaluation of calculated properties
+            if (dto == null)
+            {
+                dto = new ContractsDto();
+            }
+
             // populate calculated properties
             model.EppOptions = this.GetEppSelectOptions(model.EppDelegationAuthority);
             model.SetLostButtonEnabled = this.IsValidForLostStatus(dto, fullProposal);
