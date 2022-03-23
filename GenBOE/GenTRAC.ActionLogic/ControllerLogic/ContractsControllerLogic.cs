@@ -520,16 +520,194 @@ namespace GenTRAC.ActionLogic
         {
             _ = fullProposal ?? throw new ArgumentNullException(nameof(fullProposal));
             _ = dto ?? throw new ArgumentNullException(nameof(dto));
+            messages = messages ?? new List<string>();
 
             bool isValid = true;
 
-            messages = new List<string>(); // TODO: remove this
-            messages.Add("RemoveMe");
+            switch ((EppDelegationAuthority)dto.EppDelegationAuthority)
+            {
+                case EppDelegationAuthority.Program:
+                    if (!this.IsProgramEppDateValid(dto, messages))
+                    {
+                        isValid = false;
+                    }
+                    break;
+                case EppDelegationAuthority.LoB:
+                    if (!this.IsLoBEppDateValid(dto, messages))
+                    {
+                        isValid = false;
+                    }
+                    break;
+                case EppDelegationAuthority.Space:
+                    if (!this.IsSpaceEppDateValid(dto, messages))
+                    {
+                        isValid = false;
+                    }
+                    break;
+                case EppDelegationAuthority.Corporate:
+                    if (!this.IsCorporateEppDateValid(dto, messages))
+                    {
+                        isValid = false;
+                    }
+                    break;
+                default:
+                    log.Info($"Status {dto?.EppDelegationAuthority} was not valid. ");
+                    isValid = false; // Is it possible to not have any EPP Delegation?
+                    // TODO: remove me after testing
+                    if (!this.IsSpaceEppDateValid(dto, messages))
+                    {
+                        isValid = false;
+                    }
+                    break;                 
+            }
 
-            // TODO: complete in IES-844
+            // Final Negotiated Value is required
+            if (dto.FinalNegotiatedValue == null || dto.FinalNegotiatedValue == 0) // Can the value be $0?
+            {
+                isValid = false;
+                messages.Add("Final Negotiated Value is required.");
+            }
+
+            // Date Confirmation Of Negotiations Submitted is required
+            if (dto.NegotiationsSubmitted == null || dto.NegotiationsSubmitted == DateTime.MinValue)
+            {
+                isValid = false;
+                messages.Add("Negotiations Submitted Date is required.");
+            }
+
+            // Mod Completion Date is required
+            if (dto.ModCompletedDate == null || dto.ModCompletedDate == DateTime.MinValue)
+            {
+                isValid = false;
+                messages.Add("MOD Completion Date is required.");
+            }
+            // LM Win / Loss is required
+            if (dto.LmWon == null)
+            {
+                isValid = false;
+                messages.Add("LM Win/Loss setting is required.");
+            }
 
             return isValid;
         }
+
+        private bool IsCorporateEppDateValid(ContractsDto dto, List<string> errMessages)
+        {
+            bool isValid = true;
+            // If EPP = Corporate, all dates are required
+            if (dto.LobEppDate == null)
+            {
+                errMessages.Add("RemoveMe");
+            }
+            return isValid;
+        }
+
+        private bool IsLoBEppDateValid(ContractsDto dto, List<string> errMessages)
+        {
+            bool isValid = true;
+            // [EppDelegationAuthority.LoB] = "LobEppDate",
+            // [EppDelegationAuthority.Program] = "ProgramEppDate"
+            if (dto.LobEppDate == null)
+            {
+                errMessages.Add("RemoveMe");
+            }
+            return isValid;
+        }
+
+        private bool IsSpaceEppDateValid(ContractsDto dto, List<string> errMessages)
+        {
+            _ = dto ?? throw new ArgumentNullException(nameof(dto));
+            errMessages = errMessages ?? new List<string>();
+
+            bool isValid = true;
+
+            List<string> requiredDates = GetRequiredEppDatesForDelegation((EppDelegationAuthority)dto.EppDelegationAuthority);
+
+            // if EPP = Space, then Program, LOB, Pre-Space and Space dates are required.
+            if (requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null).Any())
+            {
+                errMessages.Add(string.Join(",", requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null).ToArray()) + " date(s) required.");
+            }
+            return isValid;
+        }
+
+        public bool IsProgramEppDateValid(ContractsDto dto, List<string> errMessages)
+        {
+            _ = dto ?? throw new ArgumentNullException(nameof(dto));
+            errMessages = errMessages ?? new List<string>();
+
+            bool isValid = true;
+
+            List<string> requiredDates = GetRequiredEppDatesForDelegation((EppDelegationAuthority)dto.EppDelegationAuthority);
+
+            if (dto.ProgramEppDate == null)
+            {
+                isValid = false;
+                errMessages.Add("ProgramEppDate is required.");
+                errMessages.Add(string.Join(",", requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null).ToArray()) + " date(s) required.");
+                // List<string> nullProps = requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null).ToList().Join(",");
+            }
+
+            return isValid;
+        }
+
+        public List<string> GetRequiredEppDatesForDelegation(EppDelegationAuthority delegationAuthority)
+        {
+            List<string> result = new List<string>();
+            // This list is inverted, including itself, all subsequent dates will be required
+            Dictionary<EppDelegationAuthority, string> dateHierarchy = new Dictionary<EppDelegationAuthority, string>
+            {
+                [EppDelegationAuthority.Corporate] = "CorporateEppDate",
+                [EppDelegationAuthority.Corporate] = "PreCorporateEppDate",
+                [EppDelegationAuthority.Space] = "SpaceEppDate",
+                [EppDelegationAuthority.Space] = "PreSpaceEppDate",
+                [EppDelegationAuthority.LoB] = "LobEppDate",
+                [EppDelegationAuthority.Program] = "ProgramEppDate"
+            };
+
+            ListWithDuplicatesCollection dict = new ListWithDuplicatesCollection();
+            dict.Add(EppDelegationAuthority.Corporate, "CorporateEppDate");
+            dict.Add(EppDelegationAuthority.Corporate, "PreCorporateEppDate");
+            dict.Add(EppDelegationAuthority.Space, "SpaceEppDate");
+            dict.Add(EppDelegationAuthority.Space, "PreSpaceEppDate");
+            dict.Add(EppDelegationAuthority.LoB, "LobEppDate");
+            dict.Add(EppDelegationAuthority.Program, "ProgramEppDate");
+
+            bool matched = false;
+            //foreach (KeyValuePair<EppDelegationAuthority, string> level in dateHierarchy)
+            //{
+            //    if (!matched && level.Key == delegationAuthority)
+            //    {
+            //        matched = true;
+            //    }
+
+            //    if (!matched)
+            //    {
+            //        continue;
+            //    }
+
+            //    result.Add(level.Value);
+            //}
+
+            foreach(var item in dict)
+            {
+                if(!matched && item.Key == delegationAuthority)
+                {
+                    matched = true;
+                }
+
+                if (!matched)
+                {
+                    continue;
+                }
+
+                result.Add(item.Value);
+            }
+
+            return result;
+        }
+
+       
 
         /// <summary>
         /// Is the userId in the proposal's permissions as a Contracts administrator (lead/back-up)
@@ -543,5 +721,14 @@ namespace GenTRAC.ActionLogic
         }
 
         #endregion Contract Validate / Save
+    }
+
+    public class ListWithDuplicatesCollection : List<KeyValuePair<EppDelegationAuthority, string>>
+    {
+        public void Add(EppDelegationAuthority key, string value)
+        {
+            var element = new KeyValuePair<EppDelegationAuthority, string>(key, value);
+            this.Add(element);
+        }
     }
 }
