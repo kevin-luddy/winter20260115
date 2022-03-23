@@ -625,11 +625,35 @@ namespace IES.Common
         }
         #endregion SSRS Report
 
+        #region Contracts
 
         /// <summary>
-        /// SSRS Report Names
+        /// Validation failed for Final Negotiated Value
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public const string INVALID_FINAL_NEGOTIATED_VALUE = "Final Negotiated Value is required.";
+
+        /// <summary>
+        /// Validation failed for Negotiations Submitted Date
+        /// </summary>
+        public const string INVALID_NEGOTIATIONS_SUBMITTED_DATE = "Negotiations Submitted Date is required.";
+
+        /// <summary>
+        /// Validation failed for MOD Completion Date
+        /// </summary>
+        public const string INVALID_MOD_COMPLETION_DATE = "MOD Completion Date is required.";
+
+        /// <summary>
+        /// Validation failed for LM Win/Loss flag
+        /// </summary>
+        public const string INVALID_LM_WIN_LOSS = "LM Win/Loss setting is required.";
+
+        #endregion
+
+
+/// <summary>
+/// SSRS Report Names
+/// </summary>
+[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
         public static class SSRSReportName
         {
             /// <summary>

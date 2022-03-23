@@ -16,6 +16,7 @@ namespace GenTRAC.ActionLogic
     using System.Web.Configuration;
     using System.Web.Mvc;
     using GenTRAC.ActionLogic.Email;
+    using GenTRAC.ActionLogic.GeneralHelper;
     using GenTRAC.ActionLogic.Mediator;
     using GenTRAC.ActionLogic.ModelView;
     using GenTRAC.ActionLogic.ModelView.Proposals;
@@ -225,7 +226,7 @@ namespace GenTRAC.ActionLogic
         /// <param name="isComplete">Are we completing the proposal</param>
         /// <returns>Contracts DTO</returns>
         [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "*")]
-        private ContractsDto ConvertContractsModelToDto(ContractsModelView model)
+        public ContractsDto ConvertContractsModelToDto(ContractsModelView model)
         {
             if (model == null)
             {
@@ -238,10 +239,10 @@ namespace GenTRAC.ActionLogic
             dto.Id = model.Id;
             dto.ProposalId = model.ProposalId;
             dto.PreviouslySubmittedROM = model.PreviouslySubmittedROM;
-            dto.CustomerSubmittalDate = DateTime.Parse(model.CustomerSubmittalDate); 
+            dto.CustomerSubmittalDate = model.CustomerSubmittalDate == null ? (DateTime?)null : DateTime.Parse(model.CustomerSubmittalDate);
             dto.ContractsCorrespondenceLogNumber = model.ContractsCorrespondenceLogNumber;
             dto.FinalNegotiatedValue = model.FinalNegotiatedValueLong;
-            dto.NegotiationsSubmitted = DateTime.Parse(model.NegotiationsSubmitted);
+            dto.NegotiationsSubmitted = model.NegotiationsSubmitted == null ? (DateTime?)null : DateTime.Parse(model.NegotiationsSubmitted);
             dto.UpdateDateLong = model.LastUpdatedDateLong;
             dto.EppDelegationAuthority = (int)model.EppDelegationAuthority;
             dto.ProgramEppDate = model.ProgramEppDate;
@@ -280,7 +281,7 @@ namespace GenTRAC.ActionLogic
             model.FinalNegotiatedValueLong = dto.FinalNegotiatedValue == null ? dto.FinalNegotiatedValue : long.Parse(dto.FinalNegotiatedValue.ToString());
             model.NegotiationsSubmittedDt = dto.NegotiationsSubmitted;
             model.LastUpdatedDateLong = dto.UpdateDateLong;
-            model.EppDelegationAuthority = (EppDelegationAuthority)dto.EppDelegationAuthority;
+            model.EppDelegationAuthority = (EppDelegationAuthority)dto?.EppDelegationAuthority;
             model.ProgramEppDate = dto.ProgramEppDate;
             model.LobEppDate = dto.LobEppDate;
             model.PreSpaceEppDate = dto.PreSpaceEppDate;
@@ -332,7 +333,7 @@ namespace GenTRAC.ActionLogic
         /// <returns>true if button should be enabled.</returns>
         private bool IsValidForCompleteStatus(ContractsDto dto, FullProposal fullProposal)
         {
-            return this.ValidForCompleteProposalSave(dto, fullProposal, null) && dto.LmWon.HasValue && dto.LmWon.Value && fullProposal.ProposalStatus == ProposalStatus.PendingAward;
+            return this.ContractDataValidForCompleteProposalSave(dto, null) && dto.LmWon.HasValue && dto.LmWon.Value && fullProposal.ProposalStatus == ProposalStatus.PendingAward;
         }
 
         /// <summary>
@@ -518,52 +519,39 @@ namespace GenTRAC.ActionLogic
         /// Validates whether the proposal is valid for Completed Status
         /// </summary>
         /// <param name="dto">Contracts data</param>
-        /// <param name="fullProposal">Proposal data</param>
         /// <param name="messages">Validation error messages (out)</param>
         /// <returns>True if valid</returns>
         /// <exception cref="ArgumentNullException">Data missing</exception>
-        public bool ValidForCompleteProposalSave(ContractsDto dto, FullProposal fullProposal, List<string> messages)
+        public bool ContractDataValidForCompleteProposalSave(ContractsDto dto, List<string> messages)
         {
-            _ = fullProposal ?? throw new ArgumentNullException(nameof(fullProposal));
             _ = dto ?? throw new ArgumentNullException(nameof(dto));
             messages = messages ?? new List<string>();
 
             bool isValid = true;
+            EppDelegationDatesHelper edc = new EppDelegationDatesHelper();
 
-            switch ((EppDelegationAuthority)dto.EppDelegationAuthority)
+            switch ((EppDelegationAuthority?)dto?.EppDelegationAuthority)
             {
                 case EppDelegationAuthority.Program:
-                    if (!this.IsProgramEppDateValid(dto, messages))
-                    {
-                        isValid = false;
-                    }
-                    break;
                 case EppDelegationAuthority.LoB:
-                    if (!this.IsLoBEppDateValid(dto, messages))
-                    {
-                        isValid = false;
-                    }
-                    break;
                 case EppDelegationAuthority.Space:
-                    if (!this.IsSpaceEppDateValid(dto, messages))
-                    {
-                        isValid = false;
-                    }
-                    break;
                 case EppDelegationAuthority.Corporate:
-                    if (!this.IsCorporateEppDateValid(dto, messages))
+                    if (!edc.AreRequiredDatesPopulated(dto, messages))
                     {
                         isValid = false;
+                    }
+                    else
+                    {
+                        if (!edc.AreRequiredDatesSequential(dto, messages))
+                        {
+                            isValid = false;
+                        }
                     }
                     break;
+
                 default:
-                    log.Info($"Status {dto?.EppDelegationAuthority} was not valid. ");
-                    isValid = false; // Is it possible to not have any EPP Delegation?
-                    // TODO: remove me after testing
-                    if (!this.IsSpaceEppDateValid(dto, messages))
-                    {
-                        isValid = false;
-                    }
+                    log.Info($"Status {dto?.EppDelegationAuthority} was unset or not valid. ");
+                    isValid = false;
                     break;                 
             }
 
@@ -571,149 +559,32 @@ namespace GenTRAC.ActionLogic
             if (dto.FinalNegotiatedValue == null || dto.FinalNegotiatedValue == 0) // Can the value be $0?
             {
                 isValid = false;
-                messages.Add("Final Negotiated Value is required.");
+                messages.Add(Constants.INVALID_FINAL_NEGOTIATED_VALUE);
             }
 
             // Date Confirmation Of Negotiations Submitted is required
             if (dto.NegotiationsSubmitted == null || dto.NegotiationsSubmitted == DateTime.MinValue)
             {
                 isValid = false;
-                messages.Add("Negotiations Submitted Date is required.");
+                messages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED_DATE);
             }
 
             // Mod Completion Date is required
             if (dto.ModCompletedDate == null || dto.ModCompletedDate == DateTime.MinValue)
             {
                 isValid = false;
-                messages.Add("MOD Completion Date is required.");
+                messages.Add(Constants.INVALID_MOD_COMPLETION_DATE);
             }
+
             // LM Win / Loss is required
             if (dto.LmWon == null)
             {
                 isValid = false;
-                messages.Add("LM Win/Loss setting is required.");
+                messages.Add(Constants.INVALID_LM_WIN_LOSS);
             }
 
             return isValid;
         }
-
-        private bool IsCorporateEppDateValid(ContractsDto dto, List<string> errMessages)
-        {
-            bool isValid = true;
-            // If EPP = Corporate, all dates are required
-            if (dto.LobEppDate == null)
-            {
-                errMessages.Add("RemoveMe");
-            }
-            return isValid;
-        }
-
-        private bool IsLoBEppDateValid(ContractsDto dto, List<string> errMessages)
-        {
-            bool isValid = true;
-            // [EppDelegationAuthority.LoB] = "LobEppDate",
-            // [EppDelegationAuthority.Program] = "ProgramEppDate"
-            if (dto.LobEppDate == null)
-            {
-                errMessages.Add("RemoveMe");
-            }
-            return isValid;
-        }
-
-        private bool IsSpaceEppDateValid(ContractsDto dto, List<string> errMessages)
-        {
-            _ = dto ?? throw new ArgumentNullException(nameof(dto));
-            errMessages = errMessages ?? new List<string>();
-
-            bool isValid = true;
-
-            List<string> requiredDates = GetRequiredEppDatesForDelegation((EppDelegationAuthority)dto.EppDelegationAuthority);
-
-            // if EPP = Space, then Program, LOB, Pre-Space and Space dates are required.
-            if (requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null).Any())
-            {
-                errMessages.Add(string.Join(",", requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null).ToArray()) + " date(s) required.");
-            }
-            return isValid;
-        }
-
-        public bool IsProgramEppDateValid(ContractsDto dto, List<string> errMessages)
-        {
-            _ = dto ?? throw new ArgumentNullException(nameof(dto));
-            errMessages = errMessages ?? new List<string>();
-
-            bool isValid = true;
-
-            List<string> requiredDates = GetRequiredEppDatesForDelegation((EppDelegationAuthority)dto.EppDelegationAuthority);
-
-            if (dto.ProgramEppDate == null)
-            {
-                isValid = false;
-                errMessages.Add("ProgramEppDate is required.");
-                errMessages.Add(string.Join(",", requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null).ToArray()) + " date(s) required.");
-                // List<string> nullProps = requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null).ToList().Join(",");
-            }
-
-            return isValid;
-        }
-
-        public List<string> GetRequiredEppDatesForDelegation(EppDelegationAuthority delegationAuthority)
-        {
-            List<string> result = new List<string>();
-            // This list is inverted, including itself, all subsequent dates will be required
-            Dictionary<EppDelegationAuthority, string> dateHierarchy = new Dictionary<EppDelegationAuthority, string>
-            {
-                [EppDelegationAuthority.Corporate] = "CorporateEppDate",
-                [EppDelegationAuthority.Corporate] = "PreCorporateEppDate",
-                [EppDelegationAuthority.Space] = "SpaceEppDate",
-                [EppDelegationAuthority.Space] = "PreSpaceEppDate",
-                [EppDelegationAuthority.LoB] = "LobEppDate",
-                [EppDelegationAuthority.Program] = "ProgramEppDate"
-            };
-
-            ListWithDuplicatesCollection dict = new ListWithDuplicatesCollection();
-            dict.Add(EppDelegationAuthority.Corporate, "CorporateEppDate");
-            dict.Add(EppDelegationAuthority.Corporate, "PreCorporateEppDate");
-            dict.Add(EppDelegationAuthority.Space, "SpaceEppDate");
-            dict.Add(EppDelegationAuthority.Space, "PreSpaceEppDate");
-            dict.Add(EppDelegationAuthority.LoB, "LobEppDate");
-            dict.Add(EppDelegationAuthority.Program, "ProgramEppDate");
-
-            bool matched = false;
-            //foreach (KeyValuePair<EppDelegationAuthority, string> level in dateHierarchy)
-            //{
-            //    if (!matched && level.Key == delegationAuthority)
-            //    {
-            //        matched = true;
-            //    }
-
-            //    if (!matched)
-            //    {
-            //        continue;
-            //    }
-
-            //    result.Add(level.Value);
-            //}
-
-            foreach(var item in dict)
-            {
-                if(!matched && item.Key == delegationAuthority)
-                {
-                    matched = true;
-                }
-
-                if (!matched)
-                {
-                    continue;
-                }
-
-                result.Add(item.Value);
-            }
-
-            return result;
-        }
-
-       
 
         /// <summary>
         /// Is the userId in the proposal's permissions as a Contracts administrator (lead/back-up)
@@ -727,14 +598,5 @@ namespace GenTRAC.ActionLogic
         }
 
         #endregion Contract Validate / Save
-    }
-
-    public class ListWithDuplicatesCollection : List<KeyValuePair<EppDelegationAuthority, string>>
-    {
-        public void Add(EppDelegationAuthority key, string value)
-        {
-            var element = new KeyValuePair<EppDelegationAuthority, string>(key, value);
-            this.Add(element);
-        }
     }
 }

@@ -8,6 +8,7 @@ namespace GenTRAC.ActionLogic.ControllerLogic
 {
     using GenTRAC.ActionLogic.Email;
     using GenTRAC.ActionLogic.Mediator;
+    using GenTRAC.ActionLogic.ModelView;
     using GenTRAC.ActionLogic.ModelView.Proposals;
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
@@ -79,7 +80,14 @@ namespace GenTRAC.ActionLogic.ControllerLogic
         {
             if (proposalId < 1)
             {
-                returnMessages.Add("The proposal ID invalid.");
+                returnMessages.Add("The proposal ID is invalid.");
+            }
+
+            ContractsModelView contractData = await this.contractsLogic.GetDataForProposalContracts(proposalId);
+
+            if (!this.contractsLogic.ContractDataValidForCompleteProposalSave(this.contractsLogic.ConvertContractsModelToDto(contractData), returnMessages))
+            {
+                return false;
             }
             
             log.Debug($"Setting proposal {proposalId} to Complete.");
