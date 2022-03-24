@@ -145,7 +145,7 @@ namespace GenTRAC.ActionLogic.ModelView
         /// EPP Delegation Authority Level
         /// </summary>
         [Display(Name = "EPP Delegation Authority")]
-        public EppDelegationAuthority EppDelegationAuthority { get; set; }
+        public EppDelegationAuthority? EppDelegationAuthority { get; set; }
 
         /// <summary>
         /// Program EPP Date

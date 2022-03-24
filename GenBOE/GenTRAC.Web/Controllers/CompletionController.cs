@@ -58,7 +58,7 @@ namespace GenTRAC.Web.Controllers
         }
 
         /// <summary>
-        /// Sets the status to proposal lost and sends notification email(s)
+        /// Sets the status to proposal complete and sends notification email(s)
         /// </summary>
         /// <param name="proposalId">Proposal to be updated</param>
         /// <returns>Response object</returns>
