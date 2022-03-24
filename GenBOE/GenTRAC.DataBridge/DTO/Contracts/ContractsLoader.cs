@@ -172,14 +172,14 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="selectedValue">Enum option that should be selected by default</param>
         /// <returns>List of SelectListItems</returns>
-        public ICollection<SelectListItem> GetEppSelectValues(EppDelegationAuthority selectedValue)
+        public ICollection<SelectListItem> GetEppSelectValues(EppDelegationAuthority? selectedValue)
         {
             ICollection<SelectListItem> result = new List<SelectListItem>();
 
             EppDelegationAuthority[] enums = (EppDelegationAuthority[])Enum.GetValues(typeof(EppDelegationAuthority));
 
             // add blank option
-            result.Add(new SelectListItem { Value = "0", Text = "(Select)", Selected = (int)selectedValue == 0 });
+            result.Add(new SelectListItem { Value = null, Text = null, Selected = selectedValue == null });
 
             foreach (EppDelegationAuthority item in enums)
             {
