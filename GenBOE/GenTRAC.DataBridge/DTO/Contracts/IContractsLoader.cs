@@ -39,6 +39,6 @@ namespace GenTRAC.DataBridge.DTO
         /// </summary>
         /// <param name="selectedValue">Enum option that should be selected by default</param>
         /// <returns>List of SelectListItems</returns>
-        ICollection<SelectListItem> GetEppSelectValues(EppDelegationAuthority selectedValue);
+        ICollection<SelectListItem> GetEppSelectValues(EppDelegationAuthority? selectedValue);
     }
 }

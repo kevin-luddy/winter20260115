@@ -187,7 +187,7 @@ namespace GenTRAC.ActionLogic
         /// </summary>
         /// <param name="eppDelegationAuthority">The current value for the contract</param>
         /// <returns>Collection of SelectListItems</returns>
-        public ICollection<SelectListItem> GetEppSelectOptions(EppDelegationAuthority eppDelegationAuthority)
+        public ICollection<SelectListItem> GetEppSelectOptions(EppDelegationAuthority? eppDelegationAuthority)
         {
             return this.contractsLoader.GetEppSelectValues(eppDelegationAuthority);
         }
@@ -243,7 +243,7 @@ namespace GenTRAC.ActionLogic
             dto.FinalNegotiatedValue = model.FinalNegotiatedValueLong;
             dto.NegotiationsSubmitted = model.NegotiationsSubmitted == null ? (DateTime?)null : DateTime.Parse(model.NegotiationsSubmitted);
             dto.UpdateDateLong = model.LastUpdatedDateLong;
-            dto.EppDelegationAuthority = (int)model.EppDelegationAuthority;
+            dto.EppDelegationAuthority = model.EppDelegationAuthority == null ? (int?)null : (int)model.EppDelegationAuthority;
             dto.ProgramEppDate = model.ProgramEppDate;
             dto.LobEppDate = model.LobEppDate;
             dto.PreSpaceEppDate = model.PreSpaceEppDate;
@@ -280,7 +280,7 @@ namespace GenTRAC.ActionLogic
             model.FinalNegotiatedValueLong = dto.FinalNegotiatedValue == null ? dto.FinalNegotiatedValue : long.Parse(dto.FinalNegotiatedValue.ToString());
             model.NegotiationsSubmittedDt = dto.NegotiationsSubmitted;
             model.LastUpdatedDateLong = dto.UpdateDateLong;
-            model.EppDelegationAuthority = (EppDelegationAuthority)dto?.EppDelegationAuthority;
+            model.EppDelegationAuthority = dto.EppDelegationAuthority == null ? (EppDelegationAuthority?)null : (EppDelegationAuthority)dto.EppDelegationAuthority;
             model.ProgramEppDate = dto.ProgramEppDate;
             model.LobEppDate = dto.LobEppDate;
             model.PreSpaceEppDate = dto.PreSpaceEppDate;
