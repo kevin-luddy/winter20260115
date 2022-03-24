@@ -238,10 +238,10 @@ namespace GenTRAC.ActionLogic
             dto.Id = model.Id;
             dto.ProposalId = model.ProposalId;
             dto.PreviouslySubmittedROM = model.PreviouslySubmittedROM;
-            dto.CustomerSubmittalDate = DateTime.Parse(model.CustomerSubmittalDate); 
+            dto.CustomerSubmittalDate = model.CustomerSubmittalDate == null ? (DateTime?)null : DateTime.Parse(model.CustomerSubmittalDate);
             dto.ContractsCorrespondenceLogNumber = model.ContractsCorrespondenceLogNumber;
             dto.FinalNegotiatedValue = model.FinalNegotiatedValueLong;
-            dto.NegotiationsSubmitted = DateTime.Parse(model.NegotiationsSubmitted);
+            dto.NegotiationsSubmitted = model.NegotiationsSubmitted == null ? (DateTime?)null : DateTime.Parse(model.NegotiationsSubmitted);
             dto.UpdateDateLong = model.LastUpdatedDateLong;
             dto.EppDelegationAuthority = (int)model.EppDelegationAuthority;
             dto.ProgramEppDate = model.ProgramEppDate;
@@ -280,7 +280,7 @@ namespace GenTRAC.ActionLogic
             model.FinalNegotiatedValueLong = dto.FinalNegotiatedValue == null ? dto.FinalNegotiatedValue : long.Parse(dto.FinalNegotiatedValue.ToString());
             model.NegotiationsSubmittedDt = dto.NegotiationsSubmitted;
             model.LastUpdatedDateLong = dto.UpdateDateLong;
-            model.EppDelegationAuthority = (EppDelegationAuthority)dto.EppDelegationAuthority;
+            model.EppDelegationAuthority = (EppDelegationAuthority)dto?.EppDelegationAuthority;
             model.ProgramEppDate = dto.ProgramEppDate;
             model.LobEppDate = dto.LobEppDate;
             model.PreSpaceEppDate = dto.PreSpaceEppDate;
