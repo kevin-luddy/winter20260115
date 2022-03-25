@@ -94,7 +94,7 @@ namespace GenTRAC.ActionLogic.GeneralHelper
                 if ((thisDate == null || lastDate == null) || lastDate > thisDate)
                 {
                     isValid = false;
-                    errMessages.Add($"{requiredDates[i - 1]} or {requiredDates[i]} was null, OR {requiredDates[i - 1]} is after {requiredDates[i]}.");
+                    errMessages.Add($"{requiredDates[i - 1]} is after {requiredDates[i]}, OR {requiredDates[i - 1]} or {requiredDates[i]} was null.");
                 }
             }
 

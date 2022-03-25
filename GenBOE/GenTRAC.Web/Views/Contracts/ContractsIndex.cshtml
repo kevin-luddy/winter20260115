@@ -142,6 +142,12 @@
         width: 60%;
         margin: 10px 0;
     }
+
+    @if(!Model.CompleteButtonEnabled)
+    {
+        @Html.Raw("#proposal-complete { margin-right: 2px; }")
+    }
+
 </style>
 
 <div id="contractsIndex" class="composite module full" style="min-height:800px;">

@@ -15,9 +15,9 @@ namespace GenTRAC.Web.Controllers
     using System.Web.Mvc;
     using GenTRAC.ActionLogic;
     using GenTRAC.ActionLogic.ModelView;
+    using GenTRAC.DataBridge.DTO;
     using GenTRAC.Web.Common;
     using IES.Common;
-    using IES.Common.Exceptions;
 
     /// <summary>
     /// Contracts Controller
@@ -166,6 +166,37 @@ namespace GenTRAC.Web.Controllers
             {
                 this.contractsLogic.SaveContract(model);
                 response.IsSuccessful = true;
+            }            
+
+            return this.Json(response);
+        }
+
+        /// <summary>
+        /// Endpoint to provide feedback on why the Completion button is not available.
+        /// </summary>
+        /// <param name="proposalId">Proposal identifier</param>
+        /// <param name="model">model with contracts data</param>
+        /// <returns>Response with errors, if applicable</returns>
+        [HttpPost]
+        public JsonResult IsValidForCompletionStatus(int proposalId, ContractsModelView model)
+        {
+            IESResponse<bool> response = new IESResponse<bool>();
+            List<string> errMessages = new List<string>();
+
+            if (proposalId < 0)
+            {
+                response.Messages.Add("The Proposal must be saved before it can be completed.");
+            }
+            else
+            {
+                ContractsDto dto = this.contractsLogic.ConvertContractsModelToDto(model);
+                response.IsSuccessful = this.contractsLogic.ContractDataValidForCompleteProposalSave(dto, errMessages);
+                if (dto.LmWon.HasValue && !dto.LmWon.Value)
+                {
+                    errMessages.Add(Constants.INVALID_LM_WIN_LOSS_FALSE);
+                }
+
+                response.Messages = errMessages;
             }            
 
             return this.Json(response);

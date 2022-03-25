@@ -645,15 +645,20 @@ namespace IES.Common
         /// <summary>
         /// Validation failed for LM Win/Loss flag
         /// </summary>
-        public const string INVALID_LM_WIN_LOSS = "LM Win/Loss setting is required.";
+        public const string INVALID_LM_WIN_LOSS = "Contract Won setting is required.";
+
+        /// <summary>
+        /// Validation failed for LM Win/Loss flag because value is false
+        /// </summary>
+        public const string INVALID_LM_WIN_LOSS_FALSE = "Contract Won setting is No.";
 
         #endregion
 
 
-/// <summary>
-/// SSRS Report Names
-/// </summary>
-[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        /// <summary>
+        /// SSRS Report Names
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
         public static class SSRSReportName
         {
             /// <summary>
