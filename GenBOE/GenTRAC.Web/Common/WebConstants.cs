@@ -465,6 +465,11 @@ namespace GenTRAC.Web.Common
             /// </summary>
             public const string REVERT_NO_BID = "RevertProposalNoBidStatus";
 
+            /// <summary>
+            /// Validate whether the proposal can be set to Complete
+            /// </summary>
+            public const string VALID_TO_COMPLETE = "IsValidForCompletionStatus";
+
             #endregion
 
             #region Approvals

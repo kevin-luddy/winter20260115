@@ -16,6 +16,7 @@ namespace GenTRAC.ActionLogic
     using System.Web.Configuration;
     using System.Web.Mvc;
     using GenTRAC.ActionLogic.Email;
+    using GenTRAC.ActionLogic.GeneralHelper;
     using GenTRAC.ActionLogic.Mediator;
     using GenTRAC.ActionLogic.ModelView;
     using GenTRAC.ActionLogic.ModelView.Proposals;
@@ -225,7 +226,7 @@ namespace GenTRAC.ActionLogic
         /// <param name="isComplete">Are we completing the proposal</param>
         /// <returns>Contracts DTO</returns>
         [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "*")]
-        private ContractsDto ConvertContractsModelToDto(ContractsModelView model)
+        public ContractsDto ConvertContractsModelToDto(ContractsModelView model)
         {
             if (model == null)
             {
@@ -332,7 +333,7 @@ namespace GenTRAC.ActionLogic
         /// <returns>true if button should be enabled.</returns>
         private bool IsValidForCompleteStatus(ContractsDto dto, FullProposal fullProposal)
         {
-            return this.ValidForCompleteProposalSave(dto, fullProposal, null) && dto.LmWon.HasValue && dto.LmWon.Value && fullProposal.ProposalStatus == ProposalStatus.PendingAward;
+            return this.ContractDataValidForCompleteProposalSave(dto, null) && dto.LmWon.HasValue && dto.LmWon.Value && fullProposal.ProposalStatus == ProposalStatus.PendingAward;
         }
 
         /// <summary>
@@ -518,21 +519,62 @@ namespace GenTRAC.ActionLogic
         /// Validates whether the proposal is valid for Completed Status
         /// </summary>
         /// <param name="dto">Contracts data</param>
-        /// <param name="fullProposal">Proposal data</param>
         /// <param name="messages">Validation error messages (out)</param>
         /// <returns>True if valid</returns>
         /// <exception cref="ArgumentNullException">Data missing</exception>
-        public bool ValidForCompleteProposalSave(ContractsDto dto, FullProposal fullProposal, List<string> messages)
+        public bool ContractDataValidForCompleteProposalSave(ContractsDto dto, List<string> messages)
         {
-            _ = fullProposal ?? throw new ArgumentNullException(nameof(fullProposal));
             _ = dto ?? throw new ArgumentNullException(nameof(dto));
+            messages = messages ?? new List<string>();
 
             bool isValid = true;
+            EppDelegationDatesHelper edc = new EppDelegationDatesHelper();
 
-            messages = new List<string>(); // TODO: remove this
-            messages.Add("RemoveMe");
+            switch ((EppDelegationAuthority?)dto?.EppDelegationAuthority)
+            {
+                case EppDelegationAuthority.Program:
+                case EppDelegationAuthority.LoB:
+                case EppDelegationAuthority.Space:
+                case EppDelegationAuthority.Corporate:
+                    if (!edc.AreRequiredDatesPopulated(dto, messages) || !edc.AreRequiredDatesSequential(dto, messages))
+                    {
+                        isValid = false;
+                    }
+                    break;
 
-            // TODO: complete in IES-844
+                default:
+                    log.Info($"Status {dto?.EppDelegationAuthority} was unset or not valid. ");
+                    isValid = false;
+                    break;                 
+            }
+
+            // Final Negotiated Value is required
+            if (dto.FinalNegotiatedValue == null || dto.FinalNegotiatedValue == 0) // Can the value be $0?
+            {
+                isValid = false;
+                messages.Add(Constants.INVALID_FINAL_NEGOTIATED_VALUE);
+            }
+
+            // Date Confirmation Of Negotiations Submitted is required
+            if (dto.NegotiationsSubmitted == null || dto.NegotiationsSubmitted == DateTime.MinValue)
+            {
+                isValid = false;
+                messages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED_DATE);
+            }
+
+            // Mod Completion Date is required
+            if (dto.ModCompletedDate == null || dto.ModCompletedDate == DateTime.MinValue)
+            {
+                isValid = false;
+                messages.Add(Constants.INVALID_MOD_COMPLETION_DATE);
+            }
+
+            // LM Win / Loss is required
+            if (dto.LmWon == null)
+            {
+                isValid = false;
+                messages.Add(Constants.INVALID_LM_WIN_LOSS);
+            }
 
             return isValid;
         }

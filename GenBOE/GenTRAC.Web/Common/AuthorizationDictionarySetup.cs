@@ -250,6 +250,7 @@ namespace GenTRAC.Web.Common
             AddActionToController(WebConstants.Action.SET_PROPOSAL_LOST, PtmSecurityPage.Contracts, SecurityAuthorization.ReadUpdate, contractsActions);
             AddActionToController(WebConstants.Action.SET_NO_BID, PtmSecurityPage.Contracts, SecurityAuthorization.ReadUpdate, contractsActions);
             AddActionToController(WebConstants.Action.REVERT_NO_BID, PtmSecurityPage.Contracts, SecurityAuthorization.ReadUpdate, contractsActions);
+            AddActionToController(WebConstants.Action.VALID_TO_COMPLETE, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsActions);
 
             result.Add(WebConstants.Controller.CONTRACTS, contractsActions);
         }

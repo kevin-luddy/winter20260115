@@ -15,6 +15,7 @@ namespace GenTRAC.Tests.ActionLogic
     using GenBOE.DataBridge.DTO;
     using GenTRAC.ActionLogic;
     using GenTRAC.ActionLogic.Email;
+    using GenTRAC.ActionLogic.GeneralHelper;
     using GenTRAC.ActionLogic.Mediator;
     using GenTRAC.ActionLogic.ModelView;
     using GenTRAC.ActionLogic.ModelView.Proposals;
@@ -398,6 +399,173 @@ namespace GenTRAC.Tests.ActionLogic
         public void ValidateContractTest()
         {
             // TODO: After Validation methods are implemented
+        }
+
+        /// <summary>
+        /// Specifying Delegation Authority of "Program", requires ProgramEppDate
+        /// </summary>
+        [TestMethod]
+        public void EppRequiredDatesListProgramTest()
+        {
+            EppDelegationDatesHelper edh = new EppDelegationDatesHelper();
+            List<string> dates = new List<string>();
+
+            dates = edh.GetRequiredEppDatesForDelegation(EppDelegationAuthority.Program);
+
+            Assert.AreEqual("ProgramEppDate", dates.First());
+            Assert.AreEqual(1, dates.Count);
+        }
+
+        /// <summary>
+        /// Speicifying Delegation Authority of "Corporate" requires all dates, and they are in correct order
+        /// </summary>
+        [TestMethod]
+        public void EppRequiredDatesListCorporateTest()
+        {
+            EppDelegationDatesHelper edh = new EppDelegationDatesHelper();
+            List<string> dates = new List<string>();
+
+            dates = edh.GetRequiredEppDatesForDelegation(EppDelegationAuthority.Corporate);
+
+            Assert.AreEqual("CorporateEppDate", dates.First());
+            Assert.AreEqual("PreCorporateEppDate", dates.ElementAt(1));
+            Assert.AreEqual("SpaceEppDate", dates.ElementAt(2));
+            Assert.AreEqual("PreSpaceEppDate", dates.ElementAt(3));
+            Assert.AreEqual("LobEppDate", dates.ElementAt(4));
+            Assert.AreEqual("ProgramEppDate", dates.Last());
+            Assert.AreEqual(6, dates.Count);
+        }
+
+        /// <summary>
+        /// Adding only those dates that are required, ensure validation passes
+        /// </summary>
+        [TestMethod]
+        public void EppDatesForSpaceDelegationPassTest()
+        {
+            EppDelegationDatesHelper edh = new EppDelegationDatesHelper();
+            List<string> errors = new List<string>();
+
+            ContractsDto dto = new ContractsDto
+            {
+                PreviouslySubmittedROM = 12345,
+                ContractsCorrespondenceLogNumber = "XYZ123",
+                EppDelegationAuthority = (int)EppDelegationAuthority.Space,
+                SpaceEppDate = DateTime.Now,
+                PreSpaceEppDate = DateTime.Now,
+                ProgramEppDate = DateTime.Now,
+                LobEppDate = DateTime.Now
+            };
+
+            bool isValid = edh.AreRequiredDatesPopulated(dto, errors);
+
+            Assert.IsTrue(isValid);
+            Assert.AreEqual(0, errors.Count);
+        }
+
+        /// <summary>
+        /// Missing Line of Business date fails validation
+        /// </summary>
+        [TestMethod]
+        public void EppDatesForSpaceDelegationMissingLoBTest()
+        {
+            EppDelegationDatesHelper edh = new EppDelegationDatesHelper();
+            List<string> errors = new List<string>();
+
+            ContractsDto dto = new ContractsDto
+            {
+                PreviouslySubmittedROM = 12345,
+                ContractsCorrespondenceLogNumber = "XYZ123",
+                EppDelegationAuthority = (int)EppDelegationAuthority.Space,
+                SpaceEppDate = DateTime.Now,
+                PreSpaceEppDate = DateTime.Now,
+                ProgramEppDate = DateTime.Now
+            };
+
+            bool isValid = edh.AreRequiredDatesPopulated(dto, errors);
+
+            Assert.IsFalse(isValid);
+            Assert.AreEqual("LobEppDate date(s) required.", errors.First());
+        }
+
+        /// <summary>
+        /// Ensures that dates that are equal, or higher, by authority level pass
+        /// </summary>
+        [TestMethod]
+        public void EppDatesForSpaceDelegationValidSequenceTest()
+        {
+            EppDelegationDatesHelper edh = new EppDelegationDatesHelper();
+            List<string> errors = new List<string>();
+
+            ContractsDto dto = new ContractsDto
+            {
+                PreviouslySubmittedROM = 12345,
+                ContractsCorrespondenceLogNumber = "XYZ123",
+                EppDelegationAuthority = (int)EppDelegationAuthority.Space,
+                SpaceEppDate = DateTime.Now,
+                PreSpaceEppDate = DateTime.Now,
+                ProgramEppDate = DateTime.Now,
+                LobEppDate = DateTime.Now
+            };
+
+            bool pass = edh.AreRequiredDatesSequential(dto, errors);
+
+            Assert.IsTrue(pass);
+        }
+
+        /// <summary>
+        /// Ensures that dates that are not equal, or higher, by authority level fails
+        /// </summary>
+        [TestMethod]
+        public void EppDatesForSpaceDelegationInvalidSequenceTest()
+        {
+            EppDelegationDatesHelper edh = new EppDelegationDatesHelper();
+            List<string> errors = new List<string>();
+
+            ContractsDto dto = new ContractsDto
+            {
+                PreviouslySubmittedROM = 12345,
+                ContractsCorrespondenceLogNumber = "XYZ123",
+                EppDelegationAuthority = (int)EppDelegationAuthority.Space,
+                SpaceEppDate = DateTime.Now,
+                PreSpaceEppDate = DateTime.Now.AddDays(-1),
+                ProgramEppDate = DateTime.Now,
+                LobEppDate = DateTime.Now
+            };
+
+            bool pass = edh.AreRequiredDatesSequential(dto, errors);
+
+            Assert.IsFalse(pass);
+            Assert.IsTrue(errors.First().Contains("SpaceEppDate is after PreSpaceEppDate"));
+        }
+
+        /// <summary>
+        /// Get list of non-epp date related validation failures
+        /// </summary>
+        [TestMethod]
+        public void ValidationFinalAllNonEppMissingTest()
+        {
+            ContractsControllerLogic sut = this.CreateSystem();
+            List<string> messages = new List<string>();
+
+            ContractsDto dto = new ContractsDto
+            {
+                PreviouslySubmittedROM = 12345,
+                ContractsCorrespondenceLogNumber = "XYZ123",
+                EppDelegationAuthority = (int)EppDelegationAuthority.Space,
+                SpaceEppDate = DateTime.Now,
+                PreSpaceEppDate = DateTime.Now,
+                ProgramEppDate = DateTime.Now,
+                LobEppDate = DateTime.Now
+            };
+
+            bool isValid = sut.ContractDataValidForCompleteProposalSave(dto, messages);
+
+            Assert.IsFalse(isValid);
+            Assert.AreEqual(4, messages.Count);
+            Assert.IsTrue(messages.Contains(Constants.INVALID_MOD_COMPLETION_DATE));
+            Assert.IsTrue(messages.Contains(Constants.INVALID_LM_WIN_LOSS));
+            Assert.IsTrue(messages.Contains(Constants.INVALID_NEGOTIATIONS_SUBMITTED_DATE));
+            Assert.IsTrue(messages.Contains(Constants.INVALID_FINAL_NEGOTIATED_VALUE));
         }
     }
 }

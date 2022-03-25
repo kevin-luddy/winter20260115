@@ -103,6 +103,7 @@
     <Compile Include="Email\DocumentReminderEmailer.cs" />
     <Compile Include="Email\PtmEmailer.cs" />
     <Compile Include="Email\IPtmEmailer.cs" />
+    <Compile Include="GeneralHelper\EppDelegationDatesHelper.cs" />
     <Compile Include="GeneralHelper\Helpers.cs" />
     <Compile Include="GeneralHelper\HtmlHelper.cs" />
     <Compile Include="GeneralHelper\IHtmlHelper.cs" />
