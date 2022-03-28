@@ -699,10 +699,10 @@ namespace GenTRAC.DataBridge.DTO
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
                     toReturn = (from p in dbModel.Proposals
-                                join c in dbModel.ProposalChecklistCompletes
+                                join c in dbModel.ProposalContractsDatas
                                 on p.ProposalID equals c.ProposalID
                                 where (p.ProposalStatusID == (int)ProposalStatus.Completed || p.ProposalStatusID == (int)ProposalStatus.PendingCertification || p.ProposalStatusID == (int)ProposalStatus.PendingAward)
-                                && c.SubmitDate >= cutoffDate && c.ChecklistTypeID == (int)ProposalChecklistType.Default
+                                && c.CustomerSubmittalDate >= cutoffDate
                                 select new ProposalDto
                                 {
                                     Id = p.ProposalID,
@@ -1602,79 +1602,83 @@ namespace GenTRAC.DataBridge.DTO
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    toReturn = dbModel.Proposals.Where(p => p.ProposalStatusID == (int)ProposalStatus.PendingCertification &&
-                    (p.CertificationLastEmailed == null || p.CertificationLastEmailed < thirtyDaysAgo) &&
-                    (!p.ProposalChecklists.Any() || (p.ProposalChecklists.Select(c => c.ProposalSubmittalDate).Max() < sixtyDaysAgo)))
-                        .Select(entity => new
-                        {
-                            Id = entity.ProposalID,
-                            TrackingNumber = entity.ProposalTrackingID,
-                            ProposalTitle = entity.ProposalTitle,
-                            OTISOpportunityID = entity.OTISOpportunityID,
-                            ProposalStatus = (ProposalStatus)entity.ProposalStatusID,
-                            UpdateDate = entity.UpdateDate,
-                            ProposalType = entity.ProposalTypeID,
-                            ProgramName = entity.ProgramName,
-                            Customer = entity.Customer,
-                            ISGSRole = (ISGSRole)entity.ISGSRoleID,
-                            Request = entity.RequestTypeID,
-                            ProposalClass = entity.ProposalClassID,
-                            RFPNumber = entity.RFPNumber,
-                            LineOfBusinessID = entity.LineOfBusinessID,
-                            ProgramAreaId = entity.ProgramAreaID,
-                            ProposalLocation = (ProposalLocation)entity.ProposalLocationID,
-                            ProposalLocationName = entity.ProposalLocationName,
-                            PricingTool = (PricingTool)entity.PricingToolID,
-                            PricingToolName = entity.PricingToolName,
-                            BoeTool = (BOETool)entity.BOEToolID,
-                            BoeToolName = entity.BOEToolName,
-                            DeliveryDate = entity.AnticipatedDeliveryDate,
-                            RevisedSubmittalDate = entity.RevisedSubmittalDate,
-                            EstimatedProposalValue = entity.EstimatedProposalValue,
-                            CustomerType = (CustomerType)entity.CustomerTypeID,
-                            DateAssigned = entity.DateAssigned,
-                            DateCreated = entity.DateCreated,
-                            RFPIssuedDate = entity.RFPIssuedDate,
-                            RFPReceivedDate = entity.RFPReceivedDate,
-                            Comments = entity.Comments,
-                            ContractTypeGroup = entity.ContractTypeGroupID.HasValue ? entity.ContractTypeGroupID.Value : 0, // 0 is Not Set
-                            CreatedByUserId = entity.CreatedByUserID,
-                            IsScheduleProposal = entity.IsScheduleProposal,
-                            ProgramProposalStatus = entity.ProgramProposalStatusID.HasValue ? (ProgramProposalStatus)entity.ProgramProposalStatusID.Value : ProgramProposalStatus.NotSet,
-                            WorkflowStatus = (WorkflowStatus)entity.WorkflowStatus,
-                            WorkflowStatusLastUpdated = entity.WorkflowStatusLastUpdated,
-                            LeadEstimatorSignedDate = entity.LeadEstimatorSignedDT,
-                            LeadEstimatorSignatureComment = entity.LeadEstimatorSignComment,
-                            CoverSheetApproverSignedDate = entity.CoverSheetApproverSignedDT,
-                            CoverSheetApproverSignatureComment = entity.CoverSheetApproverSignComment,
-                            PricingVerifierSignedDate = entity.PricingVerifierSignedDT,
-                            PricingVerifierSignatureComment = entity.PricingVerifierSignComment,
-                            IndependentReviewerSignedDate = entity.IndependentReviewerSignedDT,
-                            IndependentReviewerSignatureComment = entity.IndependentReviewerSignComment,
-                            LOBEstimatingLeadSignedDate = entity.LOBEstimatingLeadSignedDT,
-                            LOBEstimatingLeadSignatureComment = entity.LOBEstimatingLeadSignComment,
-                            ApprovalEmailText = entity.ApprovalEmailText,
-                            IsCCPDRequired = entity.CCPDRequired,
-                            IsCostVolumeClassified = entity.CostVolumeClassified,
-                            DocumentId = entity.DocumentId,
-                            ForecastedTrackingNumber = entity.ForecastedTrackingID,
-                            IsForecastProposal = entity.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
-                            ForecastEmailSent = entity.ForecastEmailSent,
-                            ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
-                            CostElementTypeIds = entity.CostElementLUs.Select(x => x.CostElementID),
-                            AgreementDate = entity.AgreementDate,
-                            CertificationDate = entity.CertificationDate,
-                            CutOffDateUtilization = entity.CutOffDateUtilization,
-                            CertificationTimelineCompleted = entity.CertificationTimelineCompleted,
-                            CertificationLastEmailed = entity.CertificationLastEmailed,
-                            NoBidDate = entity.NoBidDate,
-                            RevisionOfId = entity.RevisionOfId,
-                            entity.ReasonCertificationNotRequired,
-                            entity.OtherReasonComment,
-                            ProposalSetupComments = entity.SetupComments,
-                            InformationComments = entity.InformationComments,
-                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
-                        }).ToList()
+                    // Retrieves list of proposals and associated contracts
+                    var proposalsList = dbModel.Proposals.GroupJoin(dbModel.ProposalContractsDatas, p => p.ProposalID, c => c.ProposalID, (p, c) => new { p, c })
+                       .SelectMany(prop => prop.c.DefaultIfEmpty(), (prop, cont) => new { Proposals = prop.p, Contracts = cont })
+                       .Where(x => (x.Proposals.ProposalStatusID == (int)ProposalStatus.PendingCertification
+                                    && (x.Proposals.CertificationLastEmailed == null || x.Proposals.CertificationLastEmailed < thirtyDaysAgo)
+                                    && (!x.Proposals.ProposalChecklists.Any() || x.Contracts.CustomerSubmittalDate < sixtyDaysAgo)));
+
+                    toReturn = proposalsList.Select(entity => new
+                    {
+                        Id = entity.Proposals.ProposalID,
+                        TrackingNumber = entity.Proposals.ProposalTrackingID,
+                        ProposalTitle = entity.Proposals.ProposalTitle,
+                        OTISOpportunityID = entity.Proposals.OTISOpportunityID,
+                        ProposalStatus = (ProposalStatus)entity.Proposals.ProposalStatusID,
+                        UpdateDate = entity.Proposals.UpdateDate,
+                        ProposalType = entity.Proposals.ProposalTypeID,
+                        ProgramName = entity.Proposals.ProgramName,
+                        Customer = entity.Proposals.Customer,
+                        ISGSRole = (ISGSRole)entity.Proposals.ISGSRoleID,
+                        Request = entity.Proposals.RequestTypeID,
+                        ProposalClass = entity.Proposals.ProposalClassID,
+                        RFPNumber = entity.Proposals.RFPNumber,
+                        LineOfBusinessID = entity.Proposals.LineOfBusinessID,
+                        ProgramAreaId = entity.Proposals.ProgramAreaID,
+                        ProposalLocation = (ProposalLocation)entity.Proposals.ProposalLocationID,
+                        ProposalLocationName = entity.Proposals.ProposalLocationName,
+                        PricingTool = (PricingTool)entity.Proposals.PricingToolID,
+                        PricingToolName = entity.Proposals.PricingToolName,
+                        BoeTool = (BOETool)entity.Proposals.BOEToolID,
+                        BoeToolName = entity.Proposals.BOEToolName,
+                        DeliveryDate = entity.Proposals.AnticipatedDeliveryDate,
+                        RevisedSubmittalDate = entity.Proposals.RevisedSubmittalDate,
+                        EstimatedProposalValue = entity.Proposals.EstimatedProposalValue,
+                        CustomerType = (CustomerType)entity.Proposals.CustomerTypeID,
+                        DateAssigned = entity.Proposals.DateAssigned,
+                        DateCreated = entity.Proposals.DateCreated,
+                        RFPIssuedDate = entity.Proposals.RFPIssuedDate,
+                        RFPReceivedDate = entity.Proposals.RFPReceivedDate,
+                        Comments = entity.Proposals.Comments,
+                        ContractTypeGroup = entity.Proposals.ContractTypeGroupID.HasValue ? entity.Proposals.ContractTypeGroupID.Value : 0, // 0 is Not Set
+                        CreatedByUserId = entity.Proposals.CreatedByUserID,
+                        IsScheduleProposal = entity.Proposals.IsScheduleProposal,
+                        ProgramProposalStatus = entity.Proposals.ProgramProposalStatusID.HasValue ? (ProgramProposalStatus)entity.Proposals.ProgramProposalStatusID.Value : ProgramProposalStatus.NotSet,
+                        WorkflowStatus = (WorkflowStatus)entity.Proposals.WorkflowStatus,
+                        WorkflowStatusLastUpdated = entity.Proposals.WorkflowStatusLastUpdated,
+                        LeadEstimatorSignedDate = entity.Proposals.LeadEstimatorSignedDT,
+                        LeadEstimatorSignatureComment = entity.Proposals.LeadEstimatorSignComment,
+                        CoverSheetApproverSignedDate = entity.Proposals.CoverSheetApproverSignedDT,
+                        CoverSheetApproverSignatureComment = entity.Proposals.CoverSheetApproverSignComment,
+                        PricingVerifierSignedDate = entity.Proposals.PricingVerifierSignedDT,
+                        PricingVerifierSignatureComment = entity.Proposals.PricingVerifierSignComment,
+                        IndependentReviewerSignedDate = entity.Proposals.IndependentReviewerSignedDT,
+                        IndependentReviewerSignatureComment = entity.Proposals.IndependentReviewerSignComment,
+                        LOBEstimatingLeadSignedDate = entity.Proposals.LOBEstimatingLeadSignedDT,
+                        LOBEstimatingLeadSignatureComment = entity.Proposals.LOBEstimatingLeadSignComment,
+                        ApprovalEmailText = entity.Proposals.ApprovalEmailText,
+                        IsCCPDRequired = entity.Proposals.CCPDRequired,
+                        IsCostVolumeClassified = entity.Proposals.CostVolumeClassified,
+                        DocumentId = entity.Proposals.DocumentId,
+                        ForecastedTrackingNumber = entity.Proposals.ForecastedTrackingID,
+                        IsForecastProposal = entity.Proposals.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                        ForecastEmailSent = entity.Proposals.ForecastEmailSent,
+                        ContractTypeIds = entity.Proposals.ContractTypeLUs.Select(x => x.ContractTypeID),
+                        CostElementTypeIds = entity.Proposals.CostElementLUs.Select(x => x.CostElementID),
+                        AgreementDate = entity.Proposals.AgreementDate,
+                        CertificationDate = entity.Proposals.CertificationDate,
+                        CutOffDateUtilization = entity.Proposals.CutOffDateUtilization,
+                        CertificationTimelineCompleted = entity.Proposals.CertificationTimelineCompleted,
+                        CertificationLastEmailed = entity.Proposals.CertificationLastEmailed,
+                        NoBidDate = entity.Proposals.NoBidDate,
+                        RevisionOfId = entity.Proposals.RevisionOfId,
+                        entity.Proposals.ReasonCertificationNotRequired,
+                        entity.Proposals.OtherReasonComment,
+                        ProposalSetupComments = entity.Proposals.SetupComments,
+                        InformationComments = entity.Proposals.InformationComments,
+                        ModExecutedLastEmailed = entity.Proposals.ModExecutedLastEmailed
+                    }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
                             Id = entity.Id,
@@ -1821,8 +1825,8 @@ namespace GenTRAC.DataBridge.DTO
                             IsRevision = x.RevisionOfId != null
                         }).ToList()
                         // some of the more complicating operations (below) need to be done in C#, not in SQL, hence the approach
-                        .Select(x => new RevisionHistoryModelView() 
-                        { 
+                        .Select(x => new RevisionHistoryModelView()
+                        {
                             ProposalId = x.ProposalID,
                             IsCurrentlySelected = x.ProposalID == proposalId,
                             TrackingNumber = x.ProposalTrackingID,
@@ -1854,11 +1858,11 @@ namespace GenTRAC.DataBridge.DTO
         {
             string result = string.Empty;
 
-            switch(proposalStatus)
+            switch (proposalStatus)
             {
                 case ProposalStatus.InProgress:
-                    result = "Due: " + (revisedDeliveryDate.HasValue ? revisedDeliveryDate.Value.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) 
-                        : anticipatedDeliveryDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR)); 
+                    result = "Due: " + (revisedDeliveryDate.HasValue ? revisedDeliveryDate.Value.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR)
+                        : anticipatedDeliveryDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR));
                     break;
                 case ProposalStatus.Completed:
                 case ProposalStatus.PendingCertification:
@@ -1872,7 +1876,7 @@ namespace GenTRAC.DataBridge.DTO
                     result = proposalStatus.GetDescription();
                     break;
             }
-           
+
             return result;
         }
 

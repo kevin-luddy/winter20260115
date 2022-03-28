@@ -28,7 +28,7 @@
         $('.certificationRequired').hide();
         $('.certificationNotRequired').show();
         toggleCertificationOtherComments();
-        $('button[name="complete-button"]').hide();
+        $('button[name="certification-complete-button"]').hide();
 
         $('#CertificationTimelineComment').val('');
         $('#AgreementDate').val('');
@@ -41,7 +41,7 @@
     function showCertRequired() {
         $('.certificationRequired').show();
         $('.certificationNotRequired').hide();
-        $('button[name="complete-button"]').show();
+        $('button[name="certification-complete-button"]').show();
         $('#ReasonCertificationNotRequired').val('');
         $('#OtherReasonCommentCertification').val('');
     }
@@ -95,8 +95,8 @@
             },
             {
                 ButtonClass: 'ies-action',
-                ButtonText: 'Complete',
-                ButtonName: "complete-button",
+                ButtonText: 'Certification Complete',
+                ButtonName: "certification-complete-button",
                 ButtonAction: function (buttonPressed) {
                     ProposalCertificationTimelineWidget.SaveAndCompletePage(buttonPressed);
                 },
@@ -220,7 +220,7 @@
                     ProposalCertificationTimelineWidget.cleanDirty();
                     if (hideButtons) {
                         $("form[name=certificationTimelineForm] div.buttons button[name=save-button]").hide();
-                        $("form[name=certificationTimelineForm] div.buttons button[name=complete-button]").hide();
+                        $("form[name=certificationTimelineForm] div.buttons button[name=certification-complete-button]").hide();
                     }
 
                     GenSession.ShowLoadingBox();
@@ -308,7 +308,7 @@
         toggleCertification();
 
         if ('@Model.DisableCompleteButton' == 'True') {
-            $('button[name="complete-button"]').addClass('disabled');
+            $('button[name="certification-complete-button"]').addClass('disabled');
         }
     });
     </script>

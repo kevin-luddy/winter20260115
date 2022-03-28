@@ -373,6 +373,12 @@ namespace GenTRAC.DataBridge.DTO
                     email += ";" + contractsEmail;
                 }
 
+                string backupContractsEmail = this.RetrieveEmailForRole(proposal, PtmRole.BackupContractsPOC);
+                if (!email.Contains(backupContractsEmail))
+                {
+                    email += ";" + backupContractsEmail;
+                }
+
                 ICollection<ProposalPermissionDto> permissions = this.RetrievePermissions(proposal.Id);
 
                 if (permissions.Any(x => x.Role == PtmRole.SupplyChainPOCMatl))

@@ -39,7 +39,7 @@ namespace GenTRAC.Web.Controllers
         }
 
         /// <summary>
-        /// Set the proposal to complete and sends notificatino email(s)
+        /// Set the proposal to complete and sends notification email(s)
         /// </summary>
         /// <param name="proposalId">proposal Id to update</param>
         /// <returns>JSON encoded response object</returns>

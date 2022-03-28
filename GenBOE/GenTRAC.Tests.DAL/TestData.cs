@@ -778,6 +778,39 @@ namespace GenTRAC.Tests.DAL
             }
         }
 
+        /// <summary>
+        /// Sets the Contracts Data Customer Submit Date
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <param name="submitDate">Submit Date</param>
+        public void SetCustomerSubmittalDate(int proposalId, DateTime submitDate)
+        {
+            using (genTRACEntities dbModel = new genTRACEntities())
+            {
+                ProposalContractsData contract = dbModel.ProposalContractsDatas.FirstOrDefault(x => x.ProposalID == proposalId);
+
+                if (contract == null)
+                {
+                    contract = new ProposalContractsData
+                    {
+                        ProposalID = proposalId,
+                        UpdateDT = DateTime.Now,
+                        PreviouslySubmittedROM = this.ProposalLoader.GetAllSlim().Last().Id, // FK, must exist
+                        ContractsCorrespondLogNumber = "abc123",
+                        CustomerSubmittalDate = submitDate
+                    };
+
+                    dbModel.ProposalContractsDatas.Add(contract);
+                }
+                else
+                {
+                    contract.CustomerSubmittalDate = submitDate;
+                }
+
+                dbModel.SaveChanges();
+            }
+        }
+
         #endregion
 
         #region Reset

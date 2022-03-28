@@ -721,10 +721,10 @@ namespace GenTRAC.Tests.DAL.Loader
 
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
             this.testData.SaveChecklistAsPricer(proposal.Id, null, true);
-            this.testData.SetSubmitDate(proposal.Id, DateTime.Now);
+            this.testData.SetCustomerSubmittalDate(proposal.Id, DateTime.Now.AddDays(1));
             this.testData.SetProposalStatus(proposal.Id, ProposalStatus.PendingCertification);
 
-            ICollection<ProposalDto> result = sut.GetAllCompletedProposalsAfterSubmitDate(DateTime.Now.AddMinutes(-1));
+            ICollection<ProposalDto> result = sut.GetAllCompletedProposalsAfterSubmitDate(DateTime.Now);
 
             Assert.IsTrue(result.Any());
             Assert.IsTrue(result.Any(x => x.Id == proposal.Id));

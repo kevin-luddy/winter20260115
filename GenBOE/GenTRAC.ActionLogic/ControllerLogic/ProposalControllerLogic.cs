@@ -889,7 +889,7 @@ namespace GenTRAC.ActionLogic
             model.CertificationTimelineVisibility = SecurityAuthorization.None;
             if (fullProposalDto != null && fullProposalDto.IsCCPDRequired.HasValue && fullProposalDto.IsCCPDRequired.Value && 
                 (fullProposalDto.ProposalStatus == ProposalStatus.PendingCertification || fullProposalDto.ProposalStatus == ProposalStatus.Revised 
-                || fullProposalDto.ProposalStatus == ProposalStatus.Completed))
+                || fullProposalDto.ProposalStatus == ProposalStatus.Completed || fullProposalDto.ProposalStatus == ProposalStatus.PendingAward))
             {
                 model.CertificationTimelineVisibility = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId).Authorization;
             }
@@ -2583,17 +2583,17 @@ namespace GenTRAC.ActionLogic
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
         /// <param name="model">Certification Model View</param>
-        /// <param name="isComplete">Are we completing the proposal</param>
+        /// <param name="isCertificationComplete">Are we completing the proposal</param>
         /// <returns>Proposal DTO</returns>
         [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "*")]
-        internal ProposalDto ConvertCertificationModelToDto(int proposalId, ProposalCertificationTimelineModelView model, bool isComplete)
+        internal ProposalDto ConvertCertificationModelToDto(int proposalId, ProposalCertificationTimelineModelView model, bool isCertificationComplete)
         {
             ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
             proposal.Updateable = UpdateType.Upsert;
 
             if (model.ReasonCertificationNotRequired.HasValue)
             {
-                isComplete = true;
+                isCertificationComplete = true;
                 proposal.ReasonCertificationNotRequired = model.ReasonCertificationNotRequired;
                 proposal.OtherReasonComment = model.OtherReasonCommentCertification;
 
@@ -2621,10 +2621,9 @@ namespace GenTRAC.ActionLogic
                 proposal.OtherReasonComment = null;
             }
 
-            if (isComplete)
+            if (isCertificationComplete)
             {
-                proposal.ProposalStatus = ProposalStatus.Completed;
-                proposal.CertificationTimelineCompleted = DateTime.Now;
+                proposal.ProposalStatus = ProposalStatus.PendingAward;
             }
 
             return proposal;
