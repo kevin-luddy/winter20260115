@@ -652,7 +652,14 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
         }  
     };
 
-    TaskElementDetailsWidget.LoadMOQEquationField($('#MOQEquationFieldContent'), taskElementId);
+    // Under certain conditions, a second element with the same ID is present. Attach to the second if it exists.
+    const fieldContainer = $('[id=MOQEquationFieldContent]:eq(1)');
+    if (fieldContainer.length) {
+        TaskElementDetailsWidget.LoadMOQEquationField(fieldContainer, taskElementId);
+    } else {
+        TaskElementDetailsWidget.LoadMOQEquationField($('#MOQEquationFieldContent'), taskElementId);
+    }
+    
 
     $("#SearchEstimatingCatalog-SearchButtonCommon").click(TaskElementDetailsWidget.SearchHistoricMetrics);
     $("#SearchEstimatingCatalog-SearchButtonMST").click(TaskElementDetailsWidget.SearchHistoricMetricsMST);
