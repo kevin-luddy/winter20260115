@@ -653,7 +653,6 @@ function InitializeTaskElementDetailsWidget(metricsSearchDialogTitle, searchMetr
     };
 
     // Under certain conditions, a second element with the same ID is present. Attach to the second if it exists.
-    // TODO: root cause this issue IES-977.
     const fieldContainer = $('[id=MOQEquationFieldContent]:eq(1)');
     if (fieldContainer.length) {
         TaskElementDetailsWidget.LoadMOQEquationField(fieldContainer, taskElementId);
