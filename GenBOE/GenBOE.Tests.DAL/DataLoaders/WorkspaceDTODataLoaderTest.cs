@@ -700,6 +700,32 @@ namespace GenBOE.Tests.DAL.DataLoaders
             this.ResetTestData();
         }
 
+        /// <summary>
+        /// Ensure that once a workspace is soft-deleted, it is no longer returned in the API results
+        /// </summary>
+        [TestMethod]
+        public void DeletedWorkspaceNotReturnedTest()
+        {
+            WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+
+            // Get the workspace data
+            WorkspaceDTO workspaceModel = sut.GetById(Workspace.Id);
+            workspaceModel.TrackingNumber = "TEST_ABC123";
+            workspaceModel.Updateable = UpdateType.Upsert;
+            sut.SaveWorkspaceSettings(Author.UserID, workspaceModel);
+
+            var results = sut.GetWorkspaceDataForProposal("TEST_ABC123");
+
+            Assert.IsTrue(results.Any());
+
+            workspaceModel = sut.GetById(Workspace.Id);
+            sut.UpdateDeletedStatus(workspaceModel.Id, workspaceModel.UpdateDate, true, GlobalTestCaseSetup.GetEtiUserID());
+
+            results = sut.GetWorkspaceDataForProposal("TEST_ABC123");
+
+            Assert.IsFalse(results.Any());
+        }
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "newAvg"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1804:RemoveUnusedLocals", MessageId = "originalAvg")]
         //[TestMethod]
         public void TestOldVsNew()
