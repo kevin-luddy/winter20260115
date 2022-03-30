@@ -22,7 +22,7 @@ namespace GenTRAC.ActionLogic.GeneralHelper
         /// <summary>
         /// Dictionary that holds frieldly names for EPP Dates
         /// </summary>
-        private Dictionary<string, string> EppDateNames;
+        private readonly Dictionary<string, string> EppDateNames;
 
         /// <summary>
         /// Constructor that adds the dates in reverse dependency order.
