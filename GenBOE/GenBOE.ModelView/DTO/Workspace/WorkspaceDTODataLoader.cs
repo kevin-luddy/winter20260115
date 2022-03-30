@@ -521,7 +521,7 @@ namespace GenBOE.DataBridge.DTO
             {
                 using (GenBoeEntities gbe = new GenBoeEntities())
                 {
-                    result = gbe.Workspaces.Where(x => x.TrackingNumber == ptmTrackingNumber)
+                    result = gbe.Workspaces.Where(x => x.TrackingNumber == ptmTrackingNumber && x.IsDeleted != true)
                                     .Select(x => new { Id = x.WorkspaceID, shortName = x.WorkspaceShortName, longName = x.WorkspaceName }).ToList()
                                     .Select(x => (Id: x.Id, shortName: x.shortName, longName: x.longName)).ToList();
                 }
