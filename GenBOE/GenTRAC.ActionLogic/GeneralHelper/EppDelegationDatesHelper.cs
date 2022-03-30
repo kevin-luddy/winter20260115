@@ -20,17 +20,34 @@ namespace GenTRAC.ActionLogic.GeneralHelper
     public class EppDelegationDatesHelper : List<KeyValuePair<EppDelegationAuthority, string>>
     {
         /// <summary>
+        /// Dictionary that holds frieldly names for EPP Dates
+        /// </summary>
+        private readonly Dictionary<string, string> EppDateNames;
+
+        /// <summary>
         /// Constructor that adds the dates in reverse dependency order.
         /// Meaning that at each level, the dates for that level and all dates BELOW it are required.
         /// </summary>
         public EppDelegationDatesHelper()
         {
+            // Property-Enum mapping
             Add(EppDelegationAuthority.Corporate, "CorporateEppDate");
             Add(EppDelegationAuthority.Corporate, "PreCorporateEppDate");
             Add(EppDelegationAuthority.Space, "SpaceEppDate");
             Add(EppDelegationAuthority.Space, "PreSpaceEppDate");
             Add(EppDelegationAuthority.LoB, "LobEppDate");
             Add(EppDelegationAuthority.Program, "ProgramEppDate");
+
+            // Property-Friendly name mapping
+            EppDateNames = new Dictionary<string, string>
+            {
+                { "CorporateEppDate", "Corporate EPP Date" },
+                { "PreCorporateEppDate", "Pre-Corporate EPP Date" },
+                { "SpaceEppDate", "Space EPP Date" },
+                { "PreSpaceEppDate", "Pre-Space EPP Date" },
+                { "LobEppDate", "Line of Business EPP Date" },
+                { "ProgramEppDate", "Program EPP Date" }
+            };
         }
 
         /// <summary>
@@ -86,15 +103,29 @@ namespace GenTRAC.ActionLogic.GeneralHelper
             bool isValid = true;
             
             List<string> requiredDates = this.GetRequiredEppDatesForDelegation((EppDelegationAuthority?)dto?.EppDelegationAuthority);
+            requiredDates.Reverse();
+
             for (int i = 1; i < requiredDates.Count; i++)
             {
                 DateTime? thisDate = (DateTime?)dto.GetType().GetProperty(requiredDates[i]).GetValue(dto, null);
                 DateTime? lastDate = (DateTime?)dto.GetType().GetProperty(requiredDates[i - 1]).GetValue(dto, null);
 
-                if ((thisDate == null || lastDate == null) || lastDate > thisDate)
+                if(thisDate == null)
+                {
+                    errMessages.Add($"{EppDateNames[requiredDates[i]]} is required.");
+                    isValid = false;
+                }
+
+                if(lastDate == null)
+                {
+                    errMessages.Add($"{EppDateNames[requiredDates[i - 1]]} is required.");
+                    isValid = false;
+                }
+
+                if (thisDate != null && lastDate != null && lastDate > thisDate)
                 {
                     isValid = false;
-                    errMessages.Add($"{requiredDates[i - 1]} is after {requiredDates[i]}, OR {requiredDates[i - 1]} or {requiredDates[i]} was null.");
+                    errMessages.Add($"{EppDateNames[requiredDates[i - 1]]} must be before {EppDateNames[requiredDates[i]]}");
                 }
             }
 
@@ -119,7 +150,14 @@ namespace GenTRAC.ActionLogic.GeneralHelper
 
             if (requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null).Any())
             {
-                errMessages.Add(string.Join(", ", requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null).ToArray()) + " date(s) required.");
+                // convert the property names to friendly names
+                string[] missingDates = requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) == null).ToArray();
+                for(int i = 0; i < missingDates.Count(); i++)
+                {
+                    missingDates[i] = EppDateNames[missingDates[i]];
+                }
+
+                errMessages.Add(string.Join(", ", missingDates) + " required.");
                 isValid = false;
             }
 
