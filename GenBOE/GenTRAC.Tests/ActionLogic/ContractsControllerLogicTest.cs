@@ -484,7 +484,7 @@ namespace GenTRAC.Tests.ActionLogic
             bool isValid = edh.AreRequiredDatesPopulated(dto, errors);
 
             Assert.IsFalse(isValid);
-            Assert.AreEqual("LobEppDate date(s) required.", errors.First());
+            Assert.AreEqual("Line of Business EPP Date required.", errors.First());
         }
 
         /// <summary>
@@ -501,10 +501,10 @@ namespace GenTRAC.Tests.ActionLogic
                 PreviouslySubmittedROM = 12345,
                 ContractsCorrespondenceLogNumber = "XYZ123",
                 EppDelegationAuthority = (int)EppDelegationAuthority.Space,
-                SpaceEppDate = DateTime.Now,
-                PreSpaceEppDate = DateTime.Now,
-                ProgramEppDate = DateTime.Now,
-                LobEppDate = DateTime.Now
+                SpaceEppDate = new DateTime(2022, 03, 30),
+                PreSpaceEppDate = new DateTime(2022, 03, 30),
+                ProgramEppDate = new DateTime(2022, 03, 30),
+                LobEppDate = new DateTime(2022, 03, 30)
             };
 
             bool pass = edh.AreRequiredDatesSequential(dto, errors);
@@ -526,16 +526,16 @@ namespace GenTRAC.Tests.ActionLogic
                 PreviouslySubmittedROM = 12345,
                 ContractsCorrespondenceLogNumber = "XYZ123",
                 EppDelegationAuthority = (int)EppDelegationAuthority.Space,
-                SpaceEppDate = DateTime.Now,
-                PreSpaceEppDate = DateTime.Now.AddDays(-1),
-                ProgramEppDate = DateTime.Now,
-                LobEppDate = DateTime.Now
+                SpaceEppDate = new DateTime(2022, 03, 30),
+                PreSpaceEppDate = new DateTime(2022, 03, 29),
+                ProgramEppDate = new DateTime(2022, 03, 30),
+                LobEppDate = new DateTime(2022, 03, 30)
             };
 
             bool pass = edh.AreRequiredDatesSequential(dto, errors);
 
             Assert.IsFalse(pass);
-            Assert.IsTrue(errors.First().Contains("SpaceEppDate is after PreSpaceEppDate"));
+            Assert.IsTrue(errors.First().Contains("Line of Business EPP Date must be before Pre-Space EPP Date"));
         }
 
         /// <summary>
