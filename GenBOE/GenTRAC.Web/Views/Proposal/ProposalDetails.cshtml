@@ -163,6 +163,10 @@
                 if (proposalID < 0 || @Json.Encode(Model.RevisionHistoryVisibility == SecurityAuthorization.None)) {
                     $('[tab*=RevisionHistory]').parents("li").addClass('display-none');
                 }
+
+                if (proposalID < 0 || @Json.Encode(Model.ContractsVisibility == SecurityAuthorization.None)) {
+                    $('[tab*=Contracts]').parents('li').addClass('display-none');
+                }
             }
         };
 

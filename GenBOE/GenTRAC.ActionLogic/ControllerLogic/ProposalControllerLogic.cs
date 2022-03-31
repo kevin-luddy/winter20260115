@@ -900,6 +900,12 @@ namespace GenTRAC.ActionLogic
                 model.RevisionHistoryVisibility = this.CheckPermissions(PtmSecurityPage.RevisionHistory, proposalId).Authorization;
             }
 
+            model.ContractsVisibility = SecurityAuthorization.None;
+            if (fullProposalDto != null)
+            {
+                model.ContractsVisibility = this.CheckPermissions(PtmSecurityPage.Contracts, proposalId).Authorization;
+            }
+
             if (fullProposalDto != null)
             {
                 model.ProposalID = fullProposalDto.Id;
@@ -972,6 +978,7 @@ namespace GenTRAC.ActionLogic
             model.PsaVisibility = SecurityAuthorization.None;
             model.CertificationTimelineVisibility = SecurityAuthorization.None;
             model.RevisionHistoryVisibility = SecurityAuthorization.None;
+            model.ContractsVisibility = SecurityAuthorization.None;
 
             if (fullProposalDto != null)
             {
