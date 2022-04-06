@@ -1960,11 +1960,12 @@ namespace GenTRAC.DataBridge.DTO
                             TrackingNumber = entity.ProposalTrackingID,
                             ProposalTitle = entity.ProposalTitle,
                             ProgramAreaId = entity.ProgramAreaID,
-                            AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate,
+                            // IES-891: If Revised Anticipated Delivery Date (DB field RevisedSubmittalDate) is available, use that date in place of the Anticipated Delivery Date
+                            AnticipatedDeliveryDate = entity.RevisedSubmittalDate ?? entity.AnticipatedDeliveryDate,
                             LobDescription = entity.LineOfBusinessLU.LineOfBusinessName,
                             PaDescription = entity.ProgramAreaLU.ProgramAreaName,
                             ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
-                            Customer = entity.Customer
+                            Customer = entity.Customer                            
                         }).Take(50).ToList()
                         .Select(entity => new EppProposalData()
                         {
@@ -2049,7 +2050,8 @@ namespace GenTRAC.DataBridge.DTO
                             TrackingNumber = entity.ProposalTrackingID,
                             ProposalTitle = entity.ProposalTitle,
                             ProgramAreaId = entity.ProgramAreaID,
-                            AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate,
+                            // IES-891: If Revised Anticipated Delivery Date (DB field RevisedSubmittalDate) is available, use that date in place of the Anticipated Delivery Date
+                            AnticipatedDeliveryDate = entity.RevisedSubmittalDate ?? entity.AnticipatedDeliveryDate, 
                             LobDescription = entity.LineOfBusinessLU.LineOfBusinessName,
                             PaDescription = entity.ProgramAreaLU.ProgramAreaName,
                             ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
