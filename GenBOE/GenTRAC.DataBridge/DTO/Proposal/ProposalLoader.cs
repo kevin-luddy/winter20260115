@@ -2082,7 +2082,7 @@ namespace GenTRAC.DataBridge.DTO
         public ICollection<SelectListItem> GetRomProposalOptions(int? selectedValue)
         {
             ICollection<SelectListItem> result;
-
+ 
             using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetRomProposalOptions", Log))
             {
                 using (genTRACEntities dbModel = new genTRACEntities())

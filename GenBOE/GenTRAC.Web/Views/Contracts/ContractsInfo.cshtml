@@ -269,7 +269,7 @@
             @Html.HiddenFor(x => x.ProposalId)
             @Html.HiddenFor(x => x.LastUpdatedDateLong);
             <div class="form-row">
-                <div class="form-label">@Html.LabelFor(x => x.PreviouslySubmittedROM) *</div>
+                <div class="form-label">@Html.LabelFor(x => x.PreviouslySubmittedROM)</div>
                 <div class="form-element">
                     @Html.DropDownListFor(x => x.PreviouslySubmittedROM, Model.PreviouslySubmittedRoms, string.Empty, new { @class = "half", onchange = "ContractsInfoWidget.romChanged()" })
                 </div>

@@ -217,3 +217,13 @@ BEGIN
 	ALTER TABLE dbo.Proposal ADD ModExecutedLastEmailed datetime2(7) NULL;
 END
 GO
+
+/*
+	4/6/2022 [Nghiem, Hunter] - IES-954 Update blank space to Null for PreviousSubmittedROM to be saved
+*/
+IF OBJECT_ID('dbo.ProposalContractsData', 'U') IS NOT NULL
+BEGIN
+	ALTER TABLE dbo.ProposalContractsData
+	ALTER COLUMN PreviouslySubmittedROM			INT				NULL;
+END
+GO

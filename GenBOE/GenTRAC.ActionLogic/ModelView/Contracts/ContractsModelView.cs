@@ -71,15 +71,14 @@ namespace GenTRAC.ActionLogic.ModelView
         /// Previously Submitted ROM (PTM record)
         /// </summary>
         [Display(Name= "Previously Submitted ROM")]
-        [Required(ErrorMessage = "Previously Submitted ROM is required.")]
         public int? PreviouslySubmittedROM { get; set; }
 
         /// <summary>
         /// Previous ROM Date String
         /// </summary>
         [Display(Name = "Previously Submitted ROM Date")]
-        public string PreviousROMDate => this.previousROMDt?.Date.ToShortDateString(); 
-
+        public string PreviousROMDate => this.previousROMDt?.Date.ToShortDateString();
+        
         /// <summary>
         /// Previous ROM Value
         /// </summary>
