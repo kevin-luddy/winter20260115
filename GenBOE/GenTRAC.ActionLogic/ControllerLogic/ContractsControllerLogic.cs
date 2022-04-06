@@ -536,7 +536,7 @@ namespace GenTRAC.ActionLogic
                 case EppDelegationAuthority.LoB:
                 case EppDelegationAuthority.Space:
                 case EppDelegationAuthority.Corporate:
-                    if (!edc.AreRequiredDatesPopulated(dto, messages) || !edc.AreRequiredDatesSequential(dto, messages))
+                    if (!edc.AreRequiredDatesPopulated(dto, messages) || !edc.AreEnteredDatesSequential(dto, messages))
                     {
                         isValid = false;
                     }

@@ -89,7 +89,7 @@ namespace GenTRAC.ActionLogic.GeneralHelper
         }
 
         /// <summary>
-        /// Tests the required dates for the assigned EPP Delegation level to ensure that subsequent steps are equal or greater in value.
+        /// Tests the required dates for the assigned EPP Delegation level to ensure that required steps are equal or greater in value.
         /// </summary>
         /// <param name="dto">Contracts DTO</param>
         /// <param name="errMessages">List to which encountered errors will be added.</param>
@@ -126,6 +126,42 @@ namespace GenTRAC.ActionLogic.GeneralHelper
                 {
                     isValid = false;
                     errMessages.Add($"{EppDateNames[requiredDates[i - 1]]} must be before {EppDateNames[requiredDates[i]]}");
+                }
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Tests the dates that have been provided to ensure that subsequent steps are equal or greater in value.
+        /// </summary>
+        /// <param name="dto">Contracts DTO</param>
+        /// <param name="errMessages">List to which encountered errors will be added.</param>
+        /// <returns>True if all the required data are available and they are in sequential order (or equal to each other)</returns>
+        /// <exception cref="ArgumentNullException">If DTO is null</exception>
+        public bool AreEnteredDatesSequential(ContractsDto dto, List<string> errMessages)
+        {
+            _ = dto ?? throw new ArgumentNullException(nameof(dto));
+            errMessages = errMessages ?? new List<string>();
+
+            bool isValid = true;
+
+            // get a list of all possible date names
+            List<string> requiredDates = this.GetRequiredEppDatesForDelegation(EppDelegationAuthority.Corporate);
+            // now get a list of the date names that have actually been provided
+            List<string> givenDates = requiredDates.Where(x => dto.GetType().GetProperty(x).GetValue(dto, null) != null).ToList();
+            givenDates.Reverse();
+
+            // make sure the provided dates are sequential
+            for (int i = 1; i < givenDates.Count; i++)
+            {
+                DateTime? thisDate = (DateTime?)dto.GetType().GetProperty(givenDates[i]).GetValue(dto, null);
+                DateTime? lastDate = (DateTime?)dto.GetType().GetProperty(givenDates[i - 1]).GetValue(dto, null);
+
+                if (thisDate != null && lastDate != null && lastDate > thisDate)
+                {
+                    isValid = false;
+                    errMessages.Add($"{EppDateNames[givenDates[i - 1]]} must be before {EppDateNames[givenDates[i]]}");
                 }
             }
 
