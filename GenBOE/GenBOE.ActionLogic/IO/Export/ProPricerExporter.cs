@@ -182,7 +182,8 @@ namespace GenBOE.ActionLogic.IO.Export
                 if (line.Length > 0)
                 {
                     string updatedRowString = line.Remove(line.Length - 1, 1);
-                    sb.AppendLine(updatedRowString.Replace('–', '-')); // the first dash is a special char; replacing with std dash
+                    // Do replacements: the first special char (even though it may not look like it!); replacing with std char
+                    sb.AppendLine(updatedRowString.Replace('–', '-').Replace(' ',' ').Replace("’","'").Replace("  ", " "));
                 }
             }
 
