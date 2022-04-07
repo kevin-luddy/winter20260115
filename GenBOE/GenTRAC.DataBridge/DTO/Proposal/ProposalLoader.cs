@@ -2147,7 +2147,7 @@ namespace GenTRAC.DataBridge.DTO
                 {
                     result = dbModel.Proposals.Where(x =>
                                     x.ProposalStatusID == (int)ProposalStatus.InProgress
-                                    && (isAdmin || x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid && (role.RoleID == (int)PtmRole.Pricer || role.RoleID == (int)PtmRole.BackupPricer)))
+                                    && (isAdmin || x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid && (role.RoleID == (int)PtmRole.Pricer || role.RoleID == (int)PtmRole.BackupPricer || role.RoleID == (int)PtmRole.CostVolumeLead)))
                                     && (string.IsNullOrEmpty(searchString) || x.ProposalTrackingID.ToLower().Contains(searchString) || x.ProposalTitle.ToLower().Contains(searchString)))
                         .Select(entity => new { TrackingNumber = entity.ProposalTrackingID, ProposalTitle = entity.ProposalTitle, ProposalId = entity.ProposalID }).Take(100).ToList()
                         .Select(entity => (PtmTrackingNumber: entity.TrackingNumber, ProposalTitle: entity.ProposalTitle, ProposalId: entity.ProposalId)).ToList();
