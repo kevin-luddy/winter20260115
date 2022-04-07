@@ -4418,7 +4418,12 @@ function GenForm(inFormConfig, inContext) {
 			        }
 			        if (typeof(this.Type) !== 'undefined') {
 			            additionalClasses.push(this.Type.toLowerCase());
-			        }
+                    }
+
+                    // separate property from "Stateful" so it will not be subject isDirty 
+                    if (typeof this.IsEnabled !== 'undefined' && !this.IsEnabled) {
+                        buttonElement.prop('disabled', true);
+                    }
 
 			        $(buttonElement).addClass(additionalClasses.join(' '));
 			        buttonsDiv.append(buttonElement);
@@ -4438,7 +4443,7 @@ function GenForm(inFormConfig, inContext) {
 			                that.performFormAction(buttonAction, buttonElement);
 			            }
 			        });
-			    }
+                }
 			});
     }
 
