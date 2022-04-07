@@ -1902,7 +1902,7 @@ namespace GenTRAC.DataBridge.DTO
                 {
                     result = "Certification In Progress";
                 }
-                else if (proposalStatus == ProposalStatus.Completed)
+                else if (proposalStatus == ProposalStatus.Completed || proposalStatus == ProposalStatus.Lost)
                 {
                     result = "Certification Completed: " + certificationTimelineCompleted?.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? "N/A";
                 }
