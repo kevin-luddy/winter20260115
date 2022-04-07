@@ -33,7 +33,32 @@
                             ContractsIndexWidget.RedirectHome();
                         }
                     }
-                }],
+                },
+                {
+                    ButtonClass: 'ies',
+                    ButtonText: 'Validate',
+                    ButtonName: 'validate-complete',
+                    ButtonAction: () => {
+                        if (GenSession.isDirty()) {
+                            alert('Please save your changes first.');
+                            return false;
+                        }
+
+                        $('#contractsInfoForm .validation-box').empty();
+
+                        const dataToSend = ContractsIndexWidget.GetData();
+
+                        const validateUrl = GenSession.CreateUrl({
+                            controller: '@WebConstants.Controller.CONTRACTS',
+                            action: '@WebConstants.Action.VALID_TO_COMPLETE',
+                            id: '@ViewBag.ProposalId'
+                        });
+
+                        ContractsInfoWidget.postData(validateUrl, dataToSend);
+                    },
+                    IsEnabled: @((!Model.CompleteButtonEnabled).ToString().ToLower())
+                }
+            ],
             ContainsOCI: "true",
             IsClassEnvironment: isClassEnvironment
         });

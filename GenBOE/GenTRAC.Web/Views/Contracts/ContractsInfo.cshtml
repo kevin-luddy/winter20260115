@@ -220,27 +220,6 @@
             $(this).text('Please Wait...');
             ContractsInfoWidget.setProposalLost();
         });
-
-        $('#why-disabled').on('click', function(event) {
-            event.preventDefault();
-
-            if (GenSession.isDirty()) {
-                alert('Please save your changes first.');
-                return false;
-            }
-
-            $('#contractsInfoForm .validation-box').empty();
-
-            const dataToSend = ContractsIndexWidget.GetData();
-
-            const validateUrl = GenSession.CreateUrl({
-                controller: '@WebConstants.Controller.CONTRACTS',
-                action: '@WebConstants.Action.VALID_TO_COMPLETE',
-                id: '@ViewBag.ProposalId'
-            });
-
-            ContractsInfoWidget.postData(validateUrl, dataToSend);
-        });
     });
 </script>
 
@@ -261,7 +240,7 @@
                 }
             }
             <button id="proposal-lost" type="button" class="ies" @(Model.SetLostButtonEnabled ? string.Empty : "disabled")>Proposal Lost</button>
-            <button id="proposal-complete" type="button" class="ies" @(Model.CompleteButtonEnabled ? string.Empty : "disabled")>Complete</button>@if (!Model.CompleteButtonEnabled) { <a id="why-disabled" href="#"> Why?</a> }
+            <button id="proposal-complete" type="button" class="ies" @(Model.CompleteButtonEnabled ? string.Empty : "disabled")>Complete</button>
         </div>
         @using (Html.BeginForm("", "", FormMethod.Post, new { id = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM, name = GenTRAC.ActionLogic.ContractsControllerLogic.CONTRACTS_INFO_FORM }))
         {
