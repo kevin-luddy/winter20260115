@@ -662,7 +662,7 @@ namespace GenTRAC.DataBridge.DTO
 
                     // as long as the proposal is not in progress, grab the approval completed date
                     if (completed == (int)ProposalStatus.Completed || completed == (int)ProposalStatus.PendingCertification || completed == (int)ProposalStatus.Revised
-                        || completed == (int)ProposalStatus.PendingAward)
+                        || completed == (int)ProposalStatus.PendingAward || completed == (int)ProposalStatus.Lost)
                     {
                         toReturn = (from c in dbModel.ProposalChecklistCompletes
                                     where c.ProposalID == inProposalId
@@ -1867,6 +1867,7 @@ namespace GenTRAC.DataBridge.DTO
                 case ProposalStatus.Completed:
                 case ProposalStatus.PendingCertification:
                 case ProposalStatus.PendingAward:
+                case ProposalStatus.Lost:
                 case ProposalStatus.Revised:
                     result = "Approval Workflow Completed: " + (maxCompleteDate?.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? "N/A");
                     break;
@@ -1901,7 +1902,7 @@ namespace GenTRAC.DataBridge.DTO
                 {
                     result = "Certification In Progress";
                 }
-                else if (proposalStatus == ProposalStatus.Completed)
+                else if (proposalStatus == ProposalStatus.Completed || proposalStatus == ProposalStatus.Lost)
                 {
                     result = "Certification Completed: " + certificationTimelineCompleted?.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? "N/A";
                 }
