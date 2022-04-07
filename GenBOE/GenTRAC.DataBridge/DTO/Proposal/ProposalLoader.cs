@@ -662,7 +662,7 @@ namespace GenTRAC.DataBridge.DTO
 
                     // as long as the proposal is not in progress, grab the approval completed date
                     if (completed == (int)ProposalStatus.Completed || completed == (int)ProposalStatus.PendingCertification || completed == (int)ProposalStatus.Revised
-                        || completed == (int)ProposalStatus.PendingAward)
+                        || completed == (int)ProposalStatus.PendingAward || completed == (int)ProposalStatus.Lost)
                     {
                         toReturn = (from c in dbModel.ProposalChecklistCompletes
                                     where c.ProposalID == inProposalId
@@ -1867,6 +1867,7 @@ namespace GenTRAC.DataBridge.DTO
                 case ProposalStatus.Completed:
                 case ProposalStatus.PendingCertification:
                 case ProposalStatus.PendingAward:
+                case ProposalStatus.Lost:
                 case ProposalStatus.Revised:
                     result = "Approval Workflow Completed: " + (maxCompleteDate?.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? "N/A");
                     break;
@@ -1901,7 +1902,7 @@ namespace GenTRAC.DataBridge.DTO
                 {
                     result = "Certification In Progress";
                 }
-                else if (proposalStatus == ProposalStatus.Completed)
+                else if (proposalStatus == ProposalStatus.Completed || proposalStatus == ProposalStatus.Lost)
                 {
                     result = "Certification Completed: " + certificationTimelineCompleted?.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? "N/A";
                 }
@@ -1960,11 +1961,12 @@ namespace GenTRAC.DataBridge.DTO
                             TrackingNumber = entity.ProposalTrackingID,
                             ProposalTitle = entity.ProposalTitle,
                             ProgramAreaId = entity.ProgramAreaID,
-                            AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate,
+                            // IES-891: If Revised Anticipated Delivery Date (DB field RevisedSubmittalDate) is available, use that date in place of the Anticipated Delivery Date
+                            AnticipatedDeliveryDate = entity.RevisedSubmittalDate ?? entity.AnticipatedDeliveryDate,
                             LobDescription = entity.LineOfBusinessLU.LineOfBusinessName,
                             PaDescription = entity.ProgramAreaLU.ProgramAreaName,
                             ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
-                            Customer = entity.Customer
+                            Customer = entity.Customer                            
                         }).Take(50).ToList()
                         .Select(entity => new EppProposalData()
                         {
@@ -2049,7 +2051,8 @@ namespace GenTRAC.DataBridge.DTO
                             TrackingNumber = entity.ProposalTrackingID,
                             ProposalTitle = entity.ProposalTitle,
                             ProgramAreaId = entity.ProgramAreaID,
-                            AnticipatedDeliveryDate = entity.AnticipatedDeliveryDate,
+                            // IES-891: If Revised Anticipated Delivery Date (DB field RevisedSubmittalDate) is available, use that date in place of the Anticipated Delivery Date
+                            AnticipatedDeliveryDate = entity.RevisedSubmittalDate ?? entity.AnticipatedDeliveryDate, 
                             LobDescription = entity.LineOfBusinessLU.LineOfBusinessName,
                             PaDescription = entity.ProgramAreaLU.ProgramAreaName,
                             ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
@@ -2082,7 +2085,7 @@ namespace GenTRAC.DataBridge.DTO
         public ICollection<SelectListItem> GetRomProposalOptions(int? selectedValue)
         {
             ICollection<SelectListItem> result;
-
+ 
             using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetRomProposalOptions", Log))
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
@@ -2144,7 +2147,7 @@ namespace GenTRAC.DataBridge.DTO
                 {
                     result = dbModel.Proposals.Where(x =>
                                     x.ProposalStatusID == (int)ProposalStatus.InProgress
-                                    && (isAdmin || x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid && (role.RoleID == (int)PtmRole.Pricer || role.RoleID == (int)PtmRole.BackupPricer)))
+                                    && (isAdmin || x.ProposalUserRoles.Any(role => role.genTRACUser.NTID.ToLower() == ntid && (role.RoleID == (int)PtmRole.Pricer || role.RoleID == (int)PtmRole.BackupPricer || role.RoleID == (int)PtmRole.CostVolumeLead)))
                                     && (string.IsNullOrEmpty(searchString) || x.ProposalTrackingID.ToLower().Contains(searchString) || x.ProposalTitle.ToLower().Contains(searchString)))
                         .Select(entity => new { TrackingNumber = entity.ProposalTrackingID, ProposalTitle = entity.ProposalTitle, ProposalId = entity.ProposalID }).Take(100).ToList()
                         .Select(entity => (PtmTrackingNumber: entity.TrackingNumber, ProposalTitle: entity.ProposalTitle, ProposalId: entity.ProposalId)).ToList();

@@ -539,6 +539,33 @@ namespace GenTRAC.Tests.ActionLogic
         }
 
         /// <summary>
+        /// Ensure that all provide dates are sequential - whether they are required or not
+        /// </summary>
+        [TestMethod]
+        public void EppDatesProvidedAreSequentialFailTest()
+        {
+            EppDelegationDatesHelper edh = new EppDelegationDatesHelper();
+            List<string> errors = new List<string>();
+
+            ContractsDto dto = new ContractsDto
+            {
+                PreviouslySubmittedROM = 12345,
+                ContractsCorrespondenceLogNumber = "XYZ123",
+                EppDelegationAuthority = (int)EppDelegationAuthority.Space,
+                PreCorporateEppDate = new DateTime(2022, 04, 06),
+                SpaceEppDate = new DateTime(2022, 04, 8),
+                PreSpaceEppDate = new DateTime(2022, 04, 07),
+                LobEppDate = new DateTime(2022, 04, 06),
+                ProgramEppDate = new DateTime(2022, 04, 05)
+            };
+
+            bool pass = edh.AreEnteredDatesSequential(dto, errors);
+
+            Assert.IsFalse(pass);
+            Assert.IsTrue(errors.First().Contains("Space EPP Date must be before Pre-Corporate EPP Date"));
+        }
+
+        /// <summary>
         /// Get list of non-epp date related validation failures
         /// </summary>
         [TestMethod]

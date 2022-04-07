@@ -536,14 +536,16 @@ namespace GenTRAC.ActionLogic
                 case EppDelegationAuthority.LoB:
                 case EppDelegationAuthority.Space:
                 case EppDelegationAuthority.Corporate:
-                    if (!edc.AreRequiredDatesPopulated(dto, messages) || !edc.AreRequiredDatesSequential(dto, messages))
+                    if (!edc.AreRequiredDatesPopulated(dto, messages) || !edc.AreEnteredDatesSequential(dto, messages))
                     {
                         isValid = false;
                     }
                     break;
 
                 default:
-                    log.Info($"Status {dto?.EppDelegationAuthority} was unset or not valid. ");
+                    string msg = $"EPP Delegation Authority is unset or not valid.";
+                    log.Info(msg + $" ({dto?.EppDelegationAuthority})");
+                    messages.Add(msg);
                     isValid = false;
                     break;                 
             }
