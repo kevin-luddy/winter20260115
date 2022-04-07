@@ -543,7 +543,9 @@ namespace GenTRAC.ActionLogic
                     break;
 
                 default:
-                    log.Info($"Status {dto?.EppDelegationAuthority} was unset or not valid. ");
+                    string msg = $"EPP Delegation Authority is unset or not valid.";
+                    log.Info(msg + $" ({dto?.EppDelegationAuthority})");
+                    messages.Add(msg);
                     isValid = false;
                     break;                 
             }
