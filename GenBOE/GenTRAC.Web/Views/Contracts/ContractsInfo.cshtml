@@ -61,7 +61,7 @@
             }
         }
 
-        const handleDateSelect = () => {
+        const handleDateSelect = function () {
             ContractsInfoWidget.setDirty('contractsForm');
             $(this).blur();
             $(this).next('button.ui-datepicker-trigger').attr('tabindex', '0');
