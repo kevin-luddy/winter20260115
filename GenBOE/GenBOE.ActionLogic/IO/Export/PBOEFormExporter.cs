@@ -186,11 +186,6 @@ namespace GenBOE.ActionLogic.IO.Export
             this.SetField(document, MANAGER, boeForm.Approver);
             this.SetField(document, MANAGER_PHONE, boeForm.ApproverPhone);
 
-            // degree of completion checkboxes
-            this.SetCheckbox(document, COMPETITIVE, boeForm.DegreeOfCompetition == DegreeOfCompetition.Competitive);
-            this.SetCheckbox(document, NON_COMPETITIVE, boeForm.DegreeOfCompetition == DegreeOfCompetition.NonCompetitive);
-            this.SetCheckbox(document, SOURCE_NOT_SELECTED, boeForm.DegreeOfCompetition == DegreeOfCompetition.SourceNotSelected);
-
             // ccopd checkboxes
             this.SetCheckbox(document, CCOPD, boeForm.CCoPDApplies);
             this.SetCheckbox(document, CCOPD_COMMERCIAL, boeForm.CommercialItemExceptionApplies);

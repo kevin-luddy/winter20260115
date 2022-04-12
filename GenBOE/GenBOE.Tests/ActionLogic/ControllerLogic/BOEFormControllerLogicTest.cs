@@ -973,7 +973,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 WorkspaceId = 5,
                 CCoPDApplies = true,
                 CommercialItemDocIncluded = TripleBooleanState.Yes,
-                DegreeOfCompetition = DegreeOfCompetition.Competitive,
                 ProposalNumber = "pn",
                 RFP = "rfp",
                 SupplierName = "sn",
@@ -984,10 +983,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             Assert.AreEqual(0, messages.Count);
 
-            pboe.DegreeOfCompetition = DegreeOfCompetition.None;
             sut.ValidatePBOE(pboe, messages);
             Assert.AreEqual(1, messages.Count);
-            pboe.DegreeOfCompetition = DegreeOfCompetition.Competitive;
             messages = new Collection<ValidationMessage>();
 
             pboe.CCoPDApplies = false;

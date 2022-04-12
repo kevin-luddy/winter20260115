@@ -1125,21 +1125,6 @@ namespace IES.Common
     }
 
     /// <summary>
-    /// Degree of Competition for PBOE
-    /// </summary>
-    public enum DegreeOfCompetition
-    {
-        [Description("")]
-        None = 0,
-        [Description("Competitive")]
-        Competitive,
-        [Description("Non-Competitive")]
-        NonCompetitive,
-        [Description("Source not yet selected")]
-        SourceNotSelected
-    }
-
-    /// <summary>
     /// Certified Cost or Pricing Data Applicability for PBOE
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1714:FlagsEnumsShouldHavePluralNames")]

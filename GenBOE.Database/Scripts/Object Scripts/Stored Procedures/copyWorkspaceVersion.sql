@@ -2529,7 +2529,6 @@ BEGIN TRY
 
 	INSERT INTO [dbo].[BOEFormPBOE]
 		(UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion,  
-		[DegreeOfCompetition],
 		[CCoPD],
 		[CCoPDOtherText],
 		[RFP],
@@ -2588,7 +2587,6 @@ BEGIN TRY
 		FirmSupplierReceiptText,
 		SourceSelectionText)
 	SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion, 
-		[DegreeOfCompetition],
 		[CCoPD],
 		[CCoPDOtherText],
 		[RFP],

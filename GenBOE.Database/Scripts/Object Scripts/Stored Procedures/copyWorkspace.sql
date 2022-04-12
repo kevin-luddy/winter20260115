@@ -2182,7 +2182,6 @@ BEGIN
 	SELECT TOP 1 @PBOEID = [PBOEFormID] FROM @PBOE WHERE Processed = 0
 	INSERT INTO [dbo].[BOEFormPBOE]
 		(UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion,  
-		[DegreeOfCompetition],
 		[CCoPD],
 		[CCoPDOtherText],
 		[RFP],
@@ -2241,7 +2240,6 @@ BEGIN
 		FirmSupplierReceiptText,
 		SourceSelectionText)
 	SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion, 
-		[DegreeOfCompetition],
 		[CCoPD],
 		[CCoPDOtherText],
 		[RFP],

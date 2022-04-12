@@ -37,7 +37,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
                 throw new ArgumentNullException(nameof(dto));
             }
 
-            this.DegreeOfCompetition = dto.DegreeOfCompetition;
             this.CCoPDApplies = dto.CCoPDApplies;
             this.CommercialItemExceptionApplies = dto.CommercialItemExceptionApplies;
             this.CompetitionExceptionApplies = dto.CompetitionExceptionApplies;
@@ -100,11 +99,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.SourceSelectionText = dto.SourceSelectionText;
         }
 
-
-        /// <summary>
-        /// Gets or sets the degree of competition.
-        /// </summary>
-        public DegreeOfCompetition DegreeOfCompetition { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether CCoPD Applies.

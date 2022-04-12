@@ -35,10 +35,7 @@ namespace GenBOE.Dtos
                 return BOEFormType.PBOE;
             }
         }
-        /// <summary>
-        /// Gets or sets the degree of competition.
-        /// </summary>
-        public DegreeOfCompetition DegreeOfCompetition { get; set; }
+        
 
         /// <summary>
         /// Gets or sets a value indicating whether CCoPD applies.

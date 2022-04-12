@@ -233,13 +233,6 @@
         </div>
     </div>
     <div class="form-row"> 
-        <div class="form-label"><span helptext="Select which best represents the degree to which LM’s requirement has been competed among potential procurement sources for pricing purposes. If the source has not yet been selected or the basis for LM’s proposed procurement value is an internal estimate, shade the last box. Note: Engineering estimates/should-cost estimates may not be substituted for required supplier provided certified cost or pricing data merely to meet prime proposal submittal schedules.">Degree of Competition **</span></div>
-        <div class="form-element"><%: Html.RadioButton("DegreeOfCompetition", DegreeOfCompetition.Competitive, Model.PBOEModel.DegreeOfCompetition == DegreeOfCompetition.Competitive, new { id = "DegreeOfCompetition" }) %><label>Competitive</label><br />
-            <%: Html.RadioButton("DegreeOfCompetition", DegreeOfCompetition.NonCompetitive, Model.PBOEModel.DegreeOfCompetition == DegreeOfCompetition.NonCompetitive, new { id = "DegreeOfCompetition" }) %><label>Non-competitive</label><br />
-            <%: Html.RadioButton("DegreeOfCompetition", DegreeOfCompetition.SourceNotSelected, Model.PBOEModel.DegreeOfCompetition == DegreeOfCompetition.SourceNotSelected, new { id = "DegreeOfCompetition" }) %><label>Source not yet selected; should cost estimate (SCE) / Engineering Estimate (EE) used</label>
-        </div>
-    </div>
-    <div class="form-row"> 
         <div class="form-label"><span helptext="Select to indicate whether certified cost or pricing data is applicable to the procurement, or if not, which exception applies.">Certified Cost or Pricing Data (CCoPD) Applicability **</span></div>
         <div class="form-element">
             <input <%: Model.PBOEModel.CCoPDApplies ? "checked=\"checked\"" : string.Empty %> id="CCoPDApplies" name="CCoPDApplies" type="checkbox" value="true"><label>CCoPD Applies</label><br />

@@ -23,7 +23,6 @@ CREATE PROCEDURE [dbo].[upsertBOEFormPBOE]
 @Approver varchar(65) = NULL,
 @ApproverPhone varchar(60) = NULL,
 @FormVersion int,
-@DegreeOfCompetition int,
 @CCoPD int,
 @CCoPDOtherText varchar (100) = NULL,
 @RFP varchar(50) = NULL,
@@ -160,7 +159,6 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				,[ApproverPhone]
 				,[Revision]
 				,[FormVersion]
-				,[DegreeOfCompetition] 
 				,[CCoPD] 
 				,[CCoPDOtherText]
 				,[RFP]
@@ -235,7 +233,6 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				@ApproverPhone,
 				0, -- Revision always starts at 0
 				@FormVersion,
-				@DegreeOfCompetition, 
 				@CCoPD, 
 				@CCoPDOtherText,
 				@RFP,
@@ -341,7 +338,6 @@ ELSE
 						[Approver] =@Approver,
 						[ApproverPhone] = @ApproverPhone,
 						[Revision] = @Revision,
-						[DegreeOfCompetition] = @DegreeOfCompetition, 
 						[CCoPD] = @CCoPD, 
 						[CCoPDOtherText] = @CCoPDOtherText,
 						[RFP] = @RFP,

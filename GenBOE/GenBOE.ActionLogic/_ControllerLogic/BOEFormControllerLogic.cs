@@ -405,7 +405,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.ClinContractTypes = modelview.ClinContractTypes;
             dto.CostAnalysis = modelview.CostAnalysis;
             dto.CostAnalysisDate = modelview.CostAnalysisDate;
-            dto.DegreeOfCompetition = modelview.DegreeOfCompetition;
             dto.Description = modelview.Description;
             dto.FactFinding = modelview.FactFinding;
             dto.FactFindingDate = modelview.FactFindingDate;
@@ -733,11 +732,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             if (string.IsNullOrWhiteSpace(boeForm.Description))
             {
                 validationMessages.Add(new ValidationMessage("Description is required."));
-            }
-
-            if (boeForm.DegreeOfCompetition == DegreeOfCompetition.None)
-            {
-                validationMessages.Add(new ValidationMessage("Degree of Competition is required."));
             }
 
             if (!boeForm.CCoPDApplies && !boeForm.CommercialItemExceptionApplies &&

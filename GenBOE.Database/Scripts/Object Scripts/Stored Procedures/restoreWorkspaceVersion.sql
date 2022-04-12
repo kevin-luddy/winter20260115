@@ -2904,13 +2904,13 @@ BEGIN
 			SET IDENTITY_INSERT [dbo].[BOEFormPBOE] ON
 			INSERT INTO [dbo].[BOEFormPBOE]
 			([PBOEFormID], UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion,  
-			[DegreeOfCompetition],[CCoPD],[CCoPDOtherText],[RFP],[ProposalNumber],[SupplierName],[ValidityDate],[SupplierProposalSupportingDataIncluded],[PriceAnalysisIncluded],[CommercialItemDocIncluded],
+			[CCoPD],[CCoPDOtherText],[RFP],[ProposalNumber],[SupplierName],[ValidityDate],[SupplierProposalSupportingDataIncluded],[PriceAnalysisIncluded],[CommercialItemDocIncluded],
 			[CostAnalysisIncluded],[ShouldCostEstimate],[ShouldCostEstimateDate],[SowWritten],[SowWrittenDate],[RFPRelease],[RFPReleaseDate],[FirmSupplierReceipt],[FirmSupplierReceiptDate],
 			[SourceSelection],[SourceSelectionDate],[CID],[CIDDate],[GovtReview],[GovtReviewDate],[PriceAnalysis],[PriceAnalysisDate],[TechnicalEvaluation],[TechnicalEvaluationDate],[FactFinding],
 			[FactFindingDate],[CostAnalysis],[CostAnalysisDate],[GovtPricing],[GovtPricingDate],[SupplierNegotiations],[SupplierNegotiationsDate],[MOU],[MOUDate],[Procurement],[ProcurementDate],
 			[PlannedDate_WrittenApproval],[PlannedDate_ApprovedSubmission])
 			SELECT [PBOEFormID], UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion, 
-				[DegreeOfCompetition],[CCoPD],[CCoPDOtherText],[RFP],[ProposalNumber],[SupplierName],[ValidityDate],[SupplierProposalSupportingDataIncluded],[PriceAnalysisIncluded],
+				[CCoPD],[CCoPDOtherText],[RFP],[ProposalNumber],[SupplierName],[ValidityDate],[SupplierProposalSupportingDataIncluded],[PriceAnalysisIncluded],
 				[CommercialItemDocIncluded],[CostAnalysisIncluded],[ShouldCostEstimate],[ShouldCostEstimateDate],[SowWritten],[SowWrittenDate],[RFPRelease],[RFPReleaseDate],[FirmSupplierReceipt],
 				[FirmSupplierReceiptDate],[SourceSelection],[SourceSelectionDate],[CID],[CIDDate],[GovtReview],[GovtReviewDate],[PriceAnalysis],[PriceAnalysisDate],[TechnicalEvaluation],
 				[TechnicalEvaluationDate],[FactFinding],[FactFindingDate],[CostAnalysis],[CostAnalysisDate],[GovtPricing],[GovtPricingDate],[SupplierNegotiations],[SupplierNegotiationsDate],
