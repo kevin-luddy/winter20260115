@@ -972,7 +972,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 Version = 1,
                 WorkspaceId = 5,
                 CCoPDApplies = true,
-                CommercialItemDocIncluded = TripleBooleanState.Yes,
                 ProposalNumber = "pn",
                 RFP = "rfp",
                 SupplierName = "sn",
