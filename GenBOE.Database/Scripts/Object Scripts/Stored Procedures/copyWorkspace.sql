@@ -2145,8 +2145,8 @@ WHILE EXISTS (SELECT 1 FROM @IBOE WHERE Processed = 0)
 BEGIN
 	SELECT TOP 1 @IBOEID = [IBOEFormID] FROM @IBOE WHERE Processed = 0
 	INSERT INTO [dbo].[BOEFormIBOE]
-		(UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion)
-		SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion
+		(UpdateDT, WorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion)
+		SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion
 		FROM [dbo].[BOEFormIBOE]
 		WHERE [IBOEFormID] = @IBOEID 
 
@@ -2181,17 +2181,13 @@ WHILE EXISTS (SELECT 1 FROM @PBOE WHERE Processed = 0)
 BEGIN
 	SELECT TOP 1 @PBOEID = [PBOEFormID] FROM @PBOE WHERE Processed = 0
 	INSERT INTO [dbo].[BOEFormPBOE]
-		(UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion,  
+		(UpdateDT, WorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion,  
 		[CCoPD],
 		[CCoPDOtherText],
 		[RFP],
 		[ProposalNumber],
 		[SupplierName],
 		[ValidityDate],
-		[SupplierProposalSupportingDataIncluded],
-		[PriceAnalysisIncluded],
-		[CommercialItemDocIncluded],
-		[CostAnalysisIncluded],
 		[ShouldCostEstimate],
 		[ShouldCostEstimateDate],
 		[SowWritten],
@@ -2239,17 +2235,13 @@ BEGIN
 		RFPReleaseText,
 		FirmSupplierReceiptText,
 		SourceSelectionText)
-	SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion, 
+	SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion, 
 		[CCoPD],
 		[CCoPDOtherText],
 		[RFP],
 		[ProposalNumber],
 		[SupplierName],
 		[ValidityDate],
-		[SupplierProposalSupportingDataIncluded],
-		[PriceAnalysisIncluded],
-		[CommercialItemDocIncluded],
-		[CostAnalysisIncluded],
 		[ShouldCostEstimate],
 		[ShouldCostEstimateDate],
 		[SowWritten],

@@ -34,7 +34,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                             FormName = "FormName",
                             Updateable = UpdateType.None,
                             Description = "Unit Test - This item was created and used for unit testing.",
-                            BasisAndRationale = "BasisAndRationale",
                             ProposalTitle = "ProposalTitle",
                             ProposalDate = "02/22/2016",  // sql server will truncate to 10 chars!
                             Poc = "poc",
@@ -192,7 +191,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                     UpdateDate = item.UpdateDT,
                     FormName = "Updated Form Name",
                     Description = "Unit Test - This item was created and used to test updates for unit testing.",
-                    BasisAndRationale = "BasisAndRationale -",
                     ProposalTitle = "ProposalTitle -",
                     ProposalDate = "02/22/2016 -",  // sql server will truncate to 10 chars!
                     Poc = "poc -",
@@ -433,7 +431,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                             FormName = "FormName",
                             Updateable = UpdateType.None,
                             Description = "Unit Test Description",
-                            BasisAndRationale = "BasisAndRationale",
                             ProposalTitle = "ProposalTitle",
                             ProposalDate = "02/22/2016", // sql server will truncate to 10 chars!
                             Poc = "Poc",
@@ -560,7 +557,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                     BusinessArea = "Some business area",
                     FormName = "Updated Form name",
                     Description = "Unit Test - This item was created and used to test updates for unit testing.",
-                    BasisAndRationale = "BasisAndRationale -",
                     ProposalTitle = "ProposalTitle -",
                     ProposalDate = "02/22/2015", // sql server will truncate to 10 chars!
                     Poc = "poc -",
@@ -635,7 +631,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(expected.BusinessArea, actual.BusinessArea);
             Assert.AreEqual(expected.FormName, actual.FormName);
             Assert.AreEqual(expected.Description, actual.Description);
-            Assert.AreEqual(expected.BasisAndRationale, actual.BasisAndRationale);
             Assert.AreEqual(expected.ProposalTitle, actual.ProposalTitle);
             Assert.AreEqual(expected.ProposalDate, actual.ProposalDate);
             Assert.AreEqual(expected.Poc, actual.Poc);

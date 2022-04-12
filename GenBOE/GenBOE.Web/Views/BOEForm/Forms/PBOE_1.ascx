@@ -243,31 +243,6 @@
         </div>
     </div>
     <div class="form-row">
-        <label class="form-label"><span>Basis of and Rationale for LM Proposed Value for Procurement **</span></label>
-            <div id="Div5" class="help-icon" onclick="$(this).parent().prev().click();"></div>
-            <!-- This comment is needed for the jquery animation to work in IE8... -->
-            <div class="help-dialog" style="width: 400px;">
-                <div class="help-dialog-text">
-                    This area explains the LM proposed value for the subcontract and what it is based on and why – supplier proposed value, price analysis value, cost analysis value, should cost or engineering estimate value, or some other value.  The subcontract proposal manager is tasked with the responsibility to determine the proposed value for the procurement. Thoroughly explain how the proposed value was derived. Ensure you include in this rationale that:
-                     <ul>
-                        <li>Supplier performance and historical actuals, including all Requests for Equitable Adjustment (REA) have been considered in the proposed value</li>
-                                     <li>It explains the methodology used in the price analysis and why the method was used for this PBOE</li>
-                        <li>It describes how the proposed labor rate(s) compares with previous proposals from the same supplier</li>
-                        <li>Any unique or specifically priced terms and conditions that affect the supplier proposed price</li>
-                        <li>If no cost analysis, it addresses the reasonableness of the proposed Bills of Materials as well as reasonableness of travel (number/duration/location/number of personnel/per diems, etc.), including any adjustments made by the Technical Evaluation, have been considered in the proposed value</li>
-                        <li>If no cost analysis, a summary table of the supplier proposal is included</li>
-                        <li>The proposed value is realistic and attainable through supplier negotiations.</li>
-                    </ul>
-                    Note: In addition to the PBOE Form, provide as attachments to this document, the price analysis (if separately documented), engineering estimate, or should cost estimate.  Other attachments can be included as necessary, i.e. supplier’s proposals, commercial item documentation, cost analysis, Memorandum of Understanding, etc. or any other document that will assist in providing the source of the cost basis.
-                    Be aware that, depending on the detail provided in this section, this completed PBOE form may become Third Party Proprietary Information and must be handled and labeled accordingly.
-                </div>
-            </div>
-        <br /><br />
-        <div class="wrapper">
-            <%: Html.TextArea("BasisAndRationale_PBOE", Model.PBOEModel.BasisAndRationale, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "BasisAndRationale_PBOE" })%>
-        </div>
-    </div>
-    <div class="form-row">
         <span class="form-label"><span helptext="For each field in this section, a planned date, an actual date or “not applicable” is required. BE SURE TO KEEP THESE DATES CURRENT AS THEY CHANGE OR BECOME ACTUALS THROUGH THE CUSTOMER FACTFINDING AND NEGOTIATION PROCESS.">Schedule of Events (Date planned if not yet complete, if planned calendar date unknown, please describe (example, “ATP + 30 days”); Actual date if completed; Not applicable)</span></span>
     </div>
     <div id="ScheduleEvents">

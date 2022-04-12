@@ -363,7 +363,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             dto.Approver = modelview.Approver;
             dto.ApproverPhone = modelview.ApproverPhone;
-            dto.BasisAndRationale = modelview.BasisAndRationale;
             dto.BusinessArea = modelview.BusinessArea;
             dto.ClinContractTypes = modelview.ClinContractTypes;
             dto.Description = modelview.Description;
@@ -395,7 +394,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             BOEFormPBOEDTO dto = modelview.BOEFormId > 0 ? this.pboeFormDataLoader.GetById(modelview.BOEFormId) : new BOEFormPBOEDTO();
             dto.Approver = modelview.Approver;
             dto.ApproverPhone = modelview.ApproverPhone;
-            dto.BasisAndRationale = modelview.BasisAndRationale;
             dto.CCoPDApplies = modelview.CCoPDApplies;
             dto.CommercialItemExceptionApplies = modelview.CommercialItemExceptionApplies;
             dto.CompetitionExceptionApplies = modelview.CompetitionExceptionApplies;
@@ -736,11 +734,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 validationMessages.Add(new ValidationMessage("Certified Cost or Pricing Data (CCoPD) Applicability is required."));
             }
 
-            if (string.IsNullOrWhiteSpace(boeForm.BasisAndRationale))
-            {
-                validationMessages.Add(new ValidationMessage("Basis of and Rationale is required."));
-            }
-
             if (string.IsNullOrWhiteSpace(boeForm.Poc) || string.IsNullOrWhiteSpace(boeForm.Approver))
             {
                 validationMessages.Add(new ValidationMessage("Points of Contact are required."));
@@ -783,11 +776,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             if (string.IsNullOrWhiteSpace(boeForm.Description))
             {
                 validationMessages.Add(new ValidationMessage("Description is required."));
-            }
-
-            if (string.IsNullOrWhiteSpace(boeForm.BasisAndRationale))
-            {
-                validationMessages.Add(new ValidationMessage("Basis of and Rationale is required."));
             }
 
             if (string.IsNullOrWhiteSpace(boeForm.Poc) || string.IsNullOrWhiteSpace(boeForm.Approver))

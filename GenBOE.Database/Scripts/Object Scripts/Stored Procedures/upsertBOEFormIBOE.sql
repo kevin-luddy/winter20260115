@@ -15,7 +15,6 @@ CREATE PROCEDURE [dbo].[upsertBOEFormIBOE]
 @WorkspaceID int,
 @FormName varchar(200),
 @Description varchar(max) = NULL,
-@BasisAndRationale varchar(max) = NULL,
 @ProposalTitle varchar(200) = NULL,
 @ProposalDate varchar(10) = NULL,
 @Poc varchar(65) = NULL,
@@ -93,7 +92,6 @@ IF @IBOEFormID  < 0  /*Insert Record*/
 			    ,[WorkspaceID]
 				,[FormName]
 				,[Description]
-				,[BasisAndRationale]
 				,[ProposalTitle]
 				,[ProposalDate]
 				,[Poc]
@@ -111,7 +109,6 @@ IF @IBOEFormID  < 0  /*Insert Record*/
 			   @WorkspaceID,
 			   @FormName,
 			   @Description,
-			   @BasisAndRationale,
 			   @ProposalTitle,
 			   @ProposalDate,
 			   @Poc,
@@ -161,7 +158,6 @@ ELSE
 						[UpdateDT] = @UpdateDT,
 						[FormName] = @FormName,
 						[Description] = @Description,
-						[BasisAndRationale] = @BasisAndRationale,
 						[ProposalTitle] = @ProposalTitle,
 						[ProposalDate] = @ProposalDate,
 						[Poc] = @Poc,

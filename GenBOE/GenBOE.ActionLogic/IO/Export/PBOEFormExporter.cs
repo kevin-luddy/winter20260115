@@ -166,7 +166,6 @@ namespace GenBOE.ActionLogic.IO.Export
             this.SetField(document, VALIDITY_DATE, boeForm.ValidityDate);
             this.SetField(document, PROPOSAL_TITLE, string.IsNullOrWhiteSpace(proposalTitleAndRfpNumber) ? boeForm.ProposalTitle : proposalTitleAndRfpNumber);
             this.SetHtmlField(document, DESCRIPTION, boeForm.Description, ref counters);
-            this.SetHtmlField(document, BASIS_RATIONALE, boeForm.BasisAndRationale, ref counters);
             this.SetField(document, POC, boeForm.Poc);
             this.SetField(document, PHONE, boeForm.PocPhone);
             this.SetField(document, MANAGER, boeForm.Approver);

@@ -15,7 +15,6 @@ CREATE PROCEDURE [dbo].[upsertBOEFormPBOE]
 @WorkspaceID int,
 @FormName varchar(200),
 @Description varchar(max) = NULL,
-@BasisAndRationale varchar(max) = NULL,
 @ProposalTitle varchar(200) = NULL,
 @ProposalDate varchar(10) = NULL,
 @Poc varchar(65)=  NULL,
@@ -29,10 +28,6 @@ CREATE PROCEDURE [dbo].[upsertBOEFormPBOE]
 @ProposalNumber varchar(50) = NULL,
 @SupplierName varchar(50) = NULL,
 @ValidityDate varchar(10) = NULL,
-@SupplierProposalSupportingDataIncluded int,
-@PriceAnalysisIncluded int,
-@CommercialItemDocIncluded int,
-@CostAnalysisIncluded int,
 @ShouldCostEstimate int,
 @ShouldCostEstimateDate date = NULL,
 @SowWritten int,
@@ -150,7 +145,6 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 			    ,[WorkspaceID]
 				,[FormName]
 				,[Description]
-				,[BasisAndRationale]
 				,[ProposalTitle]
 				,[ProposalDate]
 				,[Poc]
@@ -165,10 +159,6 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				,[ProposalNumber] 
 				,[SupplierName]
 				,[ValidityDate] 
-				,[SupplierProposalSupportingDataIncluded] 
-				,[PriceAnalysisIncluded] 
-				,[CommercialItemDocIncluded] 
-				,[CostAnalysisIncluded] 
 				,[ShouldCostEstimate] 
 				,[ShouldCostEstimateDate] 
 				,[SowWritten] 
@@ -224,7 +214,6 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				@WorkspaceID,
 				@FormName,
 				@Description,
-				@BasisAndRationale,
 				@ProposalTitle,
 				@ProposalDate,
 				@Poc,
@@ -239,10 +228,6 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				@ProposalNumber, 
 				@SupplierName,
 				@ValidityDate, 
-				@SupplierProposalSupportingDataIncluded, 
-				@PriceAnalysisIncluded, 
-				@CommercialItemDocIncluded, 
-				@CostAnalysisIncluded, 
 				@ShouldCostEstimate, 
 				@ShouldCostEstimateDate, 
 				@SowWritten, 
@@ -330,7 +315,6 @@ ELSE
 						[UpdateDT] = @UpdateDT,
 						[FormName] = @FormName,
 						[Description] = @Description,
-						[BasisAndRationale] = @BasisAndRationale,
 						[ProposalTitle] = @ProposalTitle,
 						[ProposalDate] = @ProposalDate,
 						[Poc] = @Poc,
@@ -344,10 +328,6 @@ ELSE
 						[ProposalNumber] = @ProposalNumber, 
 						[SupplierName] = @SupplierName,
 						[ValidityDate] = @ValidityDate, 
-						[SupplierProposalSupportingDataIncluded] = @SupplierProposalSupportingDataIncluded, 
-						[PriceAnalysisIncluded] = @PriceAnalysisIncluded, 
-						[CommercialItemDocIncluded] = @CommercialItemDocIncluded, 
-						[CostAnalysisIncluded] = @CostAnalysisIncluded, 
 						[ShouldCostEstimate] = @ShouldCostEstimate, 
 						[ShouldCostEstimateDate] = @ShouldCostEstimateDate, 
 						[SowWritten] = @SowWritten, 

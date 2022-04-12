@@ -961,7 +961,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             {
                 Approver = "approver",
                 ApproverPhone = "phonea",
-                BasisAndRationale = "bandR",
                 Description = "desc",
                 FormName = "test1",
                 Poc = "poc",
@@ -1034,12 +1033,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             pboe.Description = "test";
             messages = new Collection<ValidationMessage>();
 
-            pboe.BasisAndRationale = null;
-            sut.ValidatePBOE(pboe, messages);
-            Assert.AreEqual(1, messages.Count);
-            pboe.BasisAndRationale = "test";
-            messages = new Collection<ValidationMessage>();
-
             pboe.Poc = null;
             sut.ValidatePBOE(pboe, messages);
             Assert.AreEqual(1, messages.Count);
@@ -1061,7 +1054,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             {
                 Approver = "approver",
                 ApproverPhone = "phonea",
-                BasisAndRationale = "bandR",
+                //BasisAndRationale = "bandR",
                 BusinessArea = "isgs",
                 Description = "desc",
                 FormName = "test1",
@@ -1100,12 +1093,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             sut.ValidateIBOE(iboe, messages);
             Assert.AreEqual(1, messages.Count);
             iboe.Description = "test";
-            messages = new Collection<ValidationMessage>();
-
-            iboe.BasisAndRationale = null;
-            sut.ValidateIBOE(iboe, messages);
-            Assert.AreEqual(1, messages.Count);
-            iboe.BasisAndRationale = "test";
             messages = new Collection<ValidationMessage>();
 
             iboe.Poc = null;

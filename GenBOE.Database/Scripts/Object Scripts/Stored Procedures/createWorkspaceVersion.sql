@@ -1882,8 +1882,8 @@ WHERE WS.WorkspaceID = @WorkspaceID
 
 /* Copy New INL Forms */
 INSERT INTO [version].[BOEFormIBOE]
-([IBOEFormID], UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion, VersionId)
-SELECT [IBOEFormID], UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion, @VersionID
+([IBOEFormID], UpdateDT, WorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion, VersionId)
+SELECT [IBOEFormID], UpdateDT, WorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion, @VersionID
   FROM [dbo].[BOEFormIBOE]
 WHERE WorkspaceID = @WorkspaceID 
 
@@ -1905,9 +1905,9 @@ FROM [dbo].[BOEFormIBOECLINsXREF] x
 WHERE B.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[BOEFormPBOE]
-([PBOEFormID], UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion,  
-	[CCoPD],	[CCoPDOtherText],	[RFP],	[ProposalNumber],	[SupplierName],	[ValidityDate],		[SupplierProposalSupportingDataIncluded],	[PriceAnalysisIncluded],	[CommercialItemDocIncluded],
-	[CostAnalysisIncluded],	[ShouldCostEstimate],	[ShouldCostEstimateDate],	[SowWritten],	[SowWrittenDate],	[RFPRelease],	[RFPReleaseDate],	[FirmSupplierReceipt],	[FirmSupplierReceiptDate],	[SourceSelection],
+([PBOEFormID], UpdateDT, WorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion,  
+	[CCoPD],	[CCoPDOtherText],	[RFP],	[ProposalNumber],	[SupplierName],	[ValidityDate],      [ShouldCostEstimate],	[ShouldCostEstimateDate],	
+      [SowWritten],	[SowWrittenDate],	[RFPRelease],	[RFPReleaseDate],	[FirmSupplierReceipt],	[FirmSupplierReceiptDate],	[SourceSelection],
 	[SourceSelectionDate],	[CID],	[CIDDate],	[GovtReview],	[GovtReviewDate],	[PriceAnalysis],	[PriceAnalysisDate],	[TechnicalEvaluation],	[TechnicalEvaluationDate],	[FactFinding],	[FactFindingDate],
 	[CostAnalysis],	[CostAnalysisDate],	[GovtPricing],	[GovtPricingDate],	[SupplierNegotiations],	[SupplierNegotiationsDate],	[MOU],	[MOUDate],	[Procurement],	[ProcurementDate],
 	[PlannedDate_WrittenApproval],	[PlannedDate_ApprovedSubmission], VersionId, [CIDText],
@@ -1925,9 +1925,9 @@ INSERT INTO [version].[BOEFormPBOE]
 	RFPReleaseText,
 	FirmSupplierReceiptText,
 	SourceSelectionText)
-SELECT [PBOEFormID], UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion,
-	[CCoPD],	[CCoPDOtherText],	[RFP],	[ProposalNumber],	[SupplierName],	[ValidityDate],	[SupplierProposalSupportingDataIncluded],	[PriceAnalysisIncluded],	[CommercialItemDocIncluded],
-	[CostAnalysisIncluded],	[ShouldCostEstimate],	[ShouldCostEstimateDate],	[SowWritten],	[SowWrittenDate],	[RFPRelease],	[RFPReleaseDate],	[FirmSupplierReceipt],	[FirmSupplierReceiptDate],
+SELECT [PBOEFormID], UpdateDT, WorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion,
+	[CCoPD],	[CCoPDOtherText],	[RFP],	[ProposalNumber],	[SupplierName],	[ValidityDate],
+	[ShouldCostEstimate],	[ShouldCostEstimateDate],	[SowWritten],	[SowWrittenDate],	[RFPRelease],	[RFPReleaseDate],	[FirmSupplierReceipt],	[FirmSupplierReceiptDate],
 	[SourceSelection],	[SourceSelectionDate],	[CID],	[CIDDate],	[GovtReview],	[GovtReviewDate],	[PriceAnalysis],	[PriceAnalysisDate],	[TechnicalEvaluation],	[TechnicalEvaluationDate],
 	[FactFinding],	[FactFindingDate],	[CostAnalysis],	[CostAnalysisDate],	[GovtPricing],	[GovtPricingDate],	[SupplierNegotiations],	[SupplierNegotiationsDate],	[MOU],
 	[MOUDate],	[Procurement],	[ProcurementDate],	[PlannedDate_WrittenApproval],	[PlannedDate_ApprovedSubmission], @VersionID, [CIDText],
