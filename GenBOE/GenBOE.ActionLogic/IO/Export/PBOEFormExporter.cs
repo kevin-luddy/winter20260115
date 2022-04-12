@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -70,9 +70,6 @@ namespace GenBOE.ActionLogic.IO.Export
         private const string RFP = "RFP";
         private const string PROPOSAL_NUMBER = "ProposalNumber";
         private const string VALIDITY_DATE = "ValidityDate";
-        private const string COMPETITIVE = "Competitive";
-        private const string NON_COMPETITIVE = "NonCompetitive";
-        private const string SOURCE_NOT_SELECTED = "SourceNotSelected";
         private const string CCOPD = "ccopd";
         private const string CCOPD_COMMERCIAL = "ccopd_commercial"; 
         private const string CCOPD_COMPETITION = "ccopd_competition";
@@ -96,17 +93,6 @@ namespace GenBOE.ActionLogic.IO.Export
         private const string PROCUREMENT = "Procurement";
         private const string PLANNED_DATE_A = "PlannedDate_A";
         private const string PLANNED_DATE_B = "PlannedDate_B";
-        // Status Of Supporting Data
-        private const string SSD_A_YES = "SSD_A_YES";
-        private const string SSD_A_NA = "SSD_A_NA";
-        private const string SSD_B_YES = "SSD_B_YES";
-        private const string SSD_B_NA = "SSD_B_NA";
-        private const string SSD_C_YES = "SSD_C_YES";
-        private const string SSD_C_NA = "SSD_C_NA";
-        private const string SSD_C_NO = "SSD_C_NO";
-        private const string SSD_D_YES = "SSD_D_YES";
-        private const string SSD_D_NA = "SSD_D_NA";
-        private const string SSD_D_NO = "SSD_D_NO";
 
         #endregion
 
@@ -193,18 +179,6 @@ namespace GenBOE.ActionLogic.IO.Export
             this.SetCheckbox(document, CCOPD_OTHER, boeForm.OtherExceptionApplies);
             this.SetField(document, CCOPD_OTHER_TEXT, boeForm.OtherExceptionApplies ? boeForm.OtherText : string.Empty);
 
-            // Status Of Supporting Data checkboxes
-            this.SetCheckbox(document, SSD_A_YES, boeForm.SupplierProposalSupportingDataIncluded == TripleBooleanState.Yes);
-            this.SetCheckbox(document, SSD_A_NA, boeForm.SupplierProposalSupportingDataIncluded == TripleBooleanState.NA);
-            this.SetCheckbox(document, SSD_B_YES, boeForm.PriceAnalysisIncluded == TripleBooleanState.Yes);
-            this.SetCheckbox(document, SSD_B_NA, boeForm.PriceAnalysisIncluded == TripleBooleanState.NA);
-            this.SetCheckbox(document, SSD_C_YES, boeForm.CommercialItemDocIncluded == TripleBooleanState.Yes);
-            this.SetCheckbox(document, SSD_C_NO, boeForm.CommercialItemDocIncluded == TripleBooleanState.No);
-            this.SetCheckbox(document, SSD_C_NA, boeForm.CommercialItemDocIncluded == TripleBooleanState.NA);
-            this.SetCheckbox(document, SSD_D_YES, boeForm.CostAnalysisIncluded == TripleBooleanState.Yes);
-            this.SetCheckbox(document, SSD_D_NO, boeForm.CostAnalysisIncluded == TripleBooleanState.No);
-            this.SetCheckbox(document, SSD_D_NA, boeForm.CostAnalysisIncluded == TripleBooleanState.NA);
-
             // Schedule of events
             this.SetScheduleEventDateField(document, SHOULD_COST_ESTIMATE, boeForm.ShouldCostEstimate, boeForm.ShouldCostEstimateDate, boeForm.ShouldCostEstimateText);
             this.SetScheduleEventDateField(document, SOW_WRITTEN, boeForm.SowWritten, boeForm.SowWrittenDate, boeForm.SowWrittenText);
@@ -244,7 +218,6 @@ namespace GenBOE.ActionLogic.IO.Export
                     TableRow tableRow = this.CloneMarkedTemplateRow(templateDataRow);
 
                     // populate the row
-                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, CONTRACT_TYPE), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.ContractType);
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, SUPPLIER_CONTRACT_TYPE), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.SupplierContractType);
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, WBS), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.WBS);
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, CLIN), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.CLIN);

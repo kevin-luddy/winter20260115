@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -45,10 +45,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.RFP = dto.RFP;
             this.SupplierName = dto.SupplierName;
             this.ValidityDate = dto.ValidityDate;
-            this.SupplierProposalSupportingDataIncluded = dto.SupplierProposalSupportingDataIncluded;
-            this.PriceAnalysisIncluded = dto.PriceAnalysisIncluded;
-            this.CommercialItemDocIncluded = dto.CommercialItemDocIncluded;
-            this.CostAnalysisIncluded = dto.CostAnalysisIncluded;
             this.ShouldCostEstimate = dto.ShouldCostEstimate;
             this.ShouldCostEstimateDate = dto.ShouldCostEstimateDate;
             this.SowWritten = dto.SowWritten;
@@ -151,30 +147,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// </summary>
         [RegularExpression(ValidationConstants.DATE_FULL, ErrorMessage = "Validity Date must be in mm/dd/yyyy format.")]
         public string ValidityDate { get; set; }
-
-        /// <summary>
-        /// Supplier proposal and supporting data included
-        /// </summary>
-        [Required]
-        public TripleBooleanState SupplierProposalSupportingDataIncluded { get; set; }
-
-        /// <summary>
-        /// Price Analysis included
-        /// </summary>
-        [Required]
-        public TripleBooleanState PriceAnalysisIncluded { get; set; }
-
-        /// <summary>
-        /// Commercial Item Documentation included
-        /// </summary>
-        [Required]
-        public TripleBooleanState CommercialItemDocIncluded { get; set; }
-        
-        /// <summary>
-        /// Is Cost Analysis Included
-        /// </summary>
-        [Required]
-        public TripleBooleanState CostAnalysisIncluded { get; set; }
 
         /// <summary>
         /// Should Cost/Engineering Estimate

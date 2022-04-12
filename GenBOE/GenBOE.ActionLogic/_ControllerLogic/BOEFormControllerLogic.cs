@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -448,10 +448,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.SourceSelectionDate = modelview.SourceSelectionDate;
             dto.SowWritten = modelview.SowWritten;
             dto.SowWrittenDate = modelview.SowWrittenDate;
-            dto.SupplierProposalSupportingDataIncluded = modelview.SupplierProposalSupportingDataIncluded;
-            dto.PriceAnalysisIncluded = modelview.PriceAnalysisIncluded;
-            dto.CommercialItemDocIncluded = modelview.CommercialItemDocIncluded;
-            dto.CostAnalysisIncluded = modelview.CostAnalysisIncluded;
             dto.SupplierName = modelview.SupplierName;
             dto.SupplierNegotiations = modelview.SupplierNegotiations;
             dto.SupplierNegotiationsDate = modelview.SupplierNegotiationsDate;

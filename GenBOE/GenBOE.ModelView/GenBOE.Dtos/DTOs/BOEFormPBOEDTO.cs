@@ -83,26 +83,6 @@ namespace GenBOE.Dtos
         public string ValidityDate { get; set; }
 
         /// <summary>
-        /// Supplier proposal and supporting data included
-        /// </summary>
-        public TripleBooleanState SupplierProposalSupportingDataIncluded { get; set; }
-        
-        /// <summary>
-        /// Price Analysis included
-        /// </summary>
-        public TripleBooleanState PriceAnalysisIncluded { get; set; }
-        
-        /// <summary>
-        /// Commercial Item Documentation included
-        /// </summary>
-        public TripleBooleanState CommercialItemDocIncluded { get; set; }
-        
-        /// <summary>
-        /// Is Cost Analysis Included
-        /// </summary>
-        public TripleBooleanState CostAnalysisIncluded { get; set; }
-
-        /// <summary>
         /// Should Cost/Engineering Estimate
         /// </summary>
         public ScheduleEvent ShouldCostEstimate { get; set; }

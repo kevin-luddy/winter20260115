@@ -42,7 +42,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                             Approver = "approver",
                             ApproverPhone = "aproverphone",
                             Version = 1,
-                            DegreeOfCompetition = DegreeOfCompetition.Competitive,
                             CCoPDApplies = true,
                             CommercialItemExceptionApplies = false,
                             CompetitionExceptionApplies = false,
@@ -52,10 +51,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                             ProposalNumber = "ProposalNumber",
                             SupplierName = "SupplierName",
                             ValidityDate = "09/11/1199",  // sql server will truncate to 10 chars!
-                            SupplierProposalSupportingDataIncluded = TripleBooleanState.No,
-                            PriceAnalysisIncluded = TripleBooleanState.Yes,
-                            CommercialItemDocIncluded = TripleBooleanState.Yes,
-                            CostAnalysisIncluded = TripleBooleanState.No,
                             ShouldCostEstimate = ScheduleEvent.Actual,
                             ShouldCostEstimateDate = DateTime.Parse("09/09/2016"),
                             SowWritten = ScheduleEvent.Actual,
@@ -205,7 +200,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                     Approver = "approver -",
                     ApproverPhone = "aproverphone -",
                     Version = item.FormVersion,
-                    DegreeOfCompetition = DegreeOfCompetition.Competitive,
                     CCoPDApplies = false,
                     CommercialItemExceptionApplies = true,
                     CompetitionExceptionApplies = true,
@@ -215,10 +209,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                     ProposalNumber = "ProposalNumber -",
                     SupplierName = "SupplierName -",
                     ValidityDate = "01/22/1099",  // sql server will truncate to 10 chars!
-                    SupplierProposalSupportingDataIncluded = TripleBooleanState.No,
-                    PriceAnalysisIncluded = TripleBooleanState.Yes,
-                    CommercialItemDocIncluded = TripleBooleanState.Yes,
-                    CostAnalysisIncluded = TripleBooleanState.No,
                     ShouldCostEstimate = ScheduleEvent.Actual,
                     ShouldCostEstimateDate = DateTime.Parse("01/02/2016"),
                     SowWritten = ScheduleEvent.Actual,
@@ -356,7 +346,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
 
         private static void AssertEquality(BOEFormPBOEDTO expected, BOEFormPBOEDTO actual)
         {
-            Assert.AreEqual(expected.DegreeOfCompetition, actual.DegreeOfCompetition);
             Assert.AreEqual(expected.CCoPDApplies, actual.CCoPDApplies);
             Assert.AreEqual(expected.CommercialItemExceptionApplies, actual.CommercialItemExceptionApplies);
             Assert.AreEqual(expected.CompetitionExceptionApplies, actual.CompetitionExceptionApplies);
@@ -367,10 +356,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual<string>(expected.SupplierName, actual.SupplierName);
             Assert.AreEqual<string>(expected.ValidityDate, actual.ValidityDate);
             Assert.AreEqual<int>(expected.Revision, actual.Revision);
-            Assert.AreEqual(expected.SupplierProposalSupportingDataIncluded, actual.SupplierProposalSupportingDataIncluded);
-            Assert.AreEqual(expected.PriceAnalysisIncluded, actual.PriceAnalysisIncluded);
-            Assert.AreEqual(expected.CommercialItemDocIncluded, actual.CommercialItemDocIncluded);
-            Assert.AreEqual(expected.CostAnalysisIncluded, actual.CostAnalysisIncluded);
             Assert.AreEqual(expected.ShouldCostEstimate, actual.ShouldCostEstimate);
             Assert.AreEqual<DateTime?>(expected.ShouldCostEstimateDate, actual.ShouldCostEstimateDate);
             Assert.AreEqual(expected.SowWritten, actual.SowWritten);

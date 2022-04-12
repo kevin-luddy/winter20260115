@@ -242,44 +242,6 @@
             <div class="label-padding-left"><%: Html.TextBox("OtherText", Model.PBOEModel.OtherText, new { id = "OtherText", @class = otherTextClass, maxlength="100" }) %></div>
         </div>
     </div>
-    <div class="form-row"> 
-        <span class="form-label"><span>Status of Supporting Data (Select all that apply)</span></span>
-        <div id="Div4" class="help-icon" onclick="$(this).parent().prev().click();"></div>
-            <!-- This comment is needed for the jquery animation to work in IE8... -->
-            <div class="help-dialog" style="width: 400px;">
-                <div class="help-dialog-text">
-                    This section of the form is intended to provide a quick glance status of the data included as support to the PBOE form and the overall procurement estimate. The supplier’s proposal and certified cost or pricing data must be included. A price analysis must be included (unless the procurement estimate is based on a should-cost or engineering estimate). Commercial Item Documentation is included unless approved for later submittal by the customer. Cost Analysis is included unless approved for later submittal by the customer.<br />
-                    Note: The asterisked items in the Schedule of Events section relate to required customer approvals for items not included in initial prime submittal.
-                </div>
-            </div>
-    </div>
-    <div class="form-row"> 
-        <div class="form-label">a) Supplier proposal and supporting data included if > $15M or ≥ CCoPD threshold AND >10%  of the LM proposal?</div>
-        <div class="form-element">
-            <%: Html.RadioButton("SupplierProposalSupportingDataIncluded", TripleBooleanState.Yes, Model.PBOEModel.SupplierProposalSupportingDataIncluded == TripleBooleanState.Yes, new { id = "SupplierProposalSupportingDataIncluded" }) %><label>Yes</label><br />
-            <%: Html.RadioButton("SupplierProposalSupportingDataIncluded", TripleBooleanState.NA, Model.PBOEModel.SupplierProposalSupportingDataIncluded == TripleBooleanState.NA, new { id = "SupplierProposalSupportingDataIncluded" }) %><label>N/A</label><br />
-        </div>
-    </div>
-    <div class="form-row"> 
-        <div class="form-label">b) Price Analysis included?</div>
-        <div class="form-element"><%: Html.RadioButton("PriceAnalysisIncluded", TripleBooleanState.Yes, Model.PBOEModel.PriceAnalysisIncluded == TripleBooleanState.Yes, new { id = "PriceAnalysisIncluded" }) %><label>Yes</label><br />
-            <%: Html.RadioButton("PriceAnalysisIncluded", TripleBooleanState.NA, Model.PBOEModel.PriceAnalysisIncluded == TripleBooleanState.NA, new { id = "PriceAnalysisIncluded" }) %><label>N/A (SCE/EE)</label><br />
-        </div>
-    </div>
-    <div class="form-row"> 
-        <div class="form-label">c) Commercial Item Documentation included?</div>
-        <div class="form-element"><%: Html.RadioButton("CommercialItemDocIncluded", TripleBooleanState.Yes, Model.PBOEModel.CommercialItemDocIncluded == TripleBooleanState.Yes, new { id = "CommercialItemDocIncluded" }) %><label>Yes</label><br />
-            <%: Html.RadioButton("CommercialItemDocIncluded", TripleBooleanState.No, Model.PBOEModel.CommercialItemDocIncluded == TripleBooleanState.No, new { id = "CommercialItemDocIncluded" }) %><label>No</label><br />
-            <%: Html.RadioButton("CommercialItemDocIncluded", TripleBooleanState.NA, Model.PBOEModel.CommercialItemDocIncluded == TripleBooleanState.NA, new { id = "CommercialItemDocIncluded" }) %><label>N/A</label><br />
-        </div>
-    </div>
-    <div class="form-row"> 
-        <div class="form-label">d) Is Cost Analysis included?</div>
-        <div class="form-element"><%: Html.RadioButton("CostAnalysisIncluded", TripleBooleanState.Yes, Model.PBOEModel.CostAnalysisIncluded == TripleBooleanState.Yes, new { id = "CostAnalysisIncluded" }) %><label>Yes</label><br />
-            <%: Html.RadioButton("CostAnalysisIncluded", TripleBooleanState.No, Model.PBOEModel.CostAnalysisIncluded == TripleBooleanState.No, new { id = "CostAnalysisIncluded" }) %><label>No</label><br />
-            <%: Html.RadioButton("CostAnalysisIncluded", TripleBooleanState.NA, Model.PBOEModel.CostAnalysisIncluded == TripleBooleanState.NA, new { id = "CostAnalysisIncluded" }) %><label>N/A</label><br />
-        </div>
-    </div>
     <div class="form-row">
         <label class="form-label"><span>Basis of and Rationale for LM Proposed Value for Procurement **</span></label>
             <div id="Div5" class="help-icon" onclick="$(this).parent().prev().click();"></div>
