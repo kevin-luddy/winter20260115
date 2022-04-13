@@ -2905,16 +2905,16 @@ BEGIN
 			INSERT INTO [dbo].[BOEFormPBOE]
 			([PBOEFormID], UpdateDT, WorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion,  
 			[CCoPD],[CCoPDOtherText],[RFP],[ProposalNumber],[SupplierName],[ValidityDate],
-			[ShouldCostEstimate],[ShouldCostEstimateDate],[SowWritten],[SowWrittenDate],[RFPRelease],[RFPReleaseDate],[FirmSupplierReceipt],[FirmSupplierReceiptDate],
-			[SourceSelection],[SourceSelectionDate],[CID],[CIDDate],[GovtReview],[GovtReviewDate],[PriceAnalysis],[PriceAnalysisDate],[TechnicalEvaluation],[TechnicalEvaluationDate],[FactFinding],
-			[FactFindingDate],[CostAnalysis],[CostAnalysisDate],[GovtPricing],[GovtPricingDate],[SupplierNegotiations],[SupplierNegotiationsDate],[MOU],[MOUDate],[Procurement],[ProcurementDate],
+			[ShouldCostEstimate],[ShouldCostEstimateDate],[RFPRelease],[RFPReleaseDate],[FirmSupplierReceipt],[FirmSupplierReceiptDate],
+			[SourceSelection],[SourceSelectionDate],[CID],[CIDDate],[PriceAnalysis],[PriceAnalysisDate],[TechnicalEvaluation],[TechnicalEvaluationDate],[FactFinding],
+			[FactFindingDate],[CostAnalysis],[CostAnalysisDate],[GovtPricing],[GovtPricingDate],[SupplierNegotiations],[SupplierNegotiationsDate],[MOU],[MOUDate],
 			[PlannedDate_WrittenApproval],[PlannedDate_ApprovedSubmission])
 			SELECT [PBOEFormID], UpdateDT, WorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion, 
 				[CCoPD],[CCoPDOtherText],[RFP],[ProposalNumber],[SupplierName],[ValidityDate],
-				[ShouldCostEstimate],[ShouldCostEstimateDate],[SowWritten],[SowWrittenDate],[RFPRelease],[RFPReleaseDate],[FirmSupplierReceipt],
-				[FirmSupplierReceiptDate],[SourceSelection],[SourceSelectionDate],[CID],[CIDDate],[GovtReview],[GovtReviewDate],[PriceAnalysis],[PriceAnalysisDate],[TechnicalEvaluation],
+				[ShouldCostEstimate],[ShouldCostEstimateDate],[RFPRelease],[RFPReleaseDate],[FirmSupplierReceipt],
+				[FirmSupplierReceiptDate],[SourceSelection],[SourceSelectionDate],[CID],[CIDDate],[PriceAnalysis],[PriceAnalysisDate],[TechnicalEvaluation],
 				[TechnicalEvaluationDate],[FactFinding],[FactFindingDate],[CostAnalysis],[CostAnalysisDate],[GovtPricing],[GovtPricingDate],[SupplierNegotiations],[SupplierNegotiationsDate],
-				[MOU],[MOUDate],[Procurement],[ProcurementDate],[PlannedDate_WrittenApproval],[PlannedDate_ApprovedSubmission]
+				[MOU],[MOUDate],[PlannedDate_WrittenApproval],[PlannedDate_ApprovedSubmission]
 			  FROM [version].[BOEFormPBOE]
 			WHERE WorkspaceID = @WorkspaceID AND VersionID = @VersionID
 

@@ -52,8 +52,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                             ValidityDate = "09/11/1199",  // sql server will truncate to 10 chars!
                             ShouldCostEstimate = ScheduleEvent.Actual,
                             ShouldCostEstimateDate = DateTime.Parse("09/09/2016"),
-                            SowWritten = ScheduleEvent.Actual,
-                            SowWrittenDate = DateTime.Parse("09/09/2016"),
                             RFPRelease = ScheduleEvent.Actual,
                             RFPReleaseDate = DateTime.Parse("09/09/2016"),
                             FirmSupplierReceipt = ScheduleEvent.Actual,
@@ -62,8 +60,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                             SourceSelectionDate = DateTime.Parse("09/09/2016"),
                             CID = ScheduleEvent.Actual,
                             CIDDate = DateTime.Parse("09/09/2016"),
-                            GovtReview = ScheduleEvent.Actual,
-                            GovtReviewDate = DateTime.Parse("09/09/2016"),
                             PriceAnalysis = ScheduleEvent.Actual,
                             PriceAnalysisDate = DateTime.Parse("09/09/2016"),
                             TechnicalEvaluation = ScheduleEvent.Actual,
@@ -78,8 +74,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                             SupplierNegotiationsDate = DateTime.Parse("09/09/2016"),
                             MOU = ScheduleEvent.Actual,
                             MOUDate = DateTime.Parse("09/09/2016"),
-                            Procurement = ScheduleEvent.Actual,
-                            ProcurementDate = DateTime.Parse("09/09/2016"),
                             PlannedDate_WrittenApproval = DateTime.Parse("09/09/2016"),
                             PlannedDate_ApprovedSubmission = DateTime.Parse("09/09/2016"),
                             CIDText = "cid",
@@ -87,14 +81,11 @@ namespace GenBOE.Tests.DAL.DataLoaders
                             FactFindingText = "fact",
                             FirmSupplierReceiptText = "firm",
                             GovtPricingText = "gov",
-                            GovtReviewText = "govt",
                             MOUText = "mou",
                             PriceAnalysisText = "price",
-                            ProcurementText = "proc",
                             RFPReleaseText = "rfp",
                             ShouldCostEstimateText = "should",
                             SourceSelectionText = "source",
-                            SowWrittenText = "sow",
                             SupplierNegotiationsText = "supplier",
                             TechnicalEvaluationText = "tech"
                         }
@@ -209,8 +200,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                     ValidityDate = "01/22/1099",  // sql server will truncate to 10 chars!
                     ShouldCostEstimate = ScheduleEvent.Actual,
                     ShouldCostEstimateDate = DateTime.Parse("01/02/2016"),
-                    SowWritten = ScheduleEvent.Actual,
-                    SowWrittenDate = DateTime.Parse("03/04/2016"),
                     RFPRelease = ScheduleEvent.Actual,
                     RFPReleaseDate = DateTime.Parse("05/06/2016"),
                     FirmSupplierReceipt = ScheduleEvent.Actual,
@@ -219,8 +208,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                     SourceSelectionDate = DateTime.Parse("09/10/2016"),
                     CID = ScheduleEvent.Planned,
                     CIDDate = DateTime.Parse("11/12/2016"),
-                    GovtReview = ScheduleEvent.Actual,
-                    GovtReviewDate = DateTime.Parse("12/01/2016"),
                     PriceAnalysis = ScheduleEvent.Actual,
                     PriceAnalysisDate = DateTime.Parse("01/03/2016"),
                     TechnicalEvaluation = ScheduleEvent.Planned,
@@ -235,8 +222,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
                     SupplierNegotiationsDate = DateTime.Parse("08/10/2016"),
                     MOU = ScheduleEvent.NA,
                     MOUDate = DateTime.Parse("10/12/2016"),
-                    Procurement = ScheduleEvent.Actual,
-                    ProcurementDate = DateTime.Parse("12/14/2016"),
                     PlannedDate_WrittenApproval = DateTime.Parse("01/05/2016"),
                     PlannedDate_ApprovedSubmission = DateTime.Parse("01/07/2016"),
                     CIDText = "new cid",
@@ -244,14 +229,11 @@ namespace GenBOE.Tests.DAL.DataLoaders
                     FactFindingText = "new fact",
                     FirmSupplierReceiptText = "new firm",
                     GovtPricingText = "new gov",
-                    GovtReviewText = "new govt",
                     MOUText = "new mou",
                     PriceAnalysisText = "new price",
-                    ProcurementText = "new proc",
                     RFPReleaseText = "new rfp",
                     ShouldCostEstimateText = "new should",
                     SourceSelectionText = "new source",
-                    SowWrittenText = "new sow",
                     SupplierNegotiationsText = "new supplier",
                     TechnicalEvaluationText = "new tech"
                 };
@@ -356,7 +338,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual<int>(expected.Revision, actual.Revision);
             Assert.AreEqual(expected.ShouldCostEstimate, actual.ShouldCostEstimate);
             Assert.AreEqual<DateTime?>(expected.ShouldCostEstimateDate, actual.ShouldCostEstimateDate);
-            Assert.AreEqual(expected.SowWritten, actual.SowWritten);
             Assert.AreEqual(expected.RFPRelease, actual.RFPRelease);
             Assert.AreEqual<DateTime?>(expected.RFPReleaseDate, actual.RFPReleaseDate);
             Assert.AreEqual(expected.FirmSupplierReceipt, actual.FirmSupplierReceipt);
@@ -365,8 +346,6 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual<DateTime?>(expected.SourceSelectionDate, actual.SourceSelectionDate);
             Assert.AreEqual(expected.CID, actual.CID);
             Assert.AreEqual<DateTime?>(expected.CIDDate, actual.CIDDate);
-            Assert.AreEqual(expected.GovtReview, actual.GovtReview);
-            Assert.AreEqual<DateTime?>(expected.GovtReviewDate, actual.GovtReviewDate);
             Assert.AreEqual(expected.PriceAnalysis, actual.PriceAnalysis);
             Assert.AreEqual<DateTime?>(expected.PriceAnalysisDate, actual.PriceAnalysisDate);
             Assert.AreEqual(expected.TechnicalEvaluation, actual.TechnicalEvaluation);
@@ -381,14 +360,11 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual<DateTime?>(expected.SupplierNegotiationsDate, actual.SupplierNegotiationsDate);
             Assert.AreEqual(expected.MOU, actual.MOU);
             Assert.AreEqual<DateTime?>(expected.MOUDate, actual.MOUDate);
-            Assert.AreEqual(expected.Procurement, actual.Procurement);
-            Assert.AreEqual<DateTime?>(expected.ProcurementDate, actual.ProcurementDate);
             Assert.AreEqual<DateTime?>(expected.PlannedDate_WrittenApproval, actual.PlannedDate_WrittenApproval);
             Assert.AreEqual<DateTime?>(expected.PlannedDate_ApprovedSubmission, actual.PlannedDate_ApprovedSubmission);
             BOEFormIBOEDTODataLoaderTest.AssertEquality(expected.ResourceIds, actual.ResourceIds);
             BOEFormIBOEDTODataLoaderTest.AssertEquality(expected.ClinContractTypes, actual.ClinContractTypes);
             Assert.AreEqual(expected.CIDText, actual.CIDText);
-            Assert.AreEqual(expected.GovtReviewText, actual.GovtReviewText);
             Assert.AreEqual(expected.PriceAnalysisText, actual.PriceAnalysisText);
             Assert.AreEqual(expected.TechnicalEvaluationText, actual.TechnicalEvaluationText);
             Assert.AreEqual(expected.FactFindingText, actual.FactFindingText);
@@ -396,9 +372,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(expected.GovtPricingText, actual.GovtPricingText);
             Assert.AreEqual(expected.SupplierNegotiationsText, actual.SupplierNegotiationsText);
             Assert.AreEqual(expected.MOUText, actual.MOUText);
-            Assert.AreEqual(expected.ProcurementText, actual.ProcurementText);
             Assert.AreEqual(expected.ShouldCostEstimateText, actual.ShouldCostEstimateText);
-            Assert.AreEqual(expected.SowWrittenText, actual.SowWrittenText);
             Assert.AreEqual(expected.RFPReleaseText, actual.RFPReleaseText);
             Assert.AreEqual(expected.FirmSupplierReceiptText, actual.FirmSupplierReceiptText);
             Assert.AreEqual(expected.SourceSelectionText, actual.SourceSelectionText);

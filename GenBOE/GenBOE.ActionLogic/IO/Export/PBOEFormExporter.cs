@@ -77,12 +77,10 @@ namespace GenBOE.ActionLogic.IO.Export
         private const string CCOPD_OTHER_TEXT = "ccopd_other_text";
         // Schedule of Events
         private const string SHOULD_COST_ESTIMATE = "ShouldCostEstimate";
-        private const string SOW_WRITTEN = "SowWritten";
         private const string RFP_RELEASE = "RFPRelease";
         private const string FIRM_SUPPLIER = "FirmSupplier";
         private const string SOURCE_SELECTION = "SourceSelection";
         private const string CID = "CID";
-        private const string GOVT_REVIEW = "GovtReview";
         private const string PRICE_ANALYSIS = "PriceAnalysis";
         private const string TECHNICAL_EVALUATION = "TechnicalEvaluation";
         private const string FACT_FINDING = "FactFinding";
@@ -90,7 +88,6 @@ namespace GenBOE.ActionLogic.IO.Export
         private const string GOVT_PRICING_CCOPD = "GovtPricingCCOPD";
         private const string SUPPLIER_NEGOTIATIONS = "SupplierNegotiations";
         private const string MOU = "MOU";
-        private const string PROCUREMENT = "Procurement";
         private const string PLANNED_DATE_A = "PlannedDate_A";
         private const string PLANNED_DATE_B = "PlannedDate_B";
 
@@ -180,12 +177,10 @@ namespace GenBOE.ActionLogic.IO.Export
 
             // Schedule of events
             this.SetScheduleEventDateField(document, SHOULD_COST_ESTIMATE, boeForm.ShouldCostEstimate, boeForm.ShouldCostEstimateDate, boeForm.ShouldCostEstimateText);
-            this.SetScheduleEventDateField(document, SOW_WRITTEN, boeForm.SowWritten, boeForm.SowWrittenDate, boeForm.SowWrittenText);
             this.SetScheduleEventDateField(document, RFP_RELEASE, boeForm.RFPRelease, boeForm.RFPReleaseDate, boeForm.RFPReleaseText);
             this.SetScheduleEventDateField(document, FIRM_SUPPLIER, boeForm.FirmSupplierReceipt, boeForm.FirmSupplierReceiptDate, boeForm.FirmSupplierReceiptText);
             this.SetScheduleEventDateField(document, SOURCE_SELECTION, boeForm.SourceSelection, boeForm.SourceSelectionDate, boeForm.SourceSelectionText);
             this.SetScheduleEventDateField(document, CID, boeForm.CID, boeForm.CIDDate, boeForm.CIDText);
-            this.SetScheduleEventDateField(document, GOVT_REVIEW, boeForm.GovtReview, boeForm.GovtReviewDate, boeForm.GovtReviewText);
             this.SetScheduleEventDateField(document, PRICE_ANALYSIS, boeForm.PriceAnalysis, boeForm.PriceAnalysisDate, boeForm.PriceAnalysisText);
             this.SetScheduleEventDateField(document, TECHNICAL_EVALUATION, boeForm.TechnicalEvaluation, boeForm.TechnicalEvaluationDate, boeForm.TechnicalEvaluationText);
             this.SetScheduleEventDateField(document, FACT_FINDING, boeForm.FactFinding, boeForm.FactFindingDate, boeForm.FactFindingText);
@@ -193,7 +188,6 @@ namespace GenBOE.ActionLogic.IO.Export
             this.SetScheduleEventDateField(document, GOVT_PRICING_CCOPD, boeForm.GovtPricing, boeForm.GovtPricingDate, boeForm.GovtPricingText);
             this.SetScheduleEventDateField(document, SUPPLIER_NEGOTIATIONS, boeForm.SupplierNegotiations, boeForm.SupplierNegotiationsDate, boeForm.SupplierNegotiationsText);
             this.SetScheduleEventDateField(document, MOU, boeForm.MOU, boeForm.MOUDate, boeForm.MOUText);
-            this.SetScheduleEventDateField(document, PROCUREMENT, boeForm.Procurement, boeForm.ProcurementDate, boeForm.ProcurementText);
             this.SetDateField(document, PLANNED_DATE_A, boeForm.PlannedDate_WrittenApproval);
             this.SetDateField(document, PLANNED_DATE_B, boeForm.PlannedDate_ApprovedSubmission);
 

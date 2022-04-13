@@ -90,13 +90,6 @@ namespace GenBOE.Dtos
         public string ShouldCostEstimateText { get; set; }
 
         /// <summary>
-        /// Statement of Work Written
-        /// </summary>
-        public ScheduleEvent SowWritten { get; set; }
-        public DateTime? SowWrittenDate { get; set; }
-        public string SowWrittenText { get; set; }
-
-        /// <summary>
         /// RFP Release to Supplier(s)
         /// </summary>
         public ScheduleEvent RFPRelease { get; set; }
@@ -123,13 +116,6 @@ namespace GenBOE.Dtos
         public ScheduleEvent CID { get; set; }
         public DateTime? CIDDate { get; set; }
         public string CIDText { get; set; }
-        
-        /// <summary>
-        /// Govt. Review of Supplier Commercial Data requrested by LM.
-        /// </summary>
-        public ScheduleEvent GovtReview { get; set; }
-        public DateTime? GovtReviewDate { get; set; }
-        public string GovtReviewText { get; set; }
         
         /// <summary>
         /// Price Analysis
@@ -180,13 +166,6 @@ namespace GenBOE.Dtos
         public DateTime? MOUDate { get; set; }
         public string MOUText { get; set; }
        
-        /// <summary>
-        /// Procurement Definitization
-        /// </summary>
-        public ScheduleEvent Procurement { get; set; }
-        public DateTime? ProcurementDate { get; set; }
-        public string ProcurementText { get; set; }
-
         /// <summary>
         /// Date of customer written approval for submission after initial prime proposal.
         /// </summary>

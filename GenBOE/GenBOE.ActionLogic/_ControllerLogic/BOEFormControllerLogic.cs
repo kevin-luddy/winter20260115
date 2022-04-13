@@ -411,8 +411,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.FormName = modelview.BOEFormName;
             dto.GovtPricing = modelview.GovtPricing;
             dto.GovtPricingDate = modelview.GovtPricingDate;
-            dto.GovtReview = modelview.GovtReview;
-            dto.GovtReviewDate = modelview.GovtReviewDate;
             dto.MOU = modelview.MOU;
             dto.MOUDate = modelview.MOUDate;
             dto.OtherText = modelview.OtherText;
@@ -430,8 +428,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.PocPhone = modelview.PocPhone;
             dto.PriceAnalysis = modelview.PriceAnalysis;
             dto.PriceAnalysisDate = modelview.PriceAnalysisDate;
-            dto.Procurement = modelview.Procurement;
-            dto.ProcurementDate = modelview.ProcurementDate;
             dto.ProposalDate = modelview.ProposalDate;
             dto.ProposalNumber = modelview.ProposalNumber;
             dto.ProposalTitle = modelview.ProposalTitle;
@@ -444,8 +440,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.ShouldCostEstimateDate = modelview.ShouldCostEstimateDate;
             dto.SourceSelection = modelview.SourceSelection;
             dto.SourceSelectionDate = modelview.SourceSelectionDate;
-            dto.SowWritten = modelview.SowWritten;
-            dto.SowWrittenDate = modelview.SowWrittenDate;
             dto.SupplierName = modelview.SupplierName;
             dto.SupplierNegotiations = modelview.SupplierNegotiations;
             dto.SupplierNegotiationsDate = modelview.SupplierNegotiationsDate;
@@ -455,7 +449,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.Version = modelview.Version;
             dto.WorkspaceId = workspaceId;
             dto.CIDText = modelview.CIDText;
-            dto.GovtReviewText = modelview.GovtReviewText;
             dto.PriceAnalysisText = modelview.PriceAnalysisText;
             dto.TechnicalEvaluationText = modelview.TechnicalEvaluationText;
             dto.FactFindingText = modelview.FactFindingText;
@@ -463,9 +456,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.GovtPricingText = modelview.GovtPricingText;
             dto.SupplierNegotiationsText = modelview.SupplierNegotiationsText;
             dto.MOUText = modelview.MOUText;
-            dto.ProcurementText = modelview.ProcurementText;
             dto.ShouldCostEstimateText = modelview.ShouldCostEstimateText;
-            dto.SowWrittenText = modelview.SowWrittenText;
             dto.RFPReleaseText = modelview.RFPReleaseText;
             dto.FirmSupplierReceiptText = modelview.FirmSupplierReceiptText;
             dto.SourceSelectionText = modelview.SourceSelectionText;

@@ -258,15 +258,6 @@
             </div>
         </div>
         <div class="form-row"> 
-            <div class="form-label">SOW Written</div>
-            <div class="form-element"><%: Html.RadioButton("SowWritten", ScheduleEvent.NA, Model.PBOEModel.SowWritten == ScheduleEvent.NA, new { id = "SowWritten" }) %><label>N/A</label><br />
-                <%: Html.RadioButton("SowWritten", ScheduleEvent.Actual, Model.PBOEModel.SowWritten == ScheduleEvent.Actual, new { id = "SowWritten" }) %><label>Actual</label><br />
-                <%: Html.RadioButton("SowWritten", ScheduleEvent.Planned, Model.PBOEModel.SowWritten == ScheduleEvent.Planned, new { id = "SowWritten" }) %><label>Planned</label><br />
-                <%: Html.TextBox("SowWrittenDate", !Model.PBOEModel.SowWrittenDate.HasValue ? string.Empty : Model.PBOEModel.SowWrittenDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "SowWrittenDate" })%><br />
-                <%: Html.TextBox("SowWrittenText", Model.PBOEModel.SowWrittenText, new { id = "SowWrittenText", maxlength="50" })%>
-            </div>
-        </div>
-        <div class="form-row"> 
             <div class="form-label">RFP Release to Supplier</div>
             <div class="form-element"><%: Html.RadioButton("RFPRelease", ScheduleEvent.NA, Model.PBOEModel.RFPRelease == ScheduleEvent.NA, new { id = "RFPRelease" }) %><label>N/A</label><br />
                 <%: Html.RadioButton("RFPRelease", ScheduleEvent.Actual, Model.PBOEModel.RFPRelease == ScheduleEvent.Actual, new { id = "RFPRelease" }) %><label>Actual</label><br />
@@ -300,15 +291,6 @@
                 <%: Html.RadioButton("CID", ScheduleEvent.Planned, Model.PBOEModel.CID == ScheduleEvent.Planned, new { id = "CID" }) %><label>Planned</label><br />
                 <%: Html.TextBox("CIDDate", !Model.PBOEModel.CIDDate.HasValue ? string.Empty : Model.PBOEModel.CIDDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "CIDDate" })%><br />
                 <%: Html.TextBox("CIDText", Model.PBOEModel.CIDText, new { id = "CIDText", maxlength="50" })%>
-            </div>
-        </div>
-        <div class="form-row"> 
-            <div class="form-label">Govt. Review of Supplier Commercial<br />Data requested by LM</div>
-            <div class="form-element"><%: Html.RadioButton("GovtReview", ScheduleEvent.NA, Model.PBOEModel.GovtReview == ScheduleEvent.NA, new { id = "GovtReview" }) %><label>N/A</label><br />
-                <%: Html.RadioButton("GovtReview", ScheduleEvent.Actual, Model.PBOEModel.GovtReview == ScheduleEvent.Actual, new { id = "GovtReview" }) %><label>Actual</label><br />
-                <%: Html.RadioButton("GovtReview", ScheduleEvent.Planned, Model.PBOEModel.GovtReview == ScheduleEvent.Planned, new { id = "GovtReview" }) %><label>Planned</label><br />
-                <%: Html.TextBox("GovtReviewDate", !Model.PBOEModel.GovtReviewDate.HasValue ? string.Empty : Model.PBOEModel.GovtReviewDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "GovtReviewDate" })%><br />
-                <%: Html.TextBox("GovtReviewText", Model.PBOEModel.GovtReviewText, new { id = "GovtReviewText", maxlength="50" })%>
             </div>
         </div>
         <div class="form-row"> 
@@ -372,15 +354,6 @@
                 <%: Html.RadioButton("MOU", ScheduleEvent.Planned, Model.PBOEModel.MOU == ScheduleEvent.Planned, new { id = "MOU" }) %><label>Planned</label><br />
                 <%: Html.TextBox("MOUDate", !Model.PBOEModel.MOUDate.HasValue ? string.Empty : Model.PBOEModel.MOUDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "MOUDate" })%><br />
                 <%: Html.TextBox("MOUText", Model.PBOEModel.MOUText, new { id = "MOUText", maxlength="50" })%>
-            </div>
-        </div>
-        <div class="form-row"> 
-            <div class="form-label">Procurement Definitization</div>
-            <div class="form-element"><%: Html.RadioButton("Procurement", ScheduleEvent.NA, Model.PBOEModel.Procurement == ScheduleEvent.NA, new { id = "Procurement" }) %><label>N/A</label><br />
-                <%: Html.RadioButton("Procurement", ScheduleEvent.Actual, Model.PBOEModel.Procurement == ScheduleEvent.Actual, new { id = "Procurement" }) %><label>Actual</label><br />
-                <%: Html.RadioButton("Procurement", ScheduleEvent.Planned, Model.PBOEModel.Procurement == ScheduleEvent.Planned, new { id = "Procurement" }) %><label>Planned</label><br />
-                <%: Html.TextBox("ProcurementDate", !Model.PBOEModel.ProcurementDate.HasValue ? string.Empty : Model.PBOEModel.ProcurementDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "ProcurementDate" })%><br />
-                <%: Html.TextBox("ProcurementText", Model.PBOEModel.ProcurementText, new { id = "ProcurementText", maxlength="50" })%>
             </div>
         </div>
     </div>
