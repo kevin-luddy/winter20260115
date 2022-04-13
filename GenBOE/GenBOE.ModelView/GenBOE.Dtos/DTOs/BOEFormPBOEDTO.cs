@@ -53,6 +53,11 @@ namespace GenBOE.Dtos
         public bool CompetitionExceptionApplies { get; set; }
 
         /// <summary>
+        /// Gets or set a value indicating whether less than threshold applies
+        /// </summary>
+        public bool LessThanThresholdExceptionApplies { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether there is an other exception that applies.
         /// </summary>
         public bool OtherExceptionApplies { get; set; }

@@ -238,6 +238,7 @@
             <input <%: Model.PBOEModel.CCoPDApplies ? "checked=\"checked\"" : string.Empty %> id="CCoPDApplies" name="CCoPDApplies" type="checkbox" value="true"><label>CCoPD Applies</label><br />
             <input <%: Model.PBOEModel.CommercialItemExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="CommercialItemExceptionApplies" name="CommercialItemExceptionApplies" type="checkbox" value="true"><label>Commercial Item Exception Applies</label><br />
             <input <%: Model.PBOEModel.CompetitionExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="CompetitionExceptionApplies" name="CompetitionExceptionApplies" type="checkbox" value="true"><label>Competition Exception Applies</label><br />
+            <input <%: Model.PBOEModel.LessThanThresholdExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="LessThanThresholdExceptionApplies" name="LessThanThresholdExceptionApplies" type="checkbox" value="true"><label>< CCoPD Threshold Exception applies</label><br />
             <input <%: Model.PBOEModel.OtherExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="OtherExceptionApplies" name="OtherExceptionApplies" type="checkbox" value="true"><label>Other Exception Applies (explain)</label><br />
             <div class="label-padding-left"><%: Html.TextBox("OtherText", Model.PBOEModel.OtherText, new { id = "OtherText", @class = otherTextClass, maxlength="100" }) %></div>
         </div>

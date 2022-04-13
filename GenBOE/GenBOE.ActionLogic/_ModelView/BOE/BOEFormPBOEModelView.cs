@@ -40,6 +40,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.CCoPDApplies = dto.CCoPDApplies;
             this.CommercialItemExceptionApplies = dto.CommercialItemExceptionApplies;
             this.CompetitionExceptionApplies = dto.CompetitionExceptionApplies;
+            this.LessThanThresholdExceptionApplies = dto.LessThanThresholdExceptionApplies;
             this.OtherExceptionApplies = dto.OtherExceptionApplies;
             this.OtherText = dto.OtherText;
             this.RFP = dto.RFP;
@@ -101,6 +102,11 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Gets or sets a value indicating whether competition exception applies.
         /// </summary>
         public bool CompetitionExceptionApplies { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether less than threshold exception applies.
+        /// </summary>
+        public bool LessThanThresholdExceptionApplies { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether there is an other exception that applies.

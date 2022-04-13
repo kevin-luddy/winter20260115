@@ -65,6 +65,7 @@ namespace GenBOE.DataBridge.DTO
                                  CCoPDApplies = ((Ccopd)b.CCoPD & Ccopd.Applies) == Ccopd.Applies,
                                  CommercialItemExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Commercial) == Ccopd.Commercial,
                                  CompetitionExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Competition) == Ccopd.Competition,
+                                 LessThanThresholdExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Threshold) == Ccopd.Threshold,
                                  OtherExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Other) == Ccopd.Other,
                                  CID = (ScheduleEvent)b.CID,
                                  CIDDate = b.CIDDate,
@@ -181,6 +182,7 @@ namespace GenBOE.DataBridge.DTO
                                     CommercialItemExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Commercial) == Ccopd.Commercial,
                                     CompetitionExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Competition) == Ccopd.Competition,
                                     OtherExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Other) == Ccopd.Other,
+                                    LessThanThresholdExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Threshold) == Ccopd.Threshold,
                                     CID = (ScheduleEvent)b.CID,
                                     CIDDate = b.CIDDate,
                                     CostAnalysis = (ScheduleEvent)b.CostAnalysis,
@@ -370,6 +372,11 @@ namespace GenBOE.DataBridge.DTO
             if (dtoToUpsert.CompetitionExceptionApplies)
             {
                 ccopdValue = ccopdValue | Ccopd.Competition;
+            }
+
+            if (dtoToUpsert.LessThanThresholdExceptionApplies)
+            {
+                ccopdValue = ccopdValue | Ccopd.Threshold;
             }
 
             if (dtoToUpsert.OtherExceptionApplies)

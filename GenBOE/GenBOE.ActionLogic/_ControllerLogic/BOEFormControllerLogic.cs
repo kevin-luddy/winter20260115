@@ -397,6 +397,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.CCoPDApplies = modelview.CCoPDApplies;
             dto.CommercialItemExceptionApplies = modelview.CommercialItemExceptionApplies;
             dto.CompetitionExceptionApplies = modelview.CompetitionExceptionApplies;
+            dto.LessThanThresholdExceptionApplies = modelview.LessThanThresholdExceptionApplies;
             dto.OtherExceptionApplies = modelview.OtherExceptionApplies;
             dto.CID = modelview.CID;
             dto.CIDDate = modelview.CIDDate;
@@ -720,7 +721,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             }
 
             if (!boeForm.CCoPDApplies && !boeForm.CommercialItemExceptionApplies &&
-                !boeForm.CompetitionExceptionApplies && !boeForm.OtherExceptionApplies)
+                !boeForm.CompetitionExceptionApplies && !boeForm.OtherExceptionApplies && !boeForm.LessThanThresholdExceptionApplies)
             {
                 validationMessages.Add(new ValidationMessage("Certified Cost or Pricing Data (CCoPD) Applicability is required."));
             }
