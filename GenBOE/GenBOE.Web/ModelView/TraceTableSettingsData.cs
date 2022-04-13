@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -19,9 +19,9 @@ namespace GenBOE.Web.ModelView
 		public ICollection<int> ElementsOfCost { get; set; } = new List<int>();
 
 		/// <summary>
-		/// Resource Rate
+		/// Resource Rate Type
 		/// </summary>
-		public int ResourceRateType { get; set; }
+		public int RateType { get; set; }
 
 		/// <summary>
 		/// bool for showing years
