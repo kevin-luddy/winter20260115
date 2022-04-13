@@ -238,10 +238,6 @@ namespace GenBOE.Web.Controllers
 
             modelView.InitialWorkspaceTitle = string.IsNullOrWhiteSpace(ws.ProposalTitle) ? ws.WorkspaceName : ws.ProposalTitle;
 
-            // We need to disable PBOE Forms (temporarily) for workspaces created on / after the shut off start date.
-            // ToDo: This is a temporary change. When we need to undo this, a list of changes is going to be in the comments of the task IES-684
-            ViewBag.DisablePboeForms = (ws.CreationDate ?? DateTime.MinValue).Date >= DateTime.Parse(ConfigurationManager.AppSettings["tempPboeShutoffStartDate"]).Date;
-
             FinalizeAction(log, "CreateForm", sw);
             return View(modelView);
         }

@@ -172,16 +172,7 @@
         <div class="module-content-data" style="width: 900px;">
             <div class="form-row">
                 <div class="form-label">Form Type *</div>
-
-                <%if ((bool)ViewBag.DisablePboeForms) { %>
-                    <div class="form-element">
-                        <select id="BOEFormType" name="BOEFormType"><option selected="selected" value="0"> </option>
-                            <option value="20">IBOE</option>
-                        </select>
-                    </div>
-                <%} else { %>
-                    <div class="form-element"><%: Html.EnumDropDownListFor(m => m.BOEFormType, new { id = "BOEFormType" }) %></div>
-                <%} %>
+                <div class="form-element"><%: Html.EnumDropDownListFor(m => m.BOEFormType, new { id = "BOEFormType" }) %></div>
             </div>
             <div id="boeFormContainer">
                 <% using (Html.BeginForm("", "", FormMethod.Post, new { id = "CreateBOEForm", onSubmit = "return false" }))
