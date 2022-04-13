@@ -16,28 +16,28 @@ namespace GenBOE.Web.ModelView
 		/// <summary>
 		/// Summary field name
 		/// </summary>
-		string SummaryField { get; set; }
+		public string SummaryField { get; set; }
 
 		/// <summary>
 		/// Summary Field Value
 		/// </summary>
-		string SummaryFieldValue { get; set; }
+		public string SummaryFieldValue { get; set; }
 
 		/// <summary>
 		/// Spread value for the year
 		/// key - year
 		/// value - spread value
 		/// </summary>
-		IDictionary<int, decimal> SpreadValuesForYear { get; set; }
+		public IDictionary<int, decimal> SpreadValuesForYear { get; set; }
 
 		/// <summary>
-		/// Total vaue for the current and parent summary fields
+		/// Total value for the current and parent summary fields
 		/// </summary>
-		decimal TotalValue { get; set; }
+		public decimal TotalValue { get; set; }
 
 		/// <summary>
 		/// Child trace table BOE data
 		/// </summary>
-		ICollection<TraceTableBoeData> traceTableBoeData { get; set; }
+		public ICollection<TraceTableBoeData> traceTableBoeData { get; set; }
 	}
 }
