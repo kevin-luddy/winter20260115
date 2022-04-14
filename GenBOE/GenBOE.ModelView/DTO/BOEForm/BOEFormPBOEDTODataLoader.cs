@@ -44,7 +44,6 @@ namespace GenBOE.DataBridge.DTO
                              {
                                  Approver = b.Approver,
                                  ApproverPhone = b.ApproverPhone,
-                                 //BasisAndRationale = b.BasisAndRationale,
                                  FormName = b.FormName,
                                  Id = b.PBOEFormID,
                                  Poc = b.Poc,
@@ -159,7 +158,6 @@ namespace GenBOE.DataBridge.DTO
                                 {
                                     Approver = b.Approver,
                                     ApproverPhone = b.ApproverPhone,
-                                    //BasisAndRationale = b.BasisAndRationale,
                                     FormName = b.FormName,
                                     Id = b.PBOEFormID,
                                     Poc = b.Poc,
@@ -222,7 +220,6 @@ namespace GenBOE.DataBridge.DTO
                                     SupplierNegotiationsText = b.SupplierNegotiationsText,
                                     TechnicalEvaluationText = b.TechnicalEvaluationText,
                                     ShouldCostEstimateText = b.ShouldCostEstimateText,
-                                    //SowWrittenText = b.SowWrittenText,
                                     RFPReleaseText = b.RFPReleaseText,
                                     FirmSupplierReceiptText = b.FirmSupplierReceiptText,
                                     SourceSelectionText = b.SourceSelectionText
@@ -281,7 +278,6 @@ namespace GenBOE.DataBridge.DTO
                                     dtoToUpsert.WorkspaceId,
                                     dtoToUpsert.FormName,
                                     dtoToUpsert.Description,
-                                    //dtoToUpsert.BasisAndRationale,
                                     dtoToUpsert.ProposalTitle,
                                     dtoToUpsert.ProposalDate,
                                     dtoToUpsert.Poc,

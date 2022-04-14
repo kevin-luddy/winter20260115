@@ -2296,8 +2296,8 @@ namespace GenBOE.Models
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertBOECustomFieldValue", bCFVIDParameter, bOEIDParameter, customFieldIDParameter, customFieldValueIDParameter, customFieldValueParameter, updateDTParameter, isOpenEndedParameter);
         }
-    
-        public virtual ObjectResult<Nullable<int>> upsertBOEFormIBOE(Nullable<int> iBOEFormID, Nullable<System.DateTime> updateDT, Nullable<int> workspaceID, string formName, string description, string proposalTitle, string proposalDate, string poc, string pocPhone, string approver, string approverPhone, string businessArea, Nullable<int> formVersion, string resourceIDs, string clinContractTypes, Nullable<int> revision)
+
+        public virtual ObjectResult<Nullable<int>> upsertBOEFormIBOE(Nullable<int> iBOEFormID, Nullable<System.DateTime> updateDT, Nullable<int> workspaceID, string formName, string description, string basisAndRationale, string proposalTitle, string proposalDate, string poc, string pocPhone, string approver, string approverPhone, string businessArea, Nullable<int> formVersion, string resourceIDs, string clinContractTypes, Nullable<int> revision)
         {
             var iBOEFormIDParameter = iBOEFormID.HasValue ?
                 new ObjectParameter("IBOEFormID", iBOEFormID) :
@@ -2318,7 +2318,11 @@ namespace GenBOE.Models
             var descriptionParameter = description != null ?
                 new ObjectParameter("Description", description) :
                 new ObjectParameter("Description", typeof(string));
-    
+
+            var basisAndRationaleParameter = basisAndRationale != null ?
+                new ObjectParameter("BasisAndRationale", basisAndRationale) :
+                new ObjectParameter("BasisAndRationale", typeof(string));
+
             var proposalTitleParameter = proposalTitle != null ?
                 new ObjectParameter("ProposalTitle", proposalTitle) :
                 new ObjectParameter("ProposalTitle", typeof(string));
@@ -2362,8 +2366,8 @@ namespace GenBOE.Models
             var revisionParameter = revision.HasValue ?
                 new ObjectParameter("Revision", revision) :
                 new ObjectParameter("Revision", typeof(int));
-    
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertBOEFormIBOE", iBOEFormIDParameter, updateDTParameter, workspaceIDParameter, formNameParameter, descriptionParameter, proposalTitleParameter, proposalDateParameter, pocParameter, pocPhoneParameter, approverParameter, approverPhoneParameter, businessAreaParameter, formVersionParameter, resourceIDsParameter, clinContractTypesParameter, revisionParameter);
+
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertBOEFormIBOE", iBOEFormIDParameter, updateDTParameter, workspaceIDParameter, formNameParameter, descriptionParameter, basisAndRationaleParameter, proposalTitleParameter, proposalDateParameter, pocParameter, pocPhoneParameter, approverParameter, approverPhoneParameter, businessAreaParameter, formVersionParameter, resourceIDsParameter, clinContractTypesParameter, revisionParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> upsertBOEFormPBOE(Nullable<int> pBOEFormID, Nullable<System.DateTime> updateDT, Nullable<int> workspaceID, string formName, string description, string proposalTitle, string proposalDate, string poc, string pocPhone, string approver, string approverPhone, Nullable<int> formVersion, Nullable<int> cCoPD, string cCoPDOtherText, string rFP, string proposalNumber, string supplierName, string validityDate, Nullable<int> shouldCostEstimate, Nullable<System.DateTime> shouldCostEstimateDate, Nullable<int> rFPRelease, Nullable<System.DateTime> rFPReleaseDate, Nullable<int> firmSupplierReceipt, Nullable<System.DateTime> firmSupplierReceiptDate, Nullable<int> sourceSelection, Nullable<System.DateTime> sourceSelectionDate, Nullable<int> cID, Nullable<System.DateTime> cIDDate, Nullable<int> priceAnalysis, Nullable<System.DateTime> priceAnalysisDate, Nullable<int> technicalEvaluation, Nullable<System.DateTime> technicalEvaluationDate, Nullable<int> factFinding, Nullable<System.DateTime> factFindingDate, Nullable<int> costAnalysis, Nullable<System.DateTime> costAnalysisDate, Nullable<int> govtPricing, Nullable<System.DateTime> govtPricingDate, Nullable<int> supplierNegotiations, Nullable<System.DateTime> supplierNegotiationsDate, Nullable<int> mOU, Nullable<System.DateTime> mOUDate, Nullable<System.DateTime> plannedDate_WrittenApproval, Nullable<System.DateTime> plannedDate_ApprovedSubmission, string resourceIDs, string clinContractTypes, Nullable<int> revision, string cIDText, string priceAnalysisText, string technicalEvaluationText, string factFindingText, string costAnalysisText, string govtPricingText, string supplierNegotiationsText, string mOUText, string shouldCostEstimateText, string rFPReleaseText, string firmSupplierReceiptText, string sourceSelectionText)

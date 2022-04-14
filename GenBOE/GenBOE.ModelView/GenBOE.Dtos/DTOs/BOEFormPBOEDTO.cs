@@ -34,8 +34,7 @@ namespace GenBOE.Dtos
             {
                 return BOEFormType.PBOE;
             }
-        }
-        
+        }        
 
         /// <summary>
         /// Gets or sets a value indicating whether CCoPD applies.

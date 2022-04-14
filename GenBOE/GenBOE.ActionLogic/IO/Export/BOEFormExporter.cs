@@ -62,6 +62,7 @@ namespace GenBOE.ActionLogic.IO.Export
         protected const string PERIOD_OF_PERFORMANCE = "POP";
         protected const string PROPOSAL_TITLE = "ProposalTitle";
         protected const string DESCRIPTION = "TaskDescription";
+        protected const string BASIS_RATIONALE = "BasisAndRationale";
         protected const string POC = "POC";
         protected const string PHONE = "Phone";
         protected const string MANAGER = "Manager";
