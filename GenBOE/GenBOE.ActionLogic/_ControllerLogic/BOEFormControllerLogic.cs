@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -363,7 +363,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             dto.Approver = modelview.Approver;
             dto.ApproverPhone = modelview.ApproverPhone;
-            dto.BasisAndRationale = modelview.BasisAndRationale;
             dto.BusinessArea = modelview.BusinessArea;
             dto.ClinContractTypes = modelview.ClinContractTypes;
             dto.Description = modelview.Description;
@@ -395,7 +394,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             BOEFormPBOEDTO dto = modelview.BOEFormId > 0 ? this.pboeFormDataLoader.GetById(modelview.BOEFormId) : new BOEFormPBOEDTO();
             dto.Approver = modelview.Approver;
             dto.ApproverPhone = modelview.ApproverPhone;
-            dto.BasisAndRationale = modelview.BasisAndRationale;
             dto.CCoPDApplies = modelview.CCoPDApplies;
             dto.CommercialItemExceptionApplies = modelview.CommercialItemExceptionApplies;
             dto.CompetitionExceptionApplies = modelview.CompetitionExceptionApplies;
@@ -405,7 +403,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.ClinContractTypes = modelview.ClinContractTypes;
             dto.CostAnalysis = modelview.CostAnalysis;
             dto.CostAnalysisDate = modelview.CostAnalysisDate;
-            dto.DegreeOfCompetition = modelview.DegreeOfCompetition;
             dto.Description = modelview.Description;
             dto.FactFinding = modelview.FactFinding;
             dto.FactFindingDate = modelview.FactFindingDate;
@@ -414,8 +411,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.FormName = modelview.BOEFormName;
             dto.GovtPricing = modelview.GovtPricing;
             dto.GovtPricingDate = modelview.GovtPricingDate;
-            dto.GovtReview = modelview.GovtReview;
-            dto.GovtReviewDate = modelview.GovtReviewDate;
             dto.MOU = modelview.MOU;
             dto.MOUDate = modelview.MOUDate;
             dto.OtherText = modelview.OtherText;
@@ -433,8 +428,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.PocPhone = modelview.PocPhone;
             dto.PriceAnalysis = modelview.PriceAnalysis;
             dto.PriceAnalysisDate = modelview.PriceAnalysisDate;
-            dto.Procurement = modelview.Procurement;
-            dto.ProcurementDate = modelview.ProcurementDate;
             dto.ProposalDate = modelview.ProposalDate;
             dto.ProposalNumber = modelview.ProposalNumber;
             dto.ProposalTitle = modelview.ProposalTitle;
@@ -447,12 +440,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.ShouldCostEstimateDate = modelview.ShouldCostEstimateDate;
             dto.SourceSelection = modelview.SourceSelection;
             dto.SourceSelectionDate = modelview.SourceSelectionDate;
-            dto.SowWritten = modelview.SowWritten;
-            dto.SowWrittenDate = modelview.SowWrittenDate;
-            dto.SupplierProposalSupportingDataIncluded = modelview.SupplierProposalSupportingDataIncluded;
-            dto.PriceAnalysisIncluded = modelview.PriceAnalysisIncluded;
-            dto.CommercialItemDocIncluded = modelview.CommercialItemDocIncluded;
-            dto.CostAnalysisIncluded = modelview.CostAnalysisIncluded;
             dto.SupplierName = modelview.SupplierName;
             dto.SupplierNegotiations = modelview.SupplierNegotiations;
             dto.SupplierNegotiationsDate = modelview.SupplierNegotiationsDate;
@@ -462,7 +449,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.Version = modelview.Version;
             dto.WorkspaceId = workspaceId;
             dto.CIDText = modelview.CIDText;
-            dto.GovtReviewText = modelview.GovtReviewText;
             dto.PriceAnalysisText = modelview.PriceAnalysisText;
             dto.TechnicalEvaluationText = modelview.TechnicalEvaluationText;
             dto.FactFindingText = modelview.FactFindingText;
@@ -470,9 +456,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.GovtPricingText = modelview.GovtPricingText;
             dto.SupplierNegotiationsText = modelview.SupplierNegotiationsText;
             dto.MOUText = modelview.MOUText;
-            dto.ProcurementText = modelview.ProcurementText;
             dto.ShouldCostEstimateText = modelview.ShouldCostEstimateText;
-            dto.SowWrittenText = modelview.SowWrittenText;
             dto.RFPReleaseText = modelview.RFPReleaseText;
             dto.FirmSupplierReceiptText = modelview.FirmSupplierReceiptText;
             dto.SourceSelectionText = modelview.SourceSelectionText;
@@ -735,20 +719,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 validationMessages.Add(new ValidationMessage("Description is required."));
             }
 
-            if (boeForm.DegreeOfCompetition == DegreeOfCompetition.None)
-            {
-                validationMessages.Add(new ValidationMessage("Degree of Competition is required."));
-            }
-
             if (!boeForm.CCoPDApplies && !boeForm.CommercialItemExceptionApplies &&
                 !boeForm.CompetitionExceptionApplies && !boeForm.OtherExceptionApplies)
             {
                 validationMessages.Add(new ValidationMessage("Certified Cost or Pricing Data (CCoPD) Applicability is required."));
-            }
-
-            if (string.IsNullOrWhiteSpace(boeForm.BasisAndRationale))
-            {
-                validationMessages.Add(new ValidationMessage("Basis of and Rationale is required."));
             }
 
             if (string.IsNullOrWhiteSpace(boeForm.Poc) || string.IsNullOrWhiteSpace(boeForm.Approver))
@@ -793,11 +767,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
             if (string.IsNullOrWhiteSpace(boeForm.Description))
             {
                 validationMessages.Add(new ValidationMessage("Description is required."));
-            }
-
-            if (string.IsNullOrWhiteSpace(boeForm.BasisAndRationale))
-            {
-                validationMessages.Add(new ValidationMessage("Basis of and Rationale is required."));
             }
 
             if (string.IsNullOrWhiteSpace(boeForm.Poc) || string.IsNullOrWhiteSpace(boeForm.Approver))

@@ -233,13 +233,6 @@
         </div>
     </div>
     <div class="form-row"> 
-        <div class="form-label"><span helptext="Select which best represents the degree to which LM’s requirement has been competed among potential procurement sources for pricing purposes. If the source has not yet been selected or the basis for LM’s proposed procurement value is an internal estimate, shade the last box. Note: Engineering estimates/should-cost estimates may not be substituted for required supplier provided certified cost or pricing data merely to meet prime proposal submittal schedules.">Degree of Competition **</span></div>
-        <div class="form-element"><%: Html.RadioButton("DegreeOfCompetition", DegreeOfCompetition.Competitive, Model.PBOEModel.DegreeOfCompetition == DegreeOfCompetition.Competitive, new { id = "DegreeOfCompetition" }) %><label>Competitive</label><br />
-            <%: Html.RadioButton("DegreeOfCompetition", DegreeOfCompetition.NonCompetitive, Model.PBOEModel.DegreeOfCompetition == DegreeOfCompetition.NonCompetitive, new { id = "DegreeOfCompetition" }) %><label>Non-competitive</label><br />
-            <%: Html.RadioButton("DegreeOfCompetition", DegreeOfCompetition.SourceNotSelected, Model.PBOEModel.DegreeOfCompetition == DegreeOfCompetition.SourceNotSelected, new { id = "DegreeOfCompetition" }) %><label>Source not yet selected; should cost estimate (SCE) / Engineering Estimate (EE) used</label>
-        </div>
-    </div>
-    <div class="form-row"> 
         <div class="form-label"><span helptext="Select to indicate whether certified cost or pricing data is applicable to the procurement, or if not, which exception applies.">Certified Cost or Pricing Data (CCoPD) Applicability **</span></div>
         <div class="form-element">
             <input <%: Model.PBOEModel.CCoPDApplies ? "checked=\"checked\"" : string.Empty %> id="CCoPDApplies" name="CCoPDApplies" type="checkbox" value="true"><label>CCoPD Applies</label><br />
@@ -247,69 +240,6 @@
             <input <%: Model.PBOEModel.CompetitionExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="CompetitionExceptionApplies" name="CompetitionExceptionApplies" type="checkbox" value="true"><label>Competition Exception Applies</label><br />
             <input <%: Model.PBOEModel.OtherExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="OtherExceptionApplies" name="OtherExceptionApplies" type="checkbox" value="true"><label>Other Exception Applies (explain)</label><br />
             <div class="label-padding-left"><%: Html.TextBox("OtherText", Model.PBOEModel.OtherText, new { id = "OtherText", @class = otherTextClass, maxlength="100" }) %></div>
-        </div>
-    </div>
-    <div class="form-row"> 
-        <span class="form-label"><span>Status of Supporting Data (Select all that apply)</span></span>
-        <div id="Div4" class="help-icon" onclick="$(this).parent().prev().click();"></div>
-            <!-- This comment is needed for the jquery animation to work in IE8... -->
-            <div class="help-dialog" style="width: 400px;">
-                <div class="help-dialog-text">
-                    This section of the form is intended to provide a quick glance status of the data included as support to the PBOE form and the overall procurement estimate. The supplier’s proposal and certified cost or pricing data must be included. A price analysis must be included (unless the procurement estimate is based on a should-cost or engineering estimate). Commercial Item Documentation is included unless approved for later submittal by the customer. Cost Analysis is included unless approved for later submittal by the customer.<br />
-                    Note: The asterisked items in the Schedule of Events section relate to required customer approvals for items not included in initial prime submittal.
-                </div>
-            </div>
-    </div>
-    <div class="form-row"> 
-        <div class="form-label">a) Supplier proposal and supporting data included if > $15M or ≥ CCoPD threshold AND >10%  of the LM proposal?</div>
-        <div class="form-element">
-            <%: Html.RadioButton("SupplierProposalSupportingDataIncluded", TripleBooleanState.Yes, Model.PBOEModel.SupplierProposalSupportingDataIncluded == TripleBooleanState.Yes, new { id = "SupplierProposalSupportingDataIncluded" }) %><label>Yes</label><br />
-            <%: Html.RadioButton("SupplierProposalSupportingDataIncluded", TripleBooleanState.NA, Model.PBOEModel.SupplierProposalSupportingDataIncluded == TripleBooleanState.NA, new { id = "SupplierProposalSupportingDataIncluded" }) %><label>N/A</label><br />
-        </div>
-    </div>
-    <div class="form-row"> 
-        <div class="form-label">b) Price Analysis included?</div>
-        <div class="form-element"><%: Html.RadioButton("PriceAnalysisIncluded", TripleBooleanState.Yes, Model.PBOEModel.PriceAnalysisIncluded == TripleBooleanState.Yes, new { id = "PriceAnalysisIncluded" }) %><label>Yes</label><br />
-            <%: Html.RadioButton("PriceAnalysisIncluded", TripleBooleanState.NA, Model.PBOEModel.PriceAnalysisIncluded == TripleBooleanState.NA, new { id = "PriceAnalysisIncluded" }) %><label>N/A (SCE/EE)</label><br />
-        </div>
-    </div>
-    <div class="form-row"> 
-        <div class="form-label">c) Commercial Item Documentation included?</div>
-        <div class="form-element"><%: Html.RadioButton("CommercialItemDocIncluded", TripleBooleanState.Yes, Model.PBOEModel.CommercialItemDocIncluded == TripleBooleanState.Yes, new { id = "CommercialItemDocIncluded" }) %><label>Yes</label><br />
-            <%: Html.RadioButton("CommercialItemDocIncluded", TripleBooleanState.No, Model.PBOEModel.CommercialItemDocIncluded == TripleBooleanState.No, new { id = "CommercialItemDocIncluded" }) %><label>No</label><br />
-            <%: Html.RadioButton("CommercialItemDocIncluded", TripleBooleanState.NA, Model.PBOEModel.CommercialItemDocIncluded == TripleBooleanState.NA, new { id = "CommercialItemDocIncluded" }) %><label>N/A</label><br />
-        </div>
-    </div>
-    <div class="form-row"> 
-        <div class="form-label">d) Is Cost Analysis included?</div>
-        <div class="form-element"><%: Html.RadioButton("CostAnalysisIncluded", TripleBooleanState.Yes, Model.PBOEModel.CostAnalysisIncluded == TripleBooleanState.Yes, new { id = "CostAnalysisIncluded" }) %><label>Yes</label><br />
-            <%: Html.RadioButton("CostAnalysisIncluded", TripleBooleanState.No, Model.PBOEModel.CostAnalysisIncluded == TripleBooleanState.No, new { id = "CostAnalysisIncluded" }) %><label>No</label><br />
-            <%: Html.RadioButton("CostAnalysisIncluded", TripleBooleanState.NA, Model.PBOEModel.CostAnalysisIncluded == TripleBooleanState.NA, new { id = "CostAnalysisIncluded" }) %><label>N/A</label><br />
-        </div>
-    </div>
-    <div class="form-row">
-        <label class="form-label"><span>Basis of and Rationale for LM Proposed Value for Procurement **</span></label>
-            <div id="Div5" class="help-icon" onclick="$(this).parent().prev().click();"></div>
-            <!-- This comment is needed for the jquery animation to work in IE8... -->
-            <div class="help-dialog" style="width: 400px;">
-                <div class="help-dialog-text">
-                    This area explains the LM proposed value for the subcontract and what it is based on and why – supplier proposed value, price analysis value, cost analysis value, should cost or engineering estimate value, or some other value.  The subcontract proposal manager is tasked with the responsibility to determine the proposed value for the procurement. Thoroughly explain how the proposed value was derived. Ensure you include in this rationale that:
-                     <ul>
-                        <li>Supplier performance and historical actuals, including all Requests for Equitable Adjustment (REA) have been considered in the proposed value</li>
-                                     <li>It explains the methodology used in the price analysis and why the method was used for this PBOE</li>
-                        <li>It describes how the proposed labor rate(s) compares with previous proposals from the same supplier</li>
-                        <li>Any unique or specifically priced terms and conditions that affect the supplier proposed price</li>
-                        <li>If no cost analysis, it addresses the reasonableness of the proposed Bills of Materials as well as reasonableness of travel (number/duration/location/number of personnel/per diems, etc.), including any adjustments made by the Technical Evaluation, have been considered in the proposed value</li>
-                        <li>If no cost analysis, a summary table of the supplier proposal is included</li>
-                        <li>The proposed value is realistic and attainable through supplier negotiations.</li>
-                    </ul>
-                    Note: In addition to the PBOE Form, provide as attachments to this document, the price analysis (if separately documented), engineering estimate, or should cost estimate.  Other attachments can be included as necessary, i.e. supplier’s proposals, commercial item documentation, cost analysis, Memorandum of Understanding, etc. or any other document that will assist in providing the source of the cost basis.
-                    Be aware that, depending on the detail provided in this section, this completed PBOE form may become Third Party Proprietary Information and must be handled and labeled accordingly.
-                </div>
-            </div>
-        <br /><br />
-        <div class="wrapper">
-            <%: Html.TextArea("BasisAndRationale_PBOE", Model.PBOEModel.BasisAndRationale, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "BasisAndRationale_PBOE" })%>
         </div>
     </div>
     <div class="form-row">
@@ -325,15 +255,6 @@
                 <%: Html.RadioButton("ShouldCostEstimate", ScheduleEvent.Planned, Model.PBOEModel.ShouldCostEstimate == ScheduleEvent.Planned, new { id = "ShouldCostEstimate" }) %><label>Planned</label><br />
                 <%: Html.TextBox("ShouldCostEstimateDate", !Model.PBOEModel.ShouldCostEstimateDate.HasValue ? string.Empty : Model.PBOEModel.ShouldCostEstimateDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "ShouldCostEstimateDate" })%><br />
                 <%: Html.TextBox("ShouldCostEstimateText", Model.PBOEModel.ShouldCostEstimateText, new { id = "ShouldCostEstimateText", maxlength="50" })%>
-            </div>
-        </div>
-        <div class="form-row"> 
-            <div class="form-label">SOW Written</div>
-            <div class="form-element"><%: Html.RadioButton("SowWritten", ScheduleEvent.NA, Model.PBOEModel.SowWritten == ScheduleEvent.NA, new { id = "SowWritten" }) %><label>N/A</label><br />
-                <%: Html.RadioButton("SowWritten", ScheduleEvent.Actual, Model.PBOEModel.SowWritten == ScheduleEvent.Actual, new { id = "SowWritten" }) %><label>Actual</label><br />
-                <%: Html.RadioButton("SowWritten", ScheduleEvent.Planned, Model.PBOEModel.SowWritten == ScheduleEvent.Planned, new { id = "SowWritten" }) %><label>Planned</label><br />
-                <%: Html.TextBox("SowWrittenDate", !Model.PBOEModel.SowWrittenDate.HasValue ? string.Empty : Model.PBOEModel.SowWrittenDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "SowWrittenDate" })%><br />
-                <%: Html.TextBox("SowWrittenText", Model.PBOEModel.SowWrittenText, new { id = "SowWrittenText", maxlength="50" })%>
             </div>
         </div>
         <div class="form-row"> 
@@ -370,15 +291,6 @@
                 <%: Html.RadioButton("CID", ScheduleEvent.Planned, Model.PBOEModel.CID == ScheduleEvent.Planned, new { id = "CID" }) %><label>Planned</label><br />
                 <%: Html.TextBox("CIDDate", !Model.PBOEModel.CIDDate.HasValue ? string.Empty : Model.PBOEModel.CIDDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "CIDDate" })%><br />
                 <%: Html.TextBox("CIDText", Model.PBOEModel.CIDText, new { id = "CIDText", maxlength="50" })%>
-            </div>
-        </div>
-        <div class="form-row"> 
-            <div class="form-label">Govt. Review of Supplier Commercial<br />Data requested by LM</div>
-            <div class="form-element"><%: Html.RadioButton("GovtReview", ScheduleEvent.NA, Model.PBOEModel.GovtReview == ScheduleEvent.NA, new { id = "GovtReview" }) %><label>N/A</label><br />
-                <%: Html.RadioButton("GovtReview", ScheduleEvent.Actual, Model.PBOEModel.GovtReview == ScheduleEvent.Actual, new { id = "GovtReview" }) %><label>Actual</label><br />
-                <%: Html.RadioButton("GovtReview", ScheduleEvent.Planned, Model.PBOEModel.GovtReview == ScheduleEvent.Planned, new { id = "GovtReview" }) %><label>Planned</label><br />
-                <%: Html.TextBox("GovtReviewDate", !Model.PBOEModel.GovtReviewDate.HasValue ? string.Empty : Model.PBOEModel.GovtReviewDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "GovtReviewDate" })%><br />
-                <%: Html.TextBox("GovtReviewText", Model.PBOEModel.GovtReviewText, new { id = "GovtReviewText", maxlength="50" })%>
             </div>
         </div>
         <div class="form-row"> 
@@ -442,15 +354,6 @@
                 <%: Html.RadioButton("MOU", ScheduleEvent.Planned, Model.PBOEModel.MOU == ScheduleEvent.Planned, new { id = "MOU" }) %><label>Planned</label><br />
                 <%: Html.TextBox("MOUDate", !Model.PBOEModel.MOUDate.HasValue ? string.Empty : Model.PBOEModel.MOUDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "MOUDate" })%><br />
                 <%: Html.TextBox("MOUText", Model.PBOEModel.MOUText, new { id = "MOUText", maxlength="50" })%>
-            </div>
-        </div>
-        <div class="form-row"> 
-            <div class="form-label">Procurement Definitization</div>
-            <div class="form-element"><%: Html.RadioButton("Procurement", ScheduleEvent.NA, Model.PBOEModel.Procurement == ScheduleEvent.NA, new { id = "Procurement" }) %><label>N/A</label><br />
-                <%: Html.RadioButton("Procurement", ScheduleEvent.Actual, Model.PBOEModel.Procurement == ScheduleEvent.Actual, new { id = "Procurement" }) %><label>Actual</label><br />
-                <%: Html.RadioButton("Procurement", ScheduleEvent.Planned, Model.PBOEModel.Procurement == ScheduleEvent.Planned, new { id = "Procurement" }) %><label>Planned</label><br />
-                <%: Html.TextBox("ProcurementDate", !Model.PBOEModel.ProcurementDate.HasValue ? string.Empty : Model.PBOEModel.ProcurementDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "ProcurementDate" })%><br />
-                <%: Html.TextBox("ProcurementText", Model.PBOEModel.ProcurementText, new { id = "ProcurementText", maxlength="50" })%>
             </div>
         </div>
     </div>

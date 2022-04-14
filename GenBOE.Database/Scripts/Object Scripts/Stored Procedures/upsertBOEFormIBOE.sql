@@ -46,6 +46,7 @@ AS
 **		10/27/16	twilson3			BOEJ-1531 Add BOE Forms CLIN xref table
 **		03/08/17	ranzalon			BOEJ-1944 Increase size of poc fields
 **		10/27/17	twilson3			BOEJ-2578 Partial Save PBOE/IBOE
+**		4/13/2022	jquijano			IES-1014: Remove deprecated PBOE fields
 *******************************************************************************/
 
 SET NOCOUNT ON 

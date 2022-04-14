@@ -34,11 +34,7 @@ namespace GenBOE.Dtos
             {
                 return BOEFormType.PBOE;
             }
-        }
-        /// <summary>
-        /// Gets or sets the degree of competition.
-        /// </summary>
-        public DegreeOfCompetition DegreeOfCompetition { get; set; }
+        }        
 
         /// <summary>
         /// Gets or sets a value indicating whether CCoPD applies.
@@ -86,38 +82,11 @@ namespace GenBOE.Dtos
         public string ValidityDate { get; set; }
 
         /// <summary>
-        /// Supplier proposal and supporting data included
-        /// </summary>
-        public TripleBooleanState SupplierProposalSupportingDataIncluded { get; set; }
-        
-        /// <summary>
-        /// Price Analysis included
-        /// </summary>
-        public TripleBooleanState PriceAnalysisIncluded { get; set; }
-        
-        /// <summary>
-        /// Commercial Item Documentation included
-        /// </summary>
-        public TripleBooleanState CommercialItemDocIncluded { get; set; }
-        
-        /// <summary>
-        /// Is Cost Analysis Included
-        /// </summary>
-        public TripleBooleanState CostAnalysisIncluded { get; set; }
-
-        /// <summary>
         /// Should Cost/Engineering Estimate
         /// </summary>
         public ScheduleEvent ShouldCostEstimate { get; set; }
         public DateTime? ShouldCostEstimateDate { get; set; }
         public string ShouldCostEstimateText { get; set; }
-
-        /// <summary>
-        /// Statement of Work Written
-        /// </summary>
-        public ScheduleEvent SowWritten { get; set; }
-        public DateTime? SowWrittenDate { get; set; }
-        public string SowWrittenText { get; set; }
 
         /// <summary>
         /// RFP Release to Supplier(s)
@@ -146,13 +115,6 @@ namespace GenBOE.Dtos
         public ScheduleEvent CID { get; set; }
         public DateTime? CIDDate { get; set; }
         public string CIDText { get; set; }
-        
-        /// <summary>
-        /// Govt. Review of Supplier Commercial Data requrested by LM.
-        /// </summary>
-        public ScheduleEvent GovtReview { get; set; }
-        public DateTime? GovtReviewDate { get; set; }
-        public string GovtReviewText { get; set; }
         
         /// <summary>
         /// Price Analysis
@@ -203,13 +165,6 @@ namespace GenBOE.Dtos
         public DateTime? MOUDate { get; set; }
         public string MOUText { get; set; }
        
-        /// <summary>
-        /// Procurement Definitization
-        /// </summary>
-        public ScheduleEvent Procurement { get; set; }
-        public DateTime? ProcurementDate { get; set; }
-        public string ProcurementText { get; set; }
-
         /// <summary>
         /// Date of customer written approval for submission after initial prime proposal.
         /// </summary>
