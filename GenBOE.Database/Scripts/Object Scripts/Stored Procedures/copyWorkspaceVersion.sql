@@ -39,6 +39,7 @@ AS
 **		10/29/20	Dusan				BOEJ-4925: Fixed MOQTypeSelectionId not copying
 **		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
+**		4/13/2022	jquijano			IES-1014: Remove deprecated PBOE fields
 *******************************************************************************/
 SET NOCOUNT ON 
 
