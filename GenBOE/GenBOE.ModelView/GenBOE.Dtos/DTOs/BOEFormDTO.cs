@@ -87,6 +87,11 @@ namespace GenBOE.Dtos
         public string Description { get; set; }
 
         /// <summary>
+        /// Gets or sets the basis and rationale.
+        /// </summary>
+        public string BasisAndRationale { get; set; }
+
+        /// <summary>
         /// Gets or sets the poc.
         /// </summary>
         public string Poc { get; set; }

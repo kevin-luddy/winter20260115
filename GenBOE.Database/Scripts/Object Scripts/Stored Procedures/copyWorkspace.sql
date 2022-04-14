@@ -33,6 +33,7 @@ AS
 **		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 **		11/30/2021	Dusan				IES-461: Remove RMS Zone Travel copying
+**		4/13/2022	jquijano			IES-1014: Remove deprecated PBOE fields
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -2145,8 +2146,8 @@ WHILE EXISTS (SELECT 1 FROM @IBOE WHERE Processed = 0)
 BEGIN
 	SELECT TOP 1 @IBOEID = [IBOEFormID] FROM @IBOE WHERE Processed = 0
 	INSERT INTO [dbo].[BOEFormIBOE]
-		(UpdateDT, WorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion)
-		SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion
+		(UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion)
+		SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, BusinessArea, Revision,FormVersion
 		FROM [dbo].[BOEFormIBOE]
 		WHERE [IBOEFormID] = @IBOEID 
 

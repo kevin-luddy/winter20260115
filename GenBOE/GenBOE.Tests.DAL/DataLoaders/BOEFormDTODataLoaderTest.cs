@@ -531,6 +531,7 @@ namespace GenBOE.Tests.DAL.DataLoaders
                     BusinessArea = "Some business area",
                     FormName = "Updated Form name",
                     Description = "Unit Test - This item was created and used to test updates for unit testing.",
+                    BasisAndRationale = "BasisAndRationale -",
                     ProposalTitle = "ProposalTitle -",
                     ProposalDate = "02/22/2015", // sql server will truncate to 10 chars!
                     Poc = "poc -",

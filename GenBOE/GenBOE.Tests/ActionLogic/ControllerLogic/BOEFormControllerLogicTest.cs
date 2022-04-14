@@ -1054,7 +1054,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             {
                 Approver = "approver",
                 ApproverPhone = "phonea",
-                //BasisAndRationale = "bandR",
+                BasisAndRationale = "bandR",
                 BusinessArea = "isgs",
                 Description = "desc",
                 FormName = "test1",

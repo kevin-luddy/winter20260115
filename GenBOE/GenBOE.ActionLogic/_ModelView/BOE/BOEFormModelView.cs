@@ -31,6 +31,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.Description = string.Empty;
             this.Approver = string.Empty;
             this.ApproverPhone = string.Empty;
+            this.BasisAndRationale = string.Empty;
             this.Poc = string.Empty;
             this.PocPhone = string.Empty;
             this.ProposalDate = string.Empty;
@@ -59,6 +60,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.Description = dto.Description;
             this.Approver = dto.Approver;
             this.ApproverPhone = dto.ApproverPhone;
+            this.BasisAndRationale = dto.BasisAndRationale;
             this.BOEFormType = dto.BOEFormType;
             this.Poc = dto.Poc;
             this.PocPhone = dto.PocPhone;
