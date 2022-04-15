@@ -94,8 +94,28 @@
                         data.Description = tinyMCE.EditorManager.editors.Description_PBOE.getContent();
                     }
 
-                    if (tinyMCE.EditorManager.editors.BasisAndRationale_PBOE) {
-                        data.BasisAndRationale = tinyMCE.EditorManager.editors.BasisAndRationale_PBOE.getContent();
+                    if (tinyMCE.EditorManager.editors.Description_SourceSelection) {
+                        data.SourceSelectionDescription = tinyMCE.EditorManager.editors.Description_SourceSelection.getContent();
+                    }
+
+                    if (tinyMCE.EditorManager.editors.Description_Commerciality) {
+                        data.SourceSelectionDescription = tinyMCE.EditorManager.editors.Description_Commerciality.getContent();
+                    }
+
+                    if (tinyMCE.EditorManager.editors.Description_TechnicalEvaluation) {
+                        data.SourceSelectionDescription = tinyMCE.EditorManager.editors.Description_TechnicalEvaluation.getContent();
+                    }
+
+                    if (tinyMCE.EditorManager.editors.Description_PriceAnalysis) {
+                        data.SourceSelectionDescription = tinyMCE.EditorManager.editors.Description_PriceAnalysis.getContent();
+                    }
+
+                    if (tinyMCE.EditorManager.editors.Description_CostAnalysis) {
+                        data.SourceSelectionDescription = tinyMCE.EditorManager.editors.Description_CostAnalysis.getContent();
+                    }
+
+                    if (tinyMCE.EditorManager.editors.Description_RationaleValueSummary) {
+                        data.SourceSelectionDescription = tinyMCE.EditorManager.editors.Description_RationaleValueSummary.getContent();
                     }
                 }
                 
@@ -150,15 +170,29 @@
             };
 
             if (!ManageBOEFormsWidget.isReadOnly()) {
+                // PBOE
                 InitializeRTE('Description_PBOE', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
-                InitializeRTE('BasisAndRationale_PBOE', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                InitializeRTE('Description_SourceSelection', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                InitializeRTE('Description_Commerciality', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                InitializeRTE('Description_TechnicalEvaluation', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                InitializeRTE('Description_PriceAnalysis', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                InitializeRTE('Description_CostAnalysis', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                InitializeRTE('Description_RationaleValueSummary', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                // IBOE
                 InitializeRTE('Description_IBOE', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
                 InitializeRTE('BasisAndRationale_IBOE', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
             }
-            else  // read-only
+            else  /* read-only */
             {
+                // PBOE
                 HandleRTEDataForReadOnly("#Description_PBOE", ".replacedWidgetText");
-                HandleRTEDataForReadOnly("#BasisAndRationale_PBOE", ".replacedWidgetText");
+                HandleRTEDataForReadOnly('#Description_SourceSelection', 'replacedWidgetText');
+                HandleRTEDataForReadOnly('#Description_Commerciality', 'replacedWidgetText');
+                HandleRTEDataForReadOnly('#Description_TechnicalEvaluation', 'replacedWidgetText');
+                HandleRTEDataForReadOnly('#Description_PriceAnalysis', 'replacedWidgetText');
+                HandleRTEDataForReadOnly('#Description_CostAnalysis', 'replacedWidgetText');
+                HandleRTEDataForReadOnly('#Description_RationaleValueSummary', 'replacedWidgetText');
+                // IBOE
                 HandleRTEDataForReadOnly("#Description_IBOE", ".replacedWidgetText");
                 HandleRTEDataForReadOnly("#BasisAndRationale_IBOE", ".replacedWidgetText");
             }

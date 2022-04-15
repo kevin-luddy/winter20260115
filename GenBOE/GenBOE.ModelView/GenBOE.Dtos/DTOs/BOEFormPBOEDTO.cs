@@ -184,5 +184,17 @@ namespace GenBOE.Dtos
         /// Supplier CCoPD Applies
         /// </summary>
         public TripleBooleanState? SupplierCCoPD { get; set; }
+
+        public string SourceSelectionDescription { get; set; }
+
+        public string CommercialityDescription { get; set; }
+
+        public string TechnicalEvaluationDescription { get; set; }
+
+        public string PriceAnalysisDescription { get; set; }
+
+        public string CostAnalysisDescription { get; set; }
+
+        public string RationaleValueSummary { get; set; }
     }
 }

@@ -138,7 +138,6 @@
     });
 
     $(document).ready(function () {
-        console.log('Open for business!');
         $('#CCoPDApplies').on('click', function () {
             toggleCCoPDApplies();
         });        
@@ -267,6 +266,38 @@
             <input <%: Model.PBOEModel.LessThanThresholdExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="LessThanThresholdExceptionApplies" name="LessThanThresholdExceptionApplies" type="checkbox" value="true"><label>< CCoPD Threshold Exception applies</label><br />
             <input <%: Model.PBOEModel.OtherExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="OtherExceptionApplies" name="OtherExceptionApplies" type="checkbox" value="true"><label>Other Exception Applies (explain)</label><br />
             <div class="label-padding-left"><%: Html.TextBox("OtherText", Model.PBOEModel.OtherText, new { id = "OtherText", @class = otherTextClass, maxlength="100" }) %></div>
+        </div>
+    </div>
+    <div class="form-row">
+        <label class="form-label"><span helptext="">Source Selection</span></label><br /><br />
+        <div class="wrapper">
+            <%: Html.TextArea("Description_SourceSelection", Model.PBOEModel.SourceSelectionDescription, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "Description_SourceSelection" })%>
+        </div>
+    </div>
+    <div class="form-row">
+        <label class="form-label"><span helptext="">Commerciality (If Applicable)</span></label><br /><br />
+        <div class="wrapper">
+            <%: Html.TextArea("Description_Commerciality", Model.PBOEModel.CommercialityDescription, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "Description_Commerciality" })%>
+        </div>
+    </div><div class="form-row">
+        <label class="form-label"><span helptext="">Technical Evaluation (If Applicable)</span></label><br /><br />
+        <div class="wrapper">
+            <%: Html.TextArea("Description_TechnicalEvaluation", Model.PBOEModel.TechnicalEvaluationDescription, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "Description_TechnicalEvaluation" })%>
+        </div>
+    </div><div class="form-row">
+        <label class="form-label"><span helptext="">Price Analysis</span></label><br /><br />
+        <div class="wrapper">
+            <%: Html.TextArea("Description_PriceAnalysis", Model.PBOEModel.PriceAnalysisDescription, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "Description_PriceAnalysis" })%>
+        </div>
+    </div><div class="form-row">
+        <label class="form-label"><span helptext="">Cost Analysis (If Applicable)</span></label><br /><br />
+        <div class="wrapper">
+            <%: Html.TextArea("Description_CostAnalysis", Model.PBOEModel.CostAnalysisDescription, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "Description_CostAnalysis" })%>
+        </div>
+    </div><div class="form-row">
+        <label class="form-label"><span helptext="">Rationale for LM Proposed Value Summary</span></label><br /><br />
+        <div class="wrapper">
+            <%: Html.TextArea("Description_RationaleValueSummary", Model.PBOEModel.RationaleValueSummary, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "Description_RationaleValueSummary" })%>
         </div>
     </div>
     <div class="form-row">

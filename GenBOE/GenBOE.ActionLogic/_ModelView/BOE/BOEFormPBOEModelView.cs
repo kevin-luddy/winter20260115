@@ -86,6 +86,12 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.RFPReleaseText = dto.RFPReleaseText;
             this.FirmSupplierReceiptText = dto.FirmSupplierReceiptText;
             this.SourceSelectionText = dto.SourceSelectionText;
+            this.SourceSelectionDescription = dto.SourceSelectionDescription;
+            this.CommercialityDescription = dto.CommercialityDescription;
+            this.TechnicalEvaluationDescription = dto.TechnicalEvaluationDescription;
+            this.PriceAnalysisDescription = dto.PriceAnalysisDescription;
+            this.CostAnalysisDescription = dto.CostAnalysisDescription;
+            this.RationaleValueSummary = dto.RationaleValueSummary;
         }
 
 
@@ -194,7 +200,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsSourceSelectionTextRequired", true, ErrorMessage = "Source Selection Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Source Selection Text.")]
         public string SourceSelectionText { get; set; }
-        
+
         /// <summary>
         /// Commercial item Documentation (CID)
         /// </summary>
@@ -205,7 +211,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsCIDTextRequired", true, ErrorMessage = "CID Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for CID Text.")]
         public string CIDText { get; set; }
-        
+
         /// <summary>
         /// Price Analysis
         /// </summary>
@@ -216,7 +222,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsPriceAnalysisTextRequired", true, ErrorMessage = "Price Analysis Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Price Analysis Text.")]
         public string PriceAnalysisText { get; set; }
-        
+
         /// <summary>
         /// Technical Evaluation
         /// </summary>
@@ -227,7 +233,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsTechnicalEvaluationTextRequired", true, ErrorMessage = "Technical Evaluation Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Technical Evaluation Text.")]
         public string TechnicalEvaluationText { get; set; }
-        
+
         /// <summary>
         /// Fact Finding
         /// </summary>
@@ -238,7 +244,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsFactFindingTextRequired", true, ErrorMessage = "Fact Finding Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Fact Finding Text.")]
         public string FactFindingText { get; set; }
-        
+
         /// <summary>
         /// Cost Analysis
         /// </summary>
@@ -249,7 +255,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsCostAnalysisTextRequired", true, ErrorMessage = "Cost Analysis Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Cost Analysis Text.")]
         public string CostAnalysisText { get; set; }
-        
+
         /// <summary>
         /// Govt. Pricing Assistance for CCoPD Review Requested by LM
         /// </summary>
@@ -260,7 +266,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsGovtPricingTextRequired", true, ErrorMessage = "Govt Pricing Assistance Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Govt Pricing Assistance Text.")]
         public string GovtPricingText { get; set; }
-        
+
         /// <summary>
         /// Supplier Negotiations Complete
         /// </summary>
@@ -271,7 +277,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsSupplierNegotiationsTextRequired", true, ErrorMessage = "Supplier Negotiations Complete Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Supplier Negotiations Complete Text.")]
         public string SupplierNegotiationsText { get; set; }
-        
+
         /// <summary>
         /// Memorandum of Understanding
         /// </summary>
@@ -282,7 +288,19 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsMOUTextRequired", true, ErrorMessage = "MOU Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for MOU Text.")]
         public string MOUText { get; set; }
-        
+
+        public string SourceSelectionDescription { get; set; }
+
+        public string CommercialityDescription { get; set; }
+
+        public string TechnicalEvaluationDescription { get; set; }
+
+        public string PriceAnalysisDescription { get; set; }
+
+        public string CostAnalysisDescription { get; set; }
+
+        public string RationaleValueSummary { get; set; }
+
         /// <summary>
         /// Date of customer written approval for submission after initial prime proposal.
         /// </summary>
