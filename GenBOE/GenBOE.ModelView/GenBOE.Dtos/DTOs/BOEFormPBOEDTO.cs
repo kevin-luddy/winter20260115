@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -174,9 +174,15 @@ namespace GenBOE.Dtos
         /// Date of customer written approval for submission after initial prime proposal.
         /// </summary>
         public DateTime? PlannedDate_WrittenApproval { get; set; }
+        
         /// <summary>
         /// Approved date for submission to customer.
         /// </summary>
         public DateTime? PlannedDate_ApprovedSubmission { get; set; }
+
+        /// <summary>
+        /// Supplier CCoPD Applies
+        /// </summary>
+        public TripleBooleanState? SupplierCCoPD { get; set; }
     }
 }

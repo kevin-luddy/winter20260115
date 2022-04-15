@@ -109,7 +109,8 @@ namespace GenBOE.DataBridge.DTO
                                  ShouldCostEstimateText = b.ShouldCostEstimateText,
                                  RFPReleaseText = b.RFPReleaseText,
                                  FirmSupplierReceiptText = b.FirmSupplierReceiptText,
-                                 SourceSelectionText = b.SourceSelectionText
+                                 SourceSelectionText = b.SourceSelectionText,
+                                 SupplierCCoPD = (TripleBooleanState?)b.SupplierCCoPD
                              }).ToList();
                 }
                 foreach (BOEFormPBOEDTO dto in pboes)
@@ -224,7 +225,8 @@ namespace GenBOE.DataBridge.DTO
                                     ShouldCostEstimateText = b.ShouldCostEstimateText,
                                     RFPReleaseText = b.RFPReleaseText,
                                     FirmSupplierReceiptText = b.FirmSupplierReceiptText,
-                                    SourceSelectionText = b.SourceSelectionText
+                                    SourceSelectionText = b.SourceSelectionText,
+                                    SupplierCCoPD = (TripleBooleanState?)b.SupplierCCoPD
                                 }).ToList();
                 }
 
@@ -333,7 +335,8 @@ namespace GenBOE.DataBridge.DTO
                                     dtoToUpsert.ShouldCostEstimateText,
                                     dtoToUpsert.RFPReleaseText,
                                     dtoToUpsert.FirmSupplierReceiptText,
-                                    dtoToUpsert.SourceSelectionText).FirstOrDefault().Value;
+                                    dtoToUpsert.SourceSelectionText,
+                                    (int?)dtoToUpsert.SupplierCCoPD).FirstOrDefault().Value;
 
                         BOEFormPBOE pboeEntity;
                         if ((pboeEntity = gbm.BOEFormPBOEs.FirstOrDefault(b => b.PBOEFormID == dtoToUpsert.Id)) != null)

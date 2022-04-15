@@ -441,6 +441,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.ShouldCostEstimateDate = modelview.ShouldCostEstimateDate;
             dto.SourceSelection = modelview.SourceSelection;
             dto.SourceSelectionDate = modelview.SourceSelectionDate;
+            dto.SupplierCCoPD = modelview.SupplierCCoPD;
             dto.SupplierName = modelview.SupplierName;
             dto.SupplierNegotiations = modelview.SupplierNegotiations;
             dto.SupplierNegotiationsDate = modelview.SupplierNegotiationsDate;

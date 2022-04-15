@@ -218,21 +218,21 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormIBOEResourcesXREF' does
           <Property Name="ApproverPhone" Type="varchar" MaxLength="60" />
           <Property Name="Revision" Type="int" Nullable="false" />
           <Property Name="FormVersion" Type="int" Nullable="false" />
-          <Property Name="DegreeOfCompetition" Type="int" Nullable="false" />
+          <Property Name="DegreeOfCompetition" Type="int" />
           <Property Name="CCoPD" Type="int" Nullable="false" />
           <Property Name="CCoPDOtherText" Type="varchar" MaxLength="100" />
           <Property Name="RFP" Type="varchar" MaxLength="50" />
           <Property Name="ProposalNumber" Type="varchar" MaxLength="50" />
           <Property Name="SupplierName" Type="varchar" MaxLength="50" />
           <Property Name="ValidityDate" Type="varchar" MaxLength="10" />
-          <Property Name="SupplierProposalSupportingDataIncluded" Type="int" Nullable="false" />
-          <Property Name="PriceAnalysisIncluded" Type="int" Nullable="false" />
-          <Property Name="CommercialItemDocIncluded" Type="int" Nullable="false" />
-          <Property Name="CostAnalysisIncluded" Type="int" Nullable="false" />
+          <Property Name="SupplierProposalSupportingDataIncluded" Type="int" />
+          <Property Name="PriceAnalysisIncluded" Type="int" />
+          <Property Name="CommercialItemDocIncluded" Type="int" />
+          <Property Name="CostAnalysisIncluded" Type="int" />
           <Property Name="ShouldCostEstimate" Type="int" Nullable="false" />
           <Property Name="ShouldCostEstimateDate" Type="date" />
           <Property Name="ShouldCostEstimateText" Type="varchar" MaxLength="50" />
-          <Property Name="SowWritten" Type="int" Nullable="false" />
+          <Property Name="SowWritten" Type="int" />
           <Property Name="SowWrittenDate" Type="date" />
           <Property Name="SowWrittenText" Type="varchar" MaxLength="50" />
           <Property Name="RFPRelease" Type="int" Nullable="false" />
@@ -247,7 +247,7 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormIBOEResourcesXREF' does
           <Property Name="CID" Type="int" Nullable="false" />
           <Property Name="CIDDate" Type="date" />
           <Property Name="CIDText" Type="varchar" MaxLength="50" />
-          <Property Name="GovtReview" Type="int" Nullable="false" />
+          <Property Name="GovtReview" Type="int" />
           <Property Name="GovtReviewDate" Type="date" />
           <Property Name="GovtReviewText" Type="varchar" MaxLength="50" />
           <Property Name="PriceAnalysis" Type="int" Nullable="false" />
@@ -271,11 +271,12 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormIBOEResourcesXREF' does
           <Property Name="MOU" Type="int" Nullable="false" />
           <Property Name="MOUDate" Type="date" />
           <Property Name="MOUText" Type="varchar" MaxLength="50" />
-          <Property Name="Procurement" Type="int" Nullable="false" />
+          <Property Name="Procurement" Type="int" />
           <Property Name="ProcurementDate" Type="date" />
           <Property Name="ProcurementText" Type="varchar" MaxLength="50" />
           <Property Name="PlannedDate_WrittenApproval" Type="date" />
           <Property Name="PlannedDate_ApprovedSubmission" Type="date" />
+          <Property Name="SupplierCCoPD" Type="int" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOECLINsXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -676,7 +677,7 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="DateOfReport" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="HistoricalProgramName" Type="varchar" MaxLength="125" Nullable="false" />
           <Property Name="ContractNumber" Type="varchar" MaxLength="255" />
-          <Property Name="WbsElement" Type="varchar" MaxLength="2500" Nullable="false" />
+          <Property Name="WbsElement" Type="varchar" MaxLength="5000" Nullable="false" />
           <Property Name="PeriodOfPerformanceStartDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="PeriodOfPerformanceEndDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="TotalWbsHours" Type="decimal" Precision="10" Scale="2" Nullable="false" />
@@ -5011,7 +5012,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="WorkspaceID" Type="int" Mode="In" />
           <Parameter Name="FormName" Type="varchar" Mode="In" />
           <Parameter Name="Description" Type="varchar(max)" Mode="In" />
-          <Parameter Name="BasisAndRationale" Type="varchar(max)" Mode="In" />
           <Parameter Name="ProposalTitle" Type="varchar" Mode="In" />
           <Parameter Name="ProposalDate" Type="varchar" Mode="In" />
           <Parameter Name="Poc" Type="varchar" Mode="In" />
@@ -5019,21 +5019,14 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="Approver" Type="varchar" Mode="In" />
           <Parameter Name="ApproverPhone" Type="varchar" Mode="In" />
           <Parameter Name="FormVersion" Type="int" Mode="In" />
-          <Parameter Name="DegreeOfCompetition" Type="int" Mode="In" />
           <Parameter Name="CCoPD" Type="int" Mode="In" />
           <Parameter Name="CCoPDOtherText" Type="varchar" Mode="In" />
           <Parameter Name="RFP" Type="varchar" Mode="In" />
           <Parameter Name="ProposalNumber" Type="varchar" Mode="In" />
           <Parameter Name="SupplierName" Type="varchar" Mode="In" />
           <Parameter Name="ValidityDate" Type="varchar" Mode="In" />
-          <Parameter Name="SupplierProposalSupportingDataIncluded" Type="int" Mode="In" />
-          <Parameter Name="PriceAnalysisIncluded" Type="int" Mode="In" />
-          <Parameter Name="CommercialItemDocIncluded" Type="int" Mode="In" />
-          <Parameter Name="CostAnalysisIncluded" Type="int" Mode="In" />
           <Parameter Name="ShouldCostEstimate" Type="int" Mode="In" />
           <Parameter Name="ShouldCostEstimateDate" Type="date" Mode="In" />
-          <Parameter Name="SowWritten" Type="int" Mode="In" />
-          <Parameter Name="SowWrittenDate" Type="date" Mode="In" />
           <Parameter Name="RFPRelease" Type="int" Mode="In" />
           <Parameter Name="RFPReleaseDate" Type="date" Mode="In" />
           <Parameter Name="FirmSupplierReceipt" Type="int" Mode="In" />
@@ -5042,8 +5035,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="SourceSelectionDate" Type="date" Mode="In" />
           <Parameter Name="CID" Type="int" Mode="In" />
           <Parameter Name="CIDDate" Type="date" Mode="In" />
-          <Parameter Name="GovtReview" Type="int" Mode="In" />
-          <Parameter Name="GovtReviewDate" Type="date" Mode="In" />
           <Parameter Name="PriceAnalysis" Type="int" Mode="In" />
           <Parameter Name="PriceAnalysisDate" Type="date" Mode="In" />
           <Parameter Name="TechnicalEvaluation" Type="int" Mode="In" />
@@ -5058,15 +5049,12 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="SupplierNegotiationsDate" Type="date" Mode="In" />
           <Parameter Name="MOU" Type="int" Mode="In" />
           <Parameter Name="MOUDate" Type="date" Mode="In" />
-          <Parameter Name="Procurement" Type="int" Mode="In" />
-          <Parameter Name="ProcurementDate" Type="date" Mode="In" />
           <Parameter Name="PlannedDate_WrittenApproval" Type="date" Mode="In" />
           <Parameter Name="PlannedDate_ApprovedSubmission" Type="date" Mode="In" />
           <Parameter Name="ResourceIDs" Type="varchar(max)" Mode="In" />
           <Parameter Name="ClinContractTypes" Type="varchar(max)" Mode="In" />
           <Parameter Name="Revision" Type="int" Mode="In" />
           <Parameter Name="CIDText" Type="varchar" Mode="In" />
-          <Parameter Name="GovtReviewText" Type="varchar" Mode="In" />
           <Parameter Name="PriceAnalysisText" Type="varchar" Mode="In" />
           <Parameter Name="TechnicalEvaluationText" Type="varchar" Mode="In" />
           <Parameter Name="FactFindingText" Type="varchar" Mode="In" />
@@ -5074,12 +5062,11 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="GovtPricingText" Type="varchar" Mode="In" />
           <Parameter Name="SupplierNegotiationsText" Type="varchar" Mode="In" />
           <Parameter Name="MOUText" Type="varchar" Mode="In" />
-          <Parameter Name="ProcurementText" Type="varchar" Mode="In" />
           <Parameter Name="ShouldCostEstimateText" Type="varchar" Mode="In" />
-          <Parameter Name="SowWrittenText" Type="varchar" Mode="In" />
           <Parameter Name="RFPReleaseText" Type="varchar" Mode="In" />
           <Parameter Name="FirmSupplierReceiptText" Type="varchar" Mode="In" />
           <Parameter Name="SourceSelectionText" Type="varchar" Mode="In" />
+          <Parameter Name="SupplierCCoPD" Type="int" Mode="In" />
         </Function>
         <Function Name="upsertBOELaborSpread" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BOELaborSpreadID" Type="int" Mode="In" />
@@ -6879,83 +6866,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Property Name="BusinessArea" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Revision" Type="Int32" Nullable="false" />
           <Property Name="FormVersion" Type="Int32" Nullable="false" />
-        </EntityType>
-        <EntityType Name="BOEFormPBOE">
-          <Key>
-            <PropertyRef Name="PBOEFormID" />
-          </Key>
-          <Property Name="PBOEFormID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="WorkspaceID" Type="Int32" Nullable="false" />
-          <Property Name="FormName" Type="String" MaxLength="200" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="BasisAndRationale" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="ProposalTitle" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
-          <Property Name="ProposalDate" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Poc" Type="String" MaxLength="65" FixedLength="false" Unicode="false" />
-          <Property Name="PocPhone" Type="String" MaxLength="60" FixedLength="false" Unicode="false" />
-          <Property Name="Approver" Type="String" MaxLength="65" FixedLength="false" Unicode="false" />
-          <Property Name="ApproverPhone" Type="String" MaxLength="60" FixedLength="false" Unicode="false" />
-          <Property Name="Revision" Type="Int32" Nullable="false" />
-          <Property Name="FormVersion" Type="Int32" Nullable="false" />
-          <Property Name="DegreeOfCompetition" Type="Int32" Nullable="false" />
-          <Property Name="CCoPD" Type="Int32" Nullable="false" />
-          <Property Name="CCoPDOtherText" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="RFP" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ProposalNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="SupplierName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ValidityDate" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="SupplierProposalSupportingDataIncluded" Type="Int32" Nullable="false" />
-          <Property Name="PriceAnalysisIncluded" Type="Int32" Nullable="false" />
-          <Property Name="CommercialItemDocIncluded" Type="Int32" Nullable="false" />
-          <Property Name="CostAnalysisIncluded" Type="Int32" Nullable="false" />
-          <Property Name="ShouldCostEstimate" Type="Int32" Nullable="false" />
-          <Property Name="ShouldCostEstimateDate" Type="DateTime" Precision="0" />
-          <Property Name="SowWritten" Type="Int32" Nullable="false" />
-          <Property Name="SowWrittenDate" Type="DateTime" Precision="0" />
-          <Property Name="RFPRelease" Type="Int32" Nullable="false" />
-          <Property Name="RFPReleaseDate" Type="DateTime" Precision="0" />
-          <Property Name="FirmSupplierReceipt" Type="Int32" Nullable="false" />
-          <Property Name="FirmSupplierReceiptDate" Type="DateTime" Precision="0" />
-          <Property Name="SourceSelection" Type="Int32" Nullable="false" />
-          <Property Name="SourceSelectionDate" Type="DateTime" Precision="0" />
-          <Property Name="CID" Type="Int32" Nullable="false" />
-          <Property Name="CIDDate" Type="DateTime" Precision="0" />
-          <Property Name="GovtReview" Type="Int32" Nullable="false" />
-          <Property Name="GovtReviewDate" Type="DateTime" Precision="0" />
-          <Property Name="PriceAnalysis" Type="Int32" Nullable="false" />
-          <Property Name="PriceAnalysisDate" Type="DateTime" Precision="0" />
-          <Property Name="TechnicalEvaluation" Type="Int32" Nullable="false" />
-          <Property Name="TechnicalEvaluationDate" Type="DateTime" Precision="0" />
-          <Property Name="FactFinding" Type="Int32" Nullable="false" />
-          <Property Name="FactFindingDate" Type="DateTime" Precision="0" />
-          <Property Name="CostAnalysis" Type="Int32" Nullable="false" />
-          <Property Name="CostAnalysisDate" Type="DateTime" Precision="0" />
-          <Property Name="GovtPricing" Type="Int32" Nullable="false" />
-          <Property Name="GovtPricingDate" Type="DateTime" Precision="0" />
-          <Property Name="SupplierNegotiations" Type="Int32" Nullable="false" />
-          <Property Name="SupplierNegotiationsDate" Type="DateTime" Precision="0" />
-          <Property Name="MOU" Type="Int32" Nullable="false" />
-          <Property Name="MOUDate" Type="DateTime" Precision="0" />
-          <Property Name="Procurement" Type="Int32" Nullable="false" />
-          <Property Name="ProcurementDate" Type="DateTime" Precision="0" />
-          <Property Name="PlannedDate_WrittenApproval" Type="DateTime" Precision="0" />
-          <Property Name="PlannedDate_ApprovedSubmission" Type="DateTime" Precision="0" />
-          <Property Name="CIDText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="GovtReviewText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="PriceAnalysisText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="TechnicalEvaluationText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="FactFindingText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="CostAnalysisText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="GovtPricingText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="SupplierNegotiationsText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="MOUText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ProcurementText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ShouldCostEstimateText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="SowWrittenText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="RFPReleaseText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="FirmSupplierReceiptText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="SourceSelectionText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="BOELaborSpread">
           <Key>
@@ -9973,7 +9883,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <EntitySet Name="BOECustomFieldValueXREFs" EntityType="Self.BOECustomFieldValueXREF" />
           <EntitySet Name="BoeDatabaseVersions" EntityType="Self.BoeDatabaseVersion" />
           <EntitySet Name="BOEFormIBOEs" EntityType="Self.BOEFormIBOE" />
-          <EntitySet Name="BOEFormPBOEs" EntityType="Self.BOEFormPBOE" />
           <EntitySet Name="BOELaborSpreads" EntityType="Self.BOELaborSpread" />
           <EntitySet Name="BOELaborTypeCustomFieldValueXREFs" EntityType="Self.BOELaborTypeCustomFieldValueXREF" />
           <EntitySet Name="BOEPotentialRoles" EntityType="Self.BOEPotentialRole" />
@@ -11241,7 +11150,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="WorkspaceID" Mode="In" Type="Int32" />
             <Parameter Name="FormName" Mode="In" Type="String" />
             <Parameter Name="Description" Mode="In" Type="String" />
-            <Parameter Name="BasisAndRationale" Mode="In" Type="String" />
             <Parameter Name="ProposalTitle" Mode="In" Type="String" />
             <Parameter Name="ProposalDate" Mode="In" Type="String" />
             <Parameter Name="Poc" Mode="In" Type="String" />
@@ -11249,21 +11157,14 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="Approver" Mode="In" Type="String" />
             <Parameter Name="ApproverPhone" Mode="In" Type="String" />
             <Parameter Name="FormVersion" Mode="In" Type="Int32" />
-            <Parameter Name="DegreeOfCompetition" Mode="In" Type="Int32" />
             <Parameter Name="CCoPD" Mode="In" Type="Int32" />
             <Parameter Name="CCoPDOtherText" Mode="In" Type="String" />
             <Parameter Name="RFP" Mode="In" Type="String" />
             <Parameter Name="ProposalNumber" Mode="In" Type="String" />
             <Parameter Name="SupplierName" Mode="In" Type="String" />
             <Parameter Name="ValidityDate" Mode="In" Type="String" />
-            <Parameter Name="SupplierProposalSupportingDataIncluded" Mode="In" Type="Int32" />
-            <Parameter Name="PriceAnalysisIncluded" Mode="In" Type="Int32" />
-            <Parameter Name="CommercialItemDocIncluded" Mode="In" Type="Int32" />
-            <Parameter Name="CostAnalysisIncluded" Mode="In" Type="Int32" />
             <Parameter Name="ShouldCostEstimate" Mode="In" Type="Int32" />
             <Parameter Name="ShouldCostEstimateDate" Mode="In" Type="DateTime" />
-            <Parameter Name="SowWritten" Mode="In" Type="Int32" />
-            <Parameter Name="SowWrittenDate" Mode="In" Type="DateTime" />
             <Parameter Name="RFPRelease" Mode="In" Type="Int32" />
             <Parameter Name="RFPReleaseDate" Mode="In" Type="DateTime" />
             <Parameter Name="FirmSupplierReceipt" Mode="In" Type="Int32" />
@@ -11272,8 +11173,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="SourceSelectionDate" Mode="In" Type="DateTime" />
             <Parameter Name="CID" Mode="In" Type="Int32" />
             <Parameter Name="CIDDate" Mode="In" Type="DateTime" />
-            <Parameter Name="GovtReview" Mode="In" Type="Int32" />
-            <Parameter Name="GovtReviewDate" Mode="In" Type="DateTime" />
             <Parameter Name="PriceAnalysis" Mode="In" Type="Int32" />
             <Parameter Name="PriceAnalysisDate" Mode="In" Type="DateTime" />
             <Parameter Name="TechnicalEvaluation" Mode="In" Type="Int32" />
@@ -11288,15 +11187,12 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="SupplierNegotiationsDate" Mode="In" Type="DateTime" />
             <Parameter Name="MOU" Mode="In" Type="Int32" />
             <Parameter Name="MOUDate" Mode="In" Type="DateTime" />
-            <Parameter Name="Procurement" Mode="In" Type="Int32" />
-            <Parameter Name="ProcurementDate" Mode="In" Type="DateTime" />
             <Parameter Name="PlannedDate_WrittenApproval" Mode="In" Type="DateTime" />
             <Parameter Name="PlannedDate_ApprovedSubmission" Mode="In" Type="DateTime" />
             <Parameter Name="ResourceIDs" Mode="In" Type="String" />
             <Parameter Name="ClinContractTypes" Mode="In" Type="String" />
             <Parameter Name="Revision" Mode="In" Type="Int32" />
             <Parameter Name="CIDText" Mode="In" Type="String" />
-            <Parameter Name="GovtReviewText" Mode="In" Type="String" />
             <Parameter Name="PriceAnalysisText" Mode="In" Type="String" />
             <Parameter Name="TechnicalEvaluationText" Mode="In" Type="String" />
             <Parameter Name="FactFindingText" Mode="In" Type="String" />
@@ -11304,12 +11200,11 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="GovtPricingText" Mode="In" Type="String" />
             <Parameter Name="SupplierNegotiationsText" Mode="In" Type="String" />
             <Parameter Name="MOUText" Mode="In" Type="String" />
-            <Parameter Name="ProcurementText" Mode="In" Type="String" />
             <Parameter Name="ShouldCostEstimateText" Mode="In" Type="String" />
-            <Parameter Name="SowWrittenText" Mode="In" Type="String" />
             <Parameter Name="RFPReleaseText" Mode="In" Type="String" />
             <Parameter Name="FirmSupplierReceiptText" Mode="In" Type="String" />
             <Parameter Name="SourceSelectionText" Mode="In" Type="String" />
+            <Parameter Name="SupplierCCoPD" Mode="In" Type="Int32" />
           </FunctionImport>
           <FunctionImport Name="upsertBOELaborSpread" ReturnType="Collection(Int32)">
             <Parameter Name="BOELaborSpreadID" Mode="In" Type="Int32" />
@@ -12404,6 +12299,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
             <Parameter Name="IsOpenEnded" Mode="In" Type="Boolean" />
           </FunctionImport>
+          <EntitySet Name="BOEFormPBOEs" EntityType="GenBOE.Models.BOEFormPBOE" />
         </EntityContainer>
         <ComplexType Name="getBOEForFindReplace_Result">
           <Property Type="Int32" Name="BOEID" Nullable="true" />
@@ -13637,7 +13533,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Property Name="DateOfReport" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="HistoricalProgramName" Type="String" Nullable="false" MaxLength="125" FixedLength="false" Unicode="false" />
           <Property Name="ContractNumber" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="WbsElement" Type="String" Nullable="false" MaxLength="2500" FixedLength="false" Unicode="false" />
+          <Property Name="WbsElement" Type="String" Nullable="false" MaxLength="5000" FixedLength="false" Unicode="false" />
           <Property Name="PeriodOfPerformanceStartDate" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="PeriodOfPerformanceEndDate" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="TotalWbsHours" Type="Decimal" Nullable="false" Precision="10" Scale="2" />
@@ -13877,6 +13773,84 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="BOEFormPBOE">
+          <Key>
+            <PropertyRef Name="PBOEFormID" />
+          </Key>
+          <Property Name="PBOEFormID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="WorkspaceID" Type="Int32" Nullable="false" />
+          <Property Name="FormName" Type="String" Nullable="false" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="BasisAndRationale" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ProposalTitle" Type="String" MaxLength="200" FixedLength="false" Unicode="false" />
+          <Property Name="ProposalDate" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Poc" Type="String" MaxLength="65" FixedLength="false" Unicode="false" />
+          <Property Name="PocPhone" Type="String" MaxLength="60" FixedLength="false" Unicode="false" />
+          <Property Name="Approver" Type="String" MaxLength="65" FixedLength="false" Unicode="false" />
+          <Property Name="ApproverPhone" Type="String" MaxLength="60" FixedLength="false" Unicode="false" />
+          <Property Name="Revision" Type="Int32" Nullable="false" />
+          <Property Name="FormVersion" Type="Int32" Nullable="false" />
+          <Property Name="DegreeOfCompetition" Type="Int32" />
+          <Property Name="CCoPD" Type="Int32" Nullable="false" />
+          <Property Name="CCoPDOtherText" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="RFP" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ProposalNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SupplierName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ValidityDate" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="SupplierProposalSupportingDataIncluded" Type="Int32" />
+          <Property Name="PriceAnalysisIncluded" Type="Int32" />
+          <Property Name="CommercialItemDocIncluded" Type="Int32" />
+          <Property Name="CostAnalysisIncluded" Type="Int32" />
+          <Property Name="ShouldCostEstimate" Type="Int32" Nullable="false" />
+          <Property Name="ShouldCostEstimateDate" Type="DateTime" Precision="0" />
+          <Property Name="ShouldCostEstimateText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SowWritten" Type="Int32" />
+          <Property Name="SowWrittenDate" Type="DateTime" Precision="0" />
+          <Property Name="SowWrittenText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="RFPRelease" Type="Int32" Nullable="false" />
+          <Property Name="RFPReleaseDate" Type="DateTime" Precision="0" />
+          <Property Name="RFPReleaseText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="FirmSupplierReceipt" Type="Int32" Nullable="false" />
+          <Property Name="FirmSupplierReceiptDate" Type="DateTime" Precision="0" />
+          <Property Name="FirmSupplierReceiptText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SourceSelection" Type="Int32" Nullable="false" />
+          <Property Name="SourceSelectionDate" Type="DateTime" Precision="0" />
+          <Property Name="SourceSelectionText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CID" Type="Int32" Nullable="false" />
+          <Property Name="CIDDate" Type="DateTime" Precision="0" />
+          <Property Name="CIDText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="GovtReview" Type="Int32" />
+          <Property Name="GovtReviewDate" Type="DateTime" Precision="0" />
+          <Property Name="GovtReviewText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PriceAnalysis" Type="Int32" Nullable="false" />
+          <Property Name="PriceAnalysisDate" Type="DateTime" Precision="0" />
+          <Property Name="PriceAnalysisText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="TechnicalEvaluation" Type="Int32" Nullable="false" />
+          <Property Name="TechnicalEvaluationDate" Type="DateTime" Precision="0" />
+          <Property Name="TechnicalEvaluationText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="FactFinding" Type="Int32" Nullable="false" />
+          <Property Name="FactFindingDate" Type="DateTime" Precision="0" />
+          <Property Name="FactFindingText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CostAnalysis" Type="Int32" Nullable="false" />
+          <Property Name="CostAnalysisDate" Type="DateTime" Precision="0" />
+          <Property Name="CostAnalysisText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="GovtPricing" Type="Int32" Nullable="false" />
+          <Property Name="GovtPricingDate" Type="DateTime" Precision="0" />
+          <Property Name="GovtPricingText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SupplierNegotiations" Type="Int32" Nullable="false" />
+          <Property Name="SupplierNegotiationsDate" Type="DateTime" Precision="0" />
+          <Property Name="SupplierNegotiationsText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="MOU" Type="Int32" Nullable="false" />
+          <Property Name="MOUDate" Type="DateTime" Precision="0" />
+          <Property Name="MOUText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Procurement" Type="Int32" />
+          <Property Name="ProcurementDate" Type="DateTime" Precision="0" />
+          <Property Name="ProcurementText" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PlannedDate_WrittenApproval" Type="DateTime" Precision="0" />
+          <Property Name="PlannedDate_ApprovedSubmission" Type="DateTime" Precision="0" />
+          <Property Name="SupplierCCoPD" Type="Int32" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -13989,84 +13963,6 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
                 <ScalarProperty Name="BusinessArea" ColumnName="BusinessArea" />
                 <ScalarProperty Name="Revision" ColumnName="Revision" />
                 <ScalarProperty Name="FormVersion" ColumnName="FormVersion" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="BOEFormPBOEs">
-            <EntityTypeMapping TypeName="GenBOE.Models.BOEFormPBOE">
-              <MappingFragment StoreEntitySet="BOEFormPBOE">
-                <ScalarProperty Name="PBOEFormID" ColumnName="PBOEFormID" />
-                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
-                <ScalarProperty Name="WorkspaceID" ColumnName="WorkspaceID" />
-                <ScalarProperty Name="FormName" ColumnName="FormName" />
-                <ScalarProperty Name="Description" ColumnName="Description" />
-                <ScalarProperty Name="BasisAndRationale" ColumnName="BasisAndRationale" />
-                <ScalarProperty Name="ProposalTitle" ColumnName="ProposalTitle" />
-                <ScalarProperty Name="ProposalDate" ColumnName="ProposalDate" />
-                <ScalarProperty Name="Poc" ColumnName="Poc" />
-                <ScalarProperty Name="PocPhone" ColumnName="PocPhone" />
-                <ScalarProperty Name="Approver" ColumnName="Approver" />
-                <ScalarProperty Name="ApproverPhone" ColumnName="ApproverPhone" />
-                <ScalarProperty Name="Revision" ColumnName="Revision" />
-                <ScalarProperty Name="FormVersion" ColumnName="FormVersion" />
-                <ScalarProperty Name="DegreeOfCompetition" ColumnName="DegreeOfCompetition" />
-                <ScalarProperty Name="CCoPD" ColumnName="CCoPD" />
-                <ScalarProperty Name="CCoPDOtherText" ColumnName="CCoPDOtherText" />
-                <ScalarProperty Name="RFP" ColumnName="RFP" />
-                <ScalarProperty Name="ProposalNumber" ColumnName="ProposalNumber" />
-                <ScalarProperty Name="SupplierName" ColumnName="SupplierName" />
-                <ScalarProperty Name="ValidityDate" ColumnName="ValidityDate" />
-                <ScalarProperty Name="SupplierProposalSupportingDataIncluded" ColumnName="SupplierProposalSupportingDataIncluded" />
-                <ScalarProperty Name="PriceAnalysisIncluded" ColumnName="PriceAnalysisIncluded" />
-                <ScalarProperty Name="CommercialItemDocIncluded" ColumnName="CommercialItemDocIncluded" />
-                <ScalarProperty Name="CostAnalysisIncluded" ColumnName="CostAnalysisIncluded" />
-                <ScalarProperty Name="ShouldCostEstimate" ColumnName="ShouldCostEstimate" />
-                <ScalarProperty Name="ShouldCostEstimateDate" ColumnName="ShouldCostEstimateDate" />
-                <ScalarProperty Name="SowWritten" ColumnName="SowWritten" />
-                <ScalarProperty Name="SowWrittenDate" ColumnName="SowWrittenDate" />
-                <ScalarProperty Name="RFPRelease" ColumnName="RFPRelease" />
-                <ScalarProperty Name="RFPReleaseDate" ColumnName="RFPReleaseDate" />
-                <ScalarProperty Name="FirmSupplierReceipt" ColumnName="FirmSupplierReceipt" />
-                <ScalarProperty Name="FirmSupplierReceiptDate" ColumnName="FirmSupplierReceiptDate" />
-                <ScalarProperty Name="SourceSelection" ColumnName="SourceSelection" />
-                <ScalarProperty Name="SourceSelectionDate" ColumnName="SourceSelectionDate" />
-                <ScalarProperty Name="CID" ColumnName="CID" />
-                <ScalarProperty Name="CIDDate" ColumnName="CIDDate" />
-                <ScalarProperty Name="GovtReview" ColumnName="GovtReview" />
-                <ScalarProperty Name="GovtReviewDate" ColumnName="GovtReviewDate" />
-                <ScalarProperty Name="PriceAnalysis" ColumnName="PriceAnalysis" />
-                <ScalarProperty Name="PriceAnalysisDate" ColumnName="PriceAnalysisDate" />
-                <ScalarProperty Name="TechnicalEvaluation" ColumnName="TechnicalEvaluation" />
-                <ScalarProperty Name="TechnicalEvaluationDate" ColumnName="TechnicalEvaluationDate" />
-                <ScalarProperty Name="FactFinding" ColumnName="FactFinding" />
-                <ScalarProperty Name="FactFindingDate" ColumnName="FactFindingDate" />
-                <ScalarProperty Name="CostAnalysis" ColumnName="CostAnalysis" />
-                <ScalarProperty Name="CostAnalysisDate" ColumnName="CostAnalysisDate" />
-                <ScalarProperty Name="GovtPricing" ColumnName="GovtPricing" />
-                <ScalarProperty Name="GovtPricingDate" ColumnName="GovtPricingDate" />
-                <ScalarProperty Name="SupplierNegotiations" ColumnName="SupplierNegotiations" />
-                <ScalarProperty Name="SupplierNegotiationsDate" ColumnName="SupplierNegotiationsDate" />
-                <ScalarProperty Name="MOU" ColumnName="MOU" />
-                <ScalarProperty Name="MOUDate" ColumnName="MOUDate" />
-                <ScalarProperty Name="Procurement" ColumnName="Procurement" />
-                <ScalarProperty Name="ProcurementDate" ColumnName="ProcurementDate" />
-                <ScalarProperty Name="PlannedDate_WrittenApproval" ColumnName="PlannedDate_WrittenApproval" />
-                <ScalarProperty Name="PlannedDate_ApprovedSubmission" ColumnName="PlannedDate_ApprovedSubmission" />
-                <ScalarProperty Name="CIDText" ColumnName="CIDText" />
-                <ScalarProperty Name="GovtReviewText" ColumnName="GovtReviewText" />
-                <ScalarProperty Name="PriceAnalysisText" ColumnName="PriceAnalysisText" />
-                <ScalarProperty Name="TechnicalEvaluationText" ColumnName="TechnicalEvaluationText" />
-                <ScalarProperty Name="FactFindingText" ColumnName="FactFindingText" />
-                <ScalarProperty Name="CostAnalysisText" ColumnName="CostAnalysisText" />
-                <ScalarProperty Name="GovtPricingText" ColumnName="GovtPricingText" />
-                <ScalarProperty Name="SupplierNegotiationsText" ColumnName="SupplierNegotiationsText" />
-                <ScalarProperty Name="MOUText" ColumnName="MOUText" />
-                <ScalarProperty Name="ProcurementText" ColumnName="ProcurementText" />
-                <ScalarProperty Name="ShouldCostEstimateText" ColumnName="ShouldCostEstimateText" />
-                <ScalarProperty Name="SowWrittenText" ColumnName="SowWrittenText" />
-                <ScalarProperty Name="RFPReleaseText" ColumnName="RFPReleaseText" />
-                <ScalarProperty Name="FirmSupplierReceiptText" ColumnName="FirmSupplierReceiptText" />
-                <ScalarProperty Name="SourceSelectionText" ColumnName="SourceSelectionText" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -16092,6 +15988,85 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="deleteMoqTypeTableCustomFieldValue" FunctionName="GenBOE.Models.Store.deleteMoqTypeTableCustomFieldValue" />
           <FunctionImportMapping FunctionImportName="upsertMoqTypeTableCustomFieldValue" FunctionName="GenBOE.Models.Store.upsertMoqTypeTableCustomFieldValue" />
+          <EntitySetMapping Name="BOEFormPBOEs">
+            <EntityTypeMapping TypeName="GenBOE.Models.BOEFormPBOE">
+              <MappingFragment StoreEntitySet="BOEFormPBOE">
+                <ScalarProperty Name="SupplierCCoPD" ColumnName="SupplierCCoPD" />
+                <ScalarProperty Name="PlannedDate_ApprovedSubmission" ColumnName="PlannedDate_ApprovedSubmission" />
+                <ScalarProperty Name="PlannedDate_WrittenApproval" ColumnName="PlannedDate_WrittenApproval" />
+                <ScalarProperty Name="ProcurementText" ColumnName="ProcurementText" />
+                <ScalarProperty Name="ProcurementDate" ColumnName="ProcurementDate" />
+                <ScalarProperty Name="Procurement" ColumnName="Procurement" />
+                <ScalarProperty Name="MOUText" ColumnName="MOUText" />
+                <ScalarProperty Name="MOUDate" ColumnName="MOUDate" />
+                <ScalarProperty Name="MOU" ColumnName="MOU" />
+                <ScalarProperty Name="SupplierNegotiationsText" ColumnName="SupplierNegotiationsText" />
+                <ScalarProperty Name="SupplierNegotiationsDate" ColumnName="SupplierNegotiationsDate" />
+                <ScalarProperty Name="SupplierNegotiations" ColumnName="SupplierNegotiations" />
+                <ScalarProperty Name="GovtPricingText" ColumnName="GovtPricingText" />
+                <ScalarProperty Name="GovtPricingDate" ColumnName="GovtPricingDate" />
+                <ScalarProperty Name="GovtPricing" ColumnName="GovtPricing" />
+                <ScalarProperty Name="CostAnalysisText" ColumnName="CostAnalysisText" />
+                <ScalarProperty Name="CostAnalysisDate" ColumnName="CostAnalysisDate" />
+                <ScalarProperty Name="CostAnalysis" ColumnName="CostAnalysis" />
+                <ScalarProperty Name="FactFindingText" ColumnName="FactFindingText" />
+                <ScalarProperty Name="FactFindingDate" ColumnName="FactFindingDate" />
+                <ScalarProperty Name="FactFinding" ColumnName="FactFinding" />
+                <ScalarProperty Name="TechnicalEvaluationText" ColumnName="TechnicalEvaluationText" />
+                <ScalarProperty Name="TechnicalEvaluationDate" ColumnName="TechnicalEvaluationDate" />
+                <ScalarProperty Name="TechnicalEvaluation" ColumnName="TechnicalEvaluation" />
+                <ScalarProperty Name="PriceAnalysisText" ColumnName="PriceAnalysisText" />
+                <ScalarProperty Name="PriceAnalysisDate" ColumnName="PriceAnalysisDate" />
+                <ScalarProperty Name="PriceAnalysis" ColumnName="PriceAnalysis" />
+                <ScalarProperty Name="GovtReviewText" ColumnName="GovtReviewText" />
+                <ScalarProperty Name="GovtReviewDate" ColumnName="GovtReviewDate" />
+                <ScalarProperty Name="GovtReview" ColumnName="GovtReview" />
+                <ScalarProperty Name="CIDText" ColumnName="CIDText" />
+                <ScalarProperty Name="CIDDate" ColumnName="CIDDate" />
+                <ScalarProperty Name="CID" ColumnName="CID" />
+                <ScalarProperty Name="SourceSelectionText" ColumnName="SourceSelectionText" />
+                <ScalarProperty Name="SourceSelectionDate" ColumnName="SourceSelectionDate" />
+                <ScalarProperty Name="SourceSelection" ColumnName="SourceSelection" />
+                <ScalarProperty Name="FirmSupplierReceiptText" ColumnName="FirmSupplierReceiptText" />
+                <ScalarProperty Name="FirmSupplierReceiptDate" ColumnName="FirmSupplierReceiptDate" />
+                <ScalarProperty Name="FirmSupplierReceipt" ColumnName="FirmSupplierReceipt" />
+                <ScalarProperty Name="RFPReleaseText" ColumnName="RFPReleaseText" />
+                <ScalarProperty Name="RFPReleaseDate" ColumnName="RFPReleaseDate" />
+                <ScalarProperty Name="RFPRelease" ColumnName="RFPRelease" />
+                <ScalarProperty Name="SowWrittenText" ColumnName="SowWrittenText" />
+                <ScalarProperty Name="SowWrittenDate" ColumnName="SowWrittenDate" />
+                <ScalarProperty Name="SowWritten" ColumnName="SowWritten" />
+                <ScalarProperty Name="ShouldCostEstimateText" ColumnName="ShouldCostEstimateText" />
+                <ScalarProperty Name="ShouldCostEstimateDate" ColumnName="ShouldCostEstimateDate" />
+                <ScalarProperty Name="ShouldCostEstimate" ColumnName="ShouldCostEstimate" />
+                <ScalarProperty Name="CostAnalysisIncluded" ColumnName="CostAnalysisIncluded" />
+                <ScalarProperty Name="CommercialItemDocIncluded" ColumnName="CommercialItemDocIncluded" />
+                <ScalarProperty Name="PriceAnalysisIncluded" ColumnName="PriceAnalysisIncluded" />
+                <ScalarProperty Name="SupplierProposalSupportingDataIncluded" ColumnName="SupplierProposalSupportingDataIncluded" />
+                <ScalarProperty Name="ValidityDate" ColumnName="ValidityDate" />
+                <ScalarProperty Name="SupplierName" ColumnName="SupplierName" />
+                <ScalarProperty Name="ProposalNumber" ColumnName="ProposalNumber" />
+                <ScalarProperty Name="RFP" ColumnName="RFP" />
+                <ScalarProperty Name="CCoPDOtherText" ColumnName="CCoPDOtherText" />
+                <ScalarProperty Name="CCoPD" ColumnName="CCoPD" />
+                <ScalarProperty Name="DegreeOfCompetition" ColumnName="DegreeOfCompetition" />
+                <ScalarProperty Name="FormVersion" ColumnName="FormVersion" />
+                <ScalarProperty Name="Revision" ColumnName="Revision" />
+                <ScalarProperty Name="ApproverPhone" ColumnName="ApproverPhone" />
+                <ScalarProperty Name="Approver" ColumnName="Approver" />
+                <ScalarProperty Name="PocPhone" ColumnName="PocPhone" />
+                <ScalarProperty Name="Poc" ColumnName="Poc" />
+                <ScalarProperty Name="ProposalDate" ColumnName="ProposalDate" />
+                <ScalarProperty Name="ProposalTitle" ColumnName="ProposalTitle" />
+                <ScalarProperty Name="BasisAndRationale" ColumnName="BasisAndRationale" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="FormName" ColumnName="FormName" />
+                <ScalarProperty Name="WorkspaceID" ColumnName="WorkspaceID" />
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="PBOEFormID" ColumnName="PBOEFormID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

@@ -8668,3 +8668,7 @@ div.WarningBanner {
     overflow: auto;
     margin-bottom: 10px;
 }
+
+#proposalReceived {
+    padding-left: 20px;
+}

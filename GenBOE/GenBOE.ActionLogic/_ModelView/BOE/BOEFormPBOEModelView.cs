@@ -38,6 +38,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             }
 
             this.CCoPDApplies = dto.CCoPDApplies;
+            this.SupplierCCoPD = dto.SupplierCCoPD;
             this.CommercialItemExceptionApplies = dto.CommercialItemExceptionApplies;
             this.CompetitionExceptionApplies = dto.CompetitionExceptionApplies;
             this.LessThanThresholdExceptionApplies = dto.LessThanThresholdExceptionApplies;
@@ -92,6 +93,11 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Gets or sets a value indicating whether CCoPD Applies.
         /// </summary>
         public bool CCoPDApplies { get; set; }
+
+        /// <summary>
+        /// Supplier CCoPD Applies
+        /// </summary>
+        public TripleBooleanState? SupplierCCoPD { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether commercial item exception applies.

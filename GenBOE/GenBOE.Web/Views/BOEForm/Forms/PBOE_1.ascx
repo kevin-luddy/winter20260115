@@ -136,6 +136,24 @@
 
         ManageBOEFormsWidget.refreshModule();
     });
+
+    $(document).ready(function () {
+        console.log('Open for business!');
+        $('#CCoPDApplies').on('click', function () {
+            toggleCCoPDApplies();
+        });        
+
+        function toggleCCoPDApplies() {
+            if ($('#CCoPDApplies').is(':checked')) {
+                $('#proposalReceived').show();
+            } else {
+                $('#proposalReceived').hide();
+            }
+        }
+
+        // ensure we have the option properly displayed
+        toggleCCoPDApplies();
+    });
 </script>
 <div id="manage-pboe">
     <%: Html.Hidden("BOEFormId", Model.PBOEModel.BOEFormId.ToString()) %>
@@ -233,9 +251,17 @@
         </div>
     </div>
     <div class="form-row"> 
-        <div class="form-label"><span helptext="Select to indicate whether certified cost or pricing data is applicable to the procurement, or if not, which exception applies.">Certified Cost or Pricing Data (CCoPD) Applicability **</span></div>
+        <div class="form-label"><span helptext="Select to indicate whether certified cost or pricing data is applicable to the procurement, or if not, which exception applies.">Expected Certified Cost or Pricing Data (CCoPD) Applicability **</span></div>
         <div class="form-element">
             <input <%: Model.PBOEModel.CCoPDApplies ? "checked=\"checked\"" : string.Empty %> id="CCoPDApplies" name="CCoPDApplies" type="checkbox" value="true"><label>CCoPD Applies</label><br />
+                <div id="proposalReceived">
+                    a)	If Supplier CCoPD applies, proposal received if >$15M or > CCoPD Threshold AND >10% of the LM proposal<br />
+                    <div style="padding-left:1px;">
+                        <%: Html.RadioButton("SupplierCCoPD", TripleBooleanState.Yes, Model.PBOEModel.SupplierCCoPD == TripleBooleanState.Yes, new { id = "SupplierCCoPD" }) %><label>Yes</label>
+                        <%: Html.RadioButton("SupplierCCoPD", TripleBooleanState.No, Model.PBOEModel.SupplierCCoPD == TripleBooleanState.No, new { id = "SupplierCCoPD" }) %><label>No</label>
+                        <%: Html.RadioButton("SupplierCCoPD", TripleBooleanState.NA, Model.PBOEModel.SupplierCCoPD == TripleBooleanState.NA, new { id = "SupplierCCoPD" }) %><label>N/A</label>
+                    </div>                
+                </div>
             <input <%: Model.PBOEModel.CommercialItemExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="CommercialItemExceptionApplies" name="CommercialItemExceptionApplies" type="checkbox" value="true"><label>Commercial Item Exception Applies</label><br />
             <input <%: Model.PBOEModel.CompetitionExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="CompetitionExceptionApplies" name="CompetitionExceptionApplies" type="checkbox" value="true"><label>Competition Exception Applies</label><br />
             <input <%: Model.PBOEModel.LessThanThresholdExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="LessThanThresholdExceptionApplies" name="LessThanThresholdExceptionApplies" type="checkbox" value="true"><label>< CCoPD Threshold Exception applies</label><br />
