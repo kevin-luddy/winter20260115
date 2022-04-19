@@ -81,23 +81,23 @@
                         }
 
                         if (tinyMCE.EditorManager.editors.Description_Commerciality) {
-                            data.SourceSelectionDescription = tinyMCE.EditorManager.editors.Description_Commerciality.getContent();
+                            data.CommercialityDescription = tinyMCE.EditorManager.editors.Description_Commerciality.getContent();
                         }
 
                         if (tinyMCE.EditorManager.editors.Description_TechnicalEvaluation) {
-                            data.SourceSelectionDescription = tinyMCE.EditorManager.editors.Description_TechnicalEvaluation.getContent();
+                            data.TechnicalEvaluationDescription = tinyMCE.EditorManager.editors.Description_TechnicalEvaluation.getContent();
                         }
 
                         if (tinyMCE.EditorManager.editors.Description_PriceAnalysis) {
-                            data.SourceSelectionDescription = tinyMCE.EditorManager.editors.Description_PriceAnalysis.getContent();
+                            data.PriceAnalysisDescription = tinyMCE.EditorManager.editors.Description_PriceAnalysis.getContent();
                         }
 
                         if (tinyMCE.EditorManager.editors.Description_CostAnalysis) {
-                            data.SourceSelectionDescription = tinyMCE.EditorManager.editors.Description_CostAnalysis.getContent();
+                            data.CostAnalysisDescription = tinyMCE.EditorManager.editors.Description_CostAnalysis.getContent();
                         }
 
                         if (tinyMCE.EditorManager.editors.Description_RationaleValueSummary) {
-                            data.SourceSelectionDescription = tinyMCE.EditorManager.editors.Description_RationaleValueSummary.getContent();
+                            data.RationaleValueDescription = tinyMCE.EditorManager.editors.Description_RationaleValueSummary.getContent();
                         }
                     }
 
