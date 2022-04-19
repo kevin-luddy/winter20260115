@@ -227,3 +227,11 @@ BEGIN
 	ALTER COLUMN PreviouslySubmittedROM			INT				NULL;
 END
 GO
+
+/*
+	4/18/2022 [Nghiem, Hunter] - IES-1042 Change name of Subcontract Admin to GSCO Admin
+*/
+BEGIN
+  UPDATE RoleLU SET RoleName = 'GSCO Administrator' WHERE RoleID = 10
+END
+GO

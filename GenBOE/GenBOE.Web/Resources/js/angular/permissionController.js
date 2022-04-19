@@ -101,7 +101,7 @@
         $scope.data.WorkspaceReviewer = hasRole(permission, "Workspace Reviewer");
         $scope.data.Approver = hasRole(permission, "Approver");
         $scope.data.SubcontractorAuthor = hasRole(permission, "Subcontractor Author");
-        $scope.data.SubcontractAdmin = hasRole(permission, "Subcontract Administrator");
+        $scope.data.SubcontractAdmin = hasRole(permission, "GSCO Administrator");
         
         $scope.dialog.errors = [];
         $scope.dialog.open = true;
