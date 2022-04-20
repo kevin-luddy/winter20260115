@@ -71,11 +71,24 @@ namespace GenBOE.ActionLogic.IO.Export
         private const string PROPOSAL_NUMBER = "ProposalNumber";
         private const string VALIDITY_DATE = "ValidityDate";
         private const string CCOPD = "ccopd";
-        private const string CCOPD_COMMERCIAL = "ccopd_commercial"; 
+        private const string CCOPD_YES = "ccopd_yes";
+        private const string CCOPD_NO = "ccopd_no";
+        private const string CCOPD_NA = "ccopd_na";
+        private const string CCOPD_COMMERCIAL = "ccopd_commercial";
         private const string CCOPD_COMPETITION = "ccopd_competition";
         private const string CCOPD_THRESHOLD = "ccopd_threshold";
         private const string CCOPD_OTHER = "ccopd_other";
         private const string CCOPD_OTHER_TEXT = "ccopd_other_text";
+
+        // Basis of and Rationale for LM Proposed Value
+        private const string PROPOSED_SOURCE_SELECTION = "ProposedSourceSelection";
+        private const string PROPOSED_COMMERCIALITY = "ProposedCommerciality";
+        private const string PROPOSED_TECHNICAL_EVALUATION = "ProposedTechnicalEvaluation";
+        private const string PROPOSED_PRICE_ANALYSIS = "ProposedPriceAnalysis";
+        private const string PROPOSED_COST_ANALYSIS = "ProposedCostAnalysis";
+        private const string PROPOSED_VALUE_PROCUREMENT = "ProposedValueProcurement";
+        private const string PROPOSED_VALUE_SUMMARY = "ProposedValueSummary";
+
         // Schedule of Events
         private const string SHOULD_COST_ESTIMATE = "ShouldCostEstimate";
         private const string RFP_RELEASE = "RFPRelease";
@@ -86,7 +99,9 @@ namespace GenBOE.ActionLogic.IO.Export
         private const string TECHNICAL_EVALUATION = "TechnicalEvaluation";
         private const string FACT_FINDING = "FactFinding";
         private const string COST_ANALYSIS = "CostAnalysis";
-        private const string GOVT_PRICING_CCOPD = "GovtPricingCCOPD";
+        private const string COST_ANALYSIS_UNQUALIFIED = "CostAnalysisUnqualified";
+        private const string GOVT_PRICING_CCOPD_REQUEST = "GovtPricingCCOPDRequest";
+        private const string GOVT_PRICING_CCOPD_REVIEW = "GovtPricingCCOPDReceipt";
         private const string SUPPLIER_NEGOTIATIONS = "SupplierNegotiations";
         private const string MOU = "MOU";
         private const string PLANNED_DATE_A = "PlannedDate_A";
@@ -171,6 +186,9 @@ namespace GenBOE.ActionLogic.IO.Export
 
             // ccopd checkboxes
             this.SetCheckbox(document, CCOPD, boeForm.CCoPDApplies);
+            this.SetCheckbox(document, CCOPD_YES, boeForm.CCoPDApplies);
+            this.SetCheckbox(document, CCOPD_NO, boeForm.CCoPDApplies);
+            this.SetCheckbox(document, CCOPD_NA, boeForm.CCoPDApplies);
             this.SetCheckbox(document, CCOPD_COMMERCIAL, boeForm.CommercialItemExceptionApplies);
             this.SetCheckbox(document, CCOPD_COMPETITION, boeForm.CompetitionExceptionApplies);
             this.SetCheckbox(document, CCOPD_THRESHOLD, boeForm.LessThanThresholdExceptionApplies);
@@ -187,7 +205,7 @@ namespace GenBOE.ActionLogic.IO.Export
             this.SetScheduleEventDateField(document, TECHNICAL_EVALUATION, boeForm.TechnicalEvaluation, boeForm.TechnicalEvaluationDate, boeForm.TechnicalEvaluationText);
             this.SetScheduleEventDateField(document, FACT_FINDING, boeForm.FactFinding, boeForm.FactFindingDate, boeForm.FactFindingText);
             this.SetScheduleEventDateField(document, COST_ANALYSIS, boeForm.CostAnalysis, boeForm.CostAnalysisDate, boeForm.CostAnalysisText);
-            this.SetScheduleEventDateField(document, GOVT_PRICING_CCOPD, boeForm.GovtPricing, boeForm.GovtPricingDate, boeForm.GovtPricingText);
+            this.SetScheduleEventDateField(document, GOVT_PRICING_CCOPD_REQUEST, boeForm.GovtPricing, boeForm.GovtPricingDate, boeForm.GovtPricingText);
             this.SetScheduleEventDateField(document, SUPPLIER_NEGOTIATIONS, boeForm.SupplierNegotiations, boeForm.SupplierNegotiationsDate, boeForm.SupplierNegotiationsText);
             this.SetScheduleEventDateField(document, MOU, boeForm.MOU, boeForm.MOUDate, boeForm.MOUText);
             this.SetDateField(document, PLANNED_DATE_A, boeForm.PlannedDate_WrittenApproval);
@@ -270,7 +288,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             string supplierContractType = Constants.CONTRACT_TYPE_NOT_SET_STRING;
 
-            if(clin != null && boeForm.ClinContractTypes.Any(c => c.ClinId == clin.Id))
+            if (clin != null && boeForm.ClinContractTypes.Any(c => c.ClinId == clin.Id))
             {
                 supplierContractType = Utilities.GetPickListText(boeForm.ClinContractTypes.First(c => c.ClinId == clin.Id).ContractType, contractTypes, Constants.CONTRACT_TYPE_NOT_SET_STRING);
             }
@@ -323,7 +341,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     value = "NA";
                 }
-                else 
+                else
                 {
                     if (scheduleEvent == ScheduleEvent.Actual && scheduleEventDate.HasValue)
                     {
