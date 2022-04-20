@@ -1140,7 +1140,9 @@ namespace IES.Common
         [Description("Competition Exception applies")]
         Competition = 4,
         [Description("Other Exception applies")]
-        Other = 8
+        Other = 8,
+        [Description("< CCoPD Threshold Exception applies")]
+        Threshold = 16
     }
 
     /// <summary>

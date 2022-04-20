@@ -64,6 +64,7 @@ namespace GenBOE.DataBridge.DTO
                                  CCoPDApplies = ((Ccopd)b.CCoPD & Ccopd.Applies) == Ccopd.Applies,
                                  CommercialItemExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Commercial) == Ccopd.Commercial,
                                  CompetitionExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Competition) == Ccopd.Competition,
+                                 LessThanThresholdExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Threshold) == Ccopd.Threshold,
                                  OtherExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Other) == Ccopd.Other,
                                  CID = (ScheduleEvent)b.CID,
                                  CIDDate = b.CIDDate,
@@ -108,7 +109,8 @@ namespace GenBOE.DataBridge.DTO
                                  ShouldCostEstimateText = b.ShouldCostEstimateText,
                                  RFPReleaseText = b.RFPReleaseText,
                                  FirmSupplierReceiptText = b.FirmSupplierReceiptText,
-                                 SourceSelectionText = b.SourceSelectionText
+                                 SourceSelectionText = b.SourceSelectionText,
+                                 SupplierCCoPD = (TripleBooleanState?)b.SupplierCCoPD
                              }).ToList();
                 }
                 foreach (BOEFormPBOEDTO dto in pboes)
@@ -179,6 +181,7 @@ namespace GenBOE.DataBridge.DTO
                                     CommercialItemExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Commercial) == Ccopd.Commercial,
                                     CompetitionExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Competition) == Ccopd.Competition,
                                     OtherExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Other) == Ccopd.Other,
+                                    LessThanThresholdExceptionApplies = ((Ccopd)b.CCoPD & Ccopd.Threshold) == Ccopd.Threshold,
                                     CID = (ScheduleEvent)b.CID,
                                     CIDDate = b.CIDDate,
                                     CostAnalysis = (ScheduleEvent)b.CostAnalysis,
@@ -222,7 +225,8 @@ namespace GenBOE.DataBridge.DTO
                                     ShouldCostEstimateText = b.ShouldCostEstimateText,
                                     RFPReleaseText = b.RFPReleaseText,
                                     FirmSupplierReceiptText = b.FirmSupplierReceiptText,
-                                    SourceSelectionText = b.SourceSelectionText
+                                    SourceSelectionText = b.SourceSelectionText,
+                                    SupplierCCoPD = (TripleBooleanState?)b.SupplierCCoPD
                                 }).ToList();
                 }
 
@@ -331,7 +335,8 @@ namespace GenBOE.DataBridge.DTO
                                     dtoToUpsert.ShouldCostEstimateText,
                                     dtoToUpsert.RFPReleaseText,
                                     dtoToUpsert.FirmSupplierReceiptText,
-                                    dtoToUpsert.SourceSelectionText).FirstOrDefault().Value;
+                                    dtoToUpsert.SourceSelectionText,
+                                    (int?)dtoToUpsert.SupplierCCoPD).FirstOrDefault().Value;
 
                         BOEFormPBOE pboeEntity;
                         if ((pboeEntity = gbm.BOEFormPBOEs.FirstOrDefault(b => b.PBOEFormID == dtoToUpsert.Id)) != null)
@@ -366,6 +371,11 @@ namespace GenBOE.DataBridge.DTO
             if (dtoToUpsert.CompetitionExceptionApplies)
             {
                 ccopdValue = ccopdValue | Ccopd.Competition;
+            }
+
+            if (dtoToUpsert.LessThanThresholdExceptionApplies)
+            {
+                ccopdValue = ccopdValue | Ccopd.Threshold;
             }
 
             if (dtoToUpsert.OtherExceptionApplies)

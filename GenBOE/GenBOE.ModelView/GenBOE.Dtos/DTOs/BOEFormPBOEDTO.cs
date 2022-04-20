@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -50,6 +50,11 @@ namespace GenBOE.Dtos
         /// Gets or sets a value indicating whether competition exception applies.
         /// </summary>
         public bool CompetitionExceptionApplies { get; set; }
+
+        /// <summary>
+        /// Gets or set a value indicating whether less than threshold applies
+        /// </summary>
+        public bool LessThanThresholdExceptionApplies { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether there is an other exception that applies.
@@ -150,7 +155,21 @@ namespace GenBOE.Dtos
         public ScheduleEvent GovtPricing { get; set; }
         public DateTime? GovtPricingDate { get; set; }
         public string GovtPricingText { get; set; }
-       
+
+        /// <summary>
+        /// Govt Pricing Received for CCoPD Review
+        /// </summary>
+        public ScheduleEvent GovtPricingReceived { get; set; }
+        public DateTime? GovtPricingReceivedDate { get; set; }
+        public string GovtPricingReceivedText { get; set; }
+
+        /// <summary>
+        /// Cost Analysis - Unqualified (Final)
+        /// </summary>
+        public ScheduleEvent CostAnalysisUnqual { get; set; }
+        public DateTime? CostAnalysisUnqualDate { get; set; }
+        public string CostAnalysisUnqualText { get; set; }
+
         /// <summary>
         /// Supplier Negotiations Complete
         /// </summary>
@@ -169,9 +188,45 @@ namespace GenBOE.Dtos
         /// Date of customer written approval for submission after initial prime proposal.
         /// </summary>
         public DateTime? PlannedDate_WrittenApproval { get; set; }
+        
         /// <summary>
         /// Approved date for submission to customer.
         /// </summary>
         public DateTime? PlannedDate_ApprovedSubmission { get; set; }
+
+        /// <summary>
+        /// Supplier CCoPD Applies
+        /// </summary>
+        public TripleBooleanState? SupplierCCoPD { get; set; }
+
+        /// <summary>
+        /// Source Selection Summary/Description
+        /// </summary>
+        public string SourceSelectionDescription { get; set; }
+
+        /// <summary>
+        /// Commerciality Summary/Description
+        /// </summary>
+        public string CommercialityDescription { get; set; }
+
+        /// <summary>
+        /// Technical Evaluation Summary/Description
+        /// </summary>
+        public string TechnicalEvaluationDescription { get; set; }
+
+        /// <summary>
+        /// Price Analysis Summary/Description
+        /// </summary>
+        public string PriceAnalysisDescription { get; set; }
+
+        /// <summary>
+        /// Cost Analysis Summary/Description
+        /// </summary>
+        public string CostAnalysisDescription { get; set; }
+
+        /// <summary>
+        /// Rationale for LM Proposed Value Summary
+        /// </summary>
+        public string RationaleValueSummary { get; set; }
     }
 }

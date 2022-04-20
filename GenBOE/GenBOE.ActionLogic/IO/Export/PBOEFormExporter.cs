@@ -73,6 +73,7 @@ namespace GenBOE.ActionLogic.IO.Export
         private const string CCOPD = "ccopd";
         private const string CCOPD_COMMERCIAL = "ccopd_commercial"; 
         private const string CCOPD_COMPETITION = "ccopd_competition";
+        private const string CCOPD_THRESHOLD = "ccopd_threshold";
         private const string CCOPD_OTHER = "ccopd_other";
         private const string CCOPD_OTHER_TEXT = "ccopd_other_text";
         // Schedule of Events
@@ -172,6 +173,7 @@ namespace GenBOE.ActionLogic.IO.Export
             this.SetCheckbox(document, CCOPD, boeForm.CCoPDApplies);
             this.SetCheckbox(document, CCOPD_COMMERCIAL, boeForm.CommercialItemExceptionApplies);
             this.SetCheckbox(document, CCOPD_COMPETITION, boeForm.CompetitionExceptionApplies);
+            this.SetCheckbox(document, CCOPD_THRESHOLD, boeForm.LessThanThresholdExceptionApplies);
             this.SetCheckbox(document, CCOPD_OTHER, boeForm.OtherExceptionApplies);
             this.SetField(document, CCOPD_OTHER_TEXT, boeForm.OtherExceptionApplies ? boeForm.OtherText : string.Empty);
 

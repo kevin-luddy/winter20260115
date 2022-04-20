@@ -76,7 +76,7 @@
             $('#ScheduleEvents input[type=radio]').change(function () { 
                 ManageBOEFormsWidget.ShowHideDate(this.value, $('#' + this.name + 'Date'), $('#' + this.name + 'Text'));
 
-                if (this.name == 'CID' || this.name == 'CostAnalysis'){
+                if (this.name == 'CID' || this.name == 'CostAnalysis' || this.name === 'PriceAnalysis'){
                     ManageBOEFormsWidget.ShowHidePlannedDates();
                 }
             });
@@ -92,8 +92,9 @@
             ManageBOEFormsWidget.ShowHidePlannedDates = function(){
                 var cid = $('#ScheduleEvents #CID:checked').val();
                 var costAnalysis = $('#ScheduleEvents #CostAnalysis:checked').val();
+                const priceAnalysis = $('#ScheduleEvents #PriceAnalysis:checked').val();
 
-                if (cid == 'Planned' || costAnalysis == 'Planned') {
+                if (cid == 'Planned' || costAnalysis == 'Planned' || priceAnalysis === 'Planned') {
                     $('div.planned-dates-row').removeClass('display-none');
                 }else{
                     $('div.planned-dates-row').addClass('display-none');
@@ -135,6 +136,23 @@
         }
 
         ManageBOEFormsWidget.refreshModule();
+    });
+
+    $(document).ready(function () {
+        $('#CCoPDApplies').on('click', function () {
+            toggleCCoPDApplies();
+        });        
+
+        function toggleCCoPDApplies() {
+            if ($('#CCoPDApplies').is(':checked')) {
+                $('#proposalReceived').show();
+            } else {
+                $('#proposalReceived').hide();
+            }
+        }
+
+        // ensure we have the option properly displayed
+        toggleCCoPDApplies();
     });
 </script>
 <div id="manage-pboe">
@@ -233,13 +251,54 @@
         </div>
     </div>
     <div class="form-row"> 
-        <div class="form-label"><span helptext="Select to indicate whether certified cost or pricing data is applicable to the procurement, or if not, which exception applies.">Certified Cost or Pricing Data (CCoPD) Applicability **</span></div>
+        <div class="form-label"><span helptext="Select to indicate whether certified cost or pricing data is applicable to the procurement, or if not, which exception applies.">Expected Certified Cost or Pricing Data (CCoPD) Applicability **</span></div>
         <div class="form-element">
             <input <%: Model.PBOEModel.CCoPDApplies ? "checked=\"checked\"" : string.Empty %> id="CCoPDApplies" name="CCoPDApplies" type="checkbox" value="true"><label>CCoPD Applies</label><br />
+                <div id="proposalReceived">
+                    a)	If Supplier CCoPD applies, proposal received if >$15M or > CCoPD Threshold AND >10% of the LM proposal<br />
+                    <div style="padding-left:1px;">
+                        <%: Html.RadioButton("SupplierCCoPD", TripleBooleanState.Yes, Model.PBOEModel.SupplierCCoPD == TripleBooleanState.Yes, new { id = "SupplierCCoPD" }) %><label>Yes</label>
+                        <%: Html.RadioButton("SupplierCCoPD", TripleBooleanState.No, Model.PBOEModel.SupplierCCoPD == TripleBooleanState.No, new { id = "SupplierCCoPD" }) %><label>No</label>
+                        <%: Html.RadioButton("SupplierCCoPD", TripleBooleanState.NA, Model.PBOEModel.SupplierCCoPD == TripleBooleanState.NA, new { id = "SupplierCCoPD" }) %><label>N/A</label>
+                    </div>                
+                </div>
             <input <%: Model.PBOEModel.CommercialItemExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="CommercialItemExceptionApplies" name="CommercialItemExceptionApplies" type="checkbox" value="true"><label>Commercial Item Exception Applies</label><br />
             <input <%: Model.PBOEModel.CompetitionExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="CompetitionExceptionApplies" name="CompetitionExceptionApplies" type="checkbox" value="true"><label>Competition Exception Applies</label><br />
+            <input <%: Model.PBOEModel.LessThanThresholdExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="LessThanThresholdExceptionApplies" name="LessThanThresholdExceptionApplies" type="checkbox" value="true"><label>< CCoPD Threshold Exception applies</label><br />
             <input <%: Model.PBOEModel.OtherExceptionApplies ? "checked=\"checked\"" : string.Empty %> id="OtherExceptionApplies" name="OtherExceptionApplies" type="checkbox" value="true"><label>Other Exception Applies (explain)</label><br />
             <div class="label-padding-left"><%: Html.TextBox("OtherText", Model.PBOEModel.OtherText, new { id = "OtherText", @class = otherTextClass, maxlength="100" }) %></div>
+        </div>
+    </div>
+    <div class="form-row">
+        <label class="form-label"><span helptext="">Source Selection</span></label><br /><br />
+        <div class="wrapper">
+            <%: Html.TextArea("Description_SourceSelection", Model.PBOEModel.SourceSelectionDescription, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "Description_SourceSelection" })%>
+        </div>
+    </div>
+    <div class="form-row">
+        <label class="form-label"><span helptext="">Commerciality (If Applicable)</span></label><br /><br />
+        <div class="wrapper">
+            <%: Html.TextArea("Description_Commerciality", Model.PBOEModel.CommercialityDescription, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "Description_Commerciality" })%>
+        </div>
+    </div><div class="form-row">
+        <label class="form-label"><span helptext="">Technical Evaluation (If Applicable)</span></label><br /><br />
+        <div class="wrapper">
+            <%: Html.TextArea("Description_TechnicalEvaluation", Model.PBOEModel.TechnicalEvaluationDescription, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "Description_TechnicalEvaluation" })%>
+        </div>
+    </div><div class="form-row">
+        <label class="form-label"><span helptext="">Price Analysis</span></label><br /><br />
+        <div class="wrapper">
+            <%: Html.TextArea("Description_PriceAnalysis", Model.PBOEModel.PriceAnalysisDescription, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "Description_PriceAnalysis" })%>
+        </div>
+    </div><div class="form-row">
+        <label class="form-label"><span helptext="">Cost Analysis (If Applicable)</span></label><br /><br />
+        <div class="wrapper">
+            <%: Html.TextArea("Description_CostAnalysis", Model.PBOEModel.CostAnalysisDescription, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "Description_CostAnalysis" })%>
+        </div>
+    </div><div class="form-row">
+        <label class="form-label"><span helptext="">Rationale for LM Proposed Value Summary</span></label><br /><br />
+        <div class="wrapper">
+            <%: Html.TextArea("Description_RationaleValueSummary", Model.PBOEModel.RationaleValueSummary, new { @maxlength = Constants.MAX_RTE_LENGTH , onkeyup = "Helper.textAreaLimit(this, " + Constants.MAX_RTE_LENGTH  + ")", id = "Description_RationaleValueSummary" })%>
         </div>
     </div>
     <div class="form-row">
@@ -294,7 +353,7 @@
             </div>
         </div>
         <div class="form-row"> 
-            <div class="form-label">Price Analysis</div>
+            <div class="form-label">Price Analysis &dagger;</div>
             <div class="form-element"><%: Html.RadioButton("PriceAnalysis", ScheduleEvent.NA, Model.PBOEModel.PriceAnalysis == ScheduleEvent.NA, new { id = "PriceAnalysis" }) %><label>N/A</label><br />
                 <%: Html.RadioButton("PriceAnalysis", ScheduleEvent.Actual, Model.PBOEModel.PriceAnalysis == ScheduleEvent.Actual, new { id = "PriceAnalysis" }) %><label>Actual</label><br />
                 <%: Html.RadioButton("PriceAnalysis", ScheduleEvent.Planned, Model.PBOEModel.PriceAnalysis == ScheduleEvent.Planned, new { id = "PriceAnalysis" }) %><label>Planned</label><br />
@@ -330,12 +389,30 @@
             </div>
         </div>
         <div class="form-row"> 
-            <div class="form-label">Govt. Pricing Assistance for CCoPD<br />Review requested by LM</div>
+            <div class="form-label">Govt. Pricing Assistance for CCoPD<br />Review - Request</div>
             <div class="form-element"><%: Html.RadioButton("GovtPricing", ScheduleEvent.NA, Model.PBOEModel.GovtPricing == ScheduleEvent.NA, new { id = "GovtPricing" }) %><label>N/A</label><br />
                 <%: Html.RadioButton("GovtPricing", ScheduleEvent.Actual, Model.PBOEModel.GovtPricing == ScheduleEvent.Actual, new { id = "GovtPricing" }) %><label>Actual</label><br />
                 <%: Html.RadioButton("GovtPricing", ScheduleEvent.Planned, Model.PBOEModel.GovtPricing == ScheduleEvent.Planned, new { id = "GovtPricing" }) %><label>Planned</label><br />
                 <%: Html.TextBox("GovtPricingDate", !Model.PBOEModel.GovtPricingDate.HasValue ? string.Empty : Model.PBOEModel.GovtPricingDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "GovtPricingDate" })%><br />
                 <%: Html.TextBox("GovtPricingText", Model.PBOEModel.GovtPricingText, new { id = "GovtPricingText", maxlength="50" })%>
+            </div>
+        </div>
+        <div class="form-row"> 
+            <div class="form-label">Govt. Pricing Assistance for CCoPD<br />Review - Receipt</div>
+            <div class="form-element"><%: Html.RadioButton("GovtPricingReceived", ScheduleEvent.NA, Model.PBOEModel.GovtPricingReceived == ScheduleEvent.NA, new { id = "GovtPricingReceived" }) %><label>N/A</label><br />
+                <%: Html.RadioButton("GovtPricingReceived", ScheduleEvent.Actual, Model.PBOEModel.GovtPricingReceived == ScheduleEvent.Actual, new { id = "GovtPricingReceived" }) %><label>Actual</label><br />
+                <%: Html.RadioButton("GovtPricingReceived", ScheduleEvent.Planned, Model.PBOEModel.GovtPricingReceived == ScheduleEvent.Planned, new { id = "GovtPricingReceived" }) %><label>Planned</label><br />
+                <%: Html.TextBox("GovtPricingReceivedDate", !Model.PBOEModel.GovtPricingReceivedDate.HasValue ? string.Empty : Model.PBOEModel.GovtPricingDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "GovtPricingReceivedDate" })%><br />
+                <%: Html.TextBox("GovtPricingReceivedText", Model.PBOEModel.GovtPricingReceivedText, new { id = "GovtPricingReceivedText", maxlength="50" })%>
+            </div>
+        </div>
+        <div class="form-row"> 
+            <div class="form-label">Cost Analysis – Unqualified (Final)</div>
+            <div class="form-element"><%: Html.RadioButton("CostAnalysisUnqual", ScheduleEvent.NA, Model.PBOEModel.CostAnalysisUnqual == ScheduleEvent.NA, new { id = "CostAnalysisUnqual" }) %><label>N/A</label><br />
+                <%: Html.RadioButton("CostAnalysisUnqual", ScheduleEvent.Actual, Model.PBOEModel.CostAnalysisUnqual == ScheduleEvent.Actual, new { id = "CostAnalysisUnqual" }) %><label>Actual</label><br />
+                <%: Html.RadioButton("CostAnalysisUnqual", ScheduleEvent.Planned, Model.PBOEModel.CostAnalysisUnqual == ScheduleEvent.Planned, new { id = "CostAnalysisUnqual" }) %><label>Planned</label><br />
+                <%: Html.TextBox("CostAnalysisUnqualDate", !Model.PBOEModel.CostAnalysisUnqualDate.HasValue ? string.Empty : Model.PBOEModel.GovtPricingDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "CostAnalysisUnqualDate" })%><br />
+                <%: Html.TextBox("CostAnalysisUnqualText", Model.PBOEModel.CostAnalysisUnqualText, new { id = "CostAnalysisUnqualText", maxlength="50" })%>
             </div>
         </div>
         <div class="form-row"> 
@@ -361,7 +438,7 @@
         <div class="form-label">&dagger; If planned date (subcontracts only):</div>
     </div>
     <div class="form-row planned-dates-row"> 
-        <div class="form-label label-padding-left">a) Date of Customer Written Approval for Submission after Initial Prime Proposal *</div>
+        <div class="form-label label-padding-left">a) Date of Customer Written Concurrence for Submission after Initial Prime Proposal *</div>
         <div class="form-element"><%: Html.TextBox("PlannedDate_WrittenApproval", !Model.PBOEModel.PlannedDate_WrittenApproval.HasValue ? string.Empty : Model.PBOEModel.PlannedDate_WrittenApproval.Value.ToString("MM/dd/yyyy"), new { @class="planned-date", id = "PlannedDate_WrittenApproval" })%>
         </div>
     </div>

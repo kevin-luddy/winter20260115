@@ -68,7 +68,8 @@ CREATE PROCEDURE [dbo].[upsertBOEFormPBOE]
 @ShouldCostEstimateText varchar(50) = NULL,
 @RFPReleaseText varchar(50) = NULL,
 @FirmSupplierReceiptText varchar(50) = NULL,
-@SourceSelectionText varchar(50) = NULL
+@SourceSelectionText varchar(50) = NULL,
+@SupplierCCoPD int
 )
 AS
 /******************************************************************************
@@ -188,6 +189,7 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				,RFPReleaseText
 				,FirmSupplierReceiptText
 				,SourceSelectionText
+				,[SupplierCCoPD]
 			   )
 		OUTPUT inserted.PBOEFormID INTO @InsertedPBOE            
 		VALUES
@@ -247,7 +249,8 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				@ShouldCostEstimateText,
 				@RFPReleaseText,
 				@FirmSupplierReceiptText,
-				@SourceSelectionText
+				@SourceSelectionText,
+				@SupplierCCoPD
 			   )
 		SELECT @PBOEFormID = PBOEID FROM @InsertedPBOE
 	
@@ -338,7 +341,8 @@ ELSE
 						ShouldCostEstimateText = @ShouldCostEstimateText,
 						RFPReleaseText = @RFPReleaseText,
 						FirmSupplierReceiptText = @FirmSupplierReceiptText,
-						SourceSelectionText = @SourceSelectionText
+						SourceSelectionText = @SourceSelectionText,
+						[SupplierCCoPD] = @SupplierCCoPD
 
 				WHERE
 					[PBOEFormID] = @PBOEFormID

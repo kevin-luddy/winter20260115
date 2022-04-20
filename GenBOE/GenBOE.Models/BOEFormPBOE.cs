@@ -28,63 +28,64 @@ namespace GenBOE.Models
         public string ApproverPhone { get; set; }
         public int Revision { get; set; }
         public int FormVersion { get; set; }
-        public int DegreeOfCompetition { get; set; }
+        public Nullable<int> DegreeOfCompetition { get; set; }
         public int CCoPD { get; set; }
         public string CCoPDOtherText { get; set; }
         public string RFP { get; set; }
         public string ProposalNumber { get; set; }
         public string SupplierName { get; set; }
         public string ValidityDate { get; set; }
-        public int SupplierProposalSupportingDataIncluded { get; set; }
-        public int PriceAnalysisIncluded { get; set; }
-        public int CommercialItemDocIncluded { get; set; }
-        public int CostAnalysisIncluded { get; set; }
+        public Nullable<int> SupplierProposalSupportingDataIncluded { get; set; }
+        public Nullable<int> PriceAnalysisIncluded { get; set; }
+        public Nullable<int> CommercialItemDocIncluded { get; set; }
+        public Nullable<int> CostAnalysisIncluded { get; set; }
         public int ShouldCostEstimate { get; set; }
         public Nullable<System.DateTime> ShouldCostEstimateDate { get; set; }
-        public int SowWritten { get; set; }
+        public string ShouldCostEstimateText { get; set; }
+        public Nullable<int> SowWritten { get; set; }
         public Nullable<System.DateTime> SowWrittenDate { get; set; }
+        public string SowWrittenText { get; set; }
         public int RFPRelease { get; set; }
         public Nullable<System.DateTime> RFPReleaseDate { get; set; }
+        public string RFPReleaseText { get; set; }
         public int FirmSupplierReceipt { get; set; }
         public Nullable<System.DateTime> FirmSupplierReceiptDate { get; set; }
+        public string FirmSupplierReceiptText { get; set; }
         public int SourceSelection { get; set; }
         public Nullable<System.DateTime> SourceSelectionDate { get; set; }
+        public string SourceSelectionText { get; set; }
         public int CID { get; set; }
         public Nullable<System.DateTime> CIDDate { get; set; }
-        public int GovtReview { get; set; }
+        public string CIDText { get; set; }
+        public Nullable<int> GovtReview { get; set; }
         public Nullable<System.DateTime> GovtReviewDate { get; set; }
+        public string GovtReviewText { get; set; }
         public int PriceAnalysis { get; set; }
         public Nullable<System.DateTime> PriceAnalysisDate { get; set; }
+        public string PriceAnalysisText { get; set; }
         public int TechnicalEvaluation { get; set; }
         public Nullable<System.DateTime> TechnicalEvaluationDate { get; set; }
+        public string TechnicalEvaluationText { get; set; }
         public int FactFinding { get; set; }
         public Nullable<System.DateTime> FactFindingDate { get; set; }
+        public string FactFindingText { get; set; }
         public int CostAnalysis { get; set; }
         public Nullable<System.DateTime> CostAnalysisDate { get; set; }
+        public string CostAnalysisText { get; set; }
         public int GovtPricing { get; set; }
         public Nullable<System.DateTime> GovtPricingDate { get; set; }
+        public string GovtPricingText { get; set; }
         public int SupplierNegotiations { get; set; }
         public Nullable<System.DateTime> SupplierNegotiationsDate { get; set; }
+        public string SupplierNegotiationsText { get; set; }
         public int MOU { get; set; }
         public Nullable<System.DateTime> MOUDate { get; set; }
-        public int Procurement { get; set; }
+        public string MOUText { get; set; }
+        public Nullable<int> Procurement { get; set; }
         public Nullable<System.DateTime> ProcurementDate { get; set; }
+        public string ProcurementText { get; set; }
         public Nullable<System.DateTime> PlannedDate_WrittenApproval { get; set; }
         public Nullable<System.DateTime> PlannedDate_ApprovedSubmission { get; set; }
-        public string CIDText { get; set; }
-        public string GovtReviewText { get; set; }
-        public string PriceAnalysisText { get; set; }
-        public string TechnicalEvaluationText { get; set; }
-        public string FactFindingText { get; set; }
-        public string CostAnalysisText { get; set; }
-        public string GovtPricingText { get; set; }
-        public string SupplierNegotiationsText { get; set; }
-        public string MOUText { get; set; }
-        public string ProcurementText { get; set; }
-        public string ShouldCostEstimateText { get; set; }
-        public string SowWrittenText { get; set; }
-        public string RFPReleaseText { get; set; }
-        public string FirmSupplierReceiptText { get; set; }
-        public string SourceSelectionText { get; set; }
+        public Nullable<int> SupplierCCoPD { get; set; }
     }
 }
