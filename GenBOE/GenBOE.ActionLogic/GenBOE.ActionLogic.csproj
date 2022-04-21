@@ -163,9 +163,11 @@
     <Compile Include="IO\Export\BOE\BOEExportInputs.cs" />
     <Compile Include="IO\Export\BOE\BOEExportConverterRMS.cs" />
     <Compile Include="IO\Export\IMoqTableExporter.cs" />
+    <Compile Include="IO\Export\ITraceTableExporter.cs" />
     <Compile Include="IO\Export\MoqTableExporter.cs" />
     <Compile Include="IO\Export\MoqTableExporterRMS.cs" />
     <Compile Include="IO\Export\TMResourceRatesExporter.cs" />
+    <Compile Include="IO\Export\TraceTableExporter.cs" />
     <Compile Include="IO\Import\IMoqTableImporter.cs" />
     <Compile Include="IO\Import\ImportedMoqTable.cs" />
     <Compile Include="IO\Import\MoqTableImporter.cs" />
@@ -374,6 +376,8 @@
     <Compile Include="_ModelView\Task\RecalcSpreadModelView.cs" />
     <Compile Include="_ModelView\Task\TaskElementDuplicateFormCollection.cs" />
     <Compile Include="_ModelView\Task\TaskElementDuplicateFormModelView.cs" />
+    <Compile Include="_ModelView\TraceTableBoeData.cs" />
+    <Compile Include="_ModelView\TraceTableSettingsData.cs" />
     <Compile Include="_ModelView\TrainingModelView.cs" />
     <Compile Include="_ModelView\VariableDependencyData.cs" />
     <Compile Include="_ModelView\VariableDependencyNode.cs" />

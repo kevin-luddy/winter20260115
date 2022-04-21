@@ -251,8 +251,6 @@
     <Compile Include="ModelView\PagedSystemOffloadRateModelView.cs" />
     <Compile Include="ModelView\RteTemplateModelView.cs" />
     <Compile Include="ModelView\SendToProPricerModelView.cs" />
-    <Compile Include="ModelView\TraceTableBoeData.cs" />
-    <Compile Include="ModelView\TraceTableSettingsData.cs" />
     <Compile Include="ModelView\UpdateWorkspaceResourceRateTMModelView.cs" />
     <Compile Include="ModelView\WhosOnlineGridModelView.cs" />
     <Compile Include="Common\TitleBinderAttribute.cs" />
