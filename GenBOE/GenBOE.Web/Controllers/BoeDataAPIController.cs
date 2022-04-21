@@ -228,7 +228,7 @@ namespace GenBOE.Web.Controllers
 		/// <returns>genBOE Workspace data for use with a Trace Table in ACV</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public string GetWorkspaceDataForTraceTable(string workspaceShortName, TraceTableSettingsData settingsData)
+		public ICollection<TraceTableBoeData> GetWorkspaceDataForTraceTable(string workspaceShortName, TraceTableSettingsData settingsData)
 		{
 			ICollection<TraceTableBoeData> boeData = null;
 
@@ -250,7 +250,7 @@ namespace GenBOE.Web.Controllers
 				logger.Error(ex);
 			}
 
-			return JsonConvert.SerializeObject(boeData);
+			return boeData;
 		}
 	}
 }

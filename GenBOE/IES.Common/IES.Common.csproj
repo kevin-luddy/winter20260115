@@ -274,6 +274,7 @@
     <Compile Include="PickList\PickListGridMV.cs" />
     <Compile Include="PickList\PickListMapper.cs" />
     <Compile Include="PickList\PickListLoader.cs" />
+    <Compile Include="SummaryFieldType.cs" />
     <Compile Include="Utilities\EnumUtilities.cs" />
     <Compile Include="IsActiveAttribute.cs" />
     <Compile Include="ListBoxItem.cs" />

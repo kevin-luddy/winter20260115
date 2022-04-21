@@ -100,149 +100,100 @@ namespace GenBOE.ActionLogic.IO.Export
 				string nextLevel = additionalLevels.FirstOrDefault();
 				ICollection<string> nextAdditionalLevels = additionalLevels.Skip(1).ToList();
 
-				if (currentLevel == SummaryFieldType.CLINNum.GetDescription())
+				if (currentLevel.Equals(SummaryFieldType.CLINNum.GetDescription(), StringComparison.CurrentCultureIgnoreCase))
 				{
 					foreach (int? clinId in resourceTypes.Select(x => x.CLINID).Distinct())
 					{
-						TraceTableBoeData newChild = new TraceTableBoeData() { SummaryField = currentLevel.GetDescription() };
-
-						if (clinId is null)
+						TraceTableBoeData newChild = new TraceTableBoeData()
 						{
-							newChild.SummaryFieldValue = CommonConstants.Unassigned_CLIN_Display_Text;
-						}
-						else
-						{
-							FullClin clin = workspace.Clins.FirstOrDefault(x => x.Id == clinId);
-							if (clin != null)
-							{
-								newChild.SummaryFieldValue = clin.ClinNumber;
-							}
-						}
+							SummaryField = currentLevel.GetDescription(),
+							SummaryFieldValue = workspace.Clins.FirstOrDefault(x => x.Id == clinId)?.ClinNumber ?? CommonConstants.Unassigned_CLIN_Display_Text
+						};
 
 						ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => x.CLINID == clinId).ToList(), newChild, includeYearlyData);
 						parent.ChildData.Add(newChild);
 					}
 				}
-				else if (currentLevel == SummaryFieldType.WBSNum.GetDescription())
+				else if (currentLevel.Equals(SummaryFieldType.WBSNum.GetDescription(), StringComparison.CurrentCultureIgnoreCase))
 				{
 					foreach (int? wbsId in resourceTypes.Select(x => x.WBSID).Distinct())
 					{
-						TraceTableBoeData newChild = new TraceTableBoeData() { SummaryField = currentLevel.GetDescription() };
-
-						if (wbsId is null)
+						TraceTableBoeData newChild = new TraceTableBoeData()
 						{
-							newChild.SummaryFieldValue = CommonConstants.Unassigned_WBS_Display_Text;
-						}
-						else
-						{
-							FullWbs wbs = workspace.WbsElements.FirstOrDefault(x => x.Id == wbsId);
-							if (wbs != null)
-							{
-								newChild.SummaryFieldValue = wbs.WbsNumber;
-							}
-						}
+							SummaryField = currentLevel.GetDescription(),
+							SummaryFieldValue = workspace.WbsElements.FirstOrDefault(x => x.Id == wbsId)?.WbsNumber ?? CommonConstants.Unassigned_WBS_Display_Text
+						};
 
 						ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => x.WBSID == wbsId).ToList(), newChild, includeYearlyData);
 						parent.ChildData.Add(newChild);
 					}
 				}
-				else if (currentLevel == SummaryFieldType.ResourceOrActivityId.GetDescription())
+				else if (currentLevel.Equals(SummaryFieldType.ResourceOrActivityId.GetDescription(), StringComparison.CurrentCultureIgnoreCase))
 				{
 					foreach (int? resourceId in resourceTypes.Select(x => x.ResourceID).Distinct())
 					{
-						TraceTableBoeData newChild = new TraceTableBoeData() { SummaryField = currentLevel.GetDescription() };
-
-						if (resourceId is null)
+						TraceTableBoeData newChild = new TraceTableBoeData()
 						{
-							newChild.SummaryFieldValue = "NO RESOURCE ID";
-						}
-						else
-						{
-							ResourceDTO resource = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceId);
-							if (resource != null)
-							{
-								newChild.SummaryFieldValue = resource.ResourceName;
-							}
-						}
+							SummaryField = currentLevel.GetDescription(),
+							SummaryFieldValue = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceId)?.ResourceName ?? "NO RESOURCE ID"
+						};
 
 						ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => x.ResourceID == resourceId).ToList(), newChild, includeYearlyData);
 						parent.ChildData.Add(newChild);
 					}
 				}
-				else if (currentLevel == SummaryFieldType.ResourceDescription.GetDescription())
+				else if (currentLevel.Equals(SummaryFieldType.ResourceDescription.GetDescription(), StringComparison.CurrentCultureIgnoreCase))
 				{
 					foreach (int? resourceId in resourceTypes.Select(x => x.ResourceID).Distinct())
 					{
-						TraceTableBoeData newChild = new TraceTableBoeData() { SummaryField = currentLevel.GetDescription() };
-
-						if (resourceId is null)
+						TraceTableBoeData newChild = new TraceTableBoeData()
 						{
-							newChild.SummaryFieldValue = "NO RESOURCE DESCRIPTION";
-						}
-						else
-						{
-							ResourceDTO resource = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceId);
-							if (resource != null)
-							{
-								newChild.SummaryFieldValue = resource.ResourceDesc;
-							}
-						}
+							SummaryField = currentLevel.GetDescription(),
+							SummaryFieldValue = workspace.ResourcesUsedInWsBoes.FirstOrDefault(x => x.Id == resourceId)?.ResourceDesc ?? "NO RESOURCE DESCRIPTION"
+						};
 
 						ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => x.ResourceID == resourceId).ToList(), newChild, includeYearlyData);
 						parent.ChildData.Add(newChild);
 					}
 				}
-				else if (currentLevel == SummaryFieldType.PerformingOrgId.GetDescription())
+				else if (currentLevel.Equals(SummaryFieldType.PerformingOrgId.GetDescription(), StringComparison.CurrentCultureIgnoreCase))
 				{
 					foreach (int? perfOrgId in resourceTypes.Select(x => x.PerformingOrgID).Distinct())
 					{
-						TraceTableBoeData newChild = new TraceTableBoeData() { SummaryField = currentLevel.GetDescription() };
-
-						if (perfOrgId is null)
+						TraceTableBoeData newChild = new TraceTableBoeData()
 						{
-							newChild.SummaryFieldValue = "NO PERF ORG ID";
-						}
-						else
-						{
-							PerformingOrgDTO perfOrg = workspace.PerformingOrgsUsedInBoes.FirstOrDefault(x => x.Id == perfOrgId);
-							if (perfOrg != null)
-							{
-								newChild.SummaryFieldValue = perfOrg.PerformingOrgName;
-							}
-						}
+							SummaryField = currentLevel.GetDescription(),
+							SummaryFieldValue = workspace.PerformingOrgsUsedInBoes.FirstOrDefault(x => x.Id == perfOrgId)?.PerformingOrgName ?? "NO PERF ORG ID"
+						};
 
 						ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => x.PerformingOrgID == perfOrgId).ToList(), newChild, includeYearlyData);
 						parent.ChildData.Add(newChild);
 					}
 
 				}
-				else if (currentLevel == SummaryFieldType.TaskDescription.GetDescription())
+				else if (currentLevel.Equals(SummaryFieldType.TaskDescription.GetDescription(), StringComparison.CurrentCultureIgnoreCase))
 				{
 					foreach (int taskId in resourceTypes.Select(x => x.TaskElementId).Distinct())
 					{
-						TraceTableBoeData newChild = new TraceTableBoeData() { SummaryField = currentLevel.GetDescription() };
-
-						BoeTaskElementDTO task = workspace.TaskElements.FirstOrDefault(x => x.Id == taskId);
-						if (task != null)
+						TraceTableBoeData newChild = new TraceTableBoeData()
 						{
-							newChild.SummaryFieldValue = task.TaskTitle;
-						}
+							SummaryField = currentLevel.GetDescription(),
+							SummaryFieldValue = workspace.TaskElements.FirstOrDefault(x => x.Id == taskId)?.TaskTitle ?? "NO TASK TITLE"
+						};
 
 						ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => x.TaskElementId == taskId).ToList(), newChild, includeYearlyData);
 						parent.ChildData.Add(newChild);
 					}
 				}
-				else if (currentLevel == SummaryFieldType.BOETitle.GetDescription())
+				else if (currentLevel.Equals(SummaryFieldType.BOETitle.GetDescription(), StringComparison.CurrentCultureIgnoreCase))
 				{
 					foreach (int boeId in resourceTypes.Select(x => x.BoeID).Distinct())
 					{
-						TraceTableBoeData newChild = new TraceTableBoeData() { SummaryField = currentLevel.GetDescription() };
-
-						FullBoe boe = workspace.Boes.FirstOrDefault(x => x.Id == boeId);
-						if (boe != null)
+						TraceTableBoeData newChild = new TraceTableBoeData()
 						{
-							newChild.SummaryFieldValue = boe.Title;
-						}
+							SummaryField = currentLevel.GetDescription(),
+							SummaryFieldValue = workspace.Boes.FirstOrDefault(x => x.Id == boeId)?.Title ?? "NO BOE TITLE"
+						};
 
 						ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => x.BoeID == boeId).ToList(), newChild, includeYearlyData);
 						parent.ChildData.Add(newChild);
@@ -251,16 +202,19 @@ namespace GenBOE.ActionLogic.IO.Export
 				else
 				{
 					// Check custom fields if summary field does not match any of the previous Summary Field Types
-					CustomFieldDTO customField = workspace.CustomFields.FirstOrDefault(x => x.CustomFieldName == currentLevel);
+					CustomFieldDTO customField = workspace.CustomFields.FirstOrDefault(x => x.CustomFieldName.Equals(currentLevel, StringComparison.CurrentCultureIgnoreCase));
 
 					if (customField != null)
 					{
-						foreach (var customFieldValue in resourceTypes.SelectMany(x => x.CustomFieldValueContainers).Where(x => x.CustomFieldID == customField.Id).Select(x => new { x.CustomFieldValueID, x.OpenEndedValue }).Distinct())
+						foreach ((int customFieldValueID, string customFieldValue) in resourceTypes.SelectMany(x => x.CustomFieldValueContainers).Where(x => x.CustomFieldID == customField.Id).Select(x => (x.CustomFieldValueID, x.OpenEndedValue)).Distinct())
 						{
-							TraceTableBoeData newChild = new TraceTableBoeData() { SummaryField = currentLevel.GetDescription() };
-							newChild.SummaryFieldValue = customFieldValue.OpenEndedValue; 
+							TraceTableBoeData newChild = new TraceTableBoeData()
+							{
+								SummaryField = currentLevel.GetDescription(),
+								SummaryFieldValue = customFieldValue
+							};
 
-							ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => x.CustomFieldValueContainers.Any(y => y.CustomFieldID == customField.Id && y.CustomFieldValueID == customFieldValue.CustomFieldValueID)).ToList(), newChild, includeYearlyData);
+							ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => x.CustomFieldValueContainers.Any(y => y.CustomFieldID == customField.Id && y.CustomFieldValueID == customFieldValueID)).ToList(), newChild, includeYearlyData);
 							parent.ChildData.Add(newChild);
 						}
 					}

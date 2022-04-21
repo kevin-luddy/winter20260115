@@ -81,7 +81,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 				Id = 1,
 				BoeID = 1,
 				TaskElementId = 1,
-				CLINID = 1,
+				CLINID = null,
 				WBSID = 1,
 				ResourceID = 2,
 				PerformingOrgID = 2,
