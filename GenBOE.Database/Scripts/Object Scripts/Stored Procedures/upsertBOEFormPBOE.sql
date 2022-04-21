@@ -69,7 +69,19 @@ CREATE PROCEDURE [dbo].[upsertBOEFormPBOE]
 @RFPReleaseText varchar(50) = NULL,
 @FirmSupplierReceiptText varchar(50) = NULL,
 @SourceSelectionText varchar(50) = NULL,
-@SupplierCCoPD int
+@SupplierCCoPD int,
+@SourceSelectionDescription VARCHAR(MAX) = NULL,
+@CommercialityDescription VARCHAR(MAX) = NULL,
+@TechnicalEvaluationDescription VARCHAR(MAX) = NULL,
+@PriceAnalysisDescription VARCHAR(MAX) = NULL,
+@CostAnalysisDescription VARCHAR(MAX) = NULL,
+@RationaleValueSummary VARCHAR(MAX) = NULL,
+@GovtPricingReceived int,
+@GovtPricingReceivedDate date,
+@GovtPricingReceivedText VARCHAR(50),
+@CostAnalysisUnqual int,
+@CostAnalysisUnqualDate date,
+@CostAnalysisUnqualText VARCHAR(50)
 )
 AS
 /******************************************************************************
@@ -90,6 +102,7 @@ AS
 **      11/14/16	twilson3			BOEJ-1541 INL Forms Text Entry Planned Fields
 **		03/08/17	ranzalon			BOEJ-1944 Increase size of poc fields
 **		10/27/17	twilson3			BOEJ-2578 Partial Save PBOE/IBOE
+**	    04/19/22	jquijano			IES-1014 Add new fields
 *******************************************************************************/
 
 SET NOCOUNT ON 
@@ -190,6 +203,18 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				,FirmSupplierReceiptText
 				,SourceSelectionText
 				,[SupplierCCoPD]
+				,[SourceSelectionDescription]
+				,[CommercialityDescription]
+				,[TechnicalEvaluationDescription]
+				,[PriceAnalysisDescription]
+				,[CostAnalysisDescription]
+				,[RationaleValueSummary]
+				,[GovtPricingReceived]
+				,[GovtPricingReceivedDate]
+				,[GovtPricingReceivedText]
+				,[CostAnalysisUnqual]
+				,[CostAnalysisUnqualDate]
+				,[CostAnalysisUnqualText]
 			   )
 		OUTPUT inserted.PBOEFormID INTO @InsertedPBOE            
 		VALUES
@@ -250,7 +275,19 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				@RFPReleaseText,
 				@FirmSupplierReceiptText,
 				@SourceSelectionText,
-				@SupplierCCoPD
+				@SupplierCCoPD,
+				@SourceSelectionDescription,
+				@CommercialityDescription,
+				@TechnicalEvaluationDescription,
+				@PriceAnalysisDescription,
+				@CostAnalysisDescription,
+				@RationaleValueSummary,
+				@GovtPricingReceived,
+				@GovtPricingReceivedDate,
+				@GovtPricingReceivedText,
+				@CostAnalysisUnqual,
+				@CostAnalysisUnqualDate,
+				@CostAnalysisUnqualText
 			   )
 		SELECT @PBOEFormID = PBOEID FROM @InsertedPBOE
 	
@@ -342,8 +379,19 @@ ELSE
 						RFPReleaseText = @RFPReleaseText,
 						FirmSupplierReceiptText = @FirmSupplierReceiptText,
 						SourceSelectionText = @SourceSelectionText,
-						[SupplierCCoPD] = @SupplierCCoPD
-
+						[SupplierCCoPD] = @SupplierCCoPD,
+						[SourceSelectionDescription] = @SourceSelectionDescription,
+						[CommercialityDescription] = @CommercialityDescription,
+						[TechnicalEvaluationDescription] = @TechnicalEvaluationDescription,
+						[PriceAnalysisDescription] = @PriceAnalysisDescription,
+						[CostAnalysisDescription] = @CostAnalysisDescription,
+						[RationaleValueSummary] = @RationaleValueSummary,
+						[GovtPricingReceived] = @GovtPricingReceived,
+						[GovtPricingReceivedDate] = @GovtPricingReceivedDate,
+						[GovtPricingReceivedText] = @GovtPricingReceivedText,
+						[CostAnalysisUnqual] = @CostAnalysisUnqual,
+						[CostAnalysisUnqualDate] = @CostAnalysisUnqualDate,
+						[CostAnalysisUnqualText] = @CostAnalysisUnqualText
 				WHERE
 					[PBOEFormID] = @PBOEFormID
 

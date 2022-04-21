@@ -87,7 +87,17 @@ namespace GenBOE.Tests.DAL.DataLoaders
                             ShouldCostEstimateText = "should",
                             SourceSelectionText = "source",
                             SupplierNegotiationsText = "supplier",
-                            TechnicalEvaluationText = "tech"
+                            TechnicalEvaluationText = "tech",
+                            RationaleValueSummary = RandomString(25),
+                            CommercialityDescription = RandomString(20),
+                            CostAnalysisDescription = RandomString(15),
+                            PriceAnalysisDescription = RandomString(10),
+                            GovtPricingReceived = ScheduleEvent.NA,
+                            GovtPricingReceivedDate = new DateTime(2022, 04, 20),
+                            GovtPricingReceivedText = RandomString(18),
+                            CostAnalysisUnqual = ScheduleEvent.Planned,
+                            CostAnalysisUnqualDate = new DateTime(2022, 04, 20),
+                            CostAnalysisUnqualText = RandomString(11),
                         }
                     };
                 }
@@ -235,7 +245,17 @@ namespace GenBOE.Tests.DAL.DataLoaders
                     ShouldCostEstimateText = "new should",
                     SourceSelectionText = "new source",
                     SupplierNegotiationsText = "new supplier",
-                    TechnicalEvaluationText = "new tech"
+                    TechnicalEvaluationText = "new tech",
+                    RationaleValueSummary = RandomString(25),
+                    CommercialityDescription = RandomString(20),
+                    CostAnalysisDescription = RandomString(15),
+                    PriceAnalysisDescription = RandomString(10),
+                    GovtPricingReceived = ScheduleEvent.NA,
+                    GovtPricingReceivedDate = new DateTime(2022, 04, 20),
+                    GovtPricingReceivedText = RandomString(18),
+                    CostAnalysisUnqual = ScheduleEvent.Planned,
+                    CostAnalysisUnqualDate = new DateTime(2022, 04, 20),
+                    CostAnalysisUnqualText = RandomString(11),
                 };
 
                 testDto.ResourceIds.Add(6);
@@ -376,9 +396,26 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(expected.RFPReleaseText, actual.RFPReleaseText);
             Assert.AreEqual(expected.FirmSupplierReceiptText, actual.FirmSupplierReceiptText);
             Assert.AreEqual(expected.SourceSelectionText, actual.SourceSelectionText);
+            Assert.AreEqual(expected.PriceAnalysisDescription, actual.PriceAnalysisDescription);
+            Assert.AreEqual(expected.RationaleValueSummary, actual.RationaleValueSummary);
+            Assert.AreEqual(expected.CostAnalysisDescription, actual.CostAnalysisDescription);
+            Assert.AreEqual(expected.CommercialityDescription, actual.CommercialityDescription);
+            Assert.AreEqual(expected.GovtPricingReceived, actual.GovtPricingReceived);
+            Assert.AreEqual(expected.GovtPricingReceivedDate, actual.GovtPricingReceivedDate);
+            Assert.AreEqual(expected.GovtPricingReceivedText, actual.GovtPricingReceivedText);
+            Assert.AreEqual(expected.CostAnalysisUnqual, actual.CostAnalysisUnqual);
+            Assert.AreEqual(expected.CostAnalysisUnqualDate, actual.CostAnalysisUnqualDate);
+            Assert.AreEqual(expected.CostAnalysisUnqualText, actual.CostAnalysisUnqualText);
         }
 
+        private static Random random = new Random();
 
+        private static string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
     }
 
 

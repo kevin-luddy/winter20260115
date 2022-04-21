@@ -277,6 +277,18 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormIBOEResourcesXREF' does
           <Property Name="PlannedDate_WrittenApproval" Type="date" />
           <Property Name="PlannedDate_ApprovedSubmission" Type="date" />
           <Property Name="SupplierCCoPD" Type="int" />
+          <Property Name="SourceSelectionDescription" Type="varchar(max)" />
+          <Property Name="CommercialityDescription" Type="varchar(max)" />
+          <Property Name="TechnicalEvaluationDescription" Type="varchar(max)" />
+          <Property Name="PriceAnalysisDescription" Type="varchar(max)" />
+          <Property Name="CostAnalysisDescription" Type="varchar(max)" />
+          <Property Name="RationaleValueSummary" Type="varchar(max)" />
+          <Property Name="GovtPricingReceived" Type="int" />
+          <Property Name="GovtPricingReceivedDate" Type="date" />
+          <Property Name="GovtPricingReceivedText" Type="varchar" MaxLength="30" />
+          <Property Name="CostAnalysisUnqual" Type="int" />
+          <Property Name="CostAnalysisUnqualDate" Type="date" />
+          <Property Name="CostAnalysisUnqualText" Type="varchar" MaxLength="30" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOECLINsXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -5067,6 +5079,18 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="FirmSupplierReceiptText" Type="varchar" Mode="In" />
           <Parameter Name="SourceSelectionText" Type="varchar" Mode="In" />
           <Parameter Name="SupplierCCoPD" Type="int" Mode="In" />
+          <Parameter Name="SourceSelectionDescription" Type="varchar(max)" Mode="In" />
+          <Parameter Name="CommercialityDescription" Type="varchar(max)" Mode="In" />
+          <Parameter Name="TechnicalEvaluationDescription" Type="varchar(max)" Mode="In" />
+          <Parameter Name="PriceAnalysisDescription" Type="varchar(max)" Mode="In" />
+          <Parameter Name="CostAnalysisDescription" Type="varchar(max)" Mode="In" />
+          <Parameter Name="RationaleValueSummary" Type="varchar(max)" Mode="In" />
+          <Parameter Name="GovtPricingReceived" Type="int" Mode="In" />
+          <Parameter Name="GovtPricingReceivedDate" Type="date" Mode="In" />
+          <Parameter Name="GovtPricingReceivedText" Type="varchar" Mode="In" />
+          <Parameter Name="CostAnalysisUnqual" Type="int" Mode="In" />
+          <Parameter Name="CostAnalysisUnqualDate" Type="date" Mode="In" />
+          <Parameter Name="CostAnalysisUnqualText" Type="varchar" Mode="In" />
         </Function>
         <Function Name="upsertBOELaborSpread" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BOELaborSpreadID" Type="int" Mode="In" />
@@ -11205,6 +11229,18 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="FirmSupplierReceiptText" Mode="In" Type="String" />
             <Parameter Name="SourceSelectionText" Mode="In" Type="String" />
             <Parameter Name="SupplierCCoPD" Mode="In" Type="Int32" />
+            <Parameter Name="SourceSelectionDescription" Mode="In" Type="String" />
+            <Parameter Name="CommercialityDescription" Mode="In" Type="String" />
+            <Parameter Name="TechnicalEvaluationDescription" Mode="In" Type="String" />
+            <Parameter Name="PriceAnalysisDescription" Mode="In" Type="String" />
+            <Parameter Name="CostAnalysisDescription" Mode="In" Type="String" />
+            <Parameter Name="RationaleValueSummary" Mode="In" Type="String" />
+            <Parameter Name="GovtPricingReceived" Mode="In" Type="Int32" />
+            <Parameter Name="GovtPricingReceivedDate" Mode="In" Type="DateTime" />
+            <Parameter Name="GovtPricingReceivedText" Mode="In" Type="String" />
+            <Parameter Name="CostAnalysisUnqual" Mode="In" Type="Int32" />
+            <Parameter Name="CostAnalysisUnqualDate" Mode="In" Type="DateTime" />
+            <Parameter Name="CostAnalysisUnqualText" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="upsertBOELaborSpread" ReturnType="Collection(Int32)">
             <Parameter Name="BOELaborSpreadID" Mode="In" Type="Int32" />
@@ -13850,6 +13886,18 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Property Name="PlannedDate_WrittenApproval" Type="DateTime" Precision="0" />
           <Property Name="PlannedDate_ApprovedSubmission" Type="DateTime" Precision="0" />
           <Property Name="SupplierCCoPD" Type="Int32" />
+          <Property Name="SourceSelectionDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="CommercialityDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="TechnicalEvaluationDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="PriceAnalysisDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="CostAnalysisDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="RationaleValueSummary" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="GovtPricingReceived" Type="Int32" />
+          <Property Name="GovtPricingReceivedDate" Type="DateTime" Precision="0" />
+          <Property Name="GovtPricingReceivedText" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="CostAnalysisUnqual" Type="Int32" />
+          <Property Name="CostAnalysisUnqualDate" Type="DateTime" Precision="0" />
+          <Property Name="CostAnalysisUnqualText" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -15991,6 +16039,18 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <EntitySetMapping Name="BOEFormPBOEs">
             <EntityTypeMapping TypeName="GenBOE.Models.BOEFormPBOE">
               <MappingFragment StoreEntitySet="BOEFormPBOE">
+                <ScalarProperty Name="CostAnalysisUnqualText" ColumnName="CostAnalysisUnqualText" />
+                <ScalarProperty Name="CostAnalysisUnqualDate" ColumnName="CostAnalysisUnqualDate" />
+                <ScalarProperty Name="CostAnalysisUnqual" ColumnName="CostAnalysisUnqual" />
+                <ScalarProperty Name="GovtPricingReceivedText" ColumnName="GovtPricingReceivedText" />
+                <ScalarProperty Name="GovtPricingReceivedDate" ColumnName="GovtPricingReceivedDate" />
+                <ScalarProperty Name="GovtPricingReceived" ColumnName="GovtPricingReceived" />
+                <ScalarProperty Name="RationaleValueSummary" ColumnName="RationaleValueSummary" />
+                <ScalarProperty Name="CostAnalysisDescription" ColumnName="CostAnalysisDescription" />
+                <ScalarProperty Name="PriceAnalysisDescription" ColumnName="PriceAnalysisDescription" />
+                <ScalarProperty Name="TechnicalEvaluationDescription" ColumnName="TechnicalEvaluationDescription" />
+                <ScalarProperty Name="CommercialityDescription" ColumnName="CommercialityDescription" />
+                <ScalarProperty Name="SourceSelectionDescription" ColumnName="SourceSelectionDescription" />
                 <ScalarProperty Name="SupplierCCoPD" ColumnName="SupplierCCoPD" />
                 <ScalarProperty Name="PlannedDate_ApprovedSubmission" ColumnName="PlannedDate_ApprovedSubmission" />
                 <ScalarProperty Name="PlannedDate_WrittenApproval" ColumnName="PlannedDate_WrittenApproval" />

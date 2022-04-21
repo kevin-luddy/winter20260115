@@ -159,14 +159,14 @@ namespace GenBOE.Dtos
         /// <summary>
         /// Govt Pricing Received for CCoPD Review
         /// </summary>
-        public ScheduleEvent GovtPricingReceived { get; set; }
+        public ScheduleEvent? GovtPricingReceived { get; set; }
         public DateTime? GovtPricingReceivedDate { get; set; }
         public string GovtPricingReceivedText { get; set; }
 
         /// <summary>
         /// Cost Analysis - Unqualified (Final)
         /// </summary>
-        public ScheduleEvent CostAnalysisUnqual { get; set; }
+        public ScheduleEvent? CostAnalysisUnqual { get; set; }
         public DateTime? CostAnalysisUnqualDate { get; set; }
         public string CostAnalysisUnqualText { get; set; }
 

@@ -87,5 +87,17 @@ namespace GenBOE.Models
         public Nullable<System.DateTime> PlannedDate_WrittenApproval { get; set; }
         public Nullable<System.DateTime> PlannedDate_ApprovedSubmission { get; set; }
         public Nullable<int> SupplierCCoPD { get; set; }
+        public string SourceSelectionDescription { get; set; }
+        public string CommercialityDescription { get; set; }
+        public string TechnicalEvaluationDescription { get; set; }
+        public string PriceAnalysisDescription { get; set; }
+        public string CostAnalysisDescription { get; set; }
+        public string RationaleValueSummary { get; set; }
+        public Nullable<int> GovtPricingReceived { get; set; }
+        public Nullable<System.DateTime> GovtPricingReceivedDate { get; set; }
+        public string GovtPricingReceivedText { get; set; }
+        public Nullable<int> CostAnalysisUnqual { get; set; }
+        public Nullable<System.DateTime> CostAnalysisUnqualDate { get; set; }
+        public string CostAnalysisUnqualText { get; set; }
     }
 }
