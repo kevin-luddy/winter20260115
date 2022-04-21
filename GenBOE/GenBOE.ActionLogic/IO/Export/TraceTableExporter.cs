@@ -255,8 +255,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 					if (customField != null)
 					{
-						var asdf = resourceTypes.SelectMany(x => x.CustomFieldValueContainers).Where(x => x.CustomFieldID == customField.Id).Select(x => new { x.CustomFieldValueID, x.OpenEndedValue }).Distinct();
-						foreach (var customFieldValue in asdf)
+						foreach (var customFieldValue in resourceTypes.SelectMany(x => x.CustomFieldValueContainers).Where(x => x.CustomFieldID == customField.Id).Select(x => new { x.CustomFieldValueID, x.OpenEndedValue }).Distinct())
 						{
 							TraceTableBoeData newChild = new TraceTableBoeData() { SummaryField = currentLevel.GetDescription() };
 							newChild.SummaryFieldValue = customFieldValue.OpenEndedValue; 
