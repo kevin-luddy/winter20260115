@@ -110,7 +110,19 @@ namespace GenBOE.DataBridge.DTO
                                  RFPReleaseText = b.RFPReleaseText,
                                  FirmSupplierReceiptText = b.FirmSupplierReceiptText,
                                  SourceSelectionText = b.SourceSelectionText,
-                                 SupplierCCoPD = (TripleBooleanState?)b.SupplierCCoPD
+                                 SupplierCCoPD = (TripleBooleanState?)b.SupplierCCoPD,
+                                 SourceSelectionDescription = b.SourceSelectionDescription,
+                                 CommercialityDescription = b.CommercialityDescription,
+                                 TechnicalEvaluationDescription = b.TechnicalEvaluationDescription,
+                                 PriceAnalysisDescription = b.PriceAnalysisDescription,
+                                 CostAnalysisDescription = b.CostAnalysisDescription,
+                                 RationaleValueSummary = b.RationaleValueSummary,
+                                 GovtPricingReceived = (ScheduleEvent)b.GovtPricingReceived,
+                                 GovtPricingReceivedDate = b.GovtPricingReceivedDate,
+                                 GovtPricingReceivedText = b.GovtPricingReceivedText,
+                                 CostAnalysisUnqual = (ScheduleEvent)b.CostAnalysisUnqual,
+                                 CostAnalysisUnqualDate = b.CostAnalysisUnqualDate,
+                                 CostAnalysisUnqualText = b.CostAnalysisUnqualText
                              }).ToList();
                 }
                 foreach (BOEFormPBOEDTO dto in pboes)
@@ -226,7 +238,19 @@ namespace GenBOE.DataBridge.DTO
                                     RFPReleaseText = b.RFPReleaseText,
                                     FirmSupplierReceiptText = b.FirmSupplierReceiptText,
                                     SourceSelectionText = b.SourceSelectionText,
-                                    SupplierCCoPD = (TripleBooleanState?)b.SupplierCCoPD
+                                    SupplierCCoPD = (TripleBooleanState?)b.SupplierCCoPD,
+                                    SourceSelectionDescription = b.SourceSelectionDescription,
+                                    CommercialityDescription = b.CommercialityDescription,
+                                    TechnicalEvaluationDescription = b.TechnicalEvaluationDescription,
+                                    PriceAnalysisDescription = b.PriceAnalysisDescription,
+                                    CostAnalysisDescription = b.CostAnalysisDescription,
+                                    RationaleValueSummary = b.RationaleValueSummary,
+                                    GovtPricingReceived = (ScheduleEvent)b.GovtPricingReceived,
+                                    GovtPricingReceivedDate = b.GovtPricingReceivedDate,
+                                    GovtPricingReceivedText = b.GovtPricingReceivedText,
+                                    CostAnalysisUnqual = (ScheduleEvent)b.CostAnalysisUnqual,
+                                    CostAnalysisUnqualDate = b.CostAnalysisUnqualDate,
+                                    CostAnalysisUnqualText = b.CostAnalysisUnqualText
                                 }).ToList();
                 }
 
@@ -336,7 +360,19 @@ namespace GenBOE.DataBridge.DTO
                                     dtoToUpsert.RFPReleaseText,
                                     dtoToUpsert.FirmSupplierReceiptText,
                                     dtoToUpsert.SourceSelectionText,
-                                    (int?)dtoToUpsert.SupplierCCoPD).FirstOrDefault().Value;
+                                    (int?)dtoToUpsert.SupplierCCoPD,
+                                    dtoToUpsert.SourceSelectionDescription,
+                                    dtoToUpsert.CommercialityDescription,
+                                    dtoToUpsert.TechnicalEvaluationDescription,
+                                    dtoToUpsert.PriceAnalysisDescription,
+                                    dtoToUpsert.CostAnalysisDescription,
+                                    dtoToUpsert.RationaleValueSummary,
+                                    (int?)dtoToUpsert.GovtPricingReceived,
+                                    dtoToUpsert.GovtPricingReceivedDate,
+                                    dtoToUpsert.GovtPricingReceivedText,
+                                    (int?)dtoToUpsert.CostAnalysisUnqual,
+                                    dtoToUpsert.CostAnalysisUnqualDate,
+                                    dtoToUpsert.CostAnalysisUnqualText).FirstOrDefault().Value;
 
                         BOEFormPBOE pboeEntity;
                         if ((pboeEntity = gbm.BOEFormPBOEs.FirstOrDefault(b => b.PBOEFormID == dtoToUpsert.Id)) != null)

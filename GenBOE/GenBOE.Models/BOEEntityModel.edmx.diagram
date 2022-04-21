@@ -326,7 +326,7 @@
         <AssociationConnector Association="GenBOE.Models.FK_RteTemplateAnswer_BoeID" />
         <AssociationConnector Association="GenBOE.Models.FK_RteTemplateAnswer_TaskID" />
         <AssociationConnector Association="GenBOE.Models.FK_RteTemplateAnswer_QuestionID" />
-        <EntityTypeShape EntityType="GenBOE.Models.RteTemplateSource" Width="1.5" PointX="5.375" PointY="17.875" />
+        <EntityTypeShape EntityType="GenBOE.Models.RteTemplateSource" Width="1.5" PointX="6.75" PointY="17.75" />
         <AssociationConnector Association="GenBOE.Models.RteTemplateAssigned" />
         <EntityTypeShape EntityType="GenBOE.Models.ProjectMap" Width="1.5" PointX="3.375" PointY="20.75" />
         <AssociationConnector Association="GenBOE.Models.FK__ProjectMa__Legac__3AD8B324" />

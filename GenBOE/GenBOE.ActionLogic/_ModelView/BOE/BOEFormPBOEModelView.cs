@@ -93,10 +93,10 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.PriceAnalysisDescription = dto.PriceAnalysisDescription;
             this.CostAnalysisDescription = dto.CostAnalysisDescription;
             this.RationaleValueSummary = dto.RationaleValueSummary;
-            this.GovtPricingReceived = dto.GovtPricingReceived;
+            this.GovtPricingReceived = dto.GovtPricingReceived ?? ScheduleEvent.NA;
             this.GovtPricingReceivedDate = dto.GovtPricingReceivedDate;
             this.GovtPricingReceivedText = dto.GovtPricingReceivedText;
-            this.CostAnalysisUnqual = dto.CostAnalysisUnqual;
+            this.CostAnalysisUnqual = dto.CostAnalysisUnqual ?? ScheduleEvent.NA;
             this.CostAnalysisUnqualDate = dto.CostAnalysisUnqualDate;
             this.CostAnalysisUnqualText = dto.CostAnalysisUnqualText;
         }

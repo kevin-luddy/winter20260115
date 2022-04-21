@@ -462,6 +462,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.RFPReleaseText = modelview.RFPReleaseText;
             dto.FirmSupplierReceiptText = modelview.FirmSupplierReceiptText;
             dto.SourceSelectionText = modelview.SourceSelectionText;
+            dto.SourceSelectionDescription = modelview.SourceSelectionDescription;
+            dto.CommercialityDescription = modelview.CommercialityDescription;
+            dto.TechnicalEvaluationDescription = modelview.TechnicalEvaluationDescription;
+            dto.PriceAnalysisDescription = modelview.PriceAnalysisDescription;
+            dto.CostAnalysisDescription = modelview.CostAnalysisDescription;
+            dto.RationaleValueSummary = modelview.RationaleValueSummary;
+            dto.GovtPricingReceived = modelview.GovtPricingReceived;
+            dto.GovtPricingReceivedDate = modelview.GovtPricingReceivedDate;
+            dto.GovtPricingReceivedText = modelview.GovtPricingReceivedText;
+            dto.CostAnalysisUnqual = modelview.CostAnalysisUnqual;
+            dto.CostAnalysisUnqualDate = modelview.CostAnalysisUnqualDate;
+            dto.CostAnalysisUnqualText = modelview.CostAnalysisUnqualText;
 
             return dto;
         }

@@ -4,7 +4,7 @@ GO
 /*
     ## START ##
 
-    04/14/2022 [Quijano] - IES-1014 PBOE DB Changes - Add new columns
+    04/14/2022 [Quijano] - IES-1014 PBOE DB Changes - Add new columns, modify existing to allow nulls
 */
 
 IF COL_LENGTH ('dbo.BOEFormPBOE', 'SupplierCCoPD') IS NULL
@@ -14,6 +14,91 @@ BEGIN
 END
 GO
 
+IF COL_LENGTH ('dbo.BOEFormPBOE', 'SourceSelectionDescription') IS NULL
+BEGIN
+	ALTER TABLE dbo.BOEFormPBOE
+		ADD SourceSelectionDescription VARCHAR(MAX) NULL
+END
+GO
+
+IF COL_LENGTH ('dbo.BOEFormPBOE', 'CommercialityDescription') IS NULL
+BEGIN
+	ALTER TABLE dbo.BOEFormPBOE
+		ADD CommercialityDescription VARCHAR(MAX) NULL
+END
+GO
+
+IF COL_LENGTH ('dbo.BOEFormPBOE', 'TechnicalEvaluationDescription') IS NULL
+BEGIN
+	ALTER TABLE dbo.BOEFormPBOE
+		ADD TechnicalEvaluationDescription VARCHAR(MAX) NULL
+END
+GO
+
+IF COL_LENGTH ('dbo.BOEFormPBOE', 'PriceAnalysisDescription') IS NULL
+BEGIN
+	ALTER TABLE dbo.BOEFormPBOE
+		ADD PriceAnalysisDescription VARCHAR(MAX) NULL
+END
+GO
+
+IF COL_LENGTH ('dbo.BOEFormPBOE', 'CostAnalysisDescription') IS NULL
+BEGIN
+	ALTER TABLE dbo.BOEFormPBOE
+		ADD CostAnalysisDescription VARCHAR(MAX) NULL
+END
+GO
+
+IF COL_LENGTH ('dbo.BOEFormPBOE', 'RationaleValueSummary') IS NULL
+BEGIN
+	ALTER TABLE dbo.BOEFormPBOE
+		ADD RationaleValueSummary VARCHAR(MAX) NULL
+END
+GO
+
+IF COL_LENGTH ('dbo.BOEFormPBOE', 'GovtPricingReceived') IS NULL
+BEGIN
+	ALTER TABLE dbo.BOEFormPBOE
+		ADD GovtPricingReceived INT NULL
+END
+GO
+
+IF COL_LENGTH ('dbo.BOEFormPBOE', 'GovtPricingReceivedDate') IS NULL
+BEGIN
+	ALTER TABLE dbo.BOEFormPBOE
+		ADD GovtPricingReceivedDate DATE NULL
+END
+GO
+
+IF COL_LENGTH ('dbo.BOEFormPBOE', 'GovtPricingReceivedText') IS NULL
+BEGIN
+	ALTER TABLE dbo.BOEFormPBOE
+		ADD GovtPricingReceivedText VARCHAR(30) NULL
+END
+GO
+
+IF COL_LENGTH ('dbo.BOEFormPBOE', 'CostAnalysisUnqual') IS NULL
+BEGIN
+	ALTER TABLE dbo.BOEFormPBOE
+		ADD CostAnalysisUnqual INT NULL
+END
+GO
+
+IF COL_LENGTH ('dbo.BOEFormPBOE', 'CostAnalysisUnqualDate') IS NULL
+BEGIN
+	ALTER TABLE dbo.BOEFormPBOE
+		ADD CostAnalysisUnqualDate DATE NULL
+END
+GO
+
+IF COL_LENGTH ('dbo.BOEFormPBOE', 'CostAnalysisUnqualText') IS NULL
+BEGIN
+	ALTER TABLE dbo.BOEFormPBOE
+		ADD CostAnalysisUnqualText VARCHAR(30) NULL
+END
+GO
+
+/* make removed fields nullable */
 IF COL_LENGTH('dbo.BOEFormPBOE', 'DegreeOfCompetition') IS NOT NULL
 BEGIN
 	ALTER TABLE dbo.BOEFormPBOE

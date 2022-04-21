@@ -97,7 +97,7 @@
                         }
 
                         if (tinyMCE.EditorManager.editors.Description_RationaleValueSummary) {
-                            data.RationaleValueDescription = tinyMCE.EditorManager.editors.Description_RationaleValueSummary.getContent();
+                            data.RationaleValueSummary = tinyMCE.EditorManager.editors.Description_RationaleValueSummary.getContent();
                         }
                     }
 
@@ -112,7 +112,7 @@
                             data.BasisAndRationale = tinyMCE.EditorManager.editors.BasisAndRationale_IBOE.getContent();
                         }
                     }
-                
+
                     var dataToSend = JSON.stringify(data);
                     var action = (boeFormType == boeFormTypeIBOE) ? '<%:WebConstants.ACTION_SAVE_IBOE_FORM%>' : '<%:WebConstants.ACTION_SAVE_PBOE_FORM%>';
 
