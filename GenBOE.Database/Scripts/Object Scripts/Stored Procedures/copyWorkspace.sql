@@ -34,6 +34,7 @@ AS
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 **		11/30/2021	Dusan				IES-461: Remove RMS Zone Travel copying
 **		4/13/2022	jquijano			IES-1014: Remove deprecated PBOE fields
+**		4/22/2022	jquijano			IES-1019: Add new fields to copy workspace
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -2226,7 +2227,20 @@ BEGIN
 		ShouldCostEstimateText,
 		RFPReleaseText,
 		FirmSupplierReceiptText,
-		SourceSelectionText)
+		SourceSelectionText
+		,[SupplierCCoPD]
+		,[SourceSelectionDescription]
+		,[CommercialityDescription]
+		,[TechnicalEvaluationDescription]
+		,[PriceAnalysisDescription]
+		,[CostAnalysisDescription]
+		,[RationaleValueSummary]
+		,[GovtPricingReceived]
+		,[GovtPricingReceivedDate]
+		,[GovtPricingReceivedText]
+		,[CostAnalysisUnqual]
+		,[CostAnalysisUnqualDate]
+		,[CostAnalysisUnqualText])
 	SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion, 
 		[CCoPD],
 		[CCoPDOtherText],
@@ -2272,6 +2286,19 @@ BEGIN
 		RFPReleaseText,
 		FirmSupplierReceiptText,
 		SourceSelectionText
+		,[SupplierCCoPD]
+		,[SourceSelectionDescription]
+		,[CommercialityDescription]
+		,[TechnicalEvaluationDescription]
+		,[PriceAnalysisDescription]
+		,[CostAnalysisDescription]
+		,[RationaleValueSummary]
+		,[GovtPricingReceived]
+		,[GovtPricingReceivedDate]
+		,[GovtPricingReceivedText]
+		,[CostAnalysisUnqual]
+		,[CostAnalysisUnqualDate]
+		,[CostAnalysisUnqualText]
 	  FROM [dbo].[BOEFormPBOE]
 	WHERE [PBOEFormID] = @PBOEID 
 	UPDATE @PBOE 
