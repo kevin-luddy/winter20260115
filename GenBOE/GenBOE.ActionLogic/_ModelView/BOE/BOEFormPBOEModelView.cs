@@ -110,6 +110,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// <summary>
         /// Supplier CCoPD Applies
         /// </summary>
+        [RequiredIf("CCoPDApplies", true, ErrorMessage = "Supplier CCoPD Applies is required when CCoPD Applies is selected.")]
         public TripleBooleanState? SupplierCCoPD { get; set; }
 
         /// <summary>
