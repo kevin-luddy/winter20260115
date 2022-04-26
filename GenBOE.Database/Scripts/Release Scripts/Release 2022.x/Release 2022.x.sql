@@ -161,9 +161,6 @@ GO
     ## END ##
 */
 
-EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2022.x.x';
-GO
-
 /*
     ## START ##
 
