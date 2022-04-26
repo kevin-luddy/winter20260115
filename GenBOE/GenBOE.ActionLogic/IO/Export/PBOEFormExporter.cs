@@ -217,9 +217,9 @@ namespace GenBOE.ActionLogic.IO.Export
             // IES-1017: New RTE Fields
             this.SetHtmlField(document, PROPOSED_COMMERCIALITY, boeForm.CommercialityDescription, ref counters);
             this.SetHtmlField(document, PROPOSED_SOURCE_SELECTION, boeForm.SourceSelectionDescription, ref counters);
-            this.SetHtmlField(document, TECHNICAL_EVALUATION, boeForm.TechnicalEvaluationDescription, ref counters);
-            this.SetHtmlField(document, PRICE_ANALYSIS, boeForm.PriceAnalysisDescription, ref counters);
-            this.SetHtmlField(document, COST_ANALYSIS, boeForm.CostAnalysisDescription, ref counters);
+            this.SetHtmlField(document, PROPOSED_TECHNICAL_EVALUATION, boeForm.TechnicalEvaluationDescription, ref counters);
+            this.SetHtmlField(document, PROPOSED_PRICE_ANALYSIS, boeForm.PriceAnalysisDescription, ref counters);
+            this.SetHtmlField(document, PROPOSED_COST_ANALYSIS, boeForm.CostAnalysisDescription, ref counters);
             this.SetHtmlField(document, PROPOSED_VALUE_SUMMARY, boeForm.RationaleValueSummary, ref counters);
 
             IOrderedEnumerable<string> distinctCLINs = rows.Select<PBOETableRow, string>(tr => tr.CLIN).Distinct().OrderBy(c => c);
