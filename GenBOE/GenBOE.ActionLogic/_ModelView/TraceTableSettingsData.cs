@@ -4,7 +4,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.Web.ModelView
+namespace GenBOE.ActionLogic.ModelView
 {
 	using System.Collections.Generic;
 

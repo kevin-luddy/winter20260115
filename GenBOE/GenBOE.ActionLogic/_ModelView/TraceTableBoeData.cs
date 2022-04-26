@@ -4,9 +4,10 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace GenBOE.Web.ModelView
+namespace GenBOE.ActionLogic.ModelView
 {
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 
 	/// <summary>
 	/// Trace Table Data from genBOE
@@ -28,7 +29,7 @@ namespace GenBOE.Web.ModelView
 		/// key - year
 		/// value - spread value
 		/// </summary>
-		public IDictionary<int, decimal> SpreadValuesForYear { get; set; }
+		public IDictionary<int, decimal> SpreadValuesForYear { get; set; } = new Dictionary<int, decimal>();
 
 		/// <summary>
 		/// Total value for the current and parent summary fields
@@ -38,6 +39,6 @@ namespace GenBOE.Web.ModelView
 		/// <summary>
 		/// Child trace table BOE data
 		/// </summary>
-		public ICollection<TraceTableBoeData> traceTableBoeData { get; set; }
+		public ICollection<TraceTableBoeData> ChildData { get; set; } = new Collection<TraceTableBoeData>();
 	}
 }
