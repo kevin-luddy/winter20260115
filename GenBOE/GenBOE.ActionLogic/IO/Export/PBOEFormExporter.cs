@@ -186,9 +186,9 @@ namespace GenBOE.ActionLogic.IO.Export
 
             // ccopd checkboxes
             this.SetCheckbox(document, CCOPD, boeForm.CCoPDApplies);
-            this.SetCheckbox(document, CCOPD_YES, boeForm.CCoPDApplies);
-            this.SetCheckbox(document, CCOPD_NO, boeForm.CCoPDApplies);
-            this.SetCheckbox(document, CCOPD_NA, boeForm.CCoPDApplies);
+            this.SetCheckbox(document, CCOPD_YES, boeForm.SupplierCCoPD == TripleBooleanState.Yes);
+            this.SetCheckbox(document, CCOPD_NO, boeForm.SupplierCCoPD == TripleBooleanState.No);
+            this.SetCheckbox(document, CCOPD_NA, boeForm.SupplierCCoPD == TripleBooleanState.NA);
             this.SetCheckbox(document, CCOPD_COMMERCIAL, boeForm.CommercialItemExceptionApplies);
             this.SetCheckbox(document, CCOPD_COMPETITION, boeForm.CompetitionExceptionApplies);
             this.SetCheckbox(document, CCOPD_THRESHOLD, boeForm.LessThanThresholdExceptionApplies);
@@ -208,8 +208,19 @@ namespace GenBOE.ActionLogic.IO.Export
             this.SetScheduleEventDateField(document, GOVT_PRICING_CCOPD_REQUEST, boeForm.GovtPricing, boeForm.GovtPricingDate, boeForm.GovtPricingText);
             this.SetScheduleEventDateField(document, SUPPLIER_NEGOTIATIONS, boeForm.SupplierNegotiations, boeForm.SupplierNegotiationsDate, boeForm.SupplierNegotiationsText);
             this.SetScheduleEventDateField(document, MOU, boeForm.MOU, boeForm.MOUDate, boeForm.MOUText);
+            // IES-1017: New fields, guard against older forms having null
+            this.SetScheduleEventDateField(document, GOVT_PRICING_CCOPD_REVIEW, boeForm.GovtPricingReceived == null ? ScheduleEvent.NA : (ScheduleEvent)boeForm.GovtPricingReceived, boeForm.GovtPricingReceivedDate, boeForm?.GovtPricingReceivedText);
+            this.SetScheduleEventDateField(document, COST_ANALYSIS_UNQUALIFIED, boeForm.CostAnalysisUnqual == null ? ScheduleEvent.NA : (ScheduleEvent)boeForm.CostAnalysisUnqual, boeForm.CostAnalysisUnqualDate, boeForm?.CostAnalysisUnqualText);
             this.SetDateField(document, PLANNED_DATE_A, boeForm.PlannedDate_WrittenApproval);
             this.SetDateField(document, PLANNED_DATE_B, boeForm.PlannedDate_ApprovedSubmission);
+
+            // IES-1017: New RTE Fields
+            this.SetHtmlField(document, PROPOSED_COMMERCIALITY, boeForm.CommercialityDescription, ref counters);
+            this.SetHtmlField(document, PROPOSED_SOURCE_SELECTION, boeForm.SourceSelectionDescription, ref counters);
+            this.SetHtmlField(document, TECHNICAL_EVALUATION, boeForm.TechnicalEvaluationDescription, ref counters);
+            this.SetHtmlField(document, PRICE_ANALYSIS, boeForm.PriceAnalysisDescription, ref counters);
+            this.SetHtmlField(document, COST_ANALYSIS, boeForm.CostAnalysisDescription, ref counters);
+            this.SetHtmlField(document, PROPOSED_VALUE_SUMMARY, boeForm.RationaleValueSummary, ref counters);
 
             IOrderedEnumerable<string> distinctCLINs = rows.Select<PBOETableRow, string>(tr => tr.CLIN).Distinct().OrderBy(c => c);
 
