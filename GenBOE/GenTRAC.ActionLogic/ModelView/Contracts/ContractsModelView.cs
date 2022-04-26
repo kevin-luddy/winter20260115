@@ -113,7 +113,7 @@ namespace GenTRAC.ActionLogic.ModelView
         /// <summary>
         /// Final Negotiated Value String
         /// </summary>
-        [Display(Name = "Final Negotiated Value")]
+        [Display(Name = "Final Negotiated Value ($)")]
         public string FinalNegotiatedValue => this.FinalNegotiatedValueLong?.ToString("C");
 
         /// <summary>

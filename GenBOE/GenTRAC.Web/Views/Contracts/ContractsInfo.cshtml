@@ -220,6 +220,12 @@
             $(this).text('Please Wait...');
             ContractsInfoWidget.setProposalLost();
         });
+
+        $('#FinalNegotiatedValue').on('change', function () {
+            const dollarValue = $('#FinalNegotiatedValue').val().trim().replace('$', '').replace(/\,/g, '');
+            GenTRAC.numericCommaSeparator(ContractsInfoWidget, dollarValue, 'input[name="FinalNegotiatedValue"]', false);
+            $('#FinalNegotiatedValue').val('$' + $('#FinalNegotiatedValue').val());
+        });
     });
 </script>
 
