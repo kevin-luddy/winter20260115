@@ -148,6 +148,9 @@
                 $('#proposalReceived').show();
             } else {
                 $('#proposalReceived').hide();
+
+                // ensure that the SupplierCCoPD is removed
+                $('input[name="SupplierCCoPD"]:checked').prop('checked', false);
             }
         }
 
