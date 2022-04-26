@@ -240,7 +240,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			settings.SummaryFields = new Collection<string>()
 			{
 				SummaryFieldType.BOETitle.GetDescription(),
-				SummaryFieldType.TaskDescription.GetDescription(), 
+				SummaryFieldType.TaskTitle.GetDescription(), 
 				SummaryFieldType.ResourceDescription.GetDescription(),
 				SummaryFieldType.PerformingOrgId.GetDescription()
 			};
@@ -261,7 +261,7 @@ namespace GenBOE.Tests.ActionLogic.Export
 			// Then Task Title
 			TraceTableBoeData taskField = boeField.ChildData.FirstOrDefault();
 			Assert.IsNotNull(taskField);
-			Assert.AreEqual(SummaryFieldType.TaskDescription.GetDescription(), taskField.SummaryField);
+			Assert.AreEqual(SummaryFieldType.TaskTitle.GetDescription(), taskField.SummaryField);
 			Assert.AreEqual(task1.TaskTitle, taskField.SummaryFieldValue);
 			Assert.AreEqual(0, taskField.TotalValue);
 			Assert.IsFalse(taskField.SpreadValuesForYear.Any());

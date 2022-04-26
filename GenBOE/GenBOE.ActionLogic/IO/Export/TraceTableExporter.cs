@@ -171,7 +171,7 @@ namespace GenBOE.ActionLogic.IO.Export
 					}
 
 				}
-				else if (currentLevel.Equals(SummaryFieldType.TaskDescription.GetDescription(), StringComparison.CurrentCultureIgnoreCase))
+				else if (currentLevel.Equals(SummaryFieldType.TaskTitle.GetDescription(), StringComparison.CurrentCultureIgnoreCase))
 				{
 					foreach (int taskId in resourceTypes.Select(x => x.TaskElementId).Distinct())
 					{

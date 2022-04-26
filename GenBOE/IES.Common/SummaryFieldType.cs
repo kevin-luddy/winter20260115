@@ -34,8 +34,8 @@ namespace IES.Common
         /// <summary>
         /// Task Description
         /// </summary>
-        [Description("Task Description")]
-        TaskDescription = 4,
+        [Description("Task Title")]
+        TaskTitle = 4,
 
         /// <summary>
         /// Performing Org Id
