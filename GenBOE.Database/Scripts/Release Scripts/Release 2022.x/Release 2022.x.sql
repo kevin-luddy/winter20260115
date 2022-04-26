@@ -156,7 +156,167 @@ END
 GO
 
 /*
-    04/14/2022 [Quijano] - IES-1014 PBOE DB Changes - Add new columns
+    04/22/2022 [Quijano] - IES-1014 PBOE DB Changes - Add new columns
+
+    ## END ##
+*/
+
+/*
+    ## START ##
+
+    04/22/2022 [Quijano] - IES-1019 PBOE DB Changes - Add new columns to backup schema
+*/
+
+IF COL_LENGTH ('version.BOEFormPBOE', 'SupplierCCoPD') IS NULL
+BEGIN
+    ALTER TABLE version.BOEFormPBOE
+        ADD SupplierCCoPD INT NULL
+END
+GO
+
+IF COL_LENGTH ('version.BOEFormPBOE', 'SourceSelectionDescription') IS NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ADD SourceSelectionDescription VARCHAR(MAX) NULL
+END
+GO
+
+IF COL_LENGTH ('version.BOEFormPBOE', 'CommercialityDescription') IS NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ADD CommercialityDescription VARCHAR(MAX) NULL
+END
+GO
+
+IF COL_LENGTH ('version.BOEFormPBOE', 'TechnicalEvaluationDescription') IS NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ADD TechnicalEvaluationDescription VARCHAR(MAX) NULL
+END
+GO
+
+IF COL_LENGTH ('version.BOEFormPBOE', 'PriceAnalysisDescription') IS NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ADD PriceAnalysisDescription VARCHAR(MAX) NULL
+END
+GO
+
+IF COL_LENGTH ('version.BOEFormPBOE', 'CostAnalysisDescription') IS NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ADD CostAnalysisDescription VARCHAR(MAX) NULL
+END
+GO
+
+IF COL_LENGTH ('version.BOEFormPBOE', 'RationaleValueSummary') IS NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ADD RationaleValueSummary VARCHAR(MAX) NULL
+END
+GO
+
+IF COL_LENGTH ('version.BOEFormPBOE', 'GovtPricingReceived') IS NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ADD GovtPricingReceived INT NULL
+END
+GO
+
+IF COL_LENGTH ('version.BOEFormPBOE', 'GovtPricingReceivedDate') IS NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ADD GovtPricingReceivedDate DATE NULL
+END
+GO
+
+IF COL_LENGTH ('version.BOEFormPBOE', 'GovtPricingReceivedText') IS NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ADD GovtPricingReceivedText VARCHAR(30) NULL
+END
+GO
+
+IF COL_LENGTH ('version.BOEFormPBOE', 'CostAnalysisUnqual') IS NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ADD CostAnalysisUnqual INT NULL
+END
+GO
+
+IF COL_LENGTH ('version.BOEFormPBOE', 'CostAnalysisUnqualDate') IS NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ADD CostAnalysisUnqualDate DATE NULL
+END
+GO
+
+IF COL_LENGTH ('version.BOEFormPBOE', 'CostAnalysisUnqualText') IS NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ADD CostAnalysisUnqualText VARCHAR(30) NULL
+END
+GO
+
+/* make removed fields nullable */
+IF COL_LENGTH('version.BOEFormPBOE', 'DegreeOfCompetition') IS NOT NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ALTER COLUMN DegreeOfCompetition INT NULL
+END
+GO
+
+IF COL_LENGTH('version.BOEFormPBOE', 'SupplierProposalSupportingDataIncluded') IS NOT NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ALTER COLUMN SupplierProposalSupportingDataIncluded INT NULL
+END
+GO
+
+IF COL_LENGTH('version.BOEFormPBOE', 'PriceAnalysisIncluded') IS NOT NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ALTER COLUMN PriceAnalysisIncluded INT NULL
+END
+GO
+
+IF COL_LENGTH('version.BOEFormPBOE', 'CommercialItemDocIncluded') IS NOT NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ALTER COLUMN CommercialItemDocIncluded INT NULL
+END
+GO
+
+IF COL_LENGTH('version.BOEFormPBOE', 'CostAnalysisIncluded') IS NOT NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ALTER COLUMN CostAnalysisIncluded INT NULL
+END
+GO
+
+IF COL_LENGTH('version.BOEFormPBOE', 'SowWritten') IS NOT NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ALTER COLUMN SowWritten INT NULL
+END
+GO
+
+IF COL_LENGTH('version.BOEFormPBOE', 'GovtReview') IS NOT NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ALTER COLUMN GovtReview INT NULL
+END
+GO
+
+IF COL_LENGTH('version.BOEFormPBOE', 'Procurement') IS NOT NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ALTER COLUMN Procurement INT NULL
+END
+GO
+
+/*
+    04/22/2022 [Quijano] - IES-1019 PBOE DB Changes - Add new columns to backup schema
 
     ## END ##
 */
