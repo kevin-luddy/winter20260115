@@ -414,6 +414,11 @@ namespace GenBOE.Tests.ActionLogic.IO
             throw new NotImplementedException();
         }
 
+        public ICollection<string> GetNoADSynceAccountsFromWebConfig()
+        {
+            throw new NotImplementedException();
+        }
+
         public string GetUserAndGroupIdsAsXml(string ntid, ICollection<GroupData> groups)
         {
             throw new NotImplementedException();
