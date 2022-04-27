@@ -87,5 +87,11 @@ namespace IES.Common
         /// <param name="inNtID">group or user's NT ID</param>
         /// <returns>true if group, false if not</returns>
         bool IsGroup(string inNtID);
+
+        /// <summary>
+        /// Gets the NTIDs from the Web.config that should not be updated during ADSync
+        /// </summary>
+        /// <returns>As list of NTIDs</returns>
+        ICollection<string> GetNoADSynceAccountsFromWebConfig();
     }
 }

@@ -912,6 +912,23 @@ namespace IES.Common
         }
 
         /// <summary>
+        /// Gets accounts that should not be updated during an AD sync
+        /// </summary>
+        /// <returns>List of NTIDs</returns>
+        public ICollection<string> GetNoADSynceAccountsFromWebConfig()
+        {
+            List<string> result = new List<string>();
+            string value = WebConfigurationManager.AppSettings["NoADSyncAccounts"];
+            
+            if (!string.IsNullOrEmpty(value))
+            {
+                result.AddRange(value.Split(',').Select(x => x.Trim()));
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Extract the value of the given property
         /// </summary>
         /// <param name="inPropertyName">Property name</param>

@@ -70,6 +70,20 @@ namespace GenBOE.ActionLogic.Synchronization
                 }
             }
 
+            // get the list of users we DO NOT want to update
+            ICollection<string> doNotUpdateUsers = adUtils.GetNoADSynceAccountsFromWebConfig();
+            foreach (string user in doNotUpdateUsers)
+            {
+                UserDTO dto = allUsers.FirstOrDefault(x => x.NTID == user);
+                
+                if (dto != null)
+                {
+                    Console.WriteLine($"Removing user {user} from update consideration.");
+                    this.logger.Info($"Removing user {user} from update consideration.");
+                    allUsers.Remove(dto);
+                }
+            }
+
             // Iterate over each genBOE user
             foreach (UserDTO user in allUsers.Where(x=>!string.IsNullOrEmpty(x.NTID)))
             {
