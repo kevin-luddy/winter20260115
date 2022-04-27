@@ -316,11 +316,6 @@
             </div>
         </div>
     </div>
-    <!--
-    <div class="form-row">
-        <span class="form-label"><span helptext="For each field in this section, a planned date, an actual date or “not applicable” is required. BE SURE TO KEEP THESE DATES CURRENT AS THEY CHANGE OR BECOME ACTUALS THROUGH THE CUSTOMER FACTFINDING AND NEGOTIATION PROCESS.">Schedule of Events (Date planned if not yet complete, if planned calendar date unknown, please describe (example, “ATP + 30 days”); Actual date if completed; Not applicable)</span></span>
-    </div>
-    -->
     <div class="form-section">
         <div class="form-section-header">
             <label class="form-label" style="margin-top: 8px;">
