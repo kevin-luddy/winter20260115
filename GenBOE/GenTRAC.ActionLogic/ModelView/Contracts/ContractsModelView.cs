@@ -88,7 +88,7 @@ namespace GenTRAC.ActionLogic.ModelView
         /// <summary>
         /// Customer Submittal Date String
         /// </summary>
-        [Display(Name = "Customer Submittal Date")]
+        [Display(Name = "Proposal Submittal Date to Customer")]
         public string CustomerSubmittalDate
         {
             get => this.CustomerSubmittalDt?.Date.ToShortDateString();
