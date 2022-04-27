@@ -8672,3 +8672,18 @@ div.WarningBanner {
 #proposalReceived {
     padding-left: 20px;
 }
+
+.form-section {
+    border-top: 1px black solid;
+    border-bottom: 1px gray solid;
+    margin-bottom: 8px;
+}
+
+.form-section-header {
+    font-size: 13px;
+    background-color: lightgray;
+    border-bottom: 1px solid black;
+    height: 30px;
+    padding: 0 8px;
+    margin-bottom: 8px;
+}
