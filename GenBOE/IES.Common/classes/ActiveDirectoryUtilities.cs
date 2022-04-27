@@ -918,7 +918,7 @@ namespace IES.Common
         public ICollection<string> GetNoADSynceAccountsFromWebConfig()
         {
             List<string> result = new List<string>();
-            string value = WebConfigurationManager.AppSettings["NoADSynceAccounts"];
+            string value = WebConfigurationManager.AppSettings["NoADSyncAccounts"];
             
             if (!string.IsNullOrEmpty(value))
             {
