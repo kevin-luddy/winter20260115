@@ -86,9 +86,9 @@ namespace GenTRAC.ActionLogic.ModelView
         public string PreviousROMValue => this.PreviousROMValueDecimal?.ToString("C");
 
         /// <summary>
-        /// Customer Submittal Date String
+        /// Proposal Submittal Date to Customer string representation.
         /// </summary>
-        [Display(Name = "Customer Submittal Date")]
+        [Display(Name = "Proposal Submittal Date to Customer")]
         public string CustomerSubmittalDate
         {
             get => this.CustomerSubmittalDt?.Date.ToShortDateString();
