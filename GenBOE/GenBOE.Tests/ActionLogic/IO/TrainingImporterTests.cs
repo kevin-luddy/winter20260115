@@ -414,7 +414,7 @@ namespace GenBOE.Tests.ActionLogic.IO
             throw new NotImplementedException();
         }
 
-        public ICollection<string> GetNoADSynceAccountsFromWebConfig()
+        public ICollection<string> GetNoADSyncAccountsFromWebConfig()
         {
             throw new NotImplementedException();
         }

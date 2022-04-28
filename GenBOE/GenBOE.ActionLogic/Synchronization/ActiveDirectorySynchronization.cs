@@ -71,7 +71,7 @@ namespace GenBOE.ActionLogic.Synchronization
             }
 
             // get the list of users we DO NOT want to update
-            ICollection<string> doNotUpdateUsers = adUtils.GetNoADSynceAccountsFromWebConfig();
+            ICollection<string> doNotUpdateUsers = adUtils.GetNoADSyncAccountsFromWebConfig();
             foreach (string user in doNotUpdateUsers)
             {
                 UserDTO dto = allUsers.FirstOrDefault(x => x.NTID == user);
