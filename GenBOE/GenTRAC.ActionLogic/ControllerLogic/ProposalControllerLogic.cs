@@ -1418,8 +1418,6 @@ namespace GenTRAC.ActionLogic
                     groupName = IES.Common.ConfigurationUtilities.GetAppSetting("CoverSheetApprovers");
                     break;
                 case PtmRole.ContractsPOC:
-                    groupName = IES.Common.ConfigurationUtilities.GetAppSetting("ContractsLead");
-                    break;
                 case PtmRole.BackupContractsPOC:
                     groupName = IES.Common.ConfigurationUtilities.GetAppSetting("ContractsLead");
                     break;
@@ -1620,14 +1618,23 @@ namespace GenTRAC.ActionLogic
                 }
             }
 
-            model.ContractLeadList = this.GetUsersForSelectList(PtmRole.ContractsPOC).Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName }).ToList();
+            // Primary and Backup Contracts PoC share the same AD List, get the data once for both
+            ICollection<UserDTO> contractsUsers = this.GetUsersForSelectList(PtmRole.ContractsPOC);
+
+            model.ContractLeadList = contractsUsers?
+                .Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
+                .OrderBy(x => x.Text)
+                .ToList();
             if (!model.ContractLeadList.Any(x => x.Value == model.ContractsPOCNtId))
             {
                 model.ContractLeadList.Insert(0, new SelectListItem() { Value = model.ContractsPOCNtId, Text = model.ContractsPOCDisplayName });
             }
             model.ContractLeadList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Contracts Lead" });
 
-            model.BackupContractLeadList = this.GetUsersForSelectList(PtmRole.BackupContractsPOC).Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName }).ToList();
+            model.BackupContractLeadList = contractsUsers?
+                .Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
+                .OrderBy(x => x.Text)
+                .ToList();
             if (!model.BackupContractLeadList.Any(x => x.Value == model.BackupContractsPOCNtId))
             {
                 model.BackupContractLeadList.Insert(0, new SelectListItem() { Value = model.BackupContractsPOCNtId, Text = model.BackupContractsPOCDisplayName });
