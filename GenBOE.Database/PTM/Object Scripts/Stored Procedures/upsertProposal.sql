@@ -78,7 +78,8 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @ReasonCertificationNotRequired INT = 1,
 	  @OtherReasonComment VARCHAR(1000) = NULL,
 	  @SetupComments VARCHAR(MAX) = NULL,
-	  @ModExecutedLastEmailed datetime2 = NULL
+	  @ModExecutedLastEmailed datetime2 = NULL,
+	  @ProposalCompletedDate datetime2 = NULL
 )
 AS
 /******************************************************************************
@@ -114,6 +115,7 @@ AS
 **			7/2/2020	ranzalon				BOEJ-4687 Link Revisions to Revised Proposal
 **			7/31/2020	ranzalon				BOEJ-4648 Proposal Setup Comments
 **          3/10/2022   jquijano                IES-854 Add new email (Mod)
+**			4/28/2022	jquijano				IES-1067 Show Certification TimelineCompleted Date
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -257,6 +259,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,[OtherReasonComment]
 		,[SetupComments]
 		,[ModExecutedLastEmailed]
+		,[ProposalCompletedDate]
 		)
 	OUTPUT inserted.ProposalID INTO @Inserted
 	VALUES
@@ -323,6 +326,7 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@OtherReasonComment
 		,@SetupComments
 		,@ModExecutedLastEmailed
+		,@ProposalCompletedDate
 		)
 
 		SELECT @ProposalID = ID FROM @Inserted
@@ -423,7 +427,7 @@ ELSE
 						,[OtherReasonComment] = @OtherReasonComment
 						,[SetupComments] = @SetupComments
 						,[ModExecutedLastEmailed] = @ModExecutedLastEmailed
-
+						,[ProposalCompletedDate] = @ProposalCompletedDate
 						WHERE 
 							ProposalID = @ProposalID;
 

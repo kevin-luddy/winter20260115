@@ -17,7 +17,7 @@ namespace GenTRAC.Models
         public int ProposalContractsDataId { get; set; }
         public System.DateTime UpdateDT { get; set; }
         public int ProposalID { get; set; }
-        public int PreviouslySubmittedROM { get; set; }
+        public Nullable<int> PreviouslySubmittedROM { get; set; }
         public Nullable<System.DateTime> CustomerSubmittalDate { get; set; }
         public string ContractsCorrespondLogNumber { get; set; }
         public Nullable<long> FinalNegotiatedValue { get; set; }

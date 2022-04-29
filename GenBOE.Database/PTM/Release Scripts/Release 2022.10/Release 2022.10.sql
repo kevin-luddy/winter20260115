@@ -235,3 +235,12 @@ BEGIN
   UPDATE RoleLU SET RoleName = 'GSCO Administrator' WHERE RoleID = 10
 END
 GO
+
+/*
+	4/28/2022 [Quijano, Jesse] - IES-1067 Show Certification TimelineCompleted Date
+*/
+IF OBJECT_ID('dbo.Proposal', 'ProposalCompletedDate') IS NULL
+BEGIN
+	ALTER TABLE dbo.Proposal ADD ProposalCompletedDate datetime2(7) NULL;
+END
+GO
