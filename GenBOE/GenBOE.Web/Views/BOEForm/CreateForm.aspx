@@ -61,6 +61,10 @@
                 if (boeFormType == '<%:(int)BOEFormType.NotSet%>') {
                     Session.alertDialog("Form Type", "A Form Type must be selected to save.");
                 } else {
+                    // Ensure any currency formatting is stripped
+                    const unformattedValue = $('#SupplierProposedValue').val().replace(',', '').replace('$', '');
+                    $('#SupplierProposedValue').val(unformattedValue);
+
                     var data = ManageBOEFormsWidget.getForm('CreateBOEForm').getData();
 
                     // Get the Form Types once.

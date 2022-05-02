@@ -41,6 +41,7 @@ AS
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
 **		4/13/2022	jquijano			IES-1014: Remove deprecated PBOE fields
 **		4/22/2022	jquijano			IES-1019: Add new fields to copy workspace
+**		5/2/2022	jquijano			IES-1126: Add VendorId, SupplierProposedValue
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -2587,7 +2588,9 @@ BEGIN TRY
 		,[GovtPricingReceivedText]
 		,[CostAnalysisUnqual]
 		,[CostAnalysisUnqualDate]
-		,[CostAnalysisUnqualText])
+		,[CostAnalysisUnqualText]
+		,[VendorId]
+		,[SupplierProposedValue])
 	SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion, 
 		[CCoPD],
 		[CCoPDOtherText],
@@ -2646,6 +2649,8 @@ BEGIN TRY
 		,[CostAnalysisUnqual]
 		,[CostAnalysisUnqualDate]
 		,[CostAnalysisUnqualText]
+		,[VendorId]
+		,[SupplierProposedValue]
 	  FROM [version].[BOEFormPBOE]
 	WHERE [PBOEFormID] = @PBOEID AND VersionID = @VersionID
 

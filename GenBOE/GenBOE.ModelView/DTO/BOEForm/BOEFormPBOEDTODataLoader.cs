@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -122,7 +122,9 @@ namespace GenBOE.DataBridge.DTO
                                  GovtPricingReceivedText = b.GovtPricingReceivedText,
                                  CostAnalysisUnqual = (ScheduleEvent)b.CostAnalysisUnqual,
                                  CostAnalysisUnqualDate = b.CostAnalysisUnqualDate,
-                                 CostAnalysisUnqualText = b.CostAnalysisUnqualText
+                                 CostAnalysisUnqualText = b.CostAnalysisUnqualText,
+                                 VendorId = b.VendorId,
+                                 SupplierProposedValue = b.SupplierProposedValue
                              }).ToList();
                 }
                 foreach (BOEFormPBOEDTO dto in pboes)
@@ -250,7 +252,9 @@ namespace GenBOE.DataBridge.DTO
                                     GovtPricingReceivedText = b.GovtPricingReceivedText,
                                     CostAnalysisUnqual = (ScheduleEvent)b.CostAnalysisUnqual,
                                     CostAnalysisUnqualDate = b.CostAnalysisUnqualDate,
-                                    CostAnalysisUnqualText = b.CostAnalysisUnqualText
+                                    CostAnalysisUnqualText = b.CostAnalysisUnqualText,
+                                    VendorId = b.VendorId,
+                                    SupplierProposedValue = b.SupplierProposedValue
                                 }).ToList();
                 }
 
@@ -372,7 +376,9 @@ namespace GenBOE.DataBridge.DTO
                                     dtoToUpsert.GovtPricingReceivedText,
                                     (int?)dtoToUpsert.CostAnalysisUnqual,
                                     dtoToUpsert.CostAnalysisUnqualDate,
-                                    dtoToUpsert.CostAnalysisUnqualText).FirstOrDefault().Value;
+                                    dtoToUpsert.CostAnalysisUnqualText,
+                                    dtoToUpsert.VendorId,
+                                    dtoToUpsert.SupplierProposedValue).FirstOrDefault().Value;
 
                         BOEFormPBOE pboeEntity;
                         if ((pboeEntity = gbm.BOEFormPBOEs.FirstOrDefault(b => b.PBOEFormID == dtoToUpsert.Id)) != null)

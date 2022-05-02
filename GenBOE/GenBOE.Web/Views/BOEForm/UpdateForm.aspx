@@ -123,9 +123,17 @@
                 return dataToSend;
             };
 
+            ManageBOEFormsWidget.StripCurrencyFormatting = function () {
+                const unformattedValue = $('#SupplierProposedValue').val().replace(',', '').replace('$', '');
+                $('#SupplierProposedValue').val(unformattedValue);
+            }
 
             ManageBOEFormsWidget.Save = function (button) {
+                ManageBOEFormsWidget.StripCurrencyFormatting();
+
                 var dataToSend = ManageBOEFormsWidget.GetData();
+                console.log(dataToSend);
+
                 var action = (ManageBOEFormsWidget.IsIBOE()) ? '<%:WebConstants.ACTION_SAVE_IBOE_FORM%>' : '<%:WebConstants.ACTION_SAVE_PBOE_FORM%>';
 
                 var saveUrl = GenSession.CreateUrl({
@@ -142,6 +150,8 @@
             };
 
             ManageBOEFormsWidget.ValidateForm = function (button) {
+                ManageBOEFormsWidget.StripCurrencyFormatting();
+
                 var dataToSend = ManageBOEFormsWidget.GetData();
                 var action = (ManageBOEFormsWidget.IsIBOE()) ? '<%:WebConstants.ACTION_VALIDATE_IBOE_FORM%>' : '<%:WebConstants.ACTION_VALIDATE_PBOE_FORM%>';
                 var validateUrl = GenSession.CreateUrl({
@@ -155,9 +165,11 @@
                     data: dataToSend,
                     success: function(response) {
                         Session.alertDialog('INL Form Validation', 'No Validation errors found.');
+                        $('#SupplierProposedValue').trigger('change'); // reset the currency formatting
                     },
                     error: function(response) {
                         // nothing to do since genvalidation exceptions get automatically handled
+                        $('#SupplierProposedValue').trigger('change');
                     }
                 }, button);
             };

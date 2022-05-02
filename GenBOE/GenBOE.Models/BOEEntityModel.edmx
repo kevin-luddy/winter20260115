@@ -289,6 +289,8 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormIBOEResourcesXREF' does
           <Property Name="CostAnalysisUnqual" Type="int" />
           <Property Name="CostAnalysisUnqualDate" Type="date" />
           <Property Name="CostAnalysisUnqualText" Type="varchar" MaxLength="30" />
+          <Property Name="VendorId" Type="varchar" MaxLength="20" />
+          <Property Name="SupplierProposedValue" Type="decimal" Precision="13" Scale="2" />
         </EntityType>
         <!--Errors Found During Generation:
 warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOECLINsXREF' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
@@ -5091,6 +5093,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="CostAnalysisUnqual" Type="int" Mode="In" />
           <Parameter Name="CostAnalysisUnqualDate" Type="date" Mode="In" />
           <Parameter Name="CostAnalysisUnqualText" Type="varchar" Mode="In" />
+          <Parameter Name="VendorId" Type="varchar" Mode="In" />
+          <Parameter Name="SupplierProposedValue" Type="decimal" Mode="In" />
         </Function>
         <Function Name="upsertBOELaborSpread" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="BOELaborSpreadID" Type="int" Mode="In" />
@@ -11241,6 +11245,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="CostAnalysisUnqual" Mode="In" Type="Int32" />
             <Parameter Name="CostAnalysisUnqualDate" Mode="In" Type="DateTime" />
             <Parameter Name="CostAnalysisUnqualText" Mode="In" Type="String" />
+            <Parameter Name="VendorId" Mode="In" Type="String" />
+            <Parameter Name="SupplierProposedValue" Mode="In" Type="Decimal" />
           </FunctionImport>
           <FunctionImport Name="upsertBOELaborSpread" ReturnType="Collection(Int32)">
             <Parameter Name="BOELaborSpreadID" Mode="In" Type="Int32" />
@@ -13898,6 +13904,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Property Name="CostAnalysisUnqual" Type="Int32" />
           <Property Name="CostAnalysisUnqualDate" Type="DateTime" Precision="0" />
           <Property Name="CostAnalysisUnqualText" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="VendorId" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="SupplierProposedValue" Type="Decimal" Precision="13" Scale="2" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -16039,6 +16047,8 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <EntitySetMapping Name="BOEFormPBOEs">
             <EntityTypeMapping TypeName="GenBOE.Models.BOEFormPBOE">
               <MappingFragment StoreEntitySet="BOEFormPBOE">
+                <ScalarProperty Name="SupplierProposedValue" ColumnName="SupplierProposedValue" />
+                <ScalarProperty Name="VendorId" ColumnName="VendorId" />
                 <ScalarProperty Name="CostAnalysisUnqualText" ColumnName="CostAnalysisUnqualText" />
                 <ScalarProperty Name="CostAnalysisUnqualDate" ColumnName="CostAnalysisUnqualDate" />
                 <ScalarProperty Name="CostAnalysisUnqual" ColumnName="CostAnalysisUnqual" />

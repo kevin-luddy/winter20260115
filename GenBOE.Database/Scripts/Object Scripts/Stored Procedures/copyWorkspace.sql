@@ -35,6 +35,7 @@ AS
 **		11/30/2021	Dusan				IES-461: Remove RMS Zone Travel copying
 **		4/13/2022	jquijano			IES-1014: Remove deprecated PBOE fields
 **		4/22/2022	jquijano			IES-1019: Add new fields to copy workspace
+**		5/2/2022	jquijano			IES-1126: Add VendorId, SupplierProposedValue
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -2240,7 +2241,9 @@ BEGIN
 		,[GovtPricingReceivedText]
 		,[CostAnalysisUnqual]
 		,[CostAnalysisUnqualDate]
-		,[CostAnalysisUnqualText])
+		,[CostAnalysisUnqualText]
+		,[VendorId]
+		,[SupplierProposedValue])
 	SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion, 
 		[CCoPD],
 		[CCoPDOtherText],
@@ -2299,6 +2302,8 @@ BEGIN
 		,[CostAnalysisUnqual]
 		,[CostAnalysisUnqualDate]
 		,[CostAnalysisUnqualText]
+		,[VendorId]
+		,[SupplierProposedValue]
 	  FROM [dbo].[BOEFormPBOE]
 	WHERE [PBOEFormID] = @PBOEID 
 	UPDATE @PBOE 
