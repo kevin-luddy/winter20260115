@@ -114,7 +114,7 @@ AS
 **			6/23/2020	ranzalon				BOEJ-4669 No new tracking number when IsRevision 
 **			7/2/2020	ranzalon				BOEJ-4687 Link Revisions to Revised Proposal
 **			7/31/2020	ranzalon				BOEJ-4648 Proposal Setup Comments
-**          3/10/2022   jquijano                IES-854 Add new email (Mod)
+**			3/10/2022   jquijano                IES-854 Add new email (Mod)
 **			4/28/2022	jquijano				IES-1067 Show Certification TimelineCompleted Date
 ******************************************************************************/
 SET NOCOUNT ON 
