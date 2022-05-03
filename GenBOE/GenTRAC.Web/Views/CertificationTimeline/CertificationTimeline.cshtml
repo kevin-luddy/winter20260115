@@ -317,7 +317,7 @@
     <div class="module-header-data">
         Certification Timeline
         <span class="form-row" style="font-weight:bold; font-size: 85%; float: right;">
-            <input class="certificationRequiredCheckbox" type="checkbox" style="margin: 11px 3px 0 0" id="isCertNotRequired" onchange="toggleCertification()" @(Model.ReasonCertificationNotRequired.HasValue ? "checked=\"checked\"" : string.Empty) />
+            <input class="certificationRequiredCheckbox" type="checkbox" style="margin: 11px 3px 0 0" id="isCertNotRequired" onchange="toggleCertification()" @(Model.ReasonCertificationNotRequired.HasValue ? "checked=\"checked\"" : string.Empty) @(Model.DisableCertificationReset ? "disabled" : string.Empty) />
             <label class="certificationRequiredCheckbox" for="isCertNeeded">Certification is <i>Not</i> Required</label>
             <button class="ies certificationNotRequiredResetButton" type="button" onclick="ProposalCertificationTimelineWidget.ResetCertificationNeeded(this)" @(Model.DisableCertificationReset ? "disabled" : string.Empty)>Reset Certification Not Required</button>
         </span>
