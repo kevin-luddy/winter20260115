@@ -201,16 +201,16 @@ FROM [dbo].[Workspace]
 WHERE WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[WorkspaceContractTypeXREF]
-           ([WorkspaceContractTypeID]
-           ,[UpdateDT]
-           ,[WorkspaceID]
-           ,[ContractTypeID]
-           ,[VersionID])
+	     ([WorkspaceContractTypeID]
+	     ,[UpdateDT]
+	     ,[WorkspaceID]
+	     ,[ContractTypeID]
+	     ,[VersionID])
 SELECT WR.[WorkspaceContractTypeID]
-      ,WR.[UpdateDT]
-      ,WR.[WorkspaceID]
-      ,WR.[ContractTypeID]
-      ,@VersionID
+	,WR.[UpdateDT]
+	,WR.[WorkspaceID]
+	,WR.[ContractTypeID]
+	,@VersionID
 FROM [dbo].[WorkspaceContractTypeXREF] WR
 	INNER JOIN dbo.Workspace WS ON WR.WorkspaceID = WS.WorkspaceID
 WHERE 
@@ -376,13 +376,13 @@ FROM [dbo].[ProjectMap]
 WHERE WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[ProjectMapSpread]
-           ([VersionID]
-           ,[ID]
+	     ([VersionID]
+	     ,[ID]
 		   ,[WorkspaceId]
 		   ,[ProjectMapId]
-           ,[SpreadDate]
-           ,[SpreadValue]
-           )
+	     ,[SpreadDate]
+	     ,[SpreadValue]
+	     )
 SELECT 	    @VersionID,
 			[ID],
 			[WorkspaceId],
@@ -404,10 +404,10 @@ INSERT INTO [version].[RteTemplate]
 			[VersionID])
 			SELECT [TemplateID],
 		[UpdateDT]
-      ,[WorkspaceID]
-      ,[Description]
-      ,[AuthorID]
-      ,[CreatedOn]
+	,[WorkspaceID]
+	,[Description]
+	,[AuthorID]
+	,[CreatedOn]
 	  ,@VersionID
   FROM [dbo].[RteTemplate]
 WHERE WorkspaceID = @WorkspaceID
@@ -424,7 +424,7 @@ INSERT INTO [version].[RteTemplateAssigned]
 WHERE R.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[RteTemplateQuestion]
-           ([QuestionID],
+	     ([QuestionID],
 		    [UpdateDT],
 			[TemplateID],
 			[Text],
@@ -433,10 +433,10 @@ INSERT INTO [version].[RteTemplateQuestion]
 			[VersionID])
 SELECT RTQ.[QuestionID]
 	  ,RTQ.[UpdateDT]
-      ,RTQ.[TemplateID]
-      ,RTQ.[Text]
-      ,RTQ.[SortOrder]
-      ,RTQ.[Required]
+	,RTQ.[TemplateID]
+	,RTQ.[Text]
+	,RTQ.[SortOrder]
+	,RTQ.[Required]
 	  ,@VersionID
   FROM [dbo].[RteTemplateQuestion] RTQ
   INNER JOIN dbo.[RteTemplate] RT ON RT.TemplateID = RTQ.TemplateID
@@ -537,13 +537,13 @@ INNER JOIN dbo.Workspace WS ON BR.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID	
 
 INSERT INTO [version].[WorkBreakdownStructure]
-           ([WBSID]
-           ,[UpdateDT]
-           ,[WBSNumber]
-           ,[DisplayedWBSNumber]
-           ,[WBSTitle]
-           ,[WorkspaceID]
-           ,[VersionID])
+	     ([WBSID]
+	     ,[UpdateDT]
+	     ,[WBSNumber]
+	     ,[DisplayedWBSNumber]
+	     ,[WBSTitle]
+	     ,[WorkspaceID]
+	     ,[VersionID])
 SELECT 
  WBS.[WBSID]
 ,WBS.[UpdateDT] 
@@ -557,22 +557,22 @@ FROM [dbo].[WorkBreakdownStructure] WBS
 WHERE WS.WorkspaceID = @WorkspaceID	
 
 INSERT INTO [version].[TMResourceRate]
-           ([TMResourceRateID]
-           ,[UpdateDT]
-           ,[WorkspaceID]
-           ,[TMResourceID]
-           ,[TMResourceRateStartDate]
-           ,[TMResourceRateEndDate]
-           ,[TMResourceRate]
-           ,[VersionID])
+	     ([TMResourceRateID]
+	     ,[UpdateDT]
+	     ,[WorkspaceID]
+	     ,[TMResourceID]
+	     ,[TMResourceRateStartDate]
+	     ,[TMResourceRateEndDate]
+	     ,[TMResourceRate]
+	     ,[VersionID])
 SELECT TMRR.[TMResourceRateID]
-      ,TMRR.[UpdateDT]
-      ,TMRR.[WorkspaceID]
-      ,TMRR.[TMResourceID]
-      ,TMRR.[TMResourceRateStartDate]
-      ,TMRR.[TMResourceRateEndDate]
-      ,TMRR.[TMResourceRate]
-      ,@VersionID
+	,TMRR.[UpdateDT]
+	,TMRR.[WorkspaceID]
+	,TMRR.[TMResourceID]
+	,TMRR.[TMResourceRateStartDate]
+	,TMRR.[TMResourceRateEndDate]
+	,TMRR.[TMResourceRate]
+	,@VersionID
 FROM [dbo].[TMResourceRate] TMRR
 	INNER JOIN dbo.Workspace WS ON TMRR.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID	
@@ -670,33 +670,33 @@ INNER JOIN dbo.Workspace WS ON PPE.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[Resource]
-           ([ResourceID]
-           ,[ResourceName]
-           ,[ResourceDescription]
-           ,[SegmentRegion]
-           ,[LaborType]
-           ,[SegmentID]
-           ,[ResourceListID]
-           /*,[ResourceInUseFlag]*/
-           ,[CostElementID]
-           ,[UpdateDT]
+	     ([ResourceID]
+	     ,[ResourceName]
+	     ,[ResourceDescription]
+	     ,[SegmentRegion]
+	     ,[LaborType]
+	     ,[SegmentID]
+	     ,[ResourceListID]
+	     /*,[ResourceInUseFlag]*/
+	     ,[CostElementID]
+	     ,[UpdateDT]
 		   ,[VersionID]
 		   ,[DeletedFlag]
 		   ,[RateTypeID]
 		   )
 SELECT R.[ResourceID]
-      ,R.[ResourceName]
-      ,R.[ResourceDescription]
-      ,R.[SegmentRegion]
-      ,R.[LaborType]
-      ,R.[SegmentID]
-      ,R.[ResourceListID]
-      /*,R.[ResourceInUseFlag]*/
-      ,R.[CostElementID]
-      ,R.[UpdateDT]
-      ,@VersionID
-      ,R.[DeletedFlag]
-      ,R.RateTypeID
+	,R.[ResourceName]
+	,R.[ResourceDescription]
+	,R.[SegmentRegion]
+	,R.[LaborType]
+	,R.[SegmentID]
+	,R.[ResourceListID]
+	/*,R.[ResourceInUseFlag]*/
+	,R.[CostElementID]
+	,R.[UpdateDT]
+	,@VersionID
+	,R.[DeletedFlag]
+	,R.RateTypeID
 FROM [dbo].[Resource] R 
 --INNER JOIN [dbo].[BOELaborType] BLT ON R.ResourceID = BLT.ResourceID
 --INNER JOIN [dbo].[BOETaskElement] BTE ON BLT.BOETaskElementID = BTE.BOETaskElementID
@@ -706,16 +706,16 @@ INNER JOIN dbo.Workspace WS ON R.ResourceListID = WS.ResourceListID
 WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[WorkspaceResource]
-           ([WorkspaceResourceID]
-           ,[SystemResourceID]
-           ,[ResourceListID]
-           ,[WorkspaceID]
-           ,[VersionID])
+	     ([WorkspaceResourceID]
+	     ,[SystemResourceID]
+	     ,[ResourceListID]
+	     ,[WorkspaceID]
+	     ,[VersionID])
 SELECT WR.[WorkspaceResourceID]
-      ,WR.[SystemResourceID]
-      ,WR.[ResourceListID]
-      ,WR.[WorkspaceID]
-      ,@VersionID
+	,WR.[SystemResourceID]
+	,WR.[ResourceListID]
+	,WR.[WorkspaceID]
+	,@VersionID
 FROM [dbo].[WorkspaceResource] WR
 INNER JOIN dbo.Workspace WS ON WR.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID
@@ -730,12 +730,12 @@ INSERT INTO [version].[PerformingOrganization]
 ,[UpdateDT]
 ,[VersionID])
 SELECT PO.[PerformingOrganizationID]
-      ,PO.[PerformingOrganizationName]
-      ,PO.[PerformingOrganizationDescription]
-      ,PO.[PerformingOrganizationListID]
-      ,PO.[PerformingOrganizationInUseFlag]
-      ,PO.[UpdateDT]
-      ,@VersionID
+	,PO.[PerformingOrganizationName]
+	,PO.[PerformingOrganizationDescription]
+	,PO.[PerformingOrganizationListID]
+	,PO.[PerformingOrganizationInUseFlag]
+	,PO.[UpdateDT]
+	,@VersionID
 FROM [dbo].[PerformingOrganization] PO
 INNER JOIN [dbo].[BOELaborType] BLT ON PO.PerformingOrganizationID = BLT.PerformingOrganizationID
 INNER JOIN [dbo].[BOETaskElement] BTE ON BLT.BOETaskElementID = BTE.BOETaskElementID
@@ -745,22 +745,22 @@ WHERE WS.WorkspaceID = @WorkspaceID
 */
 
 INSERT INTO [version].[PerformingOrganization]
-           ([PerformingOrganizationID]
-           ,[PerformingOrganizationName]
-           ,[PerformingOrganizationDescription]
-           ,[PerformingOrganizationListID]
-           /*,[PerformingOrganizationInUseFlag]*/
-           ,[UpdateDT]
+	     ([PerformingOrganizationID]
+	     ,[PerformingOrganizationName]
+	     ,[PerformingOrganizationDescription]
+	     ,[PerformingOrganizationListID]
+	     /*,[PerformingOrganizationInUseFlag]*/
+	     ,[UpdateDT]
 		   ,[VersionID]
 		   ,[DeletedFlag])
 SELECT R.[PerformingOrganizationID]
-      ,R.[PerformingOrganizationName]
-      ,R.[PerformingOrganizationDescription]
-      ,R.[PerformingOrganizationListID]
-      /*,R.[PerformingOrganizationInUseFlag]*/
-      ,R.[UpdateDT]
-      ,@VersionID
-      ,R.[DeletedFlag]
+	,R.[PerformingOrganizationName]
+	,R.[PerformingOrganizationDescription]
+	,R.[PerformingOrganizationListID]
+	/*,R.[PerformingOrganizationInUseFlag]*/
+	,R.[UpdateDT]
+	,@VersionID
+	,R.[DeletedFlag]
 FROM [dbo].[PerformingOrganization] R 
 --INNER JOIN [dbo].[BOELaborType] BLT ON R.PerformingOrganizationID = BLT.PerformingOrganizationID
 --INNER JOIN [dbo].[BOETaskElement] BTE ON BLT.BOETaskElementID = BTE.BOETaskElementID
@@ -770,16 +770,16 @@ INNER JOIN dbo.Workspace WS ON R.PerformingOrganizationListID = WS.PerformingOrg
 WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[WorkspacePerformingOrganization]
-           ([WorkspacePerformingOrganizationID]
-           ,[SystemPerformingOrganizationID]
-           ,[PerformingOrganizationListID]
-           ,[WorkspaceID]
-           ,[VersionID])
+	     ([WorkspacePerformingOrganizationID]
+	     ,[SystemPerformingOrganizationID]
+	     ,[PerformingOrganizationListID]
+	     ,[WorkspaceID]
+	     ,[VersionID])
 SELECT WR.[WorkspacePerformingOrganizationID]
-      ,WR.[SystemPerformingOrganizationID]
-      ,WR.[PerformingOrganizationListID]
-      ,WR.[WorkspaceID]
-      ,@VersionID
+	,WR.[SystemPerformingOrganizationID]
+	,WR.[PerformingOrganizationListID]
+	,WR.[WorkspaceID]
+	,@VersionID
 FROM [dbo].[WorkspacePerformingOrganization] WR
 INNER JOIN dbo.Workspace WS ON WR.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID
@@ -869,22 +869,22 @@ INNER JOIN dbo.Workspace WS ON WSV.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[BOEStateHistory]
-           ([BOEStateHistoryID]
-           ,[BOEID]
-           ,[FieldID]
-           ,[CurrentBOEStateID]
-           ,[UpdatedBOEStateID]
-           ,[ChangedByETIUserID]
-           ,[UpdateDT]
-           ,[VersionID])
+	     ([BOEStateHistoryID]
+	     ,[BOEID]
+	     ,[FieldID]
+	     ,[CurrentBOEStateID]
+	     ,[UpdatedBOEStateID]
+	     ,[ChangedByETIUserID]
+	     ,[UpdateDT]
+	     ,[VersionID])
 SELECT BH.[BOEStateHistoryID]
-      ,BH.[BOEID]
-      ,BH.[FieldID]
-      ,BH.[CurrentBOEStateID]
-      ,BH.[UpdatedBOEStateID]
-      ,BH.[ChangedByETIUserID]
-      ,BH.[UpdateDT]
-      ,@VersionID
+	,BH.[BOEID]
+	,BH.[FieldID]
+	,BH.[CurrentBOEStateID]
+	,BH.[UpdatedBOEStateID]
+	,BH.[ChangedByETIUserID]
+	,BH.[UpdateDT]
+	,@VersionID
   FROM [dbo].[BOEStateHistory] BH
 INNER JOIN dbo.BOE B ON BH.BOEID  = B.BOEID
 INNER JOIN dbo.Workspace WS ON B.WorkspaceID = WS.WorkspaceID
@@ -935,26 +935,26 @@ WHERE WS.WorkspaceID = @WorkspaceID
 
 /*WI 5160*/
 INSERT INTO [version].[BOEUserRoleHistory]
-           (
-            [BOEUserRoleHistoryID]
-           ,[UpdateDT]
-           ,[CurrentETIUserID]
-           ,[UpdatedETIUserID]
-           ,[RoleID]
-           ,[BOEID]
-           ,[FieldID]
-           ,[ChangedByETIUserID]
-           ,[VersionID]
-           )
+	     (
+		[BOEUserRoleHistoryID]
+	     ,[UpdateDT]
+	     ,[CurrentETIUserID]
+	     ,[UpdatedETIUserID]
+	     ,[RoleID]
+	     ,[BOEID]
+	     ,[FieldID]
+	     ,[ChangedByETIUserID]
+	     ,[VersionID]
+	     )
 SELECT BUR.[BOEUserRoleHistoryID]
-      ,BUR.[UpdateDT]
-      ,BUR.[CurrentETIUserID]
-      ,BUR.[UpdatedETIUserID]
-      ,BUR.[RoleID]
-      ,BUR.[BOEID]
-      ,BUR.[FieldID]
-      ,BUR.[ChangedByETIUserID]
-      ,@VersionID
+	,BUR.[UpdateDT]
+	,BUR.[CurrentETIUserID]
+	,BUR.[UpdatedETIUserID]
+	,BUR.[RoleID]
+	,BUR.[BOEID]
+	,BUR.[FieldID]
+	,BUR.[ChangedByETIUserID]
+	,@VersionID
 FROM [dbo].[BOEUserRoleHistory] BUR
 INNER JOIN dbo.BOE B ON BUR.BOEID  = B.BOEID
 INNER JOIN dbo.Workspace WS ON B.WorkspaceID = WS.WorkspaceID
@@ -1314,10 +1314,10 @@ WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[MoqTypeTableCustomFieldValueXREF] ([Id], [UpdateDT], [MoqTypeTableDataId], [CustomFieldValueId], [VersionID])
     SELECT x.[Id], x.[UpdateDT], x.[MoqTypeTableDataId], x.[CustomFieldValueId], @VersionID
-        FROM [dbo].[MoqTypeTableCustomFieldValueXREF] x, MoqTypeSelectionTableData t, MoqTypeSelection mS, BoeTaskElement tE, dbo.BOE B
-        WHERE 
-            t.MoqTypeSelectionTableDataId = x.MoqTypeTableDataId AND mS.MoqTypeSelectionId = t.MoqTypeSelectionId 
-            AND tE.BoeTaskElementId = mS.TaskId AND tE.BOEID = B.BOEID AND B.WorkspaceID = @WorkspaceID
+	  FROM [dbo].[MoqTypeTableCustomFieldValueXREF] x, MoqTypeSelectionTableData t, MoqTypeSelection mS, BoeTaskElement tE, dbo.BOE B
+	  WHERE 
+		t.MoqTypeSelectionTableDataId = x.MoqTypeTableDataId AND mS.MoqTypeSelectionId = t.MoqTypeSelectionId 
+		AND tE.BoeTaskElementId = mS.TaskId AND tE.BOEID = B.BOEID AND B.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[SumOfBOE_OrdinaryVariableXREF]
 ([OVSumID]
@@ -1376,28 +1376,28 @@ INNER JOIN dbo.Workspace WS ON B.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[ODCTaskElement]
-           ([ODCTaskElementID]
-           ,[ODCTaskTitle]
-           ,[ODCTaskDescription]
-           ,[ODCMOQText]
-           ,[BOEID]
-           ,[ODCTaskID]
-           ,[UpdateDT]
-           ,[VersionID]
-           ,[TaskStartDate]
-           ,[TaskEndDate]
+	     ([ODCTaskElementID]
+	     ,[ODCTaskTitle]
+	     ,[ODCTaskDescription]
+	     ,[ODCMOQText]
+	     ,[BOEID]
+	     ,[ODCTaskID]
+	     ,[UpdateDT]
+	     ,[VersionID]
+	     ,[TaskStartDate]
+	     ,[TaskEndDate]
 		   ,[SortOrderID]
-           )
+	     )
 SELECT OTE.[ODCTaskElementID]
-      ,OTE.[ODCTaskTitle]
-      ,OTE.[ODCTaskDescription]
-      ,OTE.[ODCMOQText]
-      ,OTE.[BOEID]
-      ,OTE.[ODCTaskID]
-      ,OTE.[UpdateDT]
-      ,@VersionID
-      ,OTE.[TaskStartDate]
-      ,OTE.[TaskEndDate]
+	,OTE.[ODCTaskTitle]
+	,OTE.[ODCTaskDescription]
+	,OTE.[ODCMOQText]
+	,OTE.[BOEID]
+	,OTE.[ODCTaskID]
+	,OTE.[UpdateDT]
+	,@VersionID
+	,OTE.[TaskStartDate]
+	,OTE.[TaskEndDate]
 	  ,OTE.[SortOrderID]
   FROM [dbo].[ODCTaskElement] OTE
 	INNER JOIN dbo.BOE B ON OTE.BOEID = B.BOEID
@@ -1405,26 +1405,26 @@ SELECT OTE.[ODCTaskElementID]
 WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[ODCType]
-           ([ODCTypeID]
+	     ([ODCTypeID]
 		   ,[ResourceID]
-           ,[PerformingOrganizationID]
-           ,[ODCTypeStartDate]
-           ,[ODCTypeEndDate]
-           ,[SpreadCurveID]
-           ,[ODCTypeCost]
-           ,[ODCTaskElementID]
-           ,[UpdateDT]
-           ,[VersionID])
+	     ,[PerformingOrganizationID]
+	     ,[ODCTypeStartDate]
+	     ,[ODCTypeEndDate]
+	     ,[SpreadCurveID]
+	     ,[ODCTypeCost]
+	     ,[ODCTaskElementID]
+	     ,[UpdateDT]
+	     ,[VersionID])
 SELECT OT.[ODCTypeID]
-      ,OT.[ResourceID]
-      ,OT.[PerformingOrganizationID]
-      ,OT.[ODCTypeStartDate]
-      ,OT.[ODCTypeEndDate]
-      ,OT.[SpreadCurveID]
-      ,OT.[ODCTypeCost]
-      ,OT.[ODCTaskElementID]
-      ,OT.[UpdateDT]
-      ,@VersionID
+	,OT.[ResourceID]
+	,OT.[PerformingOrganizationID]
+	,OT.[ODCTypeStartDate]
+	,OT.[ODCTypeEndDate]
+	,OT.[SpreadCurveID]
+	,OT.[ODCTypeCost]
+	,OT.[ODCTaskElementID]
+	,OT.[UpdateDT]
+	,@VersionID
  FROM [dbo].[ODCType] OT 
 	INNER JOIN dbo.ODCTaskElement OTE ON OT.ODCTaskElementID = OTE.ODCTaskElementID
 	INNER JOIN dbo.BOE B ON OTE.BOEID = B.BOEID
@@ -1432,16 +1432,16 @@ SELECT OT.[ODCTypeID]
 WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[ODCSpread]
-           ([ODCSpreadID]
+	     ([ODCSpreadID]
 		   ,[ODCSpreadDate]
-           ,[ODCSpreadValue]
-           ,[ODCTypeID]
-           ,[VersionID])
+	     ,[ODCSpreadValue]
+	     ,[ODCTypeID]
+	     ,[VersionID])
 SELECT OS.[ODCSpreadID]
-      ,OS.[ODCSpreadDate]
-      ,OS.[ODCSpreadValue]
-      ,OS.[ODCTypeID]
-      ,@VersionID
+	,OS.[ODCSpreadDate]
+	,OS.[ODCSpreadValue]
+	,OS.[ODCTypeID]
+	,@VersionID
 FROM [dbo].[ODCSpread] OS
 	INNER JOIN dbo.ODCType OT ON OS.ODCTypeID = OT.ODCTypeID
 	INNER JOIN dbo.ODCTaskElement OTE ON OT.ODCTaskElementID = OTE.ODCTaskElementID
@@ -1450,52 +1450,52 @@ FROM [dbo].[ODCSpread] OS
 WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[MaterialTaskElement]
-           ([MaterialTaskElementID]
-           ,[MaterialTaskID]
-           ,[MaterialTaskTitle]
-           ,[MaterialTaskDescription]
-           ,[MaterialMOQText]
-           ,[BOEID]
-           ,[UpdateDT]
-           ,[VersionID])
+	     ([MaterialTaskElementID]
+	     ,[MaterialTaskID]
+	     ,[MaterialTaskTitle]
+	     ,[MaterialTaskDescription]
+	     ,[MaterialMOQText]
+	     ,[BOEID]
+	     ,[UpdateDT]
+	     ,[VersionID])
 SELECT TE.[MaterialTaskElementID]
-      ,TE.[MaterialTaskID]
-      ,TE.[MaterialTaskTitle]
-      ,TE.[MaterialTaskDescription]
-      ,TE.[MaterialMOQText]
-      ,TE.[BOEID]
-      ,TE.[UpdateDT]
-      ,@VersionID
+	,TE.[MaterialTaskID]
+	,TE.[MaterialTaskTitle]
+	,TE.[MaterialTaskDescription]
+	,TE.[MaterialMOQText]
+	,TE.[BOEID]
+	,TE.[UpdateDT]
+	,@VersionID
   FROM [dbo].[MaterialTaskElement] TE
 	INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
 	INNER JOIN dbo.Workspace WS ON B.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID
 	
 INSERT INTO [version].[PerDiem]
-           ([PerDiemID]
+	     ([PerDiemID]
 		   ,[UpdateDT]
-           ,[PerDiemDestination]
-           ,[Qualification]
-           ,[HotelRate]
-           ,[MIERate]
-           ,[PerDiemNotes]
-           /*,[RentalCarRate]*/
-           ,[PerDiemLastUpdateETIUserID]
-           ,[PerDiemLastUpdateDT]
-           /*WI8256,[LockedRate]*/
-           ,[VersionID])
+	     ,[PerDiemDestination]
+	     ,[Qualification]
+	     ,[HotelRate]
+	     ,[MIERate]
+	     ,[PerDiemNotes]
+	     /*,[RentalCarRate]*/
+	     ,[PerDiemLastUpdateETIUserID]
+	     ,[PerDiemLastUpdateDT]
+	     /*WI8256,[LockedRate]*/
+	     ,[VersionID])
 SELECT PD.[PerDiemID]
-      ,PD.[UpdateDT]
-      ,PD.[PerDiemDestination]
-      ,PD.[Qualification]
-      ,PD.[HotelRate]
-      ,PD.[MIERate]
-      ,PD.[PerDiemNotes]
-      /*,PD.[RentalCarRate]*/
-      ,PD.[PerDiemLastUpdateETIUserID]
-      ,PD.[PerDiemLastUpdateDT]
-      /*WI8256,PD.[LockedRate]*/
-      ,@VersionID
+	,PD.[UpdateDT]
+	,PD.[PerDiemDestination]
+	,PD.[Qualification]
+	,PD.[HotelRate]
+	,PD.[MIERate]
+	,PD.[PerDiemNotes]
+	/*,PD.[RentalCarRate]*/
+	,PD.[PerDiemLastUpdateETIUserID]
+	,PD.[PerDiemLastUpdateDT]
+	/*WI8256,PD.[LockedRate]*/
+	,@VersionID
   FROM [dbo].[PerDiem] PD
 	INNER JOIN [dbo].[Trip] T ON PD.PerDiemID = T.PerDiemID
 	INNER JOIN [dbo].[TravelTrip] TT ON T.TripID = TT.TripID
@@ -1506,22 +1506,22 @@ WHERE WS.WorkspaceID = @WorkspaceID
 
 --WI 4881
 INSERT INTO [version].[TravelMiscRate]
-           ([TravelMiscRateID]
-           ,[UpdateDT]
-           ,[TransportationMode]
-           ,[MiscellaneousRate]
-           ,[SortCode]
-           ,[MiscRateInUse]
+	     ([TravelMiscRateID]
+	     ,[UpdateDT]
+	     ,[TransportationMode]
+	     ,[MiscellaneousRate]
+	     ,[SortCode]
+	     ,[MiscRateInUse]
 /*WI8256           ,[LockedRate]*/
-           ,[VersionID])
+	     ,[VersionID])
 SELECT MR.[TravelMiscRateID]
-      ,MR.[UpdateDT]
-      ,MR.[TransportationMode]
-      ,MR.[MiscellaneousRate]
-      ,MR.[SortCode]
-      ,MR.[MiscRateInUse]
+	,MR.[UpdateDT]
+	,MR.[TransportationMode]
+	,MR.[MiscellaneousRate]
+	,MR.[SortCode]
+	,MR.[MiscRateInUse]
 /*WI8256      ,MR.[LockedRate]*/
-      ,@VersionID
+	,@VersionID
   FROM [dbo].[TravelMiscRate] MR
 	INNER JOIN [dbo].[Trip] T ON MR.TravelMiscRateID = T.TravelMiscRateID
 	INNER JOIN [dbo].[TravelTrip] TT ON T.TripID = TT.TripID
@@ -1532,47 +1532,47 @@ WHERE WS.WorkspaceID = @WorkspaceID
 
 /*WI6261*/
 INSERT INTO [version].[Trip]
-           ([TripID]
-           ,[UpdateDT]
-           ,[TravelMiscRateID]
-           ,[DepartureLocationID]
-           ,[DestinationLocationID]
-           ,[PerDiemID]
-           ,[TransportationFare]
-           ,[RoundTripMiles]
-           ,[FareLastUpdateDT]
-           ,[FareLastUpdateETIUserID]
-           ,[TripInUse]
-           ,[LastUsedDT]
+	     ([TripID]
+	     ,[UpdateDT]
+	     ,[TravelMiscRateID]
+	     ,[DepartureLocationID]
+	     ,[DestinationLocationID]
+	     ,[PerDiemID]
+	     ,[TransportationFare]
+	     ,[RoundTripMiles]
+	     ,[FareLastUpdateDT]
+	     ,[FareLastUpdateETIUserID]
+	     ,[TripInUse]
+	     ,[LastUsedDT]
 /*WI8256           ,[LockedRate]*/
-           ,[VersionID]
+	     ,[VersionID]
 /*WI8256           ,[Year]
-           ,[DevEscalation]
-           ,[LMSIEscalation]*/
-           ,[RentalCarRate]
-           ,[DestinationLocationCode]
-           ,[DepartureLocationCode]
-           )
+	     ,[DevEscalation]
+	     ,[LMSIEscalation]*/
+	     ,[RentalCarRate]
+	     ,[DestinationLocationCode]
+	     ,[DepartureLocationCode]
+	     )
 SELECT T.[TripID]
-      ,T.[UpdateDT]
-      ,T.[TravelMiscRateID]
-      ,T.[DepartureLocationID]
-      ,T.[DestinationLocationID]
-      ,T.[PerDiemID]
-      ,T.[TransportationFare]
-      ,T.[RoundTripMiles]
-      ,T.[FareLastUpdateDT]
-      ,T.[FareLastUpdateETIUserID]
-      ,T.[TripInUse]
-      ,T.[LastUsedDT]
+	,T.[UpdateDT]
+	,T.[TravelMiscRateID]
+	,T.[DepartureLocationID]
+	,T.[DestinationLocationID]
+	,T.[PerDiemID]
+	,T.[TransportationFare]
+	,T.[RoundTripMiles]
+	,T.[FareLastUpdateDT]
+	,T.[FareLastUpdateETIUserID]
+	,T.[TripInUse]
+	,T.[LastUsedDT]
 /*WI8256      ,T.[LockedRate]*/
-      ,@VersionID
+	,@VersionID
 /*WI8256      ,T.[Year]
-      ,T.[DevEscalation]
-      ,T.[LMSIEscalation]*/
-      ,T.[RentalCarRate]
-      ,T.[DestinationLocationCode]
-      ,T.[DepartureLocationCode]
+	,T.[DevEscalation]
+	,T.[LMSIEscalation]*/
+	,T.[RentalCarRate]
+	,T.[DestinationLocationCode]
+	,T.[DepartureLocationCode]
 FROM [dbo].[Trip] T 
 	INNER JOIN [dbo].[TravelTrip] TT ON T.TripID = TT.TripID
 	INNER JOIN [dbo].[TravelTripTaskElement] TE ON TT.TravelTripTaskElementID = TE.TravelTripTaskElementID
@@ -1581,36 +1581,36 @@ FROM [dbo].[Trip] T
 WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[TravelTrip]
-           ([TravelTripID]
-           ,[UpdateDT]
-           ,[GroupID]
-           ,[SegmentID]
-           ,[PerformingOrganizationID]
-           ,[TripID]
-           ,[TripDate]
-           ,[NumTrips]
-           ,[NumPeople]
-           ,[NumDays]
-           ,[Purpose]           
-           ,[TravelTripTaskElementID]
-           ,[TripLockedDT]
+	     ([TravelTripID]
+	     ,[UpdateDT]
+	     ,[GroupID]
+	     ,[SegmentID]
+	     ,[PerformingOrganizationID]
+	     ,[TripID]
+	     ,[TripDate]
+	     ,[NumTrips]
+	     ,[NumPeople]
+	     ,[NumDays]
+	     ,[Purpose]           
+	     ,[TravelTripTaskElementID]
+	     ,[TripLockedDT]
  /*WI8256          ,[OriginatingTripID]*/
-           ,[VersionID])
+	     ,[VersionID])
 SELECT TT.[TravelTripID]
-      ,TT.[UpdateDT]
-      ,TT.[GroupID]
-      ,TT.[SegmentID]
-      ,TT.[PerformingOrganizationID]
-      ,TT.[TripID]
-      ,TT.[TripDate]
-      ,TT.[NumTrips]
-      ,TT.[NumPeople]
-      ,TT.[NumDays]
-      ,TT.[Purpose]      
-      ,TT.[TravelTripTaskElementID]
-      ,TT.[TripLockedDT]
+	,TT.[UpdateDT]
+	,TT.[GroupID]
+	,TT.[SegmentID]
+	,TT.[PerformingOrganizationID]
+	,TT.[TripID]
+	,TT.[TripDate]
+	,TT.[NumTrips]
+	,TT.[NumPeople]
+	,TT.[NumDays]
+	,TT.[Purpose]      
+	,TT.[TravelTripTaskElementID]
+	,TT.[TripLockedDT]
  /*WI8256     ,TT.[OriginatingTripID]*/
-      ,@VersionID
+	,@VersionID
   FROM [dbo].[TravelTrip] TT
 	INNER JOIN [dbo].[TravelTripTaskElement] TE ON TT.TravelTripTaskElementID = TE.TravelTripTaskElementID
 	INNER JOIN [dbo].[BOE] B ON TE.BOEID = B.BOEID
@@ -1618,26 +1618,26 @@ SELECT TT.[TravelTripID]
 WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[TravelTripTaskElement]
-           ([TravelTripTaskElementID]
-           ,[UpdateDT]
-           ,[TravelTaskID]
-           ,[TravelTaskTitle]
-           ,[TravelTaskDescription]
-           ,[BOEID]
-           ,[VersionID]
-           ,[TaskStartDate]
-           ,[TaskEndDate]
+	     ([TravelTripTaskElementID]
+	     ,[UpdateDT]
+	     ,[TravelTaskID]
+	     ,[TravelTaskTitle]
+	     ,[TravelTaskDescription]
+	     ,[BOEID]
+	     ,[VersionID]
+	     ,[TaskStartDate]
+	     ,[TaskEndDate]
 		   ,[SortOrderID]
-           )
+	     )
 SELECT TE.[TravelTripTaskElementID]
-      ,TE.[UpdateDT]
-      ,TE.[TravelTaskID]
-      ,TE.[TravelTaskTitle]
-      ,TE.[TravelTaskDescription]
-      ,TE.[BOEID]
-      ,@VersionID
-      ,TE.[TaskStartDate]
-      ,TE.[TaskEndDate]
+	,TE.[UpdateDT]
+	,TE.[TravelTaskID]
+	,TE.[TravelTaskTitle]
+	,TE.[TravelTaskDescription]
+	,TE.[BOEID]
+	,@VersionID
+	,TE.[TaskStartDate]
+	,TE.[TaskEndDate]
 	  ,TE.[SortOrderID]
   FROM [dbo].[TravelTripTaskElement] TE 
 	INNER JOIN [dbo].[BOE] B ON TE.BOEID = B.BOEID
@@ -1645,16 +1645,16 @@ SELECT TE.[TravelTripTaskElementID]
 WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[TravelTripTaskElementCustomFieldValueXREF]
-           ([TTECFVID]
-           ,[TravelTripTaskElementID]
-           ,[CustomFieldValueID]
-           ,[UpdateDT]
-           ,[VersionID])
+	     ([TTECFVID]
+	     ,[TravelTripTaskElementID]
+	     ,[CustomFieldValueID]
+	     ,[UpdateDT]
+	     ,[VersionID])
 SELECT X.[TTECFVID]
-      ,X.[TravelTripTaskElementID]
-      ,X.[CustomFieldValueID]
-      ,X.[UpdateDT]
-      ,@VersionID
+	,X.[TravelTripTaskElementID]
+	,X.[CustomFieldValueID]
+	,X.[UpdateDT]
+	,@VersionID
 FROM [dbo].[TravelTripTaskElementCustomFieldValueXREF] X
 	INNER JOIN dbo.TravelTripTaskElement TE ON X.TravelTripTaskElementID = TE.TravelTripTaskElementID
 	INNER JOIN dbo.BOE B ON TE.BOEID = B.BOEID
@@ -1662,16 +1662,16 @@ FROM [dbo].[TravelTripTaskElementCustomFieldValueXREF] X
 WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[TravelTripCustomFieldValueXREF]
-           ([TCFVID]
-           ,[TravelTripID]
-           ,[CustomFieldValueID]
-           ,[UpdateDT]
-           ,[VersionID])
+	     ([TCFVID]
+	     ,[TravelTripID]
+	     ,[CustomFieldValueID]
+	     ,[UpdateDT]
+	     ,[VersionID])
 SELECT X.[TCFVID]
-      ,X.[TravelTripID]
-      ,X.[CustomFieldValueID]
-      ,X.[UpdateDT]
-      ,@VersionID
+	,X.[TravelTripID]
+	,X.[CustomFieldValueID]
+	,X.[UpdateDT]
+	,@VersionID
   FROM [dbo].[TravelTripCustomFieldValueXREF] X
 	INNER JOIN dbo.TravelTrip M ON X.TravelTripID = M.TravelTripID
 	INNER JOIN dbo.TravelTripTaskElement TE ON M.TravelTripTaskElementID = TE.TravelTripTaskElementID
@@ -1706,7 +1706,7 @@ INSERT INTO [version].[MSTTravelTrip]
 		,[NonZoneResourceID]
 		,[ClinId]
 		,[WbsId]
-        ,[VersionID]
+	  ,[VersionID]
 		)
 	SELECT 
 		tt.[MSTTravelTripID]
@@ -1765,117 +1765,117 @@ INSERT INTO [version].[MSTTravelTripCustomFieldValueXREF]
 
 /*LOCKING TABLES*/
 INSERT INTO [version].[WorkspaceLockedPerDiem]
-           ([WorkspaceLockedPerDiemID]
-           ,[PerDiemID]
-           ,[UpdateDT]
-           ,[PerDiemDestination]
-           ,[Qualification]
-           ,[HotelRate]
-           ,[MIERate]
-           ,[PerDiemNotes]
-           ,[PerDiemLastUpdateETIUserID]
-           ,[PerDiemLastUpdateDT]
-           ,[WorkspaceID]
-           ,[VersionID])
+	     ([WorkspaceLockedPerDiemID]
+	     ,[PerDiemID]
+	     ,[UpdateDT]
+	     ,[PerDiemDestination]
+	     ,[Qualification]
+	     ,[HotelRate]
+	     ,[MIERate]
+	     ,[PerDiemNotes]
+	     ,[PerDiemLastUpdateETIUserID]
+	     ,[PerDiemLastUpdateDT]
+	     ,[WorkspaceID]
+	     ,[VersionID])
 SELECT L.[WorkspaceLockedPerDiemID]
-      ,L.[PerDiemID]
-      ,L.[UpdateDT]
-      ,L.[PerDiemDestination]
-      ,L.[Qualification]
-      ,L.[HotelRate]
-      ,L.[MIERate]
-      ,L.[PerDiemNotes]
-      ,L.[PerDiemLastUpdateETIUserID]
-      ,L.[PerDiemLastUpdateDT]
-      ,L.[WorkspaceID]
-      ,@VersionID
+	,L.[PerDiemID]
+	,L.[UpdateDT]
+	,L.[PerDiemDestination]
+	,L.[Qualification]
+	,L.[HotelRate]
+	,L.[MIERate]
+	,L.[PerDiemNotes]
+	,L.[PerDiemLastUpdateETIUserID]
+	,L.[PerDiemLastUpdateDT]
+	,L.[WorkspaceID]
+	,@VersionID
   FROM [dbo].[WorkspaceLockedPerDiem] L
 	INNER JOIN dbo.Workspace WS ON L.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[WorkspaceLockedTravelEscalationRate]
-           ([WorkspaceLockedTravelEscalationRateID]
-           ,[TravelEscalationRateID]
-           ,[UpdateDT]
-           ,[Year]
-           ,[DevEscalation]
-           ,[LMSIEscalation]
+	     ([WorkspaceLockedTravelEscalationRateID]
+	     ,[TravelEscalationRateID]
+	     ,[UpdateDT]
+	     ,[Year]
+	     ,[DevEscalation]
+	     ,[LMSIEscalation]
 		   ,[MiscRate]
-           ,[WorkspaceID]
-           ,[VersionID])
+	     ,[WorkspaceID]
+	     ,[VersionID])
 SELECT L.[WorkspaceLockedTravelEscalationRateID]
-      ,L.[TravelEscalationRateID]
-      ,L.[UpdateDT]
-      ,L.[Year]
-      ,L.[DevEscalation]
-      ,L.[LMSIEscalation]
+	,L.[TravelEscalationRateID]
+	,L.[UpdateDT]
+	,L.[Year]
+	,L.[DevEscalation]
+	,L.[LMSIEscalation]
 	  ,L.[MiscRate]
-      ,L.[WorkspaceID]
-      ,@VersionID
+	,L.[WorkspaceID]
+	,@VersionID
   FROM [dbo].[WorkspaceLockedTravelEscalationRate] L
 	INNER JOIN dbo.Workspace WS ON L.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[WorkspaceLockedTravelMiscRate]
-           ([WorkspaceLockedTravelMiscRateID]
-           ,[TravelMiscRateID]
-           ,[UpdateDT]
-           ,[TransportationMode]
-           ,[MiscellaneousRate]
-           ,[SortCode]
-           ,[MiscRateInUse]
-           ,[WorkspaceID]
-           ,[VersionID])
+	     ([WorkspaceLockedTravelMiscRateID]
+	     ,[TravelMiscRateID]
+	     ,[UpdateDT]
+	     ,[TransportationMode]
+	     ,[MiscellaneousRate]
+	     ,[SortCode]
+	     ,[MiscRateInUse]
+	     ,[WorkspaceID]
+	     ,[VersionID])
 SELECT L.[WorkspaceLockedTravelMiscRateID]
-      ,L.[TravelMiscRateID]
-      ,L.[UpdateDT]
-      ,L.[TransportationMode]
-      ,L.[MiscellaneousRate]
-      ,L.[SortCode]
-      ,L.[MiscRateInUse]
-      ,L.[WorkspaceID]
-      ,@VersionID      
+	,L.[TravelMiscRateID]
+	,L.[UpdateDT]
+	,L.[TransportationMode]
+	,L.[MiscellaneousRate]
+	,L.[SortCode]
+	,L.[MiscRateInUse]
+	,L.[WorkspaceID]
+	,@VersionID      
   FROM [dbo].[WorkspaceLockedTravelMiscRate] L
 	INNER JOIN dbo.Workspace WS ON L.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID
 
 INSERT INTO [version].[WorkspaceLockedTrip]
-           ([WorkspaceLockedTripID]
-           ,[TripID]
-           ,[UpdateDT]
-           ,[TravelMiscRateID]
-           ,[DepartureLocationID]
-           ,[DestinationLocationID]
-           ,[PerDiemID]
-           ,[TransportationFare]
-           ,[RoundTripMiles]
-           ,[FareLastUpdateETIUserID]
-           ,[FareLastUpdateDT]
-           ,[TripInUse]
-           ,[LastUsedDT]
-           ,[RentalCarRate]
-           ,[DepartureLocationCode]
-           ,[DestinationLocationCode]
-           ,[WorkspaceID]
-           ,[VersionID])
+	     ([WorkspaceLockedTripID]
+	     ,[TripID]
+	     ,[UpdateDT]
+	     ,[TravelMiscRateID]
+	     ,[DepartureLocationID]
+	     ,[DestinationLocationID]
+	     ,[PerDiemID]
+	     ,[TransportationFare]
+	     ,[RoundTripMiles]
+	     ,[FareLastUpdateETIUserID]
+	     ,[FareLastUpdateDT]
+	     ,[TripInUse]
+	     ,[LastUsedDT]
+	     ,[RentalCarRate]
+	     ,[DepartureLocationCode]
+	     ,[DestinationLocationCode]
+	     ,[WorkspaceID]
+	     ,[VersionID])
 SELECT L.[WorkspaceLockedTripID]
-      ,L.[TripID]
-      ,L.[UpdateDT]
-      ,L.[TravelMiscRateID]
-      ,L.[DepartureLocationID]
-      ,L.[DestinationLocationID]
-      ,L.[PerDiemID]
-      ,L.[TransportationFare]
-      ,L.[RoundTripMiles]
-      ,L.[FareLastUpdateETIUserID]
-      ,L.[FareLastUpdateDT]
-      ,L.[TripInUse]
-      ,L.[LastUsedDT]
-      ,L.[RentalCarRate]
-      ,L.[DepartureLocationCode]
-      ,L.[DestinationLocationCode]
-      ,L.[WorkspaceID]
-      ,@VersionID
+	,L.[TripID]
+	,L.[UpdateDT]
+	,L.[TravelMiscRateID]
+	,L.[DepartureLocationID]
+	,L.[DestinationLocationID]
+	,L.[PerDiemID]
+	,L.[TransportationFare]
+	,L.[RoundTripMiles]
+	,L.[FareLastUpdateETIUserID]
+	,L.[FareLastUpdateDT]
+	,L.[TripInUse]
+	,L.[LastUsedDT]
+	,L.[RentalCarRate]
+	,L.[DepartureLocationCode]
+	,L.[DestinationLocationCode]
+	,L.[WorkspaceID]
+	,@VersionID
   FROM  [dbo].[WorkspaceLockedTrip] L
 	INNER JOIN dbo.Workspace WS ON L.WorkspaceID = WS.WorkspaceID
 WHERE WS.WorkspaceID = @WorkspaceID
@@ -1924,7 +1924,22 @@ INSERT INTO [version].[BOEFormPBOE]
 	SowWrittenText,
 	RFPReleaseText,
 	FirmSupplierReceiptText,
-	SourceSelectionText)
+	SourceSelectionText
+	,[SupplierCCoPD]
+	,[SourceSelectionDescription]
+	,[CommercialityDescription]
+	,[TechnicalEvaluationDescription]
+	,[PriceAnalysisDescription]
+	,[CostAnalysisDescription]
+	,[RationaleValueSummary]
+	,[GovtPricingReceived]
+	,[GovtPricingReceivedDate]
+	,[GovtPricingReceivedText]
+	,[CostAnalysisUnqual]
+	,[CostAnalysisUnqualDate]
+	,[CostAnalysisUnqualText]
+	,[VendorId]
+	,[SupplierProposedValue])
 SELECT [PBOEFormID], UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion, [DegreeOfCompetition],
 	[CCoPD],	[CCoPDOtherText],	[RFP],	[ProposalNumber],	[SupplierName],	[ValidityDate],	[SupplierProposalSupportingDataIncluded],	[PriceAnalysisIncluded],	[CommercialItemDocIncluded],
 	[CostAnalysisIncluded],	[ShouldCostEstimate],	[ShouldCostEstimateDate],	[SowWritten],	[SowWrittenDate],	[RFPRelease],	[RFPReleaseDate],	[FirmSupplierReceipt],	[FirmSupplierReceiptDate],
@@ -1945,6 +1960,21 @@ SELECT [PBOEFormID], UpdateDT, WorkspaceID, FormName, Description, [BasisAndRati
 	RFPReleaseText,
 	FirmSupplierReceiptText,
 	SourceSelectionText
+	,[SupplierCCoPD]
+	,[SourceSelectionDescription]
+	,[CommercialityDescription]
+	,[TechnicalEvaluationDescription]
+	,[PriceAnalysisDescription]
+	,[CostAnalysisDescription]
+	,[RationaleValueSummary]
+	,[GovtPricingReceived]
+	,[GovtPricingReceivedDate]
+	,[GovtPricingReceivedText]
+	,[CostAnalysisUnqual]
+	,[CostAnalysisUnqualDate]
+	,[CostAnalysisUnqualText]
+	,[VendorId]
+	,[SupplierProposedValue]
   FROM [dbo].[BOEFormPBOE]
 WHERE WorkspaceID = @WorkspaceID 
 
