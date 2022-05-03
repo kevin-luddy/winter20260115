@@ -73,6 +73,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public string CertificationCompletedDate { get; set; }
 
         /// <summary>
+        /// Gets or sets the Proposal Completed Date
+        /// </summary>
+        public string ProposalCompletedDate { get; set; }
+
+        /// <summary>
         /// Gets or sets whether Approval was completed before Certification was enabled.
         /// </summary>
         public bool CompletedBeforeCertification { get; set; }

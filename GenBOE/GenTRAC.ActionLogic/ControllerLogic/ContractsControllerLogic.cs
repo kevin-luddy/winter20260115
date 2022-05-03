@@ -408,7 +408,7 @@ namespace GenTRAC.ActionLogic
             {
                 FullProposal fullProposal = GetFullProposalAsync(proposalId).Result;
                 fullProposal.ProposalStatus = ProposalStatus.Lost;
-                fullProposal.CertificationTimelineCompleted = DateTime.Now;
+                fullProposal.ProposalCompletedDate = DateTime.Now;
                 fullProposal.Updateable = IES.Common.UpdateType.Upsert;
                 this.ProposalMediator.SaveProposal(fullProposal);
             }

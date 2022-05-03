@@ -16,7 +16,6 @@
         <EntityTypeShape EntityType="genTRACModel.PPRChecklistContent" Width="1.5" PointX="6" PointY="29.375" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.PricingToolLU" Width="1.5" PointX="0.75" PointY="45.25" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProgramProposalStatusLU" Width="1.5" PointX="0.75" PointY="47.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="genTRACModel.Proposal" Width="1.5" PointX="3.125" PointY="8.375" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProposalAdequacyReview" Width="1.5" PointX="3.75" PointY="3.875" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProposalChecklistComplete" Width="1.5" PointX="8.25" PointY="13" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProposalChecklistTypeLU" Width="1.5" PointX="1.625" PointY="3.5" IsExpanded="true" />
@@ -30,37 +29,22 @@
         <EntityTypeShape EntityType="genTRACModel.RequestTypeLU" Width="1.5" PointX="0.75" PointY="60" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ResponseLU" Width="1.5" PointX="6" PointY="6" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ResponseTypeLU" Width="1.5" PointX="6" PointY="22.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="genTRACModel.RoleLU" Width="1.5" PointX="3.125" PointY="27.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="genTRACModel.RoleLU" Width="1.5" PointX="9.625" PointY="29.625" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.RoleTypeLU" Width="1.5" PointX="3.125" PointY="29.875" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.SystemUserRole" Width="1.5" PointX="6" PointY="13.5" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.TextTypeLU" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProposalPARChecklistXREF" Width="1.5" PointX="8.25" PointY="9.25" IsExpanded="true" />
         <EntityTypeShape EntityType="genTRACModel.ProposalPPRChecklistXREF" Width="1.5" PointX="8.25" PointY="17.5" IsExpanded="true" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_BOEToolLU" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_ProposalChecklistComplete_ChecklistTypeLU" ManuallyRouted="false" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_CustomerTypeLU" ManuallyRouted="false" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_genTRACUser" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_ProposalChecklistComplete_genTRACUser" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_ProposalUserRole_genTRACUser" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_SystemUserRole_genTRACUser" ManuallyRouted="false" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_ISGSRoleLU" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_PARChecklist_ProposalAdequacyReview" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_PARChecklist_TextTypeLU" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_ProposalPARChecklistXREF_PARChecklistContent" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_PPRChecklist_ProposalPricingReview" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_PPRChecklist_TextTypeLU" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_ProposalPPRChecklistXREF_PPRChecklistContent" ManuallyRouted="false" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_PricingToolLU" ManuallyRouted="false" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_ProgramProposalStatusLU" ManuallyRouted="false" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_ProposalClassLU" ManuallyRouted="false" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_ProposalLocationLU" ManuallyRouted="false" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_ProposalStatusLU" ManuallyRouted="false" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_ProposalTypeLU" ManuallyRouted="false" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_RequestTypeLU" ManuallyRouted="false" />
-        <AssociationConnector Association="genTRACModel.FK_ProposalChecklistComplete_Proposal" ManuallyRouted="false" />
-        <AssociationConnector Association="genTRACModel.FK_ProposalPARChecklistXREF_Proposal" ManuallyRouted="false" />
-        <AssociationConnector Association="genTRACModel.FK_ProposalPPRChecklistXREF_Proposal" ManuallyRouted="false" />
-        <AssociationConnector Association="genTRACModel.FK_ProposalUserRole_Proposal" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_ProposalAdequacyReview_ProposalChecklistTypeLU" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_ProposalChecklistComplete_ResponseTypeLU" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_ProposalPricingReview_ProposalChecklistTypeLU" ManuallyRouted="false" />
@@ -71,42 +55,58 @@
         <AssociationConnector Association="genTRACModel.FK_ProposalPARChecklistXREF_ResponseTypeLU" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_ProposalPPRChecklistXREF_ResponseTypeLU" ManuallyRouted="false" />
         <AssociationConnector Association="genTRACModel.FK_SystemUserRole_RoleLU" ManuallyRouted="false" />
-        <AssociationConnector Association="genTRACModel.ProposalCostElementXREF" ManuallyRouted="false" />
         <EntityTypeShape EntityType="genTRACModel.genTracData" Width="1.5" PointX="10.375" PointY="9.75" />
         <EntityTypeShape EntityType="genTRACModel.ContractTypeGroupLU" Width="1.5" PointX="13.625" PointY="0.875" />
         <EntityTypeShape EntityType="genTRACModel.ContractTypeLU" Width="1.5" PointX="11.375" PointY="0.875" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_ContractTypeGroupLU" />
         <AssociationConnector Association="genTRACModel.ContractTypeGroupXREF" />
-        <AssociationConnector Association="genTRACModel.ProposalContractTypeXREF" />
         <EntityTypeShape EntityType="genTRACModel.LineOfBusinessLU" Width="1.5" PointX="11.375" PointY="3.875" />
         <EntityTypeShape EntityType="genTRACModel.ProgramAreaLU" Width="1.5" PointX="13.625" PointY="3.875" />
         <AssociationConnector Association="genTRACModel.FK_ProgramAreaLU_LineOfBusinessLU" />
         <AssociationConnector Association="genTRACModel.LineOfBusinessRoleXREF" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_LineOfBusinessLU" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_ProgramAreaLU" />
         <EntityTypeShape EntityType="genTRACModel.CutOffDateUtilizationLU" Width="1.5" PointX="0.75" PointY="0.875" />
-        <AssociationConnector Association="genTRACModel.FK_CutOffDateUtilization" />
         <EntityTypeShape EntityType="genTRACModel.CannedResponsesPAR" Width="1.5" PointX="8.5" PointY="21" />
         <AssociationConnector Association="genTRACModel.FK__CannedRes__Quest__4999D985" />
         <AssociationConnector Association="genTRACModel.FK__ProposalP__Canne__4A8DFDBE" />
         <EntityTypeShape EntityType="genTRACModel.DataMartEmployee" Width="1.5" PointX="12.375" PointY="7.75" />
         <EntityTypeShape EntityType="genTRACModel.ProposalsAttachment" Width="1.5" PointX="8.5" PointY="24.625" />
-        <AssociationConnector Association="genTRACModel.FK__Proposals__Propo__5A5A5133" />
         <EntityTypeShape EntityType="genTRACModel.Attachment" Width="1.5" PointX="14.375" PointY="7.875" />
         <AssociationConnector Association="genTRACModel.FK__Proposals__Attac__5B4E756C" />
-        <AssociationConnector Association="genTRACModel.FK_Proposal_Proposal" />
         <EntityTypeShape EntityType="genTRACModel.ProposalChecklist" Width="1.5" PointX="5.25" PointY="16.75" />
-        <AssociationConnector Association="genTRACModel.FK_ProposalChecklist_Proposal" />
         <EntityTypeShape EntityType="genTRACModel.AttachmentTypeLU" Width="1.5" PointX="6.25" PointY="40" />
         <EntityTypeShape EntityType="genTRACModel.BoeDatabaseVersion" Width="1.5" PointX="14.375" PointY="14.75" />
         <EntityTypeShape EntityType="genTRACModel.EppDelegationAuthorityLU" Width="1.5" PointX="3" PointY="35.75" />
         <EntityTypeShape EntityType="genTRACModel.ReasonCertificationNotRequiredLU" Width="1.5" PointX="14.375" PointY="11.875" />
         <AssociationConnector Association="genTRACModel.FK__Proposals__Attac__08AB2BC8" />
-        <AssociationConnector Association="genTRACModel.FK__Proposal__Reason__04DA9AE4" />
         <EntityTypeShape EntityType="genTRACModel.ProposalContractsData" Width="2.25" PointX="11.25" PointY="23.625" />
         <AssociationConnector Association="genTRACModel.FK__ProposalC__EPPDe__02925FBF" />
-        <AssociationConnector Association="genTRACModel.FK__ProposalC__Previ__019E3B86" />
-        <AssociationConnector Association="genTRACModel.FK__ProposalC__Propo__00AA174D" />
+        <EntityTypeShape EntityType="genTRACModel.Proposal" Width="1.5" PointX="16.625" PointY="21.75" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_BOEToolLU" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_ContractTypeGroupLU" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_CustomerTypeLU" />
+        <AssociationConnector Association="genTRACModel.FK_CutOffDateUtilization" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_genTRACUser" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_ISGSRoleLU" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_LineOfBusinessLU" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_PricingToolLU" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_ProgramAreaLU" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_ProgramProposalStatusLU" />
+        <AssociationConnector Association="genTRACModel.FK__Proposal__Reason__04DA9AE4" />
+        <AssociationConnector Association="genTRACModel.FK__ProposalC__Previ__11CA81AE" />
+        <AssociationConnector Association="genTRACModel.FK__ProposalC__Propo__10D65D75" />
+        <AssociationConnector Association="genTRACModel.FK__Proposals__Propo__06C2E356" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_Proposal" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_ProposalClassLU" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_ProposalLocationLU" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_ProposalStatusLU" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_ProposalTypeLU" />
+        <AssociationConnector Association="genTRACModel.FK_Proposal_RequestTypeLU" />
+        <AssociationConnector Association="genTRACModel.FK_ProposalChecklist_Proposal" />
+        <AssociationConnector Association="genTRACModel.FK_ProposalChecklistComplete_Proposal" />
+        <AssociationConnector Association="genTRACModel.FK_ProposalPARChecklistXREF_Proposal" />
+        <AssociationConnector Association="genTRACModel.FK_ProposalPPRChecklistXREF_Proposal" />
+        <AssociationConnector Association="genTRACModel.FK_ProposalUserRole_Proposal" />
+        <AssociationConnector Association="genTRACModel.ProposalContractTypeXREF" />
+        <AssociationConnector Association="genTRACModel.ProposalCostElementXREF" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

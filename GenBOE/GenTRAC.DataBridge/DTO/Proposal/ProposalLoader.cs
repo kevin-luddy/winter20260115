@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -193,7 +193,8 @@ namespace GenTRAC.DataBridge.DTO
                             entity.OtherReasonComment,
                             ProposalSetupComments = entity.SetupComments,
                             InformationComments = entity.InformationComments,
-                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
+                            ProposalCompletedDate = entity.ProposalCompletedDate
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -263,7 +264,8 @@ namespace GenTRAC.DataBridge.DTO
                             OtherReasonComment = entity.OtherReasonComment,
                             ProposalSetupComments = entity.ProposalSetupComments,
                             ManageProposalInfoComments = entity.InformationComments,
-                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
+                            ProposalCompletedDate = entity.ProposalCompletedDate
                         }).ToList();
                 }
             }
@@ -570,7 +572,8 @@ namespace GenTRAC.DataBridge.DTO
                             (int?)dtoToUpsert.ReasonCertificationNotRequired,
                             dtoToUpsert.OtherReasonComment,
                             dtoToUpsert.ProposalSetupComments,
-                            dtoToUpsert.ModExecutedLastEmailed).FirstOrDefault();
+                            dtoToUpsert.ModExecutedLastEmailed,
+                            dtoToUpsert.ProposalCompletedDate).FirstOrDefault();
                     }
                 }
             }
@@ -1902,7 +1905,7 @@ namespace GenTRAC.DataBridge.DTO
                 {
                     result = "Certification In Progress";
                 }
-                else if (proposalStatus == ProposalStatus.Completed || proposalStatus == ProposalStatus.Lost)
+                else if (proposalStatus == ProposalStatus.PendingAward || proposalStatus == ProposalStatus.Lost || proposalStatus == ProposalStatus.Completed)
                 {
                     result = "Certification Completed: " + certificationTimelineCompleted?.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) ?? "N/A";
                 }

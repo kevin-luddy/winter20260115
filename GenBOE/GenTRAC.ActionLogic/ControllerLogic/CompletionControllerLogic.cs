@@ -100,7 +100,7 @@ namespace GenTRAC.ActionLogic.ControllerLogic
                 {
                     FullProposal fullProposal = await this.contractsLogic.GetFullProposalAsync(proposalId);
                     fullProposal.ProposalStatus = ProposalStatus.Completed;
-                    fullProposal.CertificationTimelineCompleted = DateTime.Now;
+                    fullProposal.ProposalCompletedDate = DateTime.Now;
                     fullProposal.Updateable = IES.Common.UpdateType.Upsert;
                     result = this.ProposalMediator.SaveProposal(fullProposal);
 

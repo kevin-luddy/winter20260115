@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -345,6 +345,11 @@ namespace GenTRAC.DataBridge.DTO
         /// Gets or sets the certification timeline completed date.
         /// </summary>
         public DateTime? CertificationTimelineCompleted { get; set; }
+
+        /// <summary>
+        /// Gets or sets the proposal completion date.
+        /// </summary>
+        public DateTime? ProposalCompletedDate { get; set; }
 
         /// <summary>
         /// Gets or sets the certification last emailed date.

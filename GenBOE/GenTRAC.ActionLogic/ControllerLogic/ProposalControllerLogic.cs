@@ -413,6 +413,7 @@ namespace GenTRAC.ActionLogic
                 newProposal.CertificationDate = originalProposal.CertificationDate;
                 newProposal.CertificationLastEmailed = originalProposal.CertificationLastEmailed;
                 newProposal.CertificationTimelineCompleted = originalProposal.CertificationTimelineCompleted;
+                newProposal.ProposalCompletedDate = originalProposal.ProposalCompletedDate;
                 newProposal.CutOffDateUtilization = originalProposal.CutOffDateUtilization;
                 newProposal.Comments = originalProposal.Comments;
 
@@ -924,6 +925,8 @@ namespace GenTRAC.ActionLogic
                 model.CompletedDate = date.HasValue ? date.Value.ToString("MM/dd/yyyy") : string.Empty;
                 date = fullProposalDto.CertificationTimelineCompleted;
                 model.CertificationCompletedDate = date.HasValue ? date.Value.ToString("MM/dd/yyyy") : string.Empty;
+                date = fullProposalDto.ProposalCompletedDate;
+                model.ProposalCompletedDate = date.HasValue ? date.Value.ToString("MM/dd/yyy") : string.Empty;
 
                 if (!date.HasValue && model.ProposalStatus == ProposalStatus.Completed)
                 {
@@ -2638,6 +2641,7 @@ namespace GenTRAC.ActionLogic
             if (isCertificationComplete)
             {
                 proposal.ProposalStatus = ProposalStatus.PendingAward;
+                proposal.CertificationTimelineCompleted = DateTime.Now;
             }
 
             return proposal;
