@@ -37,6 +37,11 @@ namespace GenBOE.ActionLogic.ModelView
 		public decimal TotalValue { get; set; }
 
 		/// <summary>
+		/// Decimal precision for the spread values
+		/// </summary>
+		public int SpreadPrecision { get; set; }
+
+		/// <summary>
 		/// Child trace table BOE data
 		/// </summary>
 		public ICollection<TraceTableBoeData> ChildData { get; set; } = new Collection<TraceTableBoeData>();
