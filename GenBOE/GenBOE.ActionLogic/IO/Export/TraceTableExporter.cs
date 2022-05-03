@@ -95,7 +95,7 @@ namespace GenBOE.ActionLogic.IO.Export
 				// spreads are now filtered
 				ICollection<ResourceSpreadDto> spreads = resourceTypes.SelectMany(x => x.LaborSpreads).ToList();
 				parent.TotalValue = spreads.Sum(x => x.LaborSpreadValue);
-				parent.Precision = resourceTypes.FirstOrDefault()?.SpreadType == SpreadType.Cost ? workspace.CostDecimalPrecision : workspace.DecimalPrecision;
+				parent.SpreadPrecision = resourceTypes.FirstOrDefault()?.SpreadType == SpreadType.Cost ? workspace.CostDecimalPrecision : workspace.DecimalPrecision;
 
 				if (includeYearlyData)
 				{

@@ -39,7 +39,7 @@ namespace GenBOE.ActionLogic.ModelView
 		/// <summary>
 		/// Decimal precision for the spread values
 		/// </summary>
-		public int Precision { get; set; }
+		public int SpreadPrecision { get; set; }
 
 		/// <summary>
 		/// Child trace table BOE data
