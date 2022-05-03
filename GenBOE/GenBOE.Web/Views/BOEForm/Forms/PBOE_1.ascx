@@ -156,6 +156,14 @@
 
         // ensure we have the option properly displayed
         toggleCCoPDApplies();
+
+        $('#SupplierProposedValue').on('change', function () {
+            const dollarValue = $('#SupplierProposedValue').val().trim().replace('$', '').replace(/\,/g, '');
+            $('#SupplierProposedValue').val(GenHelper.addCommas(dollarValue, '$'));
+        });
+
+        // ensure we format the money properly
+        $('#SupplierProposedValue').trigger('change');
     });
 </script>
 <div id="manage-pboe">
@@ -179,6 +187,10 @@
         <div class="form-element"><%: Html.TextBox("SupplierName", Model.PBOEModel.SupplierName, new { id = "SupplierName", maxlength="50" }) %></div>
     </div>
     <div class="form-row">
+        <div class="form-label"><span helptext="Type in Vendor ID number per location/division. One PBOE should be completed per unique Vendor ID i.e. LM0042531">Vendor ID **</span></div>
+        <div class="form-element"><%: Html.TextBox("VendorId", Model.PBOEModel.VendorId, new { id = "VendorId", maxlength="20"}) %></div>
+    </div>
+    <div class="form-row">
         <div class="form-label"><span helptext="Identify the LM Space RFP number provided to the supplier(s) for their quote(s).">LM Supplier RFP No **</span></div>
         <div class="form-element"><%: Html.TextBox("RFP", Model.PBOEModel.RFP, new { id = "RFP", maxlength="50" }) %></div>
     </div>
@@ -193,6 +205,10 @@
     <div class="form-row">
         <div class="form-label"><span helptext="Input the end date of supplier proposal validity (if applicable).">Supplier Proposal Validity Date **</span></div>
         <div class="form-element"><%: Html.TextBox("ValidityDate", Model.PBOEModel.ValidityDate, new { @class = "planned-date", id = "ValidityDate" }) %></div>
+    </div>
+    <div class="form-row">
+        <div class="form-label"><span helptext="Value of Supplier proposal from which LM proposed price is derived (if applicable).">Supplier Proposed Value</span></div>
+        <div class="form-element"><%: Html.TextBox("SupplierProposedValue",Model.PBOEModel.SupplierProposedValue, new { @class="labor-cost", id="SupplierProposedValue"}) %></div>
     </div>
     <div class="form-row">
         <div class="form-label"><span helptext="This is the commonly recognized name of the LM Space prime proposal and/or customer RFP number.">LM Proposal Title / Customer RFP No **</span></div>
@@ -434,7 +450,7 @@
                 <div class="form-element"><%: Html.RadioButton("CostAnalysisUnqual", ScheduleEvent.NA, Model.PBOEModel.CostAnalysisUnqual == ScheduleEvent.NA, new { id = "CostAnalysisUnqual" }) %><label>N/A</label><br />
                     <%: Html.RadioButton("CostAnalysisUnqual", ScheduleEvent.Actual, Model.PBOEModel.CostAnalysisUnqual == ScheduleEvent.Actual, new { id = "CostAnalysisUnqual" }) %><label>Actual</label><br />
                     <%: Html.RadioButton("CostAnalysisUnqual", ScheduleEvent.Planned, Model.PBOEModel.CostAnalysisUnqual == ScheduleEvent.Planned, new { id = "CostAnalysisUnqual" }) %><label>Planned</label><br />
-                    <%: Html.TextBox("CostAnalysisUnqualDate", !Model.PBOEModel.CostAnalysisUnqualDate.HasValue ? string.Empty : Model.PBOEModel.GovtPricingDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "CostAnalysisUnqualDate" })%><br />
+                    <%: Html.TextBox("CostAnalysisUnqualDate", !Model.PBOEModel.CostAnalysisUnqualDate.HasValue ? string.Empty : Model.PBOEModel.CostAnalysisUnqualDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "CostAnalysisUnqualDate" })%><br />
                     <%: Html.TextBox("CostAnalysisUnqualText", Model.PBOEModel.CostAnalysisUnqualText, new { id = "CostAnalysisUnqualText", maxlength="50" })%>
                 </div>
             </div>

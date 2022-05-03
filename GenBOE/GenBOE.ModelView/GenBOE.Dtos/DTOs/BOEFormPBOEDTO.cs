@@ -87,6 +87,16 @@ namespace GenBOE.Dtos
         public string ValidityDate { get; set; }
 
         /// <summary>
+        /// Vendor ID
+        /// </summary>
+        public string VendorId { get; set; }
+
+        /// <summary>
+        /// Value of Supplier proposal
+        /// </summary>
+        public decimal? SupplierProposedValue { get; set; }
+
+        /// <summary>
         /// Should Cost/Engineering Estimate
         /// </summary>
         public ScheduleEvent ShouldCostEstimate { get; set; }

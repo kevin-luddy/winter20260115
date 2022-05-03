@@ -81,7 +81,9 @@ CREATE PROCEDURE [dbo].[upsertBOEFormPBOE]
 @GovtPricingReceivedText VARCHAR(50),
 @CostAnalysisUnqual int,
 @CostAnalysisUnqualDate date,
-@CostAnalysisUnqualText VARCHAR(50)
+@CostAnalysisUnqualText VARCHAR(50),
+@VendorId VARCHAR(20),
+@SupplierProposedValue DECIMAL(13,2)
 )
 AS
 /******************************************************************************
@@ -102,7 +104,8 @@ AS
 **      11/14/16	twilson3			BOEJ-1541 INL Forms Text Entry Planned Fields
 **		03/08/17	ranzalon			BOEJ-1944 Increase size of poc fields
 **		10/27/17	twilson3			BOEJ-2578 Partial Save PBOE/IBOE
-**	    04/19/22	jquijano			IES-1014 Add new fields
+**		04/19/22	jquijano			IES-1014 Add new fields
+**		05/02/22	jquijano			IES-1126 Add VendorID, SupplierProposedValue
 *******************************************************************************/
 
 SET NOCOUNT ON 
@@ -215,6 +218,8 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				,[CostAnalysisUnqual]
 				,[CostAnalysisUnqualDate]
 				,[CostAnalysisUnqualText]
+				,[VendorId]
+				,[SupplierProposedValue]
 			   )
 		OUTPUT inserted.PBOEFormID INTO @InsertedPBOE            
 		VALUES
@@ -287,7 +292,9 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				@GovtPricingReceivedText,
 				@CostAnalysisUnqual,
 				@CostAnalysisUnqualDate,
-				@CostAnalysisUnqualText
+				@CostAnalysisUnqualText,
+				@VendorId,
+				@SupplierProposedValue
 			   )
 		SELECT @PBOEFormID = PBOEID FROM @InsertedPBOE
 	
@@ -391,7 +398,9 @@ ELSE
 						[GovtPricingReceivedText] = @GovtPricingReceivedText,
 						[CostAnalysisUnqual] = @CostAnalysisUnqual,
 						[CostAnalysisUnqualDate] = @CostAnalysisUnqualDate,
-						[CostAnalysisUnqualText] = @CostAnalysisUnqualText
+						[CostAnalysisUnqualText] = @CostAnalysisUnqualText,
+						[VendorId] = @VendorId,
+						[SupplierProposedValue] = @SupplierProposedValue
 				WHERE
 					[PBOEFormID] = @PBOEFormID
 

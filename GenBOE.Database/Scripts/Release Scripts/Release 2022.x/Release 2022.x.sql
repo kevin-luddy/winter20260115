@@ -320,3 +320,42 @@ GO
 
     ## END ##
 */
+
+/*
+    ## START ##
+
+    05/02/2022 [Quijano] - IES-1126 Add VendorId and SupplierProposedValue for PBOE
+*/
+IF COL_LENGTH('version.BOEFormPBOE', 'VendorId') IS NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ADD VendorId VARCHAR(20) NULL
+END
+GO
+
+IF COL_LENGTH ('dbo.BOEFormPBOE', 'VendorId') IS NULL
+BEGIN
+	ALTER TABLE dbo.BOEFormPBOE
+		ADD VendorId VARCHAR(20) NULL
+END
+GO
+
+IF COL_LENGTH('version.BOEFormPBOE', 'SupplierProposedValue') IS NULL
+BEGIN
+	ALTER TABLE version.BOEFormPBOE
+		ADD SupplierProposedValue DECIMAL(13,2) NULL
+END
+GO
+
+IF COL_LENGTH ('dbo.BOEFormPBOE', 'SupplierProposedValue') IS NULL
+BEGIN
+	ALTER TABLE dbo.BOEFormPBOE
+		ADD SupplierProposedValue DECIMAL(13,2) NULL
+END
+GO
+
+/*
+    ## END ##
+
+    05/02/2022 [Quijano] - IES-1126 Add VendorId and SupplierProposedValue for PBOE
+*/

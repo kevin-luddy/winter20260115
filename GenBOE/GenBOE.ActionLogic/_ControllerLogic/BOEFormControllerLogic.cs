@@ -474,6 +474,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.CostAnalysisUnqual = modelview.CostAnalysisUnqual;
             dto.CostAnalysisUnqualDate = modelview.CostAnalysisUnqualDate;
             dto.CostAnalysisUnqualText = modelview.CostAnalysisUnqualText;
+            dto.VendorId = modelview.VendorId;
+            dto.SupplierProposedValue = modelview.SupplierProposedValue;
 
             return dto;
         }

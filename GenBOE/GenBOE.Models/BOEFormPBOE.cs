@@ -99,5 +99,7 @@ namespace GenBOE.Models
         public Nullable<int> CostAnalysisUnqual { get; set; }
         public Nullable<System.DateTime> CostAnalysisUnqualDate { get; set; }
         public string CostAnalysisUnqualText { get; set; }
+        public string VendorId { get; set; }
+        public Nullable<decimal> SupplierProposedValue { get; set; }
     }
 }

@@ -99,6 +99,8 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.CostAnalysisUnqual = dto.CostAnalysisUnqual ?? ScheduleEvent.NA;
             this.CostAnalysisUnqualDate = dto.CostAnalysisUnqualDate;
             this.CostAnalysisUnqualText = dto.CostAnalysisUnqualText;
+            this.SupplierProposedValue = dto.SupplierProposedValue;
+            this.VendorId = dto.VendorId;
         }
 
 
@@ -365,6 +367,18 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RichText(RichTextDbColumn.PBOE_RATIONALE_VALUE_SUMMARY, "PBOEFormID")]
         [Required(ErrorMessage = "Rationale for LM Proposed Value Summary is required.")]
         public string RationaleValueSummary { get; set; }
+
+        /// <summary>
+        /// The Vendor ID associated with the supplier
+        /// </summary>
+        [Required(ErrorMessage = "The Vendor ID is required.")]
+        public string VendorId { get; set; }
+
+        /// <summary>
+        /// Value of Supplier proposal
+        /// </summary>
+        [Range(0, 99999999999.99, ErrorMessage = "Supplier Proposed Value must be between 0 and $99,999,999,999.99.")]
+        public decimal? SupplierProposedValue { get; set; }
 
         /// <summary>
         /// Date of customer written approval for submission after initial prime proposal.

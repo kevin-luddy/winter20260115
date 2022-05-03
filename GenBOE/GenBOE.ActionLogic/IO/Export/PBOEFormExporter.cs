@@ -9,6 +9,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
     using System.Linq;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Wordprocessing;
@@ -79,6 +80,8 @@ namespace GenBOE.ActionLogic.IO.Export
         private const string CCOPD_THRESHOLD = "ccopd_threshold";
         private const string CCOPD_OTHER = "ccopd_other";
         private const string CCOPD_OTHER_TEXT = "ccopd_other_text";
+        private const string VENDOR_ID = "VendorId";
+        private const string SUPPLIER_PROPOSED_VALUE = "SupplierProposedValue";
 
         // Basis of and Rationale for LM Proposed Value
         private const string PROPOSED_SOURCE_SELECTION = "ProposedSourceSelection";
@@ -183,6 +186,8 @@ namespace GenBOE.ActionLogic.IO.Export
             this.SetField(document, PHONE, boeForm.PocPhone);
             this.SetField(document, MANAGER, boeForm.Approver);
             this.SetField(document, MANAGER_PHONE, boeForm.ApproverPhone);
+            this.SetField(document, VENDOR_ID, boeForm.VendorId);
+            this.SetField(document, SUPPLIER_PROPOSED_VALUE, boeForm.SupplierProposedValue.HasValue ? boeForm.SupplierProposedValue.Value.ToString("C", CultureInfo.CurrentCulture) : String.Empty);
 
             // ccopd checkboxes
             this.SetCheckbox(document, CCOPD, boeForm.CCoPDApplies);
