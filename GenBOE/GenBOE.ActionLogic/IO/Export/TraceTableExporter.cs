@@ -60,6 +60,17 @@ namespace GenBOE.ActionLogic.IO.Export
 
 			taskElementLabors.RemoveAll(x => laborsToRemove.Contains(x.Id));
 
+			// Populate CLIN and WBS IDs for non-multi-clin-wbs
+			foreach (ResourceTypeDto labor in taskElementLabors)
+			{
+				FullBoe boe = workspace.Boes.FirstOrDefault(x => x.Id == labor.BoeID);
+				if (boe != null && !boe.IsMultiClinWbs)
+				{
+					labor.CLINID = boe.CLINID;
+					labor.WBSID = boe.WBSID;
+				}
+			}
+
 			ProcessLaborData(workspace, settingsData.SummaryFields.FirstOrDefault(), settingsData.SummaryFields.Skip(1).ToList(),
 				taskElementLabors, boeData, settingsData.ShowYears);
 
@@ -84,12 +95,11 @@ namespace GenBOE.ActionLogic.IO.Export
 				// spreads are now filtered
 				ICollection<ResourceSpreadDto> spreads = resourceTypes.SelectMany(x => x.LaborSpreads).ToList();
 				parent.TotalValue = spreads.Sum(x => x.LaborSpreadValue);
+				parent.Precision = resourceTypes.FirstOrDefault()?.SpreadType == SpreadType.Cost ? workspace.CostDecimalPrecision : workspace.DecimalPrecision;
 
 				if (includeYearlyData)
 				{
-					ICollection<int> years = spreads.Select(x => x.LaborSpreadDate.Year).Distinct().ToList();
-
-					foreach (int year in years)
+					for(int year = workspace.StartDate.Value.Year; year <= workspace.EndDate.Value.Year; year++)
 					{
 						parent.SpreadValuesForYear.Add(year, spreads.Where(x => x.LaborSpreadDate.Year == year).Sum(x => x.LaborSpreadValue));
 					}
@@ -102,6 +112,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 				if (currentLevel.Equals(SummaryFieldType.CLINNum.GetDescription(), StringComparison.CurrentCultureIgnoreCase))
 				{
+					// TODO - see if we need to order these (all categories)
 					foreach (int? clinId in resourceTypes.Select(x => x.CLINID).Distinct())
 					{
 						TraceTableBoeData newChild = new TraceTableBoeData()
@@ -206,7 +217,14 @@ namespace GenBOE.ActionLogic.IO.Export
 
 					if (customField != null)
 					{
-						foreach ((int customFieldValueID, string customFieldValue) in resourceTypes.SelectMany(x => x.CustomFieldValueContainers).Where(x => x.CustomFieldID == customField.Id).Select(x => (x.CustomFieldValueID, x.OpenEndedValue)).Distinct())
+						ICollection<string> customFieldValues = resourceTypes.SelectMany(x => x.CustomFieldValueContainers).Where(x => x.CustomFieldID == customField.Id).Select(x => x.OpenEndedValue).Distinct(StringComparer.OrdinalIgnoreCase).ToCollection();
+
+						if (resourceTypes.Any(x => !x.CustomFieldValueContainers.Any(y => y.CustomFieldID == customField.Id)))
+						{
+							customFieldValues.Add(CommonConstants.NO_CUSTOM_FIELD_VALUE);
+						}
+
+						foreach (string customFieldValue in customFieldValues)
 						{
 							TraceTableBoeData newChild = new TraceTableBoeData()
 							{
@@ -214,7 +232,11 @@ namespace GenBOE.ActionLogic.IO.Export
 								SummaryFieldValue = customFieldValue
 							};
 
-							ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourceTypes.Where(x => x.CustomFieldValueContainers.Any(y => y.CustomFieldID == customField.Id && y.CustomFieldValueID == customFieldValueID)).ToList(), newChild, includeYearlyData);
+							ProcessLaborData(workspace, nextLevel, nextAdditionalLevels,
+								customFieldValue == CommonConstants.NO_CUSTOM_FIELD_VALUE 
+									? resourceTypes.Where(x => !x.CustomFieldValueContainers.Any(y => y.CustomFieldID == customField.Id)).ToCollection()
+									: resourceTypes.Where(x => x.CustomFieldValueContainers.Any(y => y.CustomFieldID == customField.Id && y.OpenEndedValue.Equals(customFieldValue, StringComparison.CurrentCultureIgnoreCase))).ToCollection(), 
+								newChild, includeYearlyData);
 							parent.ChildData.Add(newChild);
 						}
 					}

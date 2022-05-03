@@ -166,8 +166,8 @@ namespace GenBOE.Tests.ActionLogic.Export
 			BoeTaskElementDTO task2 = new BoeTaskElementDTO() { Id = 2, TaskTitle = "Task 2", taskElementLabors = new Collection<ResourceTypeDto>() { resourceType3 } };
 			BoeTaskElementDTO task3 = new BoeTaskElementDTO() { Id = 3, TaskTitle = "Task 3", taskElementLabors = new Collection<ResourceTypeDto>() { resourceType4, resourceType5 } };
 
-			FullBoe boe1 = new FullBoe() { Id = 1, Title = "BOE1", Workspace = ws };
-			FullBoe boe2 = new FullBoe() { Id = 2, Title = "BOE2", Workspace = ws };
+			FullBoe boe1 = new FullBoe() { Id = 1, Title = "BOE1", Workspace = ws, IsMultiClinWbs = true };
+			FullBoe boe2 = new FullBoe() { Id = 2, Title = "BOE2", Workspace = ws, IsMultiClinWbs = true };
 			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { task1, task2, task3 });
 			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe1.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { task1, task2 });
 			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe2.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { task3 });

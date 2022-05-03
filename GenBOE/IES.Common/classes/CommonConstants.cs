@@ -79,6 +79,11 @@ namespace IES.Common.classes
         readonly static public string Unassigned_CLIN_Display_Text = "NO CLIN";
         readonly static public string Unassigned_WBS_Display_Text = "NO WBS";
 
+        /// <summary>
+        /// Value to display in TT export when there is no custom field value
+        /// </summary>
+        readonly static public string NO_CUSTOM_FIELD_VALUE = "NO CUSTOM FIELD VALUE";
+
         #region Label Constants
         readonly static public string BOE_MOQ_TEXT_LABEL = "MOQ Text";
             readonly static public string BOE_MOQ_TEXT_LABEL_SPACE_SYSTEMS = "MOQ Rationale";
