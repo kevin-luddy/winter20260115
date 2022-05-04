@@ -890,7 +890,7 @@ namespace GenTRAC.ActionLogic
             model.CertificationTimelineVisibility = SecurityAuthorization.None;
             if (fullProposalDto != null && fullProposalDto.IsCCPDRequired.HasValue && fullProposalDto.IsCCPDRequired.Value && 
                 (fullProposalDto.ProposalStatus == ProposalStatus.PendingCertification || fullProposalDto.ProposalStatus == ProposalStatus.Revised 
-                || fullProposalDto.ProposalStatus == ProposalStatus.Completed || fullProposalDto.ProposalStatus == ProposalStatus.PendingAward))
+                || fullProposalDto.ProposalStatus == ProposalStatus.Completed || fullProposalDto.ProposalStatus == ProposalStatus.PendingAward || fullProposalDto.ProposalStatus == ProposalStatus.Lost))
             {
                 model.CertificationTimelineVisibility = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId).Authorization;
             }
