@@ -371,13 +371,11 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// <summary>
         /// The Vendor ID associated with the supplier
         /// </summary>
-        [Required(ErrorMessage = "The Vendor ID is required.")]
         public string VendorId { get; set; }
 
         /// <summary>
         /// Value of Supplier proposal
         /// </summary>
-        [Range(0, 99999999999.99, ErrorMessage = "Supplier Proposed Value must be between 0 and $99,999,999,999.99.")]
         public decimal? SupplierProposedValue { get; set; }
 
         /// <summary>

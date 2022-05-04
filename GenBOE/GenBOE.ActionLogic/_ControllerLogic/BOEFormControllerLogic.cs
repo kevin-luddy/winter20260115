@@ -745,6 +745,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
                 validationMessages.Add(new ValidationMessage("Points of Contact are required."));
             }
+
+            if (boeForm.VendorId == null)
+            {
+                validationMessages.Add(new ValidationMessage("The Vendor ID is required."));
+            }
         }
 
         /// <summary>
