@@ -141,6 +141,9 @@ namespace GenTRAC.DataBridge.Common.Security
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Contracts, PtmSecurityPage.CertificationTimeline },
                 new PtmRole[] { PtmRole.Admin, PtmRole.ContractsPOC, PtmRole.BackupContractsPOC }, SecurityAuthorization.CreateReadUpdateDelete);
 
+            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Contracts },
+                new PtmRole[] { PtmRole.Pricer, PtmRole.BackupPricer, PtmRole.CostVolumeLead, PtmRole.PricingVerification, PtmRole.PeerReviewer, PtmRole.CoverSheetApprover }, SecurityAuthorization.Read);
+
             // Proposal Completion Endpoints
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Completion },
                 new PtmRole[] { PtmRole.Admin, PtmRole.ContractsPOC, PtmRole.BackupContractsPOC }, SecurityAuthorization.CreateReadUpdateDelete);

@@ -115,6 +115,16 @@ namespace GenTRAC.ActionLogic
                 dto = new ContractsDto();
             }
 
+            // Get security info to ensure our read-only users can do just that
+            PtmRole highestRole;
+            SecurityPermissionsRequested perms = new SecurityPermissionsRequested
+            {
+                PageToCheck = PtmSecurityPage.Contracts,
+                ProposalId = proposalId,
+            };
+
+            SecurityAuthorization highestAccess = this.SecurityAccess.IsAuthorized(perms, out highestRole);
+
             // populate calculated properties
             model.EppOptions = this.GetEppSelectOptions(model.EppDelegationAuthority);
             model.SetLostButtonEnabled = this.IsValidForLostStatus(dto, fullProposal);
@@ -123,7 +133,7 @@ namespace GenTRAC.ActionLogic
             model.IsNoBid = fullProposal.ProposalStatus == ProposalStatus.NoBid;
             model.HasAccessToSetNoBid = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions) || this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
             model.HasAccessToSetLost = ValidForLostProposalStatusSave(fullProposal, null);
-            model.IsReadOnly = fullProposal.ProposalStatus == ProposalStatus.Completed;
+            model.IsReadOnly = fullProposal.ProposalStatus == ProposalStatus.Completed || highestAccess == SecurityAuthorization.Read;
 
             // Load additional values
             model.PreviouslySubmittedRoms = this.ProposalLoader.GetRomProposalOptions(model.PreviouslySubmittedROM);
