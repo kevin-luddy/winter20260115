@@ -101,9 +101,15 @@ namespace GenTRAC.DataBridge.Common.Security
             this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Proposal },
                 new PtmRole[] { PtmRole.CostVolumeLead, PtmRole.AdditionalPricingResource1, PtmRole.AdditionalPricingResource2, PtmRole.BackupPricer, PtmRole.ProposalSetupAdmin }, SecurityAuthorization.ReadUpdate);
 
-            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Proposal, PtmSecurityPage.CertificationTimeline, PtmSecurityPage.Contracts },
+            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.Proposal, PtmSecurityPage.Contracts },
                 new PtmRole[] { PtmRole.CaptureManager, PtmRole.AdditionalUser, PtmRole.PeerReviewer, PtmRole.ContractsPOC, PtmRole.BackupContractsPOC, PtmRole.SupplyChainPOCMatl, PtmRole.SupplyChainPOCSubs, PtmRole.Viewer,
                                 PtmRole.CoverSheetApprover, PtmRole.PricingVerification },
+                    SecurityAuthorization.Read);
+
+            // Certification Timeline
+            this.InitializeMatrix(new PtmSecurityPage[] { PtmSecurityPage.CertificationTimeline }, 
+                new PtmRole[] { PtmRole.CaptureManager, PtmRole.AdditionalUser, PtmRole.PeerReviewer, PtmRole.ContractsPOC, PtmRole.BackupContractsPOC, PtmRole.SupplyChainPOCMatl, PtmRole.SupplyChainPOCSubs, PtmRole.Viewer,
+                                PtmRole.CoverSheetApprover, PtmRole.PricingVerification, PtmRole.Pricer, PtmRole.BackupPricer, PtmRole.CostVolumeLead },
                     SecurityAuthorization.Read);
 
             // Checklist
