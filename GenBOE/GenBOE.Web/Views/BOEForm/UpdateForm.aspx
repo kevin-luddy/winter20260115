@@ -144,7 +144,8 @@
                     url: saveUrl,
                     data: dataToSend,
                     success: ManageBOEFormsWidget.CancelToMainGrid,
-                    error: function(response) {
+                    error: function (response) {
+                        $('#SupplierProposedValue').trigger('change');
                     }
                 }, button);
             };
