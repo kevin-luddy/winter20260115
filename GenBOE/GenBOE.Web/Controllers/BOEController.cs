@@ -1891,7 +1891,7 @@ namespace GenBOE.Web.Controllers
                     ws.RefreshBoes();
                     ws.RefreshTaskElements();
 
-                    workspaceVariablesEffectedByDelete = workspaceVariablesEffectedByDelete.Where(x => x.ValueType == VarValueType.SumOfBOEs && ws.TaskElements.SelectMany(z => z.WorkspaceVariableIDs).Contains(x.Id)).ToList();
+                    workspaceVariablesEffectedByDelete = workspaceVariablesEffectedByDelete.Where(x => x.ValueType == VarValueType.SumOfBOEs && ws.TaskElements.SelectMany(z => z.WorkspaceVariableIDs).Contains(x.Id)).Distinct().ToList();
 
                     foreach (WorkspaceVariableDTO workspaceVar in workspaceVariablesEffectedByDelete)
                     {
