@@ -1131,17 +1131,17 @@ namespace GenBOE.Web.Controllers
             FinalizeAction(_log, "DeleteTaskElements", sw);
         }
 
-        /// <summary>
-        /// Saves a BOE(s) from the Manage BOE page.  There are also many side affects that occur with this save.
-        /// </summary>
-        /// <param name="workspace">Workspace name.</param>
-        /// <param name="boes">List of BOEs to be saved.</param>
-        /// <returns>
-        /// (json): Either "true" or a single modelView with one BOE.  When true, a reload of the boe grid is required, when a single
-        /// model view is returned, that one particular row is updated in the UI.
-        /// </returns>
+		/// <summary>
+		/// Saves a BOE(s) from the Manage BOE page.  There are also many side affects that occur with this save.
+		/// </summary>
+		/// <param name="workspace">Workspace name.</param>
+		/// <param name="boes">List of BOEs to be saved.</param>
+		/// <returns>
+		/// (json): Either "true" or a single modelView with one BOE.  When true, a reload of the boe grid is required, when a single
+		/// model view is returned, that one particular row is updated in the UI.
+		/// </returns>
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1809:AvoidExcessiveLocals")]
         public ActionResult SaveManageBOE(string workspace, Collection<ManageBOEModelView> boes)
         {
             if (boes == null)
@@ -1616,6 +1616,9 @@ namespace GenBOE.Web.Controllers
                 }
 
                 #region moreDataManipulationAndThenTheSave
+
+                List<WorkspaceVariableDTO> workspaceVariablesEffectedByDelete = new List<WorkspaceVariableDTO>();
+
                 // Dictionary to keep track of workspace variable IDs that need to be updated and their old variable total
                 Dictionary<int, decimal> WorkspaceVarOldValueID = new Dictionary<int, decimal>();
 
@@ -1632,7 +1635,6 @@ namespace GenBOE.Web.Controllers
 
                     if (workspaceVariablesForThisClin.Any())
                     {
-
                         foreach (WorkspaceVariableDTO workspaceVar in workspaceVariablesForThisClin)
                         {
                             DataClassForSumOfBOEsCalculation data = new DataClassForSumOfBOEsCalculation();
@@ -1640,6 +1642,8 @@ namespace GenBOE.Web.Controllers
 
                             decimal oldTotalValue = this._variableSelectBOEtoSumCalculation.GetWorkspaceVarLabelTotal(workspaceVar, data);
                             WorkspaceVarOldValueID[workspaceVar.Id] = oldTotalValue;
+
+                            workspaceVariablesEffectedByDelete.Add(workspaceVar);
                         }
                     }
                 }
@@ -1668,9 +1672,6 @@ namespace GenBOE.Web.Controllers
                 // variables that were effected by a BOE delete
                 List<OrdinaryVariableDto> taskVariablesEffectedByDelete = new List<OrdinaryVariableDto>();
                 List<int> WorkspaceVarIdsEffectedByDelete = new List<int>();
-
-                // BOEJ-1250 - recalculate all of the WS variables just to be sure.
-                List<WorkspaceVariableDTO> workspaceVariablesEffectedByDelete = ws.WorkspaceVariables.ToList();
 
                 List<int> BoeIdsEffectedByDelete = new List<int>();
                 // variables that were effected by a BOE to Multi
@@ -1890,14 +1891,14 @@ namespace GenBOE.Web.Controllers
                     ws.RefreshBoes();
                     ws.RefreshTaskElements();
 
-                    workspaceVariablesEffectedByDelete = workspaceVariablesEffectedByDelete.Where(x => x.ValueType == VarValueType.SumOfBOEs && ws.TaskElements.SelectMany(z => z.WorkspaceVariableIDs).Contains(x.Id)).ToList();
+                    workspaceVariablesEffectedByDelete = workspaceVariablesEffectedByDelete.Where(x => x.ValueType == VarValueType.SumOfBOEs && ws.TaskElements.SelectMany(z => z.WorkspaceVariableIDs).Contains(x.Id)).Distinct().ToList();
 
                     foreach (WorkspaceVariableDTO workspaceVar in workspaceVariablesEffectedByDelete)
                     {
                         boeTaskElementsToRecalculate.AddRange(from t in this._BoeTaskElementRecalculation.RecalculateLaborWithVariable(workspaceVar.Id, VariableType.Workspace, ws)
-                                                              where !(from o in boeTaskElementsToRecalculate
-                                                                      select o.Id).Contains(t.Id)
-                                                              select t);
+                                                                where !(from o in boeTaskElementsToRecalculate
+                                                                        select o.Id).Contains(t.Id)
+                                                                select t);
                     }
 
                     workspaceVariablesEffectedByMulti = workspaceVariablesEffectedByMulti.Where(x => ws.TaskElements.SelectMany(z => z.WorkspaceVariableIDs).Contains(x.Id)).ToList();
