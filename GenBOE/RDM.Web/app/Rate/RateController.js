@@ -491,6 +491,18 @@
 
         var dirtyRates = $scope.data.filter(function (rate) { return rate.D === true && (rate.Del === false || rate.Id > 0); });
 
+        // fill in any missing years
+        var prevYear = $scope.selectedVersion.StartYear - 1;
+        dirtyRates.forEach(function (rate) {
+            rate.Values.forEach(function (value) {
+                if (value.Yr == null || value.Yr == 0) {
+                    value.Yr = prevYear + 1;
+                }
+
+                prevYear = value.Yr;
+            });
+        });
+
         return $http({
             method: 'POST',
             url: saveUrl,
