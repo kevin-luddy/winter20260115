@@ -232,14 +232,22 @@ GO
 	4/18/2022 [Nghiem, Hunter] - IES-1042 Change name of Subcontract Admin to GSCO Admin
 */
 BEGIN
-  UPDATE RoleLU SET RoleName = 'GSCO Administrator' WHERE RoleID = 10
+  UPDATE RoleLU SET Role = 'GSCO Administrator' WHERE RoleID = 10
 END
 GO
 
 /*
 	4/28/2022 [Quijano, Jesse] - IES-1067 Show Certification TimelineCompleted Date
 */
-IF OBJECT_ID('dbo.Proposal', 'ProposalCompletedDate') IS NULL
+IF NOT EXISTS (
+	SELECT * FROM sys.all_columns C
+		INNER JOIN sys.tables T on C.object_id = T.object_id
+		INNER JOIN sys.schemas S ON T.schema_id =  S.schema_id
+	WHERE
+		T.name = 'Proposal' AND
+		C.name = 'ProposalCompletedDate' AND
+		S.name = 'dbo'
+)
 BEGIN
 	ALTER TABLE dbo.Proposal ADD ProposalCompletedDate datetime2(7) NULL;
 END
