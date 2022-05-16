@@ -1498,20 +1498,25 @@ namespace GenTRAC.DataBridge.DTO
             List<ProposalDto> toReturn = new List<ProposalDto>();
             DateTime lastSentThreshold = DateTime.Now.AddDays(-7);
             DateTime initialSendThreshold = DateTime.Now.AddDays(-15);
+            DateTime featureStartDate = DateTime.Parse(ConfigurationUtilities.GetAppSetting("PtmContractsStartDate"));
 
             using (genTRACEntities context = new genTRACEntities())
             {
                 var data = context.Proposals.GroupJoin(context.ProposalContractsDatas, p => p.ProposalID, c => c.ProposalID, (p, c) => new { p, c })
                         .SelectMany(prop => prop.c.DefaultIfEmpty(), (prop, cont) => new { Proposals = prop.p, Contracts = cont })
-                        .Where(x => (x.Proposals.CertificationDate != null
-                                        && x.Contracts.ModCompletedDate == null
-                                        && x.Proposals.ModExecutedLastEmailed == null
-                                        && x.Proposals.CertificationDate <= initialSendThreshold
-                                    ) // initial send logic
-                            || (x.Contracts.ModCompletedDate == null
-                                    && x.Proposals.ModExecutedLastEmailed != null
+                        .Where(x =>
+                            (x.Contracts.ModCompletedDate == null 
+                                && x.Contracts.LmWon != false
+                                && x.Proposals.CertificationDate > featureStartDate
+                            ) // Overall filtering - Mod date missing, proposal not marked as lost, proposal was completed after the feature was deployed
+                            &&
+                                ((x.Proposals.CertificationDate != null
+                                    && x.Proposals.ModExecutedLastEmailed == null
+                                    && x.Proposals.CertificationDate <= initialSendThreshold
+                                 ) // initial send logic
+                             || (x.Proposals.ModExecutedLastEmailed != null
                                     && lastSentThreshold >= x.Proposals.ModExecutedLastEmailed)
-                               ) // re-send logic
+                                )) // re-send logic
                         .ToList();
 
                 toReturn = data.Select(x => new ProposalDto
