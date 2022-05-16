@@ -260,6 +260,7 @@
     <Compile Include="Exceptions\ValidationException.cs" />
     <Compile Include="classes\PtmEnums.cs" />
     <Compile Include="classes\PickListEnum.cs" />
+    <Compile Include="IESResponse.cs" />
     <Compile Include="interfaces\IDateShiftable.cs" />
     <Compile Include="Loaders\BulkDataLoader.cs" />
     <Compile Include="Loaders\DataLoader.cs" />
@@ -273,6 +274,7 @@
     <Compile Include="PickList\PickListGridMV.cs" />
     <Compile Include="PickList\PickListMapper.cs" />
     <Compile Include="PickList\PickListLoader.cs" />
+    <Compile Include="SummaryFieldType.cs" />
     <Compile Include="Utilities\EnumUtilities.cs" />
     <Compile Include="IsActiveAttribute.cs" />
     <Compile Include="ListBoxItem.cs" />

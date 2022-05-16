@@ -48,6 +48,22 @@
           <Property Name="Contents" Type="varbinary(max)" Nullable="false" />
           <Property Name="UploadedBy" Type="varchar" MaxLength="1000" Nullable="false" />
         </EntityType>
+        <EntityType Name="AttachmentTypeLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BoeDatabaseVersion">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="DBVersion" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="AppVersion" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="UpdateDate" Type="datetime" Nullable="false" />
+        </EntityType>
         <EntityType Name="BOEToolLU">
           <Key>
             <PropertyRef Name="BOEToolID" />
@@ -134,6 +150,13 @@
           <Property Name="TimeUtc" Type="datetime" Nullable="false" />
           <Property Name="Sequence" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="AllXml" Type="ntext" Nullable="false" />
+        </EntityType>
+        <EntityType Name="EppDelegationAuthorityLU">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Text" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="genTRACUser">
           <Key>
@@ -295,6 +318,8 @@
           <Property Name="ReasonCertificationNotRequired" Type="int" />
           <Property Name="SetupComments" Type="varchar(max)" />
           <Property Name="InformationComments" Type="varchar(max)" />
+          <Property Name="ModExecutedLastEmailed" Type="datetime2" Precision="7" />
+          <Property Name="ProposalCompletedDate" Type="datetime2" Precision="7" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -314,7 +339,7 @@
           <Property Name="ProposalID" Type="int" Nullable="false" />
           <Property Name="ProposalSubmittalDate" Type="date" />
           <Property Name="ISGSTotalPrice" Type="bigint" />
-          <Property Name="ProfitFee" Type="bigint" />
+          <Property Name="ProfitFeeWithCom" Type="bigint" />
           <Property Name="ROSPercentage" Type="decimal" Precision="4" Scale="2" />
           <Property Name="LMLaborHours" Type="decimal" Precision="11" Scale="2" />
           <Property Name="LMLaborCost" Type="bigint" />
@@ -325,6 +350,8 @@
           <Property Name="OtherDirectCost" Type="bigint" />
           <Property Name="DeliverChecklistDFARS" Type="bit" Nullable="false" />
           <Property Name="AbsoluteValue" Type="bigint" />
+          <Property Name="Profit" Type="bigint" />
+          <Property Name="Com" Type="bigint" />
         </EntityType>
         <EntityType Name="ProposalChecklistComplete">
           <Key>
@@ -356,6 +383,29 @@
           <Property Name="ProposalClass" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
           <Property Name="IsReadOnly" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ProposalContractsData">
+          <Key>
+            <PropertyRef Name="ProposalContractsDataId" />
+          </Key>
+          <Property Name="ProposalContractsDataId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UpdateDT" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="ProposalID" Type="int" Nullable="false" />
+          <Property Name="PreviouslySubmittedROM" Type="int" />
+          <Property Name="CustomerSubmittalDate" Type="date" />
+          <Property Name="ContractsCorrespondLogNumber" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="FinalNegotiatedValue" Type="bigint" />
+          <Property Name="FinalNegotiatedDate" Type="date" />
+          <Property Name="EppDelegationAuthority" Type="int" />
+          <Property Name="ProgramEppDate" Type="date" />
+          <Property Name="LobEppDate" Type="date" />
+          <Property Name="PreSpaceEppDate" Type="date" />
+          <Property Name="SpaceEppDate" Type="date" />
+          <Property Name="PreCorporateEppDate" Type="date" />
+          <Property Name="CorporateEppDate" Type="date" />
+          <Property Name="EppRosDelegationNotes" Type="varchar" MaxLength="1000" />
+          <Property Name="LmWon" Type="bit" />
+          <Property Name="ModCompletedDate" Type="date" />
         </EntityType>
         <EntityType Name="ProposalContractTypeXREF">
           <Key>
@@ -465,6 +515,13 @@ warning 6002: The table/view 'genTrac.dbo.ProposalPPRChecklistXREF' does not hav
           <Property Name="RoleID" Type="int" Nullable="false" />
           <Property Name="RoleTypeID" Type="int" />
           <Property Name="UserID" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ReasonCertificationNotRequiredLU">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Text" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
         <EntityType Name="RequestTypeLU">
           <Key>
@@ -588,6 +645,54 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK__Proposal__Reason__04DA9AE4">
+          <End Role="ReasonCertificationNotRequiredLU" Type="Self.ReasonCertificationNotRequiredLU" Multiplicity="0..1" />
+          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ReasonCertificationNotRequiredLU">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ReasonCertificationNotRequired" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ProposalC__EppDe__12BEA5E7">
+          <End Role="EppDelegationAuthorityLU" Type="Self.EppDelegationAuthorityLU" Multiplicity="0..1" />
+          <End Role="ProposalContractsData" Type="Self.ProposalContractsData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EppDelegationAuthorityLU">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProposalContractsData">
+              <PropertyRef Name="EppDelegationAuthority" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ProposalC__Previ__11CA81AE">
+          <End Role="Proposal" Type="Self.Proposal" Multiplicity="0..1" />
+          <End Role="ProposalContractsData" Type="Self.ProposalContractsData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="ProposalContractsData">
+              <PropertyRef Name="PreviouslySubmittedROM" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ProposalC__Propo__10D65D75">
+          <End Role="Proposal" Type="Self.Proposal" Multiplicity="1" />
+          <End Role="ProposalContractsData" Type="Self.ProposalContractsData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="ProposalContractsData">
+              <PropertyRef Name="ProposalID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK__ProposalP__Canne__2E7BCEF5">
           <End Role="CannedResponsesPAR" Type="Self.CannedResponsesPAR" Multiplicity="0..1" />
           <End Role="ProposalPARChecklistXREF" Type="Self.ProposalPARChecklistXREF" Multiplicity="*" />
@@ -609,6 +714,18 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Principal>
             <Dependent Role="ProposalsAttachments">
               <PropertyRef Name="AttachmentId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Proposals__Attac__08AB2BC8">
+          <End Role="AttachmentTypeLU" Type="Self.AttachmentTypeLU" Multiplicity="1" />
+          <End Role="ProposalsAttachments" Type="Self.ProposalsAttachments" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AttachmentTypeLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProposalsAttachments">
+              <PropertyRef Name="AttachmentType" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1236,6 +1353,16 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="LineOfBusinessID" Type="varchar" Mode="In" />
           <Parameter Name="ProgramAreaID" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="CopyCannedResponsesPAR" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="newChecklistId" Type="int" Mode="In" />
+        </Function>
+        <Function Name="CreateDfarsChecklistResponseReport" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="LOB" Type="varchar" Mode="In" />
+          <Parameter Name="PA" Type="varchar" Mode="In" />
+          <Parameter Name="StartDate" Type="date" Mode="In" />
+          <Parameter Name="EndDate" Type="date" Mode="In" />
+          <Parameter Name="ExecutionUserID" Type="varchar" Mode="In" />
+        </Function>
         <Function Name="CreatePARChecklistReport" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalID" Type="int" Mode="In" />
           <Parameter Name="ProposalAdequacyReviewID" Type="int" Mode="In" />
@@ -1368,10 +1495,59 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="RoleID" Type="int" Mode="In" />
           <Parameter Name="LineOfBusinessID" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="rsCentralEstimator" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CentralEstimator" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="rsContractType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ContractType" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="rsCustomerType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="CustomerType" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="rsLineOfBusiness" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="LOB" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="rsProgramArea" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="PA" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="rsProposalStatus" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ProposalStatus" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="rsSegment" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Segment" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="rsYear" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="Year" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="SplitString" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="List" Type="varchar" Mode="In" />
+          <Parameter Name="Delimiter" Type="char" Mode="In" />
+          <Parameter Name="EmptyListItem" Type="varchar" Mode="In" />
+          <ReturnType>
+            <CollectionType>
+              <RowType>
+                <Property Name="ItemId" Type="int" Nullable="false" />
+                <Property Name="Item" Type="varchar" MaxLength="8000" />
+              </RowType>
+            </CollectionType>
+          </ReturnType>
+        </Function>
+        <Function Name="truncateTable" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="p1" Type="nvarchar" Mode="In" />
+          <Parameter Name="p2" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="udfCreateCommaSeparatedList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" ReturnType="varchar">
+          <Parameter Name="ProposalID" Type="int" Mode="In" />
+          <Parameter Name="ListTypeID" Type="int" Mode="In" />
+        </Function>
         <Function Name="unlockProposal" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalID" Type="int" Mode="In" />
           <Parameter Name="UpdateDate" Type="datetime2" Mode="In" />
           <Parameter Name="UnlockOptionID" Type="int" Mode="In" />
+        </Function>
+        <Function Name="UpdateDbVersion" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="DbVersion" Type="varchar" Mode="In" />
+          <Parameter Name="AppVersion" Type="varchar" Mode="In" />
         </Function>
         <Function Name="updateProposalForecastEmailSent" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalID" Type="int" Mode="In" />
@@ -1521,6 +1697,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="ReasonCertificationNotRequired" Type="int" Mode="In" />
           <Parameter Name="OtherReasonComment" Type="varchar" Mode="In" />
           <Parameter Name="SetupComments" Type="varchar(max)" Mode="In" />
+          <Parameter Name="ModExecutedLastEmailed" Type="datetime2" Mode="In" />
+          <Parameter Name="ProposalCompletedDate" Type="datetime2" Mode="In" />
         </Function>
         <Function Name="upsertProposalChecklist" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalChecklistID" Type="int" Mode="In" />
@@ -1528,7 +1706,9 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="ProposalID" Type="int" Mode="In" />
           <Parameter Name="ProposalSubmittalDate" Type="date" Mode="In" />
           <Parameter Name="ISGSTotalPrice" Type="bigint" Mode="In" />
-          <Parameter Name="ProfitFee" Type="bigint" Mode="In" />
+          <Parameter Name="Profit" Type="bigint" Mode="In" />
+          <Parameter Name="Com" Type="bigint" Mode="In" />
+          <Parameter Name="ProfitFeeWithCom" Type="bigint" Mode="In" />
           <Parameter Name="ROSPercentage" Type="decimal" Mode="In" />
           <Parameter Name="LMLaborHours" Type="decimal" Mode="In" />
           <Parameter Name="LMLaborCost" Type="bigint" Mode="In" />
@@ -1550,6 +1730,26 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="Text" Type="varchar" Mode="In" />
           <Parameter Name="IsActive" Type="bit" Mode="In" />
         </Function>
+        <Function Name="upsertProposalContractsData" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="ProposalContractsDataId" Type="int" Mode="In" />
+          <Parameter Name="UpdateDT" Type="datetime2" Mode="In" />
+          <Parameter Name="ProposalID" Type="int" Mode="In" />
+          <Parameter Name="PreviouslySubmittedROM" Type="int" Mode="In" />
+          <Parameter Name="CustomerSubmittalDate" Type="date" Mode="In" />
+          <Parameter Name="ContractsCorrespondLogNumber" Type="varchar" Mode="In" />
+          <Parameter Name="FinalNegotiatedValue" Type="bigint" Mode="In" />
+          <Parameter Name="FinalNegotiatedDate" Type="date" Mode="In" />
+          <Parameter Name="EppDelegationAuthority" Type="int" Mode="In" />
+          <Parameter Name="ProgramEppDate" Type="date" Mode="In" />
+          <Parameter Name="LobEppDate" Type="date" Mode="In" />
+          <Parameter Name="PreSpaceEppDate" Type="date" Mode="In" />
+          <Parameter Name="SpaceEppDate" Type="date" Mode="In" />
+          <Parameter Name="PreCorporateEppDate" Type="date" Mode="In" />
+          <Parameter Name="CorporateEppDate" Type="date" Mode="In" />
+          <Parameter Name="EppRosDelegationNotes" Type="varchar" Mode="In" />
+          <Parameter Name="LmWon" Type="bit" Mode="In" />
+          <Parameter Name="ModCompletedDate" Type="date" Mode="In" />
+        </Function>
         <Function Name="upsertProposalType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
           <Parameter Name="Text" Type="varchar" Mode="In" />
@@ -1563,6 +1763,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
         <EntityContainer Name="genTRACModelStoreContainer">
           <EntitySet Name="DataMartEmployee" EntityType="Self.DataMartEmployee" Schema="DataMart" store:Type="Tables" />
           <EntitySet Name="Attachment" EntityType="Self.Attachment" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="AttachmentTypeLU" EntityType="Self.AttachmentTypeLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="BoeDatabaseVersion" EntityType="Self.BoeDatabaseVersion" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BOEToolLU" EntityType="Self.BOEToolLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CannedResponsesPAR" EntityType="Self.CannedResponsesPAR" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChecklistTypeLU" EntityType="Self.ChecklistTypeLU" Schema="dbo" store:Type="Tables" />
@@ -1573,6 +1775,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySet Name="CustomerTypeLU" EntityType="Self.CustomerTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CutOffDateUtilizationLU" EntityType="Self.CutOffDateUtilizationLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ELMAH_Error" EntityType="Self.ELMAH_Error" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EppDelegationAuthorityLU" EntityType="Self.EppDelegationAuthorityLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="genTRACUser" EntityType="Self.genTRACUser" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ISGSRoleLU" EntityType="Self.ISGSRoleLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="LineOfBusinessLU" EntityType="Self.LineOfBusinessLU" Schema="dbo" store:Type="Tables" />
@@ -1588,6 +1791,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySet Name="ProposalChecklistComplete" EntityType="Self.ProposalChecklistComplete" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalChecklistTypeLU" EntityType="Self.ProposalChecklistTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalClassLU" EntityType="Self.ProposalClassLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ProposalContractsData" EntityType="Self.ProposalContractsData" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalContractTypeXREF" EntityType="Self.ProposalContractTypeXREF" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalCostElementXREF" EntityType="Self.ProposalCostElementXREF" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalLocationLU" EntityType="Self.ProposalLocationLU" Schema="dbo" store:Type="Tables" />
@@ -1597,6 +1801,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySet Name="ProposalTrackingGenerator" EntityType="Self.ProposalTrackingGenerator" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalTypeLU" EntityType="Self.ProposalTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ProposalUserRole" EntityType="Self.ProposalUserRole" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ReasonCertificationNotRequiredLU" EntityType="Self.ReasonCertificationNotRequiredLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="RequestTypeLU" EntityType="Self.RequestTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ResponseLU" EntityType="Self.ResponseLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ResponseTypeLU" EntityType="Self.ResponseTypeLU" Schema="dbo" store:Type="Tables" />
@@ -1667,12 +1872,32 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <End Role="PARChecklistContent" EntitySet="PARChecklistContent" />
             <End Role="CannedResponsesPAR" EntitySet="CannedResponsesPAR" />
           </AssociationSet>
+          <AssociationSet Name="FK__Proposal__Reason__04DA9AE4" Association="Self.FK__Proposal__Reason__04DA9AE4">
+            <End Role="ReasonCertificationNotRequiredLU" EntitySet="ReasonCertificationNotRequiredLU" />
+            <End Role="Proposal" EntitySet="Proposal" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ProposalC__EppDe__12BEA5E7" Association="Self.FK__ProposalC__EppDe__12BEA5E7">
+            <End Role="EppDelegationAuthorityLU" EntitySet="EppDelegationAuthorityLU" />
+            <End Role="ProposalContractsData" EntitySet="ProposalContractsData" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ProposalC__Previ__11CA81AE" Association="Self.FK__ProposalC__Previ__11CA81AE">
+            <End Role="Proposal" EntitySet="Proposal" />
+            <End Role="ProposalContractsData" EntitySet="ProposalContractsData" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ProposalC__Propo__10D65D75" Association="Self.FK__ProposalC__Propo__10D65D75">
+            <End Role="Proposal" EntitySet="Proposal" />
+            <End Role="ProposalContractsData" EntitySet="ProposalContractsData" />
+          </AssociationSet>
           <AssociationSet Name="FK__ProposalP__Canne__2E7BCEF5" Association="Self.FK__ProposalP__Canne__2E7BCEF5">
             <End Role="CannedResponsesPAR" EntitySet="CannedResponsesPAR" />
             <End Role="ProposalPARChecklistXREF" EntitySet="ProposalPARChecklistXREF" />
           </AssociationSet>
           <AssociationSet Name="FK__Proposals__Attac__07B7078F" Association="Self.FK__Proposals__Attac__07B7078F">
             <End Role="Attachment" EntitySet="Attachment" />
+            <End Role="ProposalsAttachments" EntitySet="ProposalsAttachments" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Proposals__Attac__08AB2BC8" Association="Self.FK__Proposals__Attac__08AB2BC8">
+            <End Role="AttachmentTypeLU" EntitySet="AttachmentTypeLU" />
             <End Role="ProposalsAttachments" EntitySet="ProposalsAttachments" />
           </AssociationSet>
           <AssociationSet Name="FK__Proposals__Propo__06C2E356" Association="Self.FK__Proposals__Propo__06C2E356">
@@ -1891,7 +2116,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="BOEToolID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="BOETool" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Proposals" Relationship="Self.FK_Proposal_BOEToolLU" FromRole="BOEToolLU" ToRole="Proposal" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK_Proposal_BOEToolLU" FromRole="BOEToolLU" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="ChecklistTypeLU">
           <Key>
@@ -1909,7 +2134,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="CostElementID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CostElement" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Proposals" Relationship="Self.ProposalCostElementXREF" FromRole="CostElementLU" ToRole="Proposal" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.ProposalCostElementXREF" FromRole="CostElementLU" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="CustomerTypeLU">
           <Key>
@@ -1918,7 +2143,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="CustomerTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CustomerType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Proposals" Relationship="Self.FK_Proposal_CustomerTypeLU" FromRole="CustomerTypeLU" ToRole="Proposal" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK_Proposal_CustomerTypeLU" FromRole="CustomerTypeLU" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="ELMAH_Error">
           <Key>
@@ -1949,12 +2174,12 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="FirstName" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
           <Property Name="LastName" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
           <Property Name="IsGroup" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Proposals" Relationship="Self.FK_Proposal_genTRACUser" FromRole="genTRACUser" ToRole="Proposal" />
           <NavigationProperty Name="ProposalChecklistCompletes" Relationship="Self.FK_ProposalChecklistComplete_genTRACUser" FromRole="genTRACUser" ToRole="ProposalChecklistComplete" />
           <NavigationProperty Name="ProposalUserRoles" Relationship="Self.FK_ProposalUserRole_genTRACUser" FromRole="genTRACUser" ToRole="ProposalUserRole" />
           <NavigationProperty Name="SystemUserRoles" Relationship="Self.FK_SystemUserRole_genTRACUser" FromRole="genTRACUser" ToRole="SystemUserRole" />
           <Property Name="IsUsPerson" Type="Boolean" />
           <Property Name="IsSubcontractor" Type="Boolean" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK_Proposal_genTRACUser" FromRole="genTRACUser" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="ISGSRoleLU">
           <Key>
@@ -1963,7 +2188,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="ISGSRoleID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ISGSRole" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Proposals" Relationship="Self.FK_Proposal_ISGSRoleLU" FromRole="ISGSRoleLU" ToRole="Proposal" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK_Proposal_ISGSRoleLU" FromRole="ISGSRoleLU" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="PARChecklistContent">
           <Key>
@@ -2005,7 +2230,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="PricingToolID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PricingTool" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Proposals" Relationship="Self.FK_Proposal_PricingToolLU" FromRole="PricingToolLU" ToRole="Proposal" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK_Proposal_PricingToolLU" FromRole="PricingToolLU" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="ProgramProposalStatusLU">
           <Key>
@@ -2013,103 +2238,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           </Key>
           <Property Name="ProgramProposalStatusID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ProgramProposalStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Proposals" Relationship="Self.FK_Proposal_ProgramProposalStatusLU" FromRole="ProgramProposalStatusLU" ToRole="Proposal" />
-        </EntityType>
-        <EntityType Name="Proposal">
-          <Key>
-            <PropertyRef Name="ProposalID" />
-          </Key>
-          <Property Name="ProposalID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="ProposalTrackingID" Type="String" MaxLength="13" FixedLength="false" Unicode="false" />
-          <Property Name="ProposalTitle" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="OTISOpportunityID" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
-          <Property Name="ProposalStatusID" Type="Int32" Nullable="false" />
-          <Property Name="DateCreated" Type="DateTime" Precision="7" />
-          <Property Name="DateAssigned" Type="DateTime" Precision="7" />
-          <Property Name="ProposalTypeID" Type="Int32" Nullable="false" />
-          <Property Name="IsIWTA" Type="Boolean" Nullable="false" />
-          <Property Name="ProgramName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Customer" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="CustomerTypeID" Type="Int32" Nullable="false" />
-          <Property Name="ISGSRoleID" Type="Int32" Nullable="false" />
-          <Property Name="RequestTypeID" Type="Int32" Nullable="true" />
-          <Property Name="RFPNumber" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
-          <Property Name="LineOfBusinessID" Type="Int32" Nullable="false" />
-          <Property Name="PricingToolID" Type="Int32" Nullable="false" />
-          <Property Name="BOEToolID" Type="Int32" Nullable="false" />
-          <Property Name="AnticipatedDeliveryDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="EstimatedProposalValue" Type="Int64" />
-          <Property Name="IsActive" Type="Boolean" />
-          <Property Name="CreatedByUserID" Type="Int32" />
-          <Property Name="RFPIssuedDate" Type="DateTime" Precision="0" />
-          <Property Name="RFPReceivedDate" Type="DateTime" Precision="0" />
-          <Property Name="Comments" Type="String" MaxLength="2500" FixedLength="false" Unicode="false" />
-          <Property Name="ContractTypeGroupID" Type="Int32" />
-          <Property Name="IsScheduleProposal" Type="Boolean" />
-          <Property Name="ITCOApproved" Type="Boolean" />
-          <Property Name="ProposalLocationID" Type="Int32" Nullable="false" />
-          <Property Name="ProposalLocationName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="BOEToolName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="PricingToolName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="ProgramProposalStatusID" Type="Int32" />
-          <Property Name="ProposalClassID" Type="Int32" Nullable="false" />
-          <Property Name="WorkflowStatus" Type="Int32" Nullable="false" />
-          <Property Name="WorkflowStatusLastUpdated" Type="DateTime" Precision="7" />
-          <Property Name="LeadEstimatorSignedDT" Type="DateTime" Precision="7" />
-          <Property Name="LeadEstimatorSignComment" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="CoverSheetApproverSignedDT" Type="DateTime" Precision="7" />
-          <Property Name="CoverSheetApproverSignComment" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="PricingVerifierSignedDT" Type="DateTime" Precision="7" />
-          <Property Name="PricingVerifierSignComment" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="IndependentReviewerSignedDT" Type="DateTime" Precision="7" />
-          <Property Name="IndependentReviewerSignComment" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="LOBEstimatingLeadSignedDT" Type="DateTime" Precision="7" />
-          <Property Name="LOBEstimatingLeadSignComment" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="BOEToolLU" Relationship="Self.FK_Proposal_BOEToolLU" FromRole="Proposal" ToRole="BOEToolLU" />
-          <NavigationProperty Name="CustomerTypeLU" Relationship="Self.FK_Proposal_CustomerTypeLU" FromRole="Proposal" ToRole="CustomerTypeLU" />
-          <NavigationProperty Name="genTRACUser" Relationship="Self.FK_Proposal_genTRACUser" FromRole="Proposal" ToRole="genTRACUser" />
-          <NavigationProperty Name="ISGSRoleLU" Relationship="Self.FK_Proposal_ISGSRoleLU" FromRole="Proposal" ToRole="ISGSRoleLU" />
-          <NavigationProperty Name="PricingToolLU" Relationship="Self.FK_Proposal_PricingToolLU" FromRole="Proposal" ToRole="PricingToolLU" />
-          <NavigationProperty Name="ProgramProposalStatusLU" Relationship="Self.FK_Proposal_ProgramProposalStatusLU" FromRole="Proposal" ToRole="ProgramProposalStatusLU" />
-          <NavigationProperty Name="ProposalClassLU" Relationship="Self.FK_Proposal_ProposalClassLU" FromRole="Proposal" ToRole="ProposalClassLU" />
-          <NavigationProperty Name="ProposalLocationLU" Relationship="Self.FK_Proposal_ProposalLocationLU" FromRole="Proposal" ToRole="ProposalLocationLU" />
-          <NavigationProperty Name="ProposalStatusLU" Relationship="Self.FK_Proposal_ProposalStatusLU" FromRole="Proposal" ToRole="ProposalStatusLU" />
-          <NavigationProperty Name="ProposalTypeLU" Relationship="Self.FK_Proposal_ProposalTypeLU" FromRole="Proposal" ToRole="ProposalTypeLU" />
-          <NavigationProperty Name="RequestTypeLU" Relationship="Self.FK_Proposal_RequestTypeLU" FromRole="Proposal" ToRole="RequestTypeLU" />
-          <NavigationProperty Name="ProposalChecklistCompletes" Relationship="Self.FK_ProposalChecklistComplete_Proposal" FromRole="Proposal" ToRole="ProposalChecklistComplete" />
-          <NavigationProperty Name="ProposalPARChecklistXREFs" Relationship="Self.FK_ProposalPARChecklistXREF_Proposal" FromRole="Proposal" ToRole="ProposalPARChecklistXREF" />
-          <NavigationProperty Name="ProposalPPRChecklistXREFs" Relationship="Self.FK_ProposalPPRChecklistXREF_Proposal" FromRole="Proposal" ToRole="ProposalPPRChecklistXREF" />
-          <NavigationProperty Name="ProposalUserRoles" Relationship="Self.FK_ProposalUserRole_Proposal" FromRole="Proposal" ToRole="ProposalUserRole" />
-          <NavigationProperty Name="CostElementLUs" Relationship="Self.ProposalCostElementXREF" FromRole="Proposal" ToRole="CostElementLU" />
-          <Property Name="ApprovalEmailText" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="RevisedSubmittalDate" Type="DateTime" Precision="0" />
-          <Property Name="CCPDRequired" Type="Boolean" />
-          <Property Name="DocumentId" Type="Int32" />
-          <Property Name="ForecastedTrackingID" Type="String" MaxLength="13" FixedLength="false" Unicode="false" />
-          <Property Name="ForecastEmailSent" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="ContractTypeGroupLU" Relationship="Self.FK_Proposal_ContractTypeGroupLU" FromRole="Proposal" ToRole="ContractTypeGroupLU" />
-          <NavigationProperty Name="ContractTypeLUs" Relationship="Self.ProposalContractTypeXREF" FromRole="Proposal" ToRole="ContractTypeLU" />
-          <NavigationProperty Name="ProposalChecklists" Relationship="genTRACModel.FK_ProposalChecklist_Proposal" FromRole="Proposal" ToRole="ProposalChecklist" />
-          <Property Name="ProgramAreaID" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="LineOfBusinessLU" Relationship="genTRACModel.FK_Proposal_LineOfBusinessLU" FromRole="Proposal" ToRole="LineOfBusinessLU" />
-          <NavigationProperty Name="ProgramAreaLU" Relationship="genTRACModel.FK_Proposal_ProgramAreaLU" FromRole="Proposal" ToRole="ProgramAreaLU" />
-          <Property Name="AgreementDate" Type="DateTime" Precision="0" />
-          <Property Name="CertificationDate" Type="DateTime" Precision="0" />
-          <Property Name="CutOffDateUtilization" Type="Int32" />
-          <Property Name="CertificationTimelineCompleted" Type="DateTime" Precision="7" />
-          <Property Name="CertificationLastEmailed" Type="DateTime" Precision="7" />
-          <NavigationProperty Name="CutOffDateUtilizationLU" Relationship="genTRACModel.FK_CutOffDateUtilization" FromRole="Proposal" ToRole="CutOffDateUtilizationLU" />
-          <Property Name="CostVolumeClassified" Type="Boolean" />
-          <Property Name="NoBidDate" Type="DateTime" Precision="7" />
-          <Property Name="OtherReasonComment" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
-          <Property Name="ReasonCertificationNotRequired" Type="Int32" />
-          <NavigationProperty Name="ProposalsAttachments" Relationship="genTRACModel.FK__Proposals__Propo__5A5A5133" FromRole="Proposal" ToRole="ProposalsAttachment" />
-          <Property Name="RevisionOfId" Type="Int32" />
-          <NavigationProperty Name="Proposal1" Relationship="genTRACModel.FK_Proposal_Proposal" FromRole="Proposal" ToRole="Proposal1" />
-          <NavigationProperty Name="Proposal2" Relationship="genTRACModel.FK_Proposal_Proposal" FromRole="Proposal1" ToRole="Proposal" />
-          <Property Name="SetupComments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <Property Name="InformationComments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK_Proposal_ProgramProposalStatusLU" FromRole="ProgramProposalStatusLU" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -2137,8 +2266,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="LastSaveDate" Type="DateTime" Precision="7" />
           <NavigationProperty Name="ChecklistTypeLU" Relationship="Self.FK_ProposalChecklistComplete_ChecklistTypeLU" FromRole="ProposalChecklistComplete" ToRole="ChecklistTypeLU" />
           <NavigationProperty Name="genTRACUser" Relationship="Self.FK_ProposalChecklistComplete_genTRACUser" FromRole="ProposalChecklistComplete" ToRole="genTRACUser" />
-          <NavigationProperty Name="Proposal" Relationship="Self.FK_ProposalChecklistComplete_Proposal" FromRole="ProposalChecklistComplete" ToRole="Proposal" />
           <NavigationProperty Name="ResponseTypeLU" Relationship="Self.FK_ProposalChecklistComplete_ResponseTypeLU" FromRole="ProposalChecklistComplete" ToRole="ResponseTypeLU" />
+          <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK_ProposalChecklistComplete_Proposal" FromRole="ProposalChecklistComplete" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="ProposalChecklistTypeLU">
           <Key>
@@ -2157,8 +2286,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="ProposalClassID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ProposalClass" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Proposals" Relationship="Self.FK_Proposal_ProposalClassLU" FromRole="ProposalClassLU" ToRole="Proposal" />
           <Property Name="IsReadOnly" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK_Proposal_ProposalClassLU" FromRole="ProposalClassLU" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="ProposalLocationLU">
           <Key>
@@ -2167,7 +2296,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="ProposalLocationID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ProposalLocation" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Proposals" Relationship="Self.FK_Proposal_ProposalLocationLU" FromRole="ProposalLocationLU" ToRole="Proposal" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK_Proposal_ProposalLocationLU" FromRole="ProposalLocationLU" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="ProposalPricingReview">
           <Key>
@@ -2186,7 +2315,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           </Key>
           <Property Name="ProposalStatusID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ProposalStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="Proposals" Relationship="Self.FK_Proposal_ProposalStatusLU" FromRole="ProposalStatusLU" ToRole="Proposal" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK_Proposal_ProposalStatusLU" FromRole="ProposalStatusLU" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="ProposalTrackingGenerator">
           <Key>
@@ -2204,7 +2333,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="ProposalTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ProposalType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Proposals" Relationship="Self.FK_Proposal_ProposalTypeLU" FromRole="ProposalTypeLU" ToRole="Proposal" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK_Proposal_ProposalTypeLU" FromRole="ProposalTypeLU" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="ProposalUserRole">
           <Key>
@@ -2217,9 +2346,9 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="RoleTypeID" Type="Int32" />
           <Property Name="UserID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="genTRACUser" Relationship="Self.FK_ProposalUserRole_genTRACUser" FromRole="ProposalUserRole" ToRole="genTRACUser" />
-          <NavigationProperty Name="Proposal" Relationship="Self.FK_ProposalUserRole_Proposal" FromRole="ProposalUserRole" ToRole="Proposal" />
           <NavigationProperty Name="RoleLU" Relationship="Self.FK_ProposalUserRole_RoleLU" FromRole="ProposalUserRole" ToRole="RoleLU" />
           <NavigationProperty Name="RoleTypeLU" Relationship="Self.FK_ProposalUserRole_RoleTypeLU" FromRole="ProposalUserRole" ToRole="RoleTypeLU" />
+          <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK_ProposalUserRole_Proposal" FromRole="ProposalUserRole" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="RequestTypeLU">
           <Key>
@@ -2228,7 +2357,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="RequestTypeID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="RequestType" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Proposals" Relationship="Self.FK_Proposal_RequestTypeLU" FromRole="RequestTypeLU" ToRole="Proposal" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK_Proposal_RequestTypeLU" FromRole="RequestTypeLU" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="ResponseLU">
           <Key>
@@ -2303,11 +2432,11 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="Comment" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="PageNumber" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="PARChecklistContent" Relationship="Self.FK_ProposalPARChecklistXREF_PARChecklistContent" FromRole="ProposalPARChecklistXREF" ToRole="PARChecklistContent" />
-          <NavigationProperty Name="Proposal" Relationship="Self.FK_ProposalPARChecklistXREF_Proposal" FromRole="ProposalPARChecklistXREF" ToRole="Proposal" />
           <NavigationProperty Name="ResponseLU" Relationship="Self.FK_ProposalPARChecklistXREF_ResponseLU" FromRole="ProposalPARChecklistXREF" ToRole="ResponseLU" />
           <NavigationProperty Name="ResponseTypeLU" Relationship="Self.FK_ProposalPARChecklistXREF_ResponseTypeLU" FromRole="ProposalPARChecklistXREF" ToRole="ResponseTypeLU" />
           <Property Name="CannedResponseId" Type="Int32" />
           <NavigationProperty Name="CannedResponsesPAR" Relationship="genTRACModel.FK__ProposalP__Canne__4A8DFDBE" FromRole="ProposalPARChecklistXREF" ToRole="CannedResponsesPAR" />
+          <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK_ProposalPARChecklistXREF_Proposal" FromRole="ProposalPARChecklistXREF" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="ProposalPPRChecklistXREF">
           <Key>
@@ -2321,22 +2450,10 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="ResponseID" Type="Int32" Nullable="false" />
           <Property Name="ResponseTypeID" Type="Int32" Nullable="false" />
           <NavigationProperty Name="PPRChecklistContent" Relationship="Self.FK_ProposalPPRChecklistXREF_PPRChecklistContent" FromRole="ProposalPPRChecklistXREF" ToRole="PPRChecklistContent" />
-          <NavigationProperty Name="Proposal" Relationship="Self.FK_ProposalPPRChecklistXREF_Proposal" FromRole="ProposalPPRChecklistXREF" ToRole="Proposal" />
           <NavigationProperty Name="ResponseLU" Relationship="Self.FK_ProposalPPRChecklistXREF_ResponseLU" FromRole="ProposalPPRChecklistXREF" ToRole="ResponseLU" />
           <NavigationProperty Name="ResponseTypeLU" Relationship="Self.FK_ProposalPPRChecklistXREF_ResponseTypeLU" FromRole="ProposalPPRChecklistXREF" ToRole="ResponseTypeLU" />
+          <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK_ProposalPPRChecklistXREF_Proposal" FromRole="ProposalPPRChecklistXREF" ToRole="Proposal" />
         </EntityType>
-        <Association Name="FK_Proposal_BOEToolLU">
-          <End Role="BOEToolLU" Type="Self.BOEToolLU" Multiplicity="1" />
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="BOEToolLU">
-              <PropertyRef Name="BOEToolID" />
-            </Principal>
-            <Dependent Role="Proposal">
-              <PropertyRef Name="BOEToolID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_ProposalChecklistComplete_ChecklistTypeLU">
           <End Role="ChecklistTypeLU" Type="Self.ChecklistTypeLU" Multiplicity="1" />
           <End Role="ProposalChecklistComplete" Type="Self.ProposalChecklistComplete" Multiplicity="*" />
@@ -2346,30 +2463,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Principal>
             <Dependent Role="ProposalChecklistComplete">
               <PropertyRef Name="ChecklistTypeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Proposal_CustomerTypeLU">
-          <End Role="CustomerTypeLU" Type="Self.CustomerTypeLU" Multiplicity="1" />
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CustomerTypeLU">
-              <PropertyRef Name="CustomerTypeID" />
-            </Principal>
-            <Dependent Role="Proposal">
-              <PropertyRef Name="CustomerTypeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Proposal_genTRACUser">
-          <End Role="genTRACUser" Type="Self.genTRACUser" Multiplicity="0..1" />
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="genTRACUser">
-              <PropertyRef Name="UserID" />
-            </Principal>
-            <Dependent Role="Proposal">
-              <PropertyRef Name="CreatedByUserID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2406,18 +2499,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Principal>
             <Dependent Role="SystemUserRole">
               <PropertyRef Name="UserID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Proposal_ISGSRoleLU">
-          <End Role="ISGSRoleLU" Type="Self.ISGSRoleLU" Multiplicity="1" />
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ISGSRoleLU">
-              <PropertyRef Name="ISGSRoleID" />
-            </Principal>
-            <Dependent Role="Proposal">
-              <PropertyRef Name="ISGSRoleID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2490,138 +2571,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Principal>
             <Dependent Role="ProposalPPRChecklistXREF">
               <PropertyRef Name="PPRChecklistContentID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Proposal_PricingToolLU">
-          <End Role="PricingToolLU" Type="Self.PricingToolLU" Multiplicity="1" />
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="PricingToolLU">
-              <PropertyRef Name="PricingToolID" />
-            </Principal>
-            <Dependent Role="Proposal">
-              <PropertyRef Name="PricingToolID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Proposal_ProgramProposalStatusLU">
-          <End Role="ProgramProposalStatusLU" Type="Self.ProgramProposalStatusLU" Multiplicity="0..1" />
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ProgramProposalStatusLU">
-              <PropertyRef Name="ProgramProposalStatusID" />
-            </Principal>
-            <Dependent Role="Proposal">
-              <PropertyRef Name="ProgramProposalStatusID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Proposal_ProposalClassLU">
-          <End Role="ProposalClassLU" Type="Self.ProposalClassLU" Multiplicity="1" />
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ProposalClassLU">
-              <PropertyRef Name="ProposalClassID" />
-            </Principal>
-            <Dependent Role="Proposal">
-              <PropertyRef Name="ProposalClassID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Proposal_ProposalLocationLU">
-          <End Role="ProposalLocationLU" Type="Self.ProposalLocationLU" Multiplicity="1" />
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ProposalLocationLU">
-              <PropertyRef Name="ProposalLocationID" />
-            </Principal>
-            <Dependent Role="Proposal">
-              <PropertyRef Name="ProposalLocationID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Proposal_ProposalStatusLU">
-          <End Role="ProposalStatusLU" Type="Self.ProposalStatusLU" Multiplicity="1" />
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ProposalStatusLU">
-              <PropertyRef Name="ProposalStatusID" />
-            </Principal>
-            <Dependent Role="Proposal">
-              <PropertyRef Name="ProposalStatusID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Proposal_ProposalTypeLU">
-          <End Role="ProposalTypeLU" Type="Self.ProposalTypeLU" Multiplicity="1" />
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ProposalTypeLU">
-              <PropertyRef Name="ProposalTypeID" />
-            </Principal>
-            <Dependent Role="Proposal">
-              <PropertyRef Name="ProposalTypeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Proposal_RequestTypeLU">
-          <End Role="RequestTypeLU" Type="Self.RequestTypeLU" Multiplicity="0..1" />
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="RequestTypeLU">
-              <PropertyRef Name="RequestTypeID" />
-            </Principal>
-            <Dependent Role="Proposal">
-              <PropertyRef Name="RequestTypeID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ProposalChecklistComplete_Proposal">
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="1" />
-          <End Role="ProposalChecklistComplete" Type="Self.ProposalChecklistComplete" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Proposal">
-              <PropertyRef Name="ProposalID" />
-            </Principal>
-            <Dependent Role="ProposalChecklistComplete">
-              <PropertyRef Name="ProposalID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ProposalPARChecklistXREF_Proposal">
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="1" />
-          <End Role="ProposalPARChecklistXREF" Type="Self.ProposalPARChecklistXREF" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Proposal">
-              <PropertyRef Name="ProposalID" />
-            </Principal>
-            <Dependent Role="ProposalPARChecklistXREF">
-              <PropertyRef Name="ProposalID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ProposalPPRChecklistXREF_Proposal">
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="1" />
-          <End Role="ProposalPPRChecklistXREF" Type="Self.ProposalPPRChecklistXREF" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Proposal">
-              <PropertyRef Name="ProposalID" />
-            </Principal>
-            <Dependent Role="ProposalPPRChecklistXREF">
-              <PropertyRef Name="ProposalID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_ProposalUserRole_Proposal">
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="1" />
-          <End Role="ProposalUserRole" Type="Self.ProposalUserRole" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Proposal">
-              <PropertyRef Name="ProposalID" />
-            </Principal>
-            <Dependent Role="ProposalUserRole">
-              <PropertyRef Name="ProposalID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -2745,10 +2694,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="ProposalCostElementXREF">
-          <End Role="CostElementLU" Type="Self.CostElementLU" Multiplicity="*" />
-          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
-        </Association>
         <EntityContainer Name="genTRACEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="BOEToolLUs" EntityType="Self.BOEToolLU" />
           <EntitySet Name="ChecklistTypeLUs" EntityType="Self.ChecklistTypeLU" />
@@ -2761,7 +2706,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySet Name="PPRChecklistContents" EntityType="Self.PPRChecklistContent" />
           <EntitySet Name="PricingToolLUs" EntityType="Self.PricingToolLU" />
           <EntitySet Name="ProgramProposalStatusLUs" EntityType="Self.ProgramProposalStatusLU" />
-          <EntitySet Name="Proposals" EntityType="Self.Proposal" />
           <EntitySet Name="ProposalAdequacyReviews" EntityType="Self.ProposalAdequacyReview" />
           <EntitySet Name="ProposalChecklistCompletes" EntityType="Self.ProposalChecklistComplete" />
           <EntitySet Name="ProposalChecklistTypeLUs" EntityType="Self.ProposalChecklistTypeLU" />
@@ -2781,21 +2725,9 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySet Name="TextTypeLUs" EntityType="Self.TextTypeLU" />
           <EntitySet Name="ProposalPARChecklistXREFs" EntityType="Self.ProposalPARChecklistXREF" />
           <EntitySet Name="ProposalPPRChecklistXREFs" EntityType="Self.ProposalPPRChecklistXREF" />
-          <AssociationSet Name="FK_Proposal_BOEToolLU" Association="Self.FK_Proposal_BOEToolLU">
-            <End Role="BOEToolLU" EntitySet="BOEToolLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
-          </AssociationSet>
           <AssociationSet Name="FK_ProposalChecklistComplete_ChecklistTypeLU" Association="Self.FK_ProposalChecklistComplete_ChecklistTypeLU">
             <End Role="ChecklistTypeLU" EntitySet="ChecklistTypeLUs" />
             <End Role="ProposalChecklistComplete" EntitySet="ProposalChecklistCompletes" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Proposal_CustomerTypeLU" Association="Self.FK_Proposal_CustomerTypeLU">
-            <End Role="CustomerTypeLU" EntitySet="CustomerTypeLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Proposal_genTRACUser" Association="Self.FK_Proposal_genTRACUser">
-            <End Role="genTRACUser" EntitySet="genTRACUsers" />
-            <End Role="Proposal" EntitySet="Proposals" />
           </AssociationSet>
           <AssociationSet Name="FK_ProposalChecklistComplete_genTRACUser" Association="Self.FK_ProposalChecklistComplete_genTRACUser">
             <End Role="genTRACUser" EntitySet="genTRACUsers" />
@@ -2808,10 +2740,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <AssociationSet Name="FK_SystemUserRole_genTRACUser" Association="Self.FK_SystemUserRole_genTRACUser">
             <End Role="genTRACUser" EntitySet="genTRACUsers" />
             <End Role="SystemUserRole" EntitySet="SystemUserRoles" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Proposal_ISGSRoleLU" Association="Self.FK_Proposal_ISGSRoleLU">
-            <End Role="ISGSRoleLU" EntitySet="ISGSRoleLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
           </AssociationSet>
           <AssociationSet Name="FK_PARChecklist_ProposalAdequacyReview" Association="Self.FK_PARChecklist_ProposalAdequacyReview">
             <End Role="ProposalAdequacyReview" EntitySet="ProposalAdequacyReviews" />
@@ -2836,50 +2764,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <AssociationSet Name="FK_ProposalPPRChecklistXREF_PPRChecklistContent" Association="Self.FK_ProposalPPRChecklistXREF_PPRChecklistContent">
             <End Role="PPRChecklistContent" EntitySet="PPRChecklistContents" />
             <End Role="ProposalPPRChecklistXREF" EntitySet="ProposalPPRChecklistXREFs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Proposal_PricingToolLU" Association="Self.FK_Proposal_PricingToolLU">
-            <End Role="PricingToolLU" EntitySet="PricingToolLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Proposal_ProgramProposalStatusLU" Association="Self.FK_Proposal_ProgramProposalStatusLU">
-            <End Role="ProgramProposalStatusLU" EntitySet="ProgramProposalStatusLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Proposal_ProposalClassLU" Association="Self.FK_Proposal_ProposalClassLU">
-            <End Role="ProposalClassLU" EntitySet="ProposalClassLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Proposal_ProposalLocationLU" Association="Self.FK_Proposal_ProposalLocationLU">
-            <End Role="ProposalLocationLU" EntitySet="ProposalLocationLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Proposal_ProposalStatusLU" Association="Self.FK_Proposal_ProposalStatusLU">
-            <End Role="ProposalStatusLU" EntitySet="ProposalStatusLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Proposal_ProposalTypeLU" Association="Self.FK_Proposal_ProposalTypeLU">
-            <End Role="ProposalTypeLU" EntitySet="ProposalTypeLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Proposal_RequestTypeLU" Association="Self.FK_Proposal_RequestTypeLU">
-            <End Role="RequestTypeLU" EntitySet="RequestTypeLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ProposalChecklistComplete_Proposal" Association="Self.FK_ProposalChecklistComplete_Proposal">
-            <End Role="Proposal" EntitySet="Proposals" />
-            <End Role="ProposalChecklistComplete" EntitySet="ProposalChecklistCompletes" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ProposalPARChecklistXREF_Proposal" Association="Self.FK_ProposalPARChecklistXREF_Proposal">
-            <End Role="Proposal" EntitySet="Proposals" />
-            <End Role="ProposalPARChecklistXREF" EntitySet="ProposalPARChecklistXREFs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ProposalPPRChecklistXREF_Proposal" Association="Self.FK_ProposalPPRChecklistXREF_Proposal">
-            <End Role="Proposal" EntitySet="Proposals" />
-            <End Role="ProposalPPRChecklistXREF" EntitySet="ProposalPPRChecklistXREFs" />
-          </AssociationSet>
-          <AssociationSet Name="FK_ProposalUserRole_Proposal" Association="Self.FK_ProposalUserRole_Proposal">
-            <End Role="Proposal" EntitySet="Proposals" />
-            <End Role="ProposalUserRole" EntitySet="ProposalUserRoles" />
           </AssociationSet>
           <AssociationSet Name="FK_ProposalAdequacyReview_ProposalChecklistTypeLU" Association="Self.FK_ProposalAdequacyReview_ProposalChecklistTypeLU">
             <End Role="ProposalChecklistTypeLU" EntitySet="ProposalChecklistTypeLUs" />
@@ -2920,10 +2804,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <AssociationSet Name="FK_SystemUserRole_RoleLU" Association="Self.FK_SystemUserRole_RoleLU">
             <End Role="RoleLU" EntitySet="RoleLUs" />
             <End Role="SystemUserRole" EntitySet="SystemUserRoles" />
-          </AssociationSet>
-          <AssociationSet Name="ProposalCostElementXREF" Association="Self.ProposalCostElementXREF">
-            <End Role="CostElementLU" EntitySet="CostElementLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
           </AssociationSet>
           <FunctionImport Name="archiveProposal" ReturnType="Collection(Int32)">
             <Parameter Name="CreateStartDate" Mode="In" Type="DateTime" />
@@ -3154,6 +3034,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="ReasonCertificationNotRequired" Mode="In" Type="Int32" />
             <Parameter Name="OtherReasonComment" Mode="In" Type="String" />
             <Parameter Name="SetupComments" Mode="In" Type="String" />
+            <Parameter Name="ModExecutedLastEmailed" Mode="In" Type="DateTime" />
+            <Parameter Name="ProposalCompletedDate" Mode="In" Type="DateTime" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalChecklist" ReturnType="Collection(Int32)">
             <Parameter Name="ProposalChecklistID" Mode="In" Type="Int32" />
@@ -3161,7 +3043,9 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="ProposalID" Mode="In" Type="Int32" />
             <Parameter Name="ProposalSubmittalDate" Mode="In" Type="DateTime" />
             <Parameter Name="ISGSTotalPrice" Mode="In" Type="Int64" />
-            <Parameter Name="ProfitFee" Mode="In" Type="Int64" />
+            <Parameter Name="Profit" Mode="In" Type="Int64" />
+            <Parameter Name="Com" Mode="In" Type="Int64" />
+            <Parameter Name="ProfitFeeWithCom" Mode="In" Type="Int64" />
             <Parameter Name="ROSPercentage" Mode="In" Type="Decimal" />
             <Parameter Name="LMLaborHours" Mode="In" Type="Decimal" />
             <Parameter Name="LMLaborCost" Mode="In" Type="Int64" />
@@ -3254,22 +3138,9 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           </FunctionImport>
           <EntitySet Name="ContractTypeGroupLUs" EntityType="genTRACModel.ContractTypeGroupLU" />
           <EntitySet Name="ContractTypeLUs" EntityType="genTRACModel.ContractTypeLU" />
-          <AssociationSet Name="FK_Proposal_ContractTypeGroupLU" Association="genTRACModel.FK_Proposal_ContractTypeGroupLU">
-            <End Role="ContractTypeGroupLU" EntitySet="ContractTypeGroupLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
-          </AssociationSet>
           <AssociationSet Name="ContractTypeGroupXREF" Association="genTRACModel.ContractTypeGroupXREF">
             <End Role="ContractTypeLU" EntitySet="ContractTypeLUs" />
             <End Role="ContractTypeGroupLU" EntitySet="ContractTypeGroupLUs" />
-          </AssociationSet>
-          <AssociationSet Name="ProposalContractTypeXREF" Association="genTRACModel.ProposalContractTypeXREF">
-            <End Role="ContractTypeLU" EntitySet="ContractTypeLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
-          </AssociationSet>
-          <EntitySet Name="ProposalChecklists" EntityType="genTRACModel.ProposalChecklist" />
-          <AssociationSet Name="FK_ProposalChecklist_Proposal" Association="genTRACModel.FK_ProposalChecklist_Proposal">
-            <End Role="Proposal" EntitySet="Proposals" />
-            <End Role="ProposalChecklist" EntitySet="ProposalChecklists" />
           </AssociationSet>
           <EntitySet Name="LineOfBusinessLUs" EntityType="genTRACModel.LineOfBusinessLU" />
           <EntitySet Name="ProgramAreaLUs" EntityType="genTRACModel.ProgramAreaLU" />
@@ -3281,19 +3152,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <End Role="LineOfBusinessLU" EntitySet="LineOfBusinessLUs" />
             <End Role="SystemUserRole" EntitySet="SystemUserRoles" />
           </AssociationSet>
-          <AssociationSet Name="FK_Proposal_LineOfBusinessLU" Association="genTRACModel.FK_Proposal_LineOfBusinessLU">
-            <End Role="LineOfBusinessLU" EntitySet="LineOfBusinessLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Proposal_ProgramAreaLU" Association="genTRACModel.FK_Proposal_ProgramAreaLU">
-            <End Role="ProgramAreaLU" EntitySet="ProgramAreaLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
-          </AssociationSet>
           <EntitySet Name="CutOffDateUtilizationLUs" EntityType="genTRACModel.CutOffDateUtilizationLU" />
-          <AssociationSet Name="FK_CutOffDateUtilization" Association="genTRACModel.FK_CutOffDateUtilization">
-            <End Role="CutOffDateUtilizationLU" EntitySet="CutOffDateUtilizationLUs" />
-            <End Role="Proposal" EntitySet="Proposals" />
-          </AssociationSet>
           <EntitySet Name="CannedResponsesPARs" EntityType="genTRACModel.CannedResponsesPAR" />
           <AssociationSet Name="FK__CannedRes__Quest__4999D985" Association="genTRACModel.FK__CannedRes__Quest__4999D985">
             <End Role="PARChecklistContent" EntitySet="PARChecklistContents" />
@@ -3306,18 +3165,10 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySet Name="DataMartEmployees" EntityType="genTRACModel.DataMartEmployee" />
           <FunctionImport Name="insertDataMartEmployees" />
           <EntitySet Name="ProposalsAttachments" EntityType="genTRACModel.ProposalsAttachment" />
-          <AssociationSet Name="FK__Proposals__Propo__5A5A5133" Association="genTRACModel.FK__Proposals__Propo__5A5A5133">
-            <End Role="Proposal" EntitySet="Proposals" />
-            <End Role="ProposalsAttachment" EntitySet="ProposalsAttachments" />
-          </AssociationSet>
           <EntitySet Name="Attachments" EntityType="genTRACModel.Attachment" />
           <AssociationSet Name="FK__Proposals__Attac__5B4E756C" Association="genTRACModel.FK__Proposals__Attac__5B4E756C">
             <End Role="Attachment" EntitySet="Attachments" />
             <End Role="ProposalsAttachment" EntitySet="ProposalsAttachments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Proposal_Proposal" Association="genTRACModel.FK_Proposal_Proposal">
-            <End Role="Proposal" EntitySet="Proposals" />
-            <End Role="Proposal1" EntitySet="Proposals" />
           </AssociationSet>
           <FunctionImport Name="GetProposalRevisionHistory" ReturnType="Collection(genTRACModel.GetProposalRevisionHistory_Result)">
           <Parameter Name="ProposalId" Mode="In" Type="Int32" />
@@ -3332,7 +3183,227 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="UserAndGroupIDs" Mode="In" Type="String" />
             <Parameter Name="ProposalClassFilterID" Mode="In" Type="Int32" />
           </FunctionImport>
-        </EntityContainer>
+          <EntitySet Name="ProposalChecklists" EntityType="genTRACModel.ProposalChecklist" />
+          <FunctionImport Name="deleteProposalContractsOffer">
+            <Parameter Name="ProposalContractsOfferId" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="upsertProposalContractsData" ReturnType="Collection(Int32)">
+            <Parameter Name="ProposalContractsDataId" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+            <Parameter Name="ProposalID" Mode="In" Type="Int32" />
+            <Parameter Name="PreviouslySubmittedROM" Mode="In" Type="Int32" />
+            <Parameter Name="CustomerSubmittalDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ContractsCorrespondLogNumber" Mode="In" Type="String" />
+            <Parameter Name="FinalNegotiatedValue" Mode="In" Type="Int64" />
+            <Parameter Name="FinalNegotiatedDate" Mode="In" Type="DateTime" />
+            <Parameter Name="EppDelegationAuthority" Mode="In" Type="Int32" />
+            <Parameter Name="ProgramEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="LobEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="PreSpaceEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="SpaceEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="PreCorporateEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="CorporateEppDate" Mode="In" Type="DateTime" />
+            <Parameter Name="EppRosDelegationNotes" Mode="In" Type="String" />
+            <Parameter Name="LmWon" Mode="In" Type="Boolean" />
+            <Parameter Name="ModCompletedDate" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <FunctionImport Name="upsertProposalContractsOffer">
+            <Parameter Name="ProposalContractsOfferId" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+            <Parameter Name="ContractsDataId" Mode="In" Type="Int32" />
+            <Parameter Name="CustomerOfferAmount" Mode="In" Type="Int64" />
+            <Parameter Name="CustomerOfferDate" Mode="In" Type="DateTime" />
+            <Parameter Name="LMCounterOfferDate" Mode="In" Type="DateTime" />
+            <Parameter Name="LMCounterOfferCost" Mode="In" Type="Int64" />
+            <Parameter Name="LMCounterOfferCOM" Mode="In" Type="Int64" />
+            <Parameter Name="LMCounterOfferProfitFee" Mode="In" Type="Int64" />
+          </FunctionImport>
+          <FunctionImport Name="upsertProposalContractsOffers" ReturnType="Collection(Int32)">
+            <Parameter Name="ProposalContractsOffersId" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+            <Parameter Name="ContractsDataId" Mode="In" Type="Int32" />
+            <Parameter Name="CustomerOfferAmount" Mode="In" Type="Int64" />
+            <Parameter Name="CustomerOfferDate" Mode="In" Type="DateTime" />
+            <Parameter Name="LMCounterOfferDate" Mode="In" Type="DateTime" />
+            <Parameter Name="LMCounterOfferCost" Mode="In" Type="Int64" />
+            <Parameter Name="LMCounterOfferCOM" Mode="In" Type="Int64" />
+            <Parameter Name="LMCounterOfferProfitFee" Mode="In" Type="Int64" />
+          </FunctionImport>
+          <FunctionImport Name="deleteProposalContractsOffers">
+            <Parameter Name="ProposalContractsOffersId" Mode="In" Type="Int32" />
+            <Parameter Name="UpdateDT" Mode="In" Type="DateTime" />
+          </FunctionImport>
+          <EntitySet Name="AttachmentTypeLUs" EntityType="genTRACModel.AttachmentTypeLU" />
+          <EntitySet Name="BoeDatabaseVersions" EntityType="genTRACModel.BoeDatabaseVersion" />
+          <EntitySet Name="EppDelegationAuthorityLUs" EntityType="genTRACModel.EppDelegationAuthorityLU" />
+          <EntitySet Name="ReasonCertificationNotRequiredLUs" EntityType="genTRACModel.ReasonCertificationNotRequiredLU" />
+          <AssociationSet Name="FK__Proposals__Attac__08AB2BC8" Association="genTRACModel.FK__Proposals__Attac__08AB2BC8">
+            <End Role="AttachmentTypeLU" EntitySet="AttachmentTypeLUs" />
+            <End Role="ProposalsAttachment" EntitySet="ProposalsAttachments" />
+          </AssociationSet>
+          <FunctionImport Name="CopyCannedResponsesPAR">
+          <Parameter Name="newChecklistId" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="CreateDfarsChecklistResponseReport" ReturnType="Collection(genTRACModel.CreateDfarsChecklistResponseReport_Result)">
+            <Parameter Name="LOB" Mode="In" Type="String" />
+            <Parameter Name="PA" Mode="In" Type="String" />
+            <Parameter Name="StartDate" Mode="In" Type="DateTime" />
+            <Parameter Name="EndDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ExecutionUserID" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsCentralEstimator" ReturnType="Collection(String)">
+          <Parameter Name="CentralEstimator" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsContractType" ReturnType="Collection(String)">
+          <Parameter Name="ContractType" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsCustomerType" ReturnType="Collection(String)">
+          <Parameter Name="CustomerType" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsLineOfBusiness" ReturnType="Collection(String)">
+          <Parameter Name="LOB" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsProgramArea" ReturnType="Collection(String)">
+          <Parameter Name="PA" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsProposalStatus" ReturnType="Collection(String)">
+          <Parameter Name="ProposalStatus" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsSegment">
+          <Parameter Name="Segment" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="rsYear" ReturnType="Collection(String)">
+          <Parameter Name="Year" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="SplitString" IsComposable="true" ReturnType="Collection(genTRACModel.SplitString_Result)">
+            <Parameter Name="List" Mode="In" Type="String" />
+            <Parameter Name="Delimiter" Mode="In" Type="String" />
+            <Parameter Name="EmptyListItem" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="truncateTable">
+            <Parameter Name="p1" Mode="In" Type="String" />
+            <Parameter Name="p2" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="UpdateDbVersion">
+            <Parameter Name="DbVersion" Mode="In" Type="String" />
+            <Parameter Name="AppVersion" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="ProposalContractsDatas" EntityType="genTRACModel.ProposalContractsData" />
+          <AssociationSet Name="FK__ProposalC__EPPDe__02925FBF" Association="genTRACModel.FK__ProposalC__EPPDe__02925FBF">
+            <End Role="EppDelegationAuthorityLU" EntitySet="EppDelegationAuthorityLUs" />
+            <End Role="ProposalContractsData" EntitySet="ProposalContractsDatas" />
+          </AssociationSet>
+          <EntitySet Name="Proposals" EntityType="genTRACModel.Proposal" />
+          <AssociationSet Name="FK_Proposal_BOEToolLU" Association="genTRACModel.FK_Proposal_BOEToolLU">
+            <End Role="BOEToolLU" EntitySet="BOEToolLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Proposal_ContractTypeGroupLU" Association="genTRACModel.FK_Proposal_ContractTypeGroupLU">
+            <End Role="ContractTypeGroupLU" EntitySet="ContractTypeGroupLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Proposal_CustomerTypeLU" Association="genTRACModel.FK_Proposal_CustomerTypeLU">
+            <End Role="CustomerTypeLU" EntitySet="CustomerTypeLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CutOffDateUtilization" Association="genTRACModel.FK_CutOffDateUtilization">
+            <End Role="CutOffDateUtilizationLU" EntitySet="CutOffDateUtilizationLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Proposal_genTRACUser" Association="genTRACModel.FK_Proposal_genTRACUser">
+            <End Role="genTRACUser" EntitySet="genTRACUsers" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Proposal_ISGSRoleLU" Association="genTRACModel.FK_Proposal_ISGSRoleLU">
+            <End Role="ISGSRoleLU" EntitySet="ISGSRoleLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Proposal_LineOfBusinessLU" Association="genTRACModel.FK_Proposal_LineOfBusinessLU">
+            <End Role="LineOfBusinessLU" EntitySet="LineOfBusinessLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Proposal_PricingToolLU" Association="genTRACModel.FK_Proposal_PricingToolLU">
+            <End Role="PricingToolLU" EntitySet="PricingToolLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Proposal_ProgramAreaLU" Association="genTRACModel.FK_Proposal_ProgramAreaLU">
+            <End Role="ProgramAreaLU" EntitySet="ProgramAreaLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Proposal_ProgramProposalStatusLU" Association="genTRACModel.FK_Proposal_ProgramProposalStatusLU">
+            <End Role="ProgramProposalStatusLU" EntitySet="ProgramProposalStatusLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Proposal__Reason__04DA9AE4" Association="genTRACModel.FK__Proposal__Reason__04DA9AE4">
+            <End Role="ReasonCertificationNotRequiredLU" EntitySet="ReasonCertificationNotRequiredLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ProposalC__Previ__11CA81AE" Association="genTRACModel.FK__ProposalC__Previ__11CA81AE">
+            <End Role="Proposal" EntitySet="Proposals" />
+            <End Role="ProposalContractsData" EntitySet="ProposalContractsDatas" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ProposalC__Propo__10D65D75" Association="genTRACModel.FK__ProposalC__Propo__10D65D75">
+            <End Role="Proposal" EntitySet="Proposals" />
+            <End Role="ProposalContractsData" EntitySet="ProposalContractsDatas" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Proposals__Propo__06C2E356" Association="genTRACModel.FK__Proposals__Propo__06C2E356">
+            <End Role="Proposal" EntitySet="Proposals" />
+            <End Role="ProposalsAttachment" EntitySet="ProposalsAttachments" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Proposal_Proposal" Association="genTRACModel.FK_Proposal_Proposal">
+            <End Role="Proposal" EntitySet="Proposals" />
+            <End Role="Proposal1" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Proposal_ProposalClassLU" Association="genTRACModel.FK_Proposal_ProposalClassLU">
+            <End Role="ProposalClassLU" EntitySet="ProposalClassLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Proposal_ProposalLocationLU" Association="genTRACModel.FK_Proposal_ProposalLocationLU">
+            <End Role="ProposalLocationLU" EntitySet="ProposalLocationLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Proposal_ProposalStatusLU" Association="genTRACModel.FK_Proposal_ProposalStatusLU">
+            <End Role="ProposalStatusLU" EntitySet="ProposalStatusLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Proposal_ProposalTypeLU" Association="genTRACModel.FK_Proposal_ProposalTypeLU">
+            <End Role="ProposalTypeLU" EntitySet="ProposalTypeLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Proposal_RequestTypeLU" Association="genTRACModel.FK_Proposal_RequestTypeLU">
+            <End Role="RequestTypeLU" EntitySet="RequestTypeLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProposalChecklist_Proposal" Association="genTRACModel.FK_ProposalChecklist_Proposal">
+            <End Role="Proposal" EntitySet="Proposals" />
+            <End Role="ProposalChecklist" EntitySet="ProposalChecklists" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProposalChecklistComplete_Proposal" Association="genTRACModel.FK_ProposalChecklistComplete_Proposal">
+            <End Role="Proposal" EntitySet="Proposals" />
+            <End Role="ProposalChecklistComplete" EntitySet="ProposalChecklistCompletes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProposalPARChecklistXREF_Proposal" Association="genTRACModel.FK_ProposalPARChecklistXREF_Proposal">
+            <End Role="Proposal" EntitySet="Proposals" />
+            <End Role="ProposalPARChecklistXREF" EntitySet="ProposalPARChecklistXREFs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProposalPPRChecklistXREF_Proposal" Association="genTRACModel.FK_ProposalPPRChecklistXREF_Proposal">
+            <End Role="Proposal" EntitySet="Proposals" />
+            <End Role="ProposalPPRChecklistXREF" EntitySet="ProposalPPRChecklistXREFs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_ProposalUserRole_Proposal" Association="genTRACModel.FK_ProposalUserRole_Proposal">
+            <End Role="Proposal" EntitySet="Proposals" />
+            <End Role="ProposalUserRole" EntitySet="ProposalUserRoles" />
+          </AssociationSet>
+          <AssociationSet Name="ProposalContractTypeXREF" Association="genTRACModel.ProposalContractTypeXREF">
+            <End Role="ContractTypeLU" EntitySet="ContractTypeLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <AssociationSet Name="ProposalCostElementXREF" Association="genTRACModel.ProposalCostElementXREF">
+            <End Role="CostElementLU" EntitySet="CostElementLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          </EntityContainer>
         <ComplexType Name="CreatePARChecklistReport_Result">
           <Property Type="String" Name="QuestionNumber" Nullable="true" MaxLength="50" />
           <Property Type="String" Name="Reference" Nullable="true" MaxLength="1000" />
@@ -3523,8 +3594,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="ContractTypeGroupID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ContractTypeGroup" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="IsActive" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK_Proposal_ContractTypeGroupLU" FromRole="ContractTypeGroupLU" ToRole="Proposal" />
           <NavigationProperty Name="ContractTypeLUs" Relationship="genTRACModel.ContractTypeGroupXREF" FromRole="ContractTypeGroupLU" ToRole="ContractTypeLU" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK_Proposal_ContractTypeGroupLU" FromRole="ContractTypeGroupLU" ToRole="Proposal" />
         </EntityType>
         <EntityType Name="ContractTypeLU">
           <Key>
@@ -3536,59 +3607,9 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <NavigationProperty Name="ContractTypeGroupLUs" Relationship="genTRACModel.ContractTypeGroupXREF" FromRole="ContractTypeLU" ToRole="ContractTypeGroupLU" />
           <NavigationProperty Name="Proposals" Relationship="genTRACModel.ProposalContractTypeXREF" FromRole="ContractTypeLU" ToRole="Proposal" />
         </EntityType>
-        <Association Name="FK_Proposal_ContractTypeGroupLU">
-          <End Type="genTRACModel.ContractTypeGroupLU" Role="ContractTypeGroupLU" Multiplicity="0..1" />
-          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ContractTypeGroupLU">
-              <PropertyRef Name="ContractTypeGroupID" />
-            </Principal>
-            <Dependent Role="Proposal">
-              <PropertyRef Name="ContractTypeGroupID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="ContractTypeGroupXREF">
           <End Type="genTRACModel.ContractTypeLU" Role="ContractTypeLU" Multiplicity="*" />
           <End Type="genTRACModel.ContractTypeGroupLU" Role="ContractTypeGroupLU" Multiplicity="*" />
-        </Association>
-        <Association Name="ProposalContractTypeXREF">
-          <End Type="genTRACModel.ContractTypeLU" Role="ContractTypeLU" Multiplicity="*" />
-          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
-        </Association>
-        <EntityType Name="ProposalChecklist">
-          <Key>
-            <PropertyRef Name="ProposalChecklistID" />
-          </Key>
-          <Property Name="ProposalChecklistID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
-          <Property Name="ProposalID" Type="Int32" Nullable="false" />
-          <Property Name="ProposalSubmittalDate" Type="DateTime" Precision="0" />
-          <Property Name="ISGSTotalPrice" Type="Int64" />
-          <Property Name="ProfitFee" Type="Int64" />
-          <Property Name="ROSPercentage" Type="Decimal" Precision="4" Scale="2" />
-          <Property Name="LMLaborHours" Type="Decimal" Precision="11" Scale="2" />
-          <Property Name="LMLaborCost" Type="Int64" />
-          <Property Name="SubcontractorCost" Type="Int64" />
-          <Property Name="MaterialCost" Type="Int64" />
-          <Property Name="IWTACost" Type="Int64" />
-          <Property Name="TravelCost" Type="Int64" />
-          <Property Name="OtherDirectCost" Type="Int64" />
-          <Property Name="DeliverChecklistDFARS" Type="Boolean" Nullable="false" />
-          <Property Name="AbsoluteValue" Type="Int64" />
-          <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK_ProposalChecklist_Proposal" FromRole="ProposalChecklist" ToRole="Proposal" />
-        </EntityType>
-        <Association Name="FK_ProposalChecklist_Proposal">
-          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
-          <End Type="genTRACModel.ProposalChecklist" Role="ProposalChecklist" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Proposal">
-              <PropertyRef Name="ProposalID" />
-            </Principal>
-            <Dependent Role="ProposalChecklist">
-              <PropertyRef Name="ProposalID" />
-            </Dependent>
-          </ReferentialConstraint>
         </Association>
         <EntityType Name="LineOfBusinessLU">
           <Key>
@@ -3628,30 +3649,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <End Type="genTRACModel.LineOfBusinessLU" Role="LineOfBusinessLU" Multiplicity="*" />
           <End Type="genTRACModel.SystemUserRole" Role="SystemUserRole" Multiplicity="*" />
         </Association>
-        <Association Name="FK_Proposal_LineOfBusinessLU">
-          <End Type="genTRACModel.LineOfBusinessLU" Role="LineOfBusinessLU" Multiplicity="1" />
-          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="LineOfBusinessLU">
-              <PropertyRef Name="LineOfBusinessID" />
-            </Principal>
-            <Dependent Role="Proposal">
-              <PropertyRef Name="LineOfBusinessID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Proposal_ProgramAreaLU">
-          <End Type="genTRACModel.ProgramAreaLU" Role="ProgramAreaLU" Multiplicity="1" />
-          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="ProgramAreaLU">
-              <PropertyRef Name="ProgramAreaID" />
-            </Principal>
-            <Dependent Role="Proposal">
-              <PropertyRef Name="ProgramAreaID" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="CutOffDateUtilizationLU">
           <Key>
             <PropertyRef Name="ID" />
@@ -3660,18 +3657,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK_CutOffDateUtilization" FromRole="CutOffDateUtilizationLU" ToRole="Proposal" />
         </EntityType>
-        <Association Name="FK_CutOffDateUtilization">
-          <End Type="genTRACModel.CutOffDateUtilizationLU" Role="CutOffDateUtilizationLU" Multiplicity="0..1" />
-          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="CutOffDateUtilizationLU">
-              <PropertyRef Name="ID" />
-            </Principal>
-            <Dependent Role="Proposal">
-              <PropertyRef Name="CutOffDateUtilization" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="CannedResponsesPAR">
           <Key>
             <PropertyRef Name="CannedResponseId" />
@@ -3748,21 +3733,10 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="AttachmentId" Type="Int32" Nullable="false" />
           <Property Name="AttachmentType" Type="Int32" Nullable="false" />
           <Property Name="IsRevisionReference" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK__Proposals__Propo__5A5A5133" FromRole="ProposalsAttachment" ToRole="Proposal" />
           <NavigationProperty Name="Attachment" Relationship="genTRACModel.FK__Proposals__Attac__5B4E756C" FromRole="ProposalsAttachment" ToRole="Attachment" />
+          <NavigationProperty Name="AttachmentTypeLU" Relationship="genTRACModel.FK__Proposals__Attac__08AB2BC8" FromRole="ProposalsAttachment" ToRole="AttachmentTypeLU" />
+          <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK__Proposals__Propo__06C2E356" FromRole="ProposalsAttachment" ToRole="Proposal" />
         </EntityType>
-        <Association Name="FK__Proposals__Propo__5A5A5133">
-          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
-          <End Type="genTRACModel.ProposalsAttachment" Role="ProposalsAttachment" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Proposal">
-              <PropertyRef Name="ProposalID" />
-            </Principal>
-            <Dependent Role="ProposalsAttachment">
-              <PropertyRef Name="ProposalId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="Attachment">
           <Key>
             <PropertyRef Name="ID" />
@@ -3783,18 +3757,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Principal>
             <Dependent Role="ProposalsAttachment">
               <PropertyRef Name="AttachmentId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Proposal_Proposal">
-          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="0..1" />
-          <End Type="genTRACModel.Proposal" Role="Proposal1" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Proposal">
-              <PropertyRef Name="ProposalID" />
-            </Principal>
-            <Dependent Role="Proposal1">
-              <PropertyRef Name="RevisionOfId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -3845,7 +3807,541 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Type="String" Name="ProposalClass" Nullable="false" MaxLength="50" />
           <Property Type="Int32" Name="HasOrIsRevision" Nullable="false" />
         </ComplexType>
-      </Schema>
+        <EntityType Name="ProposalChecklist">
+          <Key>
+            <PropertyRef Name="ProposalChecklistID" />
+          </Key>
+          <Property Name="ProposalChecklistID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="ProposalID" Type="Int32" Nullable="false" />
+          <Property Name="ProposalSubmittalDate" Type="DateTime" Precision="0" />
+          <Property Name="ISGSTotalPrice" Type="Int64" />
+          <Property Name="ProfitFeeWithCom" Type="Int64" />
+          <Property Name="ROSPercentage" Type="Decimal" Precision="4" Scale="2" />
+          <Property Name="LMLaborHours" Type="Decimal" Precision="11" Scale="2" />
+          <Property Name="LMLaborCost" Type="Int64" />
+          <Property Name="SubcontractorCost" Type="Int64" />
+          <Property Name="MaterialCost" Type="Int64" />
+          <Property Name="IWTACost" Type="Int64" />
+          <Property Name="TravelCost" Type="Int64" />
+          <Property Name="OtherDirectCost" Type="Int64" />
+          <Property Name="DeliverChecklistDFARS" Type="Boolean" Nullable="false" />
+          <Property Name="AbsoluteValue" Type="Int64" />
+          <Property Name="Com" Type="Int64" />
+          <Property Name="Profit" Type="Int64" />
+          <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK_ProposalChecklist_Proposal" FromRole="ProposalChecklist" ToRole="Proposal" />
+        </EntityType>
+        <EntityType Name="AttachmentTypeLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ProposalsAttachments" Relationship="genTRACModel.FK__Proposals__Attac__08AB2BC8" FromRole="AttachmentTypeLU" ToRole="ProposalsAttachment" />
+        </EntityType>
+        <EntityType Name="BoeDatabaseVersion">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="DBVersion" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="AppVersion" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="EppDelegationAuthorityLU">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Text" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ProposalContractsDatas" Relationship="genTRACModel.FK__ProposalC__EPPDe__02925FBF" FromRole="EppDelegationAuthorityLU" ToRole="ProposalContractsData" />
+          </EntityType>
+        <EntityType Name="ReasonCertificationNotRequiredLU">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Text" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK__Proposal__Reason__04DA9AE4" FromRole="ReasonCertificationNotRequiredLU" ToRole="Proposal" />
+        </EntityType>
+        <Association Name="FK__Proposals__Attac__08AB2BC8">
+          <End Type="genTRACModel.AttachmentTypeLU" Role="AttachmentTypeLU" Multiplicity="1" />
+          <End Type="genTRACModel.ProposalsAttachment" Role="ProposalsAttachment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="AttachmentTypeLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="ProposalsAttachment">
+              <PropertyRef Name="AttachmentType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <ComplexType Name="CreateDfarsChecklistResponseReport_Result">
+          <Property Type="String" Name="Tracking__" Nullable="true" MaxLength="13" />
+          <Property Type="String" Name="Proposal_Title" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="Proposal_Status" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Line_of_Business" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Program_Area_Name" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="LeadEstimatorName" Nullable="true" MaxLength="256" />
+          <Property Type="DateTime" Name="Actual_Submittal_Date" Nullable="true" />
+          <Property Type="DateTime" Name="Approval_Workflow_Completed_Date" Nullable="true" />
+          <Property Type="DateTime" Name="Certification_Completed_Date" Nullable="true" />
+          <Property Type="String" Name="Question__" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Question_Text" Nullable="true" />
+          <Property Type="String" Name="Comment" Nullable="true" MaxLength="500" />
+        </ComplexType>
+        <ComplexType Name="SplitString_Result">
+          <Property Type="Int32" Name="ItemId" Nullable="false" />
+          <Property Type="String" Name="Item" Nullable="true" MaxLength="8000" />
+        </ComplexType>
+        <EntityType Name="ProposalContractsData">
+          <Key>
+            <PropertyRef Name="ProposalContractsDataId" />
+          </Key>
+          <Property Name="ProposalContractsDataId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDT" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="ProposalID" Type="Int32" Nullable="false" />
+          <Property Name="PreviouslySubmittedROM" Type="Int32" />
+          <Property Name="CustomerSubmittalDate" Type="DateTime" Precision="0" />
+          <Property Name="ContractsCorrespondLogNumber" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="FinalNegotiatedValue" Type="Int64" />
+          <Property Name="FinalNegotiatedDate" Type="DateTime" Precision="0" />
+          <Property Name="EppDelegationAuthority" Type="Int32" />
+          <Property Name="ProgramEppDate" Type="DateTime" Precision="0" />
+          <Property Name="LobEppDate" Type="DateTime" Precision="0" />
+          <Property Name="PreSpaceEppDate" Type="DateTime" Precision="0" />
+          <Property Name="SpaceEppDate" Type="DateTime" Precision="0" />
+          <Property Name="PreCorporateEppDate" Type="DateTime" Precision="0" />
+          <Property Name="CorporateEppDate" Type="DateTime" Precision="0" />
+          <Property Name="EppRosDelegationNotes" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="LmWon" Type="Boolean" />
+          <Property Name="ModCompletedDate" Type="DateTime" Precision="0" />
+          <NavigationProperty Name="EppDelegationAuthorityLU" Relationship="genTRACModel.FK__ProposalC__EPPDe__02925FBF" FromRole="ProposalContractsData" ToRole="EppDelegationAuthorityLU" />
+          <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK__ProposalC__Previ__11CA81AE" FromRole="ProposalContractsData" ToRole="Proposal" />
+          <NavigationProperty Name="Proposal1" Relationship="genTRACModel.FK__ProposalC__Propo__10D65D75" FromRole="ProposalContractsData" ToRole="Proposal" />
+          </EntityType>
+        <Association Name="FK__ProposalC__EPPDe__02925FBF">
+          <End Type="genTRACModel.EppDelegationAuthorityLU" Role="EppDelegationAuthorityLU" Multiplicity="0..1" />
+          <End Type="genTRACModel.ProposalContractsData" Role="ProposalContractsData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="EppDelegationAuthorityLU">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="ProposalContractsData">
+              <PropertyRef Name="EppDelegationAuthority" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Proposal">
+          <Key>
+            <PropertyRef Name="ProposalID" />
+          </Key>
+          <Property Name="ProposalID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UpdateDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="ProposalTrackingID" Type="String" MaxLength="13" FixedLength="false" Unicode="false" />
+          <Property Name="ProposalTitle" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="OTISOpportunityID" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="ProposalStatusID" Type="Int32" Nullable="false" />
+          <Property Name="DateCreated" Type="DateTime" Precision="7" />
+          <Property Name="DateAssigned" Type="DateTime" Precision="7" />
+          <Property Name="ProposalTypeID" Type="Int32" Nullable="false" />
+          <Property Name="IsIWTA" Type="Boolean" Nullable="false" />
+          <Property Name="ProgramName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Customer" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CustomerTypeID" Type="Int32" Nullable="false" />
+          <Property Name="ISGSRoleID" Type="Int32" Nullable="false" />
+          <Property Name="RequestTypeID" Type="Int32" />
+          <Property Name="RFPNumber" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="LineOfBusinessID" Type="Int32" Nullable="false" />
+          <Property Name="PricingToolID" Type="Int32" Nullable="false" />
+          <Property Name="BOEToolID" Type="Int32" Nullable="false" />
+          <Property Name="AnticipatedDeliveryDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="EstimatedProposalValue" Type="Int64" />
+          <Property Name="IsActive" Type="Boolean" />
+          <Property Name="CreatedByUserID" Type="Int32" />
+          <Property Name="RFPIssuedDate" Type="DateTime" Precision="0" />
+          <Property Name="RFPReceivedDate" Type="DateTime" Precision="0" />
+          <Property Name="Comments" Type="String" MaxLength="2500" FixedLength="false" Unicode="false" />
+          <Property Name="ContractTypeGroupID" Type="Int32" />
+          <Property Name="IsScheduleProposal" Type="Boolean" />
+          <Property Name="ITCOApproved" Type="Boolean" />
+          <Property Name="ProposalLocationID" Type="Int32" Nullable="false" />
+          <Property Name="ProposalLocationName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="BOEToolName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PricingToolName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ProgramProposalStatusID" Type="Int32" />
+          <Property Name="ProposalClassID" Type="Int32" Nullable="false" />
+          <Property Name="WorkflowStatus" Type="Int32" Nullable="false" />
+          <Property Name="WorkflowStatusLastUpdated" Type="DateTime" Precision="7" />
+          <Property Name="LeadEstimatorSignedDT" Type="DateTime" Precision="7" />
+          <Property Name="LeadEstimatorSignComment" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="CoverSheetApproverSignedDT" Type="DateTime" Precision="7" />
+          <Property Name="CoverSheetApproverSignComment" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="PricingVerifierSignedDT" Type="DateTime" Precision="7" />
+          <Property Name="PricingVerifierSignComment" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="IndependentReviewerSignedDT" Type="DateTime" Precision="7" />
+          <Property Name="IndependentReviewerSignComment" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="LOBEstimatingLeadSignedDT" Type="DateTime" Precision="7" />
+          <Property Name="LOBEstimatingLeadSignComment" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="ApprovalEmailText" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="RevisedSubmittalDate" Type="DateTime" Precision="0" />
+          <Property Name="CCPDRequired" Type="Boolean" />
+          <Property Name="DocumentId" Type="Int32" />
+          <Property Name="ForecastedTrackingID" Type="String" MaxLength="13" FixedLength="false" Unicode="false" />
+          <Property Name="ForecastEmailSent" Type="Boolean" Nullable="false" />
+          <Property Name="ProgramAreaID" Type="Int32" Nullable="false" />
+          <Property Name="AgreementDate" Type="DateTime" Precision="0" />
+          <Property Name="CertificationDate" Type="DateTime" Precision="0" />
+          <Property Name="CutOffDateUtilization" Type="Int32" />
+          <Property Name="CertificationTimelineCompleted" Type="DateTime" Precision="7" />
+          <Property Name="CertificationLastEmailed" Type="DateTime" Precision="7" />
+          <Property Name="CostVolumeClassified" Type="Boolean" />
+          <Property Name="NoBidDate" Type="DateTime" Precision="7" />
+          <Property Name="RevisionOfId" Type="Int32" />
+          <Property Name="OtherReasonComment" Type="String" MaxLength="1000" FixedLength="false" Unicode="false" />
+          <Property Name="ReasonCertificationNotRequired" Type="Int32" />
+          <Property Name="SetupComments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="InformationComments" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="ModExecutedLastEmailed" Type="DateTime" Precision="7" />
+          <Property Name="ProposalCompletedDate" Type="DateTime" Precision="7" />
+          <NavigationProperty Name="BOEToolLU" Relationship="genTRACModel.FK_Proposal_BOEToolLU" FromRole="Proposal" ToRole="BOEToolLU" />
+          <NavigationProperty Name="ContractTypeGroupLU" Relationship="genTRACModel.FK_Proposal_ContractTypeGroupLU" FromRole="Proposal" ToRole="ContractTypeGroupLU" />
+          <NavigationProperty Name="CustomerTypeLU" Relationship="genTRACModel.FK_Proposal_CustomerTypeLU" FromRole="Proposal" ToRole="CustomerTypeLU" />
+          <NavigationProperty Name="CutOffDateUtilizationLU" Relationship="genTRACModel.FK_CutOffDateUtilization" FromRole="Proposal" ToRole="CutOffDateUtilizationLU" />
+          <NavigationProperty Name="genTRACUser" Relationship="genTRACModel.FK_Proposal_genTRACUser" FromRole="Proposal" ToRole="genTRACUser" />
+          <NavigationProperty Name="ISGSRoleLU" Relationship="genTRACModel.FK_Proposal_ISGSRoleLU" FromRole="Proposal" ToRole="ISGSRoleLU" />
+          <NavigationProperty Name="LineOfBusinessLU" Relationship="genTRACModel.FK_Proposal_LineOfBusinessLU" FromRole="Proposal" ToRole="LineOfBusinessLU" />
+          <NavigationProperty Name="PricingToolLU" Relationship="genTRACModel.FK_Proposal_PricingToolLU" FromRole="Proposal" ToRole="PricingToolLU" />
+          <NavigationProperty Name="ProgramAreaLU" Relationship="genTRACModel.FK_Proposal_ProgramAreaLU" FromRole="Proposal" ToRole="ProgramAreaLU" />
+          <NavigationProperty Name="ProgramProposalStatusLU" Relationship="genTRACModel.FK_Proposal_ProgramProposalStatusLU" FromRole="Proposal" ToRole="ProgramProposalStatusLU" />
+          <NavigationProperty Name="ReasonCertificationNotRequiredLU" Relationship="genTRACModel.FK__Proposal__Reason__04DA9AE4" FromRole="Proposal" ToRole="ReasonCertificationNotRequiredLU" />
+          <NavigationProperty Name="ProposalContractsDatas" Relationship="genTRACModel.FK__ProposalC__Previ__11CA81AE" FromRole="Proposal" ToRole="ProposalContractsData" />
+          <NavigationProperty Name="ProposalContractsDatas1" Relationship="genTRACModel.FK__ProposalC__Propo__10D65D75" FromRole="Proposal" ToRole="ProposalContractsData" />
+          <NavigationProperty Name="ProposalsAttachments" Relationship="genTRACModel.FK__Proposals__Propo__06C2E356" FromRole="Proposal" ToRole="ProposalsAttachment" />
+          <NavigationProperty Name="Proposal1" Relationship="genTRACModel.FK_Proposal_Proposal" FromRole="Proposal" ToRole="Proposal1" />
+          <NavigationProperty Name="Proposal2" Relationship="genTRACModel.FK_Proposal_Proposal" FromRole="Proposal1" ToRole="Proposal" />
+          <NavigationProperty Name="ProposalClassLU" Relationship="genTRACModel.FK_Proposal_ProposalClassLU" FromRole="Proposal" ToRole="ProposalClassLU" />
+          <NavigationProperty Name="ProposalLocationLU" Relationship="genTRACModel.FK_Proposal_ProposalLocationLU" FromRole="Proposal" ToRole="ProposalLocationLU" />
+          <NavigationProperty Name="ProposalStatusLU" Relationship="genTRACModel.FK_Proposal_ProposalStatusLU" FromRole="Proposal" ToRole="ProposalStatusLU" />
+          <NavigationProperty Name="ProposalTypeLU" Relationship="genTRACModel.FK_Proposal_ProposalTypeLU" FromRole="Proposal" ToRole="ProposalTypeLU" />
+          <NavigationProperty Name="RequestTypeLU" Relationship="genTRACModel.FK_Proposal_RequestTypeLU" FromRole="Proposal" ToRole="RequestTypeLU" />
+          <NavigationProperty Name="ProposalChecklists" Relationship="genTRACModel.FK_ProposalChecklist_Proposal" FromRole="Proposal" ToRole="ProposalChecklist" />
+          <NavigationProperty Name="ProposalChecklistCompletes" Relationship="genTRACModel.FK_ProposalChecklistComplete_Proposal" FromRole="Proposal" ToRole="ProposalChecklistComplete" />
+          <NavigationProperty Name="ProposalPARChecklistXREFs" Relationship="genTRACModel.FK_ProposalPARChecklistXREF_Proposal" FromRole="Proposal" ToRole="ProposalPARChecklistXREF" />
+          <NavigationProperty Name="ProposalPPRChecklistXREFs" Relationship="genTRACModel.FK_ProposalPPRChecklistXREF_Proposal" FromRole="Proposal" ToRole="ProposalPPRChecklistXREF" />
+          <NavigationProperty Name="ProposalUserRoles" Relationship="genTRACModel.FK_ProposalUserRole_Proposal" FromRole="Proposal" ToRole="ProposalUserRole" />
+          <NavigationProperty Name="ContractTypeLUs" Relationship="genTRACModel.ProposalContractTypeXREF" FromRole="Proposal" ToRole="ContractTypeLU" />
+          <NavigationProperty Name="CostElementLUs" Relationship="genTRACModel.ProposalCostElementXREF" FromRole="Proposal" ToRole="CostElementLU" />
+        </EntityType>
+        <Association Name="FK_Proposal_BOEToolLU">
+          <End Type="genTRACModel.BOEToolLU" Role="BOEToolLU" Multiplicity="1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BOEToolLU">
+              <PropertyRef Name="BOEToolID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="BOEToolID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Proposal_ContractTypeGroupLU">
+          <End Type="genTRACModel.ContractTypeGroupLU" Role="ContractTypeGroupLU" Multiplicity="0..1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ContractTypeGroupLU">
+              <PropertyRef Name="ContractTypeGroupID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ContractTypeGroupID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Proposal_CustomerTypeLU">
+          <End Type="genTRACModel.CustomerTypeLU" Role="CustomerTypeLU" Multiplicity="1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CustomerTypeLU">
+              <PropertyRef Name="CustomerTypeID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="CustomerTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CutOffDateUtilization">
+          <End Type="genTRACModel.CutOffDateUtilizationLU" Role="CutOffDateUtilizationLU" Multiplicity="0..1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CutOffDateUtilizationLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="CutOffDateUtilization" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Proposal_genTRACUser">
+          <End Type="genTRACModel.genTRACUser" Role="genTRACUser" Multiplicity="0..1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="genTRACUser">
+              <PropertyRef Name="UserID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="CreatedByUserID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Proposal_ISGSRoleLU">
+          <End Type="genTRACModel.ISGSRoleLU" Role="ISGSRoleLU" Multiplicity="1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ISGSRoleLU">
+              <PropertyRef Name="ISGSRoleID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ISGSRoleID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Proposal_LineOfBusinessLU">
+          <End Type="genTRACModel.LineOfBusinessLU" Role="LineOfBusinessLU" Multiplicity="1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="LineOfBusinessLU">
+              <PropertyRef Name="LineOfBusinessID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="LineOfBusinessID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Proposal_PricingToolLU">
+          <End Type="genTRACModel.PricingToolLU" Role="PricingToolLU" Multiplicity="1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PricingToolLU">
+              <PropertyRef Name="PricingToolID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="PricingToolID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Proposal_ProgramAreaLU">
+          <End Type="genTRACModel.ProgramAreaLU" Role="ProgramAreaLU" Multiplicity="1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProgramAreaLU">
+              <PropertyRef Name="ProgramAreaID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ProgramAreaID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Proposal_ProgramProposalStatusLU">
+          <End Type="genTRACModel.ProgramProposalStatusLU" Role="ProgramProposalStatusLU" Multiplicity="0..1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProgramProposalStatusLU">
+              <PropertyRef Name="ProgramProposalStatusID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ProgramProposalStatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Proposal__Reason__04DA9AE4">
+          <End Type="genTRACModel.ReasonCertificationNotRequiredLU" Role="ReasonCertificationNotRequiredLU" Multiplicity="0..1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ReasonCertificationNotRequiredLU">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ReasonCertificationNotRequired" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ProposalC__Previ__11CA81AE">
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="0..1" />
+          <End Type="genTRACModel.ProposalContractsData" Role="ProposalContractsData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="ProposalContractsData">
+              <PropertyRef Name="PreviouslySubmittedROM" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ProposalC__Propo__10D65D75">
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
+          <End Type="genTRACModel.ProposalContractsData" Role="ProposalContractsData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="ProposalContractsData">
+              <PropertyRef Name="ProposalID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Proposals__Propo__06C2E356">
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
+          <End Type="genTRACModel.ProposalsAttachment" Role="ProposalsAttachment" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="ProposalsAttachment">
+              <PropertyRef Name="ProposalId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Proposal_Proposal">
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="0..1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="Proposal1">
+              <PropertyRef Name="RevisionOfId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Proposal_ProposalClassLU">
+          <End Type="genTRACModel.ProposalClassLU" Role="ProposalClassLU" Multiplicity="1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProposalClassLU">
+              <PropertyRef Name="ProposalClassID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ProposalClassID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Proposal_ProposalLocationLU">
+          <End Type="genTRACModel.ProposalLocationLU" Role="ProposalLocationLU" Multiplicity="1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProposalLocationLU">
+              <PropertyRef Name="ProposalLocationID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ProposalLocationID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Proposal_ProposalStatusLU">
+          <End Type="genTRACModel.ProposalStatusLU" Role="ProposalStatusLU" Multiplicity="1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProposalStatusLU">
+              <PropertyRef Name="ProposalStatusID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ProposalStatusID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Proposal_ProposalTypeLU">
+          <End Type="genTRACModel.ProposalTypeLU" Role="ProposalTypeLU" Multiplicity="1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ProposalTypeLU">
+              <PropertyRef Name="ProposalTypeID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ProposalTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Proposal_RequestTypeLU">
+          <End Type="genTRACModel.RequestTypeLU" Role="RequestTypeLU" Multiplicity="0..1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="RequestTypeLU">
+              <PropertyRef Name="RequestTypeID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="RequestTypeID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProposalChecklist_Proposal">
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
+          <End Type="genTRACModel.ProposalChecklist" Role="ProposalChecklist" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="ProposalChecklist">
+              <PropertyRef Name="ProposalID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProposalChecklistComplete_Proposal">
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
+          <End Type="genTRACModel.ProposalChecklistComplete" Role="ProposalChecklistComplete" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="ProposalChecklistComplete">
+              <PropertyRef Name="ProposalID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProposalPARChecklistXREF_Proposal">
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
+          <End Type="genTRACModel.ProposalPARChecklistXREF" Role="ProposalPARChecklistXREF" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="ProposalPARChecklistXREF">
+              <PropertyRef Name="ProposalID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProposalPPRChecklistXREF_Proposal">
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
+          <End Type="genTRACModel.ProposalPPRChecklistXREF" Role="ProposalPPRChecklistXREF" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="ProposalPPRChecklistXREF">
+              <PropertyRef Name="ProposalID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_ProposalUserRole_Proposal">
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="1" />
+          <End Type="genTRACModel.ProposalUserRole" Role="ProposalUserRole" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Proposal">
+              <PropertyRef Name="ProposalID" />
+            </Principal>
+            <Dependent Role="ProposalUserRole">
+              <PropertyRef Name="ProposalID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="ProposalContractTypeXREF">
+          <End Type="genTRACModel.ContractTypeLU" Role="ContractTypeLU" Multiplicity="*" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+        </Association>
+        <Association Name="ProposalCostElementXREF">
+          <End Type="genTRACModel.CostElementLU" Role="CostElementLU" Multiplicity="*" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
@@ -3972,78 +4468,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
               <MappingFragment StoreEntitySet="ProgramProposalStatusLU">
                 <ScalarProperty Name="ProgramProposalStatusID" ColumnName="ProgramProposalStatusID" />
                 <ScalarProperty Name="ProgramProposalStatus" ColumnName="ProgramProposalStatus" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Proposals">
-            <EntityTypeMapping TypeName="genTRACModel.Proposal">
-              <MappingFragment StoreEntitySet="Proposal">
-                <ScalarProperty Name="InformationComments" ColumnName="InformationComments" />
-                <ScalarProperty Name="SetupComments" ColumnName="SetupComments" />
-                <ScalarProperty Name="RevisionOfId" ColumnName="RevisionOfId" />
-                <ScalarProperty Name="ReasonCertificationNotRequired" ColumnName="ReasonCertificationNotRequired" />
-                <ScalarProperty Name="OtherReasonComment" ColumnName="OtherReasonComment" />
-                <ScalarProperty Name="NoBidDate" ColumnName="NoBidDate" />
-                <ScalarProperty Name="CostVolumeClassified" ColumnName="CostVolumeClassified" />
-                <ScalarProperty Name="CertificationLastEmailed" ColumnName="CertificationLastEmailed" />
-                <ScalarProperty Name="CertificationTimelineCompleted" ColumnName="CertificationTimelineCompleted" />
-                <ScalarProperty Name="CutOffDateUtilization" ColumnName="CutOffDateUtilization" />
-                <ScalarProperty Name="CertificationDate" ColumnName="CertificationDate" />
-                <ScalarProperty Name="AgreementDate" ColumnName="AgreementDate" />
-                <ScalarProperty Name="ProgramAreaID" ColumnName="ProgramAreaID" />
-                <ScalarProperty Name="ForecastEmailSent" ColumnName="ForecastEmailSent" />
-                <ScalarProperty Name="ForecastedTrackingID" ColumnName="ForecastedTrackingID" />
-                <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
-                <ScalarProperty Name="CCPDRequired" ColumnName="CCPDRequired" />
-                <ScalarProperty Name="RevisedSubmittalDate" ColumnName="RevisedSubmittalDate" />
-                <ScalarProperty Name="ApprovalEmailText" ColumnName="ApprovalEmailText" />
-                <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
-                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
-                <ScalarProperty Name="ProposalTrackingID" ColumnName="ProposalTrackingID" />
-                <ScalarProperty Name="ProposalTitle" ColumnName="ProposalTitle" />
-                <ScalarProperty Name="OTISOpportunityID" ColumnName="OTISOpportunityID" />
-                <ScalarProperty Name="ProposalStatusID" ColumnName="ProposalStatusID" />
-                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
-                <ScalarProperty Name="DateAssigned" ColumnName="DateAssigned" />
-                <ScalarProperty Name="ProposalTypeID" ColumnName="ProposalTypeID" />
-                <ScalarProperty Name="IsIWTA" ColumnName="IsIWTA" />
-                <ScalarProperty Name="ProgramName" ColumnName="ProgramName" />
-                <ScalarProperty Name="Customer" ColumnName="Customer" />
-                <ScalarProperty Name="CustomerTypeID" ColumnName="CustomerTypeID" />
-                <ScalarProperty Name="ISGSRoleID" ColumnName="ISGSRoleID" />
-                <ScalarProperty Name="RequestTypeID" ColumnName="RequestTypeID" />
-                <ScalarProperty Name="RFPNumber" ColumnName="RFPNumber" />
-                <ScalarProperty Name="LineOfBusinessID" ColumnName="LineOfBusinessID" />
-                <ScalarProperty Name="PricingToolID" ColumnName="PricingToolID" />
-                <ScalarProperty Name="BOEToolID" ColumnName="BOEToolID" />
-                <ScalarProperty Name="AnticipatedDeliveryDate" ColumnName="AnticipatedDeliveryDate" />
-                <ScalarProperty Name="EstimatedProposalValue" ColumnName="EstimatedProposalValue" />
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
-                <ScalarProperty Name="CreatedByUserID" ColumnName="CreatedByUserID" />
-                <ScalarProperty Name="RFPIssuedDate" ColumnName="RFPIssuedDate" />
-                <ScalarProperty Name="RFPReceivedDate" ColumnName="RFPReceivedDate" />
-                <ScalarProperty Name="Comments" ColumnName="Comments" />
-                <ScalarProperty Name="ContractTypeGroupID" ColumnName="ContractTypeGroupID" />
-                <ScalarProperty Name="IsScheduleProposal" ColumnName="IsScheduleProposal" />
-                <ScalarProperty Name="ITCOApproved" ColumnName="ITCOApproved" />
-                <ScalarProperty Name="ProposalLocationID" ColumnName="ProposalLocationID" />
-                <ScalarProperty Name="ProposalLocationName" ColumnName="ProposalLocationName" />
-                <ScalarProperty Name="BOEToolName" ColumnName="BOEToolName" />
-                <ScalarProperty Name="PricingToolName" ColumnName="PricingToolName" />
-                <ScalarProperty Name="ProgramProposalStatusID" ColumnName="ProgramProposalStatusID" />
-                <ScalarProperty Name="ProposalClassID" ColumnName="ProposalClassID" />
-                <ScalarProperty Name="WorkflowStatus" ColumnName="WorkflowStatus" />
-                <ScalarProperty Name="WorkflowStatusLastUpdated" ColumnName="WorkflowStatusLastUpdated" />
-                <ScalarProperty Name="LeadEstimatorSignedDT" ColumnName="LeadEstimatorSignedDT" />
-                <ScalarProperty Name="LeadEstimatorSignComment" ColumnName="LeadEstimatorSignComment" />
-                <ScalarProperty Name="CoverSheetApproverSignedDT" ColumnName="CoverSheetApproverSignedDT" />
-                <ScalarProperty Name="CoverSheetApproverSignComment" ColumnName="CoverSheetApproverSignComment" />
-                <ScalarProperty Name="PricingVerifierSignedDT" ColumnName="PricingVerifierSignedDT" />
-                <ScalarProperty Name="PricingVerifierSignComment" ColumnName="PricingVerifierSignComment" />
-                <ScalarProperty Name="IndependentReviewerSignedDT" ColumnName="IndependentReviewerSignedDT" />
-                <ScalarProperty Name="IndependentReviewerSignComment" ColumnName="IndependentReviewerSignComment" />
-                <ScalarProperty Name="LOBEstimatingLeadSignedDT" ColumnName="LOBEstimatingLeadSignedDT" />
-                <ScalarProperty Name="LOBEstimatingLeadSignComment" ColumnName="LOBEstimatingLeadSignComment" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -4233,14 +4657,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <AssociationSetMapping Name="ProposalCostElementXREF" TypeName="genTRACModel.ProposalCostElementXREF" StoreEntitySet="ProposalCostElementXREF">
-            <EndProperty Name="CostElementLU">
-              <ScalarProperty Name="CostElementID" ColumnName="CostElementID" />
-            </EndProperty>
-            <EndProperty Name="Proposal">
-              <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
-            </EndProperty>
-          </AssociationSetMapping>
           <FunctionImportMapping FunctionImportName="archiveProposal" FunctionName="genTRACModel.Store.archiveProposal" />
           <FunctionImportMapping FunctionImportName="archiveProposalCount" FunctionName="genTRACModel.Store.archiveProposalCount" />
           <FunctionImportMapping FunctionImportName="CreatePARChecklistReport" FunctionName="genTRACModel.Store.CreatePARChecklistReport">
@@ -4406,36 +4822,6 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
               <ScalarProperty Name="ContractTypeID" ColumnName="ContractTypeID" />
             </EndProperty>
           </AssociationSetMapping>
-          <AssociationSetMapping Name="ProposalContractTypeXREF" TypeName="genTRACModel.ProposalContractTypeXREF" StoreEntitySet="ProposalContractTypeXREF">
-            <EndProperty Name="Proposal">
-              <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
-            </EndProperty>
-            <EndProperty Name="ContractTypeLU">
-              <ScalarProperty Name="ContractTypeID" ColumnName="ContractTypeID" />
-            </EndProperty>
-          </AssociationSetMapping>
-          <EntitySetMapping Name="ProposalChecklists">
-            <EntityTypeMapping TypeName="genTRACModel.ProposalChecklist">
-              <MappingFragment StoreEntitySet="ProposalChecklist">
-                <ScalarProperty Name="AbsoluteValue" ColumnName="AbsoluteValue" />
-                <ScalarProperty Name="DeliverChecklistDFARS" ColumnName="DeliverChecklistDFARS" />
-                <ScalarProperty Name="OtherDirectCost" ColumnName="OtherDirectCost" />
-                <ScalarProperty Name="TravelCost" ColumnName="TravelCost" />
-                <ScalarProperty Name="IWTACost" ColumnName="IWTACost" />
-                <ScalarProperty Name="MaterialCost" ColumnName="MaterialCost" />
-                <ScalarProperty Name="SubcontractorCost" ColumnName="SubcontractorCost" />
-                <ScalarProperty Name="LMLaborCost" ColumnName="LMLaborCost" />
-                <ScalarProperty Name="LMLaborHours" ColumnName="LMLaborHours" />
-                <ScalarProperty Name="ROSPercentage" ColumnName="ROSPercentage" />
-                <ScalarProperty Name="ProfitFee" ColumnName="ProfitFee" />
-                <ScalarProperty Name="ISGSTotalPrice" ColumnName="ISGSTotalPrice" />
-                <ScalarProperty Name="ProposalSubmittalDate" ColumnName="ProposalSubmittalDate" />
-                <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
-                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
-                <ScalarProperty Name="ProposalChecklistID" ColumnName="ProposalChecklistID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="LineOfBusinessLUs">
             <EntityTypeMapping TypeName="genTRACModel.LineOfBusinessLU">
               <MappingFragment StoreEntitySet="LineOfBusinessLU">
@@ -4591,7 +4977,217 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
-        </EntityContainerMapping>
+          <EntitySetMapping Name="ProposalChecklists">
+            <EntityTypeMapping TypeName="genTRACModel.ProposalChecklist">
+              <MappingFragment StoreEntitySet="ProposalChecklist">
+                <ScalarProperty Name="Profit" ColumnName="Profit" />
+                <ScalarProperty Name="Com" ColumnName="Com" />
+                <ScalarProperty Name="AbsoluteValue" ColumnName="AbsoluteValue" />
+                <ScalarProperty Name="DeliverChecklistDFARS" ColumnName="DeliverChecklistDFARS" />
+                <ScalarProperty Name="OtherDirectCost" ColumnName="OtherDirectCost" />
+                <ScalarProperty Name="TravelCost" ColumnName="TravelCost" />
+                <ScalarProperty Name="IWTACost" ColumnName="IWTACost" />
+                <ScalarProperty Name="MaterialCost" ColumnName="MaterialCost" />
+                <ScalarProperty Name="SubcontractorCost" ColumnName="SubcontractorCost" />
+                <ScalarProperty Name="LMLaborCost" ColumnName="LMLaborCost" />
+                <ScalarProperty Name="LMLaborHours" ColumnName="LMLaborHours" />
+                <ScalarProperty Name="ROSPercentage" ColumnName="ROSPercentage" />
+                <ScalarProperty Name="ProfitFeeWithCom" ColumnName="ProfitFeeWithCom" />
+                <ScalarProperty Name="ISGSTotalPrice" ColumnName="ISGSTotalPrice" />
+                <ScalarProperty Name="ProposalSubmittalDate" ColumnName="ProposalSubmittalDate" />
+                <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ProposalChecklistID" ColumnName="ProposalChecklistID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="upsertProposalContractsData" FunctionName="genTRACModel.Store.upsertProposalContractsData" />
+          <EntitySetMapping Name="AttachmentTypeLUs">
+            <EntityTypeMapping TypeName="genTRACModel.AttachmentTypeLU">
+              <MappingFragment StoreEntitySet="AttachmentTypeLU">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BoeDatabaseVersions">
+            <EntityTypeMapping TypeName="genTRACModel.BoeDatabaseVersion">
+              <MappingFragment StoreEntitySet="BoeDatabaseVersion">
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="AppVersion" ColumnName="AppVersion" />
+                <ScalarProperty Name="DBVersion" ColumnName="DBVersion" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EppDelegationAuthorityLUs">
+            <EntityTypeMapping TypeName="genTRACModel.EppDelegationAuthorityLU">
+              <MappingFragment StoreEntitySet="EppDelegationAuthorityLU">
+                <ScalarProperty Name="Text" ColumnName="Text" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ReasonCertificationNotRequiredLUs">
+            <EntityTypeMapping TypeName="genTRACModel.ReasonCertificationNotRequiredLU">
+              <MappingFragment StoreEntitySet="ReasonCertificationNotRequiredLU">
+                <ScalarProperty Name="Text" ColumnName="Text" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="CopyCannedResponsesPAR" FunctionName="genTRACModel.Store.CopyCannedResponsesPAR" />
+          <FunctionImportMapping FunctionImportName="CreateDfarsChecklistResponseReport" FunctionName="genTRACModel.Store.CreateDfarsChecklistResponseReport">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="genTRACModel.CreateDfarsChecklistResponseReport_Result">
+                <ScalarProperty Name="Tracking__" ColumnName="Tracking #" />
+                <ScalarProperty Name="Proposal_Title" ColumnName="Proposal Title" />
+                <ScalarProperty Name="Proposal_Status" ColumnName="Proposal Status" />
+                <ScalarProperty Name="Line_of_Business" ColumnName="Line of Business" />
+                <ScalarProperty Name="Program_Area_Name" ColumnName="Program Area Name" />
+                <ScalarProperty Name="LeadEstimatorName" ColumnName="LeadEstimatorName" />
+                <ScalarProperty Name="Actual_Submittal_Date" ColumnName="Actual Submittal Date" />
+                <ScalarProperty Name="Approval_Workflow_Completed_Date" ColumnName="Approval Workflow Completed Date" />
+                <ScalarProperty Name="Certification_Completed_Date" ColumnName="Certification Completed Date" />
+                <ScalarProperty Name="Question__" ColumnName="Question #" />
+                <ScalarProperty Name="Question_Text" ColumnName="Question Text" />
+                <ScalarProperty Name="Comment" ColumnName="Comment" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="rsCentralEstimator" FunctionName="genTRACModel.Store.rsCentralEstimator" />
+          <FunctionImportMapping FunctionImportName="rsContractType" FunctionName="genTRACModel.Store.rsContractType" />
+          <FunctionImportMapping FunctionImportName="rsCustomerType" FunctionName="genTRACModel.Store.rsCustomerType" />
+          <FunctionImportMapping FunctionImportName="rsLineOfBusiness" FunctionName="genTRACModel.Store.rsLineOfBusiness" />
+          <FunctionImportMapping FunctionImportName="rsProgramArea" FunctionName="genTRACModel.Store.rsProgramArea" />
+          <FunctionImportMapping FunctionImportName="rsProposalStatus" FunctionName="genTRACModel.Store.rsProposalStatus" />
+          <FunctionImportMapping FunctionImportName="rsSegment" FunctionName="genTRACModel.Store.rsSegment" />
+          <FunctionImportMapping FunctionImportName="rsYear" FunctionName="genTRACModel.Store.rsYear" />
+          <FunctionImportMapping FunctionImportName="SplitString" FunctionName="genTRACModel.Store.SplitString">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="genTRACModel.SplitString_Result">
+                <ScalarProperty Name="ItemId" ColumnName="ItemId" />
+                <ScalarProperty Name="Item" ColumnName="Item" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="truncateTable" FunctionName="genTRACModel.Store.truncateTable" />
+          <FunctionImportMapping FunctionImportName="UpdateDbVersion" FunctionName="genTRACModel.Store.UpdateDbVersion" />
+          <EntitySetMapping Name="ProposalContractsDatas">
+            <EntityTypeMapping TypeName="genTRACModel.ProposalContractsData">
+              <MappingFragment StoreEntitySet="ProposalContractsData">
+                <ScalarProperty Name="ModCompletedDate" ColumnName="ModCompletedDate" />
+                <ScalarProperty Name="LmWon" ColumnName="LmWon" />
+                <ScalarProperty Name="EppRosDelegationNotes" ColumnName="EppRosDelegationNotes" />
+                <ScalarProperty Name="CorporateEppDate" ColumnName="CorporateEppDate" />
+                <ScalarProperty Name="PreCorporateEppDate" ColumnName="PreCorporateEppDate" />
+                <ScalarProperty Name="SpaceEppDate" ColumnName="SpaceEppDate" />
+                <ScalarProperty Name="PreSpaceEppDate" ColumnName="PreSpaceEppDate" />
+                <ScalarProperty Name="LobEppDate" ColumnName="LobEppDate" />
+                <ScalarProperty Name="ProgramEppDate" ColumnName="ProgramEppDate" />
+                <ScalarProperty Name="EppDelegationAuthority" ColumnName="EppDelegationAuthority" />
+                <ScalarProperty Name="FinalNegotiatedDate" ColumnName="FinalNegotiatedDate" />
+                <ScalarProperty Name="FinalNegotiatedValue" ColumnName="FinalNegotiatedValue" />
+                <ScalarProperty Name="ContractsCorrespondLogNumber" ColumnName="ContractsCorrespondLogNumber" />
+                <ScalarProperty Name="CustomerSubmittalDate" ColumnName="CustomerSubmittalDate" />
+                <ScalarProperty Name="PreviouslySubmittedROM" ColumnName="PreviouslySubmittedROM" />
+                <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
+                <ScalarProperty Name="UpdateDT" ColumnName="UpdateDT" />
+                <ScalarProperty Name="ProposalContractsDataId" ColumnName="ProposalContractsDataId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Proposals">
+            <EntityTypeMapping TypeName="genTRACModel.Proposal">
+              <MappingFragment StoreEntitySet="Proposal">
+                <ScalarProperty Name="ProposalCompletedDate" ColumnName="ProposalCompletedDate" />
+                <ScalarProperty Name="ModExecutedLastEmailed" ColumnName="ModExecutedLastEmailed" />
+                <ScalarProperty Name="InformationComments" ColumnName="InformationComments" />
+                <ScalarProperty Name="SetupComments" ColumnName="SetupComments" />
+                <ScalarProperty Name="ReasonCertificationNotRequired" ColumnName="ReasonCertificationNotRequired" />
+                <ScalarProperty Name="OtherReasonComment" ColumnName="OtherReasonComment" />
+                <ScalarProperty Name="RevisionOfId" ColumnName="RevisionOfId" />
+                <ScalarProperty Name="NoBidDate" ColumnName="NoBidDate" />
+                <ScalarProperty Name="CostVolumeClassified" ColumnName="CostVolumeClassified" />
+                <ScalarProperty Name="CertificationLastEmailed" ColumnName="CertificationLastEmailed" />
+                <ScalarProperty Name="CertificationTimelineCompleted" ColumnName="CertificationTimelineCompleted" />
+                <ScalarProperty Name="CutOffDateUtilization" ColumnName="CutOffDateUtilization" />
+                <ScalarProperty Name="CertificationDate" ColumnName="CertificationDate" />
+                <ScalarProperty Name="AgreementDate" ColumnName="AgreementDate" />
+                <ScalarProperty Name="ProgramAreaID" ColumnName="ProgramAreaID" />
+                <ScalarProperty Name="ForecastEmailSent" ColumnName="ForecastEmailSent" />
+                <ScalarProperty Name="ForecastedTrackingID" ColumnName="ForecastedTrackingID" />
+                <ScalarProperty Name="DocumentId" ColumnName="DocumentId" />
+                <ScalarProperty Name="CCPDRequired" ColumnName="CCPDRequired" />
+                <ScalarProperty Name="RevisedSubmittalDate" ColumnName="RevisedSubmittalDate" />
+                <ScalarProperty Name="ApprovalEmailText" ColumnName="ApprovalEmailText" />
+                <ScalarProperty Name="LOBEstimatingLeadSignComment" ColumnName="LOBEstimatingLeadSignComment" />
+                <ScalarProperty Name="LOBEstimatingLeadSignedDT" ColumnName="LOBEstimatingLeadSignedDT" />
+                <ScalarProperty Name="IndependentReviewerSignComment" ColumnName="IndependentReviewerSignComment" />
+                <ScalarProperty Name="IndependentReviewerSignedDT" ColumnName="IndependentReviewerSignedDT" />
+                <ScalarProperty Name="PricingVerifierSignComment" ColumnName="PricingVerifierSignComment" />
+                <ScalarProperty Name="PricingVerifierSignedDT" ColumnName="PricingVerifierSignedDT" />
+                <ScalarProperty Name="CoverSheetApproverSignComment" ColumnName="CoverSheetApproverSignComment" />
+                <ScalarProperty Name="CoverSheetApproverSignedDT" ColumnName="CoverSheetApproverSignedDT" />
+                <ScalarProperty Name="LeadEstimatorSignComment" ColumnName="LeadEstimatorSignComment" />
+                <ScalarProperty Name="LeadEstimatorSignedDT" ColumnName="LeadEstimatorSignedDT" />
+                <ScalarProperty Name="WorkflowStatusLastUpdated" ColumnName="WorkflowStatusLastUpdated" />
+                <ScalarProperty Name="WorkflowStatus" ColumnName="WorkflowStatus" />
+                <ScalarProperty Name="ProposalClassID" ColumnName="ProposalClassID" />
+                <ScalarProperty Name="ProgramProposalStatusID" ColumnName="ProgramProposalStatusID" />
+                <ScalarProperty Name="PricingToolName" ColumnName="PricingToolName" />
+                <ScalarProperty Name="BOEToolName" ColumnName="BOEToolName" />
+                <ScalarProperty Name="ProposalLocationName" ColumnName="ProposalLocationName" />
+                <ScalarProperty Name="ProposalLocationID" ColumnName="ProposalLocationID" />
+                <ScalarProperty Name="ITCOApproved" ColumnName="ITCOApproved" />
+                <ScalarProperty Name="IsScheduleProposal" ColumnName="IsScheduleProposal" />
+                <ScalarProperty Name="ContractTypeGroupID" ColumnName="ContractTypeGroupID" />
+                <ScalarProperty Name="Comments" ColumnName="Comments" />
+                <ScalarProperty Name="RFPReceivedDate" ColumnName="RFPReceivedDate" />
+                <ScalarProperty Name="RFPIssuedDate" ColumnName="RFPIssuedDate" />
+                <ScalarProperty Name="CreatedByUserID" ColumnName="CreatedByUserID" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="EstimatedProposalValue" ColumnName="EstimatedProposalValue" />
+                <ScalarProperty Name="AnticipatedDeliveryDate" ColumnName="AnticipatedDeliveryDate" />
+                <ScalarProperty Name="BOEToolID" ColumnName="BOEToolID" />
+                <ScalarProperty Name="PricingToolID" ColumnName="PricingToolID" />
+                <ScalarProperty Name="LineOfBusinessID" ColumnName="LineOfBusinessID" />
+                <ScalarProperty Name="RFPNumber" ColumnName="RFPNumber" />
+                <ScalarProperty Name="RequestTypeID" ColumnName="RequestTypeID" />
+                <ScalarProperty Name="ISGSRoleID" ColumnName="ISGSRoleID" />
+                <ScalarProperty Name="CustomerTypeID" ColumnName="CustomerTypeID" />
+                <ScalarProperty Name="Customer" ColumnName="Customer" />
+                <ScalarProperty Name="ProgramName" ColumnName="ProgramName" />
+                <ScalarProperty Name="IsIWTA" ColumnName="IsIWTA" />
+                <ScalarProperty Name="ProposalTypeID" ColumnName="ProposalTypeID" />
+                <ScalarProperty Name="DateAssigned" ColumnName="DateAssigned" />
+                <ScalarProperty Name="DateCreated" ColumnName="DateCreated" />
+                <ScalarProperty Name="ProposalStatusID" ColumnName="ProposalStatusID" />
+                <ScalarProperty Name="OTISOpportunityID" ColumnName="OTISOpportunityID" />
+                <ScalarProperty Name="ProposalTitle" ColumnName="ProposalTitle" />
+                <ScalarProperty Name="ProposalTrackingID" ColumnName="ProposalTrackingID" />
+                <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
+                <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <AssociationSetMapping Name="ProposalContractTypeXREF" TypeName="genTRACModel.ProposalContractTypeXREF" StoreEntitySet="ProposalContractTypeXREF">
+            <EndProperty Name="Proposal">
+              <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
+            </EndProperty>
+            <EndProperty Name="ContractTypeLU">
+              <ScalarProperty Name="ContractTypeID" ColumnName="ContractTypeID" />
+            </EndProperty>
+          </AssociationSetMapping>
+          <AssociationSetMapping Name="ProposalCostElementXREF" TypeName="genTRACModel.ProposalCostElementXREF" StoreEntitySet="ProposalCostElementXREF">
+            <EndProperty Name="Proposal">
+              <ScalarProperty Name="ProposalID" ColumnName="ProposalID" />
+            </EndProperty>
+            <EndProperty Name="CostElementLU">
+              <ScalarProperty Name="CostElementID" ColumnName="CostElementID" />
+            </EndProperty>
+          </AssociationSetMapping>
+          </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
   </edmx:Runtime>

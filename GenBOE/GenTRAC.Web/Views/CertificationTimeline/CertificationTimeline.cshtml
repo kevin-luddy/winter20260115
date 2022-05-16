@@ -28,7 +28,7 @@
         $('.certificationRequired').hide();
         $('.certificationNotRequired').show();
         toggleCertificationOtherComments();
-        $('button[name="complete-button"]').hide();
+        $('button[name="certification-complete-button"]').hide();
 
         $('#CertificationTimelineComment').val('');
         $('#AgreementDate').val('');
@@ -41,7 +41,7 @@
     function showCertRequired() {
         $('.certificationRequired').show();
         $('.certificationNotRequired').hide();
-        $('button[name="complete-button"]').show();
+        $('button[name="certification-complete-button"]').show();
         $('#ReasonCertificationNotRequired').val('');
         $('#OtherReasonCommentCertification').val('');
     }
@@ -95,8 +95,8 @@
             },
             {
                 ButtonClass: 'ies-action',
-                ButtonText: 'Complete',
-                ButtonName: "complete-button",
+                ButtonText: 'Certification Complete',
+                ButtonName: "certification-complete-button",
                 ButtonAction: function (buttonPressed) {
                     ProposalCertificationTimelineWidget.SaveAndCompletePage(buttonPressed);
                 },
@@ -220,7 +220,7 @@
                     ProposalCertificationTimelineWidget.cleanDirty();
                     if (hideButtons) {
                         $("form[name=certificationTimelineForm] div.buttons button[name=save-button]").hide();
-                        $("form[name=certificationTimelineForm] div.buttons button[name=complete-button]").hide();
+                        $("form[name=certificationTimelineForm] div.buttons button[name=certification-complete-button]").hide();
                     }
 
                     GenSession.ShowLoadingBox();
@@ -308,7 +308,7 @@
         toggleCertification();
 
         if ('@Model.DisableCompleteButton' == 'True') {
-            $('button[name="complete-button"]').addClass('disabled');
+            $('button[name="certification-complete-button"]').addClass('disabled');
         }
     });
     </script>
@@ -317,9 +317,9 @@
     <div class="module-header-data">
         Certification Timeline
         <span class="form-row" style="font-weight:bold; font-size: 85%; float: right;">
-            <input class="certificationRequiredCheckbox" type="checkbox" style="margin: 11px 3px 0 0" id="isCertNotRequired" onchange="toggleCertification()" @(Model.ReasonCertificationNotRequired.HasValue ? "checked=\"checked\"" : string.Empty) />
+            <input class="certificationRequiredCheckbox" type="checkbox" style="margin: 11px 3px 0 0" id="isCertNotRequired" onchange="toggleCertification()" @(Model.ReasonCertificationNotRequired.HasValue ? "checked=\"checked\"" : string.Empty) @(Model.DisableCertificationReset ? "disabled" : string.Empty) />
             <label class="certificationRequiredCheckbox" for="isCertNeeded">Certification is <i>Not</i> Required</label>
-            <button class="ies certificationNotRequiredResetButton" type="button" onclick="ProposalCertificationTimelineWidget.ResetCertificationNeeded(this)">Reset Certification Not Required</button>
+            <button class="ies certificationNotRequiredResetButton" type="button" onclick="ProposalCertificationTimelineWidget.ResetCertificationNeeded(this)" @(Model.DisableCertificationReset ? "disabled" : string.Empty)>Reset Certification Not Required</button>
         </span>
 
     </div>

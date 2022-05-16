@@ -14,7 +14,9 @@ CREATE PROCEDURE [dbo].[upsertProposalChecklist]
 	@ProposalID [int],
 	@ProposalSubmittalDate [date],
 	@ISGSTotalPrice [bigint],
-	@ProfitFee [bigint],
+	@Profit [bigint],
+	@Com [bigint],
+	@ProfitFeeWithCom [bigint],
 	@ROSPercentage [decimal](4, 2),
 	@LMLaborHours [decimal](11, 2),
 	@LMLaborCost [bigint],
@@ -62,6 +64,8 @@ AS
 **		02/02/17	tglick				added new field [AbsoluteValue]
 **		3/20/2017	twilson3			BOEJ-1957 Move CCPD from Checklist to Proposal
 **		5/31/2018	ranzalon			BOEJ-3405 - remove TempProposalSubmittalDate
+**      10/13/2021  Koovackal           IES-181 DB Work - Added Profit, Com,
+**                                      ProfitFeeWithCom
 *******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -76,7 +80,9 @@ INSERT INTO [dbo].[ProposalChecklist]
            ,[ProposalID]
            ,[ProposalSubmittalDate]
            ,[ISGSTotalPrice]
-           ,[ProfitFee]
+           ,[Profit]
+           ,[Com]
+           ,[ProfitFeeWithCom]
            ,[ROSPercentage]
            ,[LMLaborHours]
            ,[LMLaborCost]
@@ -95,7 +101,9 @@ INSERT INTO [dbo].[ProposalChecklist]
             ,@ProposalID
             ,@ProposalSubmittalDate
             ,@ISGSTotalPrice
-			,@ProfitFee
+			,@Profit
+			,@Com
+			,@ProfitFeeWithCom
 			,@ROSPercentage
 			,@LMLaborHours
 			,@LMLaborCost
@@ -127,7 +135,9 @@ ELSE
 			  ,[ProposalID] = @ProposalID
 			  ,[ProposalSubmittalDate] = @ProposalSubmittalDate
 			  ,[ISGSTotalPrice] = @ISGSTotalPrice
-			  ,[ProfitFee] = @ProfitFee
+			  ,[Profit] = @Profit
+			  ,[Com] = @Com
+			  ,[ProfitFeeWithCom] = @ProfitFeeWithCom
 			  ,[ROSPercentage] = @ROSPercentage
 			  ,[LMLaborHours] = @LMLaborHours
 			  ,[LMLaborCost] = @LMLaborCost

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -9,6 +9,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using System;
     using System.Collections.Generic;
     using System.Diagnostics.CodeAnalysis;
+    using System.Globalization;
     using System.Linq;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Wordprocessing;
@@ -70,43 +71,44 @@ namespace GenBOE.ActionLogic.IO.Export
         private const string RFP = "RFP";
         private const string PROPOSAL_NUMBER = "ProposalNumber";
         private const string VALIDITY_DATE = "ValidityDate";
-        private const string COMPETITIVE = "Competitive";
-        private const string NON_COMPETITIVE = "NonCompetitive";
-        private const string SOURCE_NOT_SELECTED = "SourceNotSelected";
         private const string CCOPD = "ccopd";
-        private const string CCOPD_COMMERCIAL = "ccopd_commercial"; 
+        private const string CCOPD_YES = "ccopd_yes";
+        private const string CCOPD_NO = "ccopd_no";
+        private const string CCOPD_NA = "ccopd_na";
+        private const string CCOPD_COMMERCIAL = "ccopd_commercial";
         private const string CCOPD_COMPETITION = "ccopd_competition";
+        private const string CCOPD_THRESHOLD = "ccopd_threshold";
         private const string CCOPD_OTHER = "ccopd_other";
         private const string CCOPD_OTHER_TEXT = "ccopd_other_text";
+        private const string VENDOR_ID = "VendorId";
+        private const string SUPPLIER_PROPOSED_VALUE = "SupplierProposedValue";
+
+        // Basis of and Rationale for LM Proposed Value
+        private const string PROPOSED_SOURCE_SELECTION = "ProposedSourceSelection";
+        private const string PROPOSED_COMMERCIALITY = "ProposedCommerciality";
+        private const string PROPOSED_TECHNICAL_EVALUATION = "ProposedTechnicalEvaluation";
+        private const string PROPOSED_PRICE_ANALYSIS = "ProposedPriceAnalysis";
+        private const string PROPOSED_COST_ANALYSIS = "ProposedCostAnalysis";
+        private const string PROPOSED_VALUE_PROCUREMENT = "ProposedValueProcurement";
+        private const string PROPOSED_VALUE_SUMMARY = "ProposedValueSummary";
+
         // Schedule of Events
         private const string SHOULD_COST_ESTIMATE = "ShouldCostEstimate";
-        private const string SOW_WRITTEN = "SowWritten";
         private const string RFP_RELEASE = "RFPRelease";
         private const string FIRM_SUPPLIER = "FirmSupplier";
         private const string SOURCE_SELECTION = "SourceSelection";
         private const string CID = "CID";
-        private const string GOVT_REVIEW = "GovtReview";
         private const string PRICE_ANALYSIS = "PriceAnalysis";
         private const string TECHNICAL_EVALUATION = "TechnicalEvaluation";
         private const string FACT_FINDING = "FactFinding";
         private const string COST_ANALYSIS = "CostAnalysis";
-        private const string GOVT_PRICING_CCOPD = "GovtPricingCCOPD";
+        private const string COST_ANALYSIS_UNQUALIFIED = "CostAnalysisUnqualified";
+        private const string GOVT_PRICING_CCOPD_REQUEST = "GovtPricingCCOPDRequest";
+        private const string GOVT_PRICING_CCOPD_REVIEW = "GovtPricingCCOPDReceipt";
         private const string SUPPLIER_NEGOTIATIONS = "SupplierNegotiations";
         private const string MOU = "MOU";
-        private const string PROCUREMENT = "Procurement";
         private const string PLANNED_DATE_A = "PlannedDate_A";
         private const string PLANNED_DATE_B = "PlannedDate_B";
-        // Status Of Supporting Data
-        private const string SSD_A_YES = "SSD_A_YES";
-        private const string SSD_A_NA = "SSD_A_NA";
-        private const string SSD_B_YES = "SSD_B_YES";
-        private const string SSD_B_NA = "SSD_B_NA";
-        private const string SSD_C_YES = "SSD_C_YES";
-        private const string SSD_C_NA = "SSD_C_NA";
-        private const string SSD_C_NO = "SSD_C_NO";
-        private const string SSD_D_YES = "SSD_D_YES";
-        private const string SSD_D_NA = "SSD_D_NA";
-        private const string SSD_D_NO = "SSD_D_NO";
 
         #endregion
 
@@ -180,54 +182,50 @@ namespace GenBOE.ActionLogic.IO.Export
             this.SetField(document, VALIDITY_DATE, boeForm.ValidityDate);
             this.SetField(document, PROPOSAL_TITLE, string.IsNullOrWhiteSpace(proposalTitleAndRfpNumber) ? boeForm.ProposalTitle : proposalTitleAndRfpNumber);
             this.SetHtmlField(document, DESCRIPTION, boeForm.Description, ref counters);
-            this.SetHtmlField(document, BASIS_RATIONALE, boeForm.BasisAndRationale, ref counters);
             this.SetField(document, POC, boeForm.Poc);
             this.SetField(document, PHONE, boeForm.PocPhone);
             this.SetField(document, MANAGER, boeForm.Approver);
             this.SetField(document, MANAGER_PHONE, boeForm.ApproverPhone);
-
-            // degree of completion checkboxes
-            this.SetCheckbox(document, COMPETITIVE, boeForm.DegreeOfCompetition == DegreeOfCompetition.Competitive);
-            this.SetCheckbox(document, NON_COMPETITIVE, boeForm.DegreeOfCompetition == DegreeOfCompetition.NonCompetitive);
-            this.SetCheckbox(document, SOURCE_NOT_SELECTED, boeForm.DegreeOfCompetition == DegreeOfCompetition.SourceNotSelected);
+            this.SetField(document, VENDOR_ID, boeForm.VendorId);
+            this.SetField(document, SUPPLIER_PROPOSED_VALUE, boeForm.SupplierProposedValue.HasValue ? boeForm.SupplierProposedValue.Value.ToString("C", CultureInfo.CurrentCulture) : String.Empty);
 
             // ccopd checkboxes
             this.SetCheckbox(document, CCOPD, boeForm.CCoPDApplies);
+            this.SetCheckbox(document, CCOPD_YES, boeForm.SupplierCCoPD == TripleBooleanState.Yes);
+            this.SetCheckbox(document, CCOPD_NO, boeForm.SupplierCCoPD == TripleBooleanState.No);
+            this.SetCheckbox(document, CCOPD_NA, boeForm.SupplierCCoPD == TripleBooleanState.NA);
             this.SetCheckbox(document, CCOPD_COMMERCIAL, boeForm.CommercialItemExceptionApplies);
             this.SetCheckbox(document, CCOPD_COMPETITION, boeForm.CompetitionExceptionApplies);
+            this.SetCheckbox(document, CCOPD_THRESHOLD, boeForm.LessThanThresholdExceptionApplies);
             this.SetCheckbox(document, CCOPD_OTHER, boeForm.OtherExceptionApplies);
             this.SetField(document, CCOPD_OTHER_TEXT, boeForm.OtherExceptionApplies ? boeForm.OtherText : string.Empty);
 
-            // Status Of Supporting Data checkboxes
-            this.SetCheckbox(document, SSD_A_YES, boeForm.SupplierProposalSupportingDataIncluded == TripleBooleanState.Yes);
-            this.SetCheckbox(document, SSD_A_NA, boeForm.SupplierProposalSupportingDataIncluded == TripleBooleanState.NA);
-            this.SetCheckbox(document, SSD_B_YES, boeForm.PriceAnalysisIncluded == TripleBooleanState.Yes);
-            this.SetCheckbox(document, SSD_B_NA, boeForm.PriceAnalysisIncluded == TripleBooleanState.NA);
-            this.SetCheckbox(document, SSD_C_YES, boeForm.CommercialItemDocIncluded == TripleBooleanState.Yes);
-            this.SetCheckbox(document, SSD_C_NO, boeForm.CommercialItemDocIncluded == TripleBooleanState.No);
-            this.SetCheckbox(document, SSD_C_NA, boeForm.CommercialItemDocIncluded == TripleBooleanState.NA);
-            this.SetCheckbox(document, SSD_D_YES, boeForm.CostAnalysisIncluded == TripleBooleanState.Yes);
-            this.SetCheckbox(document, SSD_D_NO, boeForm.CostAnalysisIncluded == TripleBooleanState.No);
-            this.SetCheckbox(document, SSD_D_NA, boeForm.CostAnalysisIncluded == TripleBooleanState.NA);
-
             // Schedule of events
             this.SetScheduleEventDateField(document, SHOULD_COST_ESTIMATE, boeForm.ShouldCostEstimate, boeForm.ShouldCostEstimateDate, boeForm.ShouldCostEstimateText);
-            this.SetScheduleEventDateField(document, SOW_WRITTEN, boeForm.SowWritten, boeForm.SowWrittenDate, boeForm.SowWrittenText);
             this.SetScheduleEventDateField(document, RFP_RELEASE, boeForm.RFPRelease, boeForm.RFPReleaseDate, boeForm.RFPReleaseText);
             this.SetScheduleEventDateField(document, FIRM_SUPPLIER, boeForm.FirmSupplierReceipt, boeForm.FirmSupplierReceiptDate, boeForm.FirmSupplierReceiptText);
             this.SetScheduleEventDateField(document, SOURCE_SELECTION, boeForm.SourceSelection, boeForm.SourceSelectionDate, boeForm.SourceSelectionText);
             this.SetScheduleEventDateField(document, CID, boeForm.CID, boeForm.CIDDate, boeForm.CIDText);
-            this.SetScheduleEventDateField(document, GOVT_REVIEW, boeForm.GovtReview, boeForm.GovtReviewDate, boeForm.GovtReviewText);
             this.SetScheduleEventDateField(document, PRICE_ANALYSIS, boeForm.PriceAnalysis, boeForm.PriceAnalysisDate, boeForm.PriceAnalysisText);
             this.SetScheduleEventDateField(document, TECHNICAL_EVALUATION, boeForm.TechnicalEvaluation, boeForm.TechnicalEvaluationDate, boeForm.TechnicalEvaluationText);
             this.SetScheduleEventDateField(document, FACT_FINDING, boeForm.FactFinding, boeForm.FactFindingDate, boeForm.FactFindingText);
             this.SetScheduleEventDateField(document, COST_ANALYSIS, boeForm.CostAnalysis, boeForm.CostAnalysisDate, boeForm.CostAnalysisText);
-            this.SetScheduleEventDateField(document, GOVT_PRICING_CCOPD, boeForm.GovtPricing, boeForm.GovtPricingDate, boeForm.GovtPricingText);
+            this.SetScheduleEventDateField(document, GOVT_PRICING_CCOPD_REQUEST, boeForm.GovtPricing, boeForm.GovtPricingDate, boeForm.GovtPricingText);
             this.SetScheduleEventDateField(document, SUPPLIER_NEGOTIATIONS, boeForm.SupplierNegotiations, boeForm.SupplierNegotiationsDate, boeForm.SupplierNegotiationsText);
             this.SetScheduleEventDateField(document, MOU, boeForm.MOU, boeForm.MOUDate, boeForm.MOUText);
-            this.SetScheduleEventDateField(document, PROCUREMENT, boeForm.Procurement, boeForm.ProcurementDate, boeForm.ProcurementText);
+            // IES-1017: New fields, guard against older forms having null
+            this.SetScheduleEventDateField(document, GOVT_PRICING_CCOPD_REVIEW, boeForm.GovtPricingReceived == null ? ScheduleEvent.NA : (ScheduleEvent)boeForm.GovtPricingReceived, boeForm.GovtPricingReceivedDate, boeForm?.GovtPricingReceivedText);
+            this.SetScheduleEventDateField(document, COST_ANALYSIS_UNQUALIFIED, boeForm.CostAnalysisUnqual == null ? ScheduleEvent.NA : (ScheduleEvent)boeForm.CostAnalysisUnqual, boeForm.CostAnalysisUnqualDate, boeForm?.CostAnalysisUnqualText);
             this.SetDateField(document, PLANNED_DATE_A, boeForm.PlannedDate_WrittenApproval);
             this.SetDateField(document, PLANNED_DATE_B, boeForm.PlannedDate_ApprovedSubmission);
+
+            // IES-1017: New RTE Fields
+            this.SetHtmlField(document, PROPOSED_COMMERCIALITY, boeForm.CommercialityDescription, ref counters);
+            this.SetHtmlField(document, PROPOSED_SOURCE_SELECTION, boeForm.SourceSelectionDescription, ref counters);
+            this.SetHtmlField(document, PROPOSED_TECHNICAL_EVALUATION, boeForm.TechnicalEvaluationDescription, ref counters);
+            this.SetHtmlField(document, PROPOSED_PRICE_ANALYSIS, boeForm.PriceAnalysisDescription, ref counters);
+            this.SetHtmlField(document, PROPOSED_COST_ANALYSIS, boeForm.CostAnalysisDescription, ref counters);
+            this.SetHtmlField(document, PROPOSED_VALUE_SUMMARY, boeForm.RationaleValueSummary, ref counters);
 
             IOrderedEnumerable<string> distinctCLINs = rows.Select<PBOETableRow, string>(tr => tr.CLIN).Distinct().OrderBy(c => c);
 
@@ -249,7 +247,6 @@ namespace GenBOE.ActionLogic.IO.Export
                     TableRow tableRow = this.CloneMarkedTemplateRow(templateDataRow);
 
                     // populate the row
-                    WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, CONTRACT_TYPE), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.ContractType);
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, SUPPLIER_CONTRACT_TYPE), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.SupplierContractType);
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, WBS), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.WBS);
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(tableRow, CLIN), this.GenPortionMarkingText(isPortionMarkingEnabled) + row.CLIN);
@@ -307,7 +304,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
             string supplierContractType = Constants.CONTRACT_TYPE_NOT_SET_STRING;
 
-            if(clin != null && boeForm.ClinContractTypes.Any(c => c.ClinId == clin.Id))
+            if (clin != null && boeForm.ClinContractTypes.Any(c => c.ClinId == clin.Id))
             {
                 supplierContractType = Utilities.GetPickListText(boeForm.ClinContractTypes.First(c => c.ClinId == clin.Id).ContractType, contractTypes, Constants.CONTRACT_TYPE_NOT_SET_STRING);
             }
@@ -360,7 +357,7 @@ namespace GenBOE.ActionLogic.IO.Export
                 {
                     value = "NA";
                 }
-                else 
+                else
                 {
                     if (scheduleEvent == ScheduleEvent.Actual && scheduleEventDate.HasValue)
                     {

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 namespace IES.Common
@@ -21,6 +21,12 @@ namespace IES.Common
         ODC_TASK_ELEMENT_ODC_MOQ_TEXT,
         TRAVEL_TRIP_TASK_ELEMENT_TRAVEL_TASK_DESCRIPTION,
         PBOE_DESCRIPTION,
-        PBOE_BASIS_RATIONALE
+        PBOE_BASIS_RATIONALE,
+        PBOE_SOURCE_SELECTION_DESC,
+        PBOE_COMMERCIALITY_DESC,
+        PBOE_TECHNICAL_EVAL_DESC,
+        PBOE_PRICE_ANALYSIS_DESC,
+        PBOE_COST_ANALYSIS_DESC,
+        PBOE_RATIONALE_VALUE_SUMMARY
     }
 }

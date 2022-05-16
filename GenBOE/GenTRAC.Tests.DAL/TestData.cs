@@ -625,9 +625,11 @@ namespace GenTRAC.Tests.DAL
                     {
                         UserID = this.GetUser().Id
                     });
-                    newChecklist.ProfitFee = 0;
+                    newChecklist.ProfitFeeWithCom = 0;
+                    newChecklist.Profit = 0;
+                    newChecklist.Com = 0;
                     newChecklist.ProposalID = proposalId;
-                    newChecklist.ProposalSubmittalDate = DateTime.Now;
+                    newChecklist.EstimatingSubmitsToContractsDate = DateTime.Now;
                     newChecklist.ROSPercentage = 0;
                     newChecklist.SubmittedValue = 0;
                     newChecklist.LMLaborHrs = 0;
@@ -773,6 +775,39 @@ namespace GenTRAC.Tests.DAL
                     pCC.SubmitDate = submitDate;
                     dbModel.SaveChanges();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Sets the Contracts Data Customer Submit Date
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <param name="submitDate">Submit Date</param>
+        public void SetCustomerSubmittalDate(int proposalId, DateTime submitDate)
+        {
+            using (genTRACEntities dbModel = new genTRACEntities())
+            {
+                ProposalContractsData contract = dbModel.ProposalContractsDatas.FirstOrDefault(x => x.ProposalID == proposalId);
+
+                if (contract == null)
+                {
+                    contract = new ProposalContractsData
+                    {
+                        ProposalID = proposalId,
+                        UpdateDT = DateTime.Now,
+                        PreviouslySubmittedROM = this.ProposalLoader.GetAllSlim().Last().Id, // FK, must exist
+                        ContractsCorrespondLogNumber = "abc123",
+                        CustomerSubmittalDate = submitDate
+                    };
+
+                    dbModel.ProposalContractsDatas.Add(contract);
+                }
+                else
+                {
+                    contract.CustomerSubmittalDate = submitDate;
+                }
+
+                dbModel.SaveChanges();
             }
         }
 

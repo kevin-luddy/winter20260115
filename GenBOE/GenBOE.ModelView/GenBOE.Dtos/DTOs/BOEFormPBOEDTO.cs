@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -34,11 +34,7 @@ namespace GenBOE.Dtos
             {
                 return BOEFormType.PBOE;
             }
-        }
-        /// <summary>
-        /// Gets or sets the degree of competition.
-        /// </summary>
-        public DegreeOfCompetition DegreeOfCompetition { get; set; }
+        }        
 
         /// <summary>
         /// Gets or sets a value indicating whether CCoPD applies.
@@ -54,6 +50,11 @@ namespace GenBOE.Dtos
         /// Gets or sets a value indicating whether competition exception applies.
         /// </summary>
         public bool CompetitionExceptionApplies { get; set; }
+
+        /// <summary>
+        /// Gets or set a value indicating whether less than threshold applies
+        /// </summary>
+        public bool LessThanThresholdExceptionApplies { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether there is an other exception that applies.
@@ -86,24 +87,14 @@ namespace GenBOE.Dtos
         public string ValidityDate { get; set; }
 
         /// <summary>
-        /// Supplier proposal and supporting data included
+        /// Vendor ID
         /// </summary>
-        public TripleBooleanState SupplierProposalSupportingDataIncluded { get; set; }
-        
+        public string VendorId { get; set; }
+
         /// <summary>
-        /// Price Analysis included
+        /// Value of Supplier proposal
         /// </summary>
-        public TripleBooleanState PriceAnalysisIncluded { get; set; }
-        
-        /// <summary>
-        /// Commercial Item Documentation included
-        /// </summary>
-        public TripleBooleanState CommercialItemDocIncluded { get; set; }
-        
-        /// <summary>
-        /// Is Cost Analysis Included
-        /// </summary>
-        public TripleBooleanState CostAnalysisIncluded { get; set; }
+        public decimal? SupplierProposedValue { get; set; }
 
         /// <summary>
         /// Should Cost/Engineering Estimate
@@ -111,13 +102,6 @@ namespace GenBOE.Dtos
         public ScheduleEvent ShouldCostEstimate { get; set; }
         public DateTime? ShouldCostEstimateDate { get; set; }
         public string ShouldCostEstimateText { get; set; }
-
-        /// <summary>
-        /// Statement of Work Written
-        /// </summary>
-        public ScheduleEvent SowWritten { get; set; }
-        public DateTime? SowWrittenDate { get; set; }
-        public string SowWrittenText { get; set; }
 
         /// <summary>
         /// RFP Release to Supplier(s)
@@ -146,13 +130,6 @@ namespace GenBOE.Dtos
         public ScheduleEvent CID { get; set; }
         public DateTime? CIDDate { get; set; }
         public string CIDText { get; set; }
-        
-        /// <summary>
-        /// Govt. Review of Supplier Commercial Data requrested by LM.
-        /// </summary>
-        public ScheduleEvent GovtReview { get; set; }
-        public DateTime? GovtReviewDate { get; set; }
-        public string GovtReviewText { get; set; }
         
         /// <summary>
         /// Price Analysis
@@ -188,7 +165,21 @@ namespace GenBOE.Dtos
         public ScheduleEvent GovtPricing { get; set; }
         public DateTime? GovtPricingDate { get; set; }
         public string GovtPricingText { get; set; }
-       
+
+        /// <summary>
+        /// Govt Pricing Received for CCoPD Review
+        /// </summary>
+        public ScheduleEvent? GovtPricingReceived { get; set; }
+        public DateTime? GovtPricingReceivedDate { get; set; }
+        public string GovtPricingReceivedText { get; set; }
+
+        /// <summary>
+        /// Cost Analysis - Unqualified (Final)
+        /// </summary>
+        public ScheduleEvent? CostAnalysisUnqual { get; set; }
+        public DateTime? CostAnalysisUnqualDate { get; set; }
+        public string CostAnalysisUnqualText { get; set; }
+
         /// <summary>
         /// Supplier Negotiations Complete
         /// </summary>
@@ -204,19 +195,48 @@ namespace GenBOE.Dtos
         public string MOUText { get; set; }
        
         /// <summary>
-        /// Procurement Definitization
-        /// </summary>
-        public ScheduleEvent Procurement { get; set; }
-        public DateTime? ProcurementDate { get; set; }
-        public string ProcurementText { get; set; }
-
-        /// <summary>
         /// Date of customer written approval for submission after initial prime proposal.
         /// </summary>
         public DateTime? PlannedDate_WrittenApproval { get; set; }
+        
         /// <summary>
         /// Approved date for submission to customer.
         /// </summary>
         public DateTime? PlannedDate_ApprovedSubmission { get; set; }
+
+        /// <summary>
+        /// Supplier CCoPD Applies
+        /// </summary>
+        public TripleBooleanState? SupplierCCoPD { get; set; }
+
+        /// <summary>
+        /// Source Selection Summary/Description
+        /// </summary>
+        public string SourceSelectionDescription { get; set; }
+
+        /// <summary>
+        /// Commerciality Summary/Description
+        /// </summary>
+        public string CommercialityDescription { get; set; }
+
+        /// <summary>
+        /// Technical Evaluation Summary/Description
+        /// </summary>
+        public string TechnicalEvaluationDescription { get; set; }
+
+        /// <summary>
+        /// Price Analysis Summary/Description
+        /// </summary>
+        public string PriceAnalysisDescription { get; set; }
+
+        /// <summary>
+        /// Cost Analysis Summary/Description
+        /// </summary>
+        public string CostAnalysisDescription { get; set; }
+
+        /// <summary>
+        /// Rationale for LM Proposed Value Summary
+        /// </summary>
+        public string RationaleValueSummary { get; set; }
     }
 }

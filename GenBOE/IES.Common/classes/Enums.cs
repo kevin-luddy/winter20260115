@@ -672,6 +672,21 @@ namespace IES.Common
     }
 
     /// <summary>
+    /// EPP Levels
+    /// </summary>
+    public enum EppDelegationAuthority
+    {
+        [Description("Program")]
+        Program = 1,
+        [Description("Line of Business")]
+        LoB = 2,
+        [Description("Space")]
+        Space = 3,
+        [Description("Corporate")]
+        Corporate = 4
+    }
+
+    /// <summary>
     /// ProPricer Types
     /// </summary>
     public enum ProPricerType
@@ -1110,21 +1125,6 @@ namespace IES.Common
     }
 
     /// <summary>
-    /// Degree of Competition for PBOE
-    /// </summary>
-    public enum DegreeOfCompetition
-    {
-        [Description("")]
-        None = 0,
-        [Description("Competitive")]
-        Competitive,
-        [Description("Non-Competitive")]
-        NonCompetitive,
-        [Description("Source not yet selected")]
-        SourceNotSelected
-    }
-
-    /// <summary>
     /// Certified Cost or Pricing Data Applicability for PBOE
     /// </summary>
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1714:FlagsEnumsShouldHavePluralNames")]
@@ -1140,7 +1140,9 @@ namespace IES.Common
         [Description("Competition Exception applies")]
         Competition = 4,
         [Description("Other Exception applies")]
-        Other = 8
+        Other = 8,
+        [Description("< CCoPD Threshold Exception applies")]
+        Threshold = 16
     }
 
     /// <summary>

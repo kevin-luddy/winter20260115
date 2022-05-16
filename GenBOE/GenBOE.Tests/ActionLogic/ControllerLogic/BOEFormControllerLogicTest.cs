@@ -961,7 +961,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             {
                 Approver = "approver",
                 ApproverPhone = "phonea",
-                BasisAndRationale = "bandR",
                 Description = "desc",
                 FormName = "test1",
                 Poc = "poc",
@@ -972,8 +971,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 Version = 1,
                 WorkspaceId = 5,
                 CCoPDApplies = true,
-                CommercialItemDocIncluded = TripleBooleanState.Yes,
-                DegreeOfCompetition = DegreeOfCompetition.Competitive,
                 ProposalNumber = "pn",
                 RFP = "rfp",
                 SupplierName = "sn",
@@ -984,10 +981,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
             Assert.AreEqual(0, messages.Count);
 
-            pboe.DegreeOfCompetition = DegreeOfCompetition.None;
             sut.ValidatePBOE(pboe, messages);
             Assert.AreEqual(1, messages.Count);
-            pboe.DegreeOfCompetition = DegreeOfCompetition.Competitive;
             messages = new Collection<ValidationMessage>();
 
             pboe.CCoPDApplies = false;
@@ -1036,12 +1031,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             sut.ValidatePBOE(pboe, messages);
             Assert.AreEqual(1, messages.Count);
             pboe.Description = "test";
-            messages = new Collection<ValidationMessage>();
-
-            pboe.BasisAndRationale = null;
-            sut.ValidatePBOE(pboe, messages);
-            Assert.AreEqual(1, messages.Count);
-            pboe.BasisAndRationale = "test";
             messages = new Collection<ValidationMessage>();
 
             pboe.Poc = null;
@@ -1104,12 +1093,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
             sut.ValidateIBOE(iboe, messages);
             Assert.AreEqual(1, messages.Count);
             iboe.Description = "test";
-            messages = new Collection<ValidationMessage>();
-
-            iboe.BasisAndRationale = null;
-            sut.ValidateIBOE(iboe, messages);
-            Assert.AreEqual(1, messages.Count);
-            iboe.BasisAndRationale = "test";
             messages = new Collection<ValidationMessage>();
 
             iboe.Poc = null;

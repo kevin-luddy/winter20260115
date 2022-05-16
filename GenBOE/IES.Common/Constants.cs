@@ -155,6 +155,11 @@ namespace IES.Common
         public const string SUBMITTED_NOT_LATE_BACKGROUND_CSS_CLASS_STRING = "background-color: #0099ff";
 
         /// <summary>
+        /// CSS used for pending contractual award
+        /// </summary>
+        public const string PENDING_AWARD_BACKGROUND_CSS_CLASS_STRING = "background-color: #89cdfa";
+
+        /// <summary>
         /// Class used to make the background green color
         /// </summary>
         public const string GREEN_BACKGROUND_CSS_CLASS_STRING = "background-color: #92D050";
@@ -619,6 +624,35 @@ namespace IES.Common
             public const string USER_AND_GROUP_IDS = "UserAndGroupIDs";
         }
         #endregion SSRS Report
+
+        #region Contracts
+
+        /// <summary>
+        /// Validation failed for Final Negotiated Value
+        /// </summary>
+        public const string INVALID_FINAL_NEGOTIATED_VALUE = "Final Negotiated Value is required.";
+
+        /// <summary>
+        /// Validation failed for Negotiations Submitted Date
+        /// </summary>
+        public const string INVALID_NEGOTIATIONS_SUBMITTED_DATE = "Negotiations Submitted Date is required.";
+
+        /// <summary>
+        /// Validation failed for MOD Completion Date
+        /// </summary>
+        public const string INVALID_MOD_COMPLETION_DATE = "MOD Completion Date is required.";
+
+        /// <summary>
+        /// Validation failed for LM Win/Loss flag
+        /// </summary>
+        public const string INVALID_LM_WIN_LOSS = "Contract Won setting is required.";
+
+        /// <summary>
+        /// Validation failed for LM Win/Loss flag because value is false
+        /// </summary>
+        public const string INVALID_LM_WIN_LOSS_FALSE = "Contract Won setting is No.";
+
+        #endregion
 
 
         /// <summary>

@@ -1,6 +1,6 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright company="Lockheed Martin Corporation">
-//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+//     Copyright (c) 2011 - 2022 Lockheed Martin Corporation
 // </copyright>
 // -----------------------------------------------------------------------
 
@@ -9,6 +9,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
     using System;
     using System.ComponentModel.DataAnnotations;
     using GenBOE.ActionLogic.Validation;
+    using GenBOE.ActionLogic.ValidationAttributes;
     using GenBOE.Dtos;
     using IES.Common;
 
@@ -37,23 +38,18 @@ namespace GenBOE.ActionLogic.ModelView.BOE
                 throw new ArgumentNullException(nameof(dto));
             }
 
-            this.DegreeOfCompetition = dto.DegreeOfCompetition;
             this.CCoPDApplies = dto.CCoPDApplies;
+            this.SupplierCCoPD = dto.SupplierCCoPD;
             this.CommercialItemExceptionApplies = dto.CommercialItemExceptionApplies;
             this.CompetitionExceptionApplies = dto.CompetitionExceptionApplies;
+            this.LessThanThresholdExceptionApplies = dto.LessThanThresholdExceptionApplies;
             this.OtherExceptionApplies = dto.OtherExceptionApplies;
             this.OtherText = dto.OtherText;
             this.RFP = dto.RFP;
             this.SupplierName = dto.SupplierName;
             this.ValidityDate = dto.ValidityDate;
-            this.SupplierProposalSupportingDataIncluded = dto.SupplierProposalSupportingDataIncluded;
-            this.PriceAnalysisIncluded = dto.PriceAnalysisIncluded;
-            this.CommercialItemDocIncluded = dto.CommercialItemDocIncluded;
-            this.CostAnalysisIncluded = dto.CostAnalysisIncluded;
             this.ShouldCostEstimate = dto.ShouldCostEstimate;
             this.ShouldCostEstimateDate = dto.ShouldCostEstimateDate;
-            this.SowWritten = dto.SowWritten;
-            this.SowWrittenDate = dto.SowWrittenDate;
             this.RFPRelease = dto.RFPRelease;
             this.RFPReleaseDate = dto.RFPReleaseDate;
             this.FirmSupplierReceipt = dto.FirmSupplierReceipt;
@@ -62,8 +58,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.SourceSelectionDate = dto.SourceSelectionDate;
             this.CID = dto.CID;
             this.CIDDate = dto.CIDDate;
-            this.GovtReview = dto.GovtReview;
-            this.GovtReviewDate = dto.GovtReviewDate;
             this.PriceAnalysis = dto.PriceAnalysis;
             this.PriceAnalysisDate = dto.PriceAnalysisDate;
             this.TechnicalEvaluation = dto.TechnicalEvaluation;
@@ -78,13 +72,10 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.SupplierNegotiationsDate = dto.SupplierNegotiationsDate;
             this.MOU = dto.MOU;
             this.MOUDate = dto.MOUDate;
-            this.Procurement = dto.Procurement;
-            this.ProcurementDate = dto.ProcurementDate;
             this.PlannedDate_WrittenApproval = dto.PlannedDate_WrittenApproval;
             this.PlannedDate_ApprovedSubmission = dto.PlannedDate_ApprovedSubmission;
             this.ProposalNumber = dto.ProposalNumber;
             this.CIDText = dto.CIDText;
-            this.GovtReviewText = dto.GovtReviewText;
             this.PriceAnalysisText = dto.PriceAnalysisText;
             this.TechnicalEvaluationText = dto.TechnicalEvaluationText;
             this.FactFindingText = dto.FactFindingText;
@@ -92,24 +83,37 @@ namespace GenBOE.ActionLogic.ModelView.BOE
             this.GovtPricingText = dto.GovtPricingText;
             this.SupplierNegotiationsText = dto.SupplierNegotiationsText;
             this.MOUText = dto.MOUText;
-            this.ProcurementText = dto.ProcurementText;
             this.ShouldCostEstimateText = dto.ShouldCostEstimateText;
-            this.SowWrittenText = dto.SowWrittenText;
             this.RFPReleaseText = dto.RFPReleaseText;
             this.FirmSupplierReceiptText = dto.FirmSupplierReceiptText;
             this.SourceSelectionText = dto.SourceSelectionText;
+            this.SourceSelectionDescription = dto.SourceSelectionDescription;
+            this.CommercialityDescription = dto.CommercialityDescription;
+            this.TechnicalEvaluationDescription = dto.TechnicalEvaluationDescription;
+            this.PriceAnalysisDescription = dto.PriceAnalysisDescription;
+            this.CostAnalysisDescription = dto.CostAnalysisDescription;
+            this.RationaleValueSummary = dto.RationaleValueSummary;
+            this.GovtPricingReceived = dto.GovtPricingReceived ?? ScheduleEvent.NA;
+            this.GovtPricingReceivedDate = dto.GovtPricingReceivedDate;
+            this.GovtPricingReceivedText = dto.GovtPricingReceivedText;
+            this.CostAnalysisUnqual = dto.CostAnalysisUnqual ?? ScheduleEvent.NA;
+            this.CostAnalysisUnqualDate = dto.CostAnalysisUnqualDate;
+            this.CostAnalysisUnqualText = dto.CostAnalysisUnqualText;
+            this.SupplierProposedValue = dto.SupplierProposedValue;
+            this.VendorId = dto.VendorId;
         }
 
-
-        /// <summary>
-        /// Gets or sets the degree of competition.
-        /// </summary>
-        public DegreeOfCompetition DegreeOfCompetition { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether CCoPD Applies.
         /// </summary>
         public bool CCoPDApplies { get; set; }
+
+        /// <summary>
+        /// Supplier CCoPD Applies
+        /// </summary>
+        [RequiredIf("CCoPDApplies", true, ErrorMessage = "Supplier CCoPD Applies is required when CCoPD Applies is selected.")]
+        public TripleBooleanState? SupplierCCoPD { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether commercial item exception applies.
@@ -120,6 +124,11 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Gets or sets a value indicating whether competition exception applies.
         /// </summary>
         public bool CompetitionExceptionApplies { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether less than threshold exception applies.
+        /// </summary>
+        public bool LessThanThresholdExceptionApplies { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether there is an other exception that applies.
@@ -159,30 +168,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         public string ValidityDate { get; set; }
 
         /// <summary>
-        /// Supplier proposal and supporting data included
-        /// </summary>
-        [Required]
-        public TripleBooleanState SupplierProposalSupportingDataIncluded { get; set; }
-
-        /// <summary>
-        /// Price Analysis included
-        /// </summary>
-        [Required]
-        public TripleBooleanState PriceAnalysisIncluded { get; set; }
-
-        /// <summary>
-        /// Commercial Item Documentation included
-        /// </summary>
-        [Required]
-        public TripleBooleanState CommercialItemDocIncluded { get; set; }
-        
-        /// <summary>
-        /// Is Cost Analysis Included
-        /// </summary>
-        [Required]
-        public TripleBooleanState CostAnalysisIncluded { get; set; }
-
-        /// <summary>
         /// Should Cost/Engineering Estimate
         /// </summary>
         [Required]
@@ -192,17 +177,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsShouldCostEstimateTextRequired", true, ErrorMessage = "Should Cost/Engineering Estimate Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Should Cost/Engineering Estimate Text.")]
         public string ShouldCostEstimateText { get; set; }
-
-        /// <summary>
-        /// Statement of Work Written
-        /// </summary>
-        [Required]
-        public ScheduleEvent SowWritten { get; set; }
-        [RequiredIf("SowWritten", ScheduleEvent.Actual, ErrorMessage = "SOW Written Date is required if Schedule Event is actual.")]
-        public DateTime? SowWrittenDate { get; set; }
-        [RequiredIf("IsSowWrittenTextRequired", true, ErrorMessage = "SOW Written Text is required if Schedule Event is planned and there is no Date set.")]
-        [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for SOW Written Text.")]
-        public string SowWrittenText { get; set; }
 
         /// <summary>
         /// RFP Release to Supplier(s)
@@ -236,7 +210,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsSourceSelectionTextRequired", true, ErrorMessage = "Source Selection Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Source Selection Text.")]
         public string SourceSelectionText { get; set; }
-        
+
         /// <summary>
         /// Commercial item Documentation (CID)
         /// </summary>
@@ -247,18 +221,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsCIDTextRequired", true, ErrorMessage = "CID Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for CID Text.")]
         public string CIDText { get; set; }
-        
-        /// <summary>
-        /// Govt. Review of Supplier Commercial Data requrested by LM.
-        /// </summary>
-        [Required]
-        public ScheduleEvent GovtReview { get; set; }
-        [RequiredIf("GovtReview", ScheduleEvent.Actual, ErrorMessage = "Govt Review Date is required if Schedule Event is actual.")]
-        public DateTime? GovtReviewDate { get; set; }
-        [RequiredIf("IsGovtReviewTextRequired", true, ErrorMessage = "Govt Review Text is required if Schedule Event is planned and there is no Date set.")]
-        [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Govt Review Text.")]
-        public string GovtReviewText { get; set; }
-        
+
         /// <summary>
         /// Price Analysis
         /// </summary>
@@ -269,7 +232,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsPriceAnalysisTextRequired", true, ErrorMessage = "Price Analysis Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Price Analysis Text.")]
         public string PriceAnalysisText { get; set; }
-        
+
         /// <summary>
         /// Technical Evaluation
         /// </summary>
@@ -280,7 +243,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsTechnicalEvaluationTextRequired", true, ErrorMessage = "Technical Evaluation Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Technical Evaluation Text.")]
         public string TechnicalEvaluationText { get; set; }
-        
+
         /// <summary>
         /// Fact Finding
         /// </summary>
@@ -291,7 +254,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsFactFindingTextRequired", true, ErrorMessage = "Fact Finding Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Fact Finding Text.")]
         public string FactFindingText { get; set; }
-        
+
         /// <summary>
         /// Cost Analysis
         /// </summary>
@@ -302,7 +265,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsCostAnalysisTextRequired", true, ErrorMessage = "Cost Analysis Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Cost Analysis Text.")]
         public string CostAnalysisText { get; set; }
-        
+
         /// <summary>
         /// Govt. Pricing Assistance for CCoPD Review Requested by LM
         /// </summary>
@@ -313,7 +276,28 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsGovtPricingTextRequired", true, ErrorMessage = "Govt Pricing Assistance Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Govt Pricing Assistance Text.")]
         public string GovtPricingText { get; set; }
-        
+
+        /// <summary>
+        /// Govt. Pricing Received for CCoPD Review Received by LM
+        /// </summary>
+        [Required]
+        public ScheduleEvent GovtPricingReceived { get; set; }
+        [RequiredIf("GovtPricingReceived", ScheduleEvent.Actual, ErrorMessage = "Govt Pricing Received Date is required if Govt Pricing Received is actual.")]
+        public DateTime? GovtPricingReceivedDate { get; set; }
+        [RequiredIf("IsGovtPricingReceivedTextRequired", true, ErrorMessage = "Govt Pricing Received Text is required if Schedule Event is planned and there is no Date set.")]
+        [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Govt Pricing Received Text.")]
+        public string GovtPricingReceivedText { get; set; }
+
+        /// <summary>
+        /// Cost Analysis – Unqualified (Final)
+        /// </summary>
+        public ScheduleEvent CostAnalysisUnqual { get; set; }
+        [RequiredIf("CostAnalysisUnqual", ScheduleEvent.Actual, ErrorMessage = "Cost Analysis Unqualified Date, is required if Cost Analysis is actual.")]
+        public DateTime? CostAnalysisUnqualDate { get; set; }
+        [RequiredIf("IsCostAnalysisUnqualTextRequired", true, ErrorMessage = "Cost Analysis Unqualified Text is required if Schedule Event is planned and there is no Date set.")]
+        [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Cost Analysis Unqualified Text.")]
+        public string CostAnalysisUnqualText { get; set; }
+
         /// <summary>
         /// Supplier Negotiations Complete
         /// </summary>
@@ -324,7 +308,7 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsSupplierNegotiationsTextRequired", true, ErrorMessage = "Supplier Negotiations Complete Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Supplier Negotiations Complete Text.")]
         public string SupplierNegotiationsText { get; set; }
-        
+
         /// <summary>
         /// Memorandum of Understanding
         /// </summary>
@@ -335,17 +319,64 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         [RequiredIf("IsMOUTextRequired", true, ErrorMessage = "MOU Text is required if Schedule Event is planned and there is no Date set.")]
         [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for MOU Text.")]
         public string MOUText { get; set; }
-        
+
         /// <summary>
-        /// Procurement Definitization
+        /// Source Selection Description
         /// </summary>
-        [Required]
-        public ScheduleEvent Procurement { get; set; }
-        [RequiredIf("Procurement", ScheduleEvent.Actual, ErrorMessage = "Procurement Definitization Date is required if Schedule Event is actual.")]
-        public DateTime? ProcurementDate { get; set; }
-        [RequiredIf("IsProcurementTextRequired", true, ErrorMessage = "Procurement Definitization Text is required if Schedule Event is planned and there is no Date set.")]
-        [StringLength(50, ErrorMessage = "A maximum of 50 characters are allowed for Procurement Definitization Text.")]
-        public string ProcurementText { get; set; }
+        [HtmlTextLength(ValidationConstants.MAX_RTE_LENGTH)]
+        [RichText(RichTextDbColumn.PBOE_SOURCE_SELECTION_DESC, "PBOEFormID")]
+        [Required(ErrorMessage = "Source Selection Summary is required.")]
+        public string SourceSelectionDescription { get; set; }
+
+        /// <summary>
+        /// Commerciality Description
+        /// </summary>
+        [HtmlTextLength(ValidationConstants.MAX_RTE_LENGTH)]
+        [RichText(RichTextDbColumn.PBOE_COMMERCIALITY_DESC, "PBOEFormID")]
+        [RequiredIf("CommercialItemExceptionApplies", true, ErrorMessage = "Commerciality is required if Commerical Item Exemption applies.")]
+        public string CommercialityDescription { get; set; }
+
+        /// <summary>
+        /// Technical Evaluation Description
+        /// </summary>
+        [HtmlTextLength(ValidationConstants.MAX_RTE_LENGTH)]
+        [RichText(RichTextDbColumn.PBOE_TECHNICAL_EVAL_DESC, "PBOEFormID")]
+        [RequiredIf("CCoPDApplies", true, ErrorMessage = "Technical Evaluation Summary is required if CCoPD is set.")]
+        public string TechnicalEvaluationDescription { get; set; }
+
+        /// <summary>
+        /// Price Analysis Description
+        /// </summary>
+        [HtmlTextLength(ValidationConstants.MAX_RTE_LENGTH)]
+        [RichText(RichTextDbColumn.PBOE_PRICE_ANALYSIS_DESC, "PBOEFormID")]
+        [Required(ErrorMessage = "Price Analysis Description is required.")]
+        public string PriceAnalysisDescription { get; set; }
+
+        /// <summary>
+        /// Cost Analysis Description
+        /// </summary>
+        [HtmlTextLength(ValidationConstants.MAX_RTE_LENGTH)]
+        [RichText(RichTextDbColumn.PBOE_COST_ANALYSIS_DESC, "PBOEFormID")]
+        [RequiredIf("CCoPDApplies", true, ErrorMessage = "Cost Analysis Summary is required if CCoPD is set.")]
+        public string CostAnalysisDescription { get; set; }
+
+        /// <summary>
+        /// Rationale for LM Proposed Value Summary
+        /// </summary>
+        [HtmlTextLength(ValidationConstants.MAX_RTE_LENGTH)]
+        [RichText(RichTextDbColumn.PBOE_RATIONALE_VALUE_SUMMARY, "PBOEFormID")]
+        [Required(ErrorMessage = "Rationale for LM Proposed Value Summary is required.")]
+        public string RationaleValueSummary { get; set; }
+
+        /// <summary>
+        /// The Vendor ID associated with the supplier
+        /// </summary>
+        public string VendorId { get; set; }
+
+        /// <summary>
+        /// Value of Supplier proposal
+        /// </summary>
+        public decimal? SupplierProposedValue { get; set; }
 
         /// <summary>
         /// Date of customer written approval for submission after initial prime proposal.
@@ -384,15 +415,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Validation is the only thing this property is used for.
         /// </remarks>
         public bool IsCIDTextRequired { get { return this.CID == ScheduleEvent.Planned && !this.CIDDate.HasValue; } }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance of GovtReview text is required.
-        /// </summary>
-        /// <remarks>
-        /// This is public, but it needs to be to work w/the validation.
-        /// Validation is the only thing this property is used for.
-        /// </remarks>
-        public bool IsGovtReviewTextRequired { get { return this.GovtReview == ScheduleEvent.Planned && !this.GovtReviewDate.HasValue; } }
 
         /// <summary>
         /// Gets a value indicating whether this instance of PriceAnalysis text is required.
@@ -440,6 +462,24 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         public bool IsGovtPricingTextRequired { get { return this.GovtPricing == ScheduleEvent.Planned && !this.GovtPricingDate.HasValue; } }
 
         /// <summary>
+        /// Gets a value indicating whether this instance of GovtPricingReceived text is required.
+        /// </summary>
+        /// <remarks>
+        /// This is public, but it needs to be to work w/the validation.
+        /// Validation is the only thing this property is used for.
+        /// </remarks>
+        public bool IsGovtPricingReceivedTextRequired { get { return this.GovtPricingReceived == ScheduleEvent.Planned && !this.GovtPricingReceivedDate.HasValue; } }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance of CostAnalysisUnqual text is required.
+        /// </summary>
+        /// <remarks>
+        /// This is public, but it needs to be to work w/the validation.
+        /// Validation is the only thing this property is used for.
+        /// </remarks>
+        public bool IsCostAnalysisUnqualTextRequired { get { return this.CostAnalysisUnqual == ScheduleEvent.Planned && !this.CostAnalysisUnqualDate.HasValue; } }
+        
+        /// <summary>
         /// Gets a value indicating whether this instance of SupplierNegotiations text is required.
         /// </summary>
         /// <remarks>
@@ -458,15 +498,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         public bool IsMOUTextRequired { get { return this.MOU == ScheduleEvent.Planned && !this.MOUDate.HasValue; } }
 
         /// <summary>
-        /// Gets a value indicating whether this instance of Procurement text is required.
-        /// </summary>
-        /// <remarks>
-        /// This is public, but it needs to be to work w/the validation.
-        /// Validation is the only thing this property is used for.
-        /// </remarks>
-        public bool IsProcurementTextRequired { get { return this.Procurement == ScheduleEvent.Planned && !this.ProcurementDate.HasValue; } }
-
-        /// <summary>
         /// Gets a value indicating whether this instance of ShouldCostEstimate text is required.
         /// </summary>
         /// <remarks>
@@ -474,15 +505,6 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         /// Validation is the only thing this property is used for.
         /// </remarks>
         public bool IsShouldCostEstimateTextRequired { get { return this.ShouldCostEstimate == ScheduleEvent.Planned && !this.ShouldCostEstimateDate.HasValue; } }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance of SowWritten text is required.
-        /// </summary>
-        /// <remarks>
-        /// This is public, but it needs to be to work w/the validation.
-        /// Validation is the only thing this property is used for.
-        /// </remarks>
-        public bool IsSowWrittenTextRequired { get { return this.SowWritten == ScheduleEvent.Planned && !this.SowWrittenDate.HasValue; } }
 
         /// <summary>
         /// Gets a value indicating whether this instance of RFPRelease text is required.

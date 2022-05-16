@@ -334,6 +334,11 @@ namespace GenTRAC.ActionLogic.Validation
             public const string CONTRACTS_POC_REQUIRED = USER_INFO_VALDIATION + "Contracts POC is required.";
 
             /// <summary>
+            /// backup contracts POC is required
+            /// </summary>
+            public const string BACKCUP_CONTRACTS_POC_REQUIRED = USER_INFO_VALDIATION + "Backup Contracts POC is required.";
+
+            /// <summary>
             /// supply chain material is required
             /// </summary>
             public const string SUPPLY_CHAIN_MATERIAL_REQUIRED = USER_INFO_VALDIATION + "Materials Lead is required if Elements of Cost includes Materials.";
@@ -394,6 +399,12 @@ namespace GenTRAC.ActionLogic.Validation
             public const string CONTRACTS_POC_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Contracts Lead, or the user is not an LM, US based employee.";
 
             /// <summary>
+            /// Backup Contracts Lead invalid NTID
+            /// </summary>
+            public const string BACKUP_CONTRACTS_POC_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Backup Contracts Lead, or the user is not an LM, US based employee.";
+
+
+            /// <summary>
             /// Proposal Manager invalid NTID.
             /// </summary>
             public const string PROPOSAL_MANAGER_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Proposal Manager.";
@@ -407,6 +418,11 @@ namespace GenTRAC.ActionLogic.Validation
             /// GenBOE Workspace Creator invalid NTID
             /// </summary>
             public const string WORKSPACE_CREATOR_INVALID_NTID = USER_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for GenBOE Workspace Creator.";
+
+            /// <summary>
+            /// Contracts Lead and Backup cannot be the same person
+            /// </summary>
+            public const string CONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL = USER_INFO_VALDIATION + "Contracts Lead and Backup Contracts Lead cannot be the same person.";
 
             #endregion  Proposal User Info Section
         }
@@ -557,7 +573,7 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// Proposal Submittal Date is required
             /// </summary>
-            public const string SUBMITTAL_DATE_REQUIRED = GENERAL_INFO_VALDIATION + "Proposal Submittal Date is required.";
+            public const string ESTIMATING_SUBMITS_TO_CONTRACTS_DATE_REQUIRED = GENERAL_INFO_VALDIATION + "Estimating Submits To Contracts Date is required.";
 
             /// <summary>
             /// Proposal Submitted Value is required
@@ -630,6 +646,16 @@ namespace GenTRAC.ActionLogic.Validation
             /// profit/fee + com is a whole number
             /// </summary>
             public const string PROFIT_FEE_COM_WHOLE_NUMBER = PROPOSAL_PRICING_DATA_VALDIATION + "Profit/Fee + COM must be in U.S. whole dollars in the range +- 999,999,999,999.";
+
+            /// <summary>
+            /// profit/fee is a whole number
+            /// </summary>
+            public const string PROFIT_FEE_WHOLE_NUMBER = PROPOSAL_PRICING_DATA_VALDIATION + "Profit/Fee must be in U.S. whole dollars in the range +- 999,999,999,999.";
+
+            /// <summary>
+            /// com is a whole number
+            /// </summary>
+            public const string COM_WHOLE_NUMBER = PROPOSAL_PRICING_DATA_VALDIATION + "COM must be in U.S. whole dollars in the range +- 999,999,999,999.";
 
             /// <summary>
             /// ROS % is between 0.00 and 99.99
@@ -884,7 +910,7 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// Approval Workflow Completed Date Range Section
             /// </summary>
-            public const string DATE_RANGE_SECTION = "(Actual Submittal Date Range) - ";
+            public const string DATE_RANGE_SECTION = "(Estimating Submits to Contracts Date Range) - ";
 
             /// <summary>
             /// Approval Workflow Completed Start Date invalid format

@@ -61,6 +61,10 @@
                 if (boeFormType == '<%:(int)BOEFormType.NotSet%>') {
                     Session.alertDialog("Form Type", "A Form Type must be selected to save.");
                 } else {
+                    // Ensure any currency formatting is stripped
+                    const unformattedValue = $('#SupplierProposedValue').val().replace(',', '').replace('$', '');
+                    $('#SupplierProposedValue').val(unformattedValue);
+
                     var data = ManageBOEFormsWidget.getForm('CreateBOEForm').getData();
 
                     // Get the Form Types once.
@@ -76,8 +80,28 @@
                             data.Description = tinyMCE.EditorManager.editors.Description_PBOE.getContent();
                         }
 
-                        if (tinyMCE.EditorManager.editors.BasisAndRationale_PBOE) {
-                            data.BasisAndRationale = tinyMCE.EditorManager.editors.BasisAndRationale_PBOE.getContent();
+                        if (tinyMCE.EditorManager.editors.Description_SourceSelection) {
+                            data.SourceSelectionDescription = tinyMCE.EditorManager.editors.Description_SourceSelection.getContent();
+                        }
+
+                        if (tinyMCE.EditorManager.editors.Description_Commerciality) {
+                            data.CommercialityDescription = tinyMCE.EditorManager.editors.Description_Commerciality.getContent();
+                        }
+
+                        if (tinyMCE.EditorManager.editors.Description_TechnicalEvaluation) {
+                            data.TechnicalEvaluationDescription = tinyMCE.EditorManager.editors.Description_TechnicalEvaluation.getContent();
+                        }
+
+                        if (tinyMCE.EditorManager.editors.Description_PriceAnalysis) {
+                            data.PriceAnalysisDescription = tinyMCE.EditorManager.editors.Description_PriceAnalysis.getContent();
+                        }
+
+                        if (tinyMCE.EditorManager.editors.Description_CostAnalysis) {
+                            data.CostAnalysisDescription = tinyMCE.EditorManager.editors.Description_CostAnalysis.getContent();
+                        }
+
+                        if (tinyMCE.EditorManager.editors.Description_RationaleValueSummary) {
+                            data.RationaleValueSummary = tinyMCE.EditorManager.editors.Description_RationaleValueSummary.getContent();
                         }
                     }
 
@@ -92,7 +116,7 @@
                             data.BasisAndRationale = tinyMCE.EditorManager.editors.BasisAndRationale_IBOE.getContent();
                         }
                     }
-                
+
                     var dataToSend = JSON.stringify(data);
                     var action = (boeFormType == boeFormTypeIBOE) ? '<%:WebConstants.ACTION_SAVE_IBOE_FORM%>' : '<%:WebConstants.ACTION_SAVE_PBOE_FORM%>';
 
@@ -140,7 +164,12 @@
                                 boeDiv.html(response);
                                 if (!ManageBOEFormsWidget.isReadOnly()) {
                                     InitializeRTE('Description_PBOE', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
-                                    InitializeRTE('BasisAndRationale_PBOE', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                                    InitializeRTE('Description_SourceSelection', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                                    InitializeRTE('Description_Commerciality', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                                    InitializeRTE('Description_TechnicalEvaluation', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                                    InitializeRTE('Description_PriceAnalysis', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                                    InitializeRTE('Description_CostAnalysis', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                                    InitializeRTE('Description_RationaleValueSummary', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
                                     InitializeRTE('Description_IBOE', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
                                     InitializeRTE('BasisAndRationale_IBOE', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
                                     ManageBOEFormsWidget.refreshModule();
@@ -148,7 +177,12 @@
                                 else  // read-only
                                 {
                                     HandleRTEDataForReadOnly("#Description_PBOE", ".replacedWidgetText");
-                                    HandleRTEDataForReadOnly("#BasisAndRationale_PBOE", ".replacedWidgetText");
+                                    HandleRTEDataForReadOnly('#Description_SourceSelection', 'replacedWidgetText');
+                                    HandleRTEDataForReadOnly('#Description_Commerciality', 'replacedWidgetText');
+                                    HandleRTEDataForReadOnly('#Description_TechnicalEvaluation', 'replacedWidgetText');
+                                    HandleRTEDataForReadOnly('#Description_PriceAnalysis', 'replacedWidgetText');
+                                    HandleRTEDataForReadOnly('#Description_CostAnalysis', 'replacedWidgetText');
+                                    HandleRTEDataForReadOnly('#Description_RationaleValueSummary', 'replacedWidgetText');
                                     HandleRTEDataForReadOnly("#Description_IBOE", ".replacedWidgetText");
                                     HandleRTEDataForReadOnly("#BasisAndRationale_IBOE", ".replacedWidgetText");
                                 }
@@ -172,16 +206,7 @@
         <div class="module-content-data" style="width: 900px;">
             <div class="form-row">
                 <div class="form-label">Form Type *</div>
-
-                <%if ((bool)ViewBag.DisablePboeForms) { %>
-                    <div class="form-element">
-                        <select id="BOEFormType" name="BOEFormType"><option selected="selected" value="0"> </option>
-                            <option value="20">IBOE</option>
-                        </select>
-                    </div>
-                <%} else { %>
-                    <div class="form-element"><%: Html.EnumDropDownListFor(m => m.BOEFormType, new { id = "BOEFormType" }) %></div>
-                <%} %>
+                <div class="form-element"><%: Html.EnumDropDownListFor(m => m.BOEFormType, new { id = "BOEFormType" }) %></div>
             </div>
             <div id="boeFormContainer">
                 <% using (Html.BeginForm("", "", FormMethod.Post, new { id = "CreateBOEForm", onSubmit = "return false" }))

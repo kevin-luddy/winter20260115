@@ -153,7 +153,7 @@
                                     <div class="role-box">
                                         <input type="checkbox" name="Roles" data-ng-true-value="<%: (int)Role.SubcontractAdmin%>" id="AddSubcontractAdminRole" data-ng-model="data.SubcontractAdmin" />
                                         <div class="subtext">
-                                            <label for="AddApproverRole">Subcontract Administrator – Can manage INL forms in Workspace.</label>
+                                            <label for="AddApproverRole">GSCO Administrator – Can manage INL forms in Workspace.</label>
                                         </div>
                                     </div>
                                 <% } %>

@@ -304,13 +304,14 @@ namespace GenTRAC.ActionLogic
                 ICollection<int> statusIds = new Collection<int>();
                 statusIds = reportParameters.ProposalLogStatus;
 
-                // if proposal log status is Active, this really represents Proposal Status of In Progress, Submitted, and Completed so grab the correct IDs to send
+                // if proposal log status is Active, this really represents Proposal Status of In Progress, Pending Certification, Pending Award, and Completed so grab the correct IDs to send
                 if (statusIds.Contains((int)ProposalReportStatus.Active))
                 {
                     statusIds.Remove((int)ProposalReportStatus.Active);
                     statusIds.Add((int)ProposalStatus.InProgress);
                     statusIds.Add((int)ProposalStatus.Completed);
-                    statusIds.Add((int)ProposalStatus.Submitted);
+                    statusIds.Add((int)ProposalStatus.PendingCertification);
+                    statusIds.Add((int)ProposalStatus.PendingAward);
                 }
 
                 sb.Append(string.Format("&{0}={1}", Constants.Report.PROPOSAL_STATUS, string.Join(",", statusIds)));
@@ -586,7 +587,8 @@ namespace GenTRAC.ActionLogic
             {
                 ICollection<int> statusIds = new Collection<int>();
                 statusIds.Add((int)ProposalStatus.InProgress);
-                statusIds.Add((int)ProposalStatus.Submitted);
+                statusIds.Add((int)ProposalStatus.PendingCertification);
+                statusIds.Add((int)ProposalStatus.PendingAward);
                 statusIds.Add((int)ProposalStatus.Completed);
                 sb.Append(string.Format("&{0}={1}", Constants.Report.PROPOSAL_STATUS, string.Join(",", statusIds)));
             }

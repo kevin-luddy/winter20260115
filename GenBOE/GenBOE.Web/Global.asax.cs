@@ -1094,6 +1094,8 @@ namespace GenBOE
                     break;
             }
 
+            GenBOEUnityContainer.Container.RegisterType(typeof(ITraceTableExporter), typeof(TraceTableExporter), GetLifetimeManager(), new InjectionConstructor());
+
             GenBOEUnityContainer.Container.RegisterType(typeof(TripsExporter), typeof(TripsExporter), GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ITripDTODataLoader)),
                                                                                                                                 new ResolvedParameter(typeof(IMiscTravelRateDTOLoader)),
                                                                                                                                 new ResolvedParameter(typeof(IUserDTODataLoader)),

@@ -71,13 +71,13 @@ namespace GenTRAC.DataBridge.DTO
             {
                 // Get the cutoff Date
                 DateTime cutoffDate = IES.Common.Utilities.GetWorkflowCutoffDate();
-                
+
                 if (proposalId.HasValue)
                 {
                     // only retrieve locked proposals for THIS proposal
                     ProposalDto proposal = this.ProposalLoader.GetById(proposalId.Value);
 
-                    switch(proposal.WorkflowStatus)
+                    switch (proposal.WorkflowStatus)
                     {
                         case (WorkflowStatus.Started):
                             this.ProcessApprovers(emailList, new List<ProposalDto>() { proposal }, EmailType.InitialApprovalEmail);
@@ -109,6 +109,9 @@ namespace GenTRAC.DataBridge.DTO
 
                     // Process the Certification Timeline emails
                     this.ProcessCertificationTimeline(emailList, this.ProposalLoader.GetProposalsCertificationTimelinePastDue());
+
+                    // Process the Mod Execution Date emails
+                    this.ProcessModExecutionDateMissing(emailList, this.ProposalLoader.GetModExecutedDateMissingNotifications());
                 }
             }
 
@@ -138,6 +141,12 @@ namespace GenTRAC.DataBridge.DTO
                 {
                     // calling the update directly since the Upsert doesn't update the ForecastEmailSent property
                     this.ProposalLoader.UpdateProposalForecastEmailSent(proposalId, proposal.UpdateDate);
+                }
+                else if (emailType == EmailType.ModExecutionDateRequired)
+                {
+                    proposal.ModExecutedLastEmailed = DateTime.Now;
+
+                    this.ProposalLoader.Save(proposal);
                 }
                 else
                 {
@@ -202,7 +211,7 @@ namespace GenTRAC.DataBridge.DTO
                     DateTime? approvalDate = this.ProposalLoader.GetProposalCompletedDate(proposal.Id);
 
                     if (approvalDate != null && approvalDate <= DateTime.Today.AddDays(-7))
-                    { 
+                    {
                         if (!this.AttachmentLoader.OptionalAttachmentHasBeenUploaded(proposal.Id))
                         {
                             // retrieve permissions
@@ -212,7 +221,7 @@ namespace GenTRAC.DataBridge.DTO
                             string backupEstEmail = this.RetrieveEmailForRole(proposal, PtmRole.BackupPricer, permissions);
 
                             string emailTo = leadEstEmail;
-                            if(!string.IsNullOrEmpty(backupEstEmail))
+                            if (!string.IsNullOrEmpty(backupEstEmail))
                             {
                                 emailTo += ";" + backupEstEmail;
                             }
@@ -235,6 +244,39 @@ namespace GenTRAC.DataBridge.DTO
             }
 
             return emailList;
+        }
+
+        /// <summary>
+        /// Creates the email content for the Mod Executed Date missing reminders
+        /// </summary>
+        /// <param name="emailList">List of added email content</param>
+        /// <param name="proposals">Proposals that need to have the reminder sent</param>
+        private void ProcessModExecutionDateMissing(ICollection<EmailInformationDto> emailList, ICollection<ProposalDto> proposals)
+        {
+            foreach (ProposalDto proposal in proposals)
+            {
+                string contractsEmail = this.RetrieveEmailForRole(proposal, PtmRole.ContractsPOC);
+                string backupContractsEmail = this.RetrieveEmailForRole(proposal, PtmRole.BackupContractsPOC);
+                if (!string.IsNullOrEmpty(backupContractsEmail))
+                {
+                    contractsEmail = $"{contractsEmail};{backupContractsEmail}";
+                }
+
+                if (!string.IsNullOrEmpty(contractsEmail))
+                {
+                    EmailInformationDto emailInfo = new EmailInformationDto()
+                    {
+                        EmailAddress = contractsEmail,
+                        ProposalEmailType = EmailType.ModExecutionDateRequired,
+                        ProposalId = proposal.Id,
+                        ProposalTitle = proposal.ProposalTitle,
+                        TrackingNumber = proposal.ForecastedTrackingNumber,
+                        AdditionalText = string.Empty
+                    };
+
+                    emailList.Add(emailInfo);
+                }
+            }            
         }
 
         /// <summary>
@@ -329,6 +371,12 @@ namespace GenTRAC.DataBridge.DTO
                 if (!email.Contains(contractsEmail))
                 {
                     email += ";" + contractsEmail;
+                }
+
+                string backupContractsEmail = this.RetrieveEmailForRole(proposal, PtmRole.BackupContractsPOC);
+                if (!email.Contains(backupContractsEmail))
+                {
+                    email += ";" + backupContractsEmail;
                 }
 
                 ICollection<ProposalPermissionDto> permissions = this.RetrievePermissions(proposal.Id);

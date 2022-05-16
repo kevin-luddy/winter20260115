@@ -133,7 +133,8 @@ namespace GenTRAC.Tests.DAL.Loader
                 RevisionOfId = null,
                 ReasonCertificationNotRequired = ReasonCertificationNotRequired.Other,
                 OtherReasonComment = "Other comment",
-                ProposalSetupComments = "Setup comment"
+                ProposalSetupComments = "Setup comment",
+                ModExecutedLastEmailed = DateTime.UtcNow
             };
 
             int? newProposalID;
@@ -703,9 +704,9 @@ namespace GenTRAC.Tests.DAL.Loader
             Assert.IsNotNull(result.FirstOrDefault(x => x.Id == proposal.Id));
 
             // Change the status and test getting proposals by that status
-            sut.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Submitted);
+            sut.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.PendingCertification);
 
-            result = sut.GetProposalsByProposalStatus(ProposalStatus.Submitted);
+            result = sut.GetProposalsByProposalStatus(ProposalStatus.PendingCertification);
 
             Assert.IsNotNull(result.FirstOrDefault(x => x.Id == proposal.Id));
         }
@@ -720,10 +721,10 @@ namespace GenTRAC.Tests.DAL.Loader
 
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true);
             this.testData.SaveChecklistAsPricer(proposal.Id, null, true);
-            this.testData.SetSubmitDate(proposal.Id, DateTime.Now);
-            this.testData.SetProposalStatus(proposal.Id, ProposalStatus.Submitted);
+            this.testData.SetCustomerSubmittalDate(proposal.Id, DateTime.Now.AddDays(1));
+            this.testData.SetProposalStatus(proposal.Id, ProposalStatus.PendingCertification);
 
-            ICollection<ProposalDto> result = sut.GetAllCompletedProposalsAfterSubmitDate(DateTime.Now.AddMinutes(-1));
+            ICollection<ProposalDto> result = sut.GetAllCompletedProposalsAfterSubmitDate(DateTime.Now);
 
             Assert.IsTrue(result.Any());
             Assert.IsTrue(result.Any(x => x.Id == proposal.Id));
@@ -926,6 +927,188 @@ namespace GenTRAC.Tests.DAL.Loader
         }
 
         /// <summary>
+        /// Determine whether to send ModExecutionDate email reminder
+        /// Case: It has not been 15 days since setting CertificationDate, nothing to send
+        /// </summary>
+        [TestMethod]
+        public void MissingModExecutionDateNoInitialNotificationsTest()
+        {
+            ProposalLoader sut = this.CreateSystem();
+
+            ProposalDto proposal = testData.GetProposal();
+            ContractsDto contractsDto = new ContractsDto();
+
+            using (TransactionScope scope = new TransactionScope())
+            {   
+                proposal.CertificationDate = DateTime.Now;
+                proposal.Updateable = UpdateType.Upsert;
+
+                sut.Save(proposal);
+
+                ContractsLoader contractsLoader = new ContractsLoader();
+                contractsDto.ProposalId = proposal.Id;
+                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id; // FK, must exist
+                contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
+                contractsDto.Updateable = UpdateType.Upsert;
+                
+                contractsLoader.Save(contractsDto);
+
+                scope.Complete();
+            }
+
+            ICollection<ProposalDto> proposals = sut.GetModExecutedDateMissingNotifications();
+
+            Assert.IsNull(proposals.FirstOrDefault(x => x.Id == proposal.Id));
+        }
+
+        /// <summary>
+        /// Determine whether to send ModExecutionDate email reminder
+        /// Case: It has been 15 days since setting CertificationDate
+        /// and we have not sent the first reminder, Send.
+        /// </summary>
+        [TestMethod]
+        public void MissingModExecutionDateSendInitialNotificationsTest()
+        {
+            ProposalLoader sut = this.CreateSystem();
+
+            ProposalDto proposal = testData.GetProposal(true);
+            ContractsDto contractsDto = new ContractsDto();
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                proposal.CertificationDate = DateTime.Now.AddDays(-30);
+                proposal.Updateable = UpdateType.Upsert;
+
+                sut.Save(proposal);
+
+                ContractsLoader contractsLoader = new ContractsLoader();
+                contractsDto.ProposalId = proposal.Id;
+                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
+                contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
+                contractsDto.Updateable = UpdateType.Upsert;
+
+                contractsLoader.Save(contractsDto);
+
+                scope.Complete();
+            }
+
+            ICollection<ProposalDto> proposals = sut.GetModExecutedDateMissingNotifications();
+
+            Assert.IsNotNull(proposals.FirstOrDefault(x => x.Id == proposal.Id));
+        }
+
+        /// <summary>
+        /// Determine whether to send ModExecutionDate email reminder
+        /// Case: It has been 15 days since setting CertificationDate,
+        /// and the last emailed date is greater than 7 days.  Send.
+        /// </summary>
+        [TestMethod]
+        public void MissingModExecutionDateReSendNotificationsTest()
+        {
+            ProposalLoader sut = this.CreateSystem();
+
+            ProposalDto proposal = testData.GetProposal(true);
+            ContractsDto contractsDto = new ContractsDto();
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                proposal.CertificationDate = DateTime.Now.AddDays(-30);
+                proposal.ModExecutedLastEmailed = DateTime.Now.AddDays(-8);
+                proposal.Updateable = UpdateType.Upsert;
+
+                sut.Save(proposal);
+
+                ContractsLoader contractsLoader = new ContractsLoader();
+                contractsDto.ProposalId = proposal.Id;
+                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
+                contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
+                contractsDto.Updateable = UpdateType.Upsert;
+
+                contractsLoader.Save(contractsDto);
+
+                scope.Complete();
+            }
+
+            ICollection<ProposalDto> proposals = sut.GetModExecutedDateMissingNotifications();
+
+            Assert.IsNotNull(proposals.FirstOrDefault(x => x.Id == proposal.Id));
+        }
+
+        /// <summary>
+        /// Determine whether to send ModExecutionDate email reminder
+        /// Case: It has been 15 days since setting CertificationDate,
+        /// and the last emailed date is less than 7 days.  No send.
+        /// </summary>
+        [TestMethod]
+        public void MissingModExecutionDateNoReSendNotificationTest()
+        {
+            ProposalLoader sut = this.CreateSystem();
+
+            ProposalDto proposal = testData.GetProposal(true);
+            ContractsDto contractsDto = new ContractsDto();
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                proposal.CertificationDate = DateTime.Now.AddDays(-30);
+                proposal.ModExecutedLastEmailed = DateTime.Now.AddDays(-6);
+                proposal.Updateable = UpdateType.Upsert;
+
+                sut.Save(proposal);
+
+                ContractsLoader contractsLoader = new ContractsLoader();
+                contractsDto.ProposalId = proposal.Id;
+                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
+                contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
+                contractsDto.Updateable = UpdateType.Upsert;
+
+                contractsLoader.Save(contractsDto);
+
+                scope.Complete();
+            }
+
+            ICollection<ProposalDto> proposals = sut.GetModExecutedDateMissingNotifications();
+
+            Assert.IsNull(proposals.FirstOrDefault(x => x.Id == proposal.Id));
+        }
+
+        /// <summary>
+        /// Determine whether to send ModExecutionDate email reminder
+        /// Case: The ModExecutionDate has been set.  No send.
+        /// </summary>
+        [TestMethod]
+        public void ModExecutionDateSendNotNeededTest()
+        {
+            ProposalLoader sut = this.CreateSystem();
+
+            ProposalDto proposal = testData.GetProposal(true);
+            ContractsDto contractsDto = new ContractsDto();
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                proposal.CertificationDate = DateTime.Now.AddDays(-30);
+                proposal.ModExecutedLastEmailed = DateTime.Now.AddDays(-8);
+                proposal.Updateable = UpdateType.Upsert;
+
+                sut.Save(proposal);
+
+                ContractsLoader contractsLoader = new ContractsLoader();
+                contractsDto.ProposalId = proposal.Id;
+                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
+                contractsDto.ModCompletedDate = DateTime.Now;
+                contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
+                contractsDto.Updateable = UpdateType.Upsert;
+
+                contractsLoader.Save(contractsDto);
+
+                scope.Complete();
+            }
+
+            ICollection<ProposalDto> proposals = sut.GetModExecutedDateMissingNotifications();
+
+            Assert.IsNull(proposals.FirstOrDefault(x => x.Id == proposal.Id));
+        }
+
+        /// <summary>
         /// Tests GetWorkflowCompletedLineText for In Progress proposals
         /// </summary>
         [TestMethod]
@@ -965,7 +1148,7 @@ namespace GenTRAC.Tests.DAL.Loader
             Assert.AreEqual(expectedResultPrefix + maxCompleteDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR), result);
 
             // Test Submitted
-            result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.Submitted, anticipatedDeliveryDate, maxCompleteDate, null);
+            result = ProposalLoader.GetWorkflowCompletedLineText(ProposalStatus.PendingCertification, anticipatedDeliveryDate, maxCompleteDate, null);
             Assert.AreEqual(expectedResultPrefix + maxCompleteDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR), result);
 
             // Test Revised
@@ -1027,7 +1210,7 @@ namespace GenTRAC.Tests.DAL.Loader
             
             foreach(int id in result.Select(x => x.ProposalId).ToList())
             {
-                Assert.IsTrue(permissionsLoader.GetByIds(permissionsLoader.GetIdsByProposalId(id)).Any(x => x.UserId == userId && x.Role == PtmRole.ContractsPOC));
+                Assert.IsTrue(permissionsLoader.GetByIds(permissionsLoader.GetIdsByProposalId(id)).Any(x => x.UserId == userId && (x.Role == PtmRole.ContractsPOC || x.Role == PtmRole.BackupContractsPOC)));
             }
         }
 

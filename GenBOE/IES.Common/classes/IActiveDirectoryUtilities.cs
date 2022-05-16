@@ -92,6 +92,6 @@ namespace IES.Common
         /// Gets the NTIDs from the Web.config that should not be updated during ADSync
         /// </summary>
         /// <returns>As list of NTIDs</returns>
-        ICollection<string> GetNoADSynceAccountsFromWebConfig();
+        ICollection<string> GetNoADSyncAccountsFromWebConfig();
     }
 }

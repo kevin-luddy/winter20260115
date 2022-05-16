@@ -36,6 +36,8 @@ namespace GenTRAC.Web.Common
             AddApprovalsControllerActions(result);
             AddPostSubmittalAttachmentsControllerActions(result);
             AddCertificationTimelineControllerActions(result);
+            AddContractsControllerActions(result);
+            AddCompletionControllerActions(result);
 
             return result;
         }
@@ -203,8 +205,6 @@ namespace GenTRAC.Web.Common
             AddActionToController(WebConstants.Action.SAVE_APPROVAL, PtmSecurityPage.Approvals, SecurityAuthorization.ReadUpdate, approvalsControllerActions);
             AddActionToController(WebConstants.Action.RESET_WORKFLOW, PtmSecurityPage.Proposal, SecurityAuthorization.ReadUpdate, approvalsControllerActions);
             AddActionToController(WebConstants.Action.VALIDATE_COVER_SHEET_APPROVER, PtmSecurityPage.Approvals, SecurityAuthorization.Read, approvalsControllerActions);
-            AddActionToController(WebConstants.Action.SET_NO_BID, PtmSecurityPage.Approvals, SecurityAuthorization.ReadUpdate, approvalsControllerActions);
-            AddActionToController(WebConstants.Action.REVERT_NO_BID, PtmSecurityPage.Approvals, SecurityAuthorization.ReadUpdate, approvalsControllerActions);
             result.Add(WebConstants.Controller.APPROVALS, approvalsControllerActions);
         }
 
@@ -234,6 +234,37 @@ namespace GenTRAC.Web.Common
             AddActionToController(WebConstants.Action.SAVE_CERTIFICATION_TIMELINE, PtmSecurityPage.CertificationTimeline, SecurityAuthorization.CreateReadUpdateDelete, certificationTimelineActions);
             AddActionToController(WebConstants.Action.COMPLETE_CERTIFICATION_TIMELINE, PtmSecurityPage.CertificationTimeline, SecurityAuthorization.CreateReadUpdateDelete, certificationTimelineActions);
             result.Add(WebConstants.Controller.CERTIFICATION_TIMELINE, certificationTimelineActions);
+        }
+
+        /// <summary>
+        /// Generates items for the contracts controller
+        /// </summary>
+        /// <param name="result">The result</param>
+        private static void AddContractsControllerActions(Dictionary<string, Dictionary<string, SecurityPageAndAuthorization>> result)
+        {
+            Dictionary<string, SecurityPageAndAuthorization> contractsActions = new Dictionary<string, SecurityPageAndAuthorization>();
+            AddActionToController(WebConstants.Action.DISPLAY_CONTRACTS_INDEX, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsActions);
+            AddActionToController(WebConstants.Action.CALCULATE_OFFER_FIELDS, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsActions);
+            AddActionToController(WebConstants.Action.GET_SELECTED_ROM_DATA, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsActions);
+            AddActionToController(WebConstants.Action.SAVE_CONTRACT, PtmSecurityPage.Contracts, SecurityAuthorization.CreateReadUpdateDelete, contractsActions);
+            AddActionToController(WebConstants.Action.SET_PROPOSAL_LOST, PtmSecurityPage.Contracts, SecurityAuthorization.ReadUpdate, contractsActions);
+            AddActionToController(WebConstants.Action.SET_NO_BID, PtmSecurityPage.Contracts, SecurityAuthorization.ReadUpdate, contractsActions);
+            AddActionToController(WebConstants.Action.REVERT_NO_BID, PtmSecurityPage.Contracts, SecurityAuthorization.ReadUpdate, contractsActions);
+            AddActionToController(WebConstants.Action.VALID_TO_COMPLETE, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsActions);
+
+            result.Add(WebConstants.Controller.CONTRACTS, contractsActions);
+        }
+
+        /// <summary>
+        /// Generates actions/items from the completion controller
+        /// </summary>
+        /// <param name="result">The result</param>
+        private static void AddCompletionControllerActions(Dictionary<string, Dictionary<string, SecurityPageAndAuthorization>> result)
+        {
+            Dictionary<string, SecurityPageAndAuthorization> completionActions = new Dictionary<string, SecurityPageAndAuthorization>();
+            AddActionToController(WebConstants.Action.COMPLETE_PROPOSAL, PtmSecurityPage.Completion, SecurityAuthorization.ReadUpdate, completionActions);
+
+            result.Add(WebConstants.Controller.COMPLETION, completionActions);
         }
 
         #endregion

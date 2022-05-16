@@ -94,8 +94,28 @@
                         data.Description = tinyMCE.EditorManager.editors.Description_PBOE.getContent();
                     }
 
-                    if (tinyMCE.EditorManager.editors.BasisAndRationale_PBOE) {
-                        data.BasisAndRationale = tinyMCE.EditorManager.editors.BasisAndRationale_PBOE.getContent();
+                    if (tinyMCE.EditorManager.editors.Description_SourceSelection) {
+                        data.SourceSelectionDescription = tinyMCE.EditorManager.editors.Description_SourceSelection.getContent();
+                    }
+
+                    if (tinyMCE.EditorManager.editors.Description_Commerciality) {
+                        data.CommercialityDescription = tinyMCE.EditorManager.editors.Description_Commerciality.getContent();
+                    }
+
+                    if (tinyMCE.EditorManager.editors.Description_TechnicalEvaluation) {
+                        data.TechnicalEvaluationDescription = tinyMCE.EditorManager.editors.Description_TechnicalEvaluation.getContent();
+                    }
+
+                    if (tinyMCE.EditorManager.editors.Description_PriceAnalysis) {
+                        data.PriceAnalysisDescription = tinyMCE.EditorManager.editors.Description_PriceAnalysis.getContent();
+                    }
+
+                    if (tinyMCE.EditorManager.editors.Description_CostAnalysis) {
+                        data.CostAnalysisDescription = tinyMCE.EditorManager.editors.Description_CostAnalysis.getContent();
+                    }
+
+                    if (tinyMCE.EditorManager.editors.Description_RationaleValueSummary) {
+                        data.RationaleValueSummary = tinyMCE.EditorManager.editors.Description_RationaleValueSummary.getContent();
                     }
                 }
                 
@@ -103,9 +123,17 @@
                 return dataToSend;
             };
 
+            ManageBOEFormsWidget.StripCurrencyFormatting = function () {
+                const unformattedValue = $('#SupplierProposedValue').val().replace(',', '').replace('$', '');
+                $('#SupplierProposedValue').val(unformattedValue);
+            }
 
             ManageBOEFormsWidget.Save = function (button) {
+                ManageBOEFormsWidget.StripCurrencyFormatting();
+
                 var dataToSend = ManageBOEFormsWidget.GetData();
+                console.log(dataToSend);
+
                 var action = (ManageBOEFormsWidget.IsIBOE()) ? '<%:WebConstants.ACTION_SAVE_IBOE_FORM%>' : '<%:WebConstants.ACTION_SAVE_PBOE_FORM%>';
 
                 var saveUrl = GenSession.CreateUrl({
@@ -116,12 +144,15 @@
                     url: saveUrl,
                     data: dataToSend,
                     success: ManageBOEFormsWidget.CancelToMainGrid,
-                    error: function(response) {
+                    error: function (response) {
+                        $('#SupplierProposedValue').trigger('change');
                     }
                 }, button);
             };
 
             ManageBOEFormsWidget.ValidateForm = function (button) {
+                ManageBOEFormsWidget.StripCurrencyFormatting();
+
                 var dataToSend = ManageBOEFormsWidget.GetData();
                 var action = (ManageBOEFormsWidget.IsIBOE()) ? '<%:WebConstants.ACTION_VALIDATE_IBOE_FORM%>' : '<%:WebConstants.ACTION_VALIDATE_PBOE_FORM%>';
                 var validateUrl = GenSession.CreateUrl({
@@ -135,9 +166,11 @@
                     data: dataToSend,
                     success: function(response) {
                         Session.alertDialog('INL Form Validation', 'No Validation errors found.');
+                        $('#SupplierProposedValue').trigger('change'); // reset the currency formatting
                     },
                     error: function(response) {
                         // nothing to do since genvalidation exceptions get automatically handled
+                        $('#SupplierProposedValue').trigger('change');
                     }
                 }, button);
             };
@@ -150,15 +183,29 @@
             };
 
             if (!ManageBOEFormsWidget.isReadOnly()) {
+                // PBOE
                 InitializeRTE('Description_PBOE', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
-                InitializeRTE('BasisAndRationale_PBOE', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                InitializeRTE('Description_SourceSelection', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                InitializeRTE('Description_Commerciality', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                InitializeRTE('Description_TechnicalEvaluation', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                InitializeRTE('Description_PriceAnalysis', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                InitializeRTE('Description_CostAnalysis', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                InitializeRTE('Description_RationaleValueSummary', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
+                // IBOE
                 InitializeRTE('Description_IBOE', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
                 InitializeRTE('BasisAndRationale_IBOE', { maxlen: <%: Constants.MAX_RTE_LENGTH %> }, ManageBOEFormsWidget);
             }
-            else  // read-only
+            else  /* read-only */
             {
+                // PBOE
                 HandleRTEDataForReadOnly("#Description_PBOE", ".replacedWidgetText");
-                HandleRTEDataForReadOnly("#BasisAndRationale_PBOE", ".replacedWidgetText");
+                HandleRTEDataForReadOnly('#Description_SourceSelection', 'replacedWidgetText');
+                HandleRTEDataForReadOnly('#Description_Commerciality', 'replacedWidgetText');
+                HandleRTEDataForReadOnly('#Description_TechnicalEvaluation', 'replacedWidgetText');
+                HandleRTEDataForReadOnly('#Description_PriceAnalysis', 'replacedWidgetText');
+                HandleRTEDataForReadOnly('#Description_CostAnalysis', 'replacedWidgetText');
+                HandleRTEDataForReadOnly('#Description_RationaleValueSummary', 'replacedWidgetText');
+                // IBOE
                 HandleRTEDataForReadOnly("#Description_IBOE", ".replacedWidgetText");
                 HandleRTEDataForReadOnly("#BasisAndRationale_IBOE", ".replacedWidgetText");
             }

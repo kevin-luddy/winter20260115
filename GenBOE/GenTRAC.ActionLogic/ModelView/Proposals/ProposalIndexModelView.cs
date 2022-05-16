@@ -73,6 +73,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public string CertificationCompletedDate { get; set; }
 
         /// <summary>
+        /// Gets or sets the Proposal Completed Date
+        /// </summary>
+        public string ProposalCompletedDate { get; set; }
+
+        /// <summary>
         /// Gets or sets whether Approval was completed before Certification was enabled.
         /// </summary>
         public bool CompletedBeforeCertification { get; set; }
@@ -107,7 +112,12 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// <summary>
         /// Determines whether to hide/show Revision History tab
         /// </summary>
-        public SecurityAuthorization RevisionHistoryVisibility { get; set; }        
+        public SecurityAuthorization RevisionHistoryVisibility { get; set; }
+
+        /// <summary>
+        /// Determines whether to hide/show the Contracts tab
+        /// </summary>
+        public SecurityAuthorization ContractsVisibility { get; set; }
 
         /// <summary>
         /// Determines whether to show or hide the + New Revision button

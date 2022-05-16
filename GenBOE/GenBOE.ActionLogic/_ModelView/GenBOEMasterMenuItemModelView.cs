@@ -341,8 +341,8 @@ namespace GenBOE.ActionLogic.ModelView
         /// <summary>
         /// SSC Help URL
         /// </summary>
-        private const string SSC_HELP_LINK = "https://space.p.external.lmco.com/sites/fbo/CCDME/Estimating/Tools/default.aspx?RootFolder=%2Fsites%2Ffbo%2FCCDME%2FEstimating%2FTools%2FProPricer%20User%20Forum%2FgenBOE%2FgenBOE%20Training%20Documents&FolderCTID=0x0120007A9FC2393F740A4CAE02B8F033B82084&";
-
+        private const string SSC_HELP_LINK = "https://space.p.external.lmco.com/sites/fbo/CCDME/Estimating/SiteLinks/Forms/Web%20Part%20View.aspx?RootFolder=%2fsites%2ffbo%2fCCDME%2fEstimating%2fSiteLinks%2fLabor%20BOE%20Resources&FolderCTID=0x0120009F5DB497892BA747B0B971EB66794691";
+        
         /// <summary>
         /// RMS Help URL - Author Training
         /// </summary>

@@ -61,9 +61,9 @@ namespace GenTRAC.ActionLogic.ModelView.Admin
         public string OldProposalSubmittalDate { get; set; }
 
         /// <summary>
-        /// New Proposal Submittal Date
+        /// Date Estimating Submits To Contracts, used to be Proposal Submittal Date
         /// </summary>
-        public string NewProposalSubmittalDate { get; set; }
+        public string EstimatingSubmitsToContractsDate { get; set; }
 
         /// <summary>
         /// Old Total price

@@ -177,7 +177,7 @@ namespace RPM.DataBridge.DataLoaders
                                 {
                                     Contact = p.ContractsLead,
                                     SVal = p.SubmittedValue,
-                                    Profit = pc.ProfitFee,
+                                    Profit = pc.ProfitFeeWithCom,
                                     LOB = p.LineOfBusinessName,
                                     PA = p.ProgramAreaName,
                                     PropType = p.ProposalType,

@@ -282,7 +282,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             ProposalDto testProposal = this.testData.GetProposal(true);
 
-            testProposal.ProposalStatus = ProposalStatus.Submitted;
+            testProposal.ProposalStatus = ProposalStatus.PendingCertification;
             
             this.testData.UpdateProposal(testProposal);
 
@@ -326,7 +326,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             this.testData.SaveChecklistAsPricer(testProposal.Id, null, true);
             this.testData.SetSubmitDate(testProposal.Id, DateTime.Now.AddDays(-8));
-            this.testData.SetProposalStatus(testProposal.Id, ProposalStatus.Submitted);
+            this.testData.SetProposalStatus(testProposal.Id, ProposalStatus.PendingCertification);
 
             ICollection<EmailInformationDto> result = sut.GetDocumentReminderEmailsToBeSent();
             EmailInformationDto reminderEmail = result.FirstOrDefault(x => x.ProposalId == testProposal.Id);

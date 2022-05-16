@@ -8,24 +8,23 @@ namespace GenBOE.Web.Controllers
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Collections.ObjectModel;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
 	using System.Net.Http;
 	using System.Net.Http.Headers;
-	using System.Security.Principal;
-	using System.Web;
 	using System.Web.Http;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Export.BOE;
+	using GenBOE.ActionLogic.ModelView;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
+	using Newtonsoft.Json;
 
 	/// <summary>
 	/// BOE Data Controller, original intent is for it to be used by ACV to pull data in, but realistically, it is serving up BOE data, hence the name.
@@ -66,6 +65,11 @@ namespace GenBOE.Web.Controllers
 		private readonly IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader;
 
 		/// <summary>
+		/// Trace Table data exporter
+		/// </summary>
+		private readonly ITraceTableExporter traceTableExporter;
+
+		/// <summary>
 		/// Logger
 		/// </summary>
 		private Logger logger = new Logger("BoeDataAPIController");
@@ -83,7 +87,8 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeExporter">BOE exporter</param>
 		/// <param name="boeCustomExporter">BOE custom exporter</param>
 		/// <param name="workspaceExportFormatDTOLoader">Workspace export format loader</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader) 
+		/// <param name="traceTableExporter">Trace Table data exporter</param>
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter) 
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -92,6 +97,7 @@ namespace GenBOE.Web.Controllers
 			this.boeExporter = boeExporter;
 			this.boeCustomExporter = boeCustomExporter;
 			this.workspaceExportFormatDTOLoader = workspaceExportFormatDTOLoader;
+			this.traceTableExporter = traceTableExporter;
 		}
 		#endregion
 
@@ -212,6 +218,39 @@ namespace GenBOE.Web.Controllers
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Get the genBOE Workspace data for use with a Trace Table in ACV
+		/// </summary>
+		/// <param name="workspaceShortName">Workspace short name</param>
+		/// <param name="settingsData">Trace Table Settings Data</param>
+		/// <returns>genBOE Workspace data for use with a Trace Table in ACV</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpPost]
+		public ICollection<TraceTableBoeData> GetWorkspaceDataForTraceTable(string workspaceShortName, TraceTableSettingsData settingsData)
+		{
+			ICollection<TraceTableBoeData> boeData = null;
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+
+				SecurityAuthorization permission = this.CheckPermission(SecurityPage.Reports, workspace);
+
+				if (permission >= SecurityAuthorization.Read)
+				{
+					boeData = traceTableExporter.ExportTraceTableData(workspace, settingsData);
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+			}
+
+			return boeData;
 		}
 	}
 }

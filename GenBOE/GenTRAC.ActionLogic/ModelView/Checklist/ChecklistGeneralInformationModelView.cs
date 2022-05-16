@@ -28,7 +28,7 @@ namespace GenTRAC.ActionLogic.ModelView.Checklist
         /// <summary>
         /// Gets or sets Proposal submittal date
         /// </summary>
-        public string SubmittalDate { get; set; }
+        public string EstimatingSubmitsToContractsDate { get; set; }
 
         /// <summary>
         /// Gets or sets pricer Displays Name

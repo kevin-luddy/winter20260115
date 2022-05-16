@@ -67,7 +67,17 @@ namespace IES.Common
         /// <summary>
         /// Revision History Tab
         /// </summary>
-        RevisionHistory = 12
+        RevisionHistory = 12,
+
+        /// <summary>
+        /// Contracts Tab
+        /// </summary>
+        Contracts = 13,
+
+        /// <summary>
+        /// Completion AJAX actions
+        /// </summary>
+        Completion = 14
     }
 
     /// <summary>
@@ -225,6 +235,12 @@ namespace IES.Common
         GenBoeWorkspaceCreator = 21,
 
         /// <summary>
+        /// Backup Contracts POC
+        /// </summary>
+        [Description("Backup Contracts Lead")]
+        BackupContractsPOC = 22,
+
+        /// <summary>
         /// CAREFUL
         /// 
         /// Do not use this as a ROLE. This is only used for some decisions in which dropdown should be 
@@ -233,7 +249,7 @@ namespace IES.Common
         /// Lob Estimating Manager
         /// </summary>
         [Description("LOB Estimating Manager")]
-        LOBEstMgr = 22
+        LOBEstMgr = 99
     }
 
     /// <summary>
@@ -391,10 +407,10 @@ namespace IES.Common
         Deleted = 4,
 
         /// <summary>
-        /// Submitted
+        /// Pending Certification
         /// </summary>
-        [Description("Submitted")]
-        Submitted = 6,
+        [Description("Pending Certification")]
+        PendingCertification = 6,
 
         /// <summary>
         /// No Bid
@@ -406,7 +422,19 @@ namespace IES.Common
         /// Revised
         /// </summary>
         [Description("Revised")]
-        Revised = 8
+        Revised = 8,
+
+        /// <summary>
+        /// Pending Contractual Award
+        /// </summary>
+        [Description("Pending Contractual Award")]
+        PendingAward = 9,
+
+        /// <summary>
+        /// Lost
+        /// </summary>
+        [Description("Lost")]
+        Lost = 10
     }
 
     /// <summary>
@@ -818,10 +846,16 @@ namespace IES.Common
         NoBid = 2,
 
         /// <summary>
+        /// Lost
+        /// </summary>
+        [Description("Lost")]
+        Lost = 3,
+
+        /// <summary>
         /// All
         /// </summary>
         [Description("All")]
-        All = 3
+        All = 100
     }
 
     /// <summary>
@@ -1095,6 +1129,12 @@ namespace IES.Common
         Revised = 8,
 
         /// <summary>
+        /// Lost
+        /// </summary>
+        [Description("Lost")]
+        Lost = 10,
+
+        /// <summary>
         /// All
         /// </summary>
         [Description("All")]
@@ -1206,7 +1246,17 @@ namespace IES.Common
         /// <summary>
         /// The reminder email for when the optional document is missing
         /// </summary>
-        OptionalDocumentReminderEmail
+        OptionalDocumentReminderEmail,
+
+        /// <summary>
+        /// The proposal status has been set to "Lost"
+        /// </summary>
+        LostStatusSet,
+
+        /// <summary>
+        /// Reminder email that the Mod Execution Date is missing
+        /// </summary>
+        ModExecutionDateRequired
     }
 
     /// <summary>
@@ -1295,9 +1345,6 @@ namespace IES.Common
     /// </summary>
     public enum ReasonCertificationNotRequired
     {
-        [Description("Lost / Not Awarded")]
-        LostNotAwarded = 1,
-
         [Description("Awarded Under Threshold")]
         AwardedUnderThreshold = 2,
 

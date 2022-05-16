@@ -173,7 +173,6 @@ $(function () {
         $(this).parent().prev().click();
     });
 
-
     $('.tabs a').click(function () {
         $(this).parents('.tabs').find('a').removeClass('active');
 
@@ -194,7 +193,7 @@ $(function () {
                 error = $.parseJSON(request.responseText);
             }
 
-            if (error.ReturnType != "GenValidationException") {
+            if (error.ReturnType != "GenValidationException" && error.ReturnType !="IES.Common.Exceptions.GenValidationException") {
                 GenSession.DisplayExceptionDialog(error);
             }
             GenSession.HideLoadingBox();
@@ -205,6 +204,3 @@ $(function () {
         $("#ErrorDetails").toggle('slow');
     });
 });
-
-
-

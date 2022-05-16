@@ -36,6 +36,7 @@ AS
 **          --------    --------                ------------------------------
 **			6/06/18		brunworg				BOEJ-3480 Renamed ProductLine and LineOfBusiness tables.
 **			6/20/18		ranzalon				BOEJ-4114 - Updated for Submitted Status
+**			3/3/22		koovackal				IES-849 Changes to "Revise" button
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -115,7 +116,8 @@ WHERE
 	P.ProposalStatusID IN  (
 							1, /*In Progress*/
 							2, /*Completed*/
-							6  /*Submitted*/
+							6,  /*Pending Certification*/
+							9  /*Pending Contractual Award*/
 						   )
 
 GO

@@ -181,6 +181,7 @@ namespace GenTRAC.Tests.ActionLogic
                         CaptureManagerNtid = "n00000",
                         CostVolumeLeadNtid = "n00000",
                         ContractsPOCNtId = "n00000",
+                        BackupContractsPOCNtId = "n22222",
                         ProposalMgrNtid = "n00000",
                         SupplyChainPOCMaterialsNtId = "n00000",
                         SupplyChainPOCSubsNtId = "n00000"
@@ -188,9 +189,9 @@ namespace GenTRAC.Tests.ActionLogic
                 }
             }
 
-                /// <summary>
-                /// ProposalApprovalModelView Stub
-                /// </summary>
+            /// <summary>
+            /// ProposalApprovalModelView Stub
+            /// </summary>
             public ProposalApprovalsModelView ProposalApprovalsVM
             {
                 get
@@ -295,6 +296,7 @@ namespace GenTRAC.Tests.ActionLogic
                 BackupPricerNtId = ntid,
                 CaptureManagerNtid = ntid,
                 ContractsPOCNtId = ntid,
+                BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
                 SupplyChainPOCMaterialsNtId = ntid,
                 SupplyChainPOCSubsNtId = ntid
@@ -365,6 +367,7 @@ namespace GenTRAC.Tests.ActionLogic
                 BackupPricerNtId = ntid,
                 CaptureManagerNtid = ntid,
                 ContractsPOCNtId = ntid,
+                BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
                 SupplyChainPOCMaterialsNtId = ntid,
                 SupplyChainPOCSubsNtId = ntid
@@ -502,6 +505,7 @@ namespace GenTRAC.Tests.ActionLogic
                 BackupPricerNtId = ntid,
                 CaptureManagerNtid = ntid,
                 ContractsPOCNtId = ntid,
+                BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
                 SupplyChainPOCMaterialsNtId = ntid,
                 SupplyChainPOCSubsNtId = ntid
@@ -562,6 +566,7 @@ namespace GenTRAC.Tests.ActionLogic
                 BackupPricerNtId = ntid,
                 CaptureManagerNtid = ntid,
                 ContractsPOCNtId = ntid,
+                BackupContractsPOCNtId = ntid,
                 CostVolumeLeadNtid = ntid,
                 SupplyChainPOCMaterialsNtId = ntid,
                 SupplyChainPOCSubsNtId = ntid
@@ -1816,6 +1821,8 @@ namespace GenTRAC.Tests.ActionLogic
             }
 
             permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = PtmRole.BackupPricer, ProposalID = proposal.Id });
+            permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = PtmRole.BackupContractsPOC, ProposalID = proposal.Id });
+
             permissions[(int)PtmRole.AdditionalPricingResource1 - 1].ResourceType = ResourceType.Pricer;
             permissions[(int)PtmRole.AdditionalPricingResource2 - 1].ResourceType = ResourceType.Strategist;
             permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = PtmRole.GenBoeWorkspaceCreator, ProposalID = proposal.Id });
@@ -1828,7 +1835,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.retriever.Setup(x => x.GetProposalPermissions(proposalId.Value)).Returns(permissions);
             this.retriever.Setup(x => x.GetAllChecklistSaveInfo(proposalId.Value)).Returns(new Collection<ProposalChecklistSaveInfo>());
             this.genBoePermissionsLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("TestNtid", "TestDisplayName") });
-            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<UserDTO>() { user });
+            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>())).Returns(new Collection<UserDTO>() { user });
 
             ProposalApprovalsModelView proposalApprovalsInfo = sut.GetDataForProposalApprovals(proposalId, false);
             ProposalUserInformationModelView proposalUserInfo = sut.GetDataForProposalUserInformation(proposalId);
@@ -1841,6 +1848,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(user.DisplayName, proposalUserInfo.BackupPricerDisplayName);
             Assert.AreEqual(user.DisplayName, proposalUserInfo.CaptureManagerDisplayName);
             Assert.AreEqual(user.DisplayName, proposalUserInfo.ContractsPOCDisplayName);
+            Assert.AreEqual(user.DisplayName, proposalUserInfo.BackupContractsPOCDisplayName);
             Assert.AreEqual(user.DisplayName, proposalUserInfo.CostVolumeLeadDisplayName);
             Assert.AreEqual(user.DisplayName, proposalApprovalsInfo.LeadEstimatorDisplayName);
             Assert.AreEqual(user.DisplayName, proposalUserInfo.SupplyChainPOCMaterialsDisplayName);
@@ -1851,6 +1859,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(user.Ntid, proposalUserInfo.BackupPricerNtId);
             Assert.AreEqual(user.Ntid, proposalUserInfo.CaptureManagerNtid);
             Assert.AreEqual(user.Ntid, proposalUserInfo.ContractsPOCNtId);
+            Assert.AreEqual(user.Ntid, proposalUserInfo.BackupContractsPOCNtId);
             Assert.AreEqual(user.Ntid, proposalUserInfo.CostVolumeLeadNtid);
             Assert.AreEqual(user.Ntid, proposalApprovalsInfo.LeadEstimatorNtid);
             Assert.AreEqual(user.Ntid, proposalUserInfo.SupplyChainPOCMaterialsNtId);
@@ -1899,7 +1908,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.userMapper.Setup(x => x.GetById(user.Id)).Returns(user);
             this.retriever.Setup(x => x.GetProposalPermissions(proposalId.Value)).Returns(permissions);
             this.genBoePermissionsLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("TestNtid", "TestDisplayName") });
-            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<UserDTO>() { user });
+            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>())).Returns(new Collection<UserDTO>() { user });
 
             ProposalApprovalsModelView proposalApprovalsInfo = sut.GetDataForProposalApprovals(proposalId, true);
 
@@ -2622,6 +2631,14 @@ namespace GenTRAC.Tests.ActionLogic
                 DisplayName = "savedDisplayName"
             };
 
+            UserDTO user2 = new UserDTO()
+            {
+                Id = 3,
+                Ntid = "myNtId2",
+                DisplayName = "myDisplayName2",
+                UserType = IES.Common.UserType.User
+            };
+
             List<ProposalPermissionDto> savedUserPermissions = PopulateUserAndPermissions(savedUser, proposal);
             
             // GetDataForProposalUserInformation
@@ -2630,6 +2647,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.retriever.Setup(x => x.GetProposalPermissions(proposalId.Value)).Returns(savedUserPermissions); // GetFullProposal
             this.userMapper.Setup(x => x.GetById(savedUser.Id)).Returns(savedUser); // UserMapper
             this.genBoePermissionsLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<KeyValuePair<string, string>>());
+            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>())).Returns(new Collection<UserDTO>() { savedUser });
 
             // ProposalChecklistSaveInfo
             ICollection<ProposalChecklistSaveInfo> saveInfo = new Collection<ProposalChecklistSaveInfo>();
@@ -2637,10 +2655,10 @@ namespace GenTRAC.Tests.ActionLogic
             this.retriever.Setup(x => x.GetAllChecklistSaveInfo(proposalId.Value)).Returns(saveInfo);
 
             // Validation Methods
-            this.validationMethods.Setup(x => x.IsUserTypeValid(user.Ntid, IES.Common.UserType.User, false, false, false)).Returns(true);
-            this.validationMethods.Setup(x => x.IsUserTypeValid(user.Ntid, IES.Common.UserType.User, false, true, true)).Returns(true);
+            this.validationMethods.Setup(x => x.IsUserTypeValid(user.Ntid, IES.Common.UserType.User, false, It.IsAny<bool>(), It.IsAny<bool>())).Returns(true);
+            this.validationMethods.Setup(x => x.IsUserTypeValid(user2.Ntid, IES.Common.UserType.User, false, It.IsAny<bool>(), It.IsAny<bool>())).Returns(true);
 
-            ProposalUserInformationModelView proposalUserInfo = PopulateUserInfo(user);
+            ProposalUserInformationModelView proposalUserInfo = PopulateUserInfo(user, user2);
             ProposalApprovalsModelView proposalApprovalsInfo = PopulateApprovalsInfo(user);
 
             // verify that there are no validation errors
@@ -2682,6 +2700,13 @@ namespace GenTRAC.Tests.ActionLogic
 
             proposalUserInfo.ContractsPOCNtId = savedUser.Ntid;
             validationErrors.Clear();
+            // CASE: BackupContractsPOC not set
+            proposalUserInfo.BackupContractsPOCNtId = string.Empty;
+            sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
+            Assert.AreEqual(2, validationErrors.Count);
+
+            proposalUserInfo.BackupContractsPOCNtId = user2.Ntid;
+            validationErrors.Clear();
             // CASE: GenBOE Workspace Creator not set
             proposalUserInfo.GenBoeWorkspaceCreatorNtid = null;
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
@@ -2721,6 +2746,14 @@ namespace GenTRAC.Tests.ActionLogic
                 DisplayName = "savedDisplayName"
             };
 
+            UserDTO user2 = new UserDTO()
+            {
+                Id = 3,
+                Ntid = "myNtId2",
+                DisplayName = "myDisplayName2",
+                UserType = IES.Common.UserType.User
+            };
+
             List<ProposalPermissionDto> savedUserPermissions = PopulateUserAndPermissions(savedUser, proposal);
 
             // GetDataForProposalUserInformation
@@ -2729,6 +2762,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.retriever.Setup(x => x.GetProposalPermissions(proposalId.Value)).Returns(savedUserPermissions); // GetFullProposal
             this.userMapper.Setup(x => x.GetById(savedUser.Id)).Returns(savedUser); // UserMapper
             this.genBoePermissionsLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("TestNtid", "TestDisplayName") });
+            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>())).Returns(new Collection<UserDTO>() { savedUser });
 
             // ProposalChecklistSaveInfo
             ICollection<ProposalChecklistSaveInfo> saveInfo = new Collection<ProposalChecklistSaveInfo>();
@@ -2736,10 +2770,10 @@ namespace GenTRAC.Tests.ActionLogic
             this.retriever.Setup(x => x.GetAllChecklistSaveInfo(proposalId.Value)).Returns(saveInfo);
 
             // Validation Methods
-            this.validationMethods.Setup(x => x.IsUserTypeValid(user.Ntid, IES.Common.UserType.User, false, false, false)).Returns(false);
+            this.validationMethods.Setup(x => x.IsUserTypeValid(user2.Ntid, IES.Common.UserType.User, false, It.IsAny<bool>(), It.IsAny<bool>())).Returns(true);
 
             ProposalApprovalsModelView proposalApprovalsInfo = PopulateApprovalsInfo(user);
-            ProposalUserInformationModelView proposalUserInfo = PopulateUserInfo(user);
+            ProposalUserInformationModelView proposalUserInfo = PopulateUserInfo(user, user2);
 
             // verify that there are 9 validation errors
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
@@ -2779,6 +2813,14 @@ namespace GenTRAC.Tests.ActionLogic
                 DisplayName = "savedDisplayName"
             };
 
+            UserDTO user2 = new UserDTO()
+            {
+                Id = 3,
+                Ntid = "myNtId2",
+                DisplayName = "myDisplayName2",
+                UserType = IES.Common.UserType.User
+            };
+
             List<ProposalPermissionDto> savedUserPermissions = PopulateUserAndPermissions(savedUser, proposal);
             
             // GetDataForProposalUserInformation
@@ -2787,6 +2829,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.retriever.Setup(x => x.GetProposalPermissions(proposalId.Value)).Returns(savedUserPermissions); // GetFullProposal
             this.userMapper.Setup(x => x.GetById(savedUser.Id)).Returns(savedUser); // UserMapper
             this.genBoePermissionsLoader.Setup(x => x.GetCreateWorkspaceRolesForPtm(It.IsAny<string>(), It.IsAny<string>())).Returns(new Collection<KeyValuePair<string, string>>() { new KeyValuePair<string, string>("TestNtid", "TestDisplayName") });
+            this.userLoader.Setup(x => x.GetUserDTOsByADGroup(It.IsAny<string>())).Returns(new Collection<UserDTO>() { savedUser });
 
             // ProposalChecklistSaveInfo
             ICollection<ProposalChecklistSaveInfo> saveInfo = new Collection<ProposalChecklistSaveInfo>();
@@ -2794,11 +2837,11 @@ namespace GenTRAC.Tests.ActionLogic
             this.retriever.Setup(x => x.GetAllChecklistSaveInfo(proposalId.Value)).Returns(saveInfo);
 
             // Validation Methods
-            this.validationMethods.Setup(x => x.IsUserTypeValid(user.Ntid, IES.Common.UserType.User, false, false, false)).Returns(true);
-            this.validationMethods.Setup(x => x.IsUserTypeValid(user.Ntid, IES.Common.UserType.User, false, true, true)).Returns(true);
+            this.validationMethods.Setup(x => x.IsUserTypeValid(user.Ntid, IES.Common.UserType.User, false, It.IsAny<bool>(), It.IsAny<bool>())).Returns(true);
+            this.validationMethods.Setup(x => x.IsUserTypeValid(user2.Ntid, IES.Common.UserType.User, false, It.IsAny<bool>(), It.IsAny<bool>())).Returns(true);
 
             ProposalApprovalsModelView proposalApprovalsInfo = PopulateApprovalsInfo(user);
-            ProposalUserInformationModelView proposalUserInfo = PopulateUserInfo(user);
+            ProposalUserInformationModelView proposalUserInfo = PopulateUserInfo(user, user2);
 
             // verify that there are no validation errors
             sut.ValidateUserTypes(proposalId.Value, proposalApprovalsInfo, proposalUserInfo, validationErrors);
@@ -2819,6 +2862,7 @@ namespace GenTRAC.Tests.ActionLogic
                 permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = (PtmRole)i, ProposalID = proposal.Id });
             }
 
+            permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = PtmRole.BackupContractsPOC, ProposalID = proposal.Id });
             permissions.Add(new ProposalPermissionDto() { UserId = user.Id, Role = PtmRole.BackupPricer, ProposalID = proposal.Id });
             permissions[(int)PtmRole.AdditionalPricingResource1 - 1].ResourceType = ResourceType.Pricer;
             permissions[(int)PtmRole.AdditionalPricingResource2 - 1].ResourceType = ResourceType.Strategist;
@@ -2845,8 +2889,9 @@ namespace GenTRAC.Tests.ActionLogic
         /// populate a ProposalUserInformationModelView class from a single user DTO
         /// </summary>
         /// <param name="user">input User DTO to populate with</param>
+        /// <param name="user2">second input User DTO to populate with</param>
         /// <returns>returns a populated ProposalUserInformationModelView</returns>
-        private static ProposalUserInformationModelView PopulateUserInfo(UserDTO user)
+        private static ProposalUserInformationModelView PopulateUserInfo(UserDTO user, UserDTO user2)
         {
             ProposalUserInformationModelView userInfo = new ProposalUserInformationModelView();
 
@@ -2872,6 +2917,9 @@ namespace GenTRAC.Tests.ActionLogic
 
             userInfo.ContractsPOCNtId = user.Ntid;
             userInfo.ContractsPOCDisplayName = user.DisplayName;
+
+            userInfo.BackupContractsPOCNtId = user2.Ntid;
+            userInfo.BackupContractsPOCDisplayName = user2.DisplayName;
 
             userInfo.BackupPricerNtId = user.Ntid;
             userInfo.BackupPricerDisplayName = user.DisplayName;
@@ -3033,7 +3081,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3067,7 +3115,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3094,7 +3142,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3122,7 +3170,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3150,7 +3198,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3178,7 +3226,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3206,7 +3254,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3226,36 +3274,6 @@ namespace GenTRAC.Tests.ActionLogic
         /// <summary>
         /// Validates the completing of certification timeline, specifically Certification Not Required functionality
         /// 
-        /// We now allow certification not required when Proposal is Completed so this should throw no exceptions
-        /// </summary>
-        [TestMethod]
-        public void ValidateCompletingCertificationTimelineCertificationNotRequired_ex1()
-        {
-            var sut = this.CreateSystem();
-            ProposalDto proposal = new ProposalDto()
-            {
-                Id = 5,
-                ProposalStatus = ProposalStatus.Completed
-            };
-
-            // GetDataForProposalUserInformation
-            this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
-
-            ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
-            {
-                AgreementDate = "01/01/2018",
-                CertificationDate = "01/03/2018",
-                CutOffDateUtilization = CutOffDateUtilization.Yes,
-                Comments = "55",
-                ReasonCertificationNotRequired = ReasonCertificationNotRequired.LostNotAwarded
-            };
-
-            sut.ValidateCertification(5, model, false);
-        }
-
-        /// <summary>
-        /// Validates the completing of certification timeline, specifically Certification Not Required functionality
-        /// 
         /// Other and no comment
         /// </summary>
         [TestMethod]
@@ -3266,7 +3284,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3287,67 +3305,6 @@ namespace GenTRAC.Tests.ActionLogic
         /// <summary>
         /// Validates the completing of certification timeline, specifically Certification Not Required functionality
         /// 
-        /// Complete and cert reason filled in
-        /// </summary>
-        [TestMethod]
-        [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
-        public void ValidateCompletingCertificationTimelineCertificationNotRequired_ex3()
-        {
-            var sut = this.CreateSystem();
-            ProposalDto proposal = new ProposalDto()
-            {
-                Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
-            };
-
-            // GetDataForProposalUserInformation
-            this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
-
-            ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
-            {
-                AgreementDate = "01/01/2018",
-                CertificationDate = "01/03/2018",
-                CutOffDateUtilization = CutOffDateUtilization.Yes,
-                Comments = "55",
-                ReasonCertificationNotRequired = ReasonCertificationNotRequired.LostNotAwarded
-            };
-
-            sut.ValidateCertification(5, model, true);
-        }
-
-        /// <summary>
-        /// Validates the completing of certification timeline, specifically Certification Not Required functionality
-        /// 
-        /// Valid 1
-        /// </summary>
-        [TestMethod]
-        public void ValidateCompletingCertificationTimelineCertificationNotRequired_1()
-        {
-            var sut = this.CreateSystem();
-            ProposalDto proposal = new ProposalDto()
-            {
-                Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
-            };
-
-            // GetDataForProposalUserInformation
-            this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
-
-            ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
-            {
-                AgreementDate = "01/01/2018",
-                CertificationDate = "01/03/2018",
-                CutOffDateUtilization = CutOffDateUtilization.Yes,
-                Comments = "55",
-                ReasonCertificationNotRequired = ReasonCertificationNotRequired.LostNotAwarded
-            };
-
-            sut.ValidateCertification(5, model, false);
-        }
-
-        /// <summary>
-        /// Validates the completing of certification timeline, specifically Certification Not Required functionality
-        /// 
         /// Valid 2
         /// </summary>
         [TestMethod]
@@ -3357,7 +3314,7 @@ namespace GenTRAC.Tests.ActionLogic
             ProposalDto proposal = new ProposalDto()
             {
                 Id = 5,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             // GetDataForProposalUserInformation
@@ -3390,7 +3347,7 @@ namespace GenTRAC.Tests.ActionLogic
             {
                 Id = 1,
                 WorkflowStatus = WorkflowStatus.ProposalLocked,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(true);
@@ -3414,7 +3371,7 @@ namespace GenTRAC.Tests.ActionLogic
             {
                 Id = 1,
                 WorkflowStatus = WorkflowStatus.Started,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(true);
@@ -3481,7 +3438,7 @@ namespace GenTRAC.Tests.ActionLogic
             {
                 Id = 1,
                 WorkflowStatus = WorkflowStatus.ProposalLocked,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             this.securityAccess.Setup(x => x.CurrentUserHasRole(It.IsAny<PtmRole>(), proposal.Id)).Returns(false);
@@ -3525,7 +3482,7 @@ namespace GenTRAC.Tests.ActionLogic
                 UpdateDate = DateTime.Now,
                 TrackingNumber = "20-00001",
                 ProposalTitle = "Test",
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             FullProposal fullProposal = new FullProposal(proposal);
@@ -3569,7 +3526,7 @@ namespace GenTRAC.Tests.ActionLogic
                 UpdateDate = DateTime.Now,
                 TrackingNumber = baseTrackingNumber,
                 ProposalTitle = baseTitle,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             ProposalDto proposal = new ProposalDto()
@@ -3578,7 +3535,7 @@ namespace GenTRAC.Tests.ActionLogic
                 UpdateDate = DateTime.Now,
                 TrackingNumber = baseTrackingNumber + "-PR1",
                 ProposalTitle = baseTitle + "-PR1",
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             FullProposal fullProposal = new FullProposal(proposal);
@@ -3614,7 +3571,7 @@ namespace GenTRAC.Tests.ActionLogic
                 UpdateDate = DateTime.Now,
                 TrackingNumber = baseTrackingNumber,
                 ProposalTitle = baseTitle,
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             ProposalDto proposal = new ProposalDto()
@@ -3623,7 +3580,7 @@ namespace GenTRAC.Tests.ActionLogic
                 UpdateDate = DateTime.Now,
                 TrackingNumber = baseTrackingNumber + "-PR1",
                 ProposalTitle = baseTitle + "-PR1",
-                ProposalStatus = ProposalStatus.Submitted
+                ProposalStatus = ProposalStatus.PendingCertification
             };
 
             FullProposal fullProposal = new FullProposal(proposal);
@@ -3764,7 +3721,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             sut.RevertRevisedProposal(proposal.Id);
 
-            this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Submitted), Times.Once());
+            this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.PendingCertification), Times.Once());
             this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Completed), Times.Never());
         }
 
@@ -3789,7 +3746,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             sut.RevertRevisedProposal(proposal.Id);
 
-            this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Submitted), Times.Never());
+            this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.PendingCertification), Times.Never());
             this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Completed), Times.Once());
         }
 
@@ -3879,7 +3836,7 @@ namespace GenTRAC.Tests.ActionLogic
             {
                 Id = 1,
                 RevisionOfId = 2,
-                ProposalStatus = ProposalStatus.Submitted,
+                ProposalStatus = ProposalStatus.PendingCertification,
                 DocumentId = null
             };
 

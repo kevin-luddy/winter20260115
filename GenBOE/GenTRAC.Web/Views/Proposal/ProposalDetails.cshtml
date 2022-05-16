@@ -7,7 +7,7 @@
     string naHelpText = "Proposal was submitted before Certification Functionality<br/> was introduced into PTM.";
 }
 
-    <script type="text/javascript">
+<script type="text/javascript">
 
     // tabs class will stop float after breadcrumb
     $('div[name=stop_float]').css('clear', 'none');
@@ -86,6 +86,7 @@
             if (window.location.hash != ProposalDetailsWidget.currentHash && window.location.hash != '#users') {
                 $('div[tab*=Proposal]').hide();
                 $('div[tab*=Checklist]').hide();
+                $('div[tab*=Contracts]').hide();
                 $('div[tab*=Approvals]').hide();
                 $('div[tab*=PSA]').hide();
                 $('div[tab*=CertificationTimeline]').hide();
@@ -107,6 +108,10 @@
                 else if (currentTab == 'Checklist') {
                     var data = {};
                     $(document).trigger('LOAD_CHECKLIST_TAB', data);
+                }
+                else if (currentTab == 'Contracts') {
+                    var data = {};
+                    $(document).trigger('LOAD_CONTRACTS_TAB', data);
                 }
                 else if (currentTab == 'Approvals') {
                     var data = {};
@@ -157,6 +162,10 @@
 
                 if (proposalID < 0 || @Json.Encode(Model.RevisionHistoryVisibility == SecurityAuthorization.None)) {
                     $('[tab*=RevisionHistory]').parents("li").addClass('display-none');
+                }
+
+                if (proposalID < 0 || @Json.Encode(Model.ContractsVisibility == SecurityAuthorization.None)) {
+                    $('[tab*=Contracts]').parents('li').addClass('display-none');
                 }
             }
         };
@@ -361,6 +370,31 @@
 
         });
 
+        ProposalDetailsWidget.on('LOAD_CONTRACTS_TAB', function (e, params) {
+            $("div[tab*=Contracts] .contracts-details").children().remove();
+            $("div[tab*=Contracts] .contracts-details").html(ProposalDetailsWidget.LoadingHtml);
+            $("div[tab*=Contracts] .contracts-details").removeClass("display-none");
+            var contractsUrl =  GenSession.CreateUrl({
+                controller: '@WebConstants.Controller.CONTRACTS',
+                action: '@WebConstants.Action.DISPLAY_CONTRACTS_INDEX',
+                id: '@Model.ProposalID'
+            });
+
+            var data = {psaVisibility: '@Model.PsaVisibility'};
+
+            $.ajax({
+                type: "POST",
+                url: contractsUrl,
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    $('div[tab*=Contracts] .contracts-details').html(response);
+
+                }
+            });
+
+        });
+
         ProposalDetailsWidget.on('LOAD_CERTIFICATION_TIMELINE_TAB', function (e, params) {
             $("div[tab*=CertificationTimeline] .ct-details").children().remove();
             $("div[tab*=CertificationTimeline] .ct-details").html(ProposalDetailsWidget.LoadingHtml);
@@ -450,99 +484,103 @@
 
         ProposalDetailsWidget.LoadTab();
     });
-    </script>
+</script>
 
-<div class="proposalsetup-details module full">
-    <div id="ProposalTabs">
-        <div class="breadcrumb">
-            @Html.RouteLink("Proposals", WebConstants.Route.Name.HOME, new { action = WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME, controller = WebConstants.Controller.HOME })
-            @if (Model.ProposalID < 0 && !Model.IsNewRevision)
-            {
-                <text>
-                    > New Proposal
-                </text>
-            }
-            else if (Model.IsNewRevision)
-            {
-                <text>
-                    > New Revision
-                </text>
-            }
-            else
-            {
-                <text>
-                    > @proposalLinkText
-                </text>
-            }
-        </div>
-        <div class="tabs">
-            <div class="tabs-left"></div>
-            <div class="tabs-center" style="width: 976px">
-                <div class="proposal-text" style="text-align:left;padding:5px;">
-                    @if (Model.ProposalID < 0 && !Model.IsNewRevision)
-                    {
-                        <text>
-                            <div style="color: #FFFFFF">New Proposal</div>
-                        </text>
-                    }
-                    else if (Model.IsNewRevision)
-                    {
-                        <text>
-                            <div style="color: #FFFFFF">New Revision for @Model.RevisedProposalTitle</div>
-                        </text>
-                    }
-                    else
-                    {
-                        <text>
-                            <div class="proposalTitle">@proposalLinkText - @Model.ProposalTitle</div>
-                            <div class="proposalStatusDates">
-                                <p style="padding-bottom: 2px;">
-                                    @Model.WorkflowStatusLineText
-                                <p>
-                                    @Model.CertificationCompletedLineText
-                                </p>
-                            </div>
-                        </text>
-                    }
-                </div>
-                <div id="revisionButtons">
-                    @if (Model.DisplayNewRevisionButton)
-                    {
-                        <button name="new-revision-button" type="button" class="ies stateful_button">+ New Revision</button>
-                    }
-                    @if (Model.DisplayRevertRevisionButton)
-                    {
-                        <button name="revert-revision-button" type="button" class="ies stateful_button">Revert to Prior Version</button>
-                    }
-                </div>
+    <div class="proposalsetup-details module full">
+        <div id="ProposalTabs">
+            <div class="breadcrumb">
+                @Html.RouteLink("Proposals", WebConstants.Route.Name.HOME, new { action = WebConstants.Action.HOME_DISPLAY_GENTRAC_HOME, controller = WebConstants.Controller.HOME })
+                @if (Model.ProposalID < 0 && !Model.IsNewRevision)
+                {
+                    <text>
+                        > New Proposal
+                    </text>
+                }
+                else if (Model.IsNewRevision)
+                {
+                    <text>
+                        > New Revision
+                    </text>
+                }
+                else
+                {
+                    <text>
+                        > @proposalLinkText
+                    </text>
+                }
+            </div>
+            <div class="tabs">
+                <div class="tabs-left"></div>
+                <div class="tabs-center" style="width: 976px">
+                    <div class="proposal-text" style="text-align:left;padding:5px;">
+                        @if (Model.ProposalID < 0 && !Model.IsNewRevision)
+                        {
+                            <text>
+                                <div style="color: #FFFFFF">New Proposal</div>
+                            </text>
+                        }
+                        else if (Model.IsNewRevision)
+                        {
+                            <text>
+                                <div style="color: #FFFFFF">New Revision for @Model.RevisedProposalTitle</div>
+                            </text>
+                        }
+                        else
+                        {
+                            <text>
+                                <div class="proposalTitle">@proposalLinkText - @Model.ProposalTitle</div>
+                                <div class="proposalStatusDates">
+                                    <p style="padding-bottom: 2px;">
+                                        @Model.WorkflowStatusLineText
+                                    <p>
+                                        @Model.CertificationCompletedLineText
+                                    </p>
+                                </div>
+                            </text>
+                        }
+                    </div>
+                    <div id="revisionButtons">
+                        @if (Model.DisplayNewRevisionButton)
+                        {
+                            <button name="new-revision-button" type="button" class="ies stateful_button">+ New Revision</button>
+                        }
+                        @if (Model.DisplayRevertRevisionButton)
+                        {
+                            <button name="revert-revision-button" type="button" class="ies stateful_button">Revert to Prior Version</button>
+                        }
+                    </div>
                     <ul class="inline-block proposalTabMenu">
                         <li class="active"><div class="tab-left"></div><a href="#Proposal" tab="Proposal">Proposal Setup</a><div class="tab-right"></div></li>
                         <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Checklist" tab="Checklist">Checklist</a><div class="tab-right"></div></li>
                         <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#PSA" tab="PSA">Post Submittal Attachments</a><div class="tab-right"></div></li>
+                        <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Contracts" tab="Contracts">Contracts</a><div class="tab-right"></div></li>
                         <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#Approvals" tab="Approvals">Approvals</a><div class="tab-right"></div></li>
                         <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#CertificationTimeline" tab="CertificationTimeline">Certification Timeline</a><div class="tab-right"></div></li>
                         <li data-proposal-type="standard" style="@proposalTabsCss"><div class="tab-left"></div><a href="#RevisionHistory" tab="RevisionHistory">Revision History</a><div class="tab-right"></div></li>
                     </ul>
                 </div>
-            <div class="tabs-right"></div>
+                <div class="tabs-right"></div>
+            </div>
+        </div>
+        <div tab="Proposal">
+            <div class="proposal-details"></div>
+        </div>
+        <div tab="Checklist">
+            <div class="checklist-details"></div>
+        </div>
+        <div tab="PSA">
+            <div class="psa-details"></div>
+        </div>
+        <div tab="Contracts">
+            <div class="contracts-details"></div>
+        </div>
+        <div tab="Approvals">
+            <div class="approvals-details"></div>
+        </div>
+        <div tab="CertificationTimeline">
+            <div class="ct-details"></div>
+        </div>
+        <div tab="RevisionHistory">
+            <div class="revision-history"></div>
         </div>
     </div>
-    <div tab="Proposal">
-        <div class="proposal-details"></div>
-    </div>
-    <div tab="Checklist">
-        <div class="checklist-details"></div>
-    </div>
-    <div tab="PSA">
-        <div class="psa-details"></div>
-    </div>
-    <div tab="Approvals">
-        <div class="approvals-details"></div>
-    </div>
-    <div tab="CertificationTimeline">
-        <div class="ct-details"></div>
-    </div>
-    <div tab="RevisionHistory">
-        <div class="revision-history"></div>
-    </div>
-</div>

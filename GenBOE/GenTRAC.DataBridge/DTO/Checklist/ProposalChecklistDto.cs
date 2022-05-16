@@ -45,9 +45,9 @@ namespace GenTRAC.DataBridge.DTO
         public int ProposalID { get; set; }
 
         /// <summary>
-        /// Proposal Submittal Date
+        /// Estimating Submits To Contracts Date
         /// </summary>
-        public DateTime? ProposalSubmittalDate { get; set; }
+        public DateTime? EstimatingSubmitsToContractsDate { get; set; }
 
         /// <summary>
         /// Submitted Value
@@ -95,9 +95,19 @@ namespace GenTRAC.DataBridge.DTO
         public long? OtherDirectCosts { get; set; }
 
         /// <summary>
+        /// Profit Fee + COM (being replaced by Profit Fee / COM, but required for historical data)
+        /// </summary>
+        public long? ProfitFeeWithCom { get; set; }
+
+        /// <summary>
         /// Profit Fee
         /// </summary>
-        public long? ProfitFee { get; set; }
+        public long? Profit { get; set; }
+
+        /// <summary>
+        /// COM
+        /// </summary>
+        public long? Com { get; set; }
 
         /// <summary>
         /// ROS Percentage

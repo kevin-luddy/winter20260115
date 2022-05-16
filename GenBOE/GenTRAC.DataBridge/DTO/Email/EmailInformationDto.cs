@@ -115,5 +115,18 @@ namespace GenTRAC.DataBridge.DTO
                 return new Uri(url);
             }
         }
+
+        /// <summary>
+        /// Gets the Contracts tab URL.
+        /// </summary>
+        public Uri ProposalContractsUrl
+        {
+            get
+            {
+                string commonUrl = IES.Common.ConfigurationUtilities.GetAppSetting("ServerURL");
+                string url = string.Format("{0}/proposal/DisplayProposalDetails/id/{1}/#Contracts", commonUrl, this.ProposalId);
+                return new Uri(url);
+            }
+        }
     }
 }

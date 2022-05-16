@@ -42,7 +42,6 @@ namespace GenBOE.Models
         public virtual DbSet<BOECustomFieldValueXREF> BOECustomFieldValueXREFs { get; set; }
         public virtual DbSet<BoeDatabaseVersion> BoeDatabaseVersions { get; set; }
         public virtual DbSet<BOEFormIBOE> BOEFormIBOEs { get; set; }
-        public virtual DbSet<BOEFormPBOE> BOEFormPBOEs { get; set; }
         public virtual DbSet<BOELaborSpread> BOELaborSpreads { get; set; }
         public virtual DbSet<BOELaborTypeCustomFieldValueXREF> BOELaborTypeCustomFieldValueXREFs { get; set; }
         public virtual DbSet<BOEPotentialRole> BOEPotentialRoles { get; set; }
@@ -174,6 +173,7 @@ namespace GenBOE.Models
         public virtual DbSet<BOELaborType> BOELaborTypes { get; set; }
         public virtual DbSet<MOQTypeSelection> MOQTypeSelections { get; set; }
         public virtual DbSet<MoqTypeTableCustomFieldValueXREF> MoqTypeTableCustomFieldValueXREFs { get; set; }
+        public virtual DbSet<BOEFormPBOE> BOEFormPBOEs { get; set; }
     
         [DbFunction("GenBoeEntities", "SplitString")]
         public virtual IQueryable<SplitString_Result> SplitString(string list, string delimiter, string emptyListItem)
@@ -2370,7 +2370,7 @@ namespace GenBOE.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertBOEFormIBOE", iBOEFormIDParameter, updateDTParameter, workspaceIDParameter, formNameParameter, descriptionParameter, basisAndRationaleParameter, proposalTitleParameter, proposalDateParameter, pocParameter, pocPhoneParameter, approverParameter, approverPhoneParameter, businessAreaParameter, formVersionParameter, resourceIDsParameter, clinContractTypesParameter, revisionParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertBOEFormPBOE(Nullable<int> pBOEFormID, Nullable<System.DateTime> updateDT, Nullable<int> workspaceID, string formName, string description, string basisAndRationale, string proposalTitle, string proposalDate, string poc, string pocPhone, string approver, string approverPhone, Nullable<int> formVersion, Nullable<int> degreeOfCompetition, Nullable<int> cCoPD, string cCoPDOtherText, string rFP, string proposalNumber, string supplierName, string validityDate, Nullable<int> supplierProposalSupportingDataIncluded, Nullable<int> priceAnalysisIncluded, Nullable<int> commercialItemDocIncluded, Nullable<int> costAnalysisIncluded, Nullable<int> shouldCostEstimate, Nullable<System.DateTime> shouldCostEstimateDate, Nullable<int> sowWritten, Nullable<System.DateTime> sowWrittenDate, Nullable<int> rFPRelease, Nullable<System.DateTime> rFPReleaseDate, Nullable<int> firmSupplierReceipt, Nullable<System.DateTime> firmSupplierReceiptDate, Nullable<int> sourceSelection, Nullable<System.DateTime> sourceSelectionDate, Nullable<int> cID, Nullable<System.DateTime> cIDDate, Nullable<int> govtReview, Nullable<System.DateTime> govtReviewDate, Nullable<int> priceAnalysis, Nullable<System.DateTime> priceAnalysisDate, Nullable<int> technicalEvaluation, Nullable<System.DateTime> technicalEvaluationDate, Nullable<int> factFinding, Nullable<System.DateTime> factFindingDate, Nullable<int> costAnalysis, Nullable<System.DateTime> costAnalysisDate, Nullable<int> govtPricing, Nullable<System.DateTime> govtPricingDate, Nullable<int> supplierNegotiations, Nullable<System.DateTime> supplierNegotiationsDate, Nullable<int> mOU, Nullable<System.DateTime> mOUDate, Nullable<int> procurement, Nullable<System.DateTime> procurementDate, Nullable<System.DateTime> plannedDate_WrittenApproval, Nullable<System.DateTime> plannedDate_ApprovedSubmission, string resourceIDs, string clinContractTypes, Nullable<int> revision, string cIDText, string govtReviewText, string priceAnalysisText, string technicalEvaluationText, string factFindingText, string costAnalysisText, string govtPricingText, string supplierNegotiationsText, string mOUText, string procurementText, string shouldCostEstimateText, string sowWrittenText, string rFPReleaseText, string firmSupplierReceiptText, string sourceSelectionText)
+        public virtual ObjectResult<Nullable<int>> upsertBOEFormPBOE(Nullable<int> pBOEFormID, Nullable<System.DateTime> updateDT, Nullable<int> workspaceID, string formName, string description, string proposalTitle, string proposalDate, string poc, string pocPhone, string approver, string approverPhone, Nullable<int> formVersion, Nullable<int> cCoPD, string cCoPDOtherText, string rFP, string proposalNumber, string supplierName, string validityDate, Nullable<int> shouldCostEstimate, Nullable<System.DateTime> shouldCostEstimateDate, Nullable<int> rFPRelease, Nullable<System.DateTime> rFPReleaseDate, Nullable<int> firmSupplierReceipt, Nullable<System.DateTime> firmSupplierReceiptDate, Nullable<int> sourceSelection, Nullable<System.DateTime> sourceSelectionDate, Nullable<int> cID, Nullable<System.DateTime> cIDDate, Nullable<int> priceAnalysis, Nullable<System.DateTime> priceAnalysisDate, Nullable<int> technicalEvaluation, Nullable<System.DateTime> technicalEvaluationDate, Nullable<int> factFinding, Nullable<System.DateTime> factFindingDate, Nullable<int> costAnalysis, Nullable<System.DateTime> costAnalysisDate, Nullable<int> govtPricing, Nullable<System.DateTime> govtPricingDate, Nullable<int> supplierNegotiations, Nullable<System.DateTime> supplierNegotiationsDate, Nullable<int> mOU, Nullable<System.DateTime> mOUDate, Nullable<System.DateTime> plannedDate_WrittenApproval, Nullable<System.DateTime> plannedDate_ApprovedSubmission, string resourceIDs, string clinContractTypes, Nullable<int> revision, string cIDText, string priceAnalysisText, string technicalEvaluationText, string factFindingText, string costAnalysisText, string govtPricingText, string supplierNegotiationsText, string mOUText, string shouldCostEstimateText, string rFPReleaseText, string firmSupplierReceiptText, string sourceSelectionText, Nullable<int> supplierCCoPD, string sourceSelectionDescription, string commercialityDescription, string technicalEvaluationDescription, string priceAnalysisDescription, string costAnalysisDescription, string rationaleValueSummary, Nullable<int> govtPricingReceived, Nullable<System.DateTime> govtPricingReceivedDate, string govtPricingReceivedText, Nullable<int> costAnalysisUnqual, Nullable<System.DateTime> costAnalysisUnqualDate, string costAnalysisUnqualText, string vendorId, Nullable<decimal> supplierProposedValue)
         {
             var pBOEFormIDParameter = pBOEFormID.HasValue ?
                 new ObjectParameter("PBOEFormID", pBOEFormID) :
@@ -2391,10 +2391,6 @@ namespace GenBOE.Models
             var descriptionParameter = description != null ?
                 new ObjectParameter("Description", description) :
                 new ObjectParameter("Description", typeof(string));
-    
-            var basisAndRationaleParameter = basisAndRationale != null ?
-                new ObjectParameter("BasisAndRationale", basisAndRationale) :
-                new ObjectParameter("BasisAndRationale", typeof(string));
     
             var proposalTitleParameter = proposalTitle != null ?
                 new ObjectParameter("ProposalTitle", proposalTitle) :
@@ -2424,10 +2420,6 @@ namespace GenBOE.Models
                 new ObjectParameter("FormVersion", formVersion) :
                 new ObjectParameter("FormVersion", typeof(int));
     
-            var degreeOfCompetitionParameter = degreeOfCompetition.HasValue ?
-                new ObjectParameter("DegreeOfCompetition", degreeOfCompetition) :
-                new ObjectParameter("DegreeOfCompetition", typeof(int));
-    
             var cCoPDParameter = cCoPD.HasValue ?
                 new ObjectParameter("CCoPD", cCoPD) :
                 new ObjectParameter("CCoPD", typeof(int));
@@ -2452,22 +2444,6 @@ namespace GenBOE.Models
                 new ObjectParameter("ValidityDate", validityDate) :
                 new ObjectParameter("ValidityDate", typeof(string));
     
-            var supplierProposalSupportingDataIncludedParameter = supplierProposalSupportingDataIncluded.HasValue ?
-                new ObjectParameter("SupplierProposalSupportingDataIncluded", supplierProposalSupportingDataIncluded) :
-                new ObjectParameter("SupplierProposalSupportingDataIncluded", typeof(int));
-    
-            var priceAnalysisIncludedParameter = priceAnalysisIncluded.HasValue ?
-                new ObjectParameter("PriceAnalysisIncluded", priceAnalysisIncluded) :
-                new ObjectParameter("PriceAnalysisIncluded", typeof(int));
-    
-            var commercialItemDocIncludedParameter = commercialItemDocIncluded.HasValue ?
-                new ObjectParameter("CommercialItemDocIncluded", commercialItemDocIncluded) :
-                new ObjectParameter("CommercialItemDocIncluded", typeof(int));
-    
-            var costAnalysisIncludedParameter = costAnalysisIncluded.HasValue ?
-                new ObjectParameter("CostAnalysisIncluded", costAnalysisIncluded) :
-                new ObjectParameter("CostAnalysisIncluded", typeof(int));
-    
             var shouldCostEstimateParameter = shouldCostEstimate.HasValue ?
                 new ObjectParameter("ShouldCostEstimate", shouldCostEstimate) :
                 new ObjectParameter("ShouldCostEstimate", typeof(int));
@@ -2475,14 +2451,6 @@ namespace GenBOE.Models
             var shouldCostEstimateDateParameter = shouldCostEstimateDate.HasValue ?
                 new ObjectParameter("ShouldCostEstimateDate", shouldCostEstimateDate) :
                 new ObjectParameter("ShouldCostEstimateDate", typeof(System.DateTime));
-    
-            var sowWrittenParameter = sowWritten.HasValue ?
-                new ObjectParameter("SowWritten", sowWritten) :
-                new ObjectParameter("SowWritten", typeof(int));
-    
-            var sowWrittenDateParameter = sowWrittenDate.HasValue ?
-                new ObjectParameter("SowWrittenDate", sowWrittenDate) :
-                new ObjectParameter("SowWrittenDate", typeof(System.DateTime));
     
             var rFPReleaseParameter = rFPRelease.HasValue ?
                 new ObjectParameter("RFPRelease", rFPRelease) :
@@ -2515,14 +2483,6 @@ namespace GenBOE.Models
             var cIDDateParameter = cIDDate.HasValue ?
                 new ObjectParameter("CIDDate", cIDDate) :
                 new ObjectParameter("CIDDate", typeof(System.DateTime));
-    
-            var govtReviewParameter = govtReview.HasValue ?
-                new ObjectParameter("GovtReview", govtReview) :
-                new ObjectParameter("GovtReview", typeof(int));
-    
-            var govtReviewDateParameter = govtReviewDate.HasValue ?
-                new ObjectParameter("GovtReviewDate", govtReviewDate) :
-                new ObjectParameter("GovtReviewDate", typeof(System.DateTime));
     
             var priceAnalysisParameter = priceAnalysis.HasValue ?
                 new ObjectParameter("PriceAnalysis", priceAnalysis) :
@@ -2580,14 +2540,6 @@ namespace GenBOE.Models
                 new ObjectParameter("MOUDate", mOUDate) :
                 new ObjectParameter("MOUDate", typeof(System.DateTime));
     
-            var procurementParameter = procurement.HasValue ?
-                new ObjectParameter("Procurement", procurement) :
-                new ObjectParameter("Procurement", typeof(int));
-    
-            var procurementDateParameter = procurementDate.HasValue ?
-                new ObjectParameter("ProcurementDate", procurementDate) :
-                new ObjectParameter("ProcurementDate", typeof(System.DateTime));
-    
             var plannedDate_WrittenApprovalParameter = plannedDate_WrittenApproval.HasValue ?
                 new ObjectParameter("PlannedDate_WrittenApproval", plannedDate_WrittenApproval) :
                 new ObjectParameter("PlannedDate_WrittenApproval", typeof(System.DateTime));
@@ -2611,10 +2563,6 @@ namespace GenBOE.Models
             var cIDTextParameter = cIDText != null ?
                 new ObjectParameter("CIDText", cIDText) :
                 new ObjectParameter("CIDText", typeof(string));
-    
-            var govtReviewTextParameter = govtReviewText != null ?
-                new ObjectParameter("GovtReviewText", govtReviewText) :
-                new ObjectParameter("GovtReviewText", typeof(string));
     
             var priceAnalysisTextParameter = priceAnalysisText != null ?
                 new ObjectParameter("PriceAnalysisText", priceAnalysisText) :
@@ -2644,17 +2592,9 @@ namespace GenBOE.Models
                 new ObjectParameter("MOUText", mOUText) :
                 new ObjectParameter("MOUText", typeof(string));
     
-            var procurementTextParameter = procurementText != null ?
-                new ObjectParameter("ProcurementText", procurementText) :
-                new ObjectParameter("ProcurementText", typeof(string));
-    
             var shouldCostEstimateTextParameter = shouldCostEstimateText != null ?
                 new ObjectParameter("ShouldCostEstimateText", shouldCostEstimateText) :
                 new ObjectParameter("ShouldCostEstimateText", typeof(string));
-    
-            var sowWrittenTextParameter = sowWrittenText != null ?
-                new ObjectParameter("SowWrittenText", sowWrittenText) :
-                new ObjectParameter("SowWrittenText", typeof(string));
     
             var rFPReleaseTextParameter = rFPReleaseText != null ?
                 new ObjectParameter("RFPReleaseText", rFPReleaseText) :
@@ -2668,7 +2608,67 @@ namespace GenBOE.Models
                 new ObjectParameter("SourceSelectionText", sourceSelectionText) :
                 new ObjectParameter("SourceSelectionText", typeof(string));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertBOEFormPBOE", pBOEFormIDParameter, updateDTParameter, workspaceIDParameter, formNameParameter, descriptionParameter, basisAndRationaleParameter, proposalTitleParameter, proposalDateParameter, pocParameter, pocPhoneParameter, approverParameter, approverPhoneParameter, formVersionParameter, degreeOfCompetitionParameter, cCoPDParameter, cCoPDOtherTextParameter, rFPParameter, proposalNumberParameter, supplierNameParameter, validityDateParameter, supplierProposalSupportingDataIncludedParameter, priceAnalysisIncludedParameter, commercialItemDocIncludedParameter, costAnalysisIncludedParameter, shouldCostEstimateParameter, shouldCostEstimateDateParameter, sowWrittenParameter, sowWrittenDateParameter, rFPReleaseParameter, rFPReleaseDateParameter, firmSupplierReceiptParameter, firmSupplierReceiptDateParameter, sourceSelectionParameter, sourceSelectionDateParameter, cIDParameter, cIDDateParameter, govtReviewParameter, govtReviewDateParameter, priceAnalysisParameter, priceAnalysisDateParameter, technicalEvaluationParameter, technicalEvaluationDateParameter, factFindingParameter, factFindingDateParameter, costAnalysisParameter, costAnalysisDateParameter, govtPricingParameter, govtPricingDateParameter, supplierNegotiationsParameter, supplierNegotiationsDateParameter, mOUParameter, mOUDateParameter, procurementParameter, procurementDateParameter, plannedDate_WrittenApprovalParameter, plannedDate_ApprovedSubmissionParameter, resourceIDsParameter, clinContractTypesParameter, revisionParameter, cIDTextParameter, govtReviewTextParameter, priceAnalysisTextParameter, technicalEvaluationTextParameter, factFindingTextParameter, costAnalysisTextParameter, govtPricingTextParameter, supplierNegotiationsTextParameter, mOUTextParameter, procurementTextParameter, shouldCostEstimateTextParameter, sowWrittenTextParameter, rFPReleaseTextParameter, firmSupplierReceiptTextParameter, sourceSelectionTextParameter);
+            var supplierCCoPDParameter = supplierCCoPD.HasValue ?
+                new ObjectParameter("SupplierCCoPD", supplierCCoPD) :
+                new ObjectParameter("SupplierCCoPD", typeof(int));
+    
+            var sourceSelectionDescriptionParameter = sourceSelectionDescription != null ?
+                new ObjectParameter("SourceSelectionDescription", sourceSelectionDescription) :
+                new ObjectParameter("SourceSelectionDescription", typeof(string));
+    
+            var commercialityDescriptionParameter = commercialityDescription != null ?
+                new ObjectParameter("CommercialityDescription", commercialityDescription) :
+                new ObjectParameter("CommercialityDescription", typeof(string));
+    
+            var technicalEvaluationDescriptionParameter = technicalEvaluationDescription != null ?
+                new ObjectParameter("TechnicalEvaluationDescription", technicalEvaluationDescription) :
+                new ObjectParameter("TechnicalEvaluationDescription", typeof(string));
+    
+            var priceAnalysisDescriptionParameter = priceAnalysisDescription != null ?
+                new ObjectParameter("PriceAnalysisDescription", priceAnalysisDescription) :
+                new ObjectParameter("PriceAnalysisDescription", typeof(string));
+    
+            var costAnalysisDescriptionParameter = costAnalysisDescription != null ?
+                new ObjectParameter("CostAnalysisDescription", costAnalysisDescription) :
+                new ObjectParameter("CostAnalysisDescription", typeof(string));
+    
+            var rationaleValueSummaryParameter = rationaleValueSummary != null ?
+                new ObjectParameter("RationaleValueSummary", rationaleValueSummary) :
+                new ObjectParameter("RationaleValueSummary", typeof(string));
+    
+            var govtPricingReceivedParameter = govtPricingReceived.HasValue ?
+                new ObjectParameter("GovtPricingReceived", govtPricingReceived) :
+                new ObjectParameter("GovtPricingReceived", typeof(int));
+    
+            var govtPricingReceivedDateParameter = govtPricingReceivedDate.HasValue ?
+                new ObjectParameter("GovtPricingReceivedDate", govtPricingReceivedDate) :
+                new ObjectParameter("GovtPricingReceivedDate", typeof(System.DateTime));
+    
+            var govtPricingReceivedTextParameter = govtPricingReceivedText != null ?
+                new ObjectParameter("GovtPricingReceivedText", govtPricingReceivedText) :
+                new ObjectParameter("GovtPricingReceivedText", typeof(string));
+    
+            var costAnalysisUnqualParameter = costAnalysisUnqual.HasValue ?
+                new ObjectParameter("CostAnalysisUnqual", costAnalysisUnqual) :
+                new ObjectParameter("CostAnalysisUnqual", typeof(int));
+    
+            var costAnalysisUnqualDateParameter = costAnalysisUnqualDate.HasValue ?
+                new ObjectParameter("CostAnalysisUnqualDate", costAnalysisUnqualDate) :
+                new ObjectParameter("CostAnalysisUnqualDate", typeof(System.DateTime));
+    
+            var costAnalysisUnqualTextParameter = costAnalysisUnqualText != null ?
+                new ObjectParameter("CostAnalysisUnqualText", costAnalysisUnqualText) :
+                new ObjectParameter("CostAnalysisUnqualText", typeof(string));
+    
+            var vendorIdParameter = vendorId != null ?
+                new ObjectParameter("VendorId", vendorId) :
+                new ObjectParameter("VendorId", typeof(string));
+    
+            var supplierProposedValueParameter = supplierProposedValue.HasValue ?
+                new ObjectParameter("SupplierProposedValue", supplierProposedValue) :
+                new ObjectParameter("SupplierProposedValue", typeof(decimal));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertBOEFormPBOE", pBOEFormIDParameter, updateDTParameter, workspaceIDParameter, formNameParameter, descriptionParameter, proposalTitleParameter, proposalDateParameter, pocParameter, pocPhoneParameter, approverParameter, approverPhoneParameter, formVersionParameter, cCoPDParameter, cCoPDOtherTextParameter, rFPParameter, proposalNumberParameter, supplierNameParameter, validityDateParameter, shouldCostEstimateParameter, shouldCostEstimateDateParameter, rFPReleaseParameter, rFPReleaseDateParameter, firmSupplierReceiptParameter, firmSupplierReceiptDateParameter, sourceSelectionParameter, sourceSelectionDateParameter, cIDParameter, cIDDateParameter, priceAnalysisParameter, priceAnalysisDateParameter, technicalEvaluationParameter, technicalEvaluationDateParameter, factFindingParameter, factFindingDateParameter, costAnalysisParameter, costAnalysisDateParameter, govtPricingParameter, govtPricingDateParameter, supplierNegotiationsParameter, supplierNegotiationsDateParameter, mOUParameter, mOUDateParameter, plannedDate_WrittenApprovalParameter, plannedDate_ApprovedSubmissionParameter, resourceIDsParameter, clinContractTypesParameter, revisionParameter, cIDTextParameter, priceAnalysisTextParameter, technicalEvaluationTextParameter, factFindingTextParameter, costAnalysisTextParameter, govtPricingTextParameter, supplierNegotiationsTextParameter, mOUTextParameter, shouldCostEstimateTextParameter, rFPReleaseTextParameter, firmSupplierReceiptTextParameter, sourceSelectionTextParameter, supplierCCoPDParameter, sourceSelectionDescriptionParameter, commercialityDescriptionParameter, technicalEvaluationDescriptionParameter, priceAnalysisDescriptionParameter, costAnalysisDescriptionParameter, rationaleValueSummaryParameter, govtPricingReceivedParameter, govtPricingReceivedDateParameter, govtPricingReceivedTextParameter, costAnalysisUnqualParameter, costAnalysisUnqualDateParameter, costAnalysisUnqualTextParameter, vendorIdParameter, supplierProposedValueParameter);
         }
     
         public virtual ObjectResult<Nullable<int>> upsertBOELaborSpread(Nullable<int> bOELaborSpreadID, Nullable<int> bOELaborTypeID, Nullable<System.DateTime> laborSpreadDate, Nullable<decimal> laborSpreadValue)

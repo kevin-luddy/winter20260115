@@ -17,15 +17,17 @@ namespace GenTRAC.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Proposal()
         {
+            this.ProposalContractsDatas = new HashSet<ProposalContractsData>();
+            this.ProposalContractsDatas1 = new HashSet<ProposalContractsData>();
+            this.ProposalsAttachments = new HashSet<ProposalsAttachment>();
+            this.Proposal1 = new HashSet<Proposal>();
+            this.ProposalChecklists = new HashSet<ProposalChecklist>();
             this.ProposalChecklistCompletes = new HashSet<ProposalChecklistComplete>();
             this.ProposalPARChecklistXREFs = new HashSet<ProposalPARChecklistXREF>();
             this.ProposalPPRChecklistXREFs = new HashSet<ProposalPPRChecklistXREF>();
             this.ProposalUserRoles = new HashSet<ProposalUserRole>();
-            this.CostElementLUs = new HashSet<CostElementLU>();
             this.ContractTypeLUs = new HashSet<ContractTypeLU>();
-            this.ProposalChecklists = new HashSet<ProposalChecklist>();
-            this.ProposalsAttachments = new HashSet<ProposalsAttachment>();
-            this.Proposal1 = new HashSet<Proposal>();
+            this.CostElementLUs = new HashSet<CostElementLU>();
         }
     
         public int ProposalID { get; set; }
@@ -89,23 +91,41 @@ namespace GenTRAC.Models
         public Nullable<System.DateTime> CertificationLastEmailed { get; set; }
         public Nullable<bool> CostVolumeClassified { get; set; }
         public Nullable<System.DateTime> NoBidDate { get; set; }
+        public Nullable<int> RevisionOfId { get; set; }
         public string OtherReasonComment { get; set; }
         public Nullable<int> ReasonCertificationNotRequired { get; set; }
-        public Nullable<int> RevisionOfId { get; set; }
         public string SetupComments { get; set; }
         public string InformationComments { get; set; }
+        public Nullable<System.DateTime> ModExecutedLastEmailed { get; set; }
+        public Nullable<System.DateTime> ProposalCompletedDate { get; set; }
     
         public virtual BOEToolLU BOEToolLU { get; set; }
+        public virtual ContractTypeGroupLU ContractTypeGroupLU { get; set; }
         public virtual CustomerTypeLU CustomerTypeLU { get; set; }
+        public virtual CutOffDateUtilizationLU CutOffDateUtilizationLU { get; set; }
         public virtual genTRACUser genTRACUser { get; set; }
         public virtual ISGSRoleLU ISGSRoleLU { get; set; }
+        public virtual LineOfBusinessLU LineOfBusinessLU { get; set; }
         public virtual PricingToolLU PricingToolLU { get; set; }
+        public virtual ProgramAreaLU ProgramAreaLU { get; set; }
         public virtual ProgramProposalStatusLU ProgramProposalStatusLU { get; set; }
+        public virtual ReasonCertificationNotRequiredLU ReasonCertificationNotRequiredLU { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProposalContractsData> ProposalContractsDatas { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProposalContractsData> ProposalContractsDatas1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProposalsAttachment> ProposalsAttachments { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Proposal> Proposal1 { get; set; }
+        public virtual Proposal Proposal2 { get; set; }
         public virtual ProposalClassLU ProposalClassLU { get; set; }
         public virtual ProposalLocationLU ProposalLocationLU { get; set; }
         public virtual ProposalStatusLU ProposalStatusLU { get; set; }
         public virtual ProposalTypeLU ProposalTypeLU { get; set; }
         public virtual RequestTypeLU RequestTypeLU { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<ProposalChecklist> ProposalChecklists { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProposalChecklistComplete> ProposalChecklistCompletes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
@@ -115,19 +135,8 @@ namespace GenTRAC.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProposalUserRole> ProposalUserRoles { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<CostElementLU> CostElementLUs { get; set; }
-        public virtual ContractTypeGroupLU ContractTypeGroupLU { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ContractTypeLU> ContractTypeLUs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ProposalChecklist> ProposalChecklists { get; set; }
-        public virtual LineOfBusinessLU LineOfBusinessLU { get; set; }
-        public virtual ProgramAreaLU ProgramAreaLU { get; set; }
-        public virtual CutOffDateUtilizationLU CutOffDateUtilizationLU { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<ProposalsAttachment> ProposalsAttachments { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Proposal> Proposal1 { get; set; }
-        public virtual Proposal Proposal2 { get; set; }
+        public virtual ICollection<CostElementLU> CostElementLUs { get; set; }
     }
 }

@@ -218,17 +218,6 @@ namespace GenTRAC.ActionLogic
         }
 
         /// <summary>
-        /// Determines if the No Bid button will be enabled
-        /// </summary>
-        /// <param name="proposalId">Proposal ID</param>
-        /// <returns>True if user no bid should be enabled</returns>
-        public bool IsNoBidEnabled(int proposalId)
-        {
-            FullProposal proposal = this.GetFullProposalDto(proposalId);
-            return proposal.ProposalStatus == ProposalStatus.InProgress;
-        }
-
-        /// <summary>
         /// Validate that the Cover Sheet approver is still approved
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
@@ -436,57 +425,6 @@ namespace GenTRAC.ActionLogic
             }
 
             return toReturn;
-        }
-
-        /// <summary>
-        /// Determines if the user has access to set/revert No Bid
-        /// </summary>
-        /// <param name="proposalId">Proposal ID</param>
-        /// <returns>True if user has access, otherwise false</returns>
-        public bool HasAccessToSetNoBid(int proposalId)
-        {
-            FullProposal proposal = this.GetFullProposalDto(proposalId);
-            bool isLeadOrBackup = proposal.Permissions.Any(x => (x.Role == PtmRole.Pricer || x.Role == PtmRole.BackupPricer) && x.UserId == proposal.CurrentUser.Id);
-            bool isAdmin = this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
-
-            return (isLeadOrBackup || isAdmin) && proposal.ProposalStatus != ProposalStatus.Revised;
-        }
-
-        /// <summary>
-        /// Set proposal to No Bid status
-        /// </summary>
-        /// <param name="proposalId">ID of Proposal</param>
-        public void SetProposalToNoBid(int proposalId)
-        {
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ApprovalsControllerLogic.SetProposalToNoBid", this.log))
-            {
-                // set status no bid
-                FullProposal proposal = this.GetFullProposalDto(proposalId);
-                proposal.ProposalStatus = ProposalStatus.NoBid;
-                proposal.NoBidDate = DateTime.Now;
-                proposal.Updateable = IES.Common.UpdateType.Upsert;
-                this.ProposalMediator.SaveProposal(proposal);
-            }
-        }
-
-        /// <summary>
-        /// Revert the Proposal from No Bid back to In Progress
-        /// </summary>
-        /// <param name="proposalId">ID of Proposal to revert</param>
-        public void RevertProposalFromNoBid(int proposalId)
-        {
-            using (IES.Common.StopwatchTimer sw = new IES.Common.StopwatchTimer("ApprovalsControllerLogic.RevertProposalFromNoBid", this.log))
-            {
-                // set status in progress
-                FullProposal proposal = this.GetFullProposalDto(proposalId);
-                proposal.ProposalStatus = ProposalStatus.InProgress;
-                proposal.NoBidDate = null;
-                proposal.Updateable = IES.Common.UpdateType.Upsert;
-                this.ProposalMediator.SaveProposal(proposal);
-            }
-
-            // reset workflow
-            this.ResetWorkflow(proposalId);
         }
     }
 }

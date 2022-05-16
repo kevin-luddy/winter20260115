@@ -578,6 +578,42 @@ namespace IES.Common
                 + "To upload the document, navigate to the <a href=\"{3}\">Post Submittal Attachments tab</a>."
         };
 
+        /// <summary>
+        /// Email sent when Proposal status is set to Lost
+        /// </summary>
+        public static readonly EmailContent STATUS_LOST_SET = new EmailContent
+        {
+            Subject = "{0} Notification", // [PTM Entry Number]
+            Body = "{0} was lost. {1}" // [PTM Entry Number], [Link to specific PTM entry]
+        };
+
+        /// <summary>
+        /// Email sent when Proposal status is set to No Bid
+        /// </summary>
+        public static readonly EmailContent STATUS_NO_BID_SET = new EmailContent
+        {
+            Subject = "{0} Notification", // [PTM Entry Number]
+            Body = "{0} was a No Bid. {1}" // [PTM Entry Number], [Link to specific PTM entry.]
+        };
+
+        /// <summary>
+        /// Email sent to remind the contracts leads to enter the Mod Executed Date
+        /// </summary>
+        public static readonly EmailContent MISSING_MOD_CERTIFICATION_DATE = new EmailContent
+        {
+            Subject = "{0} Notification", // [PTM Entry Number]
+            Body = "{0} requires the Mod Executed Date, which is necessary to complete the entry. Please visit the Contracts tab and enter the date. Your prompt response is appreciated, thank you. {1}" // [PTM Entry Number], [Link to specific PTM entry.]
+        };
+
+        /// <summary>
+        /// Email sent when Proposal status is set to Completed
+        /// </summary>
+        public static readonly EmailContent STATUS_COMPLETED_SET = new EmailContent
+        {
+            Subject = "{0} Notification", // [PTM Entry Number]
+            Body = "{0} was completed and placed on contract. {1}" // [PTM Entry Number], [Link to specific PTM entry.]
+        };
+
         #endregion
     }
 

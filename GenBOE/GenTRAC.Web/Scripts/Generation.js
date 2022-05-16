@@ -2515,7 +2515,7 @@ GenWidget.prototype.ajaxRequest = function (options, formElement) {
                 var error = {};
                 if (!(response.indexOf('{') < 0 || response.indexOf('{') > 2)) {
                     error = $.parseJSON(response);
-                    if (error.ReturnType == "GenValidationException") {
+                    if (error.ReturnType == "GenValidationException" || error.ReturnType == "IES.Common.Exceptions.GenValidationException") {
                         /*
                         *  Multi-form validation logic re-copied from $\GenBOE\GenBOE.Web\Resources\js\iBOE.js
                         *  Looks like Jim inadvertently removed this on 3/12.
@@ -4418,7 +4418,12 @@ function GenForm(inFormConfig, inContext) {
 			        }
 			        if (typeof(this.Type) !== 'undefined') {
 			            additionalClasses.push(this.Type.toLowerCase());
-			        }
+                    }
+
+                    // separate property from "Stateful" so it will not be subject isDirty 
+                    if (typeof this.IsEnabled !== 'undefined' && !this.IsEnabled) {
+                        buttonElement.prop('disabled', true);
+                    }
 
 			        $(buttonElement).addClass(additionalClasses.join(' '));
 			        buttonsDiv.append(buttonElement);
@@ -4438,7 +4443,7 @@ function GenForm(inFormConfig, inContext) {
 			                that.performFormAction(buttonAction, buttonElement);
 			            }
 			        });
-			    }
+                }
 			});
     }
 

@@ -39,6 +39,9 @@ AS
 **		10/29/20	Dusan				BOEJ-4925: Fixed MOQTypeSelectionId not copying
 **		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF
+**		4/13/2022	jquijano			IES-1014: Remove deprecated PBOE fields
+**		4/22/2022	jquijano			IES-1019: Add new fields to copy workspace
+**		5/2/2022	jquijano			IES-1126: Add VendorId, SupplierProposedValue
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -2528,22 +2531,15 @@ BEGIN TRY
 	SELECT TOP 1 @PBOEID = [PBOEFormID] FROM @PBOE WHERE Processed = 0
 
 	INSERT INTO [dbo].[BOEFormPBOE]
-		(UpdateDT, WorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion,  
-		[DegreeOfCompetition],
+		(UpdateDT, WorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion,  
 		[CCoPD],
 		[CCoPDOtherText],
 		[RFP],
 		[ProposalNumber],
 		[SupplierName],
 		[ValidityDate],
-		[SupplierProposalSupportingDataIncluded],
-		[PriceAnalysisIncluded],
-		[CommercialItemDocIncluded],
-		[CostAnalysisIncluded],
 		[ShouldCostEstimate],
 		[ShouldCostEstimateDate],
-		[SowWritten],
-		[SowWrittenDate],
 		[RFPRelease],
 		[RFPReleaseDate],
 		[FirmSupplierReceipt],
@@ -2552,8 +2548,6 @@ BEGIN TRY
 		[SourceSelectionDate],
 		[CID],
 		[CIDDate],
-		[GovtReview],
-		[GovtReviewDate],
 		[PriceAnalysis],
 		[PriceAnalysisDate],
 		[TechnicalEvaluation],
@@ -2568,12 +2562,9 @@ BEGIN TRY
 		[SupplierNegotiationsDate],
 		[MOU],
 		[MOUDate],
-		[Procurement],
-		[ProcurementDate],
 		[PlannedDate_WrittenApproval],
 		[PlannedDate_ApprovedSubmission],
 		[CIDText],
-		[GovtReviewText],
 		[PriceAnalysisText],
 		[TechnicalEvaluationText],
 		[FactFindingText],
@@ -2581,71 +2572,85 @@ BEGIN TRY
 		[GovtPricingText],
 		[SupplierNegotiationsText],
 		[MOUText],
-		[ProcurementText],
 		ShouldCostEstimateText,
-		SowWrittenText,
-		RFPReleaseText,
-		FirmSupplierReceiptText,
-		SourceSelectionText)
-	SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [BasisAndRationale], [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion, 
-		[DegreeOfCompetition],
-		[CCoPD],
-		[CCoPDOtherText],
-		[RFP],
-		[ProposalNumber],
-		[SupplierName],
-		[ValidityDate],
-		[SupplierProposalSupportingDataIncluded],
-		[PriceAnalysisIncluded],
-		[CommercialItemDocIncluded],
-		[CostAnalysisIncluded],
-		[ShouldCostEstimate],
-		[ShouldCostEstimateDate],
-		[SowWritten],
-		[SowWrittenDate],
-		[RFPRelease],
-		[RFPReleaseDate],
-		[FirmSupplierReceipt],
-		[FirmSupplierReceiptDate],
-		[SourceSelection],
-		[SourceSelectionDate],
-		[CID],
-		[CIDDate],
-		[GovtReview],
-		[GovtReviewDate],
-		[PriceAnalysis],
-		[PriceAnalysisDate],
-		[TechnicalEvaluation],
-		[TechnicalEvaluationDate],
-		[FactFinding],
-		[FactFindingDate],
-		[CostAnalysis],
-		[CostAnalysisDate],
-		[GovtPricing],
-		[GovtPricingDate],
-		[SupplierNegotiations],
-		[SupplierNegotiationsDate],
-		[MOU],
-		[MOUDate],
-		[Procurement],
-		[ProcurementDate],
-		[PlannedDate_WrittenApproval],
-		[PlannedDate_ApprovedSubmission],
-		[CIDText],
-		[GovtReviewText],
-		[PriceAnalysisText],
-		[TechnicalEvaluationText],
-		[FactFindingText],
-		[CostAnalysisText],
-		[GovtPricingText],
-		[SupplierNegotiationsText],
-		[MOUText],
-		[ProcurementText],
-		ShouldCostEstimateText,
-		SowWrittenText,
 		RFPReleaseText,
 		FirmSupplierReceiptText,
 		SourceSelectionText
+		,[SupplierCCoPD]
+		,[SourceSelectionDescription]
+		,[CommercialityDescription]
+		,[TechnicalEvaluationDescription]
+		,[PriceAnalysisDescription]
+		,[CostAnalysisDescription]
+		,[RationaleValueSummary]
+		,[GovtPricingReceived]
+		,[GovtPricingReceivedDate]
+		,[GovtPricingReceivedText]
+		,[CostAnalysisUnqual]
+		,[CostAnalysisUnqualDate]
+		,[CostAnalysisUnqualText]
+		,[VendorId]
+		,[SupplierProposedValue])
+	SELECT UpdateDT, @NewWorkspaceID, FormName, Description, [ProposalTitle],[ProposalDate],Poc, PocPhone, Approver, ApproverPhone, Revision,FormVersion, 
+		[CCoPD],
+		[CCoPDOtherText],
+		[RFP],
+		[ProposalNumber],
+		[SupplierName],
+		[ValidityDate],
+		[ShouldCostEstimate],
+		[ShouldCostEstimateDate],
+		[RFPRelease],
+		[RFPReleaseDate],
+		[FirmSupplierReceipt],
+		[FirmSupplierReceiptDate],
+		[SourceSelection],
+		[SourceSelectionDate],
+		[CID],
+		[CIDDate],
+		[PriceAnalysis],
+		[PriceAnalysisDate],
+		[TechnicalEvaluation],
+		[TechnicalEvaluationDate],
+		[FactFinding],
+		[FactFindingDate],
+		[CostAnalysis],
+		[CostAnalysisDate],
+		[GovtPricing],
+		[GovtPricingDate],
+		[SupplierNegotiations],
+		[SupplierNegotiationsDate],
+		[MOU],
+		[MOUDate],
+		[PlannedDate_WrittenApproval],
+		[PlannedDate_ApprovedSubmission],
+		[CIDText],
+		[PriceAnalysisText],
+		[TechnicalEvaluationText],
+		[FactFindingText],
+		[CostAnalysisText],
+		[GovtPricingText],
+		[SupplierNegotiationsText],
+		[MOUText],
+		ShouldCostEstimateText,
+		RFPReleaseText,
+		FirmSupplierReceiptText,
+		SourceSelectionText
+		,[SupplierCCoPD]
+		,[SourceSelectionDescription]
+		,[CommercialityDescription]
+		,[TechnicalEvaluationDescription]
+		,[PriceAnalysisDescription]
+		,[CostAnalysisDescription]
+		,[RationaleValueSummary]
+		,[GovtPricingReceived]
+		,[GovtPricingReceivedDate]
+		,[GovtPricingReceivedText]
+		,[CostAnalysisUnqual]
+		,[CostAnalysisUnqualDate]
+		,[CostAnalysisUnqualText]
+		,[VendorId]
+		,[SupplierProposedValue]
 	  FROM [version].[BOEFormPBOE]
 	WHERE [PBOEFormID] = @PBOEID AND VersionID = @VersionID
 

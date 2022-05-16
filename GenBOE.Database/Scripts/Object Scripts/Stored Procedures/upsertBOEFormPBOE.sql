@@ -15,7 +15,6 @@ CREATE PROCEDURE [dbo].[upsertBOEFormPBOE]
 @WorkspaceID int,
 @FormName varchar(200),
 @Description varchar(max) = NULL,
-@BasisAndRationale varchar(max) = NULL,
 @ProposalTitle varchar(200) = NULL,
 @ProposalDate varchar(10) = NULL,
 @Poc varchar(65)=  NULL,
@@ -23,21 +22,14 @@ CREATE PROCEDURE [dbo].[upsertBOEFormPBOE]
 @Approver varchar(65) = NULL,
 @ApproverPhone varchar(60) = NULL,
 @FormVersion int,
-@DegreeOfCompetition int,
 @CCoPD int,
 @CCoPDOtherText varchar (100) = NULL,
 @RFP varchar(50) = NULL,
 @ProposalNumber varchar(50) = NULL,
 @SupplierName varchar(50) = NULL,
 @ValidityDate varchar(10) = NULL,
-@SupplierProposalSupportingDataIncluded int,
-@PriceAnalysisIncluded int,
-@CommercialItemDocIncluded int,
-@CostAnalysisIncluded int,
 @ShouldCostEstimate int,
 @ShouldCostEstimateDate date = NULL,
-@SowWritten int,
-@SowWrittenDate date = NULL,
 @RFPRelease int,
 @RFPReleaseDate date = NULL,
 @FirmSupplierReceipt int,
@@ -46,8 +38,6 @@ CREATE PROCEDURE [dbo].[upsertBOEFormPBOE]
 @SourceSelectionDate date = NULL,
 @CID int,
 @CIDDate date = NULL,
-@GovtReview int,
-@GovtReviewDate date = NULL,
 @PriceAnalysis int,
 @PriceAnalysisDate date = NULL,
 @TechnicalEvaluation int,
@@ -62,15 +52,12 @@ CREATE PROCEDURE [dbo].[upsertBOEFormPBOE]
 @SupplierNegotiationsDate date = NULL,
 @MOU int,
 @MOUDate date = NULL,
-@Procurement int,
-@ProcurementDate date = NULL,
 @PlannedDate_WrittenApproval date = NULL,
 @PlannedDate_ApprovedSubmission date = NULL,
 @ResourceIDs varchar (max),
 @ClinContractTypes varchar(max),
 @Revision int,
 @CIDText varchar(50) = NULL,
-@GovtReviewText varchar(50) = NULL,
 @PriceAnalysisText varchar(50) = NULL,
 @TechnicalEvaluationText varchar(50) = NULL,
 @FactFindingText varchar(50) = NULL,
@@ -78,12 +65,25 @@ CREATE PROCEDURE [dbo].[upsertBOEFormPBOE]
 @GovtPricingText varchar(50) = NULL,
 @SupplierNegotiationsText varchar(50) = NULL,
 @MOUText varchar(50) = NULL,
-@ProcurementText varchar(50) = NULL,
 @ShouldCostEstimateText varchar(50) = NULL,
-@SowWrittenText varchar(50) = NULL,
 @RFPReleaseText varchar(50) = NULL,
 @FirmSupplierReceiptText varchar(50) = NULL,
-@SourceSelectionText varchar(50) = NULL
+@SourceSelectionText varchar(50) = NULL,
+@SupplierCCoPD int,
+@SourceSelectionDescription VARCHAR(MAX) = NULL,
+@CommercialityDescription VARCHAR(MAX) = NULL,
+@TechnicalEvaluationDescription VARCHAR(MAX) = NULL,
+@PriceAnalysisDescription VARCHAR(MAX) = NULL,
+@CostAnalysisDescription VARCHAR(MAX) = NULL,
+@RationaleValueSummary VARCHAR(MAX) = NULL,
+@GovtPricingReceived int,
+@GovtPricingReceivedDate date,
+@GovtPricingReceivedText VARCHAR(50),
+@CostAnalysisUnqual int,
+@CostAnalysisUnqualDate date,
+@CostAnalysisUnqualText VARCHAR(50),
+@VendorId VARCHAR(20),
+@SupplierProposedValue DECIMAL(13,2)
 )
 AS
 /******************************************************************************
@@ -104,6 +104,8 @@ AS
 **      11/14/16	twilson3			BOEJ-1541 INL Forms Text Entry Planned Fields
 **		03/08/17	ranzalon			BOEJ-1944 Increase size of poc fields
 **		10/27/17	twilson3			BOEJ-2578 Partial Save PBOE/IBOE
+**		04/19/22	jquijano			IES-1014 Add new fields
+**		05/02/22	jquijano			IES-1126 Add VendorID, SupplierProposedValue
 *******************************************************************************/
 
 SET NOCOUNT ON 
@@ -151,7 +153,6 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 			    ,[WorkspaceID]
 				,[FormName]
 				,[Description]
-				,[BasisAndRationale]
 				,[ProposalTitle]
 				,[ProposalDate]
 				,[Poc]
@@ -160,21 +161,14 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				,[ApproverPhone]
 				,[Revision]
 				,[FormVersion]
-				,[DegreeOfCompetition] 
 				,[CCoPD] 
 				,[CCoPDOtherText]
 				,[RFP]
 				,[ProposalNumber] 
 				,[SupplierName]
 				,[ValidityDate] 
-				,[SupplierProposalSupportingDataIncluded] 
-				,[PriceAnalysisIncluded] 
-				,[CommercialItemDocIncluded] 
-				,[CostAnalysisIncluded] 
 				,[ShouldCostEstimate] 
 				,[ShouldCostEstimateDate] 
-				,[SowWritten] 
-				,[SowWrittenDate] 
 				,[RFPRelease] 
 				,[RFPReleaseDate] 
 				,[FirmSupplierReceipt] 
@@ -183,8 +177,6 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				,[SourceSelectionDate] 
 				,[CID] 
 				,[CIDDate] 
-				,[GovtReview] 
-				,[GovtReviewDate] 
 				,[PriceAnalysis] 
 				,[PriceAnalysisDate] 
 				,[TechnicalEvaluation] 
@@ -199,12 +191,9 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				,[SupplierNegotiationsDate] 
 				,[MOU] 
 				,[MOUDate] 
-				,[Procurement] 
-				,[ProcurementDate] 
 				,[PlannedDate_WrittenApproval] 
 				,[PlannedDate_ApprovedSubmission] 
 				,[CIDText]
-				,[GovtReviewText]
 				,[PriceAnalysisText]
 				,[TechnicalEvaluationText]
 				,[FactFindingText]
@@ -212,12 +201,25 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				,[GovtPricingText]
 				,[SupplierNegotiationsText]
 				,[MOUText]
-				,[ProcurementText]
 				,ShouldCostEstimateText
-				,SowWrittenText
 				,RFPReleaseText
 				,FirmSupplierReceiptText
 				,SourceSelectionText
+				,[SupplierCCoPD]
+				,[SourceSelectionDescription]
+				,[CommercialityDescription]
+				,[TechnicalEvaluationDescription]
+				,[PriceAnalysisDescription]
+				,[CostAnalysisDescription]
+				,[RationaleValueSummary]
+				,[GovtPricingReceived]
+				,[GovtPricingReceivedDate]
+				,[GovtPricingReceivedText]
+				,[CostAnalysisUnqual]
+				,[CostAnalysisUnqualDate]
+				,[CostAnalysisUnqualText]
+				,[VendorId]
+				,[SupplierProposedValue]
 			   )
 		OUTPUT inserted.PBOEFormID INTO @InsertedPBOE            
 		VALUES
@@ -226,7 +228,6 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				@WorkspaceID,
 				@FormName,
 				@Description,
-				@BasisAndRationale,
 				@ProposalTitle,
 				@ProposalDate,
 				@Poc,
@@ -235,21 +236,14 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				@ApproverPhone,
 				0, -- Revision always starts at 0
 				@FormVersion,
-				@DegreeOfCompetition, 
 				@CCoPD, 
 				@CCoPDOtherText,
 				@RFP,
 				@ProposalNumber, 
 				@SupplierName,
 				@ValidityDate, 
-				@SupplierProposalSupportingDataIncluded, 
-				@PriceAnalysisIncluded, 
-				@CommercialItemDocIncluded, 
-				@CostAnalysisIncluded, 
 				@ShouldCostEstimate, 
 				@ShouldCostEstimateDate, 
-				@SowWritten, 
-				@SowWrittenDate, 
 				@RFPRelease, 
 				@RFPReleaseDate, 
 				@FirmSupplierReceipt, 
@@ -258,8 +252,6 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				@SourceSelectionDate, 
 				@CID, 
 				@CIDDate, 
-				@GovtReview, 
-				@GovtReviewDate, 
 				@PriceAnalysis, 
 				@PriceAnalysisDate, 
 				@TechnicalEvaluation, 
@@ -274,12 +266,9 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				@SupplierNegotiationsDate, 
 				@MOU, 
 				@MOUDate, 
-				@Procurement, 
-				@ProcurementDate, 
 				@PlannedDate_WrittenApproval, 
 				@PlannedDate_ApprovedSubmission,
 				@CIDText,
-				@GovtReviewText,
 				@PriceAnalysisText,
 				@TechnicalEvaluationText,
 				@FactFindingText,
@@ -287,12 +276,25 @@ IF @PBOEFormID  < 0  /*Insert Record*/
 				@GovtPricingText,
 				@SupplierNegotiationsText,
 				@MOUText,
-				@ProcurementText,
 				@ShouldCostEstimateText,
-				@SowWrittenText,
 				@RFPReleaseText,
 				@FirmSupplierReceiptText,
-				@SourceSelectionText
+				@SourceSelectionText,
+				@SupplierCCoPD,
+				@SourceSelectionDescription,
+				@CommercialityDescription,
+				@TechnicalEvaluationDescription,
+				@PriceAnalysisDescription,
+				@CostAnalysisDescription,
+				@RationaleValueSummary,
+				@GovtPricingReceived,
+				@GovtPricingReceivedDate,
+				@GovtPricingReceivedText,
+				@CostAnalysisUnqual,
+				@CostAnalysisUnqualDate,
+				@CostAnalysisUnqualText,
+				@VendorId,
+				@SupplierProposedValue
 			   )
 		SELECT @PBOEFormID = PBOEID FROM @InsertedPBOE
 	
@@ -333,7 +335,6 @@ ELSE
 						[UpdateDT] = @UpdateDT,
 						[FormName] = @FormName,
 						[Description] = @Description,
-						[BasisAndRationale] = @BasisAndRationale,
 						[ProposalTitle] = @ProposalTitle,
 						[ProposalDate] = @ProposalDate,
 						[Poc] = @Poc,
@@ -341,21 +342,14 @@ ELSE
 						[Approver] =@Approver,
 						[ApproverPhone] = @ApproverPhone,
 						[Revision] = @Revision,
-						[DegreeOfCompetition] = @DegreeOfCompetition, 
 						[CCoPD] = @CCoPD, 
 						[CCoPDOtherText] = @CCoPDOtherText,
 						[RFP] = @RFP,
 						[ProposalNumber] = @ProposalNumber, 
 						[SupplierName] = @SupplierName,
 						[ValidityDate] = @ValidityDate, 
-						[SupplierProposalSupportingDataIncluded] = @SupplierProposalSupportingDataIncluded, 
-						[PriceAnalysisIncluded] = @PriceAnalysisIncluded, 
-						[CommercialItemDocIncluded] = @CommercialItemDocIncluded, 
-						[CostAnalysisIncluded] = @CostAnalysisIncluded, 
 						[ShouldCostEstimate] = @ShouldCostEstimate, 
 						[ShouldCostEstimateDate] = @ShouldCostEstimateDate, 
-						[SowWritten] = @SowWritten, 
-						[SowWrittenDate] = @SowWrittenDate, 
 						[RFPRelease] = @RFPRelease, 
 						[RFPReleaseDate] = @RFPReleaseDate, 
 						[FirmSupplierReceipt] = @FirmSupplierReceipt, 
@@ -364,8 +358,6 @@ ELSE
 						[SourceSelectionDate] = @SourceSelectionDate, 
 						[CID] = @CID, 
 						[CIDDate] = @CIDDate, 
-						[GovtReview] = @GovtReview, 
-						[GovtReviewDate] = @GovtReviewDate, 
 						[PriceAnalysis] = @PriceAnalysis, 
 						[PriceAnalysisDate] = @PriceAnalysisDate, 
 						[TechnicalEvaluation] = @TechnicalEvaluation, 
@@ -380,12 +372,9 @@ ELSE
 						[SupplierNegotiationsDate] = @SupplierNegotiationsDate, 
 						[MOU] = @MOU, 
 						[MOUDate] = @MOUDate, 
-						[Procurement] = @Procurement, 
-						[ProcurementDate] = @ProcurementDate, 
 						[PlannedDate_WrittenApproval] = @PlannedDate_WrittenApproval, 
 						[PlannedDate_ApprovedSubmission] = @PlannedDate_ApprovedSubmission,
 						[CIDText] = @CIDText,
-						[GovtReviewText] = @GovtReviewText,
 						[PriceAnalysisText] = @PriceAnalysisText,
 						[TechnicalEvaluationText] = @TechnicalEvaluationText,
 						[FactFindingText] = @FactFindingText,
@@ -393,13 +382,25 @@ ELSE
 						[GovtPricingText] = @GovtPricingText,
 						[SupplierNegotiationsText] = @SupplierNegotiationsText,
 						[MOUText] = @MOUText,
-						[ProcurementText] = @ProcurementText,
 						ShouldCostEstimateText = @ShouldCostEstimateText,
-						SowWrittenText = @SowWrittenText,
 						RFPReleaseText = @RFPReleaseText,
 						FirmSupplierReceiptText = @FirmSupplierReceiptText,
-						SourceSelectionText = @SourceSelectionText
-
+						SourceSelectionText = @SourceSelectionText,
+						[SupplierCCoPD] = @SupplierCCoPD,
+						[SourceSelectionDescription] = @SourceSelectionDescription,
+						[CommercialityDescription] = @CommercialityDescription,
+						[TechnicalEvaluationDescription] = @TechnicalEvaluationDescription,
+						[PriceAnalysisDescription] = @PriceAnalysisDescription,
+						[CostAnalysisDescription] = @CostAnalysisDescription,
+						[RationaleValueSummary] = @RationaleValueSummary,
+						[GovtPricingReceived] = @GovtPricingReceived,
+						[GovtPricingReceivedDate] = @GovtPricingReceivedDate,
+						[GovtPricingReceivedText] = @GovtPricingReceivedText,
+						[CostAnalysisUnqual] = @CostAnalysisUnqual,
+						[CostAnalysisUnqualDate] = @CostAnalysisUnqualDate,
+						[CostAnalysisUnqualText] = @CostAnalysisUnqualText,
+						[VendorId] = @VendorId,
+						[SupplierProposedValue] = @SupplierProposedValue
 				WHERE
 					[PBOEFormID] = @PBOEFormID
 

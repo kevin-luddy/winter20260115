@@ -413,6 +413,7 @@ namespace GenTRAC.ActionLogic
                 newProposal.CertificationDate = originalProposal.CertificationDate;
                 newProposal.CertificationLastEmailed = originalProposal.CertificationLastEmailed;
                 newProposal.CertificationTimelineCompleted = originalProposal.CertificationTimelineCompleted;
+                newProposal.ProposalCompletedDate = originalProposal.ProposalCompletedDate;
                 newProposal.CutOffDateUtilization = originalProposal.CutOffDateUtilization;
                 newProposal.Comments = originalProposal.Comments;
 
@@ -676,6 +677,25 @@ namespace GenTRAC.ActionLogic
 
             this.AddAndDeletePermissions(fullProposalDto, contractsPocPermission, PtmRole.ContractsPOC, permissionsToAdd, permissionsToDelete);
 
+            // Backup Contracts POC manager
+            ProposalPermissionDto backupContractsPocPermission = null;
+            if (!isForecasted)
+            {
+                UserDTO backupContractsPoc = UserMapper.GetByNtid(proposalUserInfo.BackupContractsPOCNtId);
+                backupContractsPocPermission = new ProposalPermissionDto()
+                {
+                    Id = -1,
+                    ProposalID = proposalId,
+                    UserId = backupContractsPoc.Id,
+                    Role = PtmRole.BackupContractsPOC,
+                    ResourceType = ResourceType.NotSet,
+                    Updateable = IES.Common.UpdateType.Upsert,
+                    UpdateDate = proposalUserInfo.UpdateDate
+                };
+            }
+
+            this.AddAndDeletePermissions(fullProposalDto, backupContractsPocPermission, PtmRole.BackupContractsPOC, permissionsToAdd, permissionsToDelete);
+
             // tech lead
             ProposalPermissionDto techLeadPermission = null;
             if (!string.IsNullOrEmpty(proposalUserInfo.TechLeadNtid))
@@ -869,8 +889,8 @@ namespace GenTRAC.ActionLogic
             // Determine visibility status of CertificationTimeline tab
             model.CertificationTimelineVisibility = SecurityAuthorization.None;
             if (fullProposalDto != null && fullProposalDto.IsCCPDRequired.HasValue && fullProposalDto.IsCCPDRequired.Value && 
-                (fullProposalDto.ProposalStatus == ProposalStatus.Submitted || fullProposalDto.ProposalStatus == ProposalStatus.Revised 
-                || fullProposalDto.ProposalStatus == ProposalStatus.Completed))
+                (fullProposalDto.ProposalStatus == ProposalStatus.PendingCertification || fullProposalDto.ProposalStatus == ProposalStatus.Revised 
+                || fullProposalDto.ProposalStatus == ProposalStatus.Completed || fullProposalDto.ProposalStatus == ProposalStatus.PendingAward || fullProposalDto.ProposalStatus == ProposalStatus.Lost))
             {
                 model.CertificationTimelineVisibility = this.CheckPermissions(PtmSecurityPage.CertificationTimeline, proposalId).Authorization;
             }
@@ -879,6 +899,12 @@ namespace GenTRAC.ActionLogic
             if (fullProposalDto != null && (fullProposalDto.IsRevision || fullProposalDto.ProposalStatus == ProposalStatus.Revised))
             {
                 model.RevisionHistoryVisibility = this.CheckPermissions(PtmSecurityPage.RevisionHistory, proposalId).Authorization;
+            }
+
+            model.ContractsVisibility = SecurityAuthorization.None;
+            if (fullProposalDto != null)
+            {
+                model.ContractsVisibility = this.CheckPermissions(PtmSecurityPage.Contracts, proposalId).Authorization;
             }
 
             if (fullProposalDto != null)
@@ -899,6 +925,8 @@ namespace GenTRAC.ActionLogic
                 model.CompletedDate = date.HasValue ? date.Value.ToString("MM/dd/yyyy") : string.Empty;
                 date = fullProposalDto.CertificationTimelineCompleted;
                 model.CertificationCompletedDate = date.HasValue ? date.Value.ToString("MM/dd/yyyy") : string.Empty;
+                date = fullProposalDto.ProposalCompletedDate;
+                model.ProposalCompletedDate = date.HasValue ? date.Value.ToString("MM/dd/yyy") : string.Empty;
 
                 if (!date.HasValue && model.ProposalStatus == ProposalStatus.Completed)
                 {
@@ -953,6 +981,7 @@ namespace GenTRAC.ActionLogic
             model.PsaVisibility = SecurityAuthorization.None;
             model.CertificationTimelineVisibility = SecurityAuthorization.None;
             model.RevisionHistoryVisibility = SecurityAuthorization.None;
+            model.ContractsVisibility = SecurityAuthorization.None;
 
             if (fullProposalDto != null)
             {
@@ -1292,6 +1321,7 @@ namespace GenTRAC.ActionLogic
                 model.Comments = fullProposalDto.Comments;
                 model.DisplayCertificationReset = string.Equals(model.IsReadOnly.ToLower(), "true") && model.ReasonCertificationNotRequired.HasValue && this.IsCurrentUserPricerOrBackupOrSysAdmin(fullProposalDto.Id);
                 model.DisableCompleteButton = fullProposalDto.ProposalStatus == ProposalStatus.Completed;
+                model.DisableCertificationReset = fullProposalDto.ProposalStatus == ProposalStatus.Completed || fullProposalDto.ProposalStatus == ProposalStatus.Lost;
             }
 
             return model;
@@ -1390,9 +1420,13 @@ namespace GenTRAC.ActionLogic
                 case PtmRole.CoverSheetApprover:
                     groupName = IES.Common.ConfigurationUtilities.GetAppSetting("CoverSheetApprovers");
                     break;
+                case PtmRole.ContractsPOC:
+                case PtmRole.BackupContractsPOC:
+                    groupName = IES.Common.ConfigurationUtilities.GetAppSetting("ContractsLead");
+                    break;
             }
 
-            return this.userLoader.GetUserDTOsByADGroup(groupName.GetObjectName(), groupName.GetDomain());
+            return this.userLoader.GetUserDTOsByADGroup(groupName.GetObjectName());
         }
 
         /// <summary>
@@ -1401,7 +1435,7 @@ namespace GenTRAC.ActionLogic
         /// <param name="proposalId">Proposal Id.  Can be null.</param>
         /// <param name="isNewRevision">Whether creating a new revision</param>
         /// <returns>Proposal Approvals Model View</returns>
-        public ProposalApprovalsModelView GetDataForProposalApprovals(int? proposalId, bool isNewRevision)
+        public virtual ProposalApprovalsModelView GetDataForProposalApprovals(int? proposalId, bool isNewRevision)
         {
             ProposalApprovalsModelView model = new ProposalApprovalsModelView();
 
@@ -1511,7 +1545,7 @@ namespace GenTRAC.ActionLogic
         /// </summary>
         /// <param name="proposalId">Proposal Id.  Can be null.</param>
         /// <returns>Proposal User Information Model View</returns>
-        public ProposalUserInformationModelView GetDataForProposalUserInformation(int? proposalId)
+        public virtual ProposalUserInformationModelView GetDataForProposalUserInformation(int? proposalId)
         {
             ProposalUserInformationModelView model = new ProposalUserInformationModelView();
 
@@ -1565,6 +1599,10 @@ namespace GenTRAC.ActionLogic
                             model.ContractsPOCNtId = user.Ntid;
                             model.ContractsPOCDisplayName = user.DisplayName;
                             break;
+                        case PtmRole.BackupContractsPOC:
+                            model.BackupContractsPOCNtId = user.Ntid;
+                            model.BackupContractsPOCDisplayName = user.DisplayName;
+                            break;
                         case PtmRole.TechLead:
                             model.TechLeadNtid = user.Ntid;
                             model.TechLeadDisplayName = user.DisplayName;
@@ -1582,6 +1620,29 @@ namespace GenTRAC.ActionLogic
                     }
                 }
             }
+
+            // Primary and Backup Contracts PoC share the same AD List, get the data once for both
+            ICollection<UserDTO> contractsUsers = this.GetUsersForSelectList(PtmRole.ContractsPOC);
+
+            model.ContractLeadList = contractsUsers?
+                .Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
+                .OrderBy(x => x.Text)
+                .ToList();
+            if (!model.ContractLeadList.Any(x => x.Value == model.ContractsPOCNtId))
+            {
+                model.ContractLeadList.Insert(0, new SelectListItem() { Value = model.ContractsPOCNtId, Text = model.ContractsPOCDisplayName });
+            }
+            model.ContractLeadList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Contracts Lead" });
+
+            model.BackupContractLeadList = contractsUsers?
+                .Select(x => new SelectListItem() { Value = x.Ntid, Text = x.DisplayName })
+                .OrderBy(x => x.Text)
+                .ToList();
+            if (!model.BackupContractLeadList.Any(x => x.Value == model.BackupContractsPOCNtId))
+            {
+                model.BackupContractLeadList.Insert(0, new SelectListItem() { Value = model.BackupContractsPOCNtId, Text = model.BackupContractsPOCDisplayName });
+            }
+            model.BackupContractLeadList.Insert(0, new SelectListItem() { Value = string.Empty, Text = "Select Backup Contracts Lead" });
 
             model.GenBoeWorkspaceCreatorList = new Collection<SelectListItem>() { new SelectListItem() { Value = string.Empty, Text = "Select GenBOE Workspace Creator" } };
             ICollection<KeyValuePair<string, string>> workspaceCreatorList = this.genBoePermissionLoader.GetCreateWorkspaceRolesForPtm(model.GenBoeWorkspaceCreatorNtid, model.GenBoeWorkspaceCreatorDisplayName);
@@ -1710,14 +1771,27 @@ namespace GenTRAC.ActionLogic
                 inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.COST_VOLUME_REQUIRED));
             }
 
-            if (string.IsNullOrWhiteSpace(proposalUserInfo.ContractsPOCNtId))
+            bool invalidContractsPOCNtId = string.IsNullOrWhiteSpace(proposalUserInfo.ContractsPOCNtId);
+            bool invalidBackupContractsPOCNtId = string.IsNullOrWhiteSpace(proposalUserInfo.BackupContractsPOCNtId);
+
+            if (invalidContractsPOCNtId)
             {
                 inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CONTRACTS_POC_REQUIRED));
+            }
+
+            if (invalidBackupContractsPOCNtId)
+            {
+                inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.BACKCUP_CONTRACTS_POC_REQUIRED));
             }
 
             if (string.IsNullOrWhiteSpace(proposalUserInfo.ProposalMgrNtid))
             {
                 inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROPOSALMGR_REQUIRED));
+            }
+
+            if (!invalidContractsPOCNtId && !invalidBackupContractsPOCNtId && (proposalUserInfo.ContractsPOCNtId == proposalUserInfo.BackupContractsPOCNtId))
+            {
+                inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.CONTRACTS_LEAD_AND_BACKUP_CANNOT_BE_IDENTICAL));
             }
 
             // if this is a saved proposal, this will only validate the changed users, else validate all of the users
@@ -1731,6 +1805,7 @@ namespace GenTRAC.ActionLogic
             validUnchangedUsers = this.ValidateUserType(proposalUserInfo.SupplyChainPOCMaterialsNtId, savedProposalUsers.SupplyChainPOCMaterialsNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.SUPPLY_CHAIN_POC_MATL_INVALID_NTID, true, true) && validUnchangedUsers;
             validUnchangedUsers = this.ValidateUserType(proposalUserInfo.SupplyChainPOCSubsNtId, savedProposalUsers.SupplyChainPOCSubsNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.SUPPLY_CHAIN_POC_SUBS_INVALID_NTID, true, true) && validUnchangedUsers;
             validUnchangedUsers = this.ValidateUserType(proposalUserInfo.ContractsPOCNtId, savedProposalUsers.ContractsPOCNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.CONTRACTS_POC_INVALID_NTID, true, true) && validUnchangedUsers;
+            validUnchangedUsers = this.ValidateUserType(proposalUserInfo.BackupContractsPOCNtId, savedProposalUsers.BackupContractsPOCNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.BACKUP_CONTRACTS_POC_INVALID_NTID, true, true) && validUnchangedUsers;
             validUnchangedUsers = this.ValidateUserType(proposalUserInfo.BackupPricerNtId, savedProposalUsers.BackupPricerNtId, inValidationErrors, ValidationConstants.ProposalValidationConstants.BACKUP_PRICER_INVALID_NTID, true, true) && validUnchangedUsers;
             validUnchangedUsers = this.ValidateUserType(proposalUserInfo.ProposalMgrNtid, savedProposalUsers.ProposalMgrNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.PROPOSAL_MANAGER_INVALID_NTID, false, false) && validUnchangedUsers;
             validUnchangedUsers = this.ValidateUserType(proposalUserInfo.TechLeadNtid, savedProposalUsers.TechLeadNtid, inValidationErrors, ValidationConstants.ProposalValidationConstants.TECH_LEAD_INVALID_NTID, true, true) && validUnchangedUsers;
@@ -2101,7 +2176,8 @@ namespace GenTRAC.ActionLogic
         {
             bool readOnly = false;
 
-            if (fullProposal != null && fullProposal.ProposalStatus != ProposalStatus.InProgress && fullProposal.ProposalStatus != ProposalStatus.Completed && fullProposal.ProposalStatus != ProposalStatus.Submitted)
+            if (fullProposal != null && fullProposal.ProposalStatus != ProposalStatus.InProgress && fullProposal.ProposalStatus != ProposalStatus.Completed 
+                && fullProposal.ProposalStatus != ProposalStatus.PendingCertification && fullProposal.ProposalStatus != ProposalStatus.PendingAward)
             {
                 // proposal status is Archived, Deleted, or Revision - always read only
                 readOnly = true;
@@ -2254,11 +2330,11 @@ namespace GenTRAC.ActionLogic
             {
                 if(proposal.IsCCPDRequired.HasValue && proposal.IsCCPDRequired.Value)
                 {
-                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Submitted);
+                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.PendingCertification);
                 } 
                 else
                 {
-                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Completed);
+                    this.ProposalLoader.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.PendingAward);
                 }
             }
         }
@@ -2468,7 +2544,8 @@ namespace GenTRAC.ActionLogic
                 throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.COMPLETE_FAILED_PROPOSAL);
             }
 
-            if (model.ReasonCertificationNotRequired.HasValue && proposal.ProposalStatus != ProposalStatus.Submitted && proposal.ProposalStatus != ProposalStatus.Completed)
+            if (model.ReasonCertificationNotRequired.HasValue && proposal.ProposalStatus != ProposalStatus.PendingCertification && proposal.ProposalStatus != ProposalStatus.Completed
+                && proposal.ProposalStatus != ProposalStatus.PendingAward)
             {
                 throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CERTIFICATION_NOT_REQUIRED_WRONG_STATE);
             }
@@ -2523,17 +2600,17 @@ namespace GenTRAC.ActionLogic
         /// </summary>
         /// <param name="proposalId">Proposal Id</param>
         /// <param name="model">Certification Model View</param>
-        /// <param name="isComplete">Are we completing the proposal</param>
+        /// <param name="isCertificationComplete">Are we completing the proposal</param>
         /// <returns>Proposal DTO</returns>
         [SuppressMessage("StyleCop.CSharp.ReadabilityRules", "*")]
-        internal ProposalDto ConvertCertificationModelToDto(int proposalId, ProposalCertificationTimelineModelView model, bool isComplete)
+        internal ProposalDto ConvertCertificationModelToDto(int proposalId, ProposalCertificationTimelineModelView model, bool isCertificationComplete)
         {
             ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
             proposal.Updateable = UpdateType.Upsert;
 
             if (model.ReasonCertificationNotRequired.HasValue)
             {
-                isComplete = true;
+                isCertificationComplete = true;
                 proposal.ReasonCertificationNotRequired = model.ReasonCertificationNotRequired;
                 proposal.OtherReasonComment = model.OtherReasonCommentCertification;
 
@@ -2547,7 +2624,7 @@ namespace GenTRAC.ActionLogic
                 // Marking the proposal required (when it was not required before) resets the flow
                 if (proposal.ReasonCertificationNotRequired.HasValue)
                 {
-                    proposal.ProposalStatus = ProposalStatus.Submitted;
+                    proposal.ProposalStatus = ProposalStatus.PendingCertification;
                     proposal.CertificationTimelineCompleted = null;
                 }
 
@@ -2561,9 +2638,9 @@ namespace GenTRAC.ActionLogic
                 proposal.OtherReasonComment = null;
             }
 
-            if (isComplete)
+            if (isCertificationComplete)
             {
-                proposal.ProposalStatus = ProposalStatus.Completed;
+                proposal.ProposalStatus = ProposalStatus.PendingAward;
                 proposal.CertificationTimelineCompleted = DateTime.Now;
             }
 

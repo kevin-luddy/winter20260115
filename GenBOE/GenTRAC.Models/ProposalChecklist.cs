@@ -19,7 +19,7 @@ namespace GenTRAC.Models
         public int ProposalID { get; set; }
         public Nullable<System.DateTime> ProposalSubmittalDate { get; set; }
         public Nullable<long> ISGSTotalPrice { get; set; }
-        public Nullable<long> ProfitFee { get; set; }
+        public Nullable<long> ProfitFeeWithCom { get; set; }
         public Nullable<decimal> ROSPercentage { get; set; }
         public Nullable<decimal> LMLaborHours { get; set; }
         public Nullable<long> LMLaborCost { get; set; }
@@ -30,6 +30,8 @@ namespace GenTRAC.Models
         public Nullable<long> OtherDirectCost { get; set; }
         public bool DeliverChecklistDFARS { get; set; }
         public Nullable<long> AbsoluteValue { get; set; }
+        public Nullable<long> Com { get; set; }
+        public Nullable<long> Profit { get; set; }
     
         public virtual Proposal Proposal { get; set; }
     }

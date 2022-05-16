@@ -533,6 +533,16 @@ div.nav-item a.submenu-header
     max-width: 962px;
 }
 
+.module-content-data.contracts
+{
+    height: 100px;
+    background-color: white;
+    border-left: gray 1px solid;
+    border-right: gray 1px solid;
+    border-bottom: gray 1px solid;
+    margin-left: 3px;
+}
+
 .module-ws-content-data
 {
     background-color: #ffffff;
@@ -1849,10 +1859,14 @@ li.acknowledgement-item
     padding: 10px 10px 10px 55px;
 }
 
-.validation-row-icon
+#contractsInfoForm .validation-box
 {
+    max-width: 825px;
+}
+
+.validation-row-icon {
     background: #ffffff url(images/warning_small.png) no-repeat 0px 0px;
-    display:inline-block;
+    display: inline-block;
     height: 16px;
     width: 16px;
     position: absolute;
@@ -2787,4 +2801,24 @@ div.fake-cell
     width: 100%;
     text-align: center;
     margin-top: 5px;
+}
+
+.position-relative {
+    position: relative;
+}
+
+.button-right-container {
+    position: absolute;
+    right: 40px;
+    top: -20px;
+}
+
+#confirm-modal-input {
+    width:96%;
+}
+
+.confirm-modal-button-container {
+    width: 96%;
+    margin-top: 30px;
+    text-align: center;
 }

@@ -79,6 +79,12 @@
     <Compile Include="Attachment.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="AttachmentTypeLU.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="BoeDatabaseVersion.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="BOEToolLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
@@ -95,6 +101,9 @@
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="CostElementLU.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="CreateDfarsChecklistResponseReport_Result.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="CreatePARChecklistReport_Result.cs">
@@ -116,6 +125,9 @@
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ELMAH_Error.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="EppDelegationAuthorityLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="genTracData.cs">
@@ -169,6 +181,9 @@
     <Compile Include="ProposalClassLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="ProposalContractsData.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="ProposalLocationLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
@@ -211,6 +226,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>PTMEntityModel.edmx</DependentUpon>
     </Compile>
+    <Compile Include="ReasonCertificationNotRequiredLU.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="RequestTypeLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
@@ -224,6 +242,9 @@
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="RoleTypeLU.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="SplitString_Result.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="SystemUserRole.cs">
