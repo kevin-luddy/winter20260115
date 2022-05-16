@@ -727,7 +727,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
             if(boeForm.SupplierProposedValue is null)
             {
-                validationMessages.Add(new ValidationMessage("Supplier Proposed Value required."));
+                validationMessages.Add(new ValidationMessage("Supplier Proposed Value is required."));
             }
 
             if (string.IsNullOrWhiteSpace(boeForm.ProposalTitle) && string.IsNullOrWhiteSpace(proposalTitleAndRfpNumber))
