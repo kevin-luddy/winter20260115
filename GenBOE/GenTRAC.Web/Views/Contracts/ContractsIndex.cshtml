@@ -55,6 +55,10 @@
                         });
 
                         ContractsInfoWidget.postData(validateUrl, dataToSend);
+                        if (GenSession.IsSuccessful()) {
+                            IsEnabled: @((!Model.CompleteButtonEnabled).ToString().ToLower())
+                            alert('Checklist validation was successful. No errors were detected.');
+                        }
                     },
                 }
             ],
