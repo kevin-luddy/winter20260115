@@ -207,7 +207,7 @@
         <div class="form-element"><%: Html.TextBox("ValidityDate", Model.PBOEModel.ValidityDate, new { @class = "planned-date", id = "ValidityDate" }) %></div>
     </div>
     <div class="form-row">
-        <div class="form-label"><span helptext="Value of Supplier proposal from which LM proposed price is derived (if applicable).">Supplier Proposed Value</span></div>
+        <div class="form-label"><span helptext="Value of Supplier proposal from which LM proposed price is derived (if applicable).">Supplier Proposed Value **</span></div>
         <div class="form-element"><%: Html.TextBox("SupplierProposedValue",Model.PBOEModel.SupplierProposedValue, new { @class="labor-cost", id="SupplierProposedValue"}) %></div>
     </div>
     <div class="form-row">
