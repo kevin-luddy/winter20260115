@@ -54,11 +54,24 @@
                             id: '@ViewBag.ProposalId'
                         });
 
-                        ContractsInfoWidget.postData(validateUrl, dataToSend);
-                        if (GenSession.IsSuccessful()) {
-                            IsEnabled: @((!Model.CompleteButtonEnabled).ToString().ToLower())
-                            alert('Checklist validation was successful. No errors were detected.');
-                        }
+                        $.ajax({
+                            type: 'POST',
+                            url: validateUrl,
+                            contentType: 'application/json; charset=utf-8',
+                            data: JSON.stringify(dataToSend),
+                            success: function (response) {
+                                if (typeof (response.IsSuccessful) !== 'undefined') {
+                                    if (response.IsSuccessful === true) {
+                                        GenSession.alertDialog('Contract Validation','Contract validation was successful. No errors were detected.');
+                                    } else {
+                                        ContractsInfoWidget.processErrors(response);
+                                    }
+
+                                    ContractsInfoWidget.refreshModule();
+                                    ContractsIndexWidget.refreshModule();
+                                }
+                            }
+                        });
                     },
                 }
             ],
