@@ -359,3 +359,12 @@ GO
 
     05/02/2022 [Quijano] - IES-1126 Add VendorId and SupplierProposedValue for PBOE
 */
+
+/*
+	4/18/2022 [Nghiem, Hunter] - IES-1042 Change name of Subcontract Admin to GSCO Admin
+*/
+BEGIN
+  UPDATE RoleLU SET RoleName = 'GSCO Administrator' WHERE RoleID = 10
+END
+GO
+

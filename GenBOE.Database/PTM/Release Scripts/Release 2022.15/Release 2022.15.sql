@@ -229,14 +229,6 @@ END
 GO
 
 /*
-	4/18/2022 [Nghiem, Hunter] - IES-1042 Change name of Subcontract Admin to GSCO Admin
-*/
-BEGIN
-  UPDATE RoleLU SET Role = 'GSCO Administrator' WHERE RoleID = 10
-END
-GO
-
-/*
 	4/28/2022 [Quijano, Jesse] - IES-1067 Show Certification TimelineCompleted Date
 */
 IF NOT EXISTS (
@@ -252,3 +244,14 @@ BEGIN
 	ALTER TABLE dbo.Proposal ADD ProposalCompletedDate datetime2(7) NULL;
 END
 GO
+
+
+/*
+	Dusan - Role was missing in prod, adding it in
+*/
+IF NOT EXISTS (SELECT 1 FROM dbo.RoleLU WHERE RoleId = 22)
+BEGIN
+	SET	IDENTITY_INSERT dbo.RoleLU ON;
+	INSERT INTO RoleLU (RoleId, Role) VALUES (22, 'Backup Contracts Lead');
+	SET IDENTITY_INSERT dbo.RoleLU OFF;
+END
