@@ -725,6 +725,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 validationMessages.Add(new ValidationMessage("Validity Date is required."));
             }
 
+            if(boeForm.SupplierProposedValue is null)
+            {
+                validationMessages.Add(new ValidationMessage("Supplier Proposed Value is required."));
+            }
+
             if (string.IsNullOrWhiteSpace(boeForm.ProposalTitle) && string.IsNullOrWhiteSpace(proposalTitleAndRfpNumber))
             {
                 validationMessages.Add(new ValidationMessage("Proposal Title is required."));
