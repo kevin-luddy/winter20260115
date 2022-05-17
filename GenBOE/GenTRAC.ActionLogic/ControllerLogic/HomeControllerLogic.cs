@@ -434,7 +434,7 @@ namespace GenTRAC.ActionLogic
                 sb.Append(string.Format("&{0}={1}", Constants.Report.FILTER_START_DATE, reportParameters.FilterStartDate));
             }
 
-            if (!string.IsNullOrEmpty(reportParameters.FilterStartDate) && reportParameters.FilterEndDate != Constants.Report.PROPOSAL_DATE_FORMAT)
+            if (!string.IsNullOrEmpty(reportParameters.FilterEndDate) && reportParameters.FilterEndDate != Constants.Report.PROPOSAL_DATE_FORMAT)
             {
                 sb.Append(string.Format("&{0}={1}", Constants.Report.FILTER_END_DATE, reportParameters.FilterEndDate));
             }
