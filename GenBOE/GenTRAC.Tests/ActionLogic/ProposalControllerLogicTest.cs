@@ -3747,7 +3747,7 @@ namespace GenTRAC.Tests.ActionLogic
             sut.RevertRevisedProposal(proposal.Id);
 
             this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.PendingCertification), Times.Never());
-            this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.Completed), Times.Once());
+            this.proposalLoader.Verify(x => x.UpdateProposalStatus(proposal.Id, proposal.UpdateDate, ProposalStatus.PendingAward), Times.Once());
         }
 
         /// <summary>

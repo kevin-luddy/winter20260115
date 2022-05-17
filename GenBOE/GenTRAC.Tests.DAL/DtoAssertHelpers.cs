@@ -141,6 +141,7 @@ namespace GenTRAC.Tests.DAL
             Assert.AreEqual(expectedResult.ManageProposalInfoComments, actualResult.ManageProposalInfoComments);
             Assert.AreEqual(expectedResult.ModExecutedLastEmailed, actualResult.ModExecutedLastEmailed);
             Assert.AreEqual(expectedResult.ProposalCompletedDate, actualResult.ProposalCompletedDate);
+            //70
 
             #region Additional Verification
 
