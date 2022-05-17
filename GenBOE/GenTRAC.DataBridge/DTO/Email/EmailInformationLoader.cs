@@ -270,7 +270,7 @@ namespace GenTRAC.DataBridge.DTO
                         ProposalEmailType = EmailType.ModExecutionDateRequired,
                         ProposalId = proposal.Id,
                         ProposalTitle = proposal.ProposalTitle,
-                        TrackingNumber = proposal.ForecastedTrackingNumber,
+                        TrackingNumber = proposal.TrackingNumber,
                         AdditionalText = string.Empty
                     };
 

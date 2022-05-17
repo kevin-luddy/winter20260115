@@ -2325,7 +2325,9 @@ namespace GenBOE.Web.Controllers
             // Return the partial view
             string view = ws.IsProjectMapWorkspace ? WebConstants.VIEW_BOE_PROJECTMAP_SEARCH_RESULTS : WebConstants.VIEW_BOE_SEARCH_RESULTS;
             ViewResult toReturn = View(view, searchResults);
-            
+
+            ViewData["UsingTemplateBoe"] = ws.UsingTemplateBOE;
+
             // Finalize Action
             FinalizeAction(_log, "PageSearchResults", sw);
             return toReturn;
