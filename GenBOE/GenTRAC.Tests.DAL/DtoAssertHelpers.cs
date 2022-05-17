@@ -46,8 +46,8 @@ namespace GenTRAC.Tests.DAL
             int numProperties = dtoType.GetProperties().Count();
 
             // 4 UNTESTABLE_PROPOERTIES properties we can't test from UpdateableDTO
-            // 69 testable DTO properties that are asserted below
-            Assert.AreEqual(UNTESTABLE_PROPERTIES + 69, numProperties, "Untested properties exist in the DTO.");
+            // 70 testable DTO properties that are asserted below
+            Assert.AreEqual(UNTESTABLE_PROPERTIES + 70, numProperties, "Untested properties exist in the DTO.");
 
             // 0
             Assert.AreEqual(expectedResult.ProposalTitle, actualResult.ProposalTitle);
@@ -140,6 +140,7 @@ namespace GenTRAC.Tests.DAL
             Assert.AreEqual(expectedResult.ProposalSetupComments, actualResult.ProposalSetupComments);
             Assert.AreEqual(expectedResult.ManageProposalInfoComments, actualResult.ManageProposalInfoComments);
             Assert.AreEqual(expectedResult.ModExecutedLastEmailed, actualResult.ModExecutedLastEmailed);
+            Assert.AreEqual(expectedResult.ProposalCompletedDate, actualResult.ProposalCompletedDate);
 
             #region Additional Verification
 
