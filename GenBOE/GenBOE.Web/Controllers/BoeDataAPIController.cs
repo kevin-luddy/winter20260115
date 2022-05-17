@@ -130,8 +130,8 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Gets all of the Custom Field Names for a Workspace.
 		/// </summary>
-		/// <param name="workspaceShortName"></param>
-		/// <returns></returns>
+		/// <param name="workspaceShortName">Short name of the workspace</param>
+		/// <returns>HttpResponseMessage</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
 		public ICollection<string> GetWorkspaceCustomFieldNames(string workspaceShortName)
