@@ -140,6 +140,7 @@ namespace GenTRAC.DataBridge.DTO
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
                     toReturn = dbModel.ProposalContractsDatas
+                        .Where(x => ids.Contains(x.ProposalContractsDataId))
                         .Select(x => new ContractsDto
                         {
                             Id = x.ProposalContractsDataId,

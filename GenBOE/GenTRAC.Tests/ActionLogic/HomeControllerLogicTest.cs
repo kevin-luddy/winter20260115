@@ -165,7 +165,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void BasicGetDataForHomeProposalTest()
         {
-            var sut = this.CreateSystem();
+            HomeControllerLogic sut = this.CreateSystem();
 
             // Proposal
             HomeProposalViewDto proposal = new HomeProposalViewDto()
@@ -313,11 +313,11 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void BasicGetDataForProposalFiltersTest()
         {
-            var sut = this.CreateSystem();
+            HomeControllerLogic sut = this.CreateSystem();
 
             HomeProposalFiltersModelView filtersView = sut.GetDataForProposalFilters();
 
-            Assert.AreEqual(4, filtersView.FilterOptions.Count);
+            Assert.AreEqual(5, filtersView.FilterOptions.Count);
             Assert.AreEqual(ProposalFilterOption.InProgress, filtersView.FilterOption);
             Assert.AreEqual(0, filtersView.ViewerFilterOptions.Count);
             Assert.AreEqual(ViewerProposalFilterOption.ShowOnlyMyProposals, filtersView.ViewerFilterOption);
@@ -325,7 +325,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.securityAccess.Setup(x => x.CurrentUserHasRole(PtmRole.Viewer, null)).Returns(true);
             filtersView = sut.GetDataForProposalFilters();
 
-            Assert.AreEqual(4, filtersView.FilterOptions.Count);
+            Assert.AreEqual(5, filtersView.FilterOptions.Count);
             Assert.AreEqual(ProposalFilterOption.InProgress, filtersView.FilterOption);
             Assert.AreEqual(2, filtersView.ViewerFilterOptions.Count);
             Assert.AreEqual(ViewerProposalFilterOption.ShowOnlyMyProposals, filtersView.ViewerFilterOption);
@@ -337,7 +337,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_GetProposalIdByTrackingNumberTest()
         {
-            var sut = this.CreateSystem();
+            HomeControllerLogic sut = this.CreateSystem();
             string trackingNumber = "00-00000";
             int proposalId = 15;
             this.proposalLoader.Setup(x => x.GetIdByTrackingNumber(trackingNumber)).Returns(proposalId);
@@ -352,7 +352,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_GetProposalIdByTrackingIdLegacyTest()
         {
-            var sut = this.CreateSystem();
+            HomeControllerLogic sut = this.CreateSystem();
             string trackingNumber = "0000-00000";
             int proposalId = 15;
             this.proposalLoader.Setup(x => x.GetIdByTrackingNumber(trackingNumber)).Returns(proposalId);
@@ -367,7 +367,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void C_ClearCache_Test()
         {
-            var sut = this.CreateSystem();
+            HomeControllerLogic sut = this.CreateSystem();
 
             this.cache.Setup(x => x.ClearCache());
             this.cacheWarmer.Setup(x => x.DoWarmCache());
@@ -384,7 +384,7 @@ namespace GenTRAC.Tests.ActionLogic
         [TestMethod]
         public void PopulateExportSSRSParametersTest()
         {
-            var sut = this.CreateSystem();
+            HomeControllerLogic sut = this.CreateSystem();
             Uri uri = null;
          
             UserDTO user = new UserDTO()

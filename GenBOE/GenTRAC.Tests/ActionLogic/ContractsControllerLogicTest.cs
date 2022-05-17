@@ -197,6 +197,12 @@ namespace GenTRAC.Tests.ActionLogic
 
             this.contractsLoader.Setup(x => x.GetContractForProposal(proposalId)).Returns(contractDto);
 
+            ProposalDto proposal = TestProposalHelper.GetProposalDtoForMocks(proposalId);
+            this.proposalLoader.Setup(x => x.GetById(proposalId)).Returns(proposal);
+            this.objectFactory.Setup(x => x.CreateFullProposal(proposal)).Returns(TestProposalHelper.GetFullProposalForMocks(proposalId, ProposalStatus.InProgress));
+            this.retriever.Setup(x => x.GetCurrentUser()).Returns(new UserDTO() { Id = 1 });
+            this.retriever.Setup(x => x.GetProposalPermissions(proposalId)).Returns(TestProposalHelper.GetPermissionsForMocks());
+
             ContractsModelView contractsModelView = null;
             contractsModelView = sut.GetDataForProposalContracts(proposalId).Result;
 

@@ -968,7 +968,7 @@ namespace GenTRAC.Tests.ActionLogic
             };
 
             url = sut.PopulateProposalActivitySSRSParameters(mv);
-            Assert.IsTrue(url.AbsoluteUri.Contains(Constants.Report.PROPOSAL_STATUS + "=1,6,2")); // Active translates to 1, 6, 2 (in progress, submitted, complete)
+            Assert.IsTrue(url.AbsoluteUri.Contains(Constants.Report.PROPOSAL_STATUS + "=1,6,9,2")); // Active translates to 1, 6, 9, 2 (in progress, submitted, pending award, complete)
             Assert.IsTrue(url.AbsoluteUri.Contains(Constants.Report.CREATE_START_DATE + "=10/08/2008"));
             Assert.IsTrue(url.AbsoluteUri.Contains(Constants.Report.CREATE_END_DATE + "=12/13/2013"));
             Assert.IsTrue(url.AbsoluteUri.Contains(Constants.Report.ALL_PROPOSALS + "=True"));
