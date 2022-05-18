@@ -24,7 +24,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Objects;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
-	using Newtonsoft.Json;
 
 	/// <summary>
 	/// BOE Data Controller, original intent is for it to be used by ACV to pull data in, but realistically, it is serving up BOE data, hence the name.
@@ -123,6 +122,37 @@ namespace GenBOE.Web.Controllers
 			{
 				logger.Error(ex);
 				result = null;
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Gets all of the Custom Field Names for a Workspace.
+		/// </summary>
+		/// <param name="workspaceShortName">Short name of the workspace</param>
+		/// <returns>HttpResponseMessage</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public ICollection<string> GetWorkspaceCustomFieldNames(string workspaceShortName)
+		{
+			ICollection<string> result = null;
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+				SecurityAuthorization permission = this.CheckPermission(SecurityPage.BoeCustomFields, workspace);
+
+				if (permission >= SecurityAuthorization.Read)
+				{
+					result = workspace.CustomFields.Select(c => c.CustomFieldName).ToList();
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
 			}
 
 			return result;
