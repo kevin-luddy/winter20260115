@@ -822,10 +822,10 @@ namespace GenTRAC.Tests.DAL
         {
             using (TransactionScope scope = new TransactionScope())
             {
-                foreach (ProposalDto proposal in this.proposalList)
+                foreach (ProposalDto proposal in this.proposalList.OrderByDescending(x => x.Id).ToList())
                 {
                     // get the current update time
-                    var toDelete = this.proposalLoader.GetById(proposal.Id);
+                    ProposalDto toDelete = this.proposalLoader.GetById(proposal.Id);
 
                     // delete
                     if (toDelete != null)

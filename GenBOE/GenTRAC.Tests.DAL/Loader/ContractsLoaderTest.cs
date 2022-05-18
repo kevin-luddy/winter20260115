@@ -6,17 +6,16 @@
 
 namespace GenTRAC.Tests.DAL.Loader
 {
-    using System;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using GenTRAC.DataBridge.DTO;
-    using IES.Common;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using System;
+	using System.Collections.Generic;
+	using GenTRAC.DataBridge.DTO;
+	using IES.Common;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    /// <summary>
-    /// Tests for the Contracts loader
-    /// </summary>
-    [TestClass]
+	/// <summary>
+	/// Tests for the Contracts loader
+	/// </summary>
+	[TestClass]
     public class ContractsLoaderTest
     {
         /// <summary>
@@ -51,9 +50,9 @@ namespace GenTRAC.Tests.DAL.Loader
             // Create new ContractDTO 
             ContractsLoader sut = this.CreateSystem();
 
-            ProposalDto proposal = this.testData.GetProposal(true);
-
             ProposalDto previouslySubmittedProposal = this.testData.GetProposal(true);
+
+            ProposalDto proposal = this.testData.GetProposal(true);
 
             ContractsDto testContractExpected = this.CreateContractsDto(proposal.Id, previouslySubmittedProposal.Id);
 
@@ -90,13 +89,6 @@ namespace GenTRAC.Tests.DAL.Loader
             ContractsDto testContractActual2 = useProposalID ? sut.GetContractForProposal(proposal.Id) : sut.GetById(contractId.Value);
 
             this.CompareContractData(testContractActual, testContractActual2);
-
-            // This deletes the proposal in order to test deleting the contract
-            this.testData.Cleanup();
-
-            ContractsDto testContractActual3 = useProposalID ? sut.GetContractForProposal(proposal.Id) : sut.GetById(contractId.Value);
-
-            Assert.IsNull(testContractActual3);
         }
 
         /// <summary>
