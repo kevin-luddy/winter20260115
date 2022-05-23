@@ -115,7 +115,7 @@
                             <div class="role-box">
                                 <input type="checkbox" name="Roles" data-ng-true-value="<%: (int)Role.WorkspaceAdmin%>" id="AddWorkspaceRole" data-ng-model="data.WorkspaceAdmin" />
                                 <div class="subtext">
-                                    <label for="AddWorkspaceRole">Workspace Administrator - Can manage Workspace settings. Can view and edit all BOEs in Workspace.</label>
+                                    <label for="AddWorkspaceRole">Workspace Administrator - Can manage Workspace settings. Can view and edit all BOEs in Workspace. Restricted to users with "Create Workspace" permissions.</label>
                                 </div>
                             </div>
                             <% if(ViewBag.IsProjectMapWs) { %>
