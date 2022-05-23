@@ -43,6 +43,7 @@ namespace GenTRAC.Tests.DAL.Common
             {
                 Id = -1,
                 Ntid = "securityusertest" + TestData.CreateRandomWord(3),
+                EmailAddress = "test@ptm.ssc.lmco.com",
                 Updateable = UpdateType.Upsert
             });
 

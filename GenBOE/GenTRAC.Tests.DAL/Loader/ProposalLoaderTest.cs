@@ -935,6 +935,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
+            ProposalDto previouslySubmittedRom = testData.GetProposal();
             ProposalDto proposal = testData.GetProposal();
             ContractsDto contractsDto = new ContractsDto();
 
@@ -947,7 +948,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id; // FK, must exist
+                contractsDto.PreviouslySubmittedROM = previouslySubmittedRom.Id; // FK, must exist
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
                 
@@ -971,6 +972,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
+            ProposalDto previouslySubmittedRom = testData.GetProposal();
             ProposalDto proposal = testData.GetProposal(true);
             ContractsDto contractsDto = new ContractsDto();
 
@@ -983,7 +985,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
+                contractsDto.PreviouslySubmittedROM = previouslySubmittedRom.Id;
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
 
@@ -1007,6 +1009,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
+            ProposalDto previouslySubmittedRom = testData.GetProposal();
             ProposalDto proposal = testData.GetProposal(true);
             ContractsDto contractsDto = new ContractsDto();
 
@@ -1020,7 +1023,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
+                contractsDto.PreviouslySubmittedROM = previouslySubmittedRom.Id;
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
 
@@ -1044,6 +1047,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
+            ProposalDto previouslySubmittedRom = testData.GetProposal();
             ProposalDto proposal = testData.GetProposal(true);
             ContractsDto contractsDto = new ContractsDto();
 
@@ -1057,7 +1061,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
+                contractsDto.PreviouslySubmittedROM = previouslySubmittedRom.Id;
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
 
@@ -1080,6 +1084,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
+            ProposalDto previouslySubmittedRom = testData.GetProposal();
             ProposalDto proposal = testData.GetProposal(true);
             ContractsDto contractsDto = new ContractsDto();
 
@@ -1093,7 +1098,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
+                contractsDto.PreviouslySubmittedROM = previouslySubmittedRom.Id;
                 contractsDto.ModCompletedDate = DateTime.Now;
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
@@ -1117,6 +1122,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
+            ProposalDto previouslySubmittedRom = testData.GetProposal();
             ProposalDto proposal = testData.GetProposal(true);
             ContractsDto contractsDto = new ContractsDto();
 
@@ -1129,7 +1135,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
+                contractsDto.PreviouslySubmittedROM = previouslySubmittedRom.Id;
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.LmWon = false;
                 contractsDto.Updateable = UpdateType.Upsert;
@@ -1153,6 +1159,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
+            ProposalDto previouslySubmittedRom = testData.GetProposal();
             ProposalDto proposal = testData.GetProposal(true);
             ContractsDto contractsDto = new ContractsDto();
 
@@ -1165,7 +1172,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
+                contractsDto.PreviouslySubmittedROM = previouslySubmittedRom.Id;
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
 
@@ -1178,7 +1185,6 @@ namespace GenTRAC.Tests.DAL.Loader
 
             Assert.IsNull(proposals.FirstOrDefault(x => x.Id == proposal.Id));
         }
-
 
         /// <summary>
         /// Tests GetWorkflowCompletedLineText for In Progress proposals
