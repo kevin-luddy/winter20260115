@@ -270,7 +270,7 @@ namespace GenTRAC.DataBridge.DTO
                         ProposalEmailType = EmailType.ModExecutionDateRequired,
                         ProposalId = proposal.Id,
                         ProposalTitle = proposal.ProposalTitle,
-                        TrackingNumber = proposal.ForecastedTrackingNumber,
+                        TrackingNumber = proposal.TrackingNumber,
                         AdditionalText = string.Empty
                     };
 
@@ -545,7 +545,7 @@ namespace GenTRAC.DataBridge.DTO
         /// <returns>An email address for a role found in the permissions passed in.</returns>
         private string RetrieveEmailForRole(ProposalDto proposal, PtmRole role, ICollection<ProposalPermissionDto> permissions)
         {
-            string email = null;
+            string email = string.Empty;
             ProposalPermissionDto permission = permissions.FirstOrDefault(p => p.Role == role);
 
             if (permission == null)

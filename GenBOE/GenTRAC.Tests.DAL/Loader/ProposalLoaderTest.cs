@@ -935,6 +935,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
+            ProposalDto previouslySubmittedRom = testData.GetProposal();
             ProposalDto proposal = testData.GetProposal();
             ContractsDto contractsDto = new ContractsDto();
 
@@ -947,7 +948,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id; // FK, must exist
+                contractsDto.PreviouslySubmittedROM = previouslySubmittedRom.Id; // FK, must exist
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
                 
@@ -971,6 +972,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
+            ProposalDto previouslySubmittedRom = testData.GetProposal();
             ProposalDto proposal = testData.GetProposal(true);
             ContractsDto contractsDto = new ContractsDto();
 
@@ -983,7 +985,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
+                contractsDto.PreviouslySubmittedROM = previouslySubmittedRom.Id;
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
 
@@ -1007,6 +1009,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
+            ProposalDto previouslySubmittedRom = testData.GetProposal();
             ProposalDto proposal = testData.GetProposal(true);
             ContractsDto contractsDto = new ContractsDto();
 
@@ -1020,7 +1023,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
+                contractsDto.PreviouslySubmittedROM = previouslySubmittedRom.Id;
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
 
@@ -1044,6 +1047,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
+            ProposalDto previouslySubmittedRom = testData.GetProposal();
             ProposalDto proposal = testData.GetProposal(true);
             ContractsDto contractsDto = new ContractsDto();
 
@@ -1057,7 +1061,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
+                contractsDto.PreviouslySubmittedROM = previouslySubmittedRom.Id;
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
 
@@ -1080,6 +1084,7 @@ namespace GenTRAC.Tests.DAL.Loader
         {
             ProposalLoader sut = this.CreateSystem();
 
+            ProposalDto previouslySubmittedRom = testData.GetProposal();
             ProposalDto proposal = testData.GetProposal(true);
             ContractsDto contractsDto = new ContractsDto();
 
@@ -1093,8 +1098,81 @@ namespace GenTRAC.Tests.DAL.Loader
 
                 ContractsLoader contractsLoader = new ContractsLoader();
                 contractsDto.ProposalId = proposal.Id;
-                contractsDto.PreviouslySubmittedROM = sut.GetAllSlim().Last().Id;
+                contractsDto.PreviouslySubmittedROM = previouslySubmittedRom.Id;
                 contractsDto.ModCompletedDate = DateTime.Now;
+                contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
+                contractsDto.Updateable = UpdateType.Upsert;
+
+                contractsLoader.Save(contractsDto);
+
+                scope.Complete();
+            }
+
+            ICollection<ProposalDto> proposals = sut.GetModExecutedDateMissingNotifications();
+
+            Assert.IsNull(proposals.FirstOrDefault(x => x.Id == proposal.Id));
+        }
+
+        /// <summary>
+        /// Determine whether to send ModExecutionDate email reminder
+        /// Case: The ModExecutionDate has not been set, but proposal is lost.  No send.
+        /// </summary>
+        [TestMethod]
+        public void ModExecutionDate_LostTest()
+        {
+            ProposalLoader sut = this.CreateSystem();
+
+            ProposalDto previouslySubmittedRom = testData.GetProposal();
+            ProposalDto proposal = testData.GetProposal(true);
+            ContractsDto contractsDto = new ContractsDto();
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                proposal.CertificationDate = DateTime.Now.AddDays(-30);
+                proposal.Updateable = UpdateType.Upsert;
+
+                sut.Save(proposal);
+
+                ContractsLoader contractsLoader = new ContractsLoader();
+                contractsDto.ProposalId = proposal.Id;
+                contractsDto.PreviouslySubmittedROM = previouslySubmittedRom.Id;
+                contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
+                contractsDto.LmWon = false;
+                contractsDto.Updateable = UpdateType.Upsert;
+
+                contractsLoader.Save(contractsDto);
+
+                scope.Complete();
+            }
+
+            ICollection<ProposalDto> proposals = sut.GetModExecutedDateMissingNotifications();
+
+            Assert.IsNull(proposals.FirstOrDefault(x => x.Id == proposal.Id));
+        }
+
+        /// <summary>
+        /// Determine whether to send ModExecutionDate email reminder
+        /// Case: The ModExecutionDate has not been set, but proposal was completed before the feature was deployed.  No send.
+        /// </summary>
+        [TestMethod]
+        public void ModExecutionDate_OldTest()
+        {
+            ProposalLoader sut = this.CreateSystem();
+
+            ProposalDto previouslySubmittedRom = testData.GetProposal();
+            ProposalDto proposal = testData.GetProposal(true);
+            ContractsDto contractsDto = new ContractsDto();
+
+            using (TransactionScope scope = new TransactionScope())
+            {
+                proposal.CertificationDate = new DateTime(2021, 1, 1); // this works because PtmContractsStartDate is set to 5/16/21
+                proposal.Updateable = UpdateType.Upsert;
+
+                sut.Save(proposal);
+
+                ContractsLoader contractsLoader = new ContractsLoader();
+                contractsDto.ProposalId = proposal.Id;
+                contractsDto.PreviouslySubmittedROM = previouslySubmittedRom.Id;
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
 
