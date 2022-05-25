@@ -14,10 +14,12 @@ namespace GenBOE.Web.Controllers
 	using System.Net.Http;
 	using System.Net.Http.Headers;
 	using System.Web.Http;
+	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Export.BOE;
 	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
@@ -47,6 +49,11 @@ namespace GenBOE.Web.Controllers
 		/// Reports controller
 		/// </summary>
 		private readonly IReportsControllerLogic reportsControllerLogic;
+
+		/// <summary>
+		/// BOE Form Controller Logic
+		/// </summary>
+		private readonly IBOEFormControllerLogic boeFormControllerLogic;
 
 		/// <summary>
 		/// BOE Exporter
@@ -87,7 +94,8 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeCustomExporter">BOE custom exporter</param>
 		/// <param name="workspaceExportFormatDTOLoader">Workspace export format loader</param>
 		/// <param name="traceTableExporter">Trace Table data exporter</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter) 
+		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic) 
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -97,6 +105,7 @@ namespace GenBOE.Web.Controllers
 			this.boeCustomExporter = boeCustomExporter;
 			this.workspaceExportFormatDTOLoader = workspaceExportFormatDTOLoader;
 			this.traceTableExporter = traceTableExporter;
+			this.boeFormControllerLogic = boeFormControllerLogic;
 		}
 		#endregion
 
@@ -281,6 +290,44 @@ namespace GenBOE.Web.Controllers
 			}
 
 			return boeData;
+		}
+
+		/// <summary>
+		/// Gets all of the Subcontractors for a Workspace
+		/// </summary>
+		/// <param name="workspaceShortName">Short name of the workspace</param>
+		/// <returns>HttpResponseMessage</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public ICollection<SubcontractorData> GetSubcontractors(string workspaceShortName)
+		{
+			ICollection<SubcontractorData> result = null;
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+				SecurityAuthorization permission = this.CheckPermission(SecurityPage.ManageBOEForms, workspace);
+
+				if (permission >= SecurityAuthorization.Read)
+				{
+					ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
+
+					result = forms.Where(f => f.BOEFormType == BOEFormType.PBOE).Select(p =>
+						new SubcontractorData()
+						{
+							Name = p.BOEFormName,
+							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost
+						}).ToList();
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+			}
+
+			return result;
 		}
 	}
 }
