@@ -124,8 +124,11 @@
             };
 
             ManageBOEFormsWidget.StripCurrencyFormatting = function () {
-                const unformattedValue = $('#SupplierProposedValue').val().replace(',', '').replace('$', '');
-                $('#SupplierProposedValue').val(unformattedValue);
+				const proposedVal = $('#SupplierProposedValue').val();
+				if (proposedVal !== undefined) {
+					const unformattedValue = proposedVal.replace(',', '').replace('$', '');
+					$('#SupplierProposedValue').val(unformattedValue);
+				}
             }
 
             ManageBOEFormsWidget.Save = function (button) {
@@ -227,7 +230,7 @@
             <%  } %>
     });
      
-    </script>
+	</script>
     <div id="UpdateBOEFormsForm" class="manage-BOEForms module">
         <div class="module-header-data">Edit Integrated Non-Labor Form</div>
         <div class="module-content-data" style="width: 900px;">

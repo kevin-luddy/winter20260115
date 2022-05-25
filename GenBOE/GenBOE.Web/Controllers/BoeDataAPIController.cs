@@ -293,15 +293,53 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
+		/// Gets all of the IWTA Company Names for a Workspace
+		/// </summary>
+		/// <param name="workspaceShortName">Short name of the workspace</param>
+		/// <returns>HttpResponseMessage</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public ICollection<BOEFormData> GetIwtaCompanies(string workspaceShortName)
+		{
+			ICollection<BOEFormData> result = null;
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+				SecurityAuthorization permission = this.CheckPermission(SecurityPage.ManageBOEForms, workspace);
+
+				if (permission >= SecurityAuthorization.Read)
+				{
+					ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
+
+					result = forms.Where(f => f.BOEFormType == BOEFormType.IBOE).Select(p =>
+						new BOEFormData()
+						{
+							Name = p.BOEFormName,
+							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost
+						}).ToList();
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+			}
+
+			return result;
+		}
+
+		/// <summary>
 		/// Gets all of the Subcontractors for a Workspace
 		/// </summary>
 		/// <param name="workspaceShortName">Short name of the workspace</param>
 		/// <returns>HttpResponseMessage</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public ICollection<SubcontractorData> GetSubcontractors(string workspaceShortName)
+		public ICollection<BOEFormData> GetSubcontractors(string workspaceShortName)
 		{
-			ICollection<SubcontractorData> result = null;
+			ICollection<BOEFormData> result = null;
 
 			try
 			{
@@ -315,7 +353,7 @@ namespace GenBOE.Web.Controllers
 					ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
 
 					result = forms.Where(f => f.BOEFormType == BOEFormType.PBOE).Select(p =>
-						new SubcontractorData()
+						new BOEFormData()
 						{
 							Name = p.BOEFormName,
 							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost
