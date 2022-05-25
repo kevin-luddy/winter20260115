@@ -9,7 +9,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Linq;
+	using System.IO;
+	using System.Linq;
     using GenBOE.ActionLogic;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export;
@@ -53,16 +54,60 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.tmCalculator = tmCalculator;
         }
 
-        /// <summary>
-        /// Exports a BOE Form based on its Id
-        /// </summary>
-        /// <param name="workspace">The workspace for the BOE Form.</param>
-        /// <param name="boeFormId">BOE Form Id</param>
-        /// <param name="boeFormType">BOE Form Type that you wish to export</param>
-        /// <param name="isPortionMarkingEnabled">True if portion marking is enabled; False otherwise.</param>
-        /// <param name="contractTypes">The contract types.</param>
-        /// <returns>Returns the path of the actual file, and the suggested filename.</returns>
-        public string[] ExportBOEFormReport(FullWorkspace workspace, int boeFormId, BOEFormType boeFormType, bool isPortionMarkingEnabled, ICollection<PickListDto> contractTypes)
+		/// <summary>
+		/// Exports a BOE Form based on its Id to a Stream
+		/// </summary>
+		/// <param name="workspace">The workspace for the BOE Form.</param>
+		/// <param name="boeFormId">BOE Form Id</param>
+		/// <param name="boeFormType">BOE Form Type that you wish to export</param>
+		/// <param name="isPortionMarkingEnabled">True if portion marking is enabled; False otherwise.</param>
+		/// <param name="contractTypes">The contract types.</param>
+		/// <returns>Returns the Stream containing the export.</returns>
+		public Stream ExportBOEFormReportAsStream(FullWorkspace workspace, int boeFormId, BOEFormType boeFormType, bool isPortionMarkingEnabled, ICollection<PickListDto> contractTypes)
+		{
+			if (workspace == null)
+			{
+				throw new ArgumentNullException(nameof(workspace));
+			}
+
+			if (boeFormId == 0)
+			{
+				throw new ArgumentNullException(nameof(boeFormId));
+			}
+
+			if (boeFormType == BOEFormType.NotSet)
+			{
+				throw new ArgumentNullException(nameof(boeFormType));
+			}
+
+			string proposalTitleAndRfpNumber = this.GetProposalTitleAndRfpNumber(workspace);
+
+			if (boeFormType == BOEFormType.IBOE)
+			{
+				BOEFormIBOEDTO dto = this.iboeFormDataLoader.GetById(boeFormId);
+				return this.iboeExporter.ExportToStream(workspace, dto, isPortionMarkingEnabled, proposalTitleAndRfpNumber, contractTypes);
+			}
+			else if (boeFormType == BOEFormType.PBOE)
+			{
+				BOEFormPBOEDTO dto = this.pboeFormDataLoader.GetById(boeFormId);
+				return this.pboeExporter.ExportToStream(workspace, dto, isPortionMarkingEnabled, proposalTitleAndRfpNumber, contractTypes);
+			}
+			else
+			{
+				throw new ArgumentNullException(nameof(boeFormType));
+			}
+		}
+
+		/// <summary>
+		/// Exports a BOE Form based on its Id
+		/// </summary>
+		/// <param name="workspace">The workspace for the BOE Form.</param>
+		/// <param name="boeFormId">BOE Form Id</param>
+		/// <param name="boeFormType">BOE Form Type that you wish to export</param>
+		/// <param name="isPortionMarkingEnabled">True if portion marking is enabled; False otherwise.</param>
+		/// <param name="contractTypes">The contract types.</param>
+		/// <returns>Returns the path of the actual file, and the suggested filename.</returns>
+		public string[] ExportBOEFormReport(FullWorkspace workspace, int boeFormId, BOEFormType boeFormType, bool isPortionMarkingEnabled, ICollection<PickListDto> contractTypes)
         {
             if (workspace == null)
             {
