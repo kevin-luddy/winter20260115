@@ -13,6 +13,6 @@
 		/// <summary>
 		/// The Total Cost for a Subcontractor
 		/// </summary>
-		public decimal Cost { get; set; }
+		public decimal TotalCost { get; set; }
 	}
 }

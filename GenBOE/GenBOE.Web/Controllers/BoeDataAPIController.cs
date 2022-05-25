@@ -94,6 +94,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeCustomExporter">BOE custom exporter</param>
 		/// <param name="workspaceExportFormatDTOLoader">Workspace export format loader</param>
 		/// <param name="traceTableExporter">Trace Table data exporter</param>
+		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic) 
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
@@ -317,7 +318,7 @@ namespace GenBOE.Web.Controllers
 						new SubcontractorData()
 						{
 							Name = p.BOEFormName,
-							Cost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost
+							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost
 						}).ToList();
 				}
 			}
