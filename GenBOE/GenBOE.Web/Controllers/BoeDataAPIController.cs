@@ -299,9 +299,9 @@ namespace GenBOE.Web.Controllers
 		/// <returns>HttpResponseMessage</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public ICollection<BOEFormData> GetIwtaCompanies(string workspaceShortName)
+		public IESResponse<BOEFormData> GetIwtaCompanies(string workspaceShortName)
 		{
-			ICollection<BOEFormData> result = null;
+			IESResponse<BOEFormData> result = new IESResponse<BOEFormData>();
 
 			try
 			{
@@ -314,17 +314,19 @@ namespace GenBOE.Web.Controllers
 				{
 					ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
 
-					result = forms.Where(f => f.BOEFormType == BOEFormType.IBOE).Select(p =>
+					result.Data = forms.Where(f => f.BOEFormType == BOEFormType.IBOE).Select(p =>
 						new BOEFormData()
 						{
 							Name = p.BOEFormName,
 							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost
 						}).ToList();
+					result.IsSuccessful = true;
 				}
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred returning IBOE data: {ex.Message}");
 			}
 
 			return result;
@@ -337,9 +339,9 @@ namespace GenBOE.Web.Controllers
 		/// <returns>HttpResponseMessage</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public ICollection<BOEFormData> GetSubcontractors(string workspaceShortName)
+		public IESResponse<BOEFormData> GetSubcontractors(string workspaceShortName)
 		{
-			ICollection<BOEFormData> result = null;
+			IESResponse<BOEFormData> result = new IESResponse<BOEFormData>();
 
 			try
 			{
@@ -352,17 +354,19 @@ namespace GenBOE.Web.Controllers
 				{
 					ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
 
-					result = forms.Where(f => f.BOEFormType == BOEFormType.PBOE).Select(p =>
+					result.Data = forms.Where(f => f.BOEFormType == BOEFormType.PBOE).Select(p =>
 						new BOEFormData()
 						{
 							Name = p.BOEFormName,
 							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost
 						}).ToList();
+					result.IsSuccessful = true;
 				}
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred returning PBOE data: {ex.Message}");
 			}
 
 			return result;
