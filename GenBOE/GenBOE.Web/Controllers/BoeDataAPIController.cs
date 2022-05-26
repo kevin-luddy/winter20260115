@@ -293,15 +293,15 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Gets all of the Subcontractors for a Workspace
+		/// Gets all of the IWTA Company Names for a Workspace
 		/// </summary>
 		/// <param name="workspaceShortName">Short name of the workspace</param>
 		/// <returns>HttpResponseMessage</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public ICollection<SubcontractorData> GetSubcontractors(string workspaceShortName)
+		public IESResponse<BOEFormData> GetIwtaCompanies(string workspaceShortName)
 		{
-			ICollection<SubcontractorData> result = null;
+			IESResponse<BOEFormData> result = new IESResponse<BOEFormData>();
 
 			try
 			{
@@ -314,17 +314,59 @@ namespace GenBOE.Web.Controllers
 				{
 					ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
 
-					result = forms.Where(f => f.BOEFormType == BOEFormType.PBOE).Select(p =>
-						new SubcontractorData()
+					result.Data = forms.Where(f => f.BOEFormType == BOEFormType.IBOE).Select(p =>
+						new BOEFormData()
 						{
 							Name = p.BOEFormName,
 							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost
 						}).ToList();
+					result.IsSuccessful = true;
 				}
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred returning IBOE data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Gets all of the Subcontractors for a Workspace
+		/// </summary>
+		/// <param name="workspaceShortName">Short name of the workspace</param>
+		/// <returns>HttpResponseMessage</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<BOEFormData> GetSubcontractors(string workspaceShortName)
+		{
+			IESResponse<BOEFormData> result = new IESResponse<BOEFormData>();
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+				SecurityAuthorization permission = this.CheckPermission(SecurityPage.ManageBOEForms, workspace);
+
+				if (permission >= SecurityAuthorization.Read)
+				{
+					ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
+
+					result.Data = forms.Where(f => f.BOEFormType == BOEFormType.PBOE).Select(p =>
+						new BOEFormData()
+						{
+							Name = p.BOEFormName,
+							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost
+						}).ToList();
+					result.IsSuccessful = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred returning PBOE data: {ex.Message}");
 			}
 
 			return result;

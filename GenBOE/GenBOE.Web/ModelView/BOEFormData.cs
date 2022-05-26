@@ -7,17 +7,17 @@
 namespace GenBOE.Web.ModelView
 {
 	/// <summary>
-	/// Subcontractor Data inside a Workspace
+	/// BOE Form Data inside a Workspace
 	/// </summary>
-	public class SubcontractorData
+	public class BOEFormData
 	{
 		/// <summary>
-		/// The Subcontractor Name
+		/// The BOE Form's Name
 		/// </summary>
 		public string Name { get; set; }
 		
 		/// <summary>
-		/// The Total Cost for a Subcontractor
+		/// The Total Cost for a BOE Form instance
 		/// </summary>
 		public decimal TotalCost { get; set; }
 	}
