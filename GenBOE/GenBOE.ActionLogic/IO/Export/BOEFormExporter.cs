@@ -187,6 +187,9 @@ namespace GenBOE.ActionLogic.IO.Export
 				this.PopulateDataExport(workspace, document, boeForm, isPortionMarkingEnabled, proposalTitleAndRfpNumber, contractTypes);
 			}, ms);
 
+			// Seek back to beginning of Memory Stream
+			ms.Seek(0, SeekOrigin.Begin);
+
 			return ms;
 		}
 
