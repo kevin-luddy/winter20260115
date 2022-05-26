@@ -62,8 +62,11 @@
                     Session.alertDialog("Form Type", "A Form Type must be selected to save.");
                 } else {
                     // Ensure any currency formatting is stripped
-                    const unformattedValue = $('#SupplierProposedValue').val().replace(',', '').replace('$', '');
-                    $('#SupplierProposedValue').val(unformattedValue);
+					const proposedVal = $('#SupplierProposedValue').val();
+					if (proposedVal !== undefined) {
+						const unformattedValue = proposedVal.replace(',', '').replace('$', '');
+						$('#SupplierProposedValue').val(unformattedValue);
+					}
 
                     var data = ManageBOEFormsWidget.getForm('CreateBOEForm').getData();
 
@@ -200,7 +203,7 @@
             ManageBOEFormsWidget.BindEvents();
     });
      
-    </script>
+	</script>
     <div id="CreateBOEFormsForm" class="manage-BOEForms module">
         <div class="module-header-data">Add Integrated Non-Labor Form</div>
         <div class="module-content-data" style="width: 900px;">
