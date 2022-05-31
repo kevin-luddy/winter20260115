@@ -27,14 +27,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
     /// </summary>
     public class BOEFormControllerLogic : IBOEFormControllerLogic
     {
-        private IBOEFormIBOEDTODataLoader iboeFormDataLoader;
-        private IBOEFormPBOEDTODataLoader pboeFormDataLoader;
-        private IResourceDTODataLoader resourceLoader;
-        private ITMResourceRateDTODataLoader tmResourceRateLoader;
+        private readonly IBOEFormIBOEDTODataLoader iboeFormDataLoader;
+        private readonly IBOEFormPBOEDTODataLoader pboeFormDataLoader;
+        private readonly IResourceDTODataLoader resourceLoader;
+        private readonly ITMResourceRateDTODataLoader tmResourceRateLoader;
 
-        private IBOEFormExporter iboeExporter;
-        private PBOEFormExporter pboeExporter;
-        private TMCalculator tmCalculator;
+        private readonly IBOEFormExporter iboeExporter;
+        private readonly PBOEFormExporter pboeExporter;
+        private readonly TMCalculator tmCalculator;
 
         public BOEFormControllerLogic(
             IBOEFormIBOEDTODataLoader iboeFormDataLoader,
@@ -65,10 +65,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <returns>Returns the Stream containing the export.</returns>
 		public Stream ExportBOEFormReportAsStream(FullWorkspace workspace, int boeFormId, BOEFormType boeFormType, bool isPortionMarkingEnabled, ICollection<PickListDto> contractTypes)
 		{
-			if (workspace == null)
-			{
-				throw new ArgumentNullException(nameof(workspace));
-			}
+			_ = workspace ?? throw new ArgumentNullException(nameof(workspace));
 
 			if (boeFormId == 0)
 			{
