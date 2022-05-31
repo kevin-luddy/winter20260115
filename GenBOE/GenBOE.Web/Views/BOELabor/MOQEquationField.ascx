@@ -39,7 +39,8 @@
         ShouldMoqReadOnlyBeReversed: '<%:ViewData["ShouldMoqReadOnlyBeReversed"]%>'.isTrue(),
         IsRMS: '<%:Model.Company == CompanyConfiguration.MST%>'.isTrue(),
         HistoricalMoqType: <%:(int)MOQType.Historical%>,
-        ComparativeMoqType: <%:(int)MOQType.Comparative%>
+        ComparativeMoqType: <%:(int)MOQType.Comparative%>,
+        SAPEnabled: '<%:SiteMasterUtilities.IsSAPEnabled%>'.isTrue()
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -241,7 +242,7 @@
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.TotalWbsHours}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalWBSHoursSuffix);"></div></td>
-                            <td><input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="number" required min="0" data-ng-model="tableData.TotalWbsHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
+                            <td><input data-ng-readonly="ActualReadOnly() || model.SAPEnabled" class="skip-read-only" type="number" required min="0" data-ng-model="tableData.TotalWbsHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-repeat="customField in MoqTableCustomFields" data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{customField.CustomFieldMetaData.FieldName}}{{(customField.CustomFieldMetaData.isRequired) ? ' *' : ''}}</td>
@@ -253,6 +254,7 @@
                             <td class="form-label">{{model.MoqTypeTableDataLabels.AdditionalQueryFilters}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersComparativeSuffix);"></div>
+                                <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton">Update Filters</button>
                             </td>
                             <td><textarea data-ng-readonly="ActualReadOnly()" class="skip-read-only" cols="20" required data-ng-model="tableData.AdditionalQueryFilters" /></td>
                         </tr>
@@ -260,14 +262,17 @@
                             <td class="form-label">{{model.MoqTypeTableDataLabels.TotalRelevantHours}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalRelevantHoursHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalRelevantHoursComparativeSuffix);"></div></td>
-                            <td><input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="number" required min="0" data-ng-model="tableData.TotalRelevantHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
+                            <td><input data-ng-readonly="ActualReadOnly() || model.SAPEnabled" class="skip-read-only" type="number" required min="0" data-ng-model="tableData.TotalRelevantHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                    </table>
                 </div>
                 <div class="tableDataButtons">
-                    <button data-ng-if="!ActualReadOnly() && $index == 0" style="margin-bottom:9px;" data-ng-click="CreateNewTable(moqType.TableData)" type="button" class="ies-action moqTypesButton">Add Table Data</button>
+                    <button data-ng-if="!ActualReadOnly() && $index == 0" data-ng-click="CreateNewTable(moqType.TableData)" type="button" class="ies-action moqTypesButton">Add Table Data</button>
                     <button data-ng-if="!ActualReadOnly() && $index == 0" data-ng-disabled="moqType.TableData.length <= 1" data-ng-click="displayReOrderMoqTablesDialog(moqType)" class="moqTypesButton ies-blue" type="button">Sort MOQ Tables</button>
-                    <button data-ng-if="!ActualReadOnly() && moqType.TableData.length > 1" style="display:block;" data-ng-click="RemoveTable(tableData, moqType.TableData)" type="button" class="ies-danger moqTypesButton">Delete Table Data</button>
+                    <button data-ng-if="!ActualReadOnly() && moqType.TableData.length > 1" style="display:block;" data-ng-click="RemoveTable(tableData, moqType.TableData)" type="button" class="ies-danger moqTypesButton" data-ng-class="{'moqTypesDelete': $index == 0}">Delete Table Data</button>
+                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton">Export Actuals</button>
+                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton">Validate Actuals</button>
+                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton">Calculate Actuals</button>
                 </div>
                 <hr />
             </div>

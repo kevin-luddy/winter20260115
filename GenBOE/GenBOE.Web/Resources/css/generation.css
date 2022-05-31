@@ -8359,11 +8359,21 @@ input.labelLookFeel {
 
 /* Moq Types */
 
-.moqTypesButton {
+.tableDataButtons .moqTypesButton,
+.form-label .moqTypesButton {
     height: 20px;
-    line-height: 14px !important;
-    margin-left: 10px;
-    margin-top: -2px !important;
+    line-height: 14px;
+    margin-top: -2px;
+}
+
+.tableDataParent .tableDataButtons .moqTypesDelete {
+    margin-top: 9px;
+}
+
+.tableDataParent .tableDataButtons .sapButton,
+.form-label .sapButton {
+    display: block;
+    margin-top: 5px;
 }
 
 #AddMOQWarning {

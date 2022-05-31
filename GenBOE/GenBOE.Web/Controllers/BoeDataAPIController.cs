@@ -14,16 +14,21 @@ namespace GenBOE.Web.Controllers
 	using System.Net.Http;
 	using System.Net.Http.Headers;
 	using System.Web.Http;
+	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Export.BOE;
 	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.ModelView.BOE;
 	using GenBOE.DataBridge.Common.Interfaces;
 	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
+	using GenBOE.Web.Common;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
+	using IES.Common.OfficeUtilities;
+	using IES.Common.PickList;
 
 	/// <summary>
 	/// BOE Data Controller, original intent is for it to be used by ACV to pull data in, but realistically, it is serving up BOE data, hence the name.
@@ -49,6 +54,11 @@ namespace GenBOE.Web.Controllers
 		private readonly IReportsControllerLogic reportsControllerLogic;
 
 		/// <summary>
+		/// BOE Form Controller Logic
+		/// </summary>
+		private readonly IBOEFormControllerLogic boeFormControllerLogic;
+
+		/// <summary>
 		/// BOE Exporter
 		/// </summary>
 		private readonly IBOEExporter boeExporter;
@@ -69,6 +79,11 @@ namespace GenBOE.Web.Controllers
 		private readonly ITraceTableExporter traceTableExporter;
 
 		/// <summary>
+		/// Contract Type loader
+		/// </summary>
+		private readonly ContractTypeLoader contractTypeLoader;
+
+		/// <summary>
 		/// Logger
 		/// </summary>
 		private Logger logger = new Logger("BoeDataAPIController");
@@ -87,7 +102,9 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeCustomExporter">BOE custom exporter</param>
 		/// <param name="workspaceExportFormatDTOLoader">Workspace export format loader</param>
 		/// <param name="traceTableExporter">Trace Table data exporter</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter) 
+		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
+		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, ContractTypeLoader contractTypeLoader) 
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -97,6 +114,8 @@ namespace GenBOE.Web.Controllers
 			this.boeCustomExporter = boeCustomExporter;
 			this.workspaceExportFormatDTOLoader = workspaceExportFormatDTOLoader;
 			this.traceTableExporter = traceTableExporter;
+			this.boeFormControllerLogic = boeFormControllerLogic;
+			this.contractTypeLoader = contractTypeLoader;
 		}
 		#endregion
 
@@ -156,6 +175,63 @@ namespace GenBOE.Web.Controllers
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Export a pboe based on subcontractor name
+		/// </summary>
+		/// <param name="workspaceShortName">Short name of the workspace</param>
+		/// <param name="subcontractor">Subcontractor name</param>
+		/// <returns>HttpResponseMessage</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public HttpResponseMessage ExportPBOE(string workspaceShortName, string subcontractor)
+		{
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+
+				SecurityAuthorization permission = this.CheckPermission(SecurityPage.Reports, workspace);
+
+				if (permission < SecurityAuthorization.Read)
+				{
+					return new HttpResponseMessage(HttpStatusCode.Unauthorized);
+				}
+
+				bool isPortionMarkingEnabled = SiteMasterUtilities.IsPortionMarkingEnabled;
+				ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
+
+				int? pboeId = this.boeFormControllerLogic.GetSummaryForms(workspace).FirstOrDefault(s => s.BOEFormType == BOEFormType.PBOE && s.BOEFormName == subcontractor)?.BOEFormId;
+				if (pboeId.HasValue)
+				{
+					Stream stream = this.boeFormControllerLogic.ExportBOEFormReportAsStream(workspace, pboeId.Value, BOEFormType.PBOE, isPortionMarkingEnabled, contractTypes);
+
+					string fileName = "PBOE_" + subcontractor + ".docx";
+
+					HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+					response.Content = new StreamContent(stream);
+					response.Content.Headers.ContentType = new MediaTypeHeaderValue(BOEExporterConstants.ContentType_DOCX);
+					response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+					{
+						FileName = fileName
+					};
+
+					return response;
+				}
+				else
+				{
+					logger.Error($"Unknown Subcontractor {subcontractor} sent in for workspace {workspaceShortName}");
+					return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+			}
 		}
 
 		/// <summary>
@@ -281,6 +357,86 @@ namespace GenBOE.Web.Controllers
 			}
 
 			return boeData;
+		}
+
+		/// <summary>
+		/// Gets all of the IWTA Company Names for a Workspace
+		/// </summary>
+		/// <param name="workspaceShortName">Short name of the workspace</param>
+		/// <returns>HttpResponseMessage</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<BOEFormData> GetIwtaCompanies(string workspaceShortName)
+		{
+			IESResponse<BOEFormData> result = new IESResponse<BOEFormData>();
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+				SecurityAuthorization permission = this.CheckPermission(SecurityPage.ManageBOEForms, workspace);
+
+				if (permission >= SecurityAuthorization.Read)
+				{
+					ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
+
+					result.Data = forms.Where(f => f.BOEFormType == BOEFormType.IBOE).Select(p =>
+						new BOEFormData()
+						{
+							Name = p.BOEFormName,
+							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost
+						}).ToList();
+					result.IsSuccessful = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred returning IBOE data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Gets all of the Subcontractors for a Workspace
+		/// </summary>
+		/// <param name="workspaceShortName">Short name of the workspace</param>
+		/// <returns>HttpResponseMessage</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<BOEFormData> GetSubcontractors(string workspaceShortName)
+		{
+			IESResponse<BOEFormData> result = new IESResponse<BOEFormData>();
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+				SecurityAuthorization permission = this.CheckPermission(SecurityPage.ManageBOEForms, workspace);
+
+				if (permission >= SecurityAuthorization.Read)
+				{
+					ICollection<BOEFormModelView> forms = this.boeFormControllerLogic.GetSummaryForms(workspace);
+
+					result.Data = forms.Where(f => f.BOEFormType == BOEFormType.PBOE).Select(p =>
+						new BOEFormData()
+						{
+							Name = p.BOEFormName,
+							TotalCost = workspace.IsUsingTM ? p.TotalCost + p.TMCost : p.TotalCost
+						}).ToList();
+					result.IsSuccessful = true;
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred returning PBOE data: {ex.Message}");
+			}
+
+			return result;
 		}
 	}
 }
