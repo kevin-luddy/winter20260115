@@ -7,6 +7,7 @@
 namespace GenBOE.ActionLogic
 {
     using System.Collections.Generic;
+    using System.IO;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.Dtos;
     using GenBOE.Objects;
@@ -27,14 +28,25 @@ namespace GenBOE.ActionLogic
         /// <returns>Returns the path of the actual file, and the suggested filename.</returns>
         string[] ExportBOEFormReport(FullWorkspace workspace, int boeFormId, BOEFormType boeFormType, bool isPortionMarkingEnabled, ICollection<PickListDto> contractTypes);
 
-        /// <summary>
-        /// Retrieves a boe form.
-        /// </summary>
-        /// <param name="workspaceId">The id of the workspace</param>
-        /// <param name="boeFormId">The id of the boe form.</param>
-        /// <returns>IBOE Model View for the BOE Form.</returns>
-        /// <param name="proposalTitleAndRfpNumber">Proposal Title And RFP Number from the workspace.</param>
-        BOEFormIBOEModelView GetIBOEForm(int workspaceId, int boeFormId, string proposalTitleAndRfpNumber);
+		/// <summary>
+		/// Exports a BOE Form based on its Id to a Stream
+		/// </summary>
+		/// <param name="workspace">The workspace for the BOE Form.</param>
+		/// <param name="boeFormId">BOE Form Id</param>
+		/// <param name="boeFormType">BOE Form Type that you wish to export</param>
+		/// <param name="isPortionMarkingEnabled">True if portion marking is enabled; False otherwise.</param>
+		/// <param name="contractTypes">The contract types.</param>
+		/// <returns>Returns the Stream containing the export.</returns>
+		Stream ExportBOEFormReportAsStream(FullWorkspace workspace, int boeFormId, BOEFormType boeFormType, bool isPortionMarkingEnabled, ICollection<PickListDto> contractTypes);
+
+		/// <summary>
+		/// Retrieves a boe form.
+		/// </summary>
+		/// <param name="workspaceId">The id of the workspace</param>
+		/// <param name="boeFormId">The id of the boe form.</param>
+		/// <returns>IBOE Model View for the BOE Form.</returns>
+		/// <param name="proposalTitleAndRfpNumber">Proposal Title And RFP Number from the workspace.</param>
+		BOEFormIBOEModelView GetIBOEForm(int workspaceId, int boeFormId, string proposalTitleAndRfpNumber);
 
         /// <summary>
         /// Retrieves a boe form.

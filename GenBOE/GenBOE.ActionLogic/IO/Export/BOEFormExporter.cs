@@ -165,9 +165,37 @@ namespace GenBOE.ActionLogic.IO.Export
             return toReturn;
         }
 
-        #endregion
+		/// <summary>
+		/// Export data about the given BOE Form into a pre-formatted Word template and return the stream.
+		/// </summary>
+		/// <param name="workspace">Full workspace.</param>
+		/// <param name="boeForm">The boeForm to export.</param>
+		/// <param name="isPortionMarkingEnabled">True if portion marking is enabled; False otherwise.</param>
+		/// <param name="proposalTitleAndRfpNumber">Proposal Title And RFP Number from the workspace.</param>
+		/// <param name="contractTypes">The contract types from DB.</param>
+		/// <returns>The Stream containing the export</returns>
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		public virtual Stream ExportToStream(FullWorkspace workspace, T boeForm, bool isPortionMarkingEnabled, string proposalTitleAndRfpNumber, ICollection<PickListDto> contractTypes)
+		{
+			string templateLocation = isPortionMarkingEnabled ? this.TemplateLocationPortionMarking : this.TemplateLocation;
+			string fileLocation = HttpContext.Current.Server.MapPath(string.Format(templateLocation, boeForm.Version.ToString()));
 
-        protected abstract void PopulateDataExport(FullWorkspace workspace, WordprocessingDocument document, T boeForm, bool isPortionMarkingEnabled, string proposalTitleAndRfpNumber, ICollection<PickListDto> contractTypes);
+			// template file is on disk
+			MemoryStream ms = new MemoryStream();
+			this.Export(fileLocation, (document) =>
+			{
+				this.PopulateDataExport(workspace, document, boeForm, isPortionMarkingEnabled, proposalTitleAndRfpNumber, contractTypes);
+			}, ms);
+
+			// Seek back to beginning of Memory Stream
+			ms.Seek(0, SeekOrigin.Begin);
+
+			return ms;
+		}
+
+		#endregion
+
+		protected abstract void PopulateDataExport(FullWorkspace workspace, WordprocessingDocument document, T boeForm, bool isPortionMarkingEnabled, string proposalTitleAndRfpNumber, ICollection<PickListDto> contractTypes);
 
         /// <summary>
         /// Pulls the table rows from the workspace.
