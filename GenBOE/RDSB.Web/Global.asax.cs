@@ -51,7 +51,7 @@ namespace RDSB.Web
         /// </summary>
         protected void Application_Start()
         {
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+            ConfigureWebApi();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 
             BundleConfig.RegisterBundles(BundleTable.Bundles);
@@ -175,6 +175,15 @@ namespace RDSB.Web
             ContainerControlledLifetimeManager manager = new ContainerControlledLifetimeManager();
             this.lifetimeManagers.Add(manager);
             return manager;
+        }
+
+        /// <summary>
+        /// Configures Web Api 2 "things" to work in an MVC application
+        /// </summary>
+        private static void ConfigureWebApi()
+        {
+            GlobalConfiguration.Configure(WebApiConfig.Register);
+            GlobalConfiguration.Configuration.DependencyResolver = new UnityResolver(GenBOEUnityContainer.Container);
         }
 
         /// <summary>
