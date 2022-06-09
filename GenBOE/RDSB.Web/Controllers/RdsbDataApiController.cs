@@ -7,11 +7,13 @@
 namespace RDSB.Web.Controllers
 {
 	using System;
+	using System.Collections.ObjectModel;
 	using System.IO;
 	using System.Net;
 	using System.Net.Http;
 	using System.Net.Http.Headers;
 	using System.Web.Http;
+	using IES.ActionLogic.ControllerLogic;
 	using IES.Common;
 	using IES.Common.OfficeUtilities;
 
@@ -32,8 +34,12 @@ namespace RDSB.Web.Controllers
 		/// <summary>
 		/// Token Handling
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
 		private TokenHandling tokenHandler;
+
+		/// <summary>
+		/// Document Controller Logic
+		/// </summary>
+		private IDocumentControllerLogic documentControllerLogic;
 
 		/// <summary>
 		/// Logger
@@ -45,10 +51,11 @@ namespace RDSB.Web.Controllers
 		/// </summary>
 		/// <param name="security">Security Information</param>
 		/// <param name="tokenHandler">Token Handling</param>
-		public RdsbDataApiController(ISecurityInformation security, TokenHandling tokenHandler)
+		public RdsbDataApiController(ISecurityInformation security, TokenHandling tokenHandler, IDocumentControllerLogic documentControllerLogic)
 		{
 			this.security = security;
 			this.tokenHandler = tokenHandler;
+			this.documentControllerLogic = documentControllerLogic;
 		}
 
 		#endregion
@@ -56,15 +63,26 @@ namespace RDSB.Web.Controllers
 		/// <summary>
 		/// Check if an RDSB record exists for the given PTM Tracking Number
 		/// </summary>
-		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
+		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>true if record exists, otherwise false</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "ptmTrackingNumber")]
-		public IESResponse<bool> DoesRdsbRecordExist(string ptmTrackingNumber)
+		public IESResponse<bool> DoesRdsbRecordExist(int proposalId)
 		{
 			IESResponse<bool> toReturn = new IESResponse<bool>();
 
-			// TODO - check record
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				toReturn.Data = new Collection<bool>() { documentControllerLogic.RetrieveDocumentByProposalId(proposalId) != null };
+				toReturn.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				toReturn.Messages.Add($"Error occurred checking for RDSB Record: {ex.Message}");
+			}
 
 			return toReturn;
 		}
