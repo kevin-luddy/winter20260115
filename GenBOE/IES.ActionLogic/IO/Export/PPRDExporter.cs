@@ -74,7 +74,8 @@ namespace IES.ActionLogic.IO.Export
         /// <param name="revision">Revision modelview</param>
         /// <param name="rddDocument">The RDD document to use for creation.</param>
         /// <param name="response">the web response object to write the file back to for user download</param>
-        public void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, HttpResponseBase response)
+        /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
+        public void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, HttpResponseBase response, bool includeDocumentDetails = true)
         {
             if (response == null)
             {
@@ -90,7 +91,7 @@ namespace IES.ActionLogic.IO.Export
 
             int rateTableYears = rddDocument.EndYear - rddDocument.StartYear;
 
-            this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, rddDocument); }, response.OutputStream);
+            this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, rddDocument, includeDocumentDetails); }, response.OutputStream);
         }
 
         #region Populate Methods
@@ -106,13 +107,22 @@ namespace IES.ActionLogic.IO.Export
         /// <param name="rateTableYears">Number of years to include in the rate tables</param>
         /// <param name="counters">The chunk counters</param>
         /// <param name="rddDocument">The RDD document model view.</param>
-        private void PopulatePPRDExport(WordprocessingDocument document, ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, RevisionModelView revision, int rateTableYears, ref ChunkCounter counters, DocumentDetailModelView rddDocument = null)
+        /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
+        private void PopulatePPRDExport(WordprocessingDocument document, ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, RevisionModelView revision, int rateTableYears, ref ChunkCounter counters, DocumentDetailModelView rddDocument = null, bool includeDocumentDetails = true)
         {
             // Populate the header
             this.PopulatePPRDHeader(document, revision);
 
-            // Populate introduction text
-            this.PopulateIntroduction(document, revision, ref counters);
+            if (includeDocumentDetails)
+            {
+                // Populate introduction text
+                this.PopulateIntroduction(document, revision, ref counters);
+            }
+            else
+			{
+                // Remove the document details - including introduction, clarification, and ToC
+                this.RemoveElement(WordUtilities.GetTaggedElement(document, PPRDExporterConstants.CONTAINER_DOCUMENT_DETAILS));
+            }
 
             // Get the section container template to begin the process of populating the body of the document
             SdtElement sectionContainerTemplate = WordUtilities.GetTaggedElement(document, PPRDExporterConstants.CONTAINER_SECTION);

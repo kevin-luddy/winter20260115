@@ -365,7 +365,7 @@ namespace IES.ActionLogic.ControllerLogic
             {
                 throw new ArgumentNullException(nameof(proposals));
             }
-
+            
             RevisionModelView latestRevision = this.revisionLoader.GetAll().Where(r => r.DatePublished.HasValue).OrderByDescending(r => r.DatePublished).First();
 
             ICollection<DocumentGridModelView> models = this.documentLoader.GetByProposalIds(proposals.Select(p => p.Id).ToList(), latestRevision.Id);
@@ -574,7 +574,9 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="proposalId">Proposal ID</param>
         /// <param name="serverFileName">Server File Name</param>
         /// <param name="httpResponse">HTTP response object</param>
-        public void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse)
+        /// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
+        /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
+        public void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, int? parentSectionOverride = null, bool includeDocumentDetails = true)
         {
             if (serverFileName == null)
             {
@@ -599,6 +601,11 @@ namespace IES.ActionLogic.ControllerLogic
                 throw new ArgumentException("The selected Document does not have a Revision chosen.");
             }
 
+            if (parentSectionOverride.HasValue)
+			{
+                modelView.ParentSection = parentSectionOverride.ToString();
+			}
+
             // Get Revision MV
             RevisionModelView revisionMV = this.revisionLoader.GetAll().FirstOrDefault(r => r.Id == modelView.SelectedRevisionId.Value);
 
@@ -622,7 +629,7 @@ namespace IES.ActionLogic.ControllerLogic
             // Get File Attachments
             ICollection<FileAttachmentRowModelView> fileAttachments = this.fileAttachmentLoader.GetByRevision(revisionMV.Id);
 
-            this.pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, modelView, httpResponse);
+            this.pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, modelView, httpResponse, includeDocumentDetails);
         }
 
         /// <summary>

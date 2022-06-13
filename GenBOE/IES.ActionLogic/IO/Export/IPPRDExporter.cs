@@ -39,6 +39,7 @@ namespace IES.ActionLogic.IO.Export
         /// <param name="revision">Revision modelview</param>
         /// <param name="rddDocument">The RDD modelview to create the Word Export from.</param>
         /// <param name="response">the web response object to write the file back to for user download</param>
-        void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, HttpResponseBase response);
+        /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
+        void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, HttpResponseBase response, bool includeDocumentDetails = true);
     }
 }
