@@ -160,6 +160,7 @@
     <Compile Include="Common\Search\PerfOrgSearch.cs" />
     <Compile Include="Common\WBSOrCLINValidationAttribute.cs" />
     <Compile Include="Common\SystemSettingConstants.cs" />
+    <Compile Include="Connected Services\IESSAPClient\IESSAPClient.cs" />
     <Compile Include="DateShift\DateShiftable.cs" />
     <Compile Include="DateShift\DateShiftCalculation.cs" />
     <Compile Include="DateShift\DateShiftErrors.cs" />
@@ -557,6 +558,9 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Connected Services\IESSAPClient\ConnectedService.json" />
+    <None Include="Connected Services\IESSAPClient\IESSAPClient.nswag" />
+    <None Include="Connected Services\IESSAPClient\IESSAPClient.nswag.json" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
