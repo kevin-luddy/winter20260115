@@ -765,5 +765,36 @@ namespace IES.Tests
                 scope.Complete();
             }
         }
+
+        /// <summary>
+        /// Test DoesRecordExist for an existing record
+        /// </summary>
+        [TestMethod]
+        public void DoesRecordExist_True()
+        {
+            IDocumentLoader sut = CreateSutLoader();
+            int existingId;
+
+            using (IESEntities context = new IESEntities())
+			{
+                RDSBDocumentInformation existingRecord = context.RDSBDocumentInformations.FirstOrDefault();
+                existingId = existingRecord.PTMProposalID;
+			}
+
+            bool result = sut.DoesRecordExist(existingId);
+            Assert.IsTrue(result);
+		}
+
+
+        /// <summary>
+        /// Test DoesRecordExist for an existing record
+        /// </summary>
+        [TestMethod]
+        public void DoesRecordExist_False()
+        {
+            IDocumentLoader sut = CreateSutLoader();
+            bool result = sut.DoesRecordExist(int.MaxValue);
+            Assert.IsFalse(result);
+        }
     }
 }

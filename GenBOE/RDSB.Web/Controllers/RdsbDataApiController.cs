@@ -78,7 +78,7 @@ namespace RDSB.Web.Controllers
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				toReturn.Data = new Collection<bool>() { documentControllerLogic.RetrieveDocumentByProposalId(proposalId) != null };
+				toReturn.Data = new Collection<bool>() { documentControllerLogic.DoesRdsbRecordExistForProposalId(proposalId) };
 				toReturn.IsSuccessful = true;
 			}
 			catch (Exception ex)

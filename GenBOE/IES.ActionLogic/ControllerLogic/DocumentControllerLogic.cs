@@ -632,26 +632,36 @@ namespace IES.ActionLogic.ControllerLogic
 			this.pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, modelView, httpResponse, includeDocumentDetails);
 		}
 
-		/// <summary>
-		/// Converts the sections.
-		/// </summary>
-		/// <param name="sections">The sections.</param>
-		/// <returns>A treeview of the section details.</returns>
-		private ICollection<SectionDetailModelView> ConvertSections(ICollection<SectionModelView> sections)
+        /// <summary>
+        /// Check if RDSB Record exists for the given PTM Proposal ID
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <returns>true if record exists, otherwise false</returns>
+        public bool DoesRdsbRecordExistForProposalId(int proposalId)
 		{
-			ICollection<SectionDetailModelView> details = new List<SectionDetailModelView>();
-			foreach (SectionModelView section in sections)
-			{
-				if ((!section.IsInternalSection.HasValue || !section.IsInternalSection.Value) && section.ContentType == SectionContentType.Section)
-				{
-					SectionDetailModelView detail = new SectionDetailModelView
-					{
-						Id = section.Id,
-						Title = section.Title,
-						ReferenceNumber = section.ReferenceNumber,
-						HasTable = section.ChildNodes.Any(s => (!s.IsInternalSection.HasValue || !s.IsInternalSection.Value) && s.ContentType == SectionContentType.RateTable),
-						IsRdsbRequired = section.IsRdsbRequired
-					};
+            return documentLoader.DoesRecordExist(proposalId);
+		}
+
+        /// <summary>
+        /// Converts the sections.
+        /// </summary>
+        /// <param name="sections">The sections.</param>
+        /// <returns>A treeview of the section details.</returns>
+        private ICollection<SectionDetailModelView> ConvertSections(ICollection<SectionModelView> sections)
+        {
+            ICollection<SectionDetailModelView> details = new List<SectionDetailModelView>();
+            foreach (SectionModelView section in sections)
+            {
+                if ((!section.IsInternalSection.HasValue || !section.IsInternalSection.Value) && section.ContentType == SectionContentType.Section)
+                {
+                    SectionDetailModelView detail = new SectionDetailModelView
+                    {
+                        Id = section.Id,
+                        Title = section.Title,
+                        ReferenceNumber = section.ReferenceNumber,
+                        HasTable = section.ChildNodes.Any(s => (!s.IsInternalSection.HasValue || !s.IsInternalSection.Value) && s.ContentType == SectionContentType.RateTable),
+                        IsRdsbRequired = section.IsRdsbRequired
+                    };
 
 					details.Add(detail);
 					if (section.ChildNodes != null && section.ChildNodes.Any())

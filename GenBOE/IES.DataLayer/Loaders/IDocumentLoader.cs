@@ -23,5 +23,12 @@ namespace IES.DataBridge.Loaders
         /// <param name="latestRevisionId">The latest revision Id.</param>
         /// <returns>A collection of document model views.</returns>
         ICollection<DocumentGridModelView> GetByProposalIds(ICollection<int> proposalIds, int latestRevisionId);
+
+        /// <summary>
+        /// Check if a record exists for the given Proposal ID
+        /// </summary>
+        /// <param name="proposalId">PTM Proposal ID</param>
+        /// <returns>true if record exists, otherwise false</returns>
+        bool DoesRecordExist(int proposalId);
     }
 }
