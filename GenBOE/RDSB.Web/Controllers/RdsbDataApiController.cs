@@ -99,7 +99,7 @@ namespace RDSB.Web.Controllers
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public HttpResponseMessage ExportRdsbDocument(int proposalId, int parentSectionNumber)
+		public HttpResponseMessage ExportRdsbDocument(int proposalId, string parentSectionNumber)
 		{
 			HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
 

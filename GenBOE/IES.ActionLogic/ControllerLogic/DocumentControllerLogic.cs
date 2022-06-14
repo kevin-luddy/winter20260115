@@ -576,7 +576,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="httpResponse">HTTP response object</param>
 		/// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
 		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
-		public void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, int? parentSectionOverride = null, bool includeDocumentDetails = true)
+		public void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, string parentSectionOverride = null, bool includeDocumentDetails = true)
 		{
 			if (serverFileName == null)
 			{
@@ -601,9 +601,9 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new ArgumentException("The selected Document does not have a Revision chosen.");
 			}
 
-			if (parentSectionOverride.HasValue)
+			if (!string.IsNullOrEmpty(parentSectionOverride))
 			{
-				modelView.ParentSection = parentSectionOverride.ToString();
+				modelView.ParentSection = parentSectionOverride;
 			}
 
 			// Get Revision MV
