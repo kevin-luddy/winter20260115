@@ -235,6 +235,63 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
+		/// Export an iboe based on iwta name
+		/// </summary>
+		/// <param name="workspaceShortName">Short name of the workspace</param>
+		/// <param name="iwtaName">Iwta name</param>
+		/// <returns>HttpResponseMessage</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public HttpResponseMessage ExportIBOE(string workspaceShortName, string iwtaName)
+		{
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
+
+				SecurityAuthorization permission = this.CheckPermission(SecurityPage.Reports, workspace);
+
+				if (permission < SecurityAuthorization.Read)
+				{
+					return new HttpResponseMessage(HttpStatusCode.Unauthorized);
+				}
+
+				bool isPortionMarkingEnabled = SiteMasterUtilities.IsPortionMarkingEnabled;
+				ICollection<PickListDto> contractTypes = this.contractTypeLoader.GetPickListValues();
+
+				int? iboeId = this.boeFormControllerLogic.GetSummaryForms(workspace).FirstOrDefault(s => s.BOEFormType == BOEFormType.IBOE && s.BOEFormName == iwtaName)?.BOEFormId;
+				if (iboeId.HasValue)
+				{
+					Stream stream = this.boeFormControllerLogic.ExportBOEFormReportAsStream(workspace, iboeId.Value, BOEFormType.IBOE, isPortionMarkingEnabled, contractTypes);
+
+					string fileName = "IBOE_" + iwtaName + ".docx";
+
+					HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+					response.Content = new StreamContent(stream);
+					response.Content.Headers.ContentType = new MediaTypeHeaderValue(BOEExporterConstants.ContentType_DOCX);
+					response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+					{
+						FileName = fileName
+					};
+
+					return response;
+				}
+				else
+				{
+					logger.Error($"Unknown IWTA name {iwtaName} sent in for workspace {workspaceShortName}");
+					return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				return new HttpResponseMessage(HttpStatusCode.InternalServerError);
+			}
+		}
+
+		/// <summary>
 		/// Export all BOEs given workspace 
 		/// </summary>
 		/// <param name="workspaceShortName">Short name of the workspace</param>
