@@ -31,7 +31,17 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         disableImport: true,
         invalidData: false,
         importResults: []
-    };
+	};
+
+	$scope.filterDialog = {
+		open: false,
+		data: [],
+		title: 'Update Filters',
+		isLoading: true,
+		fields: ManageTaskModel.SapFields,
+		operators: ManageTaskModel.SapOperators,
+		originalData: undefined
+	}
 
     $scope.isExporting = false;
 
@@ -449,7 +459,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     $scope.closeImportMoqTables = function () {
         resetUploadForm();
         $scope.dialog.open = false;
-    };
+	};
+
+	$scope.open
 
     $scope.fileUploadChange = function (element) {
         $scope.$apply(function ($scope) {
@@ -555,6 +567,118 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     };
 
     //#endregion
+
+	//#region SAP Filters
+
+	$scope.CloseMoqFilters = function () {
+		$scope.filterDialog.open = false;
+	};
+
+	$scope.SaveMoqFilters = function () {
+		$scope.filterDialog.isLoading = true;
+
+		var data = {};
+		data.filters = $scope.filterDialog.data;
+		data.boeId = ManageTaskModel.boeId;
+
+		// Convert view models into text
+		$http({
+			method: 'POST',
+			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.ConvertSapFilterAction, ''),
+			data: data
+		}).then(function (response) {
+			// place returned html into the content div
+			if (response.IsSuccessful === true) {
+				$scope.filterDialog.originalData.AdditionalQueryFilters = response.Data;
+			} else {
+				RaiseNotification(response.Messages[0]);
+			}
+			$scope.filterDialog.isLoading = false;
+			$scope.filterDialog.isOpen = false;
+		}).catch(function () {
+			$scope.filterDialog.isLoading = false;
+			RaiseNotification('Error Converting Filters to Text');
+		});
+	};
+
+	$scope.AddFilterRow = function () {
+		var newRow = {};
+		$scope.filterDialog.data.push(newRow);
+	};
+
+	$scope.DeleteFilter = function (index) {
+		if ($scope.filterDialog.data && $scope.filterDialog.data.length > index) {
+			$scope.filterDialog.data = $scope.filterDialog.data.splice(index, 1);
+		}
+	};
+
+	$scope.DeleteAllFilters = function () {
+		$scope.filterDialog.data = [];
+	};
+
+	$scope.UpdateParens = function () {
+		// validate only two parens checkboxes are selected
+
+
+		// validate selected checkboxes are allowed (not already having start/end parens for 2 selected rows)
+
+		// validate equal number of start parens to end parens between the 2 rows
+
+		// add parens to the 2 rows (start and end)
+
+	};
+
+	$scope.ShowFilterDialog = function (tableData) {
+		$scope.filterDialog.data = [];
+		$scope.filterDialog.isLoading = true;
+		$scope.filterDialog.originalData = tableData;
+		$scope.filterDialog.open = true;
+
+		var data = {};
+		data.text = tableData.AdditionalQueryFilters;
+		data.boeId = ManageTaskModel.boeId;
+
+		// Convert text into view models
+		$http({
+			method: 'POST',
+			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.ParseSapFilterAction, ''),
+			data: data
+		}).then(function (response) {
+			if (response.IsSuccessful === true) {
+				$scope.filterDialog.data = response.Data;
+			} else {
+				RaiseNotification(response.Messages[0]);
+			}
+			$scope.filterDialog.isLoading = false;
+		}).catch(function () {
+			$scope.filterDialog.isLoading = false;
+			RaiseNotification('Parsing Filter Text failed');
+		});
+	}
+
+	// Move MOQ Filter up
+	$scope.MoveFilterUp = function (index) {
+		// first make a copy of the array
+		var arr = $scope.filterDialog.data.slice();
+		var prev = arr[index - 1];
+		arr[index - 1] = arr[index];
+		arr[index] = prev;
+
+		$scope.filterDialog.data = arr;
+	};
+
+	// Move MOQ Filter down
+	$scope.MoveFilterDown = function (index) {
+		// first make a copy of the array
+		var arr = $scope.filterDialog.data.slice();
+		var next = arr[index + 1];
+		arr[index + 1] = arr[index];
+		arr[index] = next;
+
+		$scope.filterDialog.data = arr;
+	};
+
+	//#endregion SAP Filters
 
     $scope.refreshPage = function () {
         $window.location.reload();

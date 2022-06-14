@@ -202,8 +202,10 @@ namespace GenBOE.Web.Controllers
             this.ViewData["SpreadCurvesHours"] = hourCurves;
             this.ViewData["CostDecimalPrecision"] = ws.CostDecimalPrecision;
             this.ViewData["DecimalPrecision"] = ws.DecimalPrecision;
+			this.ViewData["SapFields"] = new [] { Name="Test" };
+			this.ViewData["SapOperators"] = new[] { Name = "Test" };
 
-            ViewResult toReturn = this.GetMasterView(WebConstants.VIEW_EDIT_BOE_INDEX, workspace);
+			ViewResult toReturn = this.GetMasterView(WebConstants.VIEW_EDIT_BOE_INDEX, workspace);
 
             // Finalize Action
             this.FinalizeAction(this._log, "EditBOEIndex", sw);

@@ -254,7 +254,7 @@
                             <td class="form-label">{{model.MoqTypeTableDataLabels.AdditionalQueryFilters}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersComparativeSuffix);"></div>
-                                <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton">Update Filters</button>
+                                <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="ShowFilterDialog(tableData)">Update Filters</button>
                             </td>
                             <td><textarea data-ng-readonly="ActualReadOnly()" class="skip-read-only" cols="20" required data-ng-model="tableData.AdditionalQueryFilters" /></td>
                         </tr>
@@ -477,7 +477,7 @@
             </table>
         </div>
     </div>
-    <div id="ReOrderMoqTypesDialog" class="reorder-moq-types-dialog" style="display: none;">
+	<div id="ReOrderMoqTypesDialog" class="reorder-moq-types-dialog" style="display: none;">
         <div class="container">
             <div class="form-row">
                 <div class="form-element">Sort MOQ Types using the move buttons.  Close when finished.  The defined order will be maintained when exporting data to MS Word.</div>
@@ -569,6 +569,87 @@
                     <button id="ImportMoqTableDialog.CancelButton" class="ies" name="cancel-button" type="button" data-ng-click="closeImportMoqTables()">Cancel</button>
                 </div>
             </div>
+        </div>
+        <div id="ImportResults" data-ng-show="dialog.showImportResults" class="import-verification">
+            <div class="content import-verification"></div>
+            <div class="important">IMPORTANT: This will replace all existing tables. If a table is removed or excluded from the Excel file, the table will be deleted.</div>
+            <br />
+            <div class="buttons">
+                <button id="Back-ImportMoqTableVerification" type="button" class="ies" data-ng-click="backFromImport()" name="back-button">Back</button>
+                <button id="CompleteImportButton-ImportMoqTableVerification" class="ies-action" data-ng-if="!dialog.invalidData" data-ng-hide="dialog.completeImportWorking" data-ng-click="completeImportMoqTables()">Complete Import</button>
+                <div id="CompleteImportLoader-ImportMoqTableVerification" class="loader" data-ng-show="dialog.completeImportWorking" style="width: 129px"></div>
+            </div>
+        </div>
+    </div>
+	<div gen-dialog id="UpdateFiltersMoqDialog" class="update-filters-moq-dialog form dialog" data-width="650" data-height="430" data-title="Update Filters" data-open="filterDialog.open">
+        <div class="container" data-ng-hide="dialog.showImportResults">
+            <div class="form-row">
+				<div class="buttons">
+					<button id="UpdateFiltersMoqDialog-ParensButton" class="ies-action" name="filter-moq-parens-button" data-ng-click="UpdateParens()">Parens</button>
+					<button id="UpdateFiltersMoqDialog-AddButton" class="ies-action" name="filter-moq-add-button" data-ng-click="AddFilterRow()">+ Add</button>
+				</div>
+			</div>
+			<div class="form-row">
+                <div class="update-filter-grid">
+					<table id="UpdateFilterMoqGrid" class="grid">
+						<thead>
+							<tr>
+								<th class="parens-checkbox"></th>
+								<th class="parens">(</th>
+								<th class="field">Field</th>
+								<th class="operator">Operator</th>
+								<th class="value">Value</th>
+								<th class="parens">)</th>
+								<th class="join">Join</th>
+								<th class="up-down"></th>
+								<th class="deleteColumn">
+                                   <div data-ng-click="DeleteAllFilters()" class="delete DeleteButton" />
+                                </th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr data-ng-show="filterDialog.isLoading"><td colspan="9"><div class="loader"></div></td></tr>
+							<tr data-ng-show="!isLoading && (filterDialog.data === undefined || filterDialog.data.length === 0)"><td colspan="9"><div class="empty-grid-text">There are no Filters, please Add a new row.</div></td></tr>
+                            <tr data-ng-repeat="queryFilter in filterDialog.data">
+								<td class="text parens-checkbox">
+                                    <div>
+                                        <input class="parens-chck" type="checkbox" data-ng-if="isWorkingState" data-ng-model="queryFilter.ParensChecked" data-ng-click="$event.stopPropagation()" />
+                                    </div>
+                                </td>
+								<td>{{::queryFilter.StartParens ? '(' : ''}}</td>
+								<td>
+									<select data-ng-model="queryFilter.Field" data-ng-change="clearOperators()" data-ng-options="item.Value for item in queryFilter.fields"></select>
+								</td>
+								<td>
+									<select data-ng-model="queryFilter.Operator" data-ng-options="item.Value for item in queryFilter.operators"></select>
+								</td>
+								<td>{{:queryFilter.Value}}</td>
+								<td>{{::queryFilter.EndParens ? ')' : ''}}</td>
+								<td>
+									<select data-ng-model="queryFilter.Join">
+										<option></option>
+										<option value="And">AND</option>
+										<option value="Or">OR</option>
+									</select>
+								</td>
+								<td>
+									<button ><span data-ng-if="!$first" class="ui-icon-arrowthick-1-n" data-ng-click="MoveFilterUp($index)"></span></button>
+									<button ><span data-ng-if="!$last" class="ui-icon-arrowthick-1-s" data-ng-click="MoveFilterDown($index)"></span></button>
+								</td>
+								<th class="deleteColumn">
+                                   <div data-ng-click="DeleteFilter($index)" class="delete DeleteButton" />
+                                </th>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+            </div>
+			<div class="form-row">
+				<div class="buttons">
+					<button id="ReOrderMoqTypesDialog-Close" class="ies" data-ng-click="SaveMoqFilters()" name="action-button" type="button">Save</button>
+					<button id="ReOrderMoqTypesDialog-Close" class="ies" data-ng-click="CloseMoqFilters()" name="cancel-button" type="button">Close</button>
+				</div>
+			</div>
         </div>
         <div id="ImportResults" data-ng-show="dialog.showImportResults" class="import-verification">
             <div class="content import-verification"></div>

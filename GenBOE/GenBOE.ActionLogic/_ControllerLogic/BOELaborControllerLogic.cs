@@ -3582,7 +3582,51 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 scope.Complete();
             }
         }
-    }
+
+		/// <summary>
+		/// Converts a List of SAP Filters into text
+		/// </summary>
+		/// <param name="filters">The list of Filters</param>
+		/// <returns>Textual representation of the filters</returns>
+		public IESResponse<string> ConvertSapFilter(string filters)
+		{
+			// Get Token
+
+			// Call Swagger Client
+
+			// Convert return to IESResponse
+			IESResponse<string> response = new IESResponse<string>
+			{
+				IsSuccessful = false
+			};
+
+			response.Messages.Add("TODO - Add client to SAP API");
+
+			return response;
+		}
+
+		/// <summary>
+		/// Parses text for a list of SAP Filters
+		/// </summary>
+		/// <param name="text">The text to parse</param>
+		/// <returns>List of SAP Filters</returns>
+		public IESResponse<string> ParseSapFilter(string text)
+		{
+			// Get Token
+
+			// Call Swagger Client
+
+			// Convert return to IESResponse
+			IESResponse<string> response = new IESResponse<string>
+			{
+				IsSuccessful = false
+			};
+
+			response.Messages.Add("TODO - Add client to SAP API");
+
+			return response;
+		}
+	}
 
     public enum ControllerCustomFieldType
     {

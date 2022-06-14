@@ -326,5 +326,20 @@ namespace GenBOE.ActionLogic
         /// <param name="importResults">MOQ Table import results</param>
         /// <param name="moqTypeId">MOQ Type Id</param>
         void CompleteImportMoqTables(ICollection<ImportMoqTableResultsModelView> importResults, int moqTypeId);
-    }
+
+		/// <summary>
+		/// Converts a List of SAP Filters into text
+		/// </summary>
+		/// <param name="filters">The list of Filters</param>
+		/// <returns>Textual representation of the filters</returns>
+		IESResponse<string> ConvertSapFilter(string filters);
+
+		/// <summary>
+		/// Parses text for a list of SAP Filters
+		/// </summary>
+		/// <param name="text">The text to parse</param>
+		/// <returns>List of SAP Filters</returns>
+		IESResponse<string> ParseSapFilter(string text);
+
+	}
 }
