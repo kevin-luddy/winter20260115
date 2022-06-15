@@ -3525,5 +3525,23 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
 			Assert.IsTrue(fields.Any());
 		}
+
+		/// <summary>
+		/// Tests getting all the operators.
+		/// </summary>
+		[TestMethod]
+		public async Task GetAllOperators_Test()
+		{
+			ICollection<QueryOperatorViewModel> operators = new List<QueryOperatorViewModel>();
+
+			using (HttpClient httpClient = new HttpClient())
+			{
+				IESSAPClient client = new IESSAPClient(WebConfigurationManager.AppSettings["IESSAPLocalUrl"], httpClient);
+
+				operators = await client.ApiQueryFilterGetAllOperatorsAsync();
+			}
+
+			Assert.IsTrue(operators.Any());
+		}
 	}
 }
