@@ -22,6 +22,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.IO.Import;
+    using GenBOE.ActionLogic.IESSAPClient;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.ModelView.Clin;
@@ -38,8 +39,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using IES.Common.classes;
     using IES.Common.Exceptions;
     using Microsoft.Practices.ObjectBuilder2;
+	using System.Threading.Tasks;
 
-    public class BOEControllerLogic : IBOEControllerLogic
+	public class BOEControllerLogic : IBOEControllerLogic
     {
         private IBOESummary _BOESummary;
         private IUserDTODataLoader UserLoader;
@@ -72,6 +74,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private IRteTemplateDataLoader rteTemplateDataLoader;
         private readonly IMoqTypeDataLoader moqTypeDataLoader;
         private IBoeApproverResponseDTODataLoader boeApproverResponseLoader;
+        private IESSAPClient iesSapClient;
 
         #region Protected Properties and Constructor
 
@@ -109,7 +112,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader,
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeDataLoader,
-            IBoeApproverResponseDTODataLoader boeApproverResponseLoader)
+            IBoeApproverResponseDTODataLoader boeApproverResponseLoader,
+            IESSAPClient iesSapClient)
         {
             this._BOESummary = inBOESummary;
             this.UserLoader = inUserLoader;
@@ -142,6 +146,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.rteTemplateDataLoader = rteTemplateDataLoader;
             this.moqTypeDataLoader = moqTypeDataLoader;
             this.boeApproverResponseLoader = boeApproverResponseLoader;
+            this.iesSapClient = iesSapClient;
         }
 
         #endregion
@@ -3268,5 +3273,23 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 }
             }
         }
+
+        /// <summary>
+		/// Gets all of the possible query operators.
+		/// </summary>
+		/// <returns>Collection of view model operators</returns>
+		public async Task<ICollection<QueryOperatorViewModel>> GetAllOperators()
+		{
+            return await iesSapClient.ApiQueryFilterGetAllOperatorsAsync();
+		}
+
+        /// <summary>
+        /// Gets all of the possible query fields.
+        /// </summary>
+        /// <returns>Collection of view model fields</returns>
+        public async Task<ICollection<QueryFieldViewModel>> GetAllFields()
+		{
+            return await iesSapClient.ApiQueryFilterGetAllFieldsAsync();
+		}
     }
 }
