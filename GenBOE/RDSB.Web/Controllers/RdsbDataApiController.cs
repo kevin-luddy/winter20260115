@@ -7,12 +7,15 @@
 namespace RDSB.Web.Controllers
 {
 	using System;
+	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
-	using System.IO;
+	using System.Linq;
 	using System.Net;
 	using System.Net.Http;
 	using System.Net.Http.Headers;
+	using System.Web;
 	using System.Web.Http;
+	using GenTRAC.DataBridge.Common.Security;
 	using IES.ActionLogic.ControllerLogic;
 	using IES.Common;
 	using IES.Common.OfficeUtilities;
@@ -26,10 +29,9 @@ namespace RDSB.Web.Controllers
 		#region Properties & Ctor
 
 		/// <summary>
-		/// Security Information
+		/// PTM Security Mapper
 		/// </summary>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1823:AvoidUnusedPrivateFields")]
-		private ISecurityInformation security;
+		private ISecurityMapper securityMapper;
 
 		/// <summary>
 		/// Token Handling
@@ -49,11 +51,12 @@ namespace RDSB.Web.Controllers
 		/// <summary>
 		/// ctor
 		/// </summary>
-		/// <param name="security">Security Information</param>
+		/// <param name="securityMapper">PTM Security Mapper</param>
 		/// <param name="tokenHandler">Token Handling</param>
-		public RdsbDataApiController(ISecurityInformation security, TokenHandling tokenHandler, IDocumentControllerLogic documentControllerLogic)
+		/// <param name="documentControllerLogic">Document COntroller Logic</param>
+		public RdsbDataApiController(ISecurityMapper securityMapper, TokenHandling tokenHandler, IDocumentControllerLogic documentControllerLogic)
 		{
-			this.security = security;
+			this.securityMapper = securityMapper;
 			this.tokenHandler = tokenHandler;
 			this.documentControllerLogic = documentControllerLogic;
 		}
@@ -90,40 +93,47 @@ namespace RDSB.Web.Controllers
 		/// <summary>
 		/// Export the RDSB Document
 		/// </summary>
-		/// <param name="ptmTrackingNumber">PTM Tracking Number</param>
+		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <param name="parentSectionNumber">Parent Section Number</param>
 		/// <returns>RDSB Document in HTTP Response Message</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "ptmTrackingNumber")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "parentSectionNumber")]
-		public HttpResponseMessage ExportRdsbDocument(string ptmTrackingNumber, int parentSectionNumber)
+		public HttpResponseMessage ExportRdsbDocument(int proposalId, string parentSectionNumber)
 		{
-			HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.OK);
+			HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
 
 			try
 			{
-				MemoryStream stream = new MemoryStream();
-				string fileName = string.Empty;
+				// validate token and check permissions
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				// TODO - export, name file
-
-				stream.Position = 0; // We need to set this to return the file
-				response.Content = new StreamContent(stream);
-				response.Content.Headers.ContentType = new MediaTypeHeaderValue(ExportFileDownloadBase.ContentType_DOCX);
-				response.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+				ICollection<SecurityPermissionsResponse> roles = this.securityMapper.GetRolesForLoggedInUser().ToList();
+				if (!roles.Any(x => x.ProposalID == proposalId || x.AuthorizedRole == PtmRole.Admin))
 				{
-					FileName = fileName
+					return new HttpResponseMessage(HttpStatusCode.Unauthorized);
+				}
+
+				// perform export
+				HttpResponse response = HttpContext.Current.Response;
+				string serverFileName = HttpContext.Current.Server.MapPath("~/Templates/Export/PPRDTemplateACV.docx");
+				this.documentControllerLogic.GenerateRDD(proposalId, serverFileName, new HttpResponseWrapper(response), parentSectionNumber, false);
+
+				response.OutputStream.Position = 0;
+				responseMessage.Content = new StreamContent(response.OutputStream);
+				responseMessage.Content.Headers.ContentType = new MediaTypeHeaderValue(ExportFileDownloadBase.ContentType_DOCX);
+				responseMessage.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
+				{
+					FileName = $"RDSB-Export-ProposalId{proposalId}.docx"
 				};
 			}
 			catch (Exception ex)
 			{
 				this.logger.Error(ex);
-				response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+				responseMessage = new HttpResponseMessage(HttpStatusCode.InternalServerError);
 			}
 
-			return response;
+			return responseMessage;
 		}
 
 		/// <summary>
