@@ -202,18 +202,18 @@ namespace GenBOE.ActionLogic.IESSAPClient
     
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> ApiQueryFilterGetAllNonDateFieldOptionsDescriptionsAsync()
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> ApiQueryFilterGetAllNonDateOperatorOptionsDescriptionsAsync()
         {
-            return ApiQueryFilterGetAllNonDateFieldOptionsDescriptionsAsync(System.Threading.CancellationToken.None);
+            return ApiQueryFilterGetAllNonDateOperatorOptionsDescriptionsAsync(System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> ApiQueryFilterGetAllNonDateFieldOptionsDescriptionsAsync(System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> ApiQueryFilterGetAllNonDateOperatorOptionsDescriptionsAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/QueryFilter/GetAllNonDateFieldOptionsDescriptions");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/QueryFilter/GetAllNonDateOperatorOptionsDescriptions");
     
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -276,18 +276,18 @@ namespace GenBOE.ActionLogic.IESSAPClient
     
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<DateDescriptionAttribute>> ApiQueryFilterGetAllDateFieldOptionDescriptionsAsync()
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<DateDescriptionAttribute>> ApiQueryFilterGetAllDateOperatorOptionDescriptionsAsync()
         {
-            return ApiQueryFilterGetAllDateFieldOptionDescriptionsAsync(System.Threading.CancellationToken.None);
+            return ApiQueryFilterGetAllDateOperatorOptionDescriptionsAsync(System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<DateDescriptionAttribute>> ApiQueryFilterGetAllDateFieldOptionDescriptionsAsync(System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<DateDescriptionAttribute>> ApiQueryFilterGetAllDateOperatorOptionDescriptionsAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/QueryFilter/GetAllDateFieldOptionDescriptions");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/QueryFilter/GetAllDateOperatorOptionDescriptions");
     
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -350,18 +350,18 @@ namespace GenBOE.ActionLogic.IESSAPClient
     
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> ApiQueryFilterGetAllOperatorOptionsDescriptionsAsync()
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> ApiQueryFilterGetAllFieldOptionDescriptionsAsync()
         {
-            return ApiQueryFilterGetAllOperatorOptionsDescriptionsAsync(System.Threading.CancellationToken.None);
+            return ApiQueryFilterGetAllFieldOptionDescriptionsAsync(System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> ApiQueryFilterGetAllOperatorOptionsDescriptionsAsync(System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<string>> ApiQueryFilterGetAllFieldOptionDescriptionsAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/QueryFilter/GetAllOperatorOptionsDescriptions");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/QueryFilter/GetAllFieldOptionDescriptions");
     
             var client_ = _httpClient;
             var disposeClient_ = false;

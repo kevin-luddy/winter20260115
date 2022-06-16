@@ -83,12 +83,12 @@
         }
       }
     },
-    "/api/QueryFilter/GetAllNonDateFieldOptionsDescriptions": {
+    "/api/QueryFilter/GetAllNonDateOperatorOptionsDescriptions": {
       "get": {
         "tags": [
           "QueryFilter"
         ],
-        "operationId": "GetAllNonDateFieldOptionsDescriptions",
+        "operationId": "GetAllNonDateOperatorOptionsDescriptions",
         "responses": {
           "200": {
             "description": "Success",
@@ -122,12 +122,12 @@
         }
       }
     },
-    "/api/QueryFilter/GetAllDateFieldOptionDescriptions": {
+    "/api/QueryFilter/GetAllDateOperatorOptionDescriptions": {
       "get": {
         "tags": [
           "QueryFilter"
         ],
-        "operationId": "GetAllDateFieldOptionDescriptions",
+        "operationId": "GetAllDateOperatorOptionDescriptions",
         "responses": {
           "200": {
             "description": "Success",
@@ -161,12 +161,12 @@
         }
       }
     },
-    "/api/QueryFilter/GetAllOperatorOptionsDescriptions": {
+    "/api/QueryFilter/GetAllFieldOptionDescriptions": {
       "get": {
         "tags": [
           "QueryFilter"
         ],
-        "operationId": "GetAllOperatorOptionsDescriptions",
+        "operationId": "GetAllFieldOptionDescriptions",
         "responses": {
           "200": {
             "description": "Success",
