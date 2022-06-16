@@ -581,12 +581,18 @@
             </div>
         </div>
     </div>
-	<div gen-dialog id="UpdateFiltersMoqDialog" class="update-filters-moq-dialog form dialog" data-width="650" data-height="430" data-title="Update Filters" data-open="filterDialog.open">
-        <div class="container" data-ng-hide="dialog.showImportResults">
+	<div gen-dialog id="UpdateFiltersMoqDialog" class="update-filters-moq-dialog form dialog" data-width="875" data-height="430" data-title="Update Filters" data-open="filterDialog.open">
+        <div class="container">
+			<div class="form-element">
+            <div data-ng-if="filterDialog.showError" class="warning-box" style="display: block">
+                <div class="warning-message"><b>{{filterDialog.error}}</b></div>
+				<div class="small-close-button" data-ng-click="HideFilterError()"></div>
+            </div>
+        </div>
             <div class="form-row">
-				<div class="buttons">
-					<button id="UpdateFiltersMoqDialog-ParensButton" class="ies-action" name="filter-moq-parens-button" data-ng-click="UpdateParens()">Parens</button>
-					<button id="UpdateFiltersMoqDialog-AddButton" class="ies-action" name="filter-moq-add-button" data-ng-click="AddFilterRow()">+ Add</button>
+				<div>
+					<button data-ng-disabled="filterDialog.isLoading" id="UpdateFiltersMoqDialog-AddButton" class="ies-action" name="filter-moq-add-button" data-ng-click="AddFilterRow()">+ Add</button>
+					<button data-ng-disabled="filterDialog.isLoading || filterDialog.data === undefined || filterDialog.data.length < 2" id="UpdateFiltersMoqDialog-ParensButton" class="ies-action" name="filter-moq-parens-button" data-ng-click="UpdateParens()">Parens</button>
 				</div>
 			</div>
 			<div class="form-row">
@@ -609,36 +615,48 @@
 						</thead>
 						<tbody>
 							<tr data-ng-show="filterDialog.isLoading"><td colspan="9"><div class="loader"></div></td></tr>
-							<tr data-ng-show="!isLoading && (filterDialog.data === undefined || filterDialog.data.length === 0)"><td colspan="9"><div class="empty-grid-text">There are no Filters, please Add a new row.</div></td></tr>
+							<tr data-ng-show="!filterDialog.isLoading && (filterDialog.data === undefined || filterDialog.data.length === 0)"><td colspan="9"><div class="empty-grid-text">There are no Filters, please Add a new row.</div></td></tr>
                             <tr data-ng-repeat="queryFilter in filterDialog.data">
 								<td class="text parens-checkbox">
                                     <div>
-                                        <input class="parens-chck" type="checkbox" data-ng-if="isWorkingState" data-ng-model="queryFilter.ParensChecked" data-ng-click="$event.stopPropagation()" />
+                                        <input class="parens-chck" type="checkbox" data-ng-model="queryFilter.ParensChecked" data-ng-click="$event.stopPropagation()" />
                                     </div>
                                 </td>
-								<td>{{::queryFilter.StartParens ? '(' : ''}}</td>
+								<td><span data-ng-if="queryFilter.StartParens">{</span></td>
 								<td>
-									<select data-ng-model="queryFilter.Field" data-ng-change="clearOperators()" data-ng-options="item.Value for item in queryFilter.fields"></select>
-								</td>
-								<td>
-									<select data-ng-model="queryFilter.Operator" data-ng-options="item.Value for item in queryFilter.operators"></select>
-								</td>
-								<td>{{:queryFilter.Value}}</td>
-								<td>{{::queryFilter.EndParens ? ')' : ''}}</td>
-								<td>
-									<select data-ng-model="queryFilter.Join">
-										<option></option>
-										<option value="And">AND</option>
-										<option value="Or">OR</option>
+									<select data-ng-model="queryFilter.Field" data-ng-change="ResetOperators(queryFilter)" data-ng-options="item.Value as item.Value for item in filterDialog.fieldsArr">
+										<option value=""></option>
 									</select>
 								</td>
 								<td>
-									<button ><span data-ng-if="!$first" class="ui-icon-arrowthick-1-n" data-ng-click="MoveFilterUp($index)"></span></button>
-									<button ><span data-ng-if="!$last" class="ui-icon-arrowthick-1-s" data-ng-click="MoveFilterDown($index)"></span></button>
+									<select data-ng-if="queryFilter.Type" data-ng-model="queryFilter.Operator" data-ng-options="item.Value for item in filterDialog.operators[queryFilter.Type]">
+										<option value=""></option>
+									</select>
 								</td>
-								<th class="deleteColumn">
+								<td>
+									<div data-ng-if="queryFilter.Type" >
+										<div data-ng-repeat="val in queryFilter.Value track by $index">
+											<input data-ng-if="queryFilter.Type !== 'System.DateTime'" type="text" data-ng-model="val" />
+											<input data-ng-if="queryFilter.Type === 'System.DateTime'" jqdatepicker type="text" data-ng-model="val" style="width:75px;" />
+											<button data-ng-if="$first" class="ies-action add-filter-button" data-ng-click="AddFilterValue(queryFilter.Value)"><span>ADD</span></button> 
+										</div>
+									</div>
+								</td>
+								<td><span data-ng-if="queryFilter.EndParens">}</span></td>
+								<td>
+									<select data-ng-if="!$last" data-ng-model="queryFilter.Join">
+										<option></option>
+										<option value="AND">AND</option>
+										<option value="OR">OR</option>
+									</select>
+								</td>
+								<td class="up-down">
+									<button data-ng-disabled="$first" data-ng-click="MoveFilterUp($index)"><i class="fa fa-arrow-up"></i></button>
+									<button data-ng-disabled="$last" data-ng-click="MoveFilterDown($index)"><i class="fa fa-arrow-down"></i></button>
+								</td>
+								<td class="deleteColumn">
                                    <div data-ng-click="DeleteFilter($index)" class="delete DeleteButton" />
-                                </th>
+                                </td>
 							</tr>
 						</tbody>
 					</table>

@@ -1445,9 +1445,9 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PARSE_SAP_FILTER, SecurityPage.TaskElements, SecurityAuthorization.ReadUpdate, ws, boeId);
-
+			
 			// Call to IES SAP Api
-			IESResponse<string> response = this._BoeLaborControllerLogic.ParseSapFilter(text);
+			IESResponse<QueryViewModel> response = this._BoeLaborControllerLogic.ParseSapFilter(text);
 			JsonResult toReturn = this.Json(response);
 
 			// Finalize Action
@@ -1462,7 +1462,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace"></param>
 		/// <param name="boeId"></param>
 		/// <returns></returns>
-		public ActionResult ConvertSapFilter(string filters, string workspace, int boeId)
+		public ActionResult ConvertSapFilter(ICollection<QueryViewModel> filters, string workspace, int boeId)
 		{
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);

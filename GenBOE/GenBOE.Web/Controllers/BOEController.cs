@@ -39,7 +39,41 @@ namespace GenBOE.Web.Controllers
     using IES.Common.Exceptions;
     using IES.Common.OfficeUtilities;
 
-    public class BOEController : GenBOEController
+	/// <summary>
+	/// View Model for Query Field
+	/// </summary>
+	public class QueryFieldViewModel
+	{
+		/// <summary>
+		/// Query field type
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
+		public string Type { get; set; }
+
+		/// <summary>
+		/// Query field value
+		/// </summary>
+		public string Value { get; set; }
+	}
+
+	public class QueryOperatorViewModel
+	{
+		/// <summary>
+		/// Query field type
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1721:PropertyNamesShouldNotMatchGetMethods")]
+		public string Type { get; set; }
+
+		/// <summary>
+		/// Query field value
+		/// </summary>
+		public string Value { get; set; }
+	}
+
+	
+
+
+	public class BOEController : GenBOEController
     {
         private Logger _log = new Logger(typeof(BOEController));
         private BoeEmailer _emailer = null;
@@ -202,8 +236,8 @@ namespace GenBOE.Web.Controllers
             this.ViewData["SpreadCurvesHours"] = hourCurves;
             this.ViewData["CostDecimalPrecision"] = ws.CostDecimalPrecision;
             this.ViewData["DecimalPrecision"] = ws.DecimalPrecision;
-			this.ViewData["SapFields"] = new [] { Name="Test" };
-			this.ViewData["SapOperators"] = new[] { Name = "Test" };
+			this.ViewData["SapFields"] = new List<QueryFieldViewModel> { new QueryFieldViewModel { Type = "System.String", Value = "String Field" }, new QueryFieldViewModel { Type = "System.DateTime", Value = "DateTime Field" } };
+			this.ViewData["SapOperators"] = new List<QueryOperatorViewModel> { new QueryOperatorViewModel { Type = "System.String", Value = "Equals" }, new QueryOperatorViewModel { Type = "System.String", Value = "Not Equals" }, new QueryOperatorViewModel { Type = "System.DateTime", Value = "Before" }, new QueryOperatorViewModel { Type = "System.DateTime", Value = "After" } };
 
 			ViewResult toReturn = this.GetMasterView(WebConstants.VIEW_EDIT_BOE_INDEX, workspace);
 

@@ -332,14 +332,14 @@ namespace GenBOE.ActionLogic
 		/// </summary>
 		/// <param name="filters">The list of Filters</param>
 		/// <returns>Textual representation of the filters</returns>
-		IESResponse<string> ConvertSapFilter(string filters);
+		IESResponse<string> ConvertSapFilter(ICollection<QueryViewModel> filters);
 
 		/// <summary>
 		/// Parses text for a list of SAP Filters
 		/// </summary>
 		/// <param name="text">The text to parse</param>
 		/// <returns>List of SAP Filters</returns>
-		IESResponse<string> ParseSapFilter(string text);
+		IESResponse<QueryViewModel> ParseSapFilter(string text);
 
 	}
 }

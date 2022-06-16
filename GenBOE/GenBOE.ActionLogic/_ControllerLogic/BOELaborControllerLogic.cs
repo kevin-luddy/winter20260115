@@ -3588,7 +3588,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="filters">The list of Filters</param>
 		/// <returns>Textual representation of the filters</returns>
-		public IESResponse<string> ConvertSapFilter(string filters)
+		public IESResponse<string> ConvertSapFilter(ICollection<QueryViewModel> filters)
 		{
 			// Get Token
 
@@ -3597,10 +3597,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			// Convert return to IESResponse
 			IESResponse<string> response = new IESResponse<string>
 			{
-				IsSuccessful = false
+				IsSuccessful = true,
+				Data = new string[] { "Fake text" }
 			};
-
-			response.Messages.Add("TODO - Add client to SAP API");
 
 			return response;
 		}
@@ -3610,19 +3609,17 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="text">The text to parse</param>
 		/// <returns>List of SAP Filters</returns>
-		public IESResponse<string> ParseSapFilter(string text)
+		public IESResponse<QueryViewModel> ParseSapFilter(string text)
 		{
 			// Get Token
 
 			// Call Swagger Client
 
 			// Convert return to IESResponse
-			IESResponse<string> response = new IESResponse<string>
+			IESResponse<QueryViewModel> response = new IESResponse<QueryViewModel>
 			{
-				IsSuccessful = false
+				IsSuccessful = true
 			};
-
-			response.Messages.Add("TODO - Add client to SAP API");
 
 			return response;
 		}
@@ -3634,4 +3631,37 @@ namespace GenBOE.ActionLogic.ControllerLogic
         LaborTypes = 1,
         MoqTypeTable = 2
     }
+
+	public class QueryViewModel
+	{
+		/// <summary>
+		/// Query has start parenthesis
+		/// </summary>
+		public bool StartParens { get; set; }
+
+		/// <summary>
+		/// Query has end parenthesis
+		/// </summary>
+		public bool EndParens { get; set; }
+
+		/// <summary>
+		/// Query field
+		/// </summary>
+		public string Field { get; set; }
+
+		/// <summary>
+		/// Query operator
+		/// </summary>
+		public string Operator { get; set; }
+
+		/// <summary>
+		/// Query value
+		/// </summary>
+		public ICollection<string> Value { get; set; }
+
+		/// <summary>
+		/// Exclusive or inclusive join
+		/// </summary>
+		public string Join { get; set; }
+	}
 }
