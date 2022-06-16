@@ -82,6 +82,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		private Mock<IMoqTypeDataLoader> moqTypeLoader = new Mock<IMoqTypeDataLoader>();
 		private Mock<IBoeApproverResponseDTODataLoader> boeApproverResponseLoader = new Mock<IBoeApproverResponseDTODataLoader>();
 		private Mock<IESSAPClient> iesSapClient = new Mock<IESSAPClient>();
+		private ITokenService tokenService = new TokenService(new MemoryCache());
 
 		private BOEControllerLogic CreateSystem()
 		{
@@ -3519,6 +3520,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			using(HttpClient httpClient = new HttpClient())
 			{
 				IESSAPClient client = new IESSAPClient(WebConfigurationManager.AppSettings["IESSAPLocalUrl"], httpClient);
+
+				Utilities.AddAuthorizationHeader(client.HttpClient, (await tokenService.GetToken()).AccessToken);
 
 				fields = await client.ApiQueryFilterGetAllFieldsAsync();
 			}

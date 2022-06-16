@@ -48,7 +48,12 @@ namespace IES.Common
         /// The Proposal class type not set value.
         /// </summary>
         public const int PROPOSAL_CLASS_TYPE_NOT_SET = -1;
-        
+
+        /// <summary>
+		/// Prefix for the JWT Bearer
+		/// </summary>
+		public static readonly string TOKEN_PREFIX = "Bearer ";
+
         /// <summary>
         /// The IDIQ Contract Type
         /// </summary>
