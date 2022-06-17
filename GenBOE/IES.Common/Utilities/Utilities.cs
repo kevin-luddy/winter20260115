@@ -18,11 +18,13 @@ namespace IES.Common
     using PickList;
     using System.Collections.Generic;
     using System.Globalization;
+	using System.Net.Http;
+	using Microsoft.Net.Http.Headers;
 
-    /// <summary>
-    /// Utility/helper methods that need a class to sit in
-    /// </summary>
-    public static class Utilities
+	/// <summary>
+	/// Utility/helper methods that need a class to sit in
+	/// </summary>
+	public static class Utilities
     {
         /// <summary>
         /// The business hours start time.
@@ -556,6 +558,25 @@ namespace IES.Common
             }
 
             return string.Concat(filename.Replace(' ', '_').Split(Path.GetInvalidFileNameChars()));
+        }
+
+        /// <summary>
+		/// Add Authorization Header to the HttpClient, if the token is provided
+		/// </summary>
+		/// <param name="client">HttpClient</param>
+		/// <param name="token">Token</param>
+		public static void AddAuthorizationHeader(this HttpClient client, string token)
+        {
+            if (client == null)
+			{
+                throw new ArgumentNullException(nameof(client));
+            }
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                client.DefaultRequestHeaders.Remove(HeaderNames.Authorization);
+                client.DefaultRequestHeaders.Add(HeaderNames.Authorization, Constants.TOKEN_PREFIX + token);
+            }
         }
     }
 }

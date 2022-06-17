@@ -90,5 +90,12 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="serverFileName">Server File Name</param>
         /// <param name="httpResponse">HTTP response object</param>
         void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse);
+
+        /// <summary>
+        /// Check if RDSB Record exists for the given PTM Proposal ID
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <returns>true if record exists, otherwise false</returns>
+        bool DoesRdsbRecordExistForProposalId(int proposalId);
     }
 }

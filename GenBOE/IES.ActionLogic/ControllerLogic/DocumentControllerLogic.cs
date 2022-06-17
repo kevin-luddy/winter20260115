@@ -626,6 +626,16 @@ namespace IES.ActionLogic.ControllerLogic
         }
 
         /// <summary>
+        /// Check if RDSB Record exists for the given PTM Proposal ID
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <returns>true if record exists, otherwise false</returns>
+        public bool DoesRdsbRecordExistForProposalId(int proposalId)
+		{
+            return documentLoader.DoesRecordExist(proposalId);
+		}
+
+        /// <summary>
         /// Converts the sections.
         /// </summary>
         /// <param name="sections">The sections.</param>

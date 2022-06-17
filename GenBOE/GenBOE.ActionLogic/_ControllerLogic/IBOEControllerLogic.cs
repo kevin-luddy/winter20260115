@@ -9,17 +9,18 @@ namespace GenBOE.ActionLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Threading.Tasks;
     using System.Web;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
+    using GenBOE.ActionLogic.IESSAPClient;
     using GenBOE.DataBridge.DTO;
     using IES.Common;
     using GenBOE.Dtos;
     using GenBOE.Objects;
-    using IES.Common.Exceptions;
-    using GenBOE.ActionLogic.ModelView.Workspace;
+    using IES.Common.Exceptions;	
 
-    public interface IBOEControllerLogic
+	public interface IBOEControllerLogic
     {
         /// <summary>
         /// Get BOE Header Model View
@@ -339,5 +340,19 @@ namespace GenBOE.ActionLogic
         /// <param name="boeRolesToSave">Boe Roles to Save</param>
         /// <returns>Error messages, if any</returns>
         IList<string> SaveBoeBulkRoles(FullWorkspace ws, ICollection<ManageBOEModelView> boeRolesToSave);
+
+        /// <summary>
+        /// Gets all of the possible query operators.
+        /// </summary>
+        /// <returns>Collection of view model operators</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+        Task<ICollection<QueryOperatorViewModel>> GetAllOperators();
+
+		/// <summary>
+		/// Gets all of the possible query fields.
+		/// </summary>
+		/// <returns>Collection of view model fields</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		Task<ICollection<QueryFieldViewModel>> GetAllFields();
     }
 }

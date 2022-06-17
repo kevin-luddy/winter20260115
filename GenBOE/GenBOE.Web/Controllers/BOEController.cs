@@ -11,7 +11,8 @@ namespace GenBOE.Web.Controllers
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Linq;
-    using System.Transactions;
+	using System.Threading.Tasks;
+	using System.Transactions;
     using System.Web.Mvc;
     using System.Web.Script.Serialization;
     using GenBOE.ActionLogic;
@@ -21,7 +22,8 @@ namespace GenBOE.Web.Controllers
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.Common.Email;
     using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.ActionLogic.IO.Export.BOE;
+	using GenBOE.ActionLogic.IESSAPClient;
+	using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.Metrics;
     using GenBOE.ActionLogic.ModelView;
@@ -176,9 +178,13 @@ namespace GenBOE.Web.Controllers
         /// <param name="workspace"></param>
         /// <param name="boeID"></param>
         /// <returns></returns>
-        public ViewResult EditBOEIndex(string workspace, int boeID)
+        public async Task<ViewResult> EditBOEIndex(string workspace, int boeID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+            // ToDo: In future task, utilize this in the UI.
+            ICollection<QueryFieldViewModel> fields = await _ControllerLogic.GetAllFields();
+            ICollection<QueryOperatorViewModel> operators = await _ControllerLogic.GetAllOperators();
 
             // Initialize Action
             Stopwatch sw = this.InitializeAction(this._log, "EditBOEIndex", SecurityPage.EditBOEHeader, SecurityAuthorization.Read, ws, boeID);
