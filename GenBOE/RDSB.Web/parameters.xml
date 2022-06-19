@@ -44,7 +44,12 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='APPLICATION_VERSION']/@value">
     </parameterentry>
   </parameter>
-  
+  <parameter name="oAuthDomain" description="doesn't matter" defaultvalue="__oAuthDomain__" tags="">
+    <parameterValidation kind="AllowEmpty" />
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthDomain']/@value">
+	</parameterentry>
+  </parameter>
+
   <!--system.web-->
   <parameter name="allowedRoles" description="doesn't matter" defaultvalue="__allowedRoles__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/authorization/allow/@roles">
