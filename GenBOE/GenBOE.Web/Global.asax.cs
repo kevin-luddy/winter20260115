@@ -10,7 +10,8 @@ namespace GenBOE
     using System.Collections.Generic;
     using System.IO.IsolatedStorage;
     using System.Linq;
-    using System.Web.Http;
+	using System.Net.Http;
+	using System.Web.Http;
     using System.Web.Mvc;
     using System.Web.Optimization;
     using System.Web.Routing;
@@ -57,6 +58,7 @@ namespace GenBOE
     {
         private readonly List<ContainerControlledLifetimeManager> _lifetimeManagers = new List<ContainerControlledLifetimeManager>();
         private readonly Logger _log = new Logger(typeof(MvcApplication));
+		private readonly HttpClient _SapHttpClient = new HttpClient();
 
         public MvcApplication()
         { }
@@ -436,7 +438,7 @@ namespace GenBOE
                 new ResolvedParameter(typeof(IBoeDTODataLoader)),
                 new ResolvedParameter(typeof(IPermissionsDTODataLoader))));
 
-            GenBOEUnityContainer.Container.RegisterType(typeof(IESSAPClient), typeof(IESSAPClient), GetLifetimeManager(), new InjectionConstructor[] { });
+			GenBOEUnityContainer.Container.RegisterType(typeof(IESSAPClient), typeof(IESSAPClient), GetLifetimeManager(), new InjectionConstructor(ConfigurationUtilities.GetAppSetting("IESSAPUrl"), _SapHttpClient));
 
             // Controller Logic
             switch (SysConfig.CompanyMode)
