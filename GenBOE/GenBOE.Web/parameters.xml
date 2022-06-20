@@ -8,6 +8,10 @@
   
   <!--appSettings-->
   
+  <parameter name="IESSAPUrl" description="doesn't matter" defaultvalue="__IESSAPUrl__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='IESSAPUrl']/@value">
+    </parameterentry>
+  </parameter>
   <parameter name="ProPricerApiUrl" description="doesn't matter" defaultvalue="__ProPricerApiUrl__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='ProPricerApiUrl']/@value">
     </parameterentry>
