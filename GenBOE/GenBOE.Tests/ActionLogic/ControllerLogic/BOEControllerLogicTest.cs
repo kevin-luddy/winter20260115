@@ -3541,6 +3541,8 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 			{
 				IESSAPClient client = new IESSAPClient(WebConfigurationManager.AppSettings["IESSAPLocalUrl"], httpClient);
 
+				Utilities.AddAuthorizationHeader(client.HttpClient, (await tokenService.GetToken()).AccessToken);
+
 				operators = await client.ApiQueryFilterGetAllOperatorsAsync();
 			}
 

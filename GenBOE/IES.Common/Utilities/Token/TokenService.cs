@@ -12,6 +12,8 @@ namespace IES.Common
 	using System.Net.Http;
 	using System.Net.Http.Json;
 	using Newtonsoft.Json;
+	using System.Collections.Generic;
+	using System.Net.Http.Headers;
 
 	public class TokenService : ITokenService, IDisposable
 	{
@@ -30,12 +32,11 @@ namespace IES.Common
 		public TokenService(ICache memoryCache)
 		{
 			this.cache = memoryCache;
-			string authority = ConfigurationManager.AppSettings["Federation:Authority"];
-			this.clientId = ConfigurationManager.AppSettings["Federation:ClientId"];
-			this.clientSecret = ConfigurationManager.AppSettings["Federation:ClientSecret"];
+			string authority = ConfigurationManager.AppSettings["oAuthDomain"];
+			this.clientId = ConfigurationManager.AppSettings["oAuthIESClientId"];
+			this.clientSecret = ConfigurationManager.AppSettings["oAuthIESClientSecret"];
 			this._client.BaseAddress = new Uri(authority);
 			_client.DefaultRequestHeaders.Add("cache-control", "no-cache");
-			_client.DefaultRequestHeaders.Add("content-type", "application/x-www-form-urlencoded");
 		}
 
 		/// <summary>
@@ -68,14 +69,19 @@ namespace IES.Common
 		{
 			Token token = null;
 
+			string encodedForm = "{grant_type:client_credentials,client_id:" + this.clientId + ",client_secret:" + this.clientSecret + "}";
 
-			//RestRequest request = new RestRequest("/as/token.oauth2", Method.Post);
+			List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>();
+			postData.Add(new KeyValuePair<string, string>("client_id", clientId));
+			postData.Add(new KeyValuePair<string, string>("client_secret", clientSecret));
 
-			string encodedForm = string.Format("grant_type=client_credentials&client_id={0}&client_secret={1}", this.clientId, this.clientSecret);
-			//request.AddParameter("application/x-www-form-urlencoded", encodedForm, ParameterType.RequestBody);
-			//RestResponse<Token> response = await this._client.ExecutePostAsync<Token>(request);
+			HttpContent content = new FormUrlEncodedContent(postData);
+			content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
 
-			HttpResponseMessage response = await _client.PostAsJsonAsync<string>("/as/token.oauth2", encodedForm);
+			// HttpResponseMessage response = await _client.PostAsync<FormUrlEncodedContent>("/as/token.oauth2", formContent);
+
+			HttpResponseMessage response = _client.PostAsync("/as/token.oauth2", content).Result;
+
 
 			if (response.IsSuccessStatusCode)
 			{

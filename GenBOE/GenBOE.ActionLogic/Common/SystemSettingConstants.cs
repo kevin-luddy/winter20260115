@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic.Common
     {
         public static readonly string PROJECT_MAP_OFFLOAD_TEXT = "ProjectMapOffloadText";
         public static readonly string JUSTIFYING_PUBLICATION = "JustifyingPublication";
+        public static readonly string SAP_CLIENT_SECRET = "SapClientSecret";
 
         /// <summary>
         /// The value for sorting by Work Breakdown Structure
