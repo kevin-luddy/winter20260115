@@ -72,6 +72,7 @@ namespace IES.Common
 			string encodedForm = "{grant_type:client_credentials,client_id:" + this.clientId + ",client_secret:" + this.clientSecret + "}";
 
 			List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>();
+			postData.Add(new KeyValuePair<string, string>("grant_type", "client_credentials"));
 			postData.Add(new KeyValuePair<string, string>("client_id", clientId));
 			postData.Add(new KeyValuePair<string, string>("client_secret", clientSecret));
 
@@ -82,12 +83,11 @@ namespace IES.Common
 
 			HttpResponseMessage response = _client.PostAsync("/as/token.oauth2", content).Result;
 
-
 			if (response.IsSuccessStatusCode)
 			{
 				string responseBody = await response.Content.ReadAsStringAsync();
 
-				token = JsonConvert.DeserializeObject(responseBody) as Token;
+				token = JsonConvert.DeserializeObject<Token>(responseBody);
 			}
 			else
 			{
