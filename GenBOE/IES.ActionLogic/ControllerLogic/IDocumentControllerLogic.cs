@@ -89,6 +89,15 @@ namespace IES.ActionLogic.ControllerLogic
         /// <param name="proposalId">Proposal ID</param>
         /// <param name="serverFileName">Server File Name</param>
         /// <param name="httpResponse">HTTP response object</param>
-        void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse);
+        /// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
+        /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
+        void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, string parentSectionOverride = null, bool includeDocumentDetails = true);
+
+        /// <summary>
+        /// Check if RDSB Record exists for the given PTM Proposal ID
+        /// </summary>
+        /// <param name="proposalId">Proposal ID</param>
+        /// <returns>true if record exists, otherwise false</returns>
+        bool DoesRdsbRecordExistForProposalId(int proposalId);
     }
 }

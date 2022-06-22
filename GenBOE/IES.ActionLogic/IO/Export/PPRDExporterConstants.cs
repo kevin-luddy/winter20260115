@@ -14,6 +14,11 @@ namespace IES.ActionLogic.IO.Export
         #region Containers
 
         /// <summary>
+        /// Document Details container tag
+        /// </summary>
+        internal const string CONTAINER_DOCUMENT_DETAILS = "DocumentDetailsContainer";
+
+        /// <summary>
         /// Introduction container tag
         /// </summary>
         internal const string CONTAINER_INTRODUCTION = "IntroductionContainer";

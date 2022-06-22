@@ -4864,7 +4864,7 @@ namespace GenBOE.Web.Controllers
                 nextRevision = nextRevision.Substring(0, 15);
             }
 
-            ICollection<WorkspaceDTO> trackingNameData = this.workspaceLoader.GetAllWsNamesAndTrackingNumberInfo().Where(w => w.TrackingNumber == trackingNumber || w.Shortname.StartsWith(trackingNumber)).ToList();
+            ICollection<WorkspaceDTO> trackingNameData = this.workspaceLoader.GetAllWsNamesAndTrackingNumberInfo().Where(w => w.TrackingNumber == trackingNumber || w.Shortname.StartsWith(trackingNumber, StringComparison.InvariantCultureIgnoreCase)).ToList();
             if (trackingNameData.Any())
             {
                 // extract revision numbers - short names should be of the format [TrackingNumber] or [TrackingNumber]_XX, where XX is the revision number

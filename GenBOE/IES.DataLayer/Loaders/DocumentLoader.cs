@@ -149,5 +149,22 @@ namespace IES.DataBridge.Loaders
 
             return toReturn;
         }
+
+        /// <summary>
+        /// Check if a record exists for the given Proposal ID
+        /// </summary>
+        /// <param name="proposalId">PTM Proposal ID</param>
+        /// <returns>true if record exists, otherwise false</returns>
+        public bool DoesRecordExist(int proposalId)
+        {
+            bool recordExists = false;
+
+            using (IESEntities context = new IESEntities())
+            {
+                recordExists = context.RDSBDocumentInformations.Any(x => x.PTMProposalID == proposalId);
+            }
+
+            return recordExists;
+        }
     }
 }

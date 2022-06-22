@@ -13,7 +13,6 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <StyleCopTreatErrorsAsWarnings>false</StyleCopTreatErrorsAsWarnings>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -99,7 +98,6 @@
     <Compile Include="Common\RateFormatter.cs" />
     <Compile Include="ControllerLogic\DocumentControllerLogic.cs" />
     <Compile Include="ControllerLogic\FileAttachmentControllerLogic.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="ControllerLogic\IDocumentControllerLogic.cs" />
     <Compile Include="ControllerLogic\IESPortalAdminControllerLogic.cs" />
@@ -109,32 +107,24 @@
     <Compile Include="ControllerLogic\IRdmControllerLogic.cs" />
     <Compile Include="ControllerLogic\IReportsControllerLogic.cs" />
     <Compile Include="ControllerLogic\BurdenPoolControllerLogic.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="ControllerLogic\IVersionControllerLogic.cs" />
     <Compile Include="ControllerLogic\IHomeControllerLogic.cs" />
     <Compile Include="ControllerLogic\PPRDControllerLogic.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="ControllerLogic\RdmControllerLogic.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="ControllerLogic\ReportsControllerLogic.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="ControllerLogic\RateControllerLogic.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="ControllerLogic\AdminControllerLogic.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="ControllerLogic\IRateControllerLogic.cs" />
     <Compile Include="ControllerLogic\IAdminControllerLogic.cs" />
     <Compile Include="ControllerLogic\VersionControllerLogic.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="ControllerLogic\HomeControllerLogic.cs">
-      <ExcludeFromStyleCop>True</ExcludeFromStyleCop>
     </Compile>
     <Compile Include="IO\Export\IRdmRevisionExporter.cs" />
     <Compile Include="IO\Export\IPPRDExporter.cs" />
@@ -175,9 +165,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="Settings.StyleCop">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <CodeAnalysisDictionary Include="..\CustomDictionary.xml">
@@ -185,7 +172,6 @@
     </CodeAnalysisDictionary>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\Libraries\StyleCop Files\StyleCop.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
