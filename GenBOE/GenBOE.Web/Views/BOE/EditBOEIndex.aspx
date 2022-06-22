@@ -37,7 +37,11 @@
             SpreadCurvesDiscreteHours: '<%= (int)SpreadCurves.DiscreteHours %>',
             SpreadCurvesDiscreteCost: '<%= (int)SpreadCurves.DiscreteCost %>',
             RteFieldSize: <%= rteFieldSize %>,
-            IsSpace: <%= ((bool)(IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)).ToString().ToLower() %>,
+			IsSpace: <%= ((bool)(IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)).ToString().ToLower() %>,
+			SapFields: <%=serializer.Serialize(ViewData["SapFields"])%>,
+			SapOperators: <%=serializer.Serialize(ViewData["SapOperators"])%>,
+			ParseSapFilterAction: '<%: WebConstants.ACTION_PARSE_SAP_FILTER %>',
+			ConvertSapFilterAction: '<%: WebConstants.ACTION_CONVERT_SAP_FILTER %>'
         });
 
         $(function () {
@@ -54,7 +58,7 @@
                 $("#SubmitForApproval").hide();
             }
         });
-    </script>
+	</script>
 
     <% Html.RenderAction(WebConstants.ACTION_DISPLAY_BOE_HEADER, WebConstants.CONTROLLER_BOE, new { id = ViewData["BOEID"] }); %>
 

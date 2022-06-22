@@ -11,7 +11,8 @@ namespace GenBOE.Web.Controllers
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Linq;
-    using System.Transactions;
+	using System.Threading.Tasks;
+	using System.Transactions;
     using System.Web.Mvc;
     using System.Web.Script.Serialization;
     using GenBOE.ActionLogic;
@@ -21,7 +22,8 @@ namespace GenBOE.Web.Controllers
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.Common.Email;
     using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.ActionLogic.IO.Export.BOE;
+	using GenBOE.ActionLogic.IESSAPClient;
+	using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.Metrics;
     using GenBOE.ActionLogic.ModelView;
@@ -39,7 +41,7 @@ namespace GenBOE.Web.Controllers
     using IES.Common.Exceptions;
     using IES.Common.OfficeUtilities;
 
-    public class BOEController : GenBOEController
+	public class BOEController : GenBOEController
     {
         private Logger _log = new Logger(typeof(BOEController));
         private BoeEmailer _emailer = null;
@@ -142,7 +144,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="workspace"></param>
         /// <param name="boeID"></param>
         /// <returns></returns>
-        public ViewResult EditBOEIndex(string workspace, int boeID)
+        public async Task<ViewResult> EditBOEIndex(string workspace, int boeID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
@@ -202,8 +204,10 @@ namespace GenBOE.Web.Controllers
             this.ViewData["SpreadCurvesHours"] = hourCurves;
             this.ViewData["CostDecimalPrecision"] = ws.CostDecimalPrecision;
             this.ViewData["DecimalPrecision"] = ws.DecimalPrecision;
+			this.ViewData["SapFields"] = await _ControllerLogic.GetAllFields();
+			this.ViewData["SapOperators"] = await _ControllerLogic.GetAllOperators();
 
-            ViewResult toReturn = this.GetMasterView(WebConstants.VIEW_EDIT_BOE_INDEX, workspace);
+			ViewResult toReturn = this.GetMasterView(WebConstants.VIEW_EDIT_BOE_INDEX, workspace);
 
             // Finalize Action
             this.FinalizeAction(this._log, "EditBOEIndex", sw);

@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Transactions;
     using System.Web;
     using System.Web.Mvc;
@@ -19,6 +20,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.Common.Email;
     using GenBOE.ActionLogic.CopyBOE;
+    using GenBOE.ActionLogic.IESSAPClient;
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.IO.Import;
@@ -72,6 +74,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private IRteTemplateDataLoader rteTemplateDataLoader;
         private readonly IMoqTypeDataLoader moqTypeDataLoader;
         private IBoeApproverResponseDTODataLoader boeApproverResponseLoader;
+        private IESSAPClient iesSapClient;
 
         #region Protected Properties and Constructor
 
@@ -109,7 +112,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader,
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeDataLoader,
-            IBoeApproverResponseDTODataLoader boeApproverResponseLoader)
+            IBoeApproverResponseDTODataLoader boeApproverResponseLoader,
+            IESSAPClient iesSapClient)
         {
             this._BOESummary = inBOESummary;
             this.UserLoader = inUserLoader;
@@ -142,6 +146,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.rteTemplateDataLoader = rteTemplateDataLoader;
             this.moqTypeDataLoader = moqTypeDataLoader;
             this.boeApproverResponseLoader = boeApproverResponseLoader;
+            this.iesSapClient = iesSapClient;
         }
 
         #endregion
@@ -3268,5 +3273,37 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 }
             }
         }
+
+        /// <summary>
+		/// Gets all of the possible query operators.
+		/// </summary>
+		/// <returns>Collection of view model operators</returns>
+		public async Task<ICollection<QueryOperatorViewModel>> GetAllOperators()
+		{
+            if (Utilities.IsSAPEnabled)
+            {
+                return await iesSapClient.ApiQueryFilterGetAllOperatorsAsync();
+            }
+            else
+            {
+                return new List<QueryOperatorViewModel>();
+            }
+		}
+
+        /// <summary>
+        /// Gets all of the possible query fields.
+        /// </summary>
+        /// <returns>Collection of view model fields</returns>
+        public async Task<ICollection<QueryFieldViewModel>> GetAllFields()
+		{
+            if (Utilities.IsSAPEnabled)
+            {
+                return await iesSapClient.ApiQueryFilterGetAllFieldsAsync();
+            }
+            else
+            {
+                return new List<QueryFieldViewModel>();
+            }
+		}
     }
 }

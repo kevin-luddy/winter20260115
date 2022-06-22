@@ -16,6 +16,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.Common.Email;
     using GenBOE.ActionLogic.CopyBOE;
+    using GenBOE.ActionLogic.IESSAPClient;
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.ModelView.BOE;
@@ -73,14 +74,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
             RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader,
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeDataLoader,
-            IBoeApproverResponseDTODataLoader boeApproverResponseLoader
+            IBoeApproverResponseDTODataLoader boeApproverResponseLoader,
+            IESSAPClient iesSapClient
             )
             : base(inBOESummary, inUserLoader, inActiveDirectoryUtil, 
             inPermissionsLoader, inFactory, inBOEExporter, inBoeCustomExporter, inGenBOEControllerLogic,
             inBoeMediator, inValidationHelper, inBoeCommentLoader, inEmailer, inBoeTaskElementMediator, inWorkspaceVariableLoader, inBOEStateMachine,
             inVariableSelectBOEtoSumCalculation, inBOELaborControllerLogic, inValidateBOE, inSecurityInformation, inBoeSearchLoader, inSecurityAccess,
             inBoeTaskElementRecalculation, inBOEImporter, inVariableCircularReferenceChecker, inConflictBOE, inNestedWBSUtilities, projectMapLoader, zoneTravelRatesFeesLoader,
-            rteTemplateDataLoader, moqTypeDataLoader, boeApproverResponseLoader)
+            rteTemplateDataLoader, moqTypeDataLoader, boeApproverResponseLoader, iesSapClient)
         {
             this.mstMetricsLoader = mstMetricsLoader;
             this.offloadRatesDTOLoader = offloadRatesDTOLoader;

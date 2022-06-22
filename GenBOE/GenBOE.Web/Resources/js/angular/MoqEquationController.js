@@ -31,7 +31,27 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         disableImport: true,
         invalidData: false,
         importResults: []
-    };
+	};
+
+	$scope.filterDialog = {
+		open: false,
+		data: [],
+		title: 'Update Filters',
+		isLoading: true,
+		fieldsArr: ManageTaskModel.SapFields,
+		fields: ManageTaskModel.SapFields.reduce(function (map, obj) {
+			map[obj.Value] = obj;
+			return map;
+		}, {}),
+		operators: ManageTaskModel.SapOperators.reduce(function (r, a) {
+			r[a.Type] = r[a.Type] || [];
+			r[a.Type].push(a);
+			return r;
+		}, Object.create(null)),
+		originalData: undefined,
+		showError: false,
+		error: ''
+	}
 
     $scope.isExporting = false;
 
@@ -449,7 +469,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     $scope.closeImportMoqTables = function () {
         resetUploadForm();
         $scope.dialog.open = false;
-    };
+	};
 
     $scope.fileUploadChange = function (element) {
         $scope.$apply(function ($scope) {
@@ -555,6 +575,284 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     };
 
     //#endregion
+
+	//#region SAP Filters
+
+	$scope.CloseMoqFilters = function () {
+		$scope.filterDialog.open = false;
+	};
+
+	$scope.HideFilterError = function () {
+		$scope.filterDialog.showError = false;
+	}
+
+	$scope.ShowFilterError = function(err) {
+		$scope.filterDialog.showError = true;
+		$scope.filterDialog.error = err;
+	};
+
+	$scope.SaveMoqFilters = function () {
+		$scope.filterDialog.isLoading = true;
+
+		var data = {};
+		data.filters = $scope.filterDialog.data;
+		data.boeId = ManageTaskModel.boeId;
+
+		// Convert view models into text
+		$http({
+			method: 'POST',
+			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.ConvertSapFilterAction, ''),
+			data: data
+		}).then(function (response) {
+			// place returned html into the content div
+			if (response.data.IsSuccessful === true) {
+				$scope.filterDialog.originalData.AdditionalQueryFilters = response.data.Data;
+				$scope.filterDialog.open = false;
+			} else {
+				$scope.ShowFilterError(response.data.Messages[0]);
+			}
+
+			$scope.filterDialog.isLoading = false;
+		}).catch(function () {
+			$scope.filterDialog.isLoading = false;
+			$scope.ShowFilterError('Error Converting Filters to Text');
+		});
+	};
+
+	$scope.AddFilterRow = function () {
+		var newRow = { ParensChecked: false, Value: ['']};
+		$scope.filterDialog.data.push(newRow);
+	};
+
+	$scope.DeleteFilter = function (index) {
+		var row = $scope.filterDialog.data[index];
+		if (row.StartParens) {
+			// need to delete matching EndParens
+			var numStart = 0; // running number of inner Start parentheses found
+			for (var i = index + 1; i < $scope.filterDialog.data.length; i++) {
+				const nextRow = $scope.filterDialog.data[i];
+				if (nextRow.EndParens) {
+					if (numStart == 0) {
+						// found it
+						nextRow.EndParens = false;
+						break;
+					} else {
+						numStart--;
+					}
+				} else if (nextRow.StartParens) {
+					numStart++;
+				}
+			}
+
+		} else if (row.EndParens) {
+			// need to delete matching StartParens
+			var numEnd = 0; // running number of inner End parentheses found
+			for (var i = index - 1; i >= 0; i--) {
+				const prevRow = $scope.filterDialog.data[i];
+				if (prevRow.StartParens) {
+					if (numEnd == 0) {
+						// found it
+						prevRow.StartParens = false;
+						break;
+					} else {
+						numEnd--;
+					}
+				} else if (prevRow.EndParens) {
+					numEnd++;
+				}
+			}
+		}
+
+
+		if ($scope.filterDialog.data && $scope.filterDialog.data.length > index) {
+			$scope.filterDialog.data.splice(index, 1);
+		}
+	};
+
+	$scope.AddFilterValue = function (valueArray) {
+		valueArray.push('');
+	};
+
+	$scope.ResetOperators = function (filterRow) {
+		if (filterRow.Field && filterRow.Field !== '') {
+			filterRow.Type = $scope.filterDialog.fields[filterRow.Field].Type;
+		} else {
+			filterRow.Type = undefined;
+		}
+	};
+
+	$scope.DeleteAllFilters = function () {
+		$scope.filterDialog.data = [];
+	};
+
+	$scope.UpdateParens = function () {
+		// validate only two parens checkboxes are selected
+		var firstRowIndex = -1;
+		var secondRowIndex = -1;
+		var tooManyCheckboxes = false;
+		for (var i = 0; i < $scope.filterDialog.data.length; i++) {
+			var row = $scope.filterDialog.data[i];
+			if (row.ParensChecked) {
+				if (firstRowIndex === -1) {
+					firstRowIndex = i;
+				} else if (secondRowIndex === -1) {
+					secondRowIndex = i;
+				} else {
+					tooManyCheckboxes = true;
+				}
+			}
+		}
+
+		if (tooManyCheckboxes || secondRowIndex === -1) {
+			$scope.ShowFilterError('Invalid row selection: Two checkboxes must be selected to modify Parens');
+			return;
+		}
+
+		// validate selected checkboxes are allowed (not already having start/end parens for 2 selected rows)
+		var firstRow = $scope.filterDialog.data[firstRowIndex];
+		var secondRow = $scope.filterDialog.data[secondRowIndex];
+
+		if (firstRow.StartParens || firstRow.EndParens || secondRow.StartParens || secondRow.EndParens) {
+			if (!(firstRow.StartParens && secondRow.EndParens)) {
+				$scope.ShowFilterError('Invalid row selection: Both rows must not have Parens or first row must have Start Parens and second row must have End Parens');
+				return;
+			}
+		}
+
+		// validate equal number of start parens to end parens between the 2 rows
+		var numStartParens = 0;
+		var numEndParens = 0;
+		for (var i = firstRowIndex + 1; i < secondRowIndex; i++) {
+			var row = $scope.filterDialog.data[i];
+			if (row.StartParens) {
+				numStartParens++;
+			} else if (row.EndParens) {
+				numEndParens++;
+			}
+		}
+
+		if (numStartParens !== numEndParens) {
+			$scope.ShowFilterError('Invalid row selection: the number of left and right Parens inside the checked rows do not match.');
+			return;
+		}
+
+		if (firstRow.StartParens && secondRow.EndParens) {
+			firstRow.StartParens = false;
+			secondRow.EndParens = false;
+		} else {
+			// add parens to the 2 rows (start and end)
+			firstRow.StartParens = true;
+			secondRow.EndParens = true;
+		}
+
+		firstRow.ParensChecked = false;
+		secondRow.ParensChecked = false;
+	};
+
+	$scope.ShowFilterDialog = function (tableData) {
+		$scope.filterDialog.data = [];
+		$scope.filterDialog.isLoading = true;
+		$scope.filterDialog.originalData = tableData;
+		$scope.filterDialog.error = '';
+		$scope.filterDialog.showError = false;
+		$scope.filterDialog.open = true;
+
+		var data = {};
+		data.text = tableData.AdditionalQueryFilters;
+		data.boeId = ManageTaskModel.boeId;
+
+		// Convert text into view models
+		$http({
+			method: 'POST',
+			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.ParseSapFilterAction, ''),
+			data: data
+		}).then(function (response) {
+			if (response.data.IsSuccessful === true) {
+
+				if (!response.data.Data) {
+					response.data.Data = [];
+				}
+
+				if (response.data.Data.length === 0) {
+					// need to show at least one row
+					response.data.Data.push({});
+				}
+
+				response.data.Data.forEach(item => {
+					item.ParensChecked = false;
+					if (item.Field) {
+						item.Type = $scope.filterDialog.fields[item.Field].Type;
+					}
+
+					if (!item.Value) {
+						item.Value = [];
+					}
+
+					if (item.Value.length === 0) {
+						item.Value.push('');
+					}
+				});
+
+				$scope.filterDialog.data = response.data.Data;
+			} else {
+				$scope.ShowFilterError(response.data.Messages[0]);
+			}
+			$scope.filterDialog.isLoading = false;
+		}).catch(function () {
+			$scope.filterDialog.isLoading = false;
+			$scope.ShowFilterError('Parsing Filter Text failed');
+		});
+	}
+
+	// Move MOQ Filter up
+	$scope.MoveFilterUp = function (index) {
+		// first make a copy of the array
+		var arr = $scope.filterDialog.data.slice();
+		var orig = arr[index];
+		var prev = arr[index - 1];
+		// swap the joins and the parens
+		const origJoin = orig.Join;
+		const origStartParens = orig.StartParens;
+		const origEndParens = orig.EndParens;
+
+		orig.Join = prev.Join;
+		orig.StartParens = prev.StartParens;
+		orig.EndParens = prev.EndParens;
+		prev.Join = origJoin;
+		prev.StartParens = origStartParens;
+		prev.EndParens = origEndParens;
+
+		arr[index - 1] = arr[index];
+		arr[index] = prev;
+
+		$scope.filterDialog.data = arr;
+	};
+
+	// Move MOQ Filter down
+	$scope.MoveFilterDown = function (index) {
+		// first make a copy of the array
+		var arr = $scope.filterDialog.data.slice();
+		var orig = arr[index];
+		var next = arr[index + 1];
+		// swap the joins and the parens
+		const origJoin = orig.Join;
+		const origStartParens = orig.StartParens;
+		const origEndParens = orig.EndParens;
+
+		orig.Join = next.Join;
+		orig.StartParens = next.StartParens;
+		orig.EndParens = next.EndParens;
+		next.Join = origJoin;
+		next.StartParens = origStartParens;
+		next.EndParens = origEndParens;
+
+		arr[index + 1] = orig;
+		arr[index] = next;
+
+		$scope.filterDialog.data = arr;
+	};
+
+	//#endregion SAP Filters
 
     $scope.refreshPage = function () {
         $window.location.reload();
