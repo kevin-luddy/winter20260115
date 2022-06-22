@@ -3280,7 +3280,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <returns>Collection of view model operators</returns>
 		public async Task<ICollection<QueryOperatorViewModel>> GetAllOperators()
 		{
-            return await iesSapClient.ApiQueryFilterGetAllOperatorsAsync();
+            if (Utilities.IsSAPEnabled)
+            {
+                return await iesSapClient.ApiQueryFilterGetAllOperatorsAsync();
+            }
+            else
+            {
+                return new List<QueryOperatorViewModel>();
+            }
 		}
 
         /// <summary>
@@ -3289,7 +3296,14 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <returns>Collection of view model fields</returns>
         public async Task<ICollection<QueryFieldViewModel>> GetAllFields()
 		{
-            return await iesSapClient.ApiQueryFilterGetAllFieldsAsync();
+            if (Utilities.IsSAPEnabled)
+            {
+                return await iesSapClient.ApiQueryFilterGetAllFieldsAsync();
+            }
+            else
+            {
+                return new List<QueryFieldViewModel>();
+            }
 		}
     }
 }

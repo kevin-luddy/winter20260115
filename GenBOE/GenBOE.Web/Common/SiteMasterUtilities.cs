@@ -291,17 +291,5 @@ namespace GenBOE.Web.Common
 				return ConfigurationUtilities.GetAppSetting("UnclassifiedBannerText");
 			}
 		}
-
-		/// <summary>
-		/// Indicates whether SAP features are enabled
-		/// </summary>
-		public static bool IsSAPEnabled
-		{
-			get
-			{
-				bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableSAP"), out bool value);
-				return value;
-			}
-		}
 	}
 }

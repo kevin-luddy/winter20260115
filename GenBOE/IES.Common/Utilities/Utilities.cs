@@ -577,5 +577,17 @@ namespace IES.Common
                 client.DefaultRequestHeaders.Add(HeaderNames.Authorization, Constants.TOKEN_PREFIX + token);
             }
         }
+
+        /// <summary>
+		/// Indicates whether SAP features are enabled
+		/// </summary>
+		public static bool IsSAPEnabled
+        {
+            get
+            {
+                bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableSAP"), out bool value);
+                return value;
+            }
+        }
     }
 }

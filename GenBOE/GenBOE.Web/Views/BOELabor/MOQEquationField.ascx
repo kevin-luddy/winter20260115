@@ -40,7 +40,7 @@
         IsRMS: '<%:Model.Company == CompanyConfiguration.MST%>'.isTrue(),
         HistoricalMoqType: <%:(int)MOQType.Historical%>,
         ComparativeMoqType: <%:(int)MOQType.Comparative%>,
-        SAPEnabled: '<%:SiteMasterUtilities.IsSAPEnabled%>'.isTrue()
+        SAPEnabled: '<%:Utilities.IsSAPEnabled%>'.isTrue()
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
