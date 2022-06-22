@@ -19,6 +19,7 @@ namespace GenBOE.Web.Controllers
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.Common.MOQ;
     using GenBOE.ActionLogic.ControllerLogic;
+    using GenBOE.ActionLogic.IESSAPClient;
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.Metrics;
@@ -1433,18 +1434,18 @@ namespace GenBOE.Web.Controllers
         }
 
 		/// <summary>
-		/// 
+		/// Parses text into Query Filters
 		/// </summary>
-		/// <param name="text"></param>
-		/// <param name="workspace"></param>
-		/// <param name="boeId"></param>
+		/// <param name="text">The text to parse</param>
+		/// <param name="workspace">Workspace name</param>
+		/// <param name="boeId">BOE Id</param>
 		/// <returns></returns>
 		public ActionResult ParseSapFilter(string text, string workspace, int boeId)
 		{
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			
-			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PARSE_SAP_FILTER, SecurityPage.TaskElements, SecurityAuthorization.ReadUpdate, ws, boeId);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PARSE_SAP_FILTER, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
 			
 			// Call to IES SAP Api
 			IESResponse<QueryViewModel> response = this._BoeLaborControllerLogic.ParseSapFilter(text);
@@ -1456,18 +1457,18 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// 
+		/// Converts Query Filters into Text
 		/// </summary>
-		/// <param name="text"></param>
-		/// <param name="workspace"></param>
-		/// <param name="boeId"></param>
+		/// <param name="filters">The query filters to convert into text</param>
+		/// <param name="workspace">Workspace name</param>
+		/// <param name="boeId">BOE Id</param>
 		/// <returns></returns>
 		public ActionResult ConvertSapFilter(ICollection<QueryViewModel> filters, string workspace, int boeId)
 		{
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CONVERT_SAP_FILTER, SecurityPage.TaskElements, SecurityAuthorization.ReadUpdate, ws, boeId);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CONVERT_SAP_FILTER, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
 
 			// Call to IES SAP Api
 			IESResponse<string> response = this._BoeLaborControllerLogic.ConvertSapFilter(filters);

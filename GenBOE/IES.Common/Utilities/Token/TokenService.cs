@@ -14,15 +14,43 @@ namespace IES.Common
 	using Newtonsoft.Json;
 	using System.Collections.Generic;
 	using System.Net.Http.Headers;
+	using IES.Common.Exceptions;
 
 	public class TokenService : ITokenService, IDisposable
 	{
+		/// <summary>
+		/// Internal Cache for tokens
+		/// </summary>
 		internal readonly ICache cache;
+
+		/// <summary>
+		/// Whether the Token Service has been disposed
+		/// </summary>
 		private bool isDisposed;
+
+		/// <summary>
+		/// Cache key for Token
+		/// </summary>
 		private const string CACHE_KEY_TOKEN = "Token";
+
+		/// <summary>
+		/// OAuth Client Id
+		/// </summary>
 		private readonly string clientId;
+
+		/// <summary>
+		/// OAuth Secret
+		/// </summary>
 		private readonly string clientSecret;
+
+		/// <summary>
+		/// Logger for Token Service
+		/// </summary>
 		private readonly Logger _log = new Logger(typeof(TokenService));
+
+		/// <summary>
+		/// Http Client for Token Service
+		/// </summary>
 		private readonly HttpClient _client = new HttpClient();
 
 		/// <summary>
@@ -69,8 +97,6 @@ namespace IES.Common
 		{
 			Token token = null;
 
-			string encodedForm = "{grant_type:client_credentials,client_id:" + this.clientId + ",client_secret:" + this.clientSecret + "}";
-
 			List<KeyValuePair<string, string>> postData = new List<KeyValuePair<string, string>>();
 			postData.Add(new KeyValuePair<string, string>("grant_type", "client_credentials"));
 			postData.Add(new KeyValuePair<string, string>("client_id", clientId));
@@ -78,8 +104,6 @@ namespace IES.Common
 
 			HttpContent content = new FormUrlEncodedContent(postData);
 			content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
-
-			// HttpResponseMessage response = await _client.PostAsync<FormUrlEncodedContent>("/as/token.oauth2", formContent);
 
 			HttpResponseMessage response = _client.PostAsync("/as/token.oauth2", content).Result;
 
@@ -92,6 +116,7 @@ namespace IES.Common
 			else
 			{
 				this._log.Error("Error creating new Token.");
+				throw new GeneralAppException("Error creating OAuth Token");
 			}
 
 			return token;
@@ -125,24 +150,6 @@ namespace IES.Common
 
 			this.isDisposed = true;
 		}
-	}
-
-	/// <summary>
-	/// Token
-	/// </summary>
-	public class Token
-	{
-		[JsonProperty("access_token")]
-		public string AccessToken { get; set; }
-
-		[JsonProperty("token_type")]
-		public string TokenType { get; set; }
-
-		[JsonProperty("expires_in")]
-		public int ExpiresIn { get; set; }
-
-		[JsonProperty("refresh_token")]
-		public string RefreshToken { get; set; }
 	}
 }
 

@@ -19,6 +19,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.MOQ;
+    using GenBOE.ActionLogic.IESSAPClient;
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.ModelView;
@@ -3631,37 +3632,4 @@ namespace GenBOE.ActionLogic.ControllerLogic
         LaborTypes = 1,
         MoqTypeTable = 2
     }
-
-	public class QueryViewModel
-	{
-		/// <summary>
-		/// Query has start parenthesis
-		/// </summary>
-		public bool StartParens { get; set; }
-
-		/// <summary>
-		/// Query has end parenthesis
-		/// </summary>
-		public bool EndParens { get; set; }
-
-		/// <summary>
-		/// Query field
-		/// </summary>
-		public string Field { get; set; }
-
-		/// <summary>
-		/// Query operator
-		/// </summary>
-		public string Operator { get; set; }
-
-		/// <summary>
-		/// Query value
-		/// </summary>
-		public ICollection<string> Value { get; set; }
-
-		/// <summary>
-		/// Exclusive or inclusive join
-		/// </summary>
-		public string Join { get; set; }
-	}
 }

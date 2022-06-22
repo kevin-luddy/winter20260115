@@ -7,24 +7,23 @@
 namespace IES.Common
 {
     using System;
+    using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Linq;
     using System.IO;
+    using System.Linq;
+    using System.Net.Http;
     using System.Text.RegularExpressions;
     using System.Threading;
-    using Exceptions;
     using System.Web.Mvc;
     using classes;
+    using Exceptions;
+    using Microsoft.Net.Http.Headers;
     using PickList;
-    using System.Collections.Generic;
-    using System.Globalization;
-	using System.Net.Http;
-	using Microsoft.Net.Http.Headers;
 
-	/// <summary>
-	/// Utility/helper methods that need a class to sit in
-	/// </summary>
-	public static class Utilities
+    /// <summary>
+    /// Utility/helper methods that need a class to sit in
+    /// </summary>
+    public static class Utilities
     {
         /// <summary>
         /// The business hours start time.

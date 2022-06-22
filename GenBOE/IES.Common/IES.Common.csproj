@@ -353,6 +353,7 @@
     <Compile Include="Utilities\NonceUtility.cs" />
     <Compile Include="Utilities\TokenHandling.cs" />
     <Compile Include="Utilities\Token\ITokenService.cs" />
+    <Compile Include="Utilities\Token\Token.cs" />
     <Compile Include="Utilities\Token\TokenService.cs" />
     <Compile Include="Utilities\Utilities.cs" />
     <Compile Include="Utilities\WebApiConfig.cs" />

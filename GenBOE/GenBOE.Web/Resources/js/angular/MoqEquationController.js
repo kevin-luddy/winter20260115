@@ -471,8 +471,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
         $scope.dialog.open = false;
 	};
 
-	$scope.open
-
     $scope.fileUploadChange = function (element) {
         $scope.$apply(function ($scope) {
             $scope.dialog.disableImport = element.value.endsWith('.xlsx') || element.value.endsWith('.xlsm') ? false : true;

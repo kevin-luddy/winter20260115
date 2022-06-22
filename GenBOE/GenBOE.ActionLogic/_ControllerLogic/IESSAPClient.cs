@@ -7,16 +7,16 @@
 
 namespace GenBOE.ActionLogic.IESSAPClient
 {
-	using System.Net.Http;
+    using System.Net.Http;
 
-	/// <summary>
-	/// 
-	/// </summary>
-	public partial class IESSAPClient
+    /// <summary>
+    /// IES SAP Client
+    /// </summary>
+    public partial class IESSAPClient
 	{
-		/// <summary>
-		/// Http Client
-		/// </summary>
-		public HttpClient HttpClient { get { return this._httpClient; } }
-	}
+        /// <summary>
+        /// Http Client
+        /// </summary>
+        public HttpClient HttpClient { get { return this._httpClient; } }
+    }
 }

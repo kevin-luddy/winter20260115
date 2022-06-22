@@ -3513,13 +3513,14 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		/// Tests getting all the fields.
 		/// </summary>
 		[TestMethod]
+		[Ignore]
 		public async Task GetAllFields_Test()
 		{
 			ICollection<QueryFieldViewModel> fields = new List<QueryFieldViewModel>();
 
 			using(HttpClient httpClient = new HttpClient())
 			{
-				IESSAPClient client = new IESSAPClient(WebConfigurationManager.AppSettings["IESSAPLocalUrl"], httpClient);
+				IESSAPClient client = new IESSAPClient(WebConfigurationManager.AppSettings["IESSAPUrl"], httpClient);
 
 				Utilities.AddAuthorizationHeader(client.HttpClient, (await tokenService.GetToken()).AccessToken);
 
@@ -3533,13 +3534,14 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		/// Tests getting all the operators.
 		/// </summary>
 		[TestMethod]
+		[Ignore]
 		public async Task GetAllOperators_Test()
 		{
 			ICollection<QueryOperatorViewModel> operators = new List<QueryOperatorViewModel>();
 
 			using (HttpClient httpClient = new HttpClient())
 			{
-				IESSAPClient client = new IESSAPClient(WebConfigurationManager.AppSettings["IESSAPLocalUrl"], httpClient);
+				IESSAPClient client = new IESSAPClient(WebConfigurationManager.AppSettings["IESSAPUrl"], httpClient);
 
 				Utilities.AddAuthorizationHeader(client.HttpClient, (await tokenService.GetToken()).AccessToken);
 

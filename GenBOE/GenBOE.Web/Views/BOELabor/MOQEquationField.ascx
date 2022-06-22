@@ -664,20 +664,10 @@
             </div>
 			<div class="form-row">
 				<div class="buttons">
-					<button id="ReOrderMoqTypesDialog-Close" class="ies" data-ng-click="SaveMoqFilters()" name="action-button" type="button">Save</button>
-					<button id="ReOrderMoqTypesDialog-Close" class="ies" data-ng-click="CloseMoqFilters()" name="cancel-button" type="button">Close</button>
+					<button id="UpdateFiltersMoqDialog-Save" class="ies" data-ng-click="SaveMoqFilters()" name="action-button" type="button">Save</button>
+					<button id="UpdateFiltersMoqDialog-Close" class="ies" data-ng-click="CloseMoqFilters()" name="cancel-button" type="button">Close</button>
 				</div>
 			</div>
-        </div>
-        <div id="ImportResults" data-ng-show="dialog.showImportResults" class="import-verification">
-            <div class="content import-verification"></div>
-            <div class="important">IMPORTANT: This will replace all existing tables. If a table is removed or excluded from the Excel file, the table will be deleted.</div>
-            <br />
-            <div class="buttons">
-                <button id="Back-ImportMoqTableVerification" type="button" class="ies" data-ng-click="backFromImport()" name="back-button">Back</button>
-                <button id="CompleteImportButton-ImportMoqTableVerification" class="ies-action" data-ng-if="!dialog.invalidData" data-ng-hide="dialog.completeImportWorking" data-ng-click="completeImportMoqTables()">Complete Import</button>
-                <div id="CompleteImportLoader-ImportMoqTableVerification" class="loader" data-ng-show="dialog.completeImportWorking" style="width: 129px"></div>
-            </div>
         </div>
     </div>
 </div>

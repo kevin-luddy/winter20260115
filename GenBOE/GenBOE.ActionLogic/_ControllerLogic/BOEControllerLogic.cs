@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Transactions;
     using System.Web;
     using System.Web.Mvc;
@@ -19,10 +20,10 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.Common.Email;
     using GenBOE.ActionLogic.CopyBOE;
+    using GenBOE.ActionLogic.IESSAPClient;
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Export.BOE;
     using GenBOE.ActionLogic.IO.Import;
-    using GenBOE.ActionLogic.IESSAPClient;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.BOE;
     using GenBOE.ActionLogic.ModelView.Clin;
@@ -39,9 +40,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using IES.Common.classes;
     using IES.Common.Exceptions;
     using Microsoft.Practices.ObjectBuilder2;
-	using System.Threading.Tasks;
 
-	public class BOEControllerLogic : IBOEControllerLogic
+    public class BOEControllerLogic : IBOEControllerLogic
     {
         private IBOESummary _BOESummary;
         private IUserDTODataLoader UserLoader;
