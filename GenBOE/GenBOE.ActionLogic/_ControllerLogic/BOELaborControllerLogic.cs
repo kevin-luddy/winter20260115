@@ -19,6 +19,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using GenBOE.ActionLogic.BOETransitions;
     using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.MOQ;
+    using GenBOE.ActionLogic.IESSAPClient;
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.ModelView;
@@ -3582,7 +3583,48 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 scope.Complete();
             }
         }
-    }
+
+		/// <summary>
+		/// Converts a List of SAP Filters into text
+		/// </summary>
+		/// <param name="filters">The list of Filters</param>
+		/// <returns>Textual representation of the filters</returns>
+		public IESResponse<string> ConvertSapFilter(ICollection<QueryViewModel> filters)
+		{
+			// Get Token
+
+			// Call Swagger Client
+
+			// Convert return to IESResponse
+			IESResponse<string> response = new IESResponse<string>
+			{
+				IsSuccessful = true,
+				Data = new string[] { "Fake text" }
+			};
+
+			return response;
+		}
+
+		/// <summary>
+		/// Parses text for a list of SAP Filters
+		/// </summary>
+		/// <param name="text">The text to parse</param>
+		/// <returns>List of SAP Filters</returns>
+		public IESResponse<QueryViewModel> ParseSapFilter(string text)
+		{
+			// Get Token
+
+			// Call Swagger Client
+
+			// Convert return to IESResponse
+			IESResponse<QueryViewModel> response = new IESResponse<QueryViewModel>
+			{
+				IsSuccessful = true
+			};
+
+			return response;
+		}
+	}
 
     public enum ControllerCustomFieldType
     {

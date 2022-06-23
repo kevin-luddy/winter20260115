@@ -173,3 +173,58 @@
     font-size:80%; 
     margin-bottom:10px;
 }
+
+#UpdateFilterMoqGrid {
+	width: 100%;
+}
+
+#UpdateFilterMoqGrid td {
+	vertical-align: top;
+}
+
+#UpdateFilterMoqGrid th.parens-checkbox,
+#UpdateFilterMoqGrid th.parens
+{
+	width: 30px;
+}
+
+#UpdateFilterMoqGrid th.up-down {
+	width: 65px;
+}
+
+#UpdateFilterMoqGrid td.up-down button {
+	width: 45%;
+	display: inline-block;
+	height: 15px;
+}
+
+#UpdateFiltersMoqDialog th.field,
+#UpdateFiltersMoqDialog th.operator {
+	width: 160px;
+}
+
+#UpdateFiltersMoqDialog th.value {
+	width: 210px;
+}
+
+#UpdateFiltersMoqDialog div.buttons {
+	position: absolute;
+	bottom: 0;
+}
+
+#UpdateFiltersMoqDialog .add-filter-button {
+	width: 34px;
+	height: 16px;
+	font-size: 6pt;
+	padding: 0;
+	float: right;
+}
+
+#UpdateFiltersMoqDialog .add-filter-button span {
+	margin-top: -5px;
+	display: block;
+}
+
+#UpdateFiltersMoqDialog-ParensButton {
+	float: right;
+}
