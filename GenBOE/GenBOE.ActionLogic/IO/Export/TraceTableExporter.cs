@@ -217,27 +217,29 @@ namespace GenBOE.ActionLogic.IO.Export
 
 					if (customField != null)
 					{
-						ICollection<string> customFieldValues = resourceTypes.SelectMany(x => x.CustomFieldValueContainers).Where(x => x.CustomFieldID == customField.Id).Select(x => x.OpenEndedValue).Distinct(StringComparer.OrdinalIgnoreCase).ToCollection();
-
-						if (resourceTypes.Any(x => !x.CustomFieldValueContainers.Any(y => y.CustomFieldID == customField.Id)))
-						{
-							customFieldValues.Add(CommonConstants.NO_CUSTOM_FIELD_VALUE);
-						}
+						ICollection<string> customFieldValues = workspace.CustomFieldValues.Where(x => x.CustomFieldID == customField.Id).Select(x => x.CustomFieldValueDescription).ToList();
 
 						foreach (string customFieldValue in customFieldValues)
 						{
-							TraceTableBoeData newChild = new TraceTableBoeData()
-							{
-								SummaryField = currentLevel.GetDescription(),
-								SummaryFieldValue = customFieldValue
-							};
+							// figure out which resources should be selected; the issue is that the custom field can be on resource, task or BOE levels, so we have to check all 3
+							List<ResourceTypeDto> resourcesForCustomField = resourceTypes
+								.Where(x => x.CustomFieldValueContainers.Any(z => z.CustomFieldID == customField.Id && z.OpenEndedValue.Equals(customFieldValue, StringComparison.CurrentCultureIgnoreCase))
+									|| workspace.TaskElements.First(t => t.Id == x.TaskElementId).CustomFieldValueContainers.Any(z => z.CustomFieldID == customField.Id && z.OpenEndedValue.Equals(customFieldValue, StringComparison.CurrentCultureIgnoreCase))
+									|| workspace.Boes.First(b => b.Id == x.BoeID).CustomFieldValueContainers.Any(z => z.CustomFieldID == customField.Id && z.OpenEndedValue.Equals(customFieldValue, StringComparison.CurrentCultureIgnoreCase))
+									).ToList();
 
-							ProcessLaborData(workspace, nextLevel, nextAdditionalLevels,
-								customFieldValue == CommonConstants.NO_CUSTOM_FIELD_VALUE 
-									? resourceTypes.Where(x => !x.CustomFieldValueContainers.Any(y => y.CustomFieldID == customField.Id)).ToCollection()
-									: resourceTypes.Where(x => x.CustomFieldValueContainers.Any(y => y.CustomFieldID == customField.Id && y.OpenEndedValue.Equals(customFieldValue, StringComparison.CurrentCultureIgnoreCase))).ToCollection(), 
-								newChild, includeYearlyData);
-							parent.ChildData.Add(newChild);
+							// only run the value if it's been used, to avoid a bunch of empty rows
+							if (resourcesForCustomField.Any())
+							{
+								TraceTableBoeData newChild = new TraceTableBoeData()
+								{
+									SummaryField = currentLevel.GetDescription(),
+									SummaryFieldValue = customFieldValue
+								};
+
+								ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourcesForCustomField, newChild, includeYearlyData);
+								parent.ChildData.Add(newChild);
+							}
 						}
 					}
 				}
