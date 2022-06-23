@@ -221,7 +221,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
 						foreach (string customFieldValue in customFieldValues)
 						{
-							// figure out which resources should be selected; the issue is that the custom field can be on resource, task or BOE levels, so we have to check all 3
+							// figure out which resources should be selected; the complication is that the custom field can be on resource, task or BOE levels, so we have to check all 3
 							List<ResourceTypeDto> resourcesForCustomField = resourceTypes
 								.Where(x => x.CustomFieldValueContainers.Any(z => z.CustomFieldID == customField.Id && z.OpenEndedValue.Equals(customFieldValue, StringComparison.CurrentCultureIgnoreCase))
 									|| workspace.TaskElements.First(t => t.Id == x.TaskElementId).CustomFieldValueContainers.Any(z => z.CustomFieldID == customField.Id && z.OpenEndedValue.Equals(customFieldValue, StringComparison.CurrentCultureIgnoreCase))
