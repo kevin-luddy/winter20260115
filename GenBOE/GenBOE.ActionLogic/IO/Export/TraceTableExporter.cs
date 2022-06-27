@@ -11,7 +11,6 @@ namespace GenBOE.ActionLogic.IO.Export
 	using System.Collections.ObjectModel;
 	using System.Linq;
 	using GenBOE.ActionLogic.ModelView;
-	using GenBOE.DataBridge.DTO;
 	using GenBOE.Dtos;
 	using GenBOE.Objects;
 	using IES.Common;
@@ -217,7 +216,8 @@ namespace GenBOE.ActionLogic.IO.Export
 
 					if (customField != null)
 					{
-						ICollection<string> customFieldValues = workspace.CustomFieldValues.Where(x => x.CustomFieldID == customField.Id).Select(x => x.CustomFieldValueDescription).ToList();
+						ICollection<string> customFieldValues = workspace.CustomFieldValues.Where(x => x.CustomFieldID == customField.Id).Select(x => x.CustomFieldValueDescription).Distinct().ToList();
+						List<int> processedResourceIds = new List<int>();
 
 						foreach (string customFieldValue in customFieldValues)
 						{
@@ -228,21 +228,44 @@ namespace GenBOE.ActionLogic.IO.Export
 									|| workspace.Boes.First(b => b.Id == x.BoeID).CustomFieldValueContainers.Any(z => z.CustomFieldID == customField.Id && z.OpenEndedValue.Equals(customFieldValue, StringComparison.CurrentCultureIgnoreCase))
 									).ToList();
 
-							// only run the value if it's been used, to avoid a bunch of empty rows
-							if (resourcesForCustomField.Any())
-							{
-								TraceTableBoeData newChild = new TraceTableBoeData()
-								{
-									SummaryField = currentLevel.GetDescription(),
-									SummaryFieldValue = customFieldValue
-								};
+							processedResourceIds.AddRange(resourcesForCustomField.Select(x => x.Id));
 
-								ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourcesForCustomField, newChild, includeYearlyData);
-								parent.ChildData.Add(newChild);
-							}
+							ProcessCustomFieldValue(workspace, currentLevel, parent, includeYearlyData, nextLevel, nextAdditionalLevels, customFieldValue, resourcesForCustomField);
 						}
+
+						// finally we have to also look for blank custom field values; since this isn't stored,
+						// we'll consider all resource types that didn't get processed up to this point as not having a value for the specific CF
+						ProcessCustomFieldValue(workspace, currentLevel, parent, includeYearlyData, nextLevel, nextAdditionalLevels, CommonConstants.NO_CUSTOM_FIELD_VALUE, 
+													resourceTypes.Where(x => !processedResourceIds.Contains(x.Id)).ToList());
 					}
 				}
+			}
+		}
+
+		/// <summary>
+		/// Process Custom Field Values for Trace Table export
+		/// </summary>
+		/// <param name="workspace">Workspace</param>
+		/// <param name="currentLevel">Current Level</param>
+		/// <param name="parent">Parent</param>
+		/// <param name="includeYearlyData">Should yearly data be included</param>
+		/// <param name="nextLevel">Next Level</param>
+		/// <param name="nextAdditionalLevels">Next Additional Levels</param>
+		/// <param name="customFieldValue">Custom Field Value</param>
+		/// <param name="resourcesForCustomField">Resources for Custom Field</param>
+		private void ProcessCustomFieldValue(FullWorkspace workspace, string currentLevel, TraceTableBoeData parent, bool includeYearlyData, string nextLevel, ICollection<string> nextAdditionalLevels, string customFieldValue, List<ResourceTypeDto> resourcesForCustomField)
+		{
+			// only run the value if it's been used, to avoid a bunch of empty rows
+			if (resourcesForCustomField.Any())
+			{
+				TraceTableBoeData newChild = new TraceTableBoeData()
+				{
+					SummaryField = currentLevel.GetDescription(),
+					SummaryFieldValue = customFieldValue
+				};
+
+				ProcessLaborData(workspace, nextLevel, nextAdditionalLevels, resourcesForCustomField, newChild, includeYearlyData);
+				parent.ChildData.Add(newChild);
 			}
 		}
 	}
