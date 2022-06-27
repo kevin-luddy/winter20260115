@@ -1,0 +1,36 @@
+﻿// -----------------------------------------------------------------------
+// <copyright company="Lockheed Martin Corporation">
+//     Copyright (c) 2011 - 2021 Lockheed Martin Corporation
+// </copyright>
+// -----------------------------------------------------------------------
+
+namespace GenBOE.ActionLogic.ModelView
+{
+    using System;
+
+    /// <summary>
+    /// MOQ Table Data
+    /// </summary>
+    public class MoqTableDataModelView
+    {
+        /// <summary>
+        /// Gets or sets the WBS Element
+        /// </summary>
+        public string WbsElement { get; set; }
+
+        /// <summary>
+        /// Gets or sets the POP Start
+        /// </summary>
+        public DateTime? PoPStart { get; set; }
+
+        /// <summary>
+        /// Gets or sets the POP End
+        /// </summary>
+        public DateTime? PoPEnd { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Query Filters
+        /// </summary>
+        public string Filters { get; set; }
+    }
+}

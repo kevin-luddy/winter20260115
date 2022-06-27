@@ -342,5 +342,12 @@ namespace GenBOE.ActionLogic
 		/// <returns>List of SAP Filters</returns>
 		IESResponse<QueryViewModel> ParseSapFilter(string text);
 
-	}
+
+        /// <summary>
+        /// Validates Actuals data for SAP
+        /// </summary>
+        /// <param name="tableData">The MOQ Table Data</param>
+        /// <returns>Validation Response</returns>
+        IESResponse<string> ValidateActualsSap(MoqTableDataModelView tableData);
+    }
 }

@@ -1452,7 +1452,7 @@ namespace GenBOE.Web.Controllers
 			JsonResult toReturn = this.Json(response);
 
 			// Finalize Action
-			FinalizeAction(_log, WebConstants.ACTION_EXPORT_MOQ_TABLES, sw);
+			FinalizeAction(_log, WebConstants.ACTION_PARSE_SAP_FILTER, sw);
 			return toReturn;
 		}
 
@@ -1475,22 +1475,51 @@ namespace GenBOE.Web.Controllers
 			JsonResult toReturn = this.Json(response);
 
 			// Finalize Action
-			FinalizeAction(_log, WebConstants.ACTION_EXPORT_MOQ_TABLES, sw);
+			FinalizeAction(_log, WebConstants.ACTION_CONVERT_SAP_FILTER, sw);
 			return toReturn;
 		}
 
-		#endregion
+        /// <summary>
+        /// Validates Actuals data for SAP
+        /// </summary>
+        /// <param name="workspace">Workspace name</param>
+		/// <param name="boeId">BOE Id</param>
+        /// <param name="tableData">The MOQ Table Data</param>
+		/// <returns>Validation Response</returns>
+        public ActionResult ValidateActualsSap(string workspace, int boeId, MoqTableDataModelView tableData)
+        {
+            if (tableData == null)
+            {
+                throw new ArgumentNullException(nameof(tableData));
+            }
 
-		#region Private Methods
+            // Initialize Action
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-		/// <summary>
-		/// Updates the labor spreads from import spread results.
-		/// </summary>
-		/// <param name="laborTypeToUpdate">The labor type to update.</param>
-		/// <param name="importSpreadResults">The import spread results.</param>
-		/// <param name="taskElementDTO">The task element dto.</param>
-		/// <param name="workspace">The workspace.</param>
-		private void UpdateLaborSpreadsFromImport(ResourceTypeDto laborTypeToUpdate, Collection<ImportLaborSpreadModelView> importSpreadResults, BoeTaskElementDTO taskElementDTO, FullWorkspace workspace)
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_VALIDATE_ACTUALS_SAP, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
+
+            // Call to IES SAP Api
+            IESResponse<string> response = this._BoeLaborControllerLogic.ValidateActualsSap(tableData);
+
+            var errors = response?.Messages?.Select(m => new { ValidationIssue= m });
+            JsonResult toReturn = this.Json(new { IsSuccessful = response != null && response.IsSuccessful, Messages = errors });
+
+            // Finalize Action
+            FinalizeAction(_log, WebConstants.ACTION_VALIDATE_ACTUALS_SAP, sw);
+            return toReturn;
+        }
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Updates the labor spreads from import spread results.
+        /// </summary>
+        /// <param name="laborTypeToUpdate">The labor type to update.</param>
+        /// <param name="importSpreadResults">The import spread results.</param>
+        /// <param name="taskElementDTO">The task element dto.</param>
+        /// <param name="workspace">The workspace.</param>
+        private void UpdateLaborSpreadsFromImport(ResourceTypeDto laborTypeToUpdate, Collection<ImportLaborSpreadModelView> importSpreadResults, BoeTaskElementDTO taskElementDTO, FullWorkspace workspace)
         {
             DateTime startDate = GenBOEUtilities.AdjustDateTimePrecision(laborTypeToUpdate.StartDateValue);
             DateTime endDate = GenBOEUtilities.AdjustDateTimePrecision(laborTypeToUpdate.EndDateValue);

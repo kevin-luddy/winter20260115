@@ -3624,7 +3624,27 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			return response;
 		}
-	}
+
+        /// <summary>
+        /// Validates Actuals data for SAP
+        /// </summary>
+        /// <param name="tableData">The MOQ Table Data</param>
+        /// <returns>Validation Response</returns>
+        public IESResponse<string> ValidateActualsSap(MoqTableDataModelView tableData)
+        {
+            // Get Token
+
+            // Call Swagger Client
+
+            // Convert return to IESResponse
+            IESResponse<string> response = new IESResponse<string>();
+            response.Messages.Add("Error 1");
+            response.Messages.Add("Error 3b");
+            response.IsSuccessful = true;
+
+            return response;
+        }
+    }
 
     public enum ControllerCustomFieldType
     {
