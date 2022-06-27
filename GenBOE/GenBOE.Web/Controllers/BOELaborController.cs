@@ -1446,9 +1446,9 @@ namespace GenBOE.Web.Controllers
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 			
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PARSE_SAP_FILTER, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
-			
-			// Call to IES SAP Api
-			IESResponse<QueryViewModel> response = this._BoeLaborControllerLogic.ParseSapFilter(text);
+
+            // Call to Controller Logic
+            IESResponse<QueryViewModel> response = this._BoeLaborControllerLogic.ParseSapFilter(text);
 			JsonResult toReturn = this.Json(response);
 
 			// Finalize Action
@@ -1470,8 +1470,8 @@ namespace GenBOE.Web.Controllers
 
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CONVERT_SAP_FILTER, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
 
-			// Call to IES SAP Api
-			IESResponse<string> response = this._BoeLaborControllerLogic.ConvertSapFilter(filters);
+            // Call to Controller Logic
+            IESResponse<string> response = this._BoeLaborControllerLogic.ConvertSapFilter(filters);
 			JsonResult toReturn = this.Json(response);
 
 			// Finalize Action
@@ -1498,7 +1498,7 @@ namespace GenBOE.Web.Controllers
 
             Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_VALIDATE_ACTUALS_SAP, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
 
-            // Call to IES SAP Api
+            // Call to Controller Logic
             IESResponse<string> response = this._BoeLaborControllerLogic.ValidateActualsSap(tableData);
 
             var errors = response?.Messages?.Select(m => new { ValidationIssue= m });
