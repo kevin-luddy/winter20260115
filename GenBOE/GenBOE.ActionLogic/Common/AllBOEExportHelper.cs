@@ -188,14 +188,14 @@ namespace GenBOE.ActionLogic.Common
 		}
 
 		/// <summary>
-		/// Removes characters that cause issues when present in file names
+		/// Removes characters that cause issues when present in file names; Some may look like duplicates, but they actually aren't
 		/// </summary>
 		/// <param name="target">String to be cleaned</param>
 		/// <param name="replacementValue">Character to replace the illegal characters with. Defaults to "."</param>
 		/// <returns>String with illegal characters replaced</returns>
 		private static string StripIllegalFileNameCharacters(string target, string replacementValue=".")
         {
-			char[] illegalCharacters = new[] { ' ', '/', '\\', '\n', '\r', '\'', '"', '–', '%', '#', '$', '&', ')', '(', '!', ',', ':' };
+			char[] illegalCharacters = new[] { ' ', ' ', '/', '\\', '\n', '\r', '\'', '"', '–', '-', '%', '#', '$', '&', ')', '(', '!', ',', ':', '{', '}', '`', '~', '^', '/','<', '>' };
 			string[] cleanedParts = target.Split(illegalCharacters, StringSplitOptions.RemoveEmptyEntries);
 
 			return string.Join(replacementValue, cleanedParts);

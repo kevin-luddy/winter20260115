@@ -9,6 +9,7 @@ namespace IES.ActionLogic.ControllerLogic
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.IO;
 	using System.Linq;
 	using System.Transactions;
 	using System.Web;
@@ -574,9 +575,7 @@ namespace IES.ActionLogic.ControllerLogic
 		/// <param name="proposalId">Proposal ID</param>
 		/// <param name="serverFileName">Server File Name</param>
 		/// <param name="httpResponse">HTTP response object</param>
-		/// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
-		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
-		public void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, string parentSectionOverride = null, bool includeDocumentDetails = true)
+		public void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse)
 		{
 			if (serverFileName == null)
 			{
@@ -588,12 +587,51 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new ArgumentNullException(nameof(httpResponse));
 			}
 
-			// get the document based off id
 			DocumentDetailModelView modelView = this.RetrieveDocumentDetailByProposalId(proposalId);
-
 			if (modelView == null)
 			{
 				throw new ArgumentException("There is no Document assigned to this proposal Id: " + proposalId.ToString());
+			}
+
+			string clientFileName = string.Format("{0}_{1}_{2}-{3}.docx", modelView.TrackingNumber, modelView.ProposalTitle, modelView.StartYear, modelView.EndYear).Replace(",", "_");
+
+			// setup the response correctly with BufferOutput since this is going to be awhile...
+			httpResponse.ContentType = PPRDExporterConstants.CONTENTTYPE_DOCX;
+			httpResponse.Clear();
+			httpResponse.AppendHeader(PPRDExporterConstants.CONTENT_HEADER_NAME, string.Format(PPRDExporterConstants.CONTENT_HEADER_FORMAT_STRING, clientFileName));
+
+			this.GenerateRDD(proposalId, serverFileName, httpResponse.OutputStream, modelView);
+		}
+
+		/// <summary>
+		/// Generates the RDD document for the Proposal Id passed in.
+		/// </summary>
+		/// <param name="proposalId">Proposal ID</param>
+		/// <param name="serverFileName">Server File Name</param>
+		/// <param name="stream">stream to write the file back to for download</param>
+		/// <param name="modelView">document detail modelview (if available)</param>
+		/// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
+		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
+		public void GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true)
+		{
+			if (serverFileName == null)
+			{
+				throw new ArgumentNullException(nameof(serverFileName));
+			}
+
+			if (stream == null)
+			{
+				throw new ArgumentNullException(nameof(stream));
+			}
+
+			// get the document based off id if we don't already have the modelview
+			if (modelView == null)
+			{
+				modelView = this.RetrieveDocumentDetailByProposalId(proposalId);
+				if (modelView == null)
+				{
+					throw new ArgumentException("There is no Document assigned to this proposal Id: " + proposalId.ToString());
+				}
 			}
 
 			if (!modelView.SelectedRevisionId.HasValue)
@@ -614,8 +652,6 @@ namespace IES.ActionLogic.ControllerLogic
 				throw new ArgumentException("Revision ID selected for this Document is invalid.");
 			}
 
-			string clientFileName = string.Format("{0}_{1}_{2}-{3}.docx", modelView.TrackingNumber, modelView.ProposalTitle, modelView.StartYear, modelView.EndYear).Replace(",", "_");
-
 			// Get SectionsMVs 
 			string refNumberPrefix = string.IsNullOrWhiteSpace(modelView.ParentSection) ? string.Empty : modelView.ParentSection + ".";
 			ICollection<SectionModelView> sections = this.sectionLoader.GetAll(revisionMV, false, modelView.SelectedSectionIds, refNumberPrefix);
@@ -629,39 +665,39 @@ namespace IES.ActionLogic.ControllerLogic
 			// Get File Attachments
 			ICollection<FileAttachmentRowModelView> fileAttachments = this.fileAttachmentLoader.GetByRevision(revisionMV.Id);
 
-			this.pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, modelView, httpResponse, includeDocumentDetails);
+			this.pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, revisionMV, modelView, stream, includeDocumentDetails);
 		}
 
-        /// <summary>
-        /// Check if RDSB Record exists for the given PTM Proposal ID
-        /// </summary>
-        /// <param name="proposalId">Proposal ID</param>
-        /// <returns>true if record exists, otherwise false</returns>
-        public bool DoesRdsbRecordExistForProposalId(int proposalId)
+		/// <summary>
+		/// Check if RDSB Record exists for the given PTM Proposal ID
+		/// </summary>
+		/// <param name="proposalId">Proposal ID</param>
+		/// <returns>true if record exists, otherwise false</returns>
+		public bool DoesRdsbRecordExistForProposalId(int proposalId)
 		{
-            return documentLoader.DoesRecordExist(proposalId);
+			return documentLoader.DoesRecordExist(proposalId);
 		}
 
-        /// <summary>
-        /// Converts the sections.
-        /// </summary>
-        /// <param name="sections">The sections.</param>
-        /// <returns>A treeview of the section details.</returns>
-        private ICollection<SectionDetailModelView> ConvertSections(ICollection<SectionModelView> sections)
-        {
-            ICollection<SectionDetailModelView> details = new List<SectionDetailModelView>();
-            foreach (SectionModelView section in sections)
-            {
-                if ((!section.IsInternalSection.HasValue || !section.IsInternalSection.Value) && section.ContentType == SectionContentType.Section)
-                {
-                    SectionDetailModelView detail = new SectionDetailModelView
-                    {
-                        Id = section.Id,
-                        Title = section.Title,
-                        ReferenceNumber = section.ReferenceNumber,
-                        HasTable = section.ChildNodes.Any(s => (!s.IsInternalSection.HasValue || !s.IsInternalSection.Value) && s.ContentType == SectionContentType.RateTable),
-                        IsRdsbRequired = section.IsRdsbRequired
-                    };
+		/// <summary>
+		/// Converts the sections.
+		/// </summary>
+		/// <param name="sections">The sections.</param>
+		/// <returns>A treeview of the section details.</returns>
+		private ICollection<SectionDetailModelView> ConvertSections(ICollection<SectionModelView> sections)
+		{
+			ICollection<SectionDetailModelView> details = new List<SectionDetailModelView>();
+			foreach (SectionModelView section in sections)
+			{
+				if ((!section.IsInternalSection.HasValue || !section.IsInternalSection.Value) && section.ContentType == SectionContentType.Section)
+				{
+					SectionDetailModelView detail = new SectionDetailModelView
+					{
+						Id = section.Id,
+						Title = section.Title,
+						ReferenceNumber = section.ReferenceNumber,
+						HasTable = section.ChildNodes.Any(s => (!s.IsInternalSection.HasValue || !s.IsInternalSection.Value) && s.ContentType == SectionContentType.RateTable),
+						IsRdsbRequired = section.IsRdsbRequired
+					};
 
 					details.Add(detail);
 					if (section.ChildNodes != null && section.ChildNodes.Any())

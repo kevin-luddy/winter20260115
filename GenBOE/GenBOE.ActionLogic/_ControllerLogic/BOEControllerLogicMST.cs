@@ -75,14 +75,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeDataLoader,
             IBoeApproverResponseDTODataLoader boeApproverResponseLoader,
-            IESSAPClient iesSapClient
+            IESSAPClient iesSapClient,
+            ITokenService tokenService
             )
             : base(inBOESummary, inUserLoader, inActiveDirectoryUtil, 
             inPermissionsLoader, inFactory, inBOEExporter, inBoeCustomExporter, inGenBOEControllerLogic,
             inBoeMediator, inValidationHelper, inBoeCommentLoader, inEmailer, inBoeTaskElementMediator, inWorkspaceVariableLoader, inBOEStateMachine,
             inVariableSelectBOEtoSumCalculation, inBOELaborControllerLogic, inValidateBOE, inSecurityInformation, inBoeSearchLoader, inSecurityAccess,
             inBoeTaskElementRecalculation, inBOEImporter, inVariableCircularReferenceChecker, inConflictBOE, inNestedWBSUtilities, projectMapLoader, zoneTravelRatesFeesLoader,
-            rteTemplateDataLoader, moqTypeDataLoader, boeApproverResponseLoader, iesSapClient)
+            rteTemplateDataLoader, moqTypeDataLoader, boeApproverResponseLoader, iesSapClient, tokenService)
         {
             this.mstMetricsLoader = mstMetricsLoader;
             this.offloadRatesDTOLoader = offloadRatesDTOLoader;

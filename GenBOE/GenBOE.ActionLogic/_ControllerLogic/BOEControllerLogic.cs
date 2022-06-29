@@ -75,6 +75,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IMoqTypeDataLoader moqTypeDataLoader;
         private IBoeApproverResponseDTODataLoader boeApproverResponseLoader;
         private IESSAPClient iesSapClient;
+        private ITokenService tokenService;
 
         #region Protected Properties and Constructor
 
@@ -113,7 +114,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IRteTemplateDataLoader rteTemplateDataLoader,
             IMoqTypeDataLoader moqTypeDataLoader,
             IBoeApproverResponseDTODataLoader boeApproverResponseLoader,
-            IESSAPClient iesSapClient)
+            IESSAPClient iesSapClient,
+            ITokenService tokenService)
         {
             this._BOESummary = inBOESummary;
             this.UserLoader = inUserLoader;
@@ -147,6 +149,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.moqTypeDataLoader = moqTypeDataLoader;
             this.boeApproverResponseLoader = boeApproverResponseLoader;
             this.iesSapClient = iesSapClient;
+            this.tokenService = tokenService;
         }
 
         #endregion
@@ -3282,6 +3285,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
             if (Utilities.IsSAPEnabled)
             {
+                Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, (await tokenService.GetToken()).AccessToken);
+
                 return await iesSapClient.ApiQueryFilterGetAllOperatorsAsync();
             }
             else
@@ -3298,6 +3303,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
             if (Utilities.IsSAPEnabled)
             {
+                Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, (await tokenService.GetToken()).AccessToken);
+
                 return await iesSapClient.ApiQueryFilterGetAllFieldsAsync();
             }
             else
