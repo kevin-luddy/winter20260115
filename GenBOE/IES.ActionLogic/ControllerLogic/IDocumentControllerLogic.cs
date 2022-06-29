@@ -6,17 +6,18 @@
 
 namespace IES.ActionLogic.ControllerLogic
 {
-    using System.Collections.Generic;
-    using System.Web;
-    using DataBridge.ModelViews;
-    using GenTRAC.DataBridge.Common.Security;
-    using GenTRAC.DataBridge.DTO;
-    using IES.Common.Exceptions;
+	using System.Collections.Generic;
+	using System.IO;
+	using System.Web;
+	using DataBridge.ModelViews;
+	using GenTRAC.DataBridge.Common.Security;
+	using GenTRAC.DataBridge.DTO;
+	using IES.Common.Exceptions;
 
-    /// <summary>
-    /// Interface for the Document Controller Logic.
-    /// </summary>
-    public interface IDocumentControllerLogic
+	/// <summary>
+	/// Interface for the Document Controller Logic.
+	/// </summary>
+	public interface IDocumentControllerLogic
     {
         /// <summary>
         /// Gets the unlinked proposals the user has access to edit that are in progress.
@@ -84,14 +85,23 @@ namespace IES.ActionLogic.ControllerLogic
         ICollection<SectionDetailModelView> GetSectionsForRevision(int revisionId);
 
         /// <summary>
+		/// Generates the RDD document for the Proposal Id passed in.
+		/// </summary>
+		/// <param name="proposalId">Proposal ID</param>
+		/// <param name="serverFileName">Server File Name</param>
+		/// <param name="httpResponse">HTTP response object</param>
+		void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse);
+
+        /// <summary>
         /// Generates the RDD document for the Proposal Id passed in.
         /// </summary>
         /// <param name="proposalId">Proposal ID</param>
         /// <param name="serverFileName">Server File Name</param>
-        /// <param name="httpResponse">HTTP response object</param>
+        /// <param name="stream">stream to write the file back to for download</param>
+		/// <param name="modelView">document detail modelview (if available)</param>
         /// <param name="parentSectionOverride">Override value for Parent Section - used in ACV</param>
         /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
-        void GenerateRDD(int proposalId, string serverFileName, HttpResponseBase httpResponse, string parentSectionOverride = null, bool includeDocumentDetails = true);
+        void GenerateRDD(int proposalId, string serverFileName, Stream stream, DocumentDetailModelView modelView, string parentSectionOverride = null, bool includeDocumentDetails = true);
 
         /// <summary>
         /// Check if RDSB Record exists for the given PTM Proposal ID

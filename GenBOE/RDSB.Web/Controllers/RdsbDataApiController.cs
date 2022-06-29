@@ -9,6 +9,7 @@ namespace RDSB.Web.Controllers
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.IO;
 	using System.Linq;
 	using System.Net;
 	using System.Net.Http;
@@ -115,12 +116,12 @@ namespace RDSB.Web.Controllers
 				}
 
 				// perform export
-				HttpResponse response = HttpContext.Current.Response;
-				string serverFileName = HttpContext.Current.Server.MapPath("~/Templates/Export/PPRDTemplateACV.docx");
-				this.documentControllerLogic.GenerateRDD(proposalId, serverFileName, new HttpResponseWrapper(response), parentSectionNumber, false);
+				string serverFileName = HttpContext.Current.Server.MapPath("~/Templates/Export/PPRDTemplate.docx");
+				MemoryStream stream = new MemoryStream();
+				this.documentControllerLogic.GenerateRDD(proposalId, serverFileName, stream, null, parentSectionNumber, false);
 
-				response.OutputStream.Position = 0;
-				responseMessage.Content = new StreamContent(response.OutputStream);
+				stream.Position = 0;
+				responseMessage.Content = new StreamContent(stream);
 				responseMessage.Content.Headers.ContentType = new MediaTypeHeaderValue(ExportFileDownloadBase.ContentType_DOCX);
 				responseMessage.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment")
 				{

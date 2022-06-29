@@ -9,6 +9,7 @@ namespace IES.ActionLogic.IO.Export
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.IO;
 	using System.Linq;
 	using System.Web;
 	using Common;
@@ -70,28 +71,22 @@ namespace IES.ActionLogic.IO.Export
 		/// <param name="rates">Collection of RateDetail MVs</param>
 		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
 		/// <param name="serverFileName">Server path to new file to generate.</param>
-		/// <param name="clientFileName">the file name to display to the browser in the download dialog</param>
 		/// <param name="revision">Revision modelview</param>
 		/// <param name="rddDocument">The RDD document to use for creation.</param>
-		/// <param name="response">the web response object to write the file back to for user download</param>
+		/// <param name="stream">the stream to write the file back to for user download</param>
 		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
-		public void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, HttpResponseBase response, bool includeDocumentDetails = true)
+		public void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, bool includeDocumentDetails = true)
 		{
-			if (response == null)
+			if (stream == null)
 			{
-				throw new ArgumentNullException(nameof(response));
+				throw new ArgumentNullException(nameof(stream));
 			}
 
 			ChunkCounter counters = new ChunkCounter();
 
-			// setup the response correctly with BufferOutput since this is going to be awhile...
-			response.ContentType = PPRDExporterConstants.CONTENTTYPE_DOCX;
-			response.Clear();
-			response.AppendHeader(PPRDExporterConstants.CONTENT_HEADER_NAME, string.Format(PPRDExporterConstants.CONTENT_HEADER_FORMAT_STRING, clientFileName));
-
 			int rateTableYears = rddDocument.EndYear - rddDocument.StartYear;
 
-			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, rddDocument, includeDocumentDetails); }, response.OutputStream);
+			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, rddDocument, includeDocumentDetails); }, stream);
 		}
 
 		#region Populate Methods
