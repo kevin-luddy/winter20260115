@@ -327,6 +327,7 @@ namespace GenBOE
             GenBOEUnityContainer.Container.RegisterType(typeof(CacheDataLoader), typeof(CacheDataLoader), "GenBOEMetricsCache", GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ICache)), 43200));
             GenBOEUnityContainer.Container.RegisterType(typeof(NonCacheDataLoader), typeof(NonCacheDataLoader), GetLifetimeManager(), new InjectionConstructor());
             GenBOEUnityContainer.Container.RegisterType(typeof(TokenHandling), typeof(TokenHandling), this.GetLifetimeManager(), new InjectionConstructor());
+            GenBOEUnityContainer.Container.RegisterType(typeof(ITokenService), typeof(TokenService), this.GetLifetimeManager(), new InjectionConstructor(new ResolvedParameter(typeof(ICache))));
 
             // Register Loaders
             GenBOEUnityContainer.Container.RegisterType(typeof(IBOEFormIBOEDTODataLoader), typeof(BOEFormIBOEDTODataLoader), GetLifetimeManager(), new InjectionMember[] { });
