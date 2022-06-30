@@ -304,10 +304,133 @@
           }
         }
       }
+    },
+    "/api/QueryParser/IsQueryValid": {
+      "post": {
+        "tags": [
+          "QueryParser"
+        ],
+        "operationId": "IsQueryValid",
+        "parameters": [
+          {
+            "name": "companyConfiguration",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CompanyConfiguration"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataTableViewModel"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataTableViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataTableViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataTableViewModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/BooleanResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BooleanResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BooleanResult"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "BooleanResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "type": "boolean"
+          },
+          "messages": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "isSuccessful": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/ResultStatus"
+          },
+          "correlationId": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CompanyConfiguration": {
+        "type": "integer",
+        "format": "int32",
+        "enum": [
+          0,
+          2,
+          3
+        ]
+      },
+      "DataTableViewModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "wbsElement": {
+            "type": "string",
+            "nullable": true
+          },
+          "poPStart": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "poPEnd": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "filters": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
       "DateDescriptionAttribute": {
         "type": "object",
         "additionalProperties": false,

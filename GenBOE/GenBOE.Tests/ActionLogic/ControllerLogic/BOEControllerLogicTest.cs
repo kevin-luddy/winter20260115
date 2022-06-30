@@ -20,7 +20,6 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 	using GenBOE.ActionLogic.Common.Email;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.CopyBOE;
-	using GenBOE.ActionLogic.IESSAPClient;
 	using GenBOE.ActionLogic.IO.Export;
 	using GenBOE.ActionLogic.IO.Import;
 	using GenBOE.ActionLogic.ModelView;
@@ -81,7 +80,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		private Mock<RMSZoneTravelRatesFeesDataLoader> _zoneTravelRatesFeesDataLoader = new Mock<RMSZoneTravelRatesFeesDataLoader>();
 		private Mock<IMoqTypeDataLoader> moqTypeLoader = new Mock<IMoqTypeDataLoader>();
 		private Mock<IBoeApproverResponseDTODataLoader> boeApproverResponseLoader = new Mock<IBoeApproverResponseDTODataLoader>();
-		private Mock<IESSAPClient> iesSapClient = new Mock<IESSAPClient>();
+		private Mock<GenBOE.ActionLogic.IESSAPClient.IESSAPClient> iesSapClient = new Mock<GenBOE.ActionLogic.IESSAPClient.IESSAPClient>();
 		private ITokenService tokenService = new TokenService(new MemoryCache());
 
 		private BOEControllerLogic CreateSystem()
@@ -3516,11 +3515,11 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[Ignore]
 		public async Task GetAllFields_Test()
 		{
-			ICollection<QueryFieldViewModel> fields = new List<QueryFieldViewModel>();
+			ICollection<GenBOE.ActionLogic.IESSAPClient.QueryFieldViewModel> fields = new List<GenBOE.ActionLogic.IESSAPClient.QueryFieldViewModel>();
 
 			using(HttpClient httpClient = new HttpClient())
 			{
-				IESSAPClient client = new IESSAPClient(WebConfigurationManager.AppSettings["IESSAPUrl"], httpClient);
+                GenBOE.ActionLogic.IESSAPClient.IESSAPClient client = new GenBOE.ActionLogic.IESSAPClient.IESSAPClient(WebConfigurationManager.AppSettings["IESSAPUrl"], httpClient);
 
 				Utilities.AddAuthorizationHeader(client.HttpClient, (await tokenService.GetToken()).AccessToken);
 
@@ -3537,11 +3536,11 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 		[Ignore]
 		public async Task GetAllOperators_Test()
 		{
-			ICollection<QueryOperatorViewModel> operators = new List<QueryOperatorViewModel>();
+			ICollection<GenBOE.ActionLogic.IESSAPClient.QueryOperatorViewModel> operators = new List<GenBOE.ActionLogic.IESSAPClient.QueryOperatorViewModel>();
 
 			using (HttpClient httpClient = new HttpClient())
 			{
-				IESSAPClient client = new IESSAPClient(WebConfigurationManager.AppSettings["IESSAPUrl"], httpClient);
+                GenBOE.ActionLogic.IESSAPClient.IESSAPClient client = new GenBOE.ActionLogic.IESSAPClient.IESSAPClient(WebConfigurationManager.AppSettings["IESSAPUrl"], httpClient);
 
 				Utilities.AddAuthorizationHeader(client.HttpClient, (await tokenService.GetToken()).AccessToken);
 
