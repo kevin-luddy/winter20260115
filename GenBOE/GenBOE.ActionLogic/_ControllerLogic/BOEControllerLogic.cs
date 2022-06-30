@@ -43,39 +43,40 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
     public class BOEControllerLogic : IBOEControllerLogic
     {
-        private IBOESummary _BOESummary;
-        private IUserDTODataLoader UserLoader;
-        private IActiveDirectoryUtilities _ADUtils;
-        private IPermissionsDTODataLoader PermissionsLoader;
-        private IFullObjectFactory Factory;
-        private IBOEExporter _BOEExporter;
-        private IBOECustomExporter _boeCustomExporter;
-        private IGenBOEControllerLogic _genBOEControllerLogic;
-        private IBoeMediator _BoeMediator;
-        private IValidationHelper _validationHelper;
-        private IBOECommentDTODataLoader _boeCommentLoader;
-        private IBoeEmailer _emailer;
-        private IBoeTaskElementMediator _BoeTaskElementMediator;
-        private IWorkspaceVariableDTODataLoader _workspaceVariableLoader;
-        private IBOEStateMachine _boeStateMachine;
-        private IVariableSelectBOEtoSumCalculation _variableSelectBOEtoSumCalculation;
-        private IBOELaborControllerLogic BoeLaborControllerLogic;
-        private IValidateBOE _validateBOE;
-        private ISecurityInformation _SecurityInformation;
-        private IBOESearchDTODataLoader _boeSearchLoader;
-        private ISecurityAccess _SecurityAccess;
-        private IBoeTaskElementRecalculation _BoeTaskElementRecalculation;
-        private IBOEImporter _BOEImporter;
-        private IVariableCircularReferenceChecker _VariableCircularReferenceChecker;
-        private IConflictBOE _ConflictBOE;
-        private INestedWBSUtilities _nestedWbsUtilities;
-        private IProjectMapDataLoader projectMapLoader;
-        private RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader;
-        private IRteTemplateDataLoader rteTemplateDataLoader;
+        private readonly IBOESummary _BOESummary;
+        private readonly IUserDTODataLoader UserLoader;
+        private readonly IActiveDirectoryUtilities _ADUtils;
+        private readonly IPermissionsDTODataLoader PermissionsLoader;
+        private readonly IFullObjectFactory Factory;
+        private readonly IBOEExporter _BOEExporter;
+        private readonly IBOECustomExporter _boeCustomExporter;
+        private readonly IGenBOEControllerLogic _genBOEControllerLogic;
+        private readonly IBoeMediator _BoeMediator;
+        private readonly IValidationHelper _validationHelper;
+        private readonly IBOECommentDTODataLoader _boeCommentLoader;
+        private readonly IBoeEmailer _emailer;
+        private readonly IBoeTaskElementMediator _BoeTaskElementMediator;
+        private readonly IWorkspaceVariableDTODataLoader _workspaceVariableLoader;
+        private readonly IBOEStateMachine _boeStateMachine;
+        private readonly IVariableSelectBOEtoSumCalculation _variableSelectBOEtoSumCalculation;
+        private readonly IBOELaborControllerLogic BoeLaborControllerLogic;
+        private readonly IValidateBOE _validateBOE;
+        private readonly ISecurityInformation _SecurityInformation;
+        private readonly IBOESearchDTODataLoader _boeSearchLoader;
+        private readonly ISecurityAccess _SecurityAccess;
+        private readonly IBoeTaskElementRecalculation _BoeTaskElementRecalculation;
+        private readonly IBOEImporter _BOEImporter;
+        private readonly IVariableCircularReferenceChecker _VariableCircularReferenceChecker;
+        private readonly IConflictBOE _ConflictBOE;
+        private readonly INestedWBSUtilities _nestedWbsUtilities;
+        private readonly IProjectMapDataLoader projectMapLoader;
+        private readonly RMSZoneTravelRatesFeesDataLoader zoneTravelRatesFeesLoader;
+        private readonly IRteTemplateDataLoader rteTemplateDataLoader;
         private readonly IMoqTypeDataLoader moqTypeDataLoader;
-        private IBoeApproverResponseDTODataLoader boeApproverResponseLoader;
-        private IESSAPClient iesSapClient;
-        private ITokenService tokenService;
+        private readonly IBoeApproverResponseDTODataLoader boeApproverResponseLoader;
+        private readonly IESSAPClient iesSapClient;
+        private readonly ITokenService tokenService;
+        private readonly Logger logger = new Logger(typeof(BOEControllerLogic));
 
         #region Protected Properties and Constructor
 
@@ -3285,9 +3286,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
             if (Utilities.IsSAPEnabled)
             {
-                Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, (await tokenService.GetToken()).AccessToken);
+                try
+                {
+                    Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, (await tokenService.GetToken()).AccessToken);
 
-                return await iesSapClient.ApiQueryFilterGetAllOperatorsAsync();
+                    return await iesSapClient.ApiQueryFilterGetAllOperatorsAsync();
+                }
+                catch (Exception ex)
+                {
+                    // gracefully handle error
+                    logger.Error(ex, "Error calling SAP API to get Operators.");
+                    return new List<QueryOperatorViewModel>();
+                }
             }
             else
             {
@@ -3303,9 +3313,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
             if (Utilities.IsSAPEnabled)
             {
-                Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, (await tokenService.GetToken()).AccessToken);
+                try
+                {
+                    Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, (await tokenService.GetToken()).AccessToken);
 
-                return await iesSapClient.ApiQueryFilterGetAllFieldsAsync();
+                    return await iesSapClient.ApiQueryFilterGetAllFieldsAsync();
+                }
+                catch(Exception ex)
+                {
+                    // gracefully handle error
+                    logger.Error(ex, "Error calling SAP API to get Fields.");
+                    return new List<QueryFieldViewModel>();
+                }
             }
             else
             {

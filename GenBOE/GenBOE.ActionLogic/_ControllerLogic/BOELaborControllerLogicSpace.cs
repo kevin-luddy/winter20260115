@@ -43,6 +43,8 @@ namespace GenBOE.ActionLogic
         /// <param name="inTaskElementDataLoader"></param>
         /// <param name="inPermissionsLoader"></param>
         /// <param name="inTaskVariableLoader"></param>
+        /// <param name="iesSapClient">IES SAP Client</param>
+        /// <param name="tokenservice">Token Service</param>
         public BOELaborControllerLogicSpace(
             Common.Calculations.BoeTaskElementRecalculation inBoeTaskElementRecalc, 
             IBOEStateMachine inBoeStateMachine, 
@@ -65,8 +67,9 @@ namespace GenBOE.ActionLogic
             IMoqTypeDataLoader moqTypeDataLoader,
             IValidateBOE validateBOE,
             IMoqTableExporter moqTableExporter,
-            IMoqTableImporter moqTableImporter
-            ) :base(inBoeTaskElementRecalc, 
+            IMoqTableImporter moqTableImporter,
+            GenBOE.ActionLogic.IESSAPClient.IESSAPClient iesSapClient,
+            ITokenService tokenservice) : base(inBoeTaskElementRecalc, 
                 inBoeStateMachine, 
                 inBoeMediator, 
                 inBoeTaskElementMediator, 
@@ -87,7 +90,9 @@ namespace GenBOE.ActionLogic
                 moqTypeDataLoader,
                 validateBOE,
                 moqTableExporter,
-                moqTableImporter)
+                moqTableImporter,
+                iesSapClient,
+                tokenservice)
         {
         }
 

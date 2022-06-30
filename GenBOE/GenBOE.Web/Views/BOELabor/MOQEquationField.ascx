@@ -586,7 +586,11 @@
         <div class="container">
 			<div class="form-element">
             <div data-ng-if="filterDialog.showError" class="warning-box" style="display: block">
-                <div class="warning-message"><b>{{filterDialog.error}}</b></div>
+                <div data-ng-if="filterDialog.error && filterDialog.error.length > 0" class="warning-message">
+					<ng-container data-ng-repeat="err in filterDialog.error">
+					<b>{{err}}</b><br />
+					</ng-container>
+                </div>
 				<div class="small-close-button" data-ng-click="HideFilterError()"></div>
             </div>
         </div>
@@ -601,7 +605,6 @@
 					<table id="UpdateFilterMoqGrid" class="grid">
 						<thead>
 							<tr>
-								<th class="parens-checkbox"></th>
 								<th class="parens">(</th>
 								<th class="field">Field</th>
 								<th class="operator">Operator</th>
@@ -618,12 +621,12 @@
 							<tr data-ng-show="filterDialog.isLoading"><td colspan="9"><div class="loader"></div></td></tr>
 							<tr data-ng-show="!filterDialog.isLoading && (filterDialog.data === undefined || filterDialog.data.length === 0)"><td colspan="9"><div class="empty-grid-text">There are no Filters, please Add a new row.</div></td></tr>
                             <tr data-ng-repeat="queryFilter in filterDialog.data">
-								<td class="text parens-checkbox">
-                                    <div>
+								<td>
+									<span data-ng-if="queryFilter.StartParens">{</span>
+									<div data-ng-if="!queryFilter.StartParens && !queryFilter.EndParens">
                                         <input class="parens-chck" type="checkbox" data-ng-model="queryFilter.ParensChecked" data-ng-click="$event.stopPropagation()" />
                                     </div>
-                                </td>
-								<td><span data-ng-if="queryFilter.StartParens">{</span></td>
+								</td>
 								<td>
 									<select data-ng-model="queryFilter.Field" data-ng-change="ResetOperators(queryFilter)" data-ng-options="item.Value as item.Value for item in filterDialog.fieldsArr">
 										<option value=""></option>
@@ -637,8 +640,8 @@
 								<td>
 									<div data-ng-if="queryFilter.Type" >
 										<div data-ng-repeat="val in queryFilter.Value track by $index">
-											<input data-ng-if="queryFilter.Type !== 'System.DateTime'" type="text" data-ng-model="val" />
-											<input data-ng-if="queryFilter.Type === 'System.DateTime'" jqdatepicker type="text" data-ng-model="val" style="width:75px;" />
+											<input data-ng-if="queryFilter.Type !== 'System.DateTime'" type="text" data-ng-model="queryFilter.Value[$index]" />
+											<input data-ng-if="queryFilter.Type === 'System.DateTime'" jqdatepicker type="text" data-ng-model="queryFilter.Value[$index]" style="width:75px;" />
 											<button data-ng-if="$first" class="ies-action add-filter-button" data-ng-click="AddFilterValue(queryFilter.Value)"><span>ADD</span></button> 
 										</div>
 									</div>
