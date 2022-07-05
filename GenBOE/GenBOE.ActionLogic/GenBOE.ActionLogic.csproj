@@ -214,6 +214,7 @@
     <Compile Include="IO\Import\MoqTableImporterRMS.cs" />
     <Compile Include="IO\Import\TMResourceRatesImporter.cs" />
     <Compile Include="IO\Import\TrainingImporter.cs" />
+    <Compile Include="_ModelView\Task\MoqTableDataModelView.cs" />
     <Compile Include="Validation\SystemExportToProPricerFormatValidator.cs" />
     <Compile Include="Workspace\ProjectMapSorter.cs" />
     <Compile Include="_ControllerLogic\AdminControllerLogicMST.cs" />

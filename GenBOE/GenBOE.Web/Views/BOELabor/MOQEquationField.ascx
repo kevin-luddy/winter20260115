@@ -153,9 +153,10 @@
             <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.SME%>">{{PortionOfTask()}} Subject Matter Expert (SME) Judgment.</span>
             <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.NonLabor%>">This task is Non-Labor:</span>
         </div>
-        <div data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>">
-            <div class="tableDataParent" data-ng-repeat="tableData in moqType.TableData | orderBy: 'Order'">
-                <div class="tableData">
+		<div data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>">
+			<div class="tableDataParent" data-ng-repeat="tableData in moqType.TableData | orderBy: 'Order'">
+               <gen-validation data-ng-if="actualsValidation.moqType == moqType.SelectedMOQType && actualsValidation.index == $index" data-errors="actualsValidation.errors"></gen-validation>
+				<div class="tableData">
                     <table pkid="{{tableData.Id}}">
                         <tr>
                             <td class="form-label">
@@ -271,14 +272,14 @@
                     <button data-ng-if="!ActualReadOnly() && $index == 0" data-ng-disabled="moqType.TableData.length <= 1" data-ng-click="displayReOrderMoqTablesDialog(moqType)" class="moqTypesButton ies-blue" type="button">Sort MOQ Tables</button>
                     <button data-ng-if="!ActualReadOnly() && moqType.TableData.length > 1" style="display:block;" data-ng-click="RemoveTable(tableData, moqType.TableData)" type="button" class="ies-danger moqTypesButton" data-ng-class="{'moqTypesDelete': $index == 0}">Delete Table Data</button>
                     <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton">Export Actuals</button>
-                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton">Validate Actuals</button>
+                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="validateActuals(moqType.SelectedMOQType, $index, tableData)">Validate Actuals</button>
                     <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton">Calculate Actuals</button>
                 </div>
                 <hr />
             </div>
             <div data-ng-if="!model.IsRMS" class="moqTypeNote">Note: Hours cited above are paid hours that exclude unpaid (zero cost) hours and service center hours.</div>
         </div>
-        <div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%> || moqType.SelectedMOQType == <%:(int)MOQType.ParametricEstimates%> || moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>">
+		<div class="form-row" data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%> || moqType.SelectedMOQType == <%:(int)MOQType.ParametricEstimates%> || moqType.SelectedMOQType == <%:(int)MOQType.AnalogousRelationships%>">
             <div class="form-label">
                 <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.CostEstimatingRelationships%>">CER</span>
                 <span data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.ParametricEstimates%>">Parametric model or tool</span>

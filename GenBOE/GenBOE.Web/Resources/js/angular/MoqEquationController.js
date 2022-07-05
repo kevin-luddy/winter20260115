@@ -51,7 +51,13 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		originalData: undefined,
 		showError: false,
 		error: ''
-	}
+	};
+
+	$scope.actualsValidation = {
+		errors: [],
+		moqType: 0,
+		index: -1
+	};
 
     $scope.isExporting = false;
 
@@ -158,7 +164,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     }
 
     // Actual Read Only, including reversal
-    $scope.ActualReadOnly = function()
+	$scope.ActualReadOnly = function ()
     {
         return $scope.model.IsReadOnly && !$scope.model.ShouldMoqReadOnlyBeReversed;
     }
@@ -647,8 +653,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		} else if (row.EndParens) {
 			// need to delete matching StartParens
 			var numEnd = 0; // running number of inner End parentheses found
-			for (var i = index - 1; i >= 0; i--) {
-				const prevRow = $scope.filterDialog.data[i];
+			for (var j = index - 1; j >= 0; j--) {
+				const prevRow = $scope.filterDialog.data[j];
 				if (prevRow.StartParens) {
 					if (numEnd == 0) {
 						// found it
@@ -722,11 +728,11 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		// validate equal number of start parens to end parens between the 2 rows
 		var numStartParens = 0;
 		var numEndParens = 0;
-		for (var i = firstRowIndex + 1; i < secondRowIndex; i++) {
-			var row = $scope.filterDialog.data[i];
-			if (row.StartParens) {
+		for (var j = firstRowIndex + 1; j < secondRowIndex; j++) {
+			var parensRow = $scope.filterDialog.data[j];
+			if (parensRow.StartParens) {
 				numStartParens++;
-			} else if (row.EndParens) {
+			} else if (parensRow.EndParens) {
 				numEndParens++;
 			}
 		}
@@ -852,9 +858,48 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		$scope.filterDialog.data = arr;
 	};
 
-	//#endregion SAP Filters
+	$scope.validateActuals = function (moqType, index, tableData) {
+		$scope.actualsValidation.errors = [];
+		$scope.actualsValidation.index = index;
+		$scope.actualsValidation.moqType = moqType;
+		// pull the data from the form
 
-    $scope.refreshPage = function () {
+		var data = {};
+		data.tableData = {
+			WbsElement: tableData.WbsElement,
+			PoPStart: tableData.PoPStart,
+			PoPEnd: tableData.PoPEnd,
+			Filters: tableData.AdditionalQueryFilters
+		};
+
+		data.boeId = ManageTaskModel.boeId;
+
+		// send to backend
+		// display response to user
+		$(document).trigger("SHOW_LOADING_BOX");
+
+		$http({
+			method: 'POST',
+			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.ValidateActualsSapAction, ''),
+			data: data
+		}).then(function (response) {
+			// place returned html into the content div
+			if (response.data.IsSuccessful === true) {
+				$scope.actualsValidation.errors = response.data.Messages; 
+			} else {
+				$scope.actualsValidation.errors = [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }];
+			}
+			$(document).trigger("HIDE_LOADING_BOX");
+		}).catch(function () {
+			$scope.actualsValidation.errors = [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }];
+			$(document).trigger("HIDE_LOADING_BOX");
+		});
+
+	};
+
+    //#endregion SAP Filters
+
+	$scope.refreshPage = function () {
         $window.location.reload();
     };
 
