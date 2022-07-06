@@ -824,7 +824,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 			$scope.filterDialog.isLoading = false;
 		}).catch(function () {
 			$scope.filterDialog.isLoading = false;
-			$scope.ShowFilterError(['Parsing Filter Text failed']);
+			$scope.ShowFilterError(['Parsing Additional Filter Text failed']);
 		});
 	}
 

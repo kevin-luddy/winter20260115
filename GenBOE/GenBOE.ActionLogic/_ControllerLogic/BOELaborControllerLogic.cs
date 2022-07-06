@@ -3600,7 +3600,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
             IESResponse<string> response = new IESResponse<string>();
 
-            if (filters == null || filters.Count == 0)
+            if (filters == null || !filters.Any())
             {
                 response.Data = new List<string> { string.Empty };
                 response.IsSuccessful = true;
