@@ -64,6 +64,8 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<IValidateBOE> validateBOE = null;
         private Mock<IMoqTableExporter> moqTableExporter = null;
         private Mock<IMoqTableImporter> moqTableImporter = null;
+        private Mock<ITokenService> tokenservice = new Mock<ITokenService>();
+        private Mock<GenBOE.ActionLogic.IESSAPClient.IESSAPClient> iesSapClient = new Mock<GenBOE.ActionLogic.IESSAPClient.IESSAPClient>();
 
         #region Private members
         private BOELaborControllerLogic CreateSystem()
@@ -92,7 +94,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                    this.moqTypeDataLoader.Object,
                    this.validateBOE.Object,
                    this.moqTableExporter.Object,
-                   this.moqTableImporter.Object
+                   this.moqTableImporter.Object,
+                   iesSapClient.Object,
+                   tokenservice.Object
             );
         }
 
@@ -122,7 +126,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                    this.moqTypeDataLoader.Object,
                    this.validateBOE.Object,
                    this.moqTableExporter.Object,
-                   this.moqTableImporter.Object
+                   this.moqTableImporter.Object,
+                   iesSapClient.Object,
+                   tokenservice.Object
             );
         }
 
@@ -153,7 +159,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                    this.moqTypeDataLoader.Object,
                    this.validateBOE.Object,
                    this.moqTableExporter.Object,
-                   this.moqTableImporter.Object
+                   this.moqTableImporter.Object,
+                   iesSapClient.Object,
+                   tokenservice.Object
             );
         }
 

@@ -50,7 +50,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		}, Object.create(null)),
 		originalData: undefined,
 		showError: false,
-		error: ''
+		error: []
 	};
 
 	$scope.actualsValidation = {
@@ -601,7 +601,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		$scope.filterDialog.isLoading = true;
 
 		var data = {};
-		data.filters = $scope.filterDialog.data;
+		data.filters = angular.copy($scope.filterDialog.data);
+		data.filters.forEach(item => {
+			if (item.Operator) {
+				item.Operator = item.Operator.Value;
+			}
+		});
 		data.boeId = ManageTaskModel.boeId;
 
 		// Convert view models into text
@@ -612,16 +617,21 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		}).then(function (response) {
 			// place returned html into the content div
 			if (response.data.IsSuccessful === true) {
-				$scope.filterDialog.originalData.AdditionalQueryFilters = response.data.Data;
+				if (response.data.Data) {
+					$scope.filterDialog.originalData.AdditionalQueryFilters = response.data.Data;
+				} else {
+					$scope.filterDialog.originalData.AdditionalQueryFilters = [''];
+				}
+				
 				$scope.filterDialog.open = false;
 			} else {
-				$scope.ShowFilterError(response.data.Messages[0]);
+				$scope.ShowFilterError(response.data.Messages);
 			}
 
 			$scope.filterDialog.isLoading = false;
 		}).catch(function () {
 			$scope.filterDialog.isLoading = false;
-			$scope.ShowFilterError('Error Converting Filters to Text');
+			$scope.ShowFilterError(['Error Converting Filters to Text']);
 		});
 	};
 
@@ -710,7 +720,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		}
 
 		if (tooManyCheckboxes || secondRowIndex === -1) {
-			$scope.ShowFilterError('Invalid row selection: Two checkboxes must be selected to modify Parens');
+			$scope.ShowFilterError(['Invalid row selection: Two checkboxes must be selected to modify Parens']);
 			return;
 		}
 
@@ -720,7 +730,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
 		if (firstRow.StartParens || firstRow.EndParens || secondRow.StartParens || secondRow.EndParens) {
 			if (!(firstRow.StartParens && secondRow.EndParens)) {
-				$scope.ShowFilterError('Invalid row selection: Both rows must not have Parens or first row must have Start Parens and second row must have End Parens');
+				$scope.ShowFilterError(['Invalid row selection: Both rows must not have Parens or first row must have Start Parens and second row must have End Parens']);
 				return;
 			}
 		}
@@ -738,7 +748,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		}
 
 		if (numStartParens !== numEndParens) {
-			$scope.ShowFilterError('Invalid row selection: the number of left and right Parens inside the checked rows do not match.');
+			$scope.ShowFilterError(['Invalid row selection: the number of left and right Parens inside the checked rows do not match.']);
 			return;
 		}
 
@@ -764,7 +774,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		$scope.filterDialog.open = true;
 
 		var data = {};
-		data.text = tableData.AdditionalQueryFilters;
+		if (Array.isArray(tableData.AdditionalQueryFilters)) {
+			data.text = tableData.AdditionalQueryFilters.join("\n");
+		} else {
+			data.text = tableData.AdditionalQueryFilters;
+		}
+
 		data.boeId = ManageTaskModel.boeId;
 
 		// Convert text into view models
@@ -788,6 +803,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 					item.ParensChecked = false;
 					if (item.Field) {
 						item.Type = $scope.filterDialog.fields[item.Field].Type;
+						if (item.Operator && $scope.filterDialog.operators[item.Type]) {
+							item.Operator = $scope.filterDialog.operators[item.Type].find(i => i.Value === item.Operator);
+						}
 					}
 
 					if (!item.Value) {
@@ -801,12 +819,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
 				$scope.filterDialog.data = response.data.Data;
 			} else {
-				$scope.ShowFilterError(response.data.Messages[0]);
+				$scope.ShowFilterError(response.data.Messages);
 			}
 			$scope.filterDialog.isLoading = false;
 		}).catch(function () {
 			$scope.filterDialog.isLoading = false;
-			$scope.ShowFilterError('Parsing Filter Text failed');
+			$scope.ShowFilterError(['Parsing Additional Filter Text failed']);
 		});
 	}
 
@@ -869,7 +887,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 			WbsElement: tableData.WbsElement,
 			PoPStart: tableData.PoPStart,
 			PoPEnd: tableData.PoPEnd,
-			Filters: tableData.AdditionalQueryFilters
+			Filters: tableData.AdditionalQueryFilters.join("\n")
 		};
 
 		data.boeId = ManageTaskModel.boeId;
@@ -884,10 +902,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 			data: data
 		}).then(function (response) {
 			// place returned html into the content div
-			if (response.data.IsSuccessful === true) {
-				$scope.actualsValidation.errors = response.data.Messages; 
-			} else {
-				$scope.actualsValidation.errors = [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }];
+			if (response.data.IsSuccessful !== true) {
+				if (response.data.Messages && response.data.Messages.length > 0) {
+					$scope.actualsValidation.errors = response.data.Messages;
+				} else {
+					$scope.actualsValidation.errors = [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }];
+				}
 			}
 			$(document).trigger("HIDE_LOADING_BOX");
 		}).catch(function () {
