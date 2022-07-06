@@ -3696,7 +3696,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     Filters = tableData.Filters,
                     PoPEnd = tableData.PoPEnd,
                     PoPStart = tableData.PoPStart,
-                    WbsElement = tableData.WbsElement
+                    WbsElement = tableData.WbsElement,
+                    TableId = tableData.TableId
                 };
 
                 // Call Swagger Client
@@ -3711,6 +3712,58 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 logger.Error(ex, "Error calling SAP API to Check if Data Table is Valid.");
                 response.Messages.Add("Error calling SAP API to Check if Data Table is Valid");
                 response.IsSuccessful = false;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Validates Actuals data for SAP
+        /// </summary>
+        /// <param name="tableData">The MOQ Table Data</param>
+		/// <returns>Validation Response</returns>
+        public async Task<ICollection<IESResponse<CalculateActualsViewModel>>> CalculateAllActualsSap(ICollection<MoqTableDataModelView> tableData)
+        {
+            ICollection<IESResponse<CalculateActualsViewModel>> response = new List<IESResponse<CalculateActualsViewModel>>();
+
+            try
+            {
+                // Get Token
+                Token token = await this.tokenservice.GetToken();
+                Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
+
+                // Convert company configuration
+                ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration =
+                    (ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
+
+                // Convert table data
+                IEnumerable<DataTableViewModel> dataTables = tableData.Select(t =>
+                new DataTableViewModel()
+                {
+                    Filters = t.Filters,
+                    PoPEnd = t.PoPEnd,
+                    PoPStart = t.PoPStart,
+                    WbsElement = t.WbsElement,
+                    TableId = t.TableId
+                });
+
+                // Call Swagger Client
+                ICollection<CalculateActualsViewModelResult> result = await iesSapClient.ApiQueryParserCalculateActualsAsync(companyConfiguration, dataTables);
+
+                response = result.Select(r =>
+                new IESResponse<CalculateActualsViewModel>
+                {
+                    Messages = r.Messages,
+                    IsSuccessful = r.IsSuccessful,
+                    Data = new List<CalculateActualsViewModel> { r.Data }
+                }).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                // throw error and let UI handle it
+                logger.Error(ex, "Error calling SAP API to Check if Data Table is Valid.");
+                throw new GeneralAppException("Error calling SAP API to Check if Data Table is Valid");
             }
 
             return response;
