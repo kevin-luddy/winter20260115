@@ -965,7 +965,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="boe">BOE containing the header</param>
         /// <param name="inBOEHeader">Modelview for the BOE Header</param>
         /// <param name="inBOEHeaderDescription">Modelview for the BOE description</param>
-        /// <param name="descriptionOnly">Bool denoting if only descrpition was changed</param>
+        /// <param name="descriptionOnly">Bool denoting if only description was changed</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode")]
         public virtual void SaveEditBoeHeader(FullWorkspace ws, FullBoe boe, IBOEHeaderModelView inBOEHeader, BOEHeaderDescriptionModelView inBOEHeaderDescription, bool descriptionOnly)
         {

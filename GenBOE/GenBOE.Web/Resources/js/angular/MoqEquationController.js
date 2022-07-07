@@ -924,10 +924,10 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 						
 						// find the moq table data and update the data with calcualted values
 						response.data.data.forEach(result => {
+							var res = result.Data[0];
 							if (result.Messages && result.Messages.length > 0) {
-								$scope.actualsValidation.errors.set(tableData.Id, result.Messages);
+								$scope.setActualsErrors(res.TableId, result.Messages);
 							} else {
-								var res = result.Data[0];
 								moqTypes.forEach(moq => {
 									var tableData = moq.TableData.find(t => t.Id == res.TableId);
 									if (tableData) {
@@ -953,6 +953,28 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 			});
 		}
 	};
+
+	$scope.setActualsErrors = function(id, errors) {
+		if (Array.isArray(errors)) {
+			if (errors.length > 0) {
+				// need to see if we need to convert to ValidationMessage
+				if (errors[0].ValidationIssue === undefined) {
+					var err = [];
+					errors.forEach(e => {
+						var valErr = {
+							ValidationIssue: e
+						};
+						err.push(valErr);
+					});
+
+					// reset array to new array
+					errors = err;
+				}
+
+				$scope.actualsValidation.errors.set(id, errors);
+			}
+		}
+	}
 
 	$scope.validateActuals = function (tableData) {
 		$scope.actualsValidation.errors = new Map();
@@ -985,14 +1007,14 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 			// place returned html into the content div
 			if (response.data.IsSuccessful !== true) {
 				if (response.data.Messages && response.data.Messages.length > 0) {
-					$scope.actualsValidation.errors.set(tableData.Id, response.data.Messages);
+					$scope.setActualsErrors(tableData.Id, response.data.Messages);
 				} else {
-					$scope.actualsValidation.errors.set(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }]);
+					$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }]);
 				}
 			}
 			$(document).trigger("HIDE_LOADING_BOX");
 		}).catch(function () {
-			$scope.actualsValidation.errors.set(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }]);
+			$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }]);
 			$(document).trigger("HIDE_LOADING_BOX");
 		});
 
