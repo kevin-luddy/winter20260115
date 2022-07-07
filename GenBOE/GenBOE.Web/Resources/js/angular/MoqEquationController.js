@@ -931,12 +931,14 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 								moqTypes.forEach(moq => {
 									var tableData = moq.TableData.find(t => t.Id == res.TableId);
 									if (tableData) {
+										tableData.DateOfReport = new Date();
 										tableData.TotalRelevantHours = res.TotalHours;
 										if (res.WbsHours) {
 											tableData.TotalWbsHours = res.WbsHours;
 										} else {
 											tableData.TotalWbsHours = 0;
 										}
+										MOQEquationFieldWidget.setDirty();
 									}
 								});
 							}
