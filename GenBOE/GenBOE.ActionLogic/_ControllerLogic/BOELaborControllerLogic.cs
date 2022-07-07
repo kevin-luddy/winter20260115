@@ -3721,7 +3721,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// Validates Actuals data for SAP
         /// </summary>
         /// <param name="tableData">The MOQ Table Data</param>
-		/// <returns>Validation Response</returns>
+        /// <returns>Validation Response</returns>
         public async Task<ICollection<IESResponse<CalculateActualsViewModel>>> CalculateAllActualsSap(ICollection<MoqTableDataModelView> tableData)
         {
             ICollection<IESResponse<CalculateActualsViewModel>> response = new List<IESResponse<CalculateActualsViewModel>>();
@@ -3762,8 +3762,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             catch (Exception ex)
             {
                 // throw error and let UI handle it
-                logger.Error(ex, "Error calling SAP API to Check if Data Table is Valid.");
-                throw new GeneralAppException("Error calling SAP API to Check if Data Table is Valid");
+                logger.Error(ex, "Error calling SAP API to Calculate All Actuals");
+                throw new GeneralAppException("Error calling SAP API to Calculate All Actuals");
             }
 
             return response;
