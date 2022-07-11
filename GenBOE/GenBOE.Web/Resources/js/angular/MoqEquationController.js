@@ -1011,7 +1011,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 				if (response.data.Messages && response.data.Messages.length > 0) {
 					$scope.setActualsErrors(tableData.Id, response.data.Messages);
 				} else {
-					$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }]);
+					$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Export Actuals' }]);
 				}
 			}
 			else {
@@ -1035,12 +1035,15 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
 			$(document).trigger("HIDE_LOADING_BOX");
 		}).catch(function () {
-			$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }]);
+			$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Export Actuals' }]);
 			$(document).trigger("HIDE_LOADING_BOX");
 		});
 	};
 
 	$scope.b64toBlob = function (b64Data, contentType = '', sliceSize = 512) {
+		// this converts base 64 encoded string into a Blob by slicing the bytes off
+		// and then converting them into char codes
+		// pulled from https://stackoverflow.com/a/16245768 
 		const byteCharacters = atob(b64Data);
 		const byteArrays = [];
 

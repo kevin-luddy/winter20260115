@@ -3755,8 +3755,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             catch (Exception ex)
             {
                 // gracefully handle error
-                logger.Error(ex, "Error calling SAP API to Check if Data Table is Valid.");
-                response.Messages.Add("Error calling SAP API to Check if Data Table is Valid");
+                logger.Error(ex, "Error calling SAP API to Export Actuals.");
+                response.Messages.Add("Error calling SAP API to Export Actuals");
                 response.IsSuccessful = false;
             }
 

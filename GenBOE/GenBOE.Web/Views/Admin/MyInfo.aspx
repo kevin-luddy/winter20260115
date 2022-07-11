@@ -5,17 +5,16 @@
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
-	<%: Scripts.Render("~/bundles/angularapp") %>
+    <%: Scripts.Render("~/bundles/angularapp") %>
     <%: Scripts.Render("~/bundles/systemAdmin") %>
     <%: Styles.Render("~/Content/siteCss") %>
-	<script type="text/javascript">
-		var myInfoWidget;
+    <script type="text/javascript">
+        var myInfoWidget;
 
-		$(function () {
-
-			var myInfoWidgetConfig = { ContextID: "myInfo", IsModule: false, isReadOnly: true }; // always mark this as false so we can essentially override the GenListWidget readonly rules
-			myInfoWidget = new GenWidget(myInfoWidgetConfig);
-		});
+        $(function () {
+            var myInfoWidgetConfig = { ContextID: "myInfo", IsModule: false, isReadOnly: true }; // always mark this as false so we can essentially override the GenListWidget readonly rules
+            myInfoWidget = new GenWidget(myInfoWidgetConfig);
+        });
 	</script>
     <div id="myInfo" class="my-info-module module">
 		<div class="module-header-data">My Info</div>
