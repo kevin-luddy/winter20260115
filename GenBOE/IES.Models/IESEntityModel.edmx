@@ -245,6 +245,8 @@
           <Property Name="DisplayRateCode" Type="bit" Nullable="false" />
           <Property Name="RevisionUniqueSectionId" Type="int" Nullable="false" />
           <Property Name="IsRdsbRequired" Type="bit" Nullable="false" />
+          <Property Name="SectionContainsCasbDisclosure" Type="bit" Nullable="false" />
+          <Property Name="SectionContainsNonCompliance" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="SectionContentTypeLU">
           <Key>
@@ -760,6 +762,8 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <Parameter Name="DisplayRateCode" Type="bit" Mode="In" />
           <Parameter Name="RevisionUniqueSectionId" Type="int" Mode="In" />
           <Parameter Name="IsRdsbRequired" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsCasbDisclosure" Type="bit" Mode="In" />
+          <Parameter Name="SectionContainsNonCompliance" Type="bit" Mode="In" />
         </Function>
         <Function Name="upsertUserLog" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="NTID" Type="varchar" Mode="In" />
@@ -998,6 +1002,8 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
             <Parameter Name="DisplayRateCode" Mode="In" Type="Boolean" />
             <Parameter Name="RevisionUniqueSectionId" Mode="In" Type="Int32" />
             <Parameter Name="IsRdsbRequired" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsCasbDisclosure" Mode="In" Type="Boolean" />
+            <Parameter Name="SectionContainsNonCompliance" Mode="In" Type="Boolean" />
           </FunctionImport>
           <FunctionImport Name="copyRevision" ReturnType="Collection(IESModel.copyRevision_Result)">
             <Parameter Name="Id" Mode="In" Type="Int32" />
@@ -1549,6 +1555,8 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <NavigationProperty Name="FileAttachments" Relationship="IESModel.FK_FileAttachment_SectionId" FromRole="Section" ToRole="FileAttachment" />
           <NavigationProperty Name="RDSBSectionXrefs" Relationship="IESModel.FK_RDSBSectionXref_RateCode" FromRole="Section" ToRole="RDSBSectionXref" />
           <Property Name="IsRdsbRequired" Type="Boolean" Nullable="false" />
+          <Property Name="SectionContainsCasbDisclosure" Type="Boolean" Nullable="false" />
+          <Property Name="SectionContainsNonCompliance" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="SectionContentTypeLU">
           <Key>
@@ -2307,6 +2315,8 @@ warning 6002: The table/view 'IES.dbo.UserLog' does not have a primary key defin
           <EntitySetMapping Name="Sections">
             <EntityTypeMapping TypeName="IESModel.Section">
               <MappingFragment StoreEntitySet="Section">
+                <ScalarProperty Name="SectionContainsNonCompliance" ColumnName="SectionContainsNonCompliance" />
+                <ScalarProperty Name="SectionContainsCasbDisclosure" ColumnName="SectionContainsCasbDisclosure" />
                 <ScalarProperty Name="IsRdsbRequired" ColumnName="IsRdsbRequired" />
                 <ScalarProperty Name="RevisionUniqueSectionId" ColumnName="RevisionUniqueSectionId" />
                 <ScalarProperty Name="DisplayRateCode" ColumnName="DisplayRateCode" />

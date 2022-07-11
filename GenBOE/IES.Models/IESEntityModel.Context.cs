@@ -284,7 +284,7 @@ namespace IES.Models
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction("deleteSection", idParameter, updateDateParameter);
         }
     
-        public virtual ObjectResult<Nullable<int>> upsertSection(Nullable<int> id, Nullable<System.DateTime> updateDate, Nullable<int> revisionID, Nullable<int> parentID, Nullable<int> displayOrder, string title, string textContent, Nullable<int> sectionContentTypeID, Nullable<bool> isInternalSection, Nullable<bool> displayRateCode, Nullable<int> revisionUniqueSectionId, Nullable<bool> isRdsbRequired)
+        public virtual ObjectResult<Nullable<int>> upsertSection(Nullable<int> id, Nullable<System.DateTime> updateDate, Nullable<int> revisionID, Nullable<int> parentID, Nullable<int> displayOrder, string title, string textContent, Nullable<int> sectionContentTypeID, Nullable<bool> isInternalSection, Nullable<bool> displayRateCode, Nullable<int> revisionUniqueSectionId, Nullable<bool> isRdsbRequired, Nullable<bool> sectionContainsCasbDisclosure, Nullable<bool> sectionContainsNonCompliance)
         {
             var idParameter = id.HasValue ?
                 new ObjectParameter("Id", id) :
@@ -334,7 +334,15 @@ namespace IES.Models
                 new ObjectParameter("IsRdsbRequired", isRdsbRequired) :
                 new ObjectParameter("IsRdsbRequired", typeof(bool));
     
-            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertSection", idParameter, updateDateParameter, revisionIDParameter, parentIDParameter, displayOrderParameter, titleParameter, textContentParameter, sectionContentTypeIDParameter, isInternalSectionParameter, displayRateCodeParameter, revisionUniqueSectionIdParameter, isRdsbRequiredParameter);
+            var sectionContainsCasbDisclosureParameter = sectionContainsCasbDisclosure.HasValue ?
+                new ObjectParameter("SectionContainsCasbDisclosure", sectionContainsCasbDisclosure) :
+                new ObjectParameter("SectionContainsCasbDisclosure", typeof(bool));
+    
+            var sectionContainsNonComplianceParameter = sectionContainsNonCompliance.HasValue ?
+                new ObjectParameter("SectionContainsNonCompliance", sectionContainsNonCompliance) :
+                new ObjectParameter("SectionContainsNonCompliance", typeof(bool));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Nullable<int>>("upsertSection", idParameter, updateDateParameter, revisionIDParameter, parentIDParameter, displayOrderParameter, titleParameter, textContentParameter, sectionContentTypeIDParameter, isInternalSectionParameter, displayRateCodeParameter, revisionUniqueSectionIdParameter, isRdsbRequiredParameter, sectionContainsCasbDisclosureParameter, sectionContainsNonComplianceParameter);
         }
     
         public virtual ObjectResult<copyRevision_Result> copyRevision(Nullable<int> id, string newRevision, string newHistory, string newCreatedBy, string newReleaseNotes)

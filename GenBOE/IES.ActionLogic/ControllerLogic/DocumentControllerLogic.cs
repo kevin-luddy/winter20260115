@@ -696,7 +696,9 @@ namespace IES.ActionLogic.ControllerLogic
 						Title = section.Title,
 						ReferenceNumber = section.ReferenceNumber,
 						HasTable = section.ChildNodes.Any(s => (!s.IsInternalSection.HasValue || !s.IsInternalSection.Value) && s.ContentType == SectionContentType.RateTable),
-						IsRdsbRequired = section.IsRdsbRequired
+						IsRdsbRequired = section.IsRdsbRequired,
+						SectionContainsCasbDisclosure = section.SectionContainsCasbDisclosure,
+						SectionContainsNonCompliance = section.SectionContainsNonCompliance
 					};
 
 					details.Add(detail);

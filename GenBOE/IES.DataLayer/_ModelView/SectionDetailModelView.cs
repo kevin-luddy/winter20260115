@@ -20,6 +20,8 @@ namespace IES.DataBridge.ModelViews
         {
             this.IsRdsbRequired = false;
             this.ChildNodes = new List<SectionDetailModelView>();
+            this.SectionContainsCasbDisclosure = false;
+            this.SectionContainsNonCompliance = false;
         }
 
         /// <summary>
@@ -46,6 +48,16 @@ namespace IES.DataBridge.ModelViews
         /// Gets or sets whether the Section is required for RDSB
         /// </summary>
         public bool IsRdsbRequired { get; set; }
+
+        /// <summary>
+        /// Does section contain CASB Disclosure Statements
+        /// </summary>
+        public bool SectionContainsCasbDisclosure { get; set; }
+
+        /// <summary>
+        /// Does Section contain Non Compliance Issues?
+        /// </summary>
+        public bool SectionContainsNonCompliance { get; set; }
 
         /// <summary>
         /// Gets or sets the child nodes.

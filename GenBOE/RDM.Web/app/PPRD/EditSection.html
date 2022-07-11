@@ -17,15 +17,27 @@
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-label">Internal</div>
+                <div class="form-label section-checkbox">Internal</div>
                 <div class="form-element">
                     <input data-ng-disabled="isReadOnly" type="checkbox" data-ng-model="model.IsInternalSection" data-ng-change="uncheckRequiredIfInternal()" />
                 </div>
             </div>
             <div class="form-row">
-                <div class="form-label">Require in RDSB</div>
+                <div class="form-label section-checkbox">Require in RDSB</div>
                 <div class="form-element">
                     <input id="IsRdsbRequiredCheckbox" data-ng-disabled="isReadOnly || model.IsInternalSection" type="checkbox" data-ng-model="model.IsRdsbRequired" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label section-checkbox">Section contains CASB Disclosure Statement</div>
+                <div class="form-element">
+                    <input id="SectionContainsCasbDisclosureCheckbox" data-ng-disabled="isReadOnly" type="checkbox" data-ng-model="model.SectionContainsCasbDisclosure" />
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label section-checkbox">Section contains Open CAS Non-Compliance Issues</div>
+                <div class="form-element">
+                    <input id="SectionContainsNonComplianceCheckbox" data-ng-disabled="isReadOnly" type="checkbox" data-ng-model="model.SectionContainsNonCompliance" />
                 </div>
             </div>
             <div class="modal-footer">
