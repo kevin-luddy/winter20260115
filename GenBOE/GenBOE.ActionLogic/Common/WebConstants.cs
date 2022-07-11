@@ -758,6 +758,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string VIEW_CREATE_WORKSPACE_PERMISSIONS_GRID = "ManageCreateWorkspacePermissionsGrid";
         public static readonly string VIEW_SYSTEM_ADMIN_JUMP = "SystemAdminJump";
         public static readonly string VIEW_SYSTEM_ADMIN = "SystemAdmin";
+        public static readonly string VIEW_SYSTEM_ADMIN_INFO = "MyInfo";
         public static readonly string VIEW_SYSTEM_RESOURCE_RATES = "SystemResourceRates";
         public static readonly string VIEW_PAGE_SYSTEM_RESOURCE_RATES = "SystemResourceRatesPagedData";
         public static readonly string VIEW_MANAGE_OVERDUE_TRAINING = "ManageOverdueTraining";

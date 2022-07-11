@@ -15,6 +15,7 @@ namespace GenBOE.Web.Controllers
     using System.Linq;
     using System.Text;
     using System.Text.RegularExpressions;
+    using System.Threading.Tasks;
     using System.Transactions;
     using System.Web.Mvc;
     using System.Web.Script.Serialization;
@@ -80,6 +81,7 @@ namespace GenBOE.Web.Controllers
         private readonly ISystemSettingDTODataLoader systemSettingLoader;
         private readonly TrainingImporter trainingImporter = new TrainingImporter();
         private readonly IProPricerDTODataLoader proPricerDTODataLoader;
+        private readonly ITokenService tokenService;
 
         /// <summary>
         /// Create static Regex object for FileFormat.
@@ -125,7 +127,8 @@ namespace GenBOE.Web.Controllers
             IPerformingOrgDTODataLoader perfOrgLoader,
             IGenBOEControllerLogic inControllerLogic,
             ISystemSettingDTODataLoader systemSettingLoader,
-            IProPricerDTODataLoader proPricerDTODataLoader)
+            IProPricerDTODataLoader proPricerDTODataLoader,
+            ITokenService tokenService)
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, inIUserDTODataLoader, inIPermissionsDTOLoader, inControllerLogic)
         {
             _WorkspaceExportFormatDTOLoader = inIWorkspaceExportFormatDTOLoader;
@@ -154,10 +157,34 @@ namespace GenBOE.Web.Controllers
             this.userDataLoader = inIUserDTODataLoader;
             this.systemSettingLoader = systemSettingLoader;
             this.proPricerDTODataLoader = proPricerDTODataLoader;
+            this.tokenService = tokenService;
         }
 
         #region display
 
+        public async Task<ViewResult> MyInfo()
+        {
+            // Action Init
+            Stopwatch sw = InitializeAction(_log, WebConstants.VIEW_SYSTEM_ADMIN_INFO, SecurityPage.SystemAdmin, SecurityAuthorization.Read, null, null);
+
+            // Create Model
+            UserDTO user = this.UserLoader.GetUserForActiveUser();
+            Token token = await this.tokenService.GetToken();
+            MyInfoModelView myInfoModel = new MyInfoModelView()
+            {
+                DisplayName = user.DisplayName,
+                NtId = user.NTID,
+                BearerToken = token.AccessToken
+            };
+
+            // Perform Action
+            ViewResult toReturn = View(WebConstants.VIEW_SYSTEM_ADMIN_INFO, myInfoModel);
+
+            // Action Finalize
+            FinalizeAction(_log, WebConstants.VIEW_SYSTEM_ADMIN_INFO, sw);
+
+            return toReturn;
+        }
 
         /// <summary>
         /// Displays the System Admin View
