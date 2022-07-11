@@ -162,6 +162,10 @@ namespace GenBOE.Web.Controllers
 
         #region display
 
+        /// <summary>
+        /// My Info View for an Admin
+        /// </summary>
+        /// <returns>My Info view for an Admin</returns>
         public async Task<ViewResult> MyInfo()
         {
             // Action Init
