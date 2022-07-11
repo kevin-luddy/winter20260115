@@ -179,7 +179,7 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.QueryTypeHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.QueryTypeComparativeSuffix);"></div>
                             <td>
-                                <select data-ng-readonly="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.QueryType" data-ng-change="clearPoPDates(tableData)">
+                                <select data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.QueryType" data-ng-change="clearPoPDates(tableData)">
                                     <option value=""></option>
                                     <option value="<%: MoqTableData.MONTHLY%>"><%: MoqTableData.MONTHLY%></option>
                                     <option value="<%: MoqTableData.WEEKLY%>"><%: MoqTableData.WEEKLY%></option>
@@ -191,7 +191,7 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.DateOfReportHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.DateOfReportComparativeSuffix);"></div>
                             </td>
-                            <td><input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date" required data-ng-model="tableData.DateOfReport" onchange="MOQEquationFieldWidget.setDirty()" /></td>
+                            <td><input data-ng-readonly="ActualReadOnly() || <%:Utilities.IsSAPEnabled.ToString().ToLower()%>" class="skip-read-only" type="date" required data-ng-model="tableData.DateOfReport" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.HistoricalProgramName}} * 

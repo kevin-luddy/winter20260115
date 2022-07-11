@@ -8459,6 +8459,11 @@ input.labelLookFeel {
     margin-bottom: 0;
 }
 
+.tableData input:read-only, 
+.tableData textarea:read-only {
+    color: #878787;
+}
+
 .moqTaskBasedOn {
     margin-bottom: 10px;
 }
