@@ -3737,7 +3737,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     (ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
 
                 // Convert table data
-                IEnumerable<DataTableViewModel> dataTables = tableData.Select(t =>
+                ICollection<DataTableViewModel> dataTables = tableData.Select(t =>
                 new DataTableViewModel()
                 {
                     Filters = t.Filters,
@@ -3745,7 +3745,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     PoPStart = t.PoPStart,
                     WbsElement = t.WbsElement,
                     TableId = t.TableId
-                });
+                }).ToList();
 
                 // Call Swagger Client
                 ICollection<CalculateActualsViewModelResult> result = await iesSapClient.ApiQueryParserCalculateActualsAsync(companyConfiguration, dataTables);
