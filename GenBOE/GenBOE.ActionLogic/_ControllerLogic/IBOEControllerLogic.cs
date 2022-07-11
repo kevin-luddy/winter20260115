@@ -125,7 +125,7 @@ namespace GenBOE.ActionLogic
         /// <param name="boe">BOE containing the header</param>
         /// <param name="inBOEHeader">Modelview for the BOE Header</param>
         /// <param name="inBOEHeaderDescription">Modelview for the BOE description</param>
-        /// <param name="descriptionOnly">Bool denoting if only descrpition was changed</param>
+        /// <param name="descriptionOnly">Bool denoting if only description was changed</param>
         void SaveEditBoeHeader(FullWorkspace ws, FullBoe boe, IBOEHeaderModelView inBOEHeader, BOEHeaderDescriptionModelView inBOEHeaderDescription, bool descriptionOnly);
 
         /// <summary>

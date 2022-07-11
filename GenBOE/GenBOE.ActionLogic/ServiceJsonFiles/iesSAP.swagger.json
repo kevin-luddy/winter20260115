@@ -359,6 +359,89 @@
 					}
 				}
 			}
+		},
+		"/api/QueryParser/CalculateActuals": {
+			"post": {
+				"tags": [
+					"QueryParser"
+				],
+				"parameters": [
+					{
+						"name": "companyConfiguration",
+						"in": "query",
+						"schema": {
+							"$ref": "#/components/schemas/CompanyConfiguration"
+						}
+					}
+				],
+				"requestBody": {
+					"content": {
+						"application/json-patch+json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/DataTableViewModel"
+								}
+							}
+						},
+						"application/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/DataTableViewModel"
+								}
+							}
+						},
+						"text/json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/DataTableViewModel"
+								}
+							}
+						},
+						"application/*+json": {
+							"schema": {
+								"type": "array",
+								"items": {
+									"$ref": "#/components/schemas/DataTableViewModel"
+								}
+							}
+						}
+					}
+				},
+				"responses": {
+					"200": {
+						"description": "Success",
+						"content": {
+							"text/plain": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/CalculateActualsViewModelResult"
+									}
+								}
+							},
+							"application/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/CalculateActualsViewModelResult"
+									}
+								}
+							},
+							"text/json": {
+								"schema": {
+									"type": "array",
+									"items": {
+										"$ref": "#/components/schemas/CalculateActualsViewModelResult"
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 	},
 	"components": {
@@ -390,14 +473,60 @@
 				},
 				"additionalProperties": false
 			},
+			"CalculateActualsViewModel": {
+				"type": "object",
+				"properties": {
+					"wbsHours": {
+						"type": "number",
+						"format": "double",
+						"nullable": true
+					},
+					"totalHours": {
+						"type": "number",
+						"format": "double"
+					},
+					"tableId": {
+						"type": "integer",
+						"format": "int32"
+					}
+				},
+				"additionalProperties": false
+			},
+			"CalculateActualsViewModelResult": {
+				"type": "object",
+				"properties": {
+					"data": {
+						"$ref": "#/components/schemas/CalculateActualsViewModel"
+					},
+					"messages": {
+						"type": "array",
+						"items": {
+							"type": "string"
+						},
+						"nullable": true
+					},
+					"isSuccessful": {
+						"type": "boolean",
+						"readOnly": true
+					},
+					"status": {
+						"$ref": "#/components/schemas/ResultStatus"
+					},
+					"correlationId": {
+						"type": "string",
+						"nullable": true
+					}
+				},
+				"additionalProperties": false
+			},
 			"CompanyConfiguration": {
 				"enum": [
-					0,
-					2,
-					3
+					"None",
+					"ISGS",
+					"SpaceSystems",
+					"MST"
 				],
-				"type": "integer",
-				"format": "int32"
+				"type": "string"
 			},
 			"DataTableViewModel": {
 				"type": "object",
@@ -419,6 +548,10 @@
 					"filters": {
 						"type": "string",
 						"nullable": true
+					},
+					"tableId": {
+						"type": "integer",
+						"format": "int32"
 					}
 				},
 				"additionalProperties": false
@@ -538,15 +671,14 @@
 			},
 			"ResultStatus": {
 				"enum": [
-					0,
-					1,
-					2,
-					3,
-					4,
-					5
+					"Ok",
+					"Failed",
+					"NotFound",
+					"NotAuthorized",
+					"InvalidInput",
+					"HttpFailure"
 				],
-				"type": "integer",
-				"format": "int32"
+				"type": "string"
 			},
 			"StringResult": {
 				"type": "object",

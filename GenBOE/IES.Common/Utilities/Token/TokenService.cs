@@ -77,8 +77,7 @@ namespace IES.Common
 			if (!this.cache.Contains(CACHE_KEY_TOKEN))
 			{
 				token = await this.CreateToken();
-				// we are giving a 2 minute cushion for the token to expire.  Actual expiration is 2 hours total
-				this.cache.Add(CACHE_KEY_TOKEN, token, 120 * 60);
+				this.cache.Add(CACHE_KEY_TOKEN, token, 5 * 60);
 			}
 			else
 			{

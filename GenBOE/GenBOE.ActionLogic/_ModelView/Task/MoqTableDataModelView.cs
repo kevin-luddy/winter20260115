@@ -32,5 +32,10 @@ namespace GenBOE.ActionLogic.ModelView
         /// Gets or sets the Query Filters
         /// </summary>
         public string Filters { get; set; }
+
+        /// <summary>
+        /// Gets or sets the Table Id
+        /// </summary>
+        public int TableId { get; set; }
     }
 }
