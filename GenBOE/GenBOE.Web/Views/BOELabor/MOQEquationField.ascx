@@ -273,7 +273,7 @@
                     <button data-ng-if="!ActualReadOnly() && moqType.TableData.length > 1" style="display:block;" data-ng-click="RemoveTable(tableData, moqType.TableData)" type="button" class="ies-danger moqTypesButton" data-ng-class="{'moqTypesDelete': $index == 0}">Delete Table Data</button>
                     <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="exportActuals(tableData)">Export Actuals</button>
                     <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="validateActuals(tableData)">Validate Actuals</button>
-                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton">Calculate Actuals</button>
+                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="calculateActuals(tableData)">Calculate Actuals</button>
                 </div>
                 <hr />
             </div>

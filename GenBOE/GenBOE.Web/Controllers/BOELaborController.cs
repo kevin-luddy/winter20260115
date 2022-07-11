@@ -1534,7 +1534,7 @@ namespace GenBOE.Web.Controllers
             IESResponse<byte> response = await this._BoeLaborControllerLogic.ExportActualsSap(tableData);
 
             var errors = response.Messages?.Select(m => new { ValidationIssue = m });
-            string data = System.Convert.ToBase64String(response.Data.ToArray());
+            string data = response.Data != null ? System.Convert.ToBase64String(response.Data.ToArray()) : String.Empty;
             JsonResult toReturn = this.Json(new { IsSuccessful = response.IsSuccessful, Messages = errors, Data = data });
 
             // Finalize Action
