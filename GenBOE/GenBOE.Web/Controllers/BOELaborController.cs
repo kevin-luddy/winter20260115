@@ -1502,7 +1502,7 @@ namespace GenBOE.Web.Controllers
             // Call to Controller Logic
             IESResponse<bool> response = await this._BoeLaborControllerLogic.ValidateActualsSap(tableData);
 
-            var errors = response?.Messages?.Select(m => new { ValidationIssue = m });
+            List<ErrorModelView> errors = response?.Messages?.Select(m => new ErrorModelView (){ ValidationIssue = m }).ToList();
             JsonResult toReturn = this.Json(new { IsSuccessful = response != null && response.IsSuccessful, Messages = errors });
 
             // Finalize Action
@@ -1533,7 +1533,7 @@ namespace GenBOE.Web.Controllers
             // Call to Controller Logic
             IESResponse<byte> response = await this._BoeLaborControllerLogic.ExportActualsSap(tableData);
 
-            var errors = response.Messages?.Select(m => new { ValidationIssue = m });
+            List<ErrorModelView> errors = response?.Messages?.Select(m => new ErrorModelView() { ValidationIssue = m }).ToList();
             string data = response.Data != null ? System.Convert.ToBase64String(response.Data.ToArray()) : String.Empty; 
             JsonResult toReturn = this.Json(new { IsSuccessful = response.IsSuccessful, Messages = errors, Data = data });
 
