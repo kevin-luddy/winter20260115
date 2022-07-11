@@ -396,7 +396,8 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_PARSE_SAP_FILTER = "ParseSapFilter";
 		public static readonly string ACTION_CONVERT_SAP_FILTER = "ConvertSapFilter";
         public static readonly string ACTION_VALIDATE_ACTUALS_SAP = "ValidateActualsSap";
-        public static readonly string ACTION_CALCULATE_ALL_ACTUALS_SAP = "CalculateAllActualsSap"; 
+        public static readonly string ACTION_CALCULATE_ALL_ACTUALS_SAP = "CalculateAllActualsSap";
+        public static readonly string ACTION_EXPORT_ACTUALS_SAP = "ExportActualsSap";
 
         //BOE ODC Controller
         public static readonly string ACTION_DISPLAY_BOE_OTHER_DIRECT_COST_GRID = "DisplayBOEOtherDirectCostGrid";
