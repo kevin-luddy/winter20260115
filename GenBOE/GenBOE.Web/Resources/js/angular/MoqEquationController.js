@@ -874,6 +874,72 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		$scope.filterDialog.data = arr;
 	};
 
+	$scope.calculateActuals = function (tableData) {
+		$scope.actualsValidation.errors = new Map();
+
+		const data = {
+			tableData: [],
+			boeId: ManageTaskModel.boeId
+		};
+
+		const table = {
+			WbsElement: tableData.WbsElement,
+			PoPStart: tableData.PoPStart,
+			PoPEnd: tableData.PoPEnd,
+			Filters: tableData.AdditionalQueryFilters,
+			TableId: tableData.Id
+		};
+
+		if (Array.isArray(tableData.AdditionalQueryFilters)) {
+			table.Filters = table.AdditionalQueryFilters.join("\n");
+		}
+
+		data.tableData.push(table);
+
+		if (data.tableData.length > 0) {
+			// send to backend
+			// display response to user
+			$(document).trigger("SHOW_LOADING_BOX");
+
+			$http({
+				method: 'POST',
+				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CalculateAllActualsSapAction, ''),
+				data: data
+			}).then(function (response) {
+				// place returned html into the content div
+				if (response.data.IsSuccessful === true) {
+					// the response is wrapped inside response.data.data array
+					if (response.data.data && Array.isArray(response.data.data)) {
+
+						// update the moq data table with calcualted values
+						response.data.data.forEach(result => {
+							const res = result.Data[0];
+							if (result.Messages && result.Messages.length > 0) {
+								$scope.setActualsErrors(res.TableId, result.Messages);
+							} else {
+								tableData.DateOfReport = new Date();
+								tableData.TotalRelevantHours = res.TotalHours;
+								if (res.WbsHours) {
+									tableData.TotalWbsHours = res.WbsHours;
+								} else {
+									tableData.TotalWbsHours = 0;
+								}
+								MOQEquationFieldWidget.setDirty();
+							}
+						});
+					}
+				} else {
+					RaiseNotification('Error talking to backend to Calculate Actuals');
+				}
+
+				$(document).trigger("HIDE_LOADING_BOX");
+			}).catch(function () {
+				RaiseNotification('Error talking to backend to Calculate Actuals');
+				$(document).trigger("HIDE_LOADING_BOX");
+			});
+		}
+	};
+
 	$scope.calculateAllMoqActuals = function () {
 		$scope.actualsValidation.errors = new Map();
 
