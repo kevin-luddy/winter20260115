@@ -877,11 +877,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 	$scope.calculateActuals = function (tableData) {
 		$scope.actualsValidation.errors = new Map();
 
-		var data = {
+		const data = {
 			tableData: [],
 			boeId: ManageTaskModel.boeId
 		};
-		var table = {
+
+		const table = {
 			WbsElement: tableData.WbsElement,
 			PoPStart: tableData.PoPStart,
 			PoPEnd: tableData.PoPEnd,
@@ -912,7 +913,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
 						// update the moq data table with calcualted values
 						response.data.data.forEach(result => {
-							var res = result.Data[0];
+							const res = result.Data[0];
 							if (result.Messages && result.Messages.length > 0) {
 								$scope.setActualsErrors(res.TableId, result.Messages);
 							} else {
