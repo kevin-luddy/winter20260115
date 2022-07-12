@@ -117,14 +117,14 @@ namespace IES.ActionLogic.ControllerLogic
                 this.ValidateSection(section, validationErrors, casbSections, nonComplianceSections);
             }
 
-            if(casbSections.Count > 1)
+            if(casbSections.Count != 1)
 			{
-                validationErrors.Add(new ValidationMessage($"Only one section can be marked as 'Contains CASB Disclosure Statement'. The following sections were marked this way: {string.Join(", ", casbSections)}"));
+                validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CASB Disclosure Statement'. The following sections were marked this way: {(casbSections.Any() ? string.Join(", ", casbSections) : "none")}"));
 			}
 
-            if (nonComplianceSections.Count > 1)
+            if (nonComplianceSections.Count != 1)
             {
-                validationErrors.Add(new ValidationMessage($"Only one section can be marked as 'Contains CAS Non-Compliance Issues'. The following sections are marked this way: {string.Join(", ", nonComplianceSections)}"));
+                validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CAS Non-Compliance Issues'. The following sections are marked this way: {(nonComplianceSections.Any() ? string.Join(", ", nonComplianceSections) : "none")}"));
             }
         }
 

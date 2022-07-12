@@ -16,8 +16,9 @@ namespace RDM.Tests.ControllerLogic
     using IES.DataBridge.Loaders;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
+	using System.Linq;
 
-    [TestClass]
+	[TestClass]
     public class PPRDControllerLogicTest
     {
         /// <summary>
@@ -178,13 +179,63 @@ namespace RDM.Tests.ControllerLogic
         /// Only 1 table is allowed per section
         /// Validate section content types
         /// Validate content nodes can't have child nodes
+        /// Casb is invalid
+        /// NonCompliance is invalid
         /// </summary>
         [TestMethod]
         public void TestValidateSections()
         {
             Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
             this.sut.ValidateSections(this.sections, validationErrors);
-            Assert.AreEqual(validationErrors.Count, 3);
+            Assert.AreEqual(5, validationErrors.Count);
+        }
+
+        /// <summary>
+        /// Only 1 table is allowed per section
+        /// Validate section content types
+        /// Validate content nodes can't have child nodes
+        /// CASB valid, non compliance causes an issue
+        /// </summary>
+        [TestMethod]
+        public void TestValidateSections_2()
+        {
+            Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+            this.sections.First().SectionContainsCasbDisclosure = true;
+            this.sut.ValidateSections(this.sections, validationErrors);
+            Assert.AreEqual(4, validationErrors.Count);
+        }
+
+        /// <summary>
+        /// Only 1 table is allowed per section
+        /// Validate section content types
+        /// Validate content nodes can't have child nodes        
+        /// Non compliance and CASB sections are valid
+        /// </summary>
+        [TestMethod]
+        public void TestValidateSections_3()
+        {
+            Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+            this.sections.First().SectionContainsCasbDisclosure = true;
+            this.sections.Last().SectionContainsNonCompliance = true;
+            this.sut.ValidateSections(this.sections, validationErrors);
+            Assert.AreEqual(3, validationErrors.Count);
+        }
+
+        /// <summary>
+        /// Only 1 table is allowed per section
+        /// Validate section content types
+        /// Validate content nodes can't have child nodes
+        /// Test that 2 sections marked as non-compliance cause an error
+        /// </summary>
+        [TestMethod]
+        public void TestValidateSections_4()
+        {
+            Collection<ValidationMessage> validationErrors = new Collection<ValidationMessage>();
+            this.sections.First().SectionContainsCasbDisclosure = true;
+            this.sections.First().SectionContainsNonCompliance = true;
+            this.sections.First().ChildNodes.First().SectionContainsNonCompliance = true;
+            this.sut.ValidateSections(this.sections, validationErrors);
+            Assert.AreEqual(4, validationErrors.Count);
         }
     }
 }

@@ -474,5 +474,49 @@ namespace IES.DataBridge.Loaders
             }
         }
         #endregion
+
+        /// <summary>
+        /// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Disclosure data
+        /// </summary>
+        /// <param name="proposalId">PTM Proposal ID</param>
+        /// <returns>Data to support a Cover Sheet creation</returns>
+        public (string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId)
+        {
+            string casbSection = null;
+            string nonCompliance = null;
+
+            using (IESEntities context = new IESEntities())
+            {
+                int? rdmRevision = context.RDSBDocumentInformations.FirstOrDefault(x => x.PTMProposalID == proposalId)?.RDMRevisionID;
+
+                if (rdmRevision.HasValue)
+                {
+                    ICollection<SectionModelView> flatSections = FlattenSections(RetrieveAllSections(new RevisionModelView() { Id = rdmRevision.Value }, true));
+
+                    casbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosure)?.ReferenceNumber;
+                    nonCompliance = flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance)?.ReferenceNumber;
+                }
+            }
+
+            return (casbSection, nonCompliance);
+        }
+
+        /// <summary>
+        /// Flattens sections, to allow for easier searching
+        /// </summary>
+        /// <param name="sectionsToProcess">Sections to flatten</param>
+        /// <returns>An ICollection of flattened sections</returns>
+        private ICollection<SectionModelView> FlattenSections(ICollection<SectionModelView> sectionsToProcess)
+		{
+            ICollection<SectionModelView> flatSections = new List<SectionModelView>();
+
+            foreach (SectionModelView section in sectionsToProcess)
+            {
+                flatSections.Add(section);
+                flatSections.AddRange(FlattenSections(section.ChildNodes));
+            }
+
+            return flatSections;
+        }
     }
 }

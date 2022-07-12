@@ -738,5 +738,15 @@ namespace IES.ActionLogic.ControllerLogic
 
 			return ids;
 		}
+
+		/// <summary>
+		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Compliance data
+		/// </summary>
+		/// <param name="proposalId">PTM Proposal ID</param>
+		/// <returns>Data to support a Cover Sheet creation</returns>
+		public (string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId)
+		{
+			return sectionLoader.GetCoverSheetData(proposalId);
+		}
 	}
 }

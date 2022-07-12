@@ -46,5 +46,13 @@ namespace IES.DataBridge.Loaders
         /// <param name="revision">Revision</param>
         /// <param name="sectionSet">sections to update</param>
         void UpdateSectionsAndContent(RevisionModelView revision, ICollection<SectionModelView> sectionSet);
+
+        /// <summary>
+        /// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Compliance data
+        /// </summary>
+        /// <param name="proposalId">PTM Proposal ID</param>
+        /// <returns>Data to support a Cover Sheet creation</returns>
+        (string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId);
+
     }
 }
