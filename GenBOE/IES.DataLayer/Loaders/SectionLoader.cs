@@ -85,7 +85,9 @@ namespace IES.DataBridge.Loaders
                     IsInternalSection = r.IsInternalSection,
                     DisplayRateCode = r.DisplayRateCode,
                     RevisionUniqueSectionId = r.RevisionUniqueSectionId,
-                    IsRdsbRequired = r.IsRdsbRequired
+                    IsRdsbRequired = r.IsRdsbRequired,
+                    SectionContainsCasbDisclosure = r.SectionContainsCasbDisclosure,
+                    SectionContainsNonCompliance = r.SectionContainsNonCompliance
                 }).ToList();
             }
 
@@ -322,7 +324,8 @@ namespace IES.DataBridge.Loaders
                     result = iesEntities.upsertSection(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.RevisionId,
                         dtoToUpsert.ParentId, dtoToUpsert.DisplayOrder, dtoToUpsert.Title,
                         dtoToUpsert.TextContent, (int)dtoToUpsert.ContentType, dtoToUpsert.IsInternalSection,
-                        dtoToUpsert.DisplayRateCode, dtoToUpsert.RevisionUniqueSectionId, dtoToUpsert.IsRdsbRequired).First();
+                        dtoToUpsert.DisplayRateCode, dtoToUpsert.RevisionUniqueSectionId, dtoToUpsert.IsRdsbRequired, 
+                        dtoToUpsert.SectionContainsCasbDisclosure, dtoToUpsert.SectionContainsNonCompliance).First();
                 }
             }
 
@@ -453,6 +456,9 @@ namespace IES.DataBridge.Loaders
                 s.Title = section.Title;
                 s.RevisionUniqueSectionId = section.RevisionUniqueSectionId;
                 s.IsRdsbRequired = section.IsRdsbRequired;
+                s.SectionContainsCasbDisclosure = section.SectionContainsCasbDisclosure;
+                s.SectionContainsNonCompliance = section.SectionContainsNonCompliance;
+
                 this.UpdateSectionsAndContent(s, section.ChildNodes, sectionsToDelete);
             }
 
@@ -461,7 +467,7 @@ namespace IES.DataBridge.Loaders
             {
                 SectionModelView s = new SectionModelView(section.RevisionId, section.DisplayOrder, section.IsInternalSection,
                     section.Title, section.TextContent, section.DisplayRateCode, section.ContentType, section.ReferenceNumber,
-                    section.RevisionUniqueSectionId);
+                    section.RevisionUniqueSectionId, section.SectionContainsCasbDisclosure, section.SectionContainsNonCompliance);
                 s.Id = -1; // Force upsert to insert new row
                 parent.ChildNodes.Add(s);
                 this.UpdateSectionsAndContent(s, section.ChildNodes, sectionsToDelete);

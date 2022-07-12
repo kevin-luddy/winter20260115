@@ -18,6 +18,7 @@ namespace IES.DataBridge.ModelViews
     public class SectionModelView : IESUpdateableModelView
     {
         #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SectionModelView"/> class.
         /// </summary>
@@ -31,6 +32,8 @@ namespace IES.DataBridge.ModelViews
             this.OldUpdateDate = null;
             this.RevisionUniqueSectionId = -1;
             this.IsRdsbRequired = false;
+            this.SectionContainsCasbDisclosure = false;
+            this.SectionContainsNonCompliance = false;
         }
 
         /// <summary>
@@ -45,8 +48,10 @@ namespace IES.DataBridge.ModelViews
         /// <param name="contentType">Content Type</param>
         /// <param name="referenceNumber">Reference Number</param>
         /// <param name="revisionUniqueSectionId">Section Identifier unique to the version</param>
+        /// <param name="sectionContainsCasbDisclosure">Section contains CASB Disclosure Statements</param>
+        /// <param name="sectionContainsNonCompliance">Section contains Non Compliance issues</param>
         public SectionModelView(int revisionId, int displayOrder, bool? isInternalSection, string title,
-            string textContent, bool? displayRateCode, SectionContentType contentType, string referenceNumber, int revisionUniqueSectionId)
+            string textContent, bool? displayRateCode, SectionContentType contentType, string referenceNumber, int revisionUniqueSectionId, bool sectionContainsCasbDisclosure, bool sectionContainsNonCompliance)
         {
             this.RevisionId = revisionId;
             this.DisplayOrder = displayOrder;
@@ -60,7 +65,10 @@ namespace IES.DataBridge.ModelViews
             this.ChildNodes = new List<SectionModelView>();
             this.OldId = null;
             this.OldUpdateDate = null;
+            this.SectionContainsCasbDisclosure = sectionContainsCasbDisclosure;
+            this.SectionContainsNonCompliance = sectionContainsNonCompliance;
         }
+
         #endregion
 
         /// <summary>
@@ -148,5 +156,15 @@ namespace IES.DataBridge.ModelViews
         /// gets/sets whether section is required in RDSB
         /// </summary>
         public bool IsRdsbRequired { get; set; }
+
+        /// <summary>
+        /// Does section contain CASB Disclosure Statements
+        /// </summary>
+        public bool SectionContainsCasbDisclosure { get; set; }
+
+        /// <summary>
+        /// Does Section contain Non Compliance Issues?
+        /// </summary>
+        public bool SectionContainsNonCompliance { get; set; }
     }
 }
