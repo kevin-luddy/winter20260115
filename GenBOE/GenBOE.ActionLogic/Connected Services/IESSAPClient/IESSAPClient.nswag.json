@@ -451,6 +451,69 @@
           }
         }
       }
+    },
+    "/api/QueryParser/ExportActuals": {
+      "post": {
+        "tags": [
+          "QueryParser"
+        ],
+        "operationId": "ExportActuals",
+        "parameters": [
+          {
+            "name": "companyConfiguration",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CompanyConfiguration"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json-patch+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataTableViewModel"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataTableViewModel"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataTableViewModel"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/DataTableViewModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportActualsViewModelResult"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportActualsViewModelResult"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExportActualsViewModelResult"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -583,6 +646,48 @@
             "nullable": true
           },
           "textualDescription": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ExportActualsViewModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "type": "string",
+            "format": "byte",
+            "nullable": true
+          },
+          "fileName": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ExportActualsViewModelResult": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ExportActualsViewModel"
+          },
+          "messages": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "isSuccessful": {
+            "type": "boolean",
+            "readOnly": true
+          },
+          "status": {
+            "$ref": "#/components/schemas/ResultStatus"
+          },
+          "correlationId": {
             "type": "string",
             "nullable": true
           }

@@ -3718,6 +3718,52 @@ namespace GenBOE.ActionLogic.ControllerLogic
         }
 
         /// <summary>
+        /// Export Actuals data for SAP
+        /// </summary>
+        /// <param name="tableData">The MOQ Table Data</param>
+        /// <returns>Validation Response with file as byte array</returns>
+        public async Task<IESResponse<byte>> ExportActualsSap(MoqTableDataModelView tableData)
+        {
+            IESResponse<byte> response = new IESResponse<byte>();
+
+            try
+            {
+                // Get Token
+                Token token = await this.tokenservice.GetToken();
+                Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
+
+                // Convert company configuration
+                ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration =
+                    (ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
+
+                // Convert table data
+                DataTableViewModel dataTable = new DataTableViewModel()
+                {
+                    Filters = tableData.Filters,
+                    PoPEnd = tableData.PoPEnd,
+                    PoPStart = tableData.PoPStart,
+                    WbsElement = tableData.WbsElement,
+                    TableId = tableData.TableId
+                };
+
+                // Call Swagger Client
+                ExportActualsViewModelResult result = await iesSapClient.ApiQueryParserExportActualsAsync(companyConfiguration, dataTable);
+                response.Messages = result.Messages;
+                response.IsSuccessful = result.IsSuccessful;
+                response.Data = result.Data.Data;
+            }
+            catch (Exception ex)
+            {
+                // gracefully handle error
+                logger.Error(ex, "Error calling SAP API to Export Actuals.");
+                response.Messages.Add("Error calling SAP API to Export Actuals");
+                response.IsSuccessful = false;
+            }
+
+            return response;
+        }
+
+        /// <summary>
         /// Validates Actuals data for SAP
         /// </summary>
         /// <param name="tableData">The MOQ Table Data</param>

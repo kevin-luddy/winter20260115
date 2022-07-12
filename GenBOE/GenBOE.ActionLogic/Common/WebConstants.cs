@@ -396,7 +396,8 @@ namespace GenBOE.ActionLogic.Common
 		public static readonly string ACTION_PARSE_SAP_FILTER = "ParseSapFilter";
 		public static readonly string ACTION_CONVERT_SAP_FILTER = "ConvertSapFilter";
         public static readonly string ACTION_VALIDATE_ACTUALS_SAP = "ValidateActualsSap";
-        public static readonly string ACTION_CALCULATE_ALL_ACTUALS_SAP = "CalculateAllActualsSap"; 
+        public static readonly string ACTION_CALCULATE_ALL_ACTUALS_SAP = "CalculateAllActualsSap";
+        public static readonly string ACTION_EXPORT_ACTUALS_SAP = "ExportActualsSap";
 
         //BOE ODC Controller
         public static readonly string ACTION_DISPLAY_BOE_OTHER_DIRECT_COST_GRID = "DisplayBOEOtherDirectCostGrid";
@@ -757,6 +758,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string VIEW_CREATE_WORKSPACE_PERMISSIONS_GRID = "ManageCreateWorkspacePermissionsGrid";
         public static readonly string VIEW_SYSTEM_ADMIN_JUMP = "SystemAdminJump";
         public static readonly string VIEW_SYSTEM_ADMIN = "SystemAdmin";
+        public static readonly string VIEW_SYSTEM_ADMIN_INFO = "MyInfo";
         public static readonly string VIEW_SYSTEM_RESOURCE_RATES = "SystemResourceRates";
         public static readonly string VIEW_PAGE_SYSTEM_RESOURCE_RATES = "SystemResourceRatesPagedData";
         public static readonly string VIEW_MANAGE_OVERDUE_TRAINING = "ManageOverdueTraining";

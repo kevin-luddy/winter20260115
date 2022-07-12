@@ -956,7 +956,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		}
 	};
 
-	$scope.setActualsErrors = function(id, errors) {
+	$scope.setActualsErrors = function (id, errors) {
 		if (Array.isArray(errors)) {
 			if (errors.length > 0) {
 				// need to see if we need to convert to ValidationMessage
@@ -976,7 +976,92 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 				$scope.actualsValidation.errors.set(id, errors);
 			}
 		}
-	}
+	};
+
+	$scope.exportActuals = function (tableData) {
+		$scope.actualsValidation.errors = new Map();
+		// pull the data from the form
+
+		var data = {};
+		data.tableData = {
+			WbsElement: tableData.WbsElement,
+			PoPStart: tableData.PoPStart,
+			PoPEnd: tableData.PoPEnd,
+			Filters: tableData.AdditionalQueryFilters,
+			TableId: tableData.Id
+		};
+
+		if (Array.isArray(tableData.AdditionalQueryFilters)) {
+			data.tableData.Filters = tableData.AdditionalQueryFilters.join("\n");
+		}
+
+		data.boeId = ManageTaskModel.boeId;
+
+		// send to backend
+		// display response to user
+		$(document).trigger("SHOW_LOADING_BOX");
+
+		$http({
+			method: 'POST',
+			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.ExportActualsSapAction, ''),
+			data: data
+		}).then(function (response) {
+			// place returned html into the content div
+			if (response.data.IsSuccessful !== true) {
+				if (response.data.Messages && response.data.Messages.length > 0) {
+					$scope.setActualsErrors(tableData.Id, response.data.Messages);
+				} else {
+					$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Export Actuals' }]);
+				}
+			}
+			else {
+				var blob = $scope.b64toBlob(response.data.Data, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+				var filename = 'ActualsExport.xlsx';
+				
+				if (navigator.msSaveBlob)
+					navigator.msSaveBlob(blob, filename);
+				else {
+					// trick to download store a file having its URL
+					var fileURL = URL.createObjectURL(blob);
+					var a = document.createElement('a');
+					a.href = fileURL;
+					a.target = '_blank';
+					a.download = filename;
+					document.body.appendChild(a); //create the link "a"
+					a.click(); //click the link "a"
+					document.body.removeChild(a); //remove the link "a"
+				}
+			}
+
+			$(document).trigger("HIDE_LOADING_BOX");
+		}).catch(function () {
+			$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Export Actuals' }]);
+			$(document).trigger("HIDE_LOADING_BOX");
+		});
+	};
+
+	$scope.b64toBlob = function (b64Data, contentType = '', sliceSize = 512) {
+		// this converts base 64 encoded string into a Blob by slicing the bytes off
+		// and then converting them into char codes
+		// pulled from https://stackoverflow.com/a/16245768 
+		const byteCharacters = atob(b64Data);
+		const byteArrays = [];
+
+		for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+			const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+			const byteNumbers = new Array(slice.length);
+			for (let i = 0; i < slice.length; i++) {
+				byteNumbers[i] = slice.charCodeAt(i);
+			}
+
+			const byteArray = new Uint8Array(byteNumbers);
+			byteArrays.push(byteArray);
+		}
+
+		const blob = new Blob(byteArrays, { type: contentType });
+		return blob;
+	};
 
 	$scope.validateActuals = function (tableData) {
 		$scope.actualsValidation.errors = new Map();
