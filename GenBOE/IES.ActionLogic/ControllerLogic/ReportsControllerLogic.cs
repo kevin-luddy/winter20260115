@@ -141,7 +141,10 @@ namespace IES.ActionLogic.ControllerLogic
             string clientFileName = $"FullPPRD_RDM_Rev{revisionMV.Revision}_{DateTime.Today.ToString(Constants.DATE_FORMATTING_YEAR_MONTH_DAY)}.docx";
 
             // Get SectionsMVs
-            ICollection<SectionModelView> sections = this.sectionLoader.GetAll(revisionMV); 
+            ICollection<SectionModelView> sections = this.sectionLoader.GetAll(revisionMV);
+
+            // No prefix
+            int refNumberPrefixLevel = 0;
 
             // Get Rates
             ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetRatesByRevision(revisionMV);
@@ -150,7 +153,7 @@ namespace IES.ActionLogic.ControllerLogic
             ICollection<FileAttachmentRowModelView> fileAttachments = this.fileAttachmentLoader.GetByRevision(revisionMV.Id);
 
             // TODO - RDM 1.0 - Update to allow user to select number of years
-            this.pprdExporter.ExportFullPPRDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, CommonConstants.RATE_TABLE_YEARS_TO_DISPLAY, httpResponse);
+            this.pprdExporter.ExportFullPPRDToWordFile(sections, rates, fileAttachments, serverFileName, clientFileName, revisionMV, CommonConstants.RATE_TABLE_YEARS_TO_DISPLAY, httpResponse, refNumberPrefixLevel);
         }
 
         /// <summary>
