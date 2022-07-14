@@ -55,6 +55,7 @@ AS
 	**		05/15/2018	ranzalon			Added IsRdsbRequired for sections
 	**		08/21/2019	ranzalon			Added IncludeGaT2InBurdAndCommBurdTables
 	**										for burden pools
+	**		07/07/2022	Dusan				Added SectionContainsCasbDisclosure and SectionContainsNonCompliance
 	*******************************************************************************/
 	SET NOCOUNT ON 
 	DECLARE @ErrorMessage varchar (500), @ErrorSeverity INT, @ErrorState INT, @ErrorProcedure VARCHAR(1000), @ErrorLine INT;
@@ -86,12 +87,12 @@ AS
 
 				-- Copy associated PPR&D document (all sections and associated content)
 				INSERT INTO [dbo].Section
-				(UpdateDate, RevisionID, ParentID, DisplayOrder, Title, TextContent, SectionContentTypeID, IsInternalSection, DisplayRateCode, RevisionUniqueSectionId, IsRdsbRequired)
+				(UpdateDate, RevisionID, ParentID, DisplayOrder, Title, TextContent, SectionContentTypeID, IsInternalSection, DisplayRateCode, RevisionUniqueSectionId, IsRdsbRequired, SectionContainsCasbDisclosure, SectionContainsNonCompliance)
 				OUTPUT Inserted.ParentID, Inserted.Id INTO @SectionMap
 				SELECT GETDATE() AS UpdateDate,
 								@RevisionID as RevisionID,
 								Id AS ParentID, -- Note that we save the old Id in the new ParentID.
-								DisplayOrder, Title, TextContent, SectionContentTypeID, IsInternalSection, DisplayRateCode, RevisionUniqueSectionId, IsRdsbRequired
+								DisplayOrder, Title, TextContent, SectionContentTypeID, IsInternalSection, DisplayRateCode, RevisionUniqueSectionId, IsRdsbRequired, SectionContainsCasbDisclosure, SectionContainsNonCompliance
 				FROM dbo.Section 
 				WHERE RevisionID = @ID;
 

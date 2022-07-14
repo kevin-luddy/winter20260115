@@ -9,6 +9,7 @@ namespace RDSB.Web.Controllers
 	using System;
 	using System.Collections.Generic;
 	using System.Collections.ObjectModel;
+	using System.Diagnostics.CodeAnalysis;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
@@ -69,7 +70,7 @@ namespace RDSB.Web.Controllers
 		/// </summary>
 		/// <param name="proposalId">PTM Proposal ID</param>
 		/// <returns>true if record exists, otherwise false</returns>
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
 		public IESResponse<bool> DoesRdsbRecordExist(int proposalId)
 		{
@@ -85,7 +86,7 @@ namespace RDSB.Web.Controllers
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				toReturn.Messages.Add($"Error occurred checking for RDSB Record: {ex.Message}");
+				toReturn.Messages.Add($"Error occurred while checking for RDSB Record.");
 			}
 
 			return toReturn;
@@ -98,8 +99,7 @@ namespace RDSB.Web.Controllers
 		/// <param name="parentSectionNumber">Parent Section Number</param>
 		/// <returns>RDSB Document in HTTP Response Message</returns>
 		[HttpGet]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope")]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[SuppressMessage("Microsoft.Reliability", "CA2000:Dispose objects before losing scope"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public HttpResponseMessage ExportRdsbDocument(int proposalId, string parentSectionNumber)
 		{
 			HttpResponseMessage responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
@@ -142,7 +142,7 @@ namespace RDSB.Web.Controllers
 		/// </summary>
 		/// <returns>True/false</returns>
 		[HttpGet]
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		public bool IsAlive()
 		{
 			bool result;
@@ -158,6 +158,33 @@ namespace RDSB.Web.Controllers
 			}
 
 			return result;
+		}
+
+		/// <summary>
+		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Compliance data
+		/// </summary>
+		/// <param name="proposalId">PTM Proposal ID</param>
+		/// <returns>Data to support a Cover Sheet creation</returns>
+		[HttpGet]
+		[SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures"), SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		public IESResponse<(string CasbSection, string NonComplianceSection)> GetCoverSheetData(int proposalId)
+		{
+			IESResponse<(string CasbSection, string NonComplianceSection)> toReturn = new IESResponse<(string CasbSection, string NonComplianceSection)>();
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				toReturn.Data = new List<(string CasbSection, string NonComplianceSection)>() { documentControllerLogic.GetCoverSheetData(proposalId) };
+				toReturn.IsSuccessful = true;
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				toReturn.Messages.Add($"Error occurred while retrieving data from RDSB");
+			}
+
+			return toReturn;
 		}
 	}
 }

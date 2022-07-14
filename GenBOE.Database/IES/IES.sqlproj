@@ -83,6 +83,7 @@
     <Folder Include="Release Scripts\Older\Release 2018.8" />
     <Folder Include="Release Scripts\Older\Release 2019.1" />
     <Folder Include="Release Scripts\Older\Release 2019.5" />
+    <Folder Include="Release Scripts\Release 2022.x" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Object Scripts\Stored Procedures\ExportCobraRates.sql" />
@@ -154,6 +155,7 @@
     <None Include="Release Scripts\Older\Release 2018.8\1 - Release 2018.8 Script.sql" />
     <Build Include="Release Scripts\Older\Release 2019.1\1 - Release 2019.1 Script.sql" />
     <Build Include="Release Scripts\Older\Release 2019.5\1 - Release 2019.5 Script.sql" />
+    <Build Include="Release Scripts\Release 2022.x\1 - Release 2022.x Script.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Object Scripts\Stored Procedures\ELMAH_LogError.sql" />

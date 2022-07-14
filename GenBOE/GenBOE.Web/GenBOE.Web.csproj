@@ -245,8 +245,10 @@
     <Compile Include="ModelView\CustomFieldImportModelView.cs" />
     <Compile Include="ModelView\DateShiftIndexModelView.cs" />
     <Compile Include="ModelView\BOEBulkSubmitModelView.cs" />
+    <Compile Include="ModelView\ErrorModelView.cs" />
     <Compile Include="ModelView\ImportLaborSpreadModelView.cs" />
     <Compile Include="ModelView\ManageOffloadRatesGridModelView.cs" />
+    <Compile Include="ModelView\MyInfoModelView.cs" />
     <Compile Include="ModelView\PagedSystemOffloadRateModelView.cs" />
     <Compile Include="ModelView\RteTemplateModelView.cs" />
     <Compile Include="ModelView\SendToProPricerModelView.cs" />
@@ -842,6 +844,7 @@
     <Content Include="Views\Admin\ManageTripsForTravel.ascx" />
     <Content Include="Views\Admin\ManageTripsForTravelGrid.ascx" />
     <Content Include="Views\Admin\ManageSystemProPricerGrid.ascx" />
+    <Content Include="Views\Admin\MyInfo.aspx" />
     <Content Include="Views\BOEBulkSubmit\BOEBulkSubmit.aspx" />
     <Content Include="Views\BOEForm\Forms\IBOE_1.ascx" />
     <Content Include="Views\BOEForm\Forms\PBOE_1.ascx" />

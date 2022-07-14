@@ -1782,3 +1782,7 @@ import-verification .container
     font-weight: normal;
     padding: 5px;
 }
+
+.section-checkbox {
+    min-width: 280px;
+}

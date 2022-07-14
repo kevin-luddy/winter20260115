@@ -155,7 +155,7 @@
         </div>
 		<div data-ng-show="!moqType.collapsed" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%> || moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>">
 			<div class="tableDataParent" data-ng-repeat="tableData in moqType.TableData | orderBy: 'Order'">
-               <gen-validation data-ng-if="actualsValidation.moqType == moqType.SelectedMOQType && actualsValidation.index == $index" data-errors="actualsValidation.errors"></gen-validation>
+               <gen-validation data-ng-if="actualsValidation.errors.get(tableData.Id)" data-errors="actualsValidation.errors.get(tableData.Id)"></gen-validation>
 				<div class="tableData">
                     <table pkid="{{tableData.Id}}">
                         <tr>
@@ -179,7 +179,7 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.QueryTypeHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.QueryTypeComparativeSuffix);"></div>
                             <td>
-                                <select data-ng-readonly="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.QueryType" data-ng-change="clearPoPDates(tableData)">
+                                <select data-ng-disabled="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.QueryType" data-ng-change="clearPoPDates(tableData)">
                                     <option value=""></option>
                                     <option value="<%: MoqTableData.MONTHLY%>"><%: MoqTableData.MONTHLY%></option>
                                     <option value="<%: MoqTableData.WEEKLY%>"><%: MoqTableData.WEEKLY%></option>
@@ -191,7 +191,7 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.DateOfReportHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.DateOfReportComparativeSuffix);"></div>
                             </td>
-                            <td><input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date" required data-ng-model="tableData.DateOfReport" onchange="MOQEquationFieldWidget.setDirty()" /></td>
+                            <td><input data-ng-readonly="ActualReadOnly() || <%:Utilities.IsSAPEnabled.ToString().ToLower()%>" class="skip-read-only" type="date" required data-ng-model="tableData.DateOfReport" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.HistoricalProgramName}} * 
@@ -271,9 +271,9 @@
                     <button data-ng-if="!ActualReadOnly() && $index == 0" data-ng-click="CreateNewTable(moqType.TableData)" type="button" class="ies-action moqTypesButton">Add Table Data</button>
                     <button data-ng-if="!ActualReadOnly() && $index == 0" data-ng-disabled="moqType.TableData.length <= 1" data-ng-click="displayReOrderMoqTablesDialog(moqType)" class="moqTypesButton ies-blue" type="button">Sort MOQ Tables</button>
                     <button data-ng-if="!ActualReadOnly() && moqType.TableData.length > 1" style="display:block;" data-ng-click="RemoveTable(tableData, moqType.TableData)" type="button" class="ies-danger moqTypesButton" data-ng-class="{'moqTypesDelete': $index == 0}">Delete Table Data</button>
-                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton">Export Actuals</button>
-                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="validateActuals(moqType.SelectedMOQType, $index, tableData)">Validate Actuals</button>
-                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton">Calculate Actuals</button>
+                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="exportActuals(tableData)">Export Actuals</button>
+                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="validateActuals(tableData)">Validate Actuals</button>
+                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="calculateActuals(tableData)">Calculate Actuals</button>
                 </div>
                 <hr />
             </div>
@@ -388,6 +388,7 @@
             <select data-ng-model="model.selectedMOQType" data-ng-options="moqType.SelectedMOQTypeText for moqType in model.MOQTypes | moqTypesFilter:model.SelectedMoqTypes" class="moqTypes"></select>
             <button data-ng-if="!ActualReadOnly()" data-ng-click="AddMoqType()" data-ng-disabled="!model.selectedMOQType" class="moqTypesButton ies-action" type="button">Add MOQ Type</button>
             <button data-ng-if="!ActualReadOnly()" data-ng-disabled="model.SelectedMoqTypes.length <= 1" data-ng-click="displayReOrderMoqTypesDialog()" class="moqTypesButton ies-blue" type="button">Sort MOQ Types</button>
+			<button data-ng-if="!ActualReadOnly()" data-ng-disabled="model.SelectedMoqTypes.length <= 1" data-ng-click="calculateAllMoqActuals()" class="moqTypesButton ies-action" type="button">Calculate All Actuals</button>
         </div>
     </div>
 
@@ -586,7 +587,11 @@
         <div class="container">
 			<div class="form-element">
             <div data-ng-if="filterDialog.showError" class="warning-box" style="display: block">
-                <div class="warning-message"><b>{{filterDialog.error}}</b></div>
+                <div data-ng-if="filterDialog.error && filterDialog.error.length > 0" class="warning-message">
+					<ng-container data-ng-repeat="err in filterDialog.error">
+					<b>{{err}}</b><br />
+					</ng-container>
+                </div>
 				<div class="small-close-button" data-ng-click="HideFilterError()"></div>
             </div>
         </div>
@@ -601,7 +606,6 @@
 					<table id="UpdateFilterMoqGrid" class="grid">
 						<thead>
 							<tr>
-								<th class="parens-checkbox"></th>
 								<th class="parens">(</th>
 								<th class="field">Field</th>
 								<th class="operator">Operator</th>
@@ -618,12 +622,12 @@
 							<tr data-ng-show="filterDialog.isLoading"><td colspan="9"><div class="loader"></div></td></tr>
 							<tr data-ng-show="!filterDialog.isLoading && (filterDialog.data === undefined || filterDialog.data.length === 0)"><td colspan="9"><div class="empty-grid-text">There are no Filters, please Add a new row.</div></td></tr>
                             <tr data-ng-repeat="queryFilter in filterDialog.data">
-								<td class="text parens-checkbox">
-                                    <div>
+								<td>
+									<span data-ng-if="queryFilter.StartParens">{</span>
+									<div data-ng-if="!queryFilter.StartParens && !queryFilter.EndParens">
                                         <input class="parens-chck" type="checkbox" data-ng-model="queryFilter.ParensChecked" data-ng-click="$event.stopPropagation()" />
                                     </div>
-                                </td>
-								<td><span data-ng-if="queryFilter.StartParens">{</span></td>
+								</td>
 								<td>
 									<select data-ng-model="queryFilter.Field" data-ng-change="ResetOperators(queryFilter)" data-ng-options="item.Value as item.Value for item in filterDialog.fieldsArr">
 										<option value=""></option>
@@ -637,8 +641,8 @@
 								<td>
 									<div data-ng-if="queryFilter.Type" >
 										<div data-ng-repeat="val in queryFilter.Value track by $index">
-											<input data-ng-if="queryFilter.Type !== 'System.DateTime'" type="text" data-ng-model="val" />
-											<input data-ng-if="queryFilter.Type === 'System.DateTime'" jqdatepicker type="text" data-ng-model="val" style="width:75px;" />
+											<input data-ng-if="queryFilter.Type !== 'System.DateTime'" type="text" data-ng-model="queryFilter.Value[$index]" />
+											<input data-ng-if="queryFilter.Type === 'System.DateTime'" jqdatepicker type="text" data-ng-model="queryFilter.Value[$index]" style="width:75px;" />
 											<button data-ng-if="$first" class="ies-action add-filter-button" data-ng-click="AddFilterValue(queryFilter.Value)"><span>ADD</span></button> 
 										</div>
 									</div>

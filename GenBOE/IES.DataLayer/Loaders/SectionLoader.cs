@@ -85,7 +85,9 @@ namespace IES.DataBridge.Loaders
                     IsInternalSection = r.IsInternalSection,
                     DisplayRateCode = r.DisplayRateCode,
                     RevisionUniqueSectionId = r.RevisionUniqueSectionId,
-                    IsRdsbRequired = r.IsRdsbRequired
+                    IsRdsbRequired = r.IsRdsbRequired,
+                    SectionContainsCasbDisclosure = r.SectionContainsCasbDisclosure,
+                    SectionContainsNonCompliance = r.SectionContainsNonCompliance
                 }).ToList();
             }
 
@@ -322,7 +324,8 @@ namespace IES.DataBridge.Loaders
                     result = iesEntities.upsertSection(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.RevisionId,
                         dtoToUpsert.ParentId, dtoToUpsert.DisplayOrder, dtoToUpsert.Title,
                         dtoToUpsert.TextContent, (int)dtoToUpsert.ContentType, dtoToUpsert.IsInternalSection,
-                        dtoToUpsert.DisplayRateCode, dtoToUpsert.RevisionUniqueSectionId, dtoToUpsert.IsRdsbRequired).First();
+                        dtoToUpsert.DisplayRateCode, dtoToUpsert.RevisionUniqueSectionId, dtoToUpsert.IsRdsbRequired, 
+                        dtoToUpsert.SectionContainsCasbDisclosure, dtoToUpsert.SectionContainsNonCompliance).First();
                 }
             }
 
@@ -453,6 +456,9 @@ namespace IES.DataBridge.Loaders
                 s.Title = section.Title;
                 s.RevisionUniqueSectionId = section.RevisionUniqueSectionId;
                 s.IsRdsbRequired = section.IsRdsbRequired;
+                s.SectionContainsCasbDisclosure = section.SectionContainsCasbDisclosure;
+                s.SectionContainsNonCompliance = section.SectionContainsNonCompliance;
+
                 this.UpdateSectionsAndContent(s, section.ChildNodes, sectionsToDelete);
             }
 
@@ -461,12 +467,56 @@ namespace IES.DataBridge.Loaders
             {
                 SectionModelView s = new SectionModelView(section.RevisionId, section.DisplayOrder, section.IsInternalSection,
                     section.Title, section.TextContent, section.DisplayRateCode, section.ContentType, section.ReferenceNumber,
-                    section.RevisionUniqueSectionId);
+                    section.RevisionUniqueSectionId, section.SectionContainsCasbDisclosure, section.SectionContainsNonCompliance);
                 s.Id = -1; // Force upsert to insert new row
                 parent.ChildNodes.Add(s);
                 this.UpdateSectionsAndContent(s, section.ChildNodes, sectionsToDelete);
             }
         }
         #endregion
+
+        /// <summary>
+        /// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Disclosure data
+        /// </summary>
+        /// <param name="proposalId">PTM Proposal ID</param>
+        /// <returns>Data to support a Cover Sheet creation</returns>
+        public (string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId)
+        {
+            string casbSection = null;
+            string nonCompliance = null;
+
+            using (IESEntities context = new IESEntities())
+            {
+                int? rdmRevision = context.RDSBDocumentInformations.FirstOrDefault(x => x.PTMProposalID == proposalId)?.RDMRevisionID;
+
+                if (rdmRevision.HasValue)
+                {
+                    ICollection<SectionModelView> flatSections = FlattenSections(RetrieveAllSections(new RevisionModelView() { Id = rdmRevision.Value }, true));
+
+                    casbSection = flatSections.FirstOrDefault(x => x.SectionContainsCasbDisclosure)?.ReferenceNumber;
+                    nonCompliance = flatSections.FirstOrDefault(x => x.SectionContainsNonCompliance)?.ReferenceNumber;
+                }
+            }
+
+            return (casbSection, nonCompliance);
+        }
+
+        /// <summary>
+        /// Flattens sections, to allow for easier searching
+        /// </summary>
+        /// <param name="sectionsToProcess">Sections to flatten</param>
+        /// <returns>An ICollection of flattened sections</returns>
+        private ICollection<SectionModelView> FlattenSections(ICollection<SectionModelView> sectionsToProcess)
+		{
+            ICollection<SectionModelView> flatSections = new List<SectionModelView>();
+
+            foreach (SectionModelView section in sectionsToProcess)
+            {
+                flatSections.Add(section);
+                flatSections.AddRange(FlattenSections(section.ChildNodes));
+            }
+
+            return flatSections;
+        }
     }
 }

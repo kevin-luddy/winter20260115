@@ -1187,7 +1187,7 @@
                         moqType.SkillMixRationale = $('textarea[name="SkillMixRationale_' + moqTypeId + '"]').val();
                     }
 
-                    postedData.MOQTypes = MOQEquationFieldModel.SelectedMoqTypes;
+                    postedData.MOQTypes = angular.copy(MOQEquationFieldModel.SelectedMoqTypes);
 
                     // MOQ Table Custom Fields
                     var moqTablecustomFieldDictionary = [];
@@ -1226,7 +1226,11 @@
 
                         for (var table in postedMoqType.TableData) {
                             var postedTable = postedMoqType.TableData[table];
-                            delete postedTable.UpdateDate;
+							delete postedTable.UpdateDate;
+
+							if (Array.isArray(postedTable.AdditionalQueryFilters)) {
+								postedTable.AdditionalQueryFilters = postedTable.AdditionalQueryFilters.join("\n");
+							}
 
                             if (moqTablecustomFieldDictionary[postedTable.Id] !== undefined) {
                                 postedTable.CustomFieldValueContainers = moqTablecustomFieldDictionary[postedTable.Id].CustomFieldValues;

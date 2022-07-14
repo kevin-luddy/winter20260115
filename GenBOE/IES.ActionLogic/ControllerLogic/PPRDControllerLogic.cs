@@ -109,9 +109,22 @@ namespace IES.ActionLogic.ControllerLogic
                 throw new ArgumentNullException(nameof(validationErrors));
             }
 
+            List<string> casbSections = new List<string>();
+            List<string> nonComplianceSections = new List<string>();
+
             foreach (SectionModelView section in sections)
             {
-                this.ValidateSection(section, validationErrors);
+                this.ValidateSection(section, validationErrors, casbSections, nonComplianceSections);
+            }
+
+            if(casbSections.Count != 1)
+			{
+                validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CASB Disclosure Statement'. The following sections were marked this way: {(casbSections.Any() ? string.Join(", ", casbSections) : "none")}"));
+			}
+
+            if (nonComplianceSections.Count != 1)
+            {
+                validationErrors.Add(new ValidationMessage($"Exactly one section should be marked as 'Contains CAS Non-Compliance Issues'. The following sections are marked this way: {(nonComplianceSections.Any() ? string.Join(", ", nonComplianceSections) : "none")}"));
             }
         }
 
@@ -120,7 +133,9 @@ namespace IES.ActionLogic.ControllerLogic
         /// </summary>
         /// <param name="section">The section node to check.</param>
         /// <param name="validationErrors">List of errors found.</param>
-        private void ValidateSection(SectionModelView section, ICollection<ValidationMessage> validationErrors)
+        /// <param name="casbSections">A list of strings in which we'll keep track of sections that contain CASB setting; this is necessary to validate that it's only set once</param>
+        /// <param name="nonComplianceSections">A list of strings in which we'll keep track of sections that contain non-compliance setting; this is necessary to validate that it's only set once</param>
+        private void ValidateSection(SectionModelView section, ICollection<ValidationMessage> validationErrors, ICollection<string> casbSections, ICollection<string> nonComplianceSections)
         {
             if (section.ContentType == SectionContentType.Section)
             {
@@ -128,6 +143,16 @@ namespace IES.ActionLogic.ControllerLogic
                 {
                     validationErrors.Add(new ValidationMessage($"Section {section.ReferenceNumber} - Is missing required Title."));
                 }
+
+                if(section.SectionContainsCasbDisclosure)
+                {
+                    casbSections.Add(section.ReferenceNumber);
+                }
+
+                if (section.SectionContainsNonCompliance)
+				{
+                    nonComplianceSections.Add(section.ReferenceNumber);
+				}
 
                 int numTablesInSection = 0;
                 foreach (SectionModelView child in section.ChildNodes)
@@ -137,7 +162,7 @@ namespace IES.ActionLogic.ControllerLogic
                         numTablesInSection++;
                     }
 
-                    this.ValidateSection(child, validationErrors);  // recursively validate children
+                    this.ValidateSection(child, validationErrors, casbSections, nonComplianceSections);  // recursively validate children
                 }
 
                 if (numTablesInSection > 1)

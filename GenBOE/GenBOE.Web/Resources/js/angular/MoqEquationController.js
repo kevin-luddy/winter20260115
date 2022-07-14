@@ -50,13 +50,11 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		}, Object.create(null)),
 		originalData: undefined,
 		showError: false,
-		error: ''
+		error: []
 	};
 
 	$scope.actualsValidation = {
-		errors: [],
-		moqType: 0,
-		index: -1
+		errors: new Map()
 	};
 
     $scope.isExporting = false;
@@ -601,7 +599,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		$scope.filterDialog.isLoading = true;
 
 		var data = {};
-		data.filters = $scope.filterDialog.data;
+		data.filters = angular.copy($scope.filterDialog.data);
+		data.filters.forEach(item => {
+			if (item.Operator) {
+				item.Operator = item.Operator.Value;
+			}
+		});
 		data.boeId = ManageTaskModel.boeId;
 
 		// Convert view models into text
@@ -612,16 +615,21 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		}).then(function (response) {
 			// place returned html into the content div
 			if (response.data.IsSuccessful === true) {
-				$scope.filterDialog.originalData.AdditionalQueryFilters = response.data.Data;
+				if (response.data.Data) {
+					$scope.filterDialog.originalData.AdditionalQueryFilters = response.data.Data;
+				} else {
+					$scope.filterDialog.originalData.AdditionalQueryFilters = [''];
+				}
+				
 				$scope.filterDialog.open = false;
 			} else {
-				$scope.ShowFilterError(response.data.Messages[0]);
+				$scope.ShowFilterError(response.data.Messages);
 			}
 
 			$scope.filterDialog.isLoading = false;
 		}).catch(function () {
 			$scope.filterDialog.isLoading = false;
-			$scope.ShowFilterError('Error Converting Filters to Text');
+			$scope.ShowFilterError(['Error Converting Filters to Text']);
 		});
 	};
 
@@ -710,7 +718,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		}
 
 		if (tooManyCheckboxes || secondRowIndex === -1) {
-			$scope.ShowFilterError('Invalid row selection: Two checkboxes must be selected to modify Parens');
+			$scope.ShowFilterError(['Invalid row selection: Two checkboxes must be selected to modify Parens']);
 			return;
 		}
 
@@ -720,7 +728,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
 		if (firstRow.StartParens || firstRow.EndParens || secondRow.StartParens || secondRow.EndParens) {
 			if (!(firstRow.StartParens && secondRow.EndParens)) {
-				$scope.ShowFilterError('Invalid row selection: Both rows must not have Parens or first row must have Start Parens and second row must have End Parens');
+				$scope.ShowFilterError(['Invalid row selection: Both rows must not have Parens or first row must have Start Parens and second row must have End Parens']);
 				return;
 			}
 		}
@@ -738,7 +746,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		}
 
 		if (numStartParens !== numEndParens) {
-			$scope.ShowFilterError('Invalid row selection: the number of left and right Parens inside the checked rows do not match.');
+			$scope.ShowFilterError(['Invalid row selection: the number of left and right Parens inside the checked rows do not match.']);
 			return;
 		}
 
@@ -764,7 +772,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		$scope.filterDialog.open = true;
 
 		var data = {};
-		data.text = tableData.AdditionalQueryFilters;
+		if (Array.isArray(tableData.AdditionalQueryFilters)) {
+			data.text = tableData.AdditionalQueryFilters.join("\n");
+		} else {
+			data.text = tableData.AdditionalQueryFilters;
+		}
+
 		data.boeId = ManageTaskModel.boeId;
 
 		// Convert text into view models
@@ -788,6 +801,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 					item.ParensChecked = false;
 					if (item.Field) {
 						item.Type = $scope.filterDialog.fields[item.Field].Type;
+						if (item.Operator && $scope.filterDialog.operators[item.Type]) {
+							item.Operator = $scope.filterDialog.operators[item.Type].find(i => i.Value === item.Operator);
+						}
 					}
 
 					if (!item.Value) {
@@ -801,12 +817,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
 				$scope.filterDialog.data = response.data.Data;
 			} else {
-				$scope.ShowFilterError(response.data.Messages[0]);
+				$scope.ShowFilterError(response.data.Messages);
 			}
 			$scope.filterDialog.isLoading = false;
 		}).catch(function () {
 			$scope.filterDialog.isLoading = false;
-			$scope.ShowFilterError('Parsing Filter Text failed');
+			$scope.ShowFilterError(['Parsing Additional Filter Text failed']);
 		});
 	}
 
@@ -858,10 +874,178 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		$scope.filterDialog.data = arr;
 	};
 
-	$scope.validateActuals = function (moqType, index, tableData) {
-		$scope.actualsValidation.errors = [];
-		$scope.actualsValidation.index = index;
-		$scope.actualsValidation.moqType = moqType;
+	$scope.calculateActuals = function (tableData) {
+		$scope.actualsValidation.errors = new Map();
+
+		const data = {
+			tableData: [],
+			boeId: ManageTaskModel.boeId
+		};
+
+		const table = {
+			WbsElement: tableData.WbsElement,
+			PoPStart: tableData.PoPStart,
+			PoPEnd: tableData.PoPEnd,
+			Filters: tableData.AdditionalQueryFilters,
+			TableId: tableData.Id
+		};
+
+		if (Array.isArray(tableData.AdditionalQueryFilters)) {
+			table.Filters = table.AdditionalQueryFilters.join("\n");
+		}
+
+		data.tableData.push(table);
+
+		if (data.tableData.length > 0) {
+			// send to backend
+			// display response to user
+			$(document).trigger("SHOW_LOADING_BOX");
+
+			$http({
+				method: 'POST',
+				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CalculateAllActualsSapAction, ''),
+				data: data
+			}).then(function (response) {
+				// place returned html into the content div
+				if (response.data.IsSuccessful === true) {
+					// the response is wrapped inside response.data.data array
+					if (response.data.data && Array.isArray(response.data.data)) {
+
+						// update the moq data table with calcualted values
+						response.data.data.forEach(result => {
+							const res = result.Data[0];
+							if (result.Messages && result.Messages.length > 0) {
+								$scope.setActualsErrors(res.TableId, result.Messages);
+							} else {
+								tableData.DateOfReport = new Date();
+								tableData.TotalRelevantHours = res.TotalHours;
+								if (res.WbsHours) {
+									tableData.TotalWbsHours = res.WbsHours;
+								} else {
+									tableData.TotalWbsHours = 0;
+								}
+								MOQEquationFieldWidget.setDirty();
+							}
+						});
+					}
+				} else {
+					RaiseNotification('Error talking to backend to Calculate Actuals');
+				}
+
+				$(document).trigger("HIDE_LOADING_BOX");
+			}).catch(function () {
+				RaiseNotification('Error talking to backend to Calculate Actuals');
+				$(document).trigger("HIDE_LOADING_BOX");
+			});
+		}
+	};
+
+	$scope.calculateAllMoqActuals = function () {
+		$scope.actualsValidation.errors = new Map();
+
+		// Get all the data tables
+		var data = {
+			tableData: []
+		};
+
+		var moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+		if (moqTypes) {
+			moqTypes.forEach(moq => {
+				if (moq.TableData) {
+					moq.TableData.forEach(tableData => {
+						var table = {
+							WbsElement: tableData.WbsElement,
+							PoPStart: tableData.PoPStart,
+							PoPEnd: tableData.PoPEnd,
+							Filters: tableData.AdditionalQueryFilters,
+							TableId: tableData.Id
+						};
+
+						if (Array.isArray(tableData.AdditionalQueryFilters)) {
+							table.Filters = table.AdditionalQueryFilters.join("\n");
+						}
+
+						data.tableData.push(table);
+					});
+				}
+			});
+		}
+
+		data.boeId = ManageTaskModel.boeId;
+
+		if (data.tableData.length > 0) {
+			// send to backend
+			// display response to user
+			$(document).trigger("SHOW_LOADING_BOX");
+
+			$http({
+				method: 'POST',
+				url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.CalculateAllActualsSapAction, ''),
+				data: data
+			}).then(function (response) {
+				// place returned html into the content div
+				if (response.data.IsSuccessful === true) {
+					// the response is wrapped inside response.data.data array
+					if (response.data.data && Array.isArray(response.data.data)) {
+						
+						// find the moq table data and update the data with calcualted values
+						response.data.data.forEach(result => {
+							var res = result.Data[0];
+							if (result.Messages && result.Messages.length > 0) {
+								$scope.setActualsErrors(res.TableId, result.Messages);
+							} else {
+								moqTypes.forEach(moq => {
+									var tableData = moq.TableData.find(t => t.Id == res.TableId);
+									if (tableData) {
+										tableData.DateOfReport = new Date();
+										tableData.TotalRelevantHours = res.TotalHours;
+										if (res.WbsHours) {
+											tableData.TotalWbsHours = res.WbsHours;
+										} else {
+											tableData.TotalWbsHours = 0;
+										}
+										MOQEquationFieldWidget.setDirty();
+									}
+								});
+							}
+						});
+					}
+				} else {
+					RaiseNotification('Error talking to backend to Calculate All Actuals');
+				}
+
+				$(document).trigger("HIDE_LOADING_BOX");
+			}).catch(function () {
+				RaiseNotification('Error talking to backend to Calculate All Actuals');
+				$(document).trigger("HIDE_LOADING_BOX");
+			});
+		}
+	};
+
+	$scope.setActualsErrors = function (id, errors) {
+		if (Array.isArray(errors)) {
+			if (errors.length > 0) {
+				// need to see if we need to convert to ValidationMessage
+				if (errors[0].ValidationIssue === undefined) {
+					var err = [];
+					errors.forEach(e => {
+						var valErr = {
+							ValidationIssue: e
+						};
+						err.push(valErr);
+					});
+
+					// reset array to new array
+					errors = err;
+				}
+
+				$scope.actualsValidation.errors.set(id, errors);
+			}
+		}
+	};
+
+	$scope.exportActuals = function (tableData) {
+		$scope.actualsValidation.errors = new Map();
 		// pull the data from the form
 
 		var data = {};
@@ -869,8 +1053,98 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 			WbsElement: tableData.WbsElement,
 			PoPStart: tableData.PoPStart,
 			PoPEnd: tableData.PoPEnd,
-			Filters: tableData.AdditionalQueryFilters
+			Filters: tableData.AdditionalQueryFilters,
+			TableId: tableData.Id
 		};
+
+		if (Array.isArray(tableData.AdditionalQueryFilters)) {
+			data.tableData.Filters = tableData.AdditionalQueryFilters.join("\n");
+		}
+
+		data.boeId = ManageTaskModel.boeId;
+
+		// send to backend
+		// display response to user
+		$(document).trigger("SHOW_LOADING_BOX");
+
+		$http({
+			method: 'POST',
+			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.ExportActualsSapAction, ''),
+			data: data
+		}).then(function (response) {
+			// place returned html into the content div
+			if (response.data.IsSuccessful !== true) {
+				if (response.data.Messages && response.data.Messages.length > 0) {
+					$scope.setActualsErrors(tableData.Id, response.data.Messages);
+				} else {
+					$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Export Actuals' }]);
+				}
+			}
+			else {
+				var blob = $scope.b64toBlob(response.data.Data, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+				var filename = 'ActualsExport.xlsx';
+				
+				if (navigator.msSaveBlob)
+					navigator.msSaveBlob(blob, filename);
+				else {
+					// trick to download store a file having its URL
+					var fileURL = URL.createObjectURL(blob);
+					var a = document.createElement('a');
+					a.href = fileURL;
+					a.target = '_blank';
+					a.download = filename;
+					document.body.appendChild(a); //create the link "a"
+					a.click(); //click the link "a"
+					document.body.removeChild(a); //remove the link "a"
+				}
+			}
+
+			$(document).trigger("HIDE_LOADING_BOX");
+		}).catch(function () {
+			$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Export Actuals' }]);
+			$(document).trigger("HIDE_LOADING_BOX");
+		});
+	};
+
+	$scope.b64toBlob = function (b64Data, contentType = '', sliceSize = 512) {
+		// this converts base 64 encoded string into a Blob by slicing the bytes off
+		// and then converting them into char codes
+		// pulled from https://stackoverflow.com/a/16245768 
+		const byteCharacters = atob(b64Data);
+		const byteArrays = [];
+
+		for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+			const slice = byteCharacters.slice(offset, offset + sliceSize);
+
+			const byteNumbers = new Array(slice.length);
+			for (let i = 0; i < slice.length; i++) {
+				byteNumbers[i] = slice.charCodeAt(i);
+			}
+
+			const byteArray = new Uint8Array(byteNumbers);
+			byteArrays.push(byteArray);
+		}
+
+		const blob = new Blob(byteArrays, { type: contentType });
+		return blob;
+	};
+
+	$scope.validateActuals = function (tableData) {
+		$scope.actualsValidation.errors = new Map();
+		// pull the data from the form
+
+		var data = {};
+		data.tableData = {
+			WbsElement: tableData.WbsElement,
+			PoPStart: tableData.PoPStart,
+			PoPEnd: tableData.PoPEnd,
+			Filters: tableData.AdditionalQueryFilters,
+			TableId: tableData.Id
+		};
+
+		if (Array.isArray(tableData.AdditionalQueryFilters)){
+			data.tableData.Filters = tableData.AdditionalQueryFilters.join("\n");
+		}
 
 		data.boeId = ManageTaskModel.boeId;
 
@@ -884,14 +1158,16 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 			data: data
 		}).then(function (response) {
 			// place returned html into the content div
-			if (response.data.IsSuccessful === true) {
-				$scope.actualsValidation.errors = response.data.Messages; 
-			} else {
-				$scope.actualsValidation.errors = [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }];
+			if (response.data.IsSuccessful !== true) {
+				if (response.data.Messages && response.data.Messages.length > 0) {
+					$scope.setActualsErrors(tableData.Id, response.data.Messages);
+				} else {
+					$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }]);
+				}
 			}
 			$(document).trigger("HIDE_LOADING_BOX");
 		}).catch(function () {
-			$scope.actualsValidation.errors = [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }];
+			$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }]);
 			$(document).trigger("HIDE_LOADING_BOX");
 		});
 

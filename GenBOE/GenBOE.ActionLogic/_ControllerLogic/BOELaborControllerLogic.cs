@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Transactions;
     using System.Web;
     using System.Web.Configuration;
@@ -57,6 +58,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IValidateBOE validateBOE;
         private readonly IMoqTableExporter moqTableExporter;
         private readonly IMoqTableImporter moqTableImporter;
+        private readonly IESSAPClient iesSapClient;
+        private readonly ITokenService tokenservice;
 
         /// <summary>
         /// Task Element Validation Class
@@ -88,7 +91,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IMoqTypeDataLoader moqTypeDataLoader,
             IValidateBOE validateBOE,
             IMoqTableExporter moqTableExporter,
-            IMoqTableImporter moqTableImporter)
+            IMoqTableImporter moqTableImporter,
+            IESSAPClient iesSapClient,
+            ITokenService tokenservice)
         {
             this._BoeTaskElementRecalculation = inBoeTaskElementRecalc;
             this._boeStateMachine = inBoeStateMachine;
@@ -112,6 +117,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.validateBOE = validateBOE;
             this.moqTableExporter = moqTableExporter;
             this.moqTableImporter = moqTableImporter;
+            this.tokenservice = tokenservice;
+            this.iesSapClient = iesSapClient;
         }
 
         #region Public Members
@@ -3589,18 +3596,37 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="filters">The list of Filters</param>
 		/// <returns>Textual representation of the filters</returns>
-		public IESResponse<string> ConvertSapFilter(ICollection<QueryViewModel> filters)
+		public async Task<IESResponse<string>> ConvertSapFilter(ICollection<QueryViewModel> filters)
 		{
-			// Get Token
+            IESResponse<string> response = new IESResponse<string>();
 
-			// Call Swagger Client
+            if (filters == null || !filters.Any())
+            {
+                response.Data = new List<string> { string.Empty };
+                response.IsSuccessful = true;
+            }
+            else
+            {
+                try
+                {
+                    // Get Token
+                    Token token = await this.tokenservice.GetToken();
+                    Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
 
-			// Convert return to IESResponse
-			IESResponse<string> response = new IESResponse<string>
-			{
-				IsSuccessful = true,
-				Data = new string[] { "Fake text" }
-			};
+                    // Call Swagger Client
+                    StringResult result = await iesSapClient.ApiQueryParserFormulateStringAsync(filters);
+                    response.Messages = result.Messages;
+                    response.IsSuccessful = result.IsSuccessful;
+                    response.Data.Add(result.Data);
+                }
+                catch (Exception ex)
+                {
+                    // gracefully handle error
+                    logger.Error(ex, "Error calling SAP API to Parse filters.");
+                    response.Messages.Add("Error calling SAP API to Parse filters");
+                    response.IsSuccessful = false;
+                }
+            }
 
 			return response;
 		}
@@ -3610,37 +3636,181 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="text">The text to parse</param>
 		/// <returns>List of SAP Filters</returns>
-		public IESResponse<QueryViewModel> ParseSapFilter(string text)
+		public async Task<IESResponse<QueryViewModel>> ParseSapFilter(string text)
 		{
-			// Get Token
+            IESResponse<QueryViewModel> response = new IESResponse<QueryViewModel>();
 
-			// Call Swagger Client
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                response.Data = new List<QueryViewModel>();
+                response.IsSuccessful = true;
+            }
+            else
+            {
+                try
+                {
+                    // Get Token
+                    Token token = await this.tokenservice.GetToken();
+                    Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
 
-			// Convert return to IESResponse
-			IESResponse<QueryViewModel> response = new IESResponse<QueryViewModel>
-			{
-				IsSuccessful = true
-			};
+                    // Call Swagger Client
+                    QueryViewModelICollectionResult result = await iesSapClient.ApiQueryParserParseStringAsync(text);
+                    response.Messages = result.Messages;
+                    response.IsSuccessful = result.IsSuccessful;
+                    response.Data = result.Data;
+                }
+                catch (Exception ex)
+                {
+                    // gracefully handle error
+                    logger.Error(ex, "Error calling SAP API to Parse text.");
+                    response.Messages.Add("Error calling SAP API to Parse text");
+                    response.IsSuccessful = false;
+                }
+            }
 
-			return response;
-		}
+            return response;
+        }
 
         /// <summary>
         /// Validates Actuals data for SAP
         /// </summary>
         /// <param name="tableData">The MOQ Table Data</param>
         /// <returns>Validation Response</returns>
-        public IESResponse<string> ValidateActualsSap(MoqTableDataModelView tableData)
+        public async Task<IESResponse<bool>> ValidateActualsSap(MoqTableDataModelView tableData)
         {
-            // Get Token
+            IESResponse<bool> response = new IESResponse<bool>();
 
-            // Call Swagger Client
+            try
+            {
+                // Get Token
+                Token token = await this.tokenservice.GetToken();
+                Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
 
-            // Convert return to IESResponse
-            IESResponse<string> response = new IESResponse<string>();
-            response.Messages.Add("Error 1");
-            response.Messages.Add("Error 3b");
-            response.IsSuccessful = true;
+                // Convert company configuration
+                ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration = 
+                    (ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
+
+                // Convert table data
+                DataTableViewModel dataTable = new DataTableViewModel()
+                {
+                    Filters = tableData.Filters,
+                    PoPEnd = tableData.PoPEnd,
+                    PoPStart = tableData.PoPStart,
+                    WbsElement = tableData.WbsElement,
+                    TableId = tableData.TableId
+                };
+
+                // Call Swagger Client
+                BooleanResult result = await iesSapClient.ApiQueryParserIsQueryValidAsync(companyConfiguration, dataTable);
+                response.Messages = result.Messages;
+                response.IsSuccessful = result.IsSuccessful;
+                response.Data.Add(result.Data);
+            }
+            catch (Exception ex)
+            {
+                // gracefully handle error
+                logger.Error(ex, "Error calling SAP API to Check if Data Table is Valid.");
+                response.Messages.Add("Error calling SAP API to Check if Data Table is Valid");
+                response.IsSuccessful = false;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Export Actuals data for SAP
+        /// </summary>
+        /// <param name="tableData">The MOQ Table Data</param>
+        /// <returns>Validation Response with file as byte array</returns>
+        public async Task<IESResponse<byte>> ExportActualsSap(MoqTableDataModelView tableData)
+        {
+            IESResponse<byte> response = new IESResponse<byte>();
+
+            try
+            {
+                // Get Token
+                Token token = await this.tokenservice.GetToken();
+                Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
+
+                // Convert company configuration
+                ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration =
+                    (ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
+
+                // Convert table data
+                DataTableViewModel dataTable = new DataTableViewModel()
+                {
+                    Filters = tableData.Filters,
+                    PoPEnd = tableData.PoPEnd,
+                    PoPStart = tableData.PoPStart,
+                    WbsElement = tableData.WbsElement,
+                    TableId = tableData.TableId
+                };
+
+                // Call Swagger Client
+                ExportActualsViewModelResult result = await iesSapClient.ApiQueryParserExportActualsAsync(companyConfiguration, dataTable);
+                response.Messages = result.Messages;
+                response.IsSuccessful = result.IsSuccessful;
+                response.Data = result.Data.Data;
+            }
+            catch (Exception ex)
+            {
+                // gracefully handle error
+                logger.Error(ex, "Error calling SAP API to Export Actuals.");
+                response.Messages.Add("Error calling SAP API to Export Actuals");
+                response.IsSuccessful = false;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Validates Actuals data for SAP
+        /// </summary>
+        /// <param name="tableData">The MOQ Table Data</param>
+        /// <returns>Validation Response</returns>
+        public async Task<ICollection<IESResponse<CalculateActualsViewModel>>> CalculateAllActualsSap(ICollection<MoqTableDataModelView> tableData)
+        {
+            ICollection<IESResponse<CalculateActualsViewModel>> response = new List<IESResponse<CalculateActualsViewModel>>();
+
+            try
+            {
+                // Get Token
+                Token token = await this.tokenservice.GetToken();
+                Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
+
+                // Convert company configuration
+                ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration =
+                    (ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
+
+                // Convert table data
+                ICollection<DataTableViewModel> dataTables = tableData.Select(t =>
+                new DataTableViewModel()
+                {
+                    Filters = t.Filters,
+                    PoPEnd = t.PoPEnd,
+                    PoPStart = t.PoPStart,
+                    WbsElement = t.WbsElement,
+                    TableId = t.TableId
+                }).ToList();
+
+                // Call Swagger Client
+                ICollection<CalculateActualsViewModelResult> result = await iesSapClient.ApiQueryParserCalculateActualsAsync(companyConfiguration, dataTables);
+
+                response = result.Select(r =>
+                new IESResponse<CalculateActualsViewModel>
+                {
+                    Messages = r.Messages,
+                    IsSuccessful = r.IsSuccessful,
+                    Data = new List<CalculateActualsViewModel> { r.Data }
+                }).ToList();
+
+            }
+            catch (Exception ex)
+            {
+                // throw error and let UI handle it
+                logger.Error(ex, "Error calling SAP API to Calculate All Actuals");
+                throw new GeneralAppException("Error calling SAP API to Calculate All Actuals");
+            }
 
             return response;
         }

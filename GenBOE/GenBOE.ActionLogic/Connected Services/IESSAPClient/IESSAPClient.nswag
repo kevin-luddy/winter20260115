@@ -3,7 +3,7 @@
   "defaultVariables": null,
   "documentGenerator": {
     "fromDocument": {
-      "url": "C:\\Users\\e405721\\Desktop\\Code-Repos\\IES\\IES\\GenBOE\\GenBOE.ActionLogic\\ServiceJsonFiles\\iesSAP.swagger.json",
+      "url": "C:\\Users\\twilson3\\Documents\\Repos\\IES\\GenBOE\\GenBOE.ActionLogic\\ServiceJsonFiles\\iesSAP.swagger.json",
       "output": "IESSAPClient.nswag.json",
       "newLineBehavior": "Auto"
     }

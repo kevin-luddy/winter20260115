@@ -35,6 +35,8 @@ namespace IES.Models
         public bool DisplayRateCode { get; set; }
         public int RevisionUniqueSectionId { get; set; }
         public bool IsRdsbRequired { get; set; }
+        public bool SectionContainsCasbDisclosure { get; set; }
+        public bool SectionContainsNonCompliance { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<RateCode> RateCodes { get; set; }

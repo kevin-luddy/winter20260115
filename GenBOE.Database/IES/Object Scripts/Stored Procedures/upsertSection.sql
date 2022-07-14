@@ -20,7 +20,9 @@ CREATE PROCEDURE [dbo].[upsertSection]
 	@IsInternalSection		BIT = 0,
 	@DisplayRateCode		BIT = 0,
 	@RevisionUniqueSectionId INT,
-	@IsRdsbRequired			BIT = 0
+	@IsRdsbRequired			BIT = 0,
+	@SectionContainsCasbDisclosure BIT,
+	@SectionContainsNonCompliance BIT
 )
 AS
 	/******************************************************************************
@@ -44,6 +46,7 @@ AS
 	**		08/22/2017	brunworg			Redesign Section and related tables.
 	**		10/10/2017	Dusan				Added RevisionUniqueSectionId
 	**		05/15/2018	ranzalon			Added IsRdsbRequired
+	**		07/07/2022	Dusan				Added SectionContainsCasbDisclosure and SectionContainsNonCompliance
 	*******************************************************************************/
 	SET NOCOUNT ON 
 	DECLARE @ErrorMessage varchar (500)
@@ -72,7 +75,9 @@ AS
 					   ,[IsInternalSection]
 					   ,[DisplayRateCode]
 					   ,[RevisionUniqueSectionId]
-					   ,[IsRdsbRequired])
+					   ,[IsRdsbRequired]
+					   ,[SectionContainsCasbDisclosure]
+					   ,[SectionContainsNonCompliance])
 				 OUTPUT inserted.ID INTO @Inserted
 				 VALUES
 					   (@UpdateDate
@@ -85,7 +90,9 @@ AS
 					   ,@IsInternalSection
 					   ,@DisplayRateCode
 					   ,@RevisionUniqueSectionId
-					   ,@IsRdsbRequired)
+					   ,@IsRdsbRequired
+					   ,@SectionContainsCasbDisclosure
+					   ,@SectionContainsNonCompliance)
 
 			SELECT @Id = Id FROM @Inserted
 		END
@@ -107,6 +114,8 @@ AS
 					       ,DisplayRateCode = @DisplayRateCode
 						   ,RevisionUniqueSectionId = @RevisionUniqueSectionId
 						   ,IsRdsbRequired = @IsRdsbRequired
+						   ,SectionContainsCasbDisclosure = @SectionContainsCasbDisclosure
+						   ,SectionContainsNonCompliance = @SectionContainsNonCompliance
 						WHERE 
 							ID = @Id
 				END

@@ -11,6 +11,7 @@ namespace GenBOE.Web.Controllers
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Transactions;
     using System.Web.Mvc;
     using System.Web.Script.Serialization;
@@ -1440,7 +1441,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace name</param>
 		/// <param name="boeId">BOE Id</param>
 		/// <returns></returns>
-		public ActionResult ParseSapFilter(string text, string workspace, int boeId)
+		public async Task<ActionResult> ParseSapFilter(string text, string workspace, int boeId)
 		{
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1448,7 +1449,7 @@ namespace GenBOE.Web.Controllers
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_PARSE_SAP_FILTER, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
 
             // Call to Controller Logic
-            IESResponse<QueryViewModel> response = this._BoeLaborControllerLogic.ParseSapFilter(text);
+            IESResponse<QueryViewModel> response = await this._BoeLaborControllerLogic.ParseSapFilter(text);
 			JsonResult toReturn = this.Json(response);
 
 			// Finalize Action
@@ -1463,7 +1464,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="workspace">Workspace name</param>
 		/// <param name="boeId">BOE Id</param>
 		/// <returns></returns>
-		public ActionResult ConvertSapFilter(ICollection<QueryViewModel> filters, string workspace, int boeId)
+		public async Task<ActionResult> ConvertSapFilter(ICollection<QueryViewModel> filters, string workspace, int boeId)
 		{
 			// Initialize Action
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
@@ -1471,7 +1472,7 @@ namespace GenBOE.Web.Controllers
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CONVERT_SAP_FILTER, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
 
             // Call to Controller Logic
-            IESResponse<string> response = this._BoeLaborControllerLogic.ConvertSapFilter(filters);
+            IESResponse<string> response = await this._BoeLaborControllerLogic.ConvertSapFilter(filters);
 			JsonResult toReturn = this.Json(response);
 
 			// Finalize Action
@@ -1486,7 +1487,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="boeId">BOE Id</param>
         /// <param name="tableData">The MOQ Table Data</param>
 		/// <returns>Validation Response</returns>
-        public ActionResult ValidateActualsSap(string workspace, int boeId, MoqTableDataModelView tableData)
+        public async Task<ActionResult> ValidateActualsSap(string workspace, int boeId, MoqTableDataModelView tableData)
         {
             if (tableData == null)
             {
@@ -1499,13 +1500,74 @@ namespace GenBOE.Web.Controllers
             Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_VALIDATE_ACTUALS_SAP, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
 
             // Call to Controller Logic
-            IESResponse<string> response = this._BoeLaborControllerLogic.ValidateActualsSap(tableData);
+            IESResponse<bool> response = await this._BoeLaborControllerLogic.ValidateActualsSap(tableData);
 
-            var errors = response?.Messages?.Select(m => new { ValidationIssue= m });
+            List<ErrorModelView> errors = response.Messages?.Select(m => new ErrorModelView (){ ValidationIssue = m }).ToList();
             JsonResult toReturn = this.Json(new { IsSuccessful = response != null && response.IsSuccessful, Messages = errors });
 
             // Finalize Action
             FinalizeAction(_log, WebConstants.ACTION_VALIDATE_ACTUALS_SAP, sw);
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Export Actuals data for SAP
+        /// </summary>
+        /// <param name="workspace">Workspace name</param>
+        /// <param name="boeId">BOE Id</param>
+        /// <param name="tableData">The MOQ Table Data</param>
+        /// <returns>Validation Response with file as byte array</returns>
+
+        public async Task<ActionResult> ExportActualsSap(string workspace, int boeId, MoqTableDataModelView tableData)
+        {
+            if (tableData == null)
+            {
+                throw new ArgumentNullException(nameof(tableData));
+            }
+
+            // Initialize Action
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_EXPORT_ACTUALS_SAP, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
+
+            // Call to Controller Logic
+            IESResponse<byte> response = await this._BoeLaborControllerLogic.ExportActualsSap(tableData);
+
+            List<ErrorModelView> errors = response.Messages?.Select(m => new ErrorModelView() { ValidationIssue = m }).ToList();
+            string data = response.Data != null ? System.Convert.ToBase64String(response.Data.ToArray()) : String.Empty; 
+            JsonResult toReturn = this.Json(new { IsSuccessful = response.IsSuccessful, Messages = errors, Data = data });
+
+            // Finalize Action
+            FinalizeAction(_log, WebConstants.ACTION_EXPORT_ACTUALS_SAP, sw);
+            return toReturn;
+        }
+
+        /// <summary>
+        /// Calculates all Actuals for MOQ Data Tables from SAP
+        /// </summary>
+        /// <param name="workspace">Workspace name</param>
+		/// <param name="boeId">BOE Id</param>
+        /// <param name="tableData">The MOQ Table Data</param>
+		/// <returns>Validation Response</returns>
+        public async Task<ActionResult> CalculateAllActualsSap(string workspace, int boeId, ICollection<MoqTableDataModelView> tableData)
+        {
+            if (tableData == null || !tableData.Any())
+            {
+                throw new ArgumentNullException(nameof(tableData));
+            }
+
+            // Initialize Action
+            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+
+            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
+
+            // Call to Controller Logic
+            ICollection<IESResponse<CalculateActualsViewModel>> response = await this._BoeLaborControllerLogic.CalculateAllActualsSap(tableData);
+
+            JsonResult toReturn = this.Json(new { IsSuccessful = response != null, data = response });             
+
+            // Finalize Action
+            FinalizeAction(_log, WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP, sw);
             return toReturn;
         }
         #endregion

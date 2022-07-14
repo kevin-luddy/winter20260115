@@ -408,6 +408,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             dto.BusinessArea = modelview.BusinessArea;
             dto.ClinContractTypes = modelview.ClinContractTypes;
             dto.Description = modelview.Description;
+            dto.BasisAndRationale = modelview.BasisAndRationale;
             dto.FormName = modelview.BOEFormName;
             dto.Poc = modelview.Poc;
             dto.PocPhone = modelview.PocPhone;

@@ -696,7 +696,9 @@ namespace IES.ActionLogic.ControllerLogic
 						Title = section.Title,
 						ReferenceNumber = section.ReferenceNumber,
 						HasTable = section.ChildNodes.Any(s => (!s.IsInternalSection.HasValue || !s.IsInternalSection.Value) && s.ContentType == SectionContentType.RateTable),
-						IsRdsbRequired = section.IsRdsbRequired
+						IsRdsbRequired = section.IsRdsbRequired,
+						SectionContainsCasbDisclosure = section.SectionContainsCasbDisclosure,
+						SectionContainsNonCompliance = section.SectionContainsNonCompliance
 					};
 
 					details.Add(detail);
@@ -735,6 +737,16 @@ namespace IES.ActionLogic.ControllerLogic
 			}
 
 			return ids;
+		}
+
+		/// <summary>
+		/// Gets data necessary for automation of a coversheet. Specifically sections that contain 1) CASB and 2) Non-Compliance data
+		/// </summary>
+		/// <param name="proposalId">PTM Proposal ID</param>
+		/// <returns>Data to support a Cover Sheet creation</returns>
+		public (string CasbSection, string NonComplianceSection) GetCoverSheetData(int proposalId)
+		{
+			return sectionLoader.GetCoverSheetData(proposalId);
 		}
 	}
 }

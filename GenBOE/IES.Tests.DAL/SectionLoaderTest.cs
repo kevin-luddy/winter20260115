@@ -486,5 +486,31 @@ namespace IES.Tests
                 }
             }
         }
+        
+        /// <summary>
+        /// Tests GetCoverSheetData with no sections assigned
+        /// </summary>
+        [TestMethod]
+        public void TestGetCoverSheetData_BlankData()
+		{
+			SectionLoader sut = this.testData.SectionLoader;
+			(string CasbSection, string NonComplianceSection) result = sut.GetCoverSheetData(15204);
+
+            Assert.AreEqual(null, result.CasbSection);
+            Assert.AreEqual(null, result.NonComplianceSection);
+        }
+
+        /// <summary>
+        /// Tests GetCoverSheetData with both sections assigned
+        /// </summary>
+        [TestMethod]
+        public void TestGetCoverSheetData_Data()
+        {
+            SectionLoader sut = this.testData.SectionLoader;
+            (string CasbSection, string NonComplianceSection) result = sut.GetCoverSheetData(17070);
+
+            Assert.AreEqual("1.3", result.CasbSection);
+            Assert.AreEqual("1.4", result.NonComplianceSection);
+        }
     }
 }

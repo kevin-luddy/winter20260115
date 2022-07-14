@@ -26,7 +26,6 @@ namespace GenBOE
     using GenBOE.ActionLogic.ControllerLogic;
     using GenBOE.ActionLogic.CopyBOE;
     using GenBOE.ActionLogic.CustomFields;
-	using GenBOE.ActionLogic.IESSAPClient;
 	using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.NewValidation;
@@ -439,7 +438,7 @@ namespace GenBOE
                 new ResolvedParameter(typeof(IBoeDTODataLoader)),
                 new ResolvedParameter(typeof(IPermissionsDTODataLoader))));
 
-			GenBOEUnityContainer.Container.RegisterType(typeof(IESSAPClient), typeof(IESSAPClient), GetLifetimeManager(), new InjectionConstructor(ConfigurationUtilities.GetAppSetting("IESSAPUrl"), _SapHttpClient));
+			GenBOEUnityContainer.Container.RegisterType(typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient), typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient), GetLifetimeManager(), new InjectionConstructor(ConfigurationUtilities.GetAppSetting("IESSAPUrl"), _SapHttpClient));
 
             // Controller Logic
             switch (SysConfig.CompanyMode)
@@ -468,7 +467,9 @@ namespace GenBOE
                         new ResolvedParameter(typeof(IMoqTypeDataLoader)),
                         new ResolvedParameter(typeof(IValidateBOE)),
                         new ResolvedParameter(typeof(IMoqTableExporter)),
-                        new ResolvedParameter(typeof(IMoqTableImporter))));
+                        new ResolvedParameter(typeof(IMoqTableImporter)),
+                        new ResolvedParameter(typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient)),
+                        new ResolvedParameter(typeof(ITokenService))));
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEControllerLogic), typeof(BOEControllerLogicMST), GetLifetimeManager(), new InjectionConstructor(
                         new ResolvedParameter(typeof(IMSTMetricLoader)),
                         new ResolvedParameter(typeof(IBOESummary)),
@@ -503,7 +504,7 @@ namespace GenBOE
                         new ResolvedParameter(typeof(IRteTemplateDataLoader)),
                         new ResolvedParameter(typeof(IMoqTypeDataLoader)),
                         new ResolvedParameter(typeof(IBoeApproverResponseDTODataLoader)),
-                        new ResolvedParameter(typeof(IESSAPClient)),
+                        new ResolvedParameter(typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient)),
                         new ResolvedParameter(typeof(ITokenService))
                         ));
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEOtherDirectCostControllerLogic), typeof(BOEOtherDirectCostControllerLogicMST), GetLifetimeManager(), new InjectionConstructor());
@@ -537,7 +538,9 @@ namespace GenBOE
                         new ResolvedParameter(typeof(IMoqTypeDataLoader)),
                         new ResolvedParameter(typeof(IValidateBOE)),
                         new ResolvedParameter(typeof(IMoqTableExporter)),
-                        new ResolvedParameter(typeof(IMoqTableImporter))));
+                        new ResolvedParameter(typeof(IMoqTableImporter)),
+                        new ResolvedParameter(typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient)),
+                        new ResolvedParameter(typeof(ITokenService))));
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEControllerLogic), typeof(BOEControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor(
                         new ResolvedParameter(typeof(IBOESummary)),
                         new ResolvedParameter(typeof(IUserDTODataLoader)),
@@ -570,7 +573,7 @@ namespace GenBOE
                         new ResolvedParameter(typeof(IRteTemplateDataLoader)),
                         new ResolvedParameter(typeof(IMoqTypeDataLoader)),
                         new ResolvedParameter(typeof(IBoeApproverResponseDTODataLoader)),
-                        new ResolvedParameter(typeof(IESSAPClient)),
+                        new ResolvedParameter(typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient)),
                         new ResolvedParameter(typeof(ITokenService))));
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEOtherDirectCostControllerLogic), typeof(BOEOtherDirectCostControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor());
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEMaterialControllerLogic), typeof(BOEMaterialControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor());
@@ -605,7 +608,9 @@ namespace GenBOE
                         new ResolvedParameter(typeof(IMoqTypeDataLoader)),
                         new ResolvedParameter(typeof(IValidateBOE)),
                         new ResolvedParameter(typeof(IMoqTableExporter)),
-                        new ResolvedParameter(typeof(IMoqTableImporter))));
+                        new ResolvedParameter(typeof(IMoqTableImporter)),
+                        new ResolvedParameter(typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient)),
+                        new ResolvedParameter(typeof(ITokenService))));
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEControllerLogic), typeof(BOEControllerLogic), GetLifetimeManager(), new InjectionConstructor(
                         new ResolvedParameter(typeof(ICustomFieldValueDTODataLoader)),
                         new ResolvedParameter(typeof(IBOESummary)),
@@ -635,7 +640,9 @@ namespace GenBOE
                         new ResolvedParameter(typeof(IConflictBOE)),
                         new ResolvedParameter(typeof(INestedWBSUtilities)),
                         new ResolvedParameter(typeof(IMoqTypeDataLoader)),
-                        new ResolvedParameter(typeof(IBoeApproverResponseDTODataLoader))));
+                        new ResolvedParameter(typeof(IBoeApproverResponseDTODataLoader)),
+                        new ResolvedParameter(typeof(GenBOE.ActionLogic.IESSAPClient.IESSAPClient)),
+                        new ResolvedParameter(typeof(ITokenService))));
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEOtherDirectCostControllerLogic), typeof(BOEOtherDirectCostControllerLogic), GetLifetimeManager(), new InjectionConstructor());
                     GenBOEUnityContainer.Container.RegisterType(typeof(IBOEMaterialControllerLogic), typeof(BOEMaterialControllerLogic), GetLifetimeManager(), new InjectionConstructor());
                     GenBOEUnityContainer.Container.RegisterType(typeof(IGenBOEControllerLogic), typeof(GenBOEControllerLogic), GetLifetimeManager(), new InjectionMember[] { });
