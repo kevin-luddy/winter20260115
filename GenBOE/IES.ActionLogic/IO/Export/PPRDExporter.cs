@@ -36,18 +36,19 @@ namespace IES.ActionLogic.IO.Export
 		/// </summary>
 		private const string FIRST_SECTION_REFERENCE_NUMBER = "1.0";
 
-		/// <summary>
-		/// Generate a Word document containing the full PPRD.
-		/// </summary>
-		/// <param name="sections">Collection of Section MVs</param>
-		/// <param name="rates">Collection of RateDetail MVs</param>
-		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
-		/// <param name="serverFileName">Server path to new file to generate.</param>
-		/// <param name="clientFileName">the file name to display to the browser in the download dialog</param>
-		/// <param name="revision">Revision modelview</param>
-		/// <param name="rateTableYears">Number of years to include in the rate tables</param>
-		/// <param name="response">the web response object to write the file back to for user download</param>
-		public void ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response)
+        /// <summary>
+        /// Generate a Word document containing the full PPRD.
+        /// </summary>
+        /// <param name="sections">Collection of Section MVs</param>
+        /// <param name="rates">Collection of RateDetail MVs</param>
+        /// <param name="fileAttachments">Collection of File Attachment MVs</param>
+        /// <param name="serverFileName">Server path to new file to generate.</param>
+        /// <param name="clientFileName">the file name to display to the browser in the download dialog</param>
+        /// <param name="revision">Revision modelview</param>
+        /// <param name="rateTableYears">Number of years to include in the rate tables</param>
+        /// <param name="response">the web response object to write the file back to for user download</param>
+        /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
+        public void ExportFullPPRDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, string clientFileName, RevisionModelView revision, int rateTableYears, HttpResponseBase response, int refNumberPrefixLevel)
 		{
 			if (response == null)
 			{
@@ -61,21 +62,22 @@ namespace IES.ActionLogic.IO.Export
 			response.Clear();
 			response.AppendHeader(PPRDExporterConstants.CONTENT_HEADER_NAME, string.Format(PPRDExporterConstants.CONTENT_HEADER_FORMAT_STRING, clientFileName));
 
-			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters); }, response.OutputStream);
+			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel); }, response.OutputStream);
 		}
 
-		/// <summary>
-		/// Generate a Word document containing the RDD sections and rates.
-		/// </summary>
-		/// <param name="sections">Collection of Section MVs</param>
-		/// <param name="rates">Collection of RateDetail MVs</param>
-		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
-		/// <param name="serverFileName">Server path to new file to generate.</param>
-		/// <param name="revision">Revision modelview</param>
-		/// <param name="rddDocument">The RDD document to use for creation.</param>
-		/// <param name="stream">the stream to write the file back to for user download</param>
-		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
-		public void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, bool includeDocumentDetails = true)
+        /// <summary>
+        /// Generate a Word document containing the RDD sections and rates.
+        /// </summary>
+        /// <param name="sections">Collection of Section MVs</param>
+        /// <param name="rates">Collection of RateDetail MVs</param>
+        /// <param name="fileAttachments">Collection of File Attachment MVs</param>
+        /// <param name="serverFileName">Server path to new file to generate.</param>
+        /// <param name="revision">Revision modelview</param>
+        /// <param name="rddDocument">The RDD document to use for creation.</param>
+        /// <param name="stream">the stream to write the file back to for user download</param>
+        /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
+        /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
+        public void ExportRDDToWordFile(ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, string serverFileName, RevisionModelView revision, DocumentDetailModelView rddDocument, Stream stream, int refNumberPrefixLevel, bool includeDocumentDetails = true)
 		{
 			if (stream == null)
 			{
@@ -86,24 +88,25 @@ namespace IES.ActionLogic.IO.Export
 
 			int rateTableYears = rddDocument.EndYear - rddDocument.StartYear;
 
-			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, rddDocument, includeDocumentDetails); }, stream);
+			this.Export(serverFileName, (document) => { this.PopulatePPRDExport(document, sections, rates, fileAttachments, revision, rateTableYears, ref counters, refNumberPrefixLevel, rddDocument, includeDocumentDetails); }, stream);
 		}
 
-		#region Populate Methods
+        #region Populate Methods
 
-		/// <summary>
-		/// Populate the Word document with the the full PPRD.
-		/// </summary>
-		/// <param name="document">Word document to store the PPRD.</param>
-		/// <param name="sections">Section model views</param>
-		/// <param name="rates">Rate Detail model views</param>
-		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
-		/// <param name="revision">Revision modelview</param>
-		/// <param name="rateTableYears">Number of years to include in the rate tables</param>
-		/// <param name="counters">The chunk counters</param>
-		/// <param name="rddDocument">The RDD document model view.</param>
-		/// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
-		private void PopulatePPRDExport(WordprocessingDocument document, ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, RevisionModelView revision, int rateTableYears, ref ChunkCounter counters, DocumentDetailModelView rddDocument = null, bool includeDocumentDetails = true)
+        /// <summary>
+        /// Populate the Word document with the the full PPRD.
+        /// </summary>
+        /// <param name="document">Word document to store the PPRD.</param>
+        /// <param name="sections">Section model views</param>
+        /// <param name="rates">Rate Detail model views</param>
+        /// <param name="fileAttachments">Collection of File Attachment MVs</param>
+        /// <param name="revision">Revision modelview</param>
+        /// <param name="rateTableYears">Number of years to include in the rate tables</param>
+        /// <param name="counters">The chunk counters</param>
+        /// <param name="rddDocument">The RDD document model view.</param>
+        /// <param name="includeDocumentDetails">If document details (introduction, clarification, table of contents) should be included in the export</param>
+        /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
+        private void PopulatePPRDExport(WordprocessingDocument document, ICollection<SectionModelView> sections, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, RevisionModelView revision, int rateTableYears, ref ChunkCounter counters, int refNumberPrefixLevel, DocumentDetailModelView rddDocument = null, bool includeDocumentDetails = true)
 		{
 			// Populate the header
 			this.PopulatePPRDHeader(document, revision);
@@ -138,7 +141,7 @@ namespace IES.ActionLogic.IO.Export
 			SectionModelView lastSection = sections.LastOrDefault();
 
 			// Add File Attachments that do not have sections
-			this.PopulateFileAttachments(fileAttachments, sectionContainerTemplate, lastElement, document.MainDocumentPart, ref counters, lastSection);
+			this.PopulateFileAttachments(fileAttachments, sectionContainerTemplate, lastElement, document.MainDocumentPart, ref counters, lastSection, refNumberPrefixLevel);
 
 			int firstSectionId = sections.FirstOrDefault() == null ? -1 : sections.First().Id;
 
@@ -146,7 +149,7 @@ namespace IES.ActionLogic.IO.Export
 			foreach (SectionModelView section in sections.Reverse())
 			{
 				this.PopulateSectionContainer(section, rates, fileAttachments, publishYear, rateTableYears, 0, sectionContainerTemplate,
-					lastElement, document.MainDocumentPart, ref counters, rddDocument, section.Id == firstSectionId);
+					lastElement, document.MainDocumentPart, ref counters, rddDocument, section.Id == firstSectionId, refNumberPrefixLevel);
 			}
 
 			if (sectionContainerTemplate != null)
@@ -230,22 +233,23 @@ namespace IES.ActionLogic.IO.Export
 			}
 		}
 
-		/// <summary>
-		/// Populate the Section Container
-		/// </summary>
-		/// <param name="section">Section MV</param>
-		/// <param name="rates">Rate Detail MVs</param>
-		/// <param name="fileAttachments">Collection of File Attachment MVs</param>
-		/// <param name="publishYear">Publish year</param>
-		/// <param name="rateTableYears">Number of years to include in the rate tables</param>
-		/// <param name="subsectionLevel">Subsection level</param>
-		/// <param name="sectionContainerTemplate">The Section Container Template</param>
-		/// <param name="lastElement">Last Element</param>
-		/// <param name="mainPart">The main document part</param>
-		/// <param name="counters">The chunk counters</param>
-		/// <param name="rddDocument">The RDD document to create from.  If null, then export full PPRD.</param>
-		/// <param name="firstSection">Bool noting if this is the first section</param>
-		private void PopulateSectionContainer(SectionModelView section, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, int publishYear, int rateTableYears, int subsectionLevel, SdtElement sectionContainerTemplate, OpenXmlElement lastElement, MainDocumentPart mainPart, ref ChunkCounter counters, DocumentDetailModelView rddDocument, bool firstSection)
+        /// <summary>
+        /// Populate the Section Container
+        /// </summary>
+        /// <param name="section">Section MV</param>
+        /// <param name="rates">Rate Detail MVs</param>
+        /// <param name="fileAttachments">Collection of File Attachment MVs</param>
+        /// <param name="publishYear">Publish year</param>
+        /// <param name="rateTableYears">Number of years to include in the rate tables</param>
+        /// <param name="subsectionLevel">Subsection level</param>
+        /// <param name="sectionContainerTemplate">The Section Container Template</param>
+        /// <param name="lastElement">Last Element</param>
+        /// <param name="mainPart">The main document part</param>
+        /// <param name="counters">The chunk counters</param>
+        /// <param name="rddDocument">The RDD document to create from.  If null, then export full PPRD.</param>
+        /// <param name="firstSection">Bool noting if this is the first section</param>
+        /// <param name="refNumberPrefixLevel">The prefix level for the Reference Numbers.</param>
+        private void PopulateSectionContainer(SectionModelView section, ICollection<RateDetailModelView> rates, ICollection<FileAttachmentRowModelView> fileAttachments, int publishYear, int rateTableYears, int subsectionLevel, SdtElement sectionContainerTemplate, OpenXmlElement lastElement, MainDocumentPart mainPart, ref ChunkCounter counters, DocumentDetailModelView rddDocument, bool firstSection, int refNumberPrefixLevel)
 		{
 			if (rddDocument == null || rddDocument.SelectedSectionIds.Contains(section.Id))
 			{
@@ -266,7 +270,7 @@ namespace IES.ActionLogic.IO.Export
 				}
 
 				// Populate the section number and title
-				this.PopulateSectionTitle(sectionContainer, section, subsectionLevel);
+				this.PopulateSectionTitle(sectionContainer, section, subsectionLevel, refNumberPrefixLevel);
 
 				// Separate out the child node elements
 				ICollection<SectionModelView> textAndTableMVs =
@@ -390,7 +394,7 @@ namespace IES.ActionLogic.IO.Export
 				foreach (SectionModelView subsectionElement in subsectionMVs.Reverse())
 				{
 					// Recursive call to populate subsections
-					this.PopulateSectionContainer(subsectionElement, rates, fileAttachments, publishYear, rateTableYears, subsectionLevel, sectionContainerTemplate, lastElement, mainPart, ref counters, rddDocument, firstSection);
+					this.PopulateSectionContainer(subsectionElement, rates, fileAttachments, publishYear, rateTableYears, subsectionLevel, sectionContainerTemplate, lastElement, mainPart, ref counters, rddDocument, firstSection, refNumberPrefixLevel);
 				}
 			}
 		}
@@ -431,13 +435,14 @@ namespace IES.ActionLogic.IO.Export
 			}
 		}
 
-		/// <summary>
-		/// Populate the section title and number
-		/// </summary>
-		/// <param name="sectionContainer">Section Container</param>
-		/// <param name="section">Section ModelView</param>
-		/// <param name="subsectionLevel">Section level - 0 for top-level, 1 for subsection, etc</param>
-		private void PopulateSectionTitle(SdtElement sectionContainer, SectionModelView section, int subsectionLevel)
+        /// <summary>
+        /// Populate the section title and number
+        /// </summary>
+        /// <param name="sectionContainer">Section Container</param>
+        /// <param name="section">Section ModelView</param>
+        /// <param name="subsectionLevel">Section level - 0 for top-level, 1 for subsection, etc</param>
+        /// <param name="refNumberPrefixLevel">The prefix level for the Reference Numbers.</param>
+        private void PopulateSectionTitle(SdtElement sectionContainer, SectionModelView section, int subsectionLevel, int refNumberPrefixLevel)
 		{
 			// Get section title container elements
 			SdtElement sectionTitleContainerElement =
@@ -447,7 +452,7 @@ namespace IES.ActionLogic.IO.Export
 			SdtElement subsubsectionTitleContainerElement =
 				WordUtilities.GetTaggedChildElement(sectionContainer, PPRDExporterConstants.CONTAINER_SUBSUBSECTIONTITLE);
 
-			if (subsectionLevel == 0)
+			if (subsectionLevel + refNumberPrefixLevel == 0)
 			{
 				// Top-level section (ex. "1.0")
 				if (sectionTitleContainerElement != null)
@@ -482,7 +487,7 @@ namespace IES.ActionLogic.IO.Export
 				this.RemoveIt(subsectionTitleContainerElement);
 				this.RemoveIt(subsubsectionTitleContainerElement);
 			}
-			else if (subsectionLevel == 1)
+			else if (subsectionLevel + refNumberPrefixLevel == 1)
 			{
 				// First level subsection (ex. 1.1)
 				if (subsectionTitleContainerElement != null)
@@ -663,16 +668,17 @@ namespace IES.ActionLogic.IO.Export
 			}
 		}
 
-		/// <summary>
-		/// Populates the File Attachments Section.
-		/// </summary>
-		/// <param name="fileAttachments">The file attachments.</param>
-		/// <param name="sectionContainerTemplate">The section container template.</param>
-		/// <param name="lastElement">The last element.</param>
-		/// <param name="mainDocumentPart">The main document part.</param>
-		/// <param name="counters">The counters.</param>
-		/// <param name="lastSection">The last section of the document (if one exists).</param>
-		private void PopulateFileAttachments(ICollection<FileAttachmentRowModelView> fileAttachments, SdtElement sectionContainerTemplate, OpenXmlElement lastElement, MainDocumentPart mainDocumentPart, ref ChunkCounter counters, SectionModelView lastSection)
+        /// <summary>
+        /// Populates the File Attachments Section.
+        /// </summary>
+        /// <param name="fileAttachments">The file attachments.</param>
+        /// <param name="sectionContainerTemplate">The section container template.</param>
+        /// <param name="lastElement">The last element.</param>
+        /// <param name="mainDocumentPart">The main document part.</param>
+        /// <param name="counters">The counters.</param>
+        /// <param name="lastSection">The last section of the document (if one exists).</param>
+        /// <param name="refNumberPrefixLevel">The prefix Level for the Reference Numbers.</param>
+        private void PopulateFileAttachments(ICollection<FileAttachmentRowModelView> fileAttachments, SdtElement sectionContainerTemplate, OpenXmlElement lastElement, MainDocumentPart mainDocumentPart, ref ChunkCounter counters, SectionModelView lastSection, int refNumberPrefixLevel)
 		{
 			ICollection<FileAttachmentRowModelView> attachments = fileAttachments.Where(f => f.SectionId == 0).ToList();
 
@@ -700,7 +706,7 @@ namespace IES.ActionLogic.IO.Export
 				};
 
 				// Populate the section number and title
-				this.PopulateSectionTitle(sectionContainer, attachmentSection, 0);
+				this.PopulateSectionTitle(sectionContainer, attachmentSection, 0, refNumberPrefixLevel);
 
 				// Get the container template
 				SdtElement textAndTableContainerTemplate =
