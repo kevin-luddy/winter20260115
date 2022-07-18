@@ -88,6 +88,9 @@
     <Compile Include="BOEToolLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="CageCode.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="CannedResponsesPAR.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>

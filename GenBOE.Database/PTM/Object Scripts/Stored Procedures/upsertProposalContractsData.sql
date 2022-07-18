@@ -26,7 +26,8 @@ CREATE PROCEDURE [dbo].[upsertProposalContractsData]
 	@CorporateEppDate [date],
 	@EppRosDelegationNotes [varchar](1000),
 	@LmWon [bit],
-	@ModCompletedDate [date]
+	@ModCompletedDate [date],
+	@CageCode [varchar](10)
 )
 AS
 /******************************************************************************
@@ -44,6 +45,7 @@ AS
 **		--------	--------			---------------------------------------
 **		10/29/21    Koovackal			Creation
 **      02/16/22    Koovackal           Add upsert for EPP fields
+**		07/18/22	ranzalon			Add CageCode
 *******************************************************************************/
 SET NOCOUNT ON
 
@@ -54,12 +56,12 @@ SET NOCOUNT ON
 														ContractsCorrespondLogNumber, FinalNegotiatedValue, FinalNegotiatedDate,
 														EppDelegationAuthority, ProgramEppDate, LobEppDate, PreSpaceEppDate, 
 														SpaceEppDate, PreCorporateEppDate, CorporateEppDate, EppRosDelegationNotes, 
-														LmWon, ModCompletedDate)
+														LmWon, ModCompletedDate, CageCode)
 				OUTPUT inserted.ProposalContractsDataId INTO @Inserted
 				VALUES (GETDATE(), @ProposalID, @PreviouslySubmittedROM, @CustomerSubmittalDate, @ContractsCorrespondLogNumber,
 						@FinalNegotiatedValue, @FinalNegotiatedDate, @EppDelegationAuthority, @ProgramEppDate, @LobEppDate, 
 						@PreSpaceEppDate, @SpaceEppDate, @PreCorporateEppDate, @CorporateEppDate, @EppRosDelegationNotes, @LmWon, 
-						@ModCompletedDate)
+						@ModCompletedDate, @CageCode)
 			SELECT @ProposalContractsDataId = Id FROM @Inserted
 		END
 	ELSE -- updating existing
@@ -82,7 +84,8 @@ SET NOCOUNT ON
 						CorporateEppDate = @CorporateEppDate,
 						EppRosDelegationNotes = @EppRosDelegationNotes,
 						LmWon = @LmWon,
-						ModCompletedDate = @ModCompletedDate
+						ModCompletedDate = @ModCompletedDate,
+						CageCode = @CageCode
 					WHERE ProposalContractsDataId = @ProposalContractsDataId
 			ELSE
 				BEGIN

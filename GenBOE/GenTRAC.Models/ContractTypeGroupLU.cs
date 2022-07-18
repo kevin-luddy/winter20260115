@@ -17,8 +17,8 @@ namespace GenTRAC.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ContractTypeGroupLU()
         {
-            this.Proposals = new HashSet<Proposal>();
             this.ContractTypeLUs = new HashSet<ContractTypeLU>();
+            this.Proposals = new HashSet<Proposal>();
         }
     
         public int ContractTypeGroupID { get; set; }
@@ -26,8 +26,8 @@ namespace GenTRAC.Models
         public bool IsActive { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Proposal> Proposals { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ContractTypeLU> ContractTypeLUs { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Proposal> Proposals { get; set; }
     }
 }

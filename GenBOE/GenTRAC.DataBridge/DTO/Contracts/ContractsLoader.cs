@@ -60,7 +60,8 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.CorporateEppDate,
                             dtoToUpsert.EppRosDelegationNotes,
                             dtoToUpsert.LmWon,
-                            dtoToUpsert.ModCompletedDate
+                            dtoToUpsert.ModCompletedDate,
+                            string.Empty // TODO - update with dto value as part of IES-1497 (Thomas)
                             ).FirstOrDefault();
                     }
                 }
