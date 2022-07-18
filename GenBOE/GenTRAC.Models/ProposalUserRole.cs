@@ -22,8 +22,8 @@ namespace GenTRAC.Models
         public int UserID { get; set; }
     
         public virtual genTRACUser genTRACUser { get; set; }
-        public virtual Proposal Proposal { get; set; }
         public virtual RoleLU RoleLU { get; set; }
         public virtual RoleTypeLU RoleTypeLU { get; set; }
+        public virtual Proposal Proposal { get; set; }
     }
 }

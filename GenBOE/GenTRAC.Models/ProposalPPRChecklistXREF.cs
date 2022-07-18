@@ -20,8 +20,8 @@ namespace GenTRAC.Models
         public int ResponseTypeID { get; set; }
     
         public virtual PPRChecklistContent PPRChecklistContent { get; set; }
-        public virtual Proposal Proposal { get; set; }
         public virtual ResponseLU ResponseLU { get; set; }
         public virtual ResponseTypeLU ResponseTypeLU { get; set; }
+        public virtual Proposal Proposal { get; set; }
     }
 }
