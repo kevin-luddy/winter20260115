@@ -32,6 +32,7 @@ namespace GenTRAC.Models
         public Nullable<long> AbsoluteValue { get; set; }
         public Nullable<long> Com { get; set; }
         public Nullable<long> Profit { get; set; }
+        public Nullable<long> CostThroughCom { get; set; }
     
         public virtual Proposal Proposal { get; set; }
     }

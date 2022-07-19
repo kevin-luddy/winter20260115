@@ -89,10 +89,26 @@ namespace GenTRAC.DataBridge.DTO
                         // only pricer can edit general info and PPR responses
                         if (dtoToUpsert.ResponseType == ChecklistResponseType.Pricer)
                         {
-                            toReturn = dbModel.upsertProposalChecklist(dtoToUpsert.Id, dtoToUpsert.UpdateDate, dtoToUpsert.ProposalID,
-                                dtoToUpsert.EstimatingSubmitsToContractsDate, dtoToUpsert.SubmittedValue,
-                                dtoToUpsert.Profit, dtoToUpsert.Com, dtoToUpsert.ProfitFeeWithCom,  dtoToUpsert.ROSPercentage, dtoToUpsert.LMLaborHrs, dtoToUpsert.LMLaborCost,
-                                dtoToUpsert.SubcontractorCost, dtoToUpsert.MaterialCost, dtoToUpsert.IWTACost, dtoToUpsert.TravelCost, dtoToUpsert.OtherDirectCosts, dtoToUpsert.DeliverChecklistDFARS, dtoToUpsert.AbsoluteValue).FirstOrDefault();
+                            toReturn = dbModel.upsertProposalChecklist(dtoToUpsert.Id, 
+                                dtoToUpsert.UpdateDate, 
+                                dtoToUpsert.ProposalID,
+                                dtoToUpsert.EstimatingSubmitsToContractsDate,
+                                dtoToUpsert.SubmittedValue,
+                                dtoToUpsert.Profit, 
+                                dtoToUpsert.Com,
+                                dtoToUpsert.ProfitFeeWithCom, 
+                                dtoToUpsert.ROSPercentage,
+                                dtoToUpsert.LMLaborHrs, 
+                                dtoToUpsert.LMLaborCost,
+                                dtoToUpsert.SubcontractorCost, 
+                                dtoToUpsert.MaterialCost,
+                                dtoToUpsert.IWTACost,
+                                dtoToUpsert.TravelCost, 
+                                dtoToUpsert.OtherDirectCosts, 
+                                dtoToUpsert.DeliverChecklistDFARS,
+                                dtoToUpsert.AbsoluteValue,
+                                null // TODO - Thomas - update with dto value in IES-1507
+                                ).FirstOrDefault();
 
                             ProposalChecklistSaveInfo pprUserSaveInfo = dtoToUpsert.UserSaveInfo[dtoToUpsert.ResponseType][ChecklistType.ProposalPricingReview];
                             int pprUserId = pprUserSaveInfo.UserID;
