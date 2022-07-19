@@ -104,6 +104,12 @@ namespace GenTRAC.ActionLogic.ModelView
         }
 
         /// <summary>
+        /// Cage Code #
+        /// </summary>
+		[Display(Name = "Cage #")]
+        public string CageCode { get; set; }
+
+        /// <summary>
         /// Contracts Correspondence Log Number
         /// </summary>
         [Display(Name = "Contracts Correspondence Log Number")]
