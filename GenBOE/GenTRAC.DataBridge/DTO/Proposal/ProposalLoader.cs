@@ -573,7 +573,9 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.OtherReasonComment,
                             dtoToUpsert.ProposalSetupComments,
                             dtoToUpsert.ModExecutedLastEmailed,
-                            dtoToUpsert.ProposalCompletedDate).FirstOrDefault();
+                            dtoToUpsert.ProposalCompletedDate,
+                            null, // TODO - Update this and next line with dto values in IES-1506 by Thomas
+                            string.Empty).FirstOrDefault();
                     }
                 }
             }

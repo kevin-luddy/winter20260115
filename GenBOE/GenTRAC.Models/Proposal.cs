@@ -98,6 +98,8 @@ namespace GenTRAC.Models
         public string InformationComments { get; set; }
         public Nullable<System.DateTime> ModExecutedLastEmailed { get; set; }
         public Nullable<System.DateTime> ProposalCompletedDate { get; set; }
+        public Nullable<int> ContractActionType { get; set; }
+        public string ContractActionTypeOtherText { get; set; }
     
         public virtual BOEToolLU BOEToolLU { get; set; }
         public virtual ContractTypeGroupLU ContractTypeGroupLU { get; set; }
@@ -138,5 +140,6 @@ namespace GenTRAC.Models
         public virtual ICollection<ContractTypeLU> ContractTypeLUs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CostElementLU> CostElementLUs { get; set; }
+        public virtual ContractActionTypeLU ContractActionTypeLU { get; set; }
     }
 }
