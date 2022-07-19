@@ -19,8 +19,8 @@ namespace GenTRAC.Models
         public int AttachmentType { get; set; }
         public bool IsRevisionReference { get; set; }
     
-        public virtual Proposal Proposal { get; set; }
         public virtual Attachment Attachment { get; set; }
         public virtual AttachmentTypeLU AttachmentTypeLU { get; set; }
+        public virtual Proposal Proposal { get; set; }
     }
 }

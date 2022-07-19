@@ -32,9 +32,11 @@ namespace GenTRAC.Models
         public string EppRosDelegationNotes { get; set; }
         public Nullable<bool> LmWon { get; set; }
         public Nullable<System.DateTime> ModCompletedDate { get; set; }
+        public string CageCode { get; set; }
     
         public virtual EppDelegationAuthorityLU EppDelegationAuthorityLU { get; set; }
         public virtual Proposal Proposal { get; set; }
         public virtual Proposal Proposal1 { get; set; }
+        public virtual CageCode CageCode1 { get; set; }
     }
 }

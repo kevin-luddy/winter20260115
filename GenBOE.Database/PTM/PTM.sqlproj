@@ -98,6 +98,7 @@
     <Folder Include="Release Scripts\Release 2021.23" />
     <Folder Include="Release Scripts\Release 2022.15" />
     <Folder Include="Release Scripts\IES-954" />
+    <Folder Include="Release Scripts\Release 2022.25" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Object Scripts\Stored Procedures\upsertProposalChecklistTemplate.sql" />
@@ -211,5 +212,8 @@
     <None Include="Object Scripts\X_Data Cleanup\DeleteOrphanedAttachments.sql" />
     <None Include="Object Scripts\Stored Procedures\getProposalRevisionHistory.sql" />
     <None Include="Release Scripts\Release 2021.7\Release 2021.7.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <PostDeploy Include="Release Scripts\Release 2022.25\Release 2022.25.sql" />
   </ItemGroup>
 </Project>

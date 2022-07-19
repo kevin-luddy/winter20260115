@@ -107,6 +107,8 @@
         <AssociationConnector Association="genTRACModel.FK_ProposalUserRole_Proposal" />
         <AssociationConnector Association="genTRACModel.ProposalContractTypeXREF" />
         <AssociationConnector Association="genTRACModel.ProposalCostElementXREF" />
+        <EntityTypeShape EntityType="genTRACModel.CageCode" Width="1.5" PointX="0.75" PointY="7" />
+        <AssociationConnector Association="genTRACModel.FK__ProposalC__CageC__6E4C3B47" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
