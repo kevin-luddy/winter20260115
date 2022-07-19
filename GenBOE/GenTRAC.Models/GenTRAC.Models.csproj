@@ -97,6 +97,9 @@
     <Compile Include="ChecklistTypeLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="ContractActionTypeLU.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="ContractTypeGroupLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>

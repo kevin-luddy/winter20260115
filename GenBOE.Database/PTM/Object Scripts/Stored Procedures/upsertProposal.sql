@@ -79,7 +79,9 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @OtherReasonComment VARCHAR(1000) = NULL,
 	  @SetupComments VARCHAR(MAX) = NULL,
 	  @ModExecutedLastEmailed datetime2 = NULL,
-	  @ProposalCompletedDate datetime2 = NULL
+	  @ProposalCompletedDate datetime2 = NULL,
+	  @ContractActionType int = NULL,
+	  @ContractActionTypeOtherText VARCHAR(100) = NULL
 )
 AS
 /******************************************************************************
@@ -116,6 +118,7 @@ AS
 **			7/31/2020	ranzalon				BOEJ-4648 Proposal Setup Comments
 **			3/10/2022   jquijano                IES-854 Add new email (Mod)
 **			4/28/2022	jquijano				IES-1067 Show Certification TimelineCompleted Date
+**			7/19/2022	ranzalon				IES-1504 - Contract Action Type
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -260,6 +263,8 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,[SetupComments]
 		,[ModExecutedLastEmailed]
 		,[ProposalCompletedDate]
+		,[ContractActionType]
+		,[ContractActionTypeOtherText]
 		)
 	OUTPUT inserted.ProposalID INTO @Inserted
 	VALUES
@@ -327,6 +332,8 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@SetupComments
 		,@ModExecutedLastEmailed
 		,@ProposalCompletedDate
+		,@ContractActionType
+		,@ContractActionTypeOtherText
 		)
 
 		SELECT @ProposalID = ID FROM @Inserted
@@ -428,6 +435,8 @@ ELSE
 						,[SetupComments] = @SetupComments
 						,[ModExecutedLastEmailed] = @ModExecutedLastEmailed
 						,[ProposalCompletedDate] = @ProposalCompletedDate
+						,[ContractActionType] = @ContractActionType
+						,[ContractActionTypeOtherText] = @ContractActionTypeOtherText
 						WHERE 
 							ProposalID = @ProposalID;
 

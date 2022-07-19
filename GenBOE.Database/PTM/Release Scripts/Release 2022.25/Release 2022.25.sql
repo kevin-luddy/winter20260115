@@ -1,4 +1,7 @@
-﻿/*
+﻿EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2022.25';
+GO
+
+/*
                 ## START ##
 
                 7/18/2021 [Dusan/RJ] - IES-1496 - Add Cage Codes
@@ -57,4 +60,45 @@ GO
                 ## END ##
 
                 7/18/2021 [Dusan/RJ] - IES-1496 - Add Cage Codes
+*/
+
+/*
+                ## START ##
+
+                7/19/2021 [RJ] - IES-1504 - Contract Action Type
+*/
+
+IF OBJECT_ID('dbo.ContractActionTypeLU', 'U') IS NULL
+BEGIN
+                CREATE TABLE dbo.ContractActionTypeLU (
+                        ID                      int             PRIMARY KEY,
+                        ContractActionType      VARCHAR(100)    NOT NULL
+                ); 
+END
+GO
+
+IF NOT EXISTS(SELECT 1 FROM dbo.ContractActionTypeLU)
+BEGIN
+                INSERT INTO dbo.ContractActionTypeLU (ID, ContractActionType)
+                VALUES (1, 'New Contract'),
+                        (2, 'Letter Contract'),
+                        (3, 'Change Order'),
+                        (4, 'Unpriced Order'),
+                        (5, 'Price Revision / Redetermination'),
+                        (6, 'Other');
+END
+GO
+
+IF COL_LENGTH('dbo.Proposal', 'ContractActionType') IS NULL
+BEGIN
+    ALTER TABLE dbo.Proposal
+        ADD ContractActionType int NULL,
+            ContractActionTypeOtherText VARCHAR(100) NULL,
+        FOREIGN KEY(ContractActionType) REFERENCES dbo.ContractActionTypeLU(ID);
+END
+
+/*
+                ## END ##
+
+                7/19/2021 [RJ] - IES-1504 - Contract Action Type
 */
