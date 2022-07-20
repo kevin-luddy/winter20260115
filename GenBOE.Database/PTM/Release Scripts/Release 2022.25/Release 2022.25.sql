@@ -102,3 +102,21 @@ END
 
                 7/19/2021 [RJ] - IES-1504 - Contract Action Type
 */
+
+/*
+                ## START ##
+
+                7/19/2021 [RJ] - IES-1505 - Cost through COM
+*/
+
+IF COL_LENGTH('dbo.Proposal', 'CostThroughCom') IS NULL
+BEGIN
+    ALTER TABLE dbo.ProposalChecklist
+        ADD CostThroughCom bigint NULL;
+END
+
+/*
+                ## END ##
+
+                7/19/2021 [RJ] - IES-1505 - Cost through COM
+*/
