@@ -88,10 +88,16 @@
     <Compile Include="BOEToolLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="CageCode.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="CannedResponsesPAR.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ChecklistTypeLU.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="ContractActionTypeLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
     <Compile Include="ContractTypeGroupLU.cs">

@@ -17,10 +17,10 @@ namespace GenTRAC.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public genTRACUser()
         {
-            this.Proposals = new HashSet<Proposal>();
             this.ProposalChecklistCompletes = new HashSet<ProposalChecklistComplete>();
             this.ProposalUserRoles = new HashSet<ProposalUserRole>();
             this.SystemUserRoles = new HashSet<SystemUserRole>();
+            this.Proposals = new HashSet<Proposal>();
         }
     
         public int UserID { get; set; }
@@ -36,12 +36,12 @@ namespace GenTRAC.Models
         public Nullable<bool> IsSubcontractor { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Proposal> Proposals { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProposalChecklistComplete> ProposalChecklistCompletes { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<ProposalUserRole> ProposalUserRoles { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SystemUserRole> SystemUserRoles { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Proposal> Proposals { get; set; }
     }
 }

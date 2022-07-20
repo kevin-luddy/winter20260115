@@ -60,7 +60,8 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.CorporateEppDate,
                             dtoToUpsert.EppRosDelegationNotes,
                             dtoToUpsert.LmWon,
-                            dtoToUpsert.ModCompletedDate
+                            dtoToUpsert.ModCompletedDate,
+                            dtoToUpsert.CageCode
                             ).FirstOrDefault();
                     }
                 }
@@ -116,7 +117,8 @@ namespace GenTRAC.DataBridge.DTO
                             CorporateEppDate = x.CorporateEppDate,
                             EppRosDelegationNotes = x.EppRosDelegationNotes,
                             LmWon = x.LmWon,
-                            ModCompletedDate = x.ModCompletedDate
+                            ModCompletedDate = x.ModCompletedDate,
+                            CageCode = x.CageCode
                         }).FirstOrDefault(x => x.ProposalId == proposalId);
                 }
             }
@@ -160,7 +162,8 @@ namespace GenTRAC.DataBridge.DTO
                             CorporateEppDate = x.CorporateEppDate,
                             EppRosDelegationNotes = x.EppRosDelegationNotes,
                             LmWon = x.LmWon,
-                            ModCompletedDate = x.ModCompletedDate
+                            ModCompletedDate = x.ModCompletedDate,
+                            CageCode = x.CageCode
                         }).ToList();
                 }
             }

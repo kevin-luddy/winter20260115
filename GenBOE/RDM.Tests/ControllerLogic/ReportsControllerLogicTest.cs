@@ -140,7 +140,7 @@ namespace RDM.Tests.ControllerLogic
 
             sut.GenerateFullPPRD(id, serverFileName, httpResponse.Object);
 
-            this.pprdExporter.Verify(x => x.ExportFullPPRDToWordFile(It.IsAny<ICollection<SectionModelView>>(), It.IsAny<ICollection<RateDetailModelView>>(), It.IsAny<ICollection<FileAttachmentRowModelView>>(), serverFileName, It.IsAny<string>(), wipRevision, It.IsAny<int>(), httpResponse.Object), Times.Exactly(1));
+            this.pprdExporter.Verify(x => x.ExportFullPPRDToWordFile(It.IsAny<ICollection<SectionModelView>>(), It.IsAny<ICollection<RateDetailModelView>>(), It.IsAny<ICollection<FileAttachmentRowModelView>>(), serverFileName, It.IsAny<string>(), wipRevision, It.IsAny<int>(), httpResponse.Object, It.IsAny<int>()), Times.Exactly(1));
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace RDM.Tests.ControllerLogic
 
             sut.GenerateFullPPRD(id, serverFileName, httpResponse.Object);
 
-            this.pprdExporter.Verify(x => x.ExportFullPPRDToWordFile(It.IsAny<ICollection<SectionModelView>>(), It.IsAny<ICollection<RateDetailModelView>>(), It.IsAny<ICollection<FileAttachmentRowModelView>>(), serverFileName, It.IsAny<string>(), previousRevision, It.IsAny<int>(), httpResponse.Object), Times.Exactly(1));
+            this.pprdExporter.Verify(x => x.ExportFullPPRDToWordFile(It.IsAny<ICollection<SectionModelView>>(), It.IsAny<ICollection<RateDetailModelView>>(), It.IsAny<ICollection<FileAttachmentRowModelView>>(), serverFileName, It.IsAny<string>(), previousRevision, It.IsAny<int>(), httpResponse.Object, It.IsAny<int>()), Times.Exactly(1));
         }
 
         /// <summary>

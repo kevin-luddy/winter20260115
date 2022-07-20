@@ -11,6 +11,7 @@ namespace IES.ActionLogic.ControllerLogic
 	using System.Collections.ObjectModel;
 	using System.IO;
 	using System.Linq;
+	using System.Text.RegularExpressions;
 	using System.Transactions;
 	using System.Web;
 	using DataBridge.Loaders;
@@ -654,7 +655,9 @@ namespace IES.ActionLogic.ControllerLogic
 
 			// Get SectionsMVs 
 			string refNumberPrefix = string.IsNullOrWhiteSpace(modelView.ParentSection) ? string.Empty : modelView.ParentSection + ".";
-			ICollection<SectionModelView> sections = this.sectionLoader.GetAll(revisionMV, false, modelView.SelectedSectionIds, refNumberPrefix);
+            int refNumberPrefixLevel = string.IsNullOrWhiteSpace(modelView.ParentSection) ? 0 : Regex.Matches(modelView.ParentSection, ".").Count;
+
+            ICollection<SectionModelView> sections = this.sectionLoader.GetAll(revisionMV, false, modelView.SelectedSectionIds, refNumberPrefix);
 
 			// Get Rates
 			ICollection<RateDetailModelView> rates = this.rateDetailLoader.GetRatesByRevision(revisionMV);
@@ -665,7 +668,7 @@ namespace IES.ActionLogic.ControllerLogic
 			// Get File Attachments
 			ICollection<FileAttachmentRowModelView> fileAttachments = this.fileAttachmentLoader.GetByRevision(revisionMV.Id);
 
-			this.pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, revisionMV, modelView, stream, includeDocumentDetails);
+			this.pprdExporter.ExportRDDToWordFile(sections, rates, fileAttachments, serverFileName, revisionMV, modelView, stream, refNumberPrefixLevel, includeDocumentDetails);
 		}
 
 		/// <summary>

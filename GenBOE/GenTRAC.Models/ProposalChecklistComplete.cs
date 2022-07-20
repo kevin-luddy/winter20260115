@@ -26,7 +26,7 @@ namespace GenTRAC.Models
     
         public virtual ChecklistTypeLU ChecklistTypeLU { get; set; }
         public virtual genTRACUser genTRACUser { get; set; }
-        public virtual Proposal Proposal { get; set; }
         public virtual ResponseTypeLU ResponseTypeLU { get; set; }
+        public virtual Proposal Proposal { get; set; }
     }
 }

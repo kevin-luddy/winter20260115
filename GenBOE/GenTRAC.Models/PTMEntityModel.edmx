@@ -72,6 +72,17 @@
           <Property Name="BOETool" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
         </EntityType>
+        <EntityType Name="CageCodes">
+          <Key>
+            <PropertyRef Name="CageCode" />
+          </Key>
+          <Property Name="CageCode" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Address1" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Address2" Type="varchar" MaxLength="100" />
+          <Property Name="City" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="State" Type="varchar" MaxLength="2" Nullable="false" />
+          <Property Name="Zip" Type="varchar" MaxLength="10" Nullable="false" />
+        </EntityType>
         <EntityType Name="CannedResponsesPAR">
           <Key>
             <PropertyRef Name="CannedResponseId" />
@@ -87,6 +98,13 @@
           <Property Name="ChecklistTypeID" Type="int" Nullable="false" />
           <Property Name="ChecklistType" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ContractActionTypeLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" Nullable="false" />
+          <Property Name="ContractActionType" Type="varchar" MaxLength="100" Nullable="false" />
         </EntityType>
         <EntityType Name="ContractTypeGroupLU">
           <Key>
@@ -320,6 +338,8 @@
           <Property Name="InformationComments" Type="varchar(max)" />
           <Property Name="ModExecutedLastEmailed" Type="datetime2" Precision="7" />
           <Property Name="ProposalCompletedDate" Type="datetime2" Precision="7" />
+          <Property Name="ContractActionType" Type="int" />
+          <Property Name="ContractActionTypeOtherText" Type="varchar" MaxLength="100" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -352,6 +372,7 @@
           <Property Name="AbsoluteValue" Type="bigint" />
           <Property Name="Profit" Type="bigint" />
           <Property Name="Com" Type="bigint" />
+          <Property Name="CostThroughCom" Type="bigint" />
         </EntityType>
         <EntityType Name="ProposalChecklistComplete">
           <Key>
@@ -406,6 +427,7 @@
           <Property Name="EppRosDelegationNotes" Type="varchar" MaxLength="1000" />
           <Property Name="LmWon" Type="bit" />
           <Property Name="ModCompletedDate" Type="date" />
+          <Property Name="CageCode" Type="varchar" MaxLength="10" />
         </EntityType>
         <EntityType Name="ProposalContractTypeXREF">
           <Key>
@@ -645,6 +667,18 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK__Proposal__Contra__7310F064">
+          <End Role="ContractActionTypeLU" Type="Self.ContractActionTypeLU" Multiplicity="0..1" />
+          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ContractActionTypeLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ContractActionType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK__Proposal__Reason__04DA9AE4">
           <End Role="ReasonCertificationNotRequiredLU" Type="Self.ReasonCertificationNotRequiredLU" Multiplicity="0..1" />
           <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
@@ -654,6 +688,18 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Principal>
             <Dependent Role="Proposal">
               <PropertyRef Name="ReasonCertificationNotRequired" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__ProposalC__CageC__6E4C3B47">
+          <End Role="CageCodes" Type="Self.CageCodes" Multiplicity="0..1" />
+          <End Role="ProposalContractsData" Type="Self.ProposalContractsData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CageCodes">
+              <PropertyRef Name="CageCode" />
+            </Principal>
+            <Dependent Role="ProposalContractsData">
+              <PropertyRef Name="CageCode" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1699,6 +1745,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="SetupComments" Type="varchar(max)" Mode="In" />
           <Parameter Name="ModExecutedLastEmailed" Type="datetime2" Mode="In" />
           <Parameter Name="ProposalCompletedDate" Type="datetime2" Mode="In" />
+          <Parameter Name="ContractActionType" Type="int" Mode="In" />
+          <Parameter Name="ContractActionTypeOtherText" Type="varchar" Mode="In" />
         </Function>
         <Function Name="upsertProposalChecklist" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalChecklistID" Type="int" Mode="In" />
@@ -1719,6 +1767,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="OtherDirectCost" Type="bigint" Mode="In" />
           <Parameter Name="DeliverChecklistDFARS" Type="bit" Mode="In" />
           <Parameter Name="AbsoluteValue" Type="bigint" Mode="In" />
+          <Parameter Name="CostThroughCom" Type="bigint" Mode="In" />
         </Function>
         <Function Name="upsertProposalChecklistTemplate" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalID" Type="int" Mode="In" />
@@ -1749,6 +1798,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="EppRosDelegationNotes" Type="varchar" Mode="In" />
           <Parameter Name="LmWon" Type="bit" Mode="In" />
           <Parameter Name="ModCompletedDate" Type="date" Mode="In" />
+          <Parameter Name="CageCode" Type="varchar" Mode="In" />
         </Function>
         <Function Name="upsertProposalType" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="Id" Type="int" Mode="In" />
@@ -1766,8 +1816,10 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySet Name="AttachmentTypeLU" EntityType="Self.AttachmentTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BoeDatabaseVersion" EntityType="Self.BoeDatabaseVersion" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="BOEToolLU" EntityType="Self.BOEToolLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CageCodes" EntityType="Self.CageCodes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CannedResponsesPAR" EntityType="Self.CannedResponsesPAR" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ChecklistTypeLU" EntityType="Self.ChecklistTypeLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ContractActionTypeLU" EntityType="Self.ContractActionTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ContractTypeGroupLU" EntityType="Self.ContractTypeGroupLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ContractTypeGroupXREF" EntityType="Self.ContractTypeGroupXREF" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ContractTypeLU" EntityType="Self.ContractTypeLU" Schema="dbo" store:Type="Tables" />
@@ -1872,9 +1924,17 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <End Role="PARChecklistContent" EntitySet="PARChecklistContent" />
             <End Role="CannedResponsesPAR" EntitySet="CannedResponsesPAR" />
           </AssociationSet>
+          <AssociationSet Name="FK__Proposal__Contra__7310F064" Association="Self.FK__Proposal__Contra__7310F064">
+            <End Role="ContractActionTypeLU" EntitySet="ContractActionTypeLU" />
+            <End Role="Proposal" EntitySet="Proposal" />
+          </AssociationSet>
           <AssociationSet Name="FK__Proposal__Reason__04DA9AE4" Association="Self.FK__Proposal__Reason__04DA9AE4">
             <End Role="ReasonCertificationNotRequiredLU" EntitySet="ReasonCertificationNotRequiredLU" />
             <End Role="Proposal" EntitySet="Proposal" />
+          </AssociationSet>
+          <AssociationSet Name="FK__ProposalC__CageC__6E4C3B47" Association="Self.FK__ProposalC__CageC__6E4C3B47">
+            <End Role="CageCodes" EntitySet="CageCodes" />
+            <End Role="ProposalContractsData" EntitySet="ProposalContractsData" />
           </AssociationSet>
           <AssociationSet Name="FK__ProposalC__EppDe__12BEA5E7" Association="Self.FK__ProposalC__EppDe__12BEA5E7">
             <End Role="EppDelegationAuthorityLU" EntitySet="EppDelegationAuthorityLU" />
@@ -3036,6 +3096,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="SetupComments" Mode="In" Type="String" />
             <Parameter Name="ModExecutedLastEmailed" Mode="In" Type="DateTime" />
             <Parameter Name="ProposalCompletedDate" Mode="In" Type="DateTime" />
+            <Parameter Name="ContractActionType" Mode="In" Type="Int32" />
+            <Parameter Name="ContractActionTypeOtherText" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalChecklist" ReturnType="Collection(Int32)">
             <Parameter Name="ProposalChecklistID" Mode="In" Type="Int32" />
@@ -3056,6 +3118,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="OtherDirectCost" Mode="In" Type="Int64" />
             <Parameter Name="DeliverChecklistDFARS" Mode="In" Type="Boolean" />
             <Parameter Name="AbsoluteValue" Mode="In" Type="Int64" />
+            <Parameter Name="CostThroughCom" Mode="In" Type="Int64" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalChecklistTemplate">
             <Parameter Name="ProposalID" Mode="In" Type="Int32" />
@@ -3207,6 +3270,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="EppRosDelegationNotes" Mode="In" Type="String" />
             <Parameter Name="LmWon" Mode="In" Type="Boolean" />
             <Parameter Name="ModCompletedDate" Mode="In" Type="DateTime" />
+            <Parameter Name="CageCode" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalContractsOffer">
             <Parameter Name="ProposalContractsOfferId" Mode="In" Type="Int32" />
@@ -3401,6 +3465,16 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           </AssociationSet>
           <AssociationSet Name="ProposalCostElementXREF" Association="genTRACModel.ProposalCostElementXREF">
             <End Role="CostElementLU" EntitySet="CostElementLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
+          <EntitySet Name="CageCodes" EntityType="genTRACModel.CageCode" />
+          <AssociationSet Name="FK__ProposalC__CageC__6E4C3B47" Association="genTRACModel.FK__ProposalC__CageC__6E4C3B47">
+            <End Role="CageCode" EntitySet="CageCodes" />
+            <End Role="ProposalContractsData" EntitySet="ProposalContractsDatas" />
+          </AssociationSet>
+          <EntitySet Name="ContractActionTypeLUs" EntityType="genTRACModel.ContractActionTypeLU" />
+          <AssociationSet Name="FK__Proposal__Contra__7310F064" Association="genTRACModel.FK__Proposal__Contra__7310F064">
+            <End Role="ContractActionTypeLU" EntitySet="ContractActionTypeLUs" />
             <End Role="Proposal" EntitySet="Proposals" />
           </AssociationSet>
           </EntityContainer>
@@ -3830,6 +3904,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="Com" Type="Int64" />
           <Property Name="Profit" Type="Int64" />
           <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK_ProposalChecklist_Proposal" FromRole="ProposalChecklist" ToRole="Proposal" />
+          <Property Name="CostThroughCom" Type="Int64" />
         </EntityType>
         <EntityType Name="AttachmentTypeLU">
           <Key>
@@ -3919,6 +3994,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <NavigationProperty Name="EppDelegationAuthorityLU" Relationship="genTRACModel.FK__ProposalC__EPPDe__02925FBF" FromRole="ProposalContractsData" ToRole="EppDelegationAuthorityLU" />
           <NavigationProperty Name="Proposal" Relationship="genTRACModel.FK__ProposalC__Previ__11CA81AE" FromRole="ProposalContractsData" ToRole="Proposal" />
           <NavigationProperty Name="Proposal1" Relationship="genTRACModel.FK__ProposalC__Propo__10D65D75" FromRole="ProposalContractsData" ToRole="Proposal" />
+          <Property Name="CageCode" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="CageCode1" Relationship="genTRACModel.FK__ProposalC__CageC__6E4C3B47" FromRole="ProposalContractsData" ToRole="CageCode" />
           </EntityType>
         <Association Name="FK__ProposalC__EPPDe__02925FBF">
           <End Type="genTRACModel.EppDelegationAuthorityLU" Role="EppDelegationAuthorityLU" Multiplicity="0..1" />
@@ -4032,6 +4109,9 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <NavigationProperty Name="ProposalUserRoles" Relationship="genTRACModel.FK_ProposalUserRole_Proposal" FromRole="Proposal" ToRole="ProposalUserRole" />
           <NavigationProperty Name="ContractTypeLUs" Relationship="genTRACModel.ProposalContractTypeXREF" FromRole="Proposal" ToRole="ContractTypeLU" />
           <NavigationProperty Name="CostElementLUs" Relationship="genTRACModel.ProposalCostElementXREF" FromRole="Proposal" ToRole="CostElementLU" />
+          <Property Name="ContractActionType" Type="Int32" />
+          <Property Name="ContractActionTypeOtherText" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ContractActionTypeLU" Relationship="genTRACModel.FK__Proposal__Contra__7310F064" FromRole="Proposal" ToRole="ContractActionTypeLU" />
         </EntityType>
         <Association Name="FK_Proposal_BOEToolLU">
           <End Type="genTRACModel.BOEToolLU" Role="BOEToolLU" Multiplicity="1" />
@@ -4340,6 +4420,50 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
         <Association Name="ProposalCostElementXREF">
           <End Type="genTRACModel.CostElementLU" Role="CostElementLU" Multiplicity="*" />
           <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+        </Association>
+        <EntityType Name="CageCode">
+          <Key>
+            <PropertyRef Name="CageCode1" />
+          </Key>
+          <Property Name="CageCode1" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Address1" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Address2" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="City" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="State" Type="String" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="Zip" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="ProposalContractsDatas" Relationship="genTRACModel.FK__ProposalC__CageC__6E4C3B47" FromRole="CageCode" ToRole="ProposalContractsData" />
+        </EntityType>
+        <Association Name="FK__ProposalC__CageC__6E4C3B47">
+          <End Type="genTRACModel.CageCode" Role="CageCode" Multiplicity="0..1" />
+          <End Type="genTRACModel.ProposalContractsData" Role="ProposalContractsData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CageCode">
+              <PropertyRef Name="CageCode1" />
+            </Principal>
+            <Dependent Role="ProposalContractsData">
+              <PropertyRef Name="CageCode" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="ContractActionTypeLU">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" />
+          <Property Name="ContractActionType" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK__Proposal__Contra__7310F064" FromRole="ContractActionTypeLU" ToRole="Proposal" />
+        </EntityType>
+        <Association Name="FK__Proposal__Contra__7310F064">
+          <End Type="genTRACModel.ContractActionTypeLU" Role="ContractActionTypeLU" Multiplicity="0..1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="ContractActionTypeLU">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="ContractActionType" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
         </Schema>
     </edmx:ConceptualModels>
@@ -4980,6 +5104,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="ProposalChecklists">
             <EntityTypeMapping TypeName="genTRACModel.ProposalChecklist">
               <MappingFragment StoreEntitySet="ProposalChecklist">
+                <ScalarProperty Name="CostThroughCom" ColumnName="CostThroughCom" />
                 <ScalarProperty Name="Profit" ColumnName="Profit" />
                 <ScalarProperty Name="Com" ColumnName="Com" />
                 <ScalarProperty Name="AbsoluteValue" ColumnName="AbsoluteValue" />
@@ -5076,6 +5201,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="ProposalContractsDatas">
             <EntityTypeMapping TypeName="genTRACModel.ProposalContractsData">
               <MappingFragment StoreEntitySet="ProposalContractsData">
+                <ScalarProperty Name="CageCode" ColumnName="CageCode" />
                 <ScalarProperty Name="ModCompletedDate" ColumnName="ModCompletedDate" />
                 <ScalarProperty Name="LmWon" ColumnName="LmWon" />
                 <ScalarProperty Name="EppRosDelegationNotes" ColumnName="EppRosDelegationNotes" />
@@ -5100,6 +5226,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="Proposals">
             <EntityTypeMapping TypeName="genTRACModel.Proposal">
               <MappingFragment StoreEntitySet="Proposal">
+                <ScalarProperty Name="ContractActionTypeOtherText" ColumnName="ContractActionTypeOtherText" />
+                <ScalarProperty Name="ContractActionType" ColumnName="ContractActionType" />
                 <ScalarProperty Name="ProposalCompletedDate" ColumnName="ProposalCompletedDate" />
                 <ScalarProperty Name="ModExecutedLastEmailed" ColumnName="ModExecutedLastEmailed" />
                 <ScalarProperty Name="InformationComments" ColumnName="InformationComments" />
@@ -5187,6 +5315,26 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
               <ScalarProperty Name="CostElementID" ColumnName="CostElementID" />
             </EndProperty>
           </AssociationSetMapping>
+          <EntitySetMapping Name="CageCodes">
+            <EntityTypeMapping TypeName="genTRACModel.CageCode">
+              <MappingFragment StoreEntitySet="CageCodes">
+                <ScalarProperty Name="Zip" ColumnName="Zip" />
+                <ScalarProperty Name="State" ColumnName="State" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="Address2" ColumnName="Address2" />
+                <ScalarProperty Name="Address1" ColumnName="Address1" />
+                <ScalarProperty Name="CageCode1" ColumnName="CageCode" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="ContractActionTypeLUs">
+            <EntityTypeMapping TypeName="genTRACModel.ContractActionTypeLU">
+              <MappingFragment StoreEntitySet="ContractActionTypeLU">
+                <ScalarProperty Name="ContractActionType" ColumnName="ContractActionType" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

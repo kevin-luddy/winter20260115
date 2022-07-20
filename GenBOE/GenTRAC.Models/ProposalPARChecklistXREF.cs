@@ -23,9 +23,9 @@ namespace GenTRAC.Models
         public Nullable<int> CannedResponseId { get; set; }
     
         public virtual PARChecklistContent PARChecklistContent { get; set; }
-        public virtual Proposal Proposal { get; set; }
         public virtual ResponseLU ResponseLU { get; set; }
         public virtual ResponseTypeLU ResponseTypeLU { get; set; }
         public virtual CannedResponsesPAR CannedResponsesPAR { get; set; }
+        public virtual Proposal Proposal { get; set; }
     }
 }
