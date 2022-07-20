@@ -185,10 +185,10 @@ namespace GenTRAC.ActionLogic
         /// <returns>All cage codes view models</returns>
         public ICollection<CageCodeModelView> GetAllCageCodesData()
 		{
-            ICollection<CageCodesDTO> cageCodesDTOs = cageCodesLoader.GetAllCageCodesData();
+            ICollection<CageCodeDTO> cageCodesDTOs = cageCodesLoader.GetAllCageCodesData();
             ICollection<CageCodeModelView> cageCodeViewModels = new List<CageCodeModelView>();
 
-            foreach (CageCodesDTO cageCodesDTO in cageCodesDTOs)
+            foreach (CageCodeDTO cageCodesDTO in cageCodesDTOs)
 			{
                 cageCodeViewModels.Add(new CageCodeModelView()
                 {
@@ -211,7 +211,7 @@ namespace GenTRAC.ActionLogic
         /// <returns>Cage code view model</returns>
         public CageCodeModelView GetDataByCageCode(string cageCode)
 		{
-            CageCodesDTO cageCodesDTO = cageCodesLoader.GetDataByCageCode(cageCode);
+            CageCodeDTO cageCodesDTO = cageCodesLoader.GetDataByCageCode(cageCode);
 
             CageCodeModelView cageCodeViewModel = new CageCodeModelView()
             {
@@ -621,6 +621,13 @@ namespace GenTRAC.ActionLogic
                     messages.Add(msg);
                     isValid = false;
                     break;                 
+            }
+
+            // Cage Code required for validation
+            if (dto.CageCode == null)
+            {
+                isValid = false;
+                messages.Add(Constants.INVALID_CAGE_CODE);
             }
 
             // Final Negotiated Value is required

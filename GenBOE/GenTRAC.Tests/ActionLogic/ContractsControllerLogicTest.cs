@@ -161,9 +161,9 @@ namespace GenTRAC.Tests.ActionLogic
 
             int proposalId = 5;
 
-            ICollection<CageCodesDTO> cageCodesDTOsSetup = new List<CageCodesDTO>();
+            ICollection<CageCodeDTO> cageCodesDTOsSetup = new List<CageCodeDTO>();
 
-            cageCodesDTOsSetup.Add(new CageCodesDTO()
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
             {
                 CageCode = "ABC123",
                 Address1 = "Test1",
@@ -172,7 +172,7 @@ namespace GenTRAC.Tests.ActionLogic
                 State = "TestState",
                 Zip = "TestZip"
             });
-            cageCodesDTOsSetup.Add(new CageCodesDTO()
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
             {
                 CageCode = "ABC1234",
                 Address1 = "Test11",
@@ -181,7 +181,7 @@ namespace GenTRAC.Tests.ActionLogic
                 State = "TestStatee",
                 Zip = "TestZipp"
             });
-            cageCodesDTOsSetup.Add(new CageCodesDTO()
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
             {
                 CageCode = "ABC12345",
                 Address1 = "Test111",
@@ -651,9 +651,9 @@ namespace GenTRAC.Tests.ActionLogic
             // Create new Contracts Controller Logic object
             ContractsControllerLogic sut = this.CreateSystem();
 
-            ICollection<CageCodesDTO> cageCodesDTOsSetup = new List<CageCodesDTO>();
+            ICollection<CageCodeDTO> cageCodesDTOsSetup = new List<CageCodeDTO>();
 
-            cageCodesDTOsSetup.Add(new CageCodesDTO()
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
             {
                 CageCode = "ABC123",
                 Address1 = "Test1",
@@ -662,7 +662,7 @@ namespace GenTRAC.Tests.ActionLogic
                 State = "TestState",
                 Zip = "TestZip"
             });
-            cageCodesDTOsSetup.Add(new CageCodesDTO()
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
             {
                 CageCode = "ABC1234",
                 Address1 = "Test11",
@@ -671,7 +671,7 @@ namespace GenTRAC.Tests.ActionLogic
                 State = "TestStatee",
                 Zip = "TestZipp"
             });
-            cageCodesDTOsSetup.Add(new CageCodesDTO()
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
             {
                 CageCode = "ABC12345",
                 Address1 = "Test111",
@@ -698,7 +698,7 @@ namespace GenTRAC.Tests.ActionLogic
             // Create new Contracts Controller Logic object
             ContractsControllerLogic sut = this.CreateSystem();
 
-            CageCodesDTO cageCodesDTOSetup = new CageCodesDTO()
+            CageCodeDTO cageCodesDTOSetup = new CageCodeDTO()
             {
                 CageCode = "XYZ098",
                 Address1 = "Address 1 Test",

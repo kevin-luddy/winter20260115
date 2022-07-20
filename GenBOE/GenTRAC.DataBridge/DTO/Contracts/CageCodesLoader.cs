@@ -34,16 +34,16 @@ namespace GenTRAC.DataBridge.DTO
 		/// Get All Cage Codes
 		/// </summary>
 		/// <returns>All Cage Codes</returns>
-		public ICollection<CageCodesDTO> GetAllCageCodesData()
+		public ICollection<CageCodeDTO> GetAllCageCodesData()
 		{
-			ICollection<CageCodesDTO> toReturn = new List<CageCodesDTO>();
+			ICollection<CageCodeDTO> toReturn = new List<CageCodeDTO>();
 
             using (StopwatchTimer sw = new StopwatchTimer("CageCodes.GetAllCageCodesData", Log))
             {
                 using (genTRACEntities dbModel = new genTRACEntities())
                 {
                     toReturn = dbModel.CageCodes
-                        .Select(x => new CageCodesDTO()
+                        .Select(x => new CageCodeDTO()
                         {
                             CageCode = x.CageCode1,
                             Address1 = x.Address1,
@@ -63,16 +63,16 @@ namespace GenTRAC.DataBridge.DTO
 		/// </summary>
 		/// <param name="cageCode">Cage Code</param>
 		/// <returns>Specified cage code data</returns>
-		public CageCodesDTO GetDataByCageCode(string cageCode)
+		public CageCodeDTO GetDataByCageCode(string cageCode)
 		{
-			CageCodesDTO toReturn = new CageCodesDTO();
+			CageCodeDTO toReturn = new CageCodeDTO();
 
 			using (StopwatchTimer sw = new StopwatchTimer("CageCodes.GetDataByCageCode", Log))
 			{
 				using (genTRACEntities dbModel = new genTRACEntities())
 				{
 					toReturn = dbModel.CageCodes
-						.Select(x => new CageCodesDTO()
+						.Select(x => new CageCodeDTO()
 						{
 							CageCode = x.CageCode1,
 							Address1 = x.Address1,

@@ -13,7 +13,7 @@ namespace GenTRAC.DataBridge.DTO.Contracts
     /// Cage Codes DTO
     /// </summary>
     [Serializable]
-    public class CageCodesDTO : IES.Common.UpdateableDTO
+    public class CageCodeDTO : IES.Common.UpdateableDTO
     {
         /// <summary>
         /// Cage Code

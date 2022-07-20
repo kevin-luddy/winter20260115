@@ -633,6 +633,11 @@ namespace IES.Common
         #region Contracts
 
         /// <summary>
+        /// Validation failed for Cage Code
+        /// </summary>
+        public const string INVALID_CAGE_CODE = "Cage Code is required.";
+
+        /// <summary>
         /// Validation failed for Final Negotiated Value
         /// </summary>
         public const string INVALID_FINAL_NEGOTIATED_VALUE = "Final Negotiated Value is required.";
