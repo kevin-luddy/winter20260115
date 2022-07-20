@@ -18,10 +18,12 @@ namespace GenTRAC.Tests.ActionLogic
     using GenTRAC.ActionLogic.GeneralHelper;
     using GenTRAC.ActionLogic.Mediator;
     using GenTRAC.ActionLogic.ModelView;
+    using GenTRAC.ActionLogic.ModelView.Contracts;
     using GenTRAC.ActionLogic.ModelView.Proposals;
     using GenTRAC.ActionLogic.Validation;
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
+    using GenTRAC.DataBridge.DTO.Contracts;
     using GenTRAC.Objects;
     using GenTRAC.Objects.FullObject;
     using GenTRAC.Tests.Helper;
@@ -85,9 +87,14 @@ namespace GenTRAC.Tests.ActionLogic
         private Mock<IProposalMediator> proposalMediator = null;
 
         /// <summary>
-        /// propsoal mediator
+        /// Contracts Loader
         /// </summary>
         private Mock<IContractsLoader> contractsLoader = null;
+
+        /// <summary>
+        /// Cage Codes Loader
+        /// </summary>
+        private Mock<ICageCodesLoader> cageCodesLoader = null;
 
         /// <summary>
         /// Emailer
@@ -121,6 +128,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalMediator = new Mock<IProposalMediator>();
             this.approvalsLoader = new Mock<IApprovalsLoader>();
             this.contractsLoader = new Mock<IContractsLoader>();
+            this.cageCodesLoader = new Mock<ICageCodesLoader>();
             this.emailer = new Mock<IPtmEmailer>();
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterInstance(this.emailer.Object);
             this.retriever = new Mock<IRetriever>();
@@ -137,7 +145,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             logic = new ContractsControllerLogic(this.securityAccess.Object, this.proposalLoader.Object, this.userMapper.Object,
                         this.objectFactory.Object, this.approvalsLoader.Object, this.proposalChecklistLoader.Object, this.checklistMediator.Object,
-                        this.proposalMediator.Object, this.contractsLoader.Object, this.emailer.Object, this.approvalsLogic.Object);
+                        this.proposalMediator.Object, this.contractsLoader.Object, this.cageCodesLoader.Object, this.emailer.Object, this.approvalsLogic.Object);
 
             return logic;
         }
@@ -152,6 +160,36 @@ namespace GenTRAC.Tests.ActionLogic
             ContractsControllerLogic sut = this.CreateSystem();
 
             int proposalId = 5;
+
+            ICollection<CageCodeDTO> cageCodesDTOsSetup = new List<CageCodeDTO>();
+
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
+            {
+                CageCode = "ABC123",
+                Address1 = "Test1",
+                Address2 = "Test2",
+                City = "TestCity",
+                State = "TestState",
+                Zip = "TestZip"
+            });
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
+            {
+                CageCode = "ABC1234",
+                Address1 = "Test11",
+                Address2 = "Test22",
+                City = "TestCityy",
+                State = "TestStatee",
+                Zip = "TestZipp"
+            });
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
+            {
+                CageCode = "ABC12345",
+                Address1 = "Test111",
+                Address2 = "Test222",
+                City = "TestCityyy",
+                State = "TestStateee",
+                Zip = "TestZippp"
+            });
 
             ContractsDto contractDto = new ContractsDto()
             {
@@ -171,7 +209,8 @@ namespace GenTRAC.Tests.ActionLogic
                 CorporateEppDate = DateTime.Now,
                 EppRosDelegationNotes = "Test EppRosDelegationNotes",
                 LmWon = false,
-                ModCompletedDate = DateTime.Now
+                ModCompletedDate = DateTime.Now,
+                CageCode = "Test"
             };
 
             ICollection<SelectListItem> getRomProposalOptions = new Collection<SelectListItem>()
@@ -196,6 +235,8 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLoader.Setup(x => x.GetRomProposalOptions(contractDto.PreviouslySubmittedROM)).Returns(getRomProposalOptions);
 
             this.contractsLoader.Setup(x => x.GetContractForProposal(proposalId)).Returns(contractDto);
+
+            this.cageCodesLoader.Setup(x => x.GetAllCageCodesData()).Returns(cageCodesDTOsSetup);
 
             ProposalDto proposal = TestProposalHelper.GetProposalDtoForMocks(proposalId);
             this.proposalLoader.Setup(x => x.GetById(proposalId)).Returns(proposal);
@@ -280,7 +321,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
             this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
-                        this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
+            this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
 
             await sut.SetProposalLost(fp.Id, errors);
 
@@ -393,7 +434,7 @@ namespace GenTRAC.Tests.ActionLogic
             // ContractsControllerLogic sut = this.CreateSystem();
 
             // TODO: SaveContract unit test.
-            
+
             // Assert that the id return from the save is the one we expect.
             // Verify method - that it ran, but if we get an Id, may not be needed) 
         }
@@ -562,7 +603,7 @@ namespace GenTRAC.Tests.ActionLogic
                 SpaceEppDate = new DateTime(2022, 04, 8),
                 PreSpaceEppDate = new DateTime(2022, 04, 07),
                 LobEppDate = new DateTime(2022, 04, 06),
-                ProgramEppDate = new DateTime(2022, 04, 05)
+                ProgramEppDate = new DateTime(2022, 04, 05),
             };
 
             bool pass = edh.AreEnteredDatesSequential(dto, errors);
@@ -599,6 +640,91 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(messages.Contains(Constants.INVALID_LM_WIN_LOSS));
             Assert.IsTrue(messages.Contains(Constants.INVALID_NEGOTIATIONS_SUBMITTED_DATE));
             Assert.IsTrue(messages.Contains(Constants.INVALID_FINAL_NEGOTIATED_VALUE));
+        }
+
+        /// <summary>
+        /// Runs through a valid test of getting all cage code data
+        /// </summary>
+        [TestMethod]
+        public void GetAllCageCodesDataTest()
+        {
+            // Create new Contracts Controller Logic object
+            ContractsControllerLogic sut = this.CreateSystem();
+
+            ICollection<CageCodeDTO> cageCodesDTOsSetup = new List<CageCodeDTO>();
+
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
+            {
+                CageCode = "ABC123",
+                Address1 = "Test1",
+                Address2 = "Test2",
+                City = "TestCity",
+                State = "TestState",
+                Zip = "TestZip"
+            });
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
+            {
+                CageCode = "ABC1234",
+                Address1 = "Test11",
+                Address2 = "Test22",
+                City = "TestCityy",
+                State = "TestStatee",
+                Zip = "TestZipp"
+            });
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
+            {
+                CageCode = "ABC12345",
+                Address1 = "Test111",
+                Address2 = "Test222",
+                City = "TestCityyy",
+                State = "TestStateee",
+                Zip = "TestZippp"
+            });
+
+            // When this method is called, return this instead:
+            this.cageCodesLoader.Setup(x => x.GetAllCageCodesData()).Returns(cageCodesDTOsSetup);
+
+            ICollection<CageCodeModelView> cageCodesDTOsActuals = sut.GetAllCageCodesData();
+
+            Assert.IsTrue(cageCodesDTOsActuals.Any());
+        }
+
+        /// <summary>
+        /// Runs through a valid test of getting data by a cage code
+        /// </summary>
+        [TestMethod]
+        public void GetDataForCageCodeTest()
+        {
+            // Create new Contracts Controller Logic object
+            ContractsControllerLogic sut = this.CreateSystem();
+
+            CageCodeDTO cageCodesDTOSetup = new CageCodeDTO()
+            {
+                CageCode = "XYZ098",
+                Address1 = "Address 1 Test",
+                Address2 = "Address 2 Test",
+                City = "City Test",
+                State = "State Test",
+                Zip = "Zip Test"
+            };
+
+            string matchingFakeCageCode = "XYZ098";
+            string notMatchingFakeCageCode = "ABC123";
+
+            // When this method is called, return this instead:
+            this.cageCodesLoader.Setup(x => x.GetDataByCageCode(matchingFakeCageCode)).Returns(cageCodesDTOSetup);
+
+            CageCodeModelView cageCodesDTOActual = sut.GetDataByCageCode(matchingFakeCageCode);
+
+            Assert.IsNotNull(cageCodesDTOActual);
+            Assert.AreEqual(cageCodesDTOSetup.CageCode, cageCodesDTOActual.CageCode);
+            Assert.AreEqual(cageCodesDTOSetup.Address1, cageCodesDTOActual.Address1);
+            Assert.AreEqual(cageCodesDTOSetup.Address2, cageCodesDTOActual.Address2);
+            Assert.AreEqual(cageCodesDTOSetup.City, cageCodesDTOActual.City);
+            Assert.AreEqual(cageCodesDTOSetup.State, cageCodesDTOActual.State);
+            Assert.AreEqual(cageCodesDTOSetup.Zip, cageCodesDTOActual.Zip);
+
+            Assert.AreNotEqual(notMatchingFakeCageCode, cageCodesDTOActual.CageCode);
         }
     }
 }

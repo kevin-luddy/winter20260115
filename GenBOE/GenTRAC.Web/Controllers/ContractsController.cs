@@ -49,7 +49,7 @@ namespace GenTRAC.Web.Controllers
         public ViewResult DisplayContractsIndex(int proposalId)
         {
             this.ViewBag.ProposalId = proposalId.ToString();
-            
+
             ContractsModelView model = this.contractsLogic.GetDataForProposalContracts(proposalId).Result;
 
             return this.View(WebConstants.View.CONTRACTS_INDEX, model);
@@ -166,7 +166,7 @@ namespace GenTRAC.Web.Controllers
             {
                 this.contractsLogic.SaveContract(model);
                 response.IsSuccessful = true;
-            }            
+            }
 
             return this.Json(response);
         }
@@ -197,7 +197,7 @@ namespace GenTRAC.Web.Controllers
                 }
 
                 response.Messages = errMessages;
-            }            
+            }
 
             return this.Json(response);
         }
@@ -213,7 +213,7 @@ namespace GenTRAC.Web.Controllers
 
             foreach (ModelError model in modelsWithErrors.SelectMany(x => x.Errors))
             {
-                response.Messages.Add(model.ErrorMessage);                
+                response.Messages.Add(model.ErrorMessage);
             }
         }
     }
