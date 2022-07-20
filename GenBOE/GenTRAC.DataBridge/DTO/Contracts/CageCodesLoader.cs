@@ -6,32 +6,85 @@
 
 namespace GenTRAC.DataBridge.DTO
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Web.Mvc;
+	using System.Collections.Generic;
+	using System.Linq;
 	using GenTRAC.DataBridge.DTO.Contracts;
 	using GenTRAC.Models;
-    using IES.Common;
+	using IES.Common;
 
 	/// <summary>
 	/// Cage Codes Loader
 	/// </summary>
-	public class CageCodesLoader : DataLoader<CageCodesDTO>, ICageCodesLoader
+	public class CageCodesLoader : ICageCodesLoader
 	{
-		public override ICollection<CageCodesDTO> GetByIds(ICollection<int> ids)
+		/// <summary>
+		/// Logger
+		/// </summary>
+		protected Logger Log { get; set; }
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		public CageCodesLoader()
 		{
-			throw new NotImplementedException();
+			this.Log = new Logger(typeof(CageCodesLoader));
 		}
 
-		protected override int? Delete(CageCodesDTO dtoToDelete)
+		/// <summary>
+		/// Get All Cage Codes
+		/// </summary>
+		/// <returns>All Cage Codes</returns>
+		public ICollection<CageCodesDTO> GetAllCageCodesData()
 		{
-			throw new NotImplementedException();
-		}
+			ICollection<CageCodesDTO> toReturn = new List<CageCodesDTO>();
 
-		protected override int? Upsert(CageCodesDTO dtoToUpsert)
+            using (StopwatchTimer sw = new StopwatchTimer("CageCodes.GetAllCageCodesData", Log))
+            {
+                using (genTRACEntities dbModel = new genTRACEntities())
+                {
+                    toReturn = dbModel.CageCodes
+                        .Select(x => new CageCodesDTO()
+                        {
+                            CageCode = x.CageCode1,
+                            Address1 = x.Address1,
+							Address2 = x.Address2,
+							City = x.City,
+							State = x.State,
+							Zip = x.Zip
+                        }).ToList();
+                }
+            }
+
+            return toReturn;
+        }
+
+		/// <summary>
+		/// Gets the data associated to a cage code by a given cage code.
+		/// </summary>
+		/// <param name="cageCode">Cage Code</param>
+		/// <returns>Specified cage code data</returns>
+		public CageCodesDTO GetDataByCageCode(string cageCode)
 		{
-			throw new NotImplementedException();
+			CageCodesDTO toReturn = new CageCodesDTO();
+
+			using (StopwatchTimer sw = new StopwatchTimer("CageCodes.GetDataByCageCode", Log))
+			{
+				using (genTRACEntities dbModel = new genTRACEntities())
+				{
+					toReturn = dbModel.CageCodes
+						.Select(x => new CageCodesDTO()
+						{
+							CageCode = x.CageCode1,
+							Address1 = x.Address1,
+							Address2 = x.Address2,
+							City = x.City,
+							State = x.State,
+							Zip = x.Zip
+						}).FirstOrDefault(x => x.CageCode == cageCode);
+				}
+			}
+
+			return toReturn;
 		}
 	}
 }

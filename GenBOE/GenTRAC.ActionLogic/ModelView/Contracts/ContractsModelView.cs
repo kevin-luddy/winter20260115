@@ -10,7 +10,8 @@ namespace GenTRAC.ActionLogic.ModelView
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.Web.Mvc;
-    using IES.Common;
+	using GenTRAC.ActionLogic.ModelView.Contracts;
+	using IES.Common;
 
     /// <summary>
     /// Contracts Tab MV
@@ -70,7 +71,7 @@ namespace GenTRAC.ActionLogic.ModelView
         /// <summary>
         /// Previously Submitted ROM (PTM record)
         /// </summary>
-        [Display(Name= "Previously Submitted ROM")]
+        [Display(Name = "Previously Submitted ROM")]
         public int? PreviouslySubmittedROM { get; set; }
 
         /// <summary>
@@ -78,7 +79,7 @@ namespace GenTRAC.ActionLogic.ModelView
         /// </summary>
         [Display(Name = "Previously Submitted ROM Date")]
         public string PreviousROMDate => this.previousROMDt?.Date.ToShortDateString();
-        
+
         /// <summary>
         /// Previous ROM Value
         /// </summary>
@@ -108,6 +109,11 @@ namespace GenTRAC.ActionLogic.ModelView
         /// </summary>
 		[Display(Name = "Cage #")]
         public string CageCode { get; set; }
+
+        /// <summary>
+        /// Collection of Cage Code View Models
+        /// </summary>
+        public ICollection<CageCodeModelView> CageCodes {get; set;}
 
         /// <summary>
         /// Contracts Correspondence Log Number
