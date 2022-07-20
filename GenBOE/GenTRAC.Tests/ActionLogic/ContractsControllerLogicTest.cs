@@ -690,7 +690,8 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(cageCodesDTOSetup.City, cageCodesDTOActual.City);
             Assert.AreEqual(cageCodesDTOSetup.State, cageCodesDTOActual.State);
             Assert.AreEqual(cageCodesDTOSetup.Zip, cageCodesDTOActual.Zip);
-           // Assert.AreNotEqual(match)
+
+            Assert.AreNotEqual(notMatchingFakeCageCode, cageCodesDTOActual.CageCode);
         }
     }
 }
