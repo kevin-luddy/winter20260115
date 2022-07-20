@@ -39,6 +39,11 @@ namespace GenTRAC.DataBridge.DTO
         public DateTime? CustomerSubmittalDate { get; set; }
 
         /// <summary>
+        /// Cage #
+        /// </summary>
+        public string CageCode { get; set; }
+
+        /// <summary>
         /// Contracts Correspondence Log Number
         /// </summary>
         public string ContractsCorrespondenceLogNumber { get; set; }

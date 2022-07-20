@@ -61,7 +61,7 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.EppRosDelegationNotes,
                             dtoToUpsert.LmWon,
                             dtoToUpsert.ModCompletedDate,
-                            string.Empty // TODO - update with dto value as part of IES-1497 (Thomas)
+                            dtoToUpsert.CageCode
                             ).FirstOrDefault();
                     }
                 }
@@ -117,7 +117,8 @@ namespace GenTRAC.DataBridge.DTO
                             CorporateEppDate = x.CorporateEppDate,
                             EppRosDelegationNotes = x.EppRosDelegationNotes,
                             LmWon = x.LmWon,
-                            ModCompletedDate = x.ModCompletedDate
+                            ModCompletedDate = x.ModCompletedDate,
+                            CageCode = x.CageCode
                         }).FirstOrDefault(x => x.ProposalId == proposalId);
                 }
             }
@@ -161,7 +162,8 @@ namespace GenTRAC.DataBridge.DTO
                             CorporateEppDate = x.CorporateEppDate,
                             EppRosDelegationNotes = x.EppRosDelegationNotes,
                             LmWon = x.LmWon,
-                            ModCompletedDate = x.ModCompletedDate
+                            ModCompletedDate = x.ModCompletedDate,
+                            CageCode = x.CageCode
                         }).ToList();
                 }
             }

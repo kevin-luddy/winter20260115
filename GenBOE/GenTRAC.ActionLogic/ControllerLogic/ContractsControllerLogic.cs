@@ -19,10 +19,12 @@ namespace GenTRAC.ActionLogic
     using GenTRAC.ActionLogic.GeneralHelper;
     using GenTRAC.ActionLogic.Mediator;
     using GenTRAC.ActionLogic.ModelView;
-    using GenTRAC.ActionLogic.ModelView.Proposals;
+	using GenTRAC.ActionLogic.ModelView.Contracts;
+	using GenTRAC.ActionLogic.ModelView.Proposals;
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
-    using GenTRAC.Objects;
+	using GenTRAC.DataBridge.DTO.Contracts;
+	using GenTRAC.Objects;
     using GenTRAC.Objects.FullObject;
     using IES.Common;
 
@@ -47,6 +49,12 @@ namespace GenTRAC.ActionLogic
         /// The Contracts Loader
         /// </summary>
         private IContractsLoader contractsLoader = null;
+
+
+        /// <summary>
+        /// The Cage Codes Loader
+        /// </summary>
+        private ICageCodesLoader cageCodesLoader = null;
 
         /// <summary>
         /// The emailer.
@@ -84,11 +92,13 @@ namespace GenTRAC.ActionLogic
             IChecklistMediator checklistMediator,
             IProposalMediator proposalMediator,
             IContractsLoader contractsLoader,
+            ICageCodesLoader cageCodesLoader,
             IPtmEmailer inEmailer,
             ApprovalsControllerLogic inApprovalsLogic)
             : base(securityAccess, proposalLoader, userMapper, objectFactory, approvalsLoader, proposalChecklistLoader, checklistMediator, proposalMediator)
         {
             this.contractsLoader = contractsLoader;
+            this.cageCodesLoader = cageCodesLoader;
             this.emailer = inEmailer;
             this.approvalsLogic = inApprovalsLogic;
         }
@@ -138,6 +148,11 @@ namespace GenTRAC.ActionLogic
             // Load additional values
             model.PreviouslySubmittedRoms = this.ProposalLoader.GetRomProposalOptions(model.PreviouslySubmittedROM);
 
+            // Load in Cage Codes data
+            model.CageCodes = GetAllCageCodesData();
+
+            // ToDo: Feed from UI the selected Cage Code data
+
             if (model.PreviouslySubmittedROM.HasValue)
             {
                 Tuple<DateTime?, decimal?> previousRomDateAndValue = this.GetRomDateAndValue(model.PreviouslySubmittedROM.Value);
@@ -163,6 +178,53 @@ namespace GenTRAC.ActionLogic
 
             return this.ProposalLoader.GetRomDateAndValue(proposalId);
         }
+
+        /// <summary>
+        /// Gets all the Cage Code data in a view model
+        /// </summary>
+        /// <returns>All cage codes view models</returns>
+        public ICollection<CageCodeModelView> GetAllCageCodesData()
+		{
+            ICollection<CageCodesDTO> cageCodesDTOs = cageCodesLoader.GetAllCageCodesData();
+            ICollection<CageCodeModelView> cageCodeViewModels = new List<CageCodeModelView>();
+
+            foreach (CageCodesDTO cageCodesDTO in cageCodesDTOs)
+			{
+                cageCodeViewModels.Add(new CageCodeModelView()
+                {
+                    CageCode = cageCodesDTO.CageCode,
+                    Address1 = cageCodesDTO.Address1,
+                    Address2 = cageCodesDTO.Address2,
+                    City = cageCodesDTO.City,
+                    State = cageCodesDTO.State,
+                    Zip = cageCodesDTO.Zip
+                });
+			}
+
+            return cageCodeViewModels;
+        }
+
+        /// <summary>
+        /// Get data by cage code
+        /// </summary>
+        /// <param name="cageCode"></param>
+        /// <returns>Cage code view model</returns>
+        public CageCodeModelView GetDataByCageCode(string cageCode)
+		{
+            CageCodesDTO cageCodesDTO = cageCodesLoader.GetDataByCageCode(cageCode);
+
+            CageCodeModelView cageCodeViewModel = new CageCodeModelView()
+            {
+                CageCode = cageCodesDTO.CageCode,
+                Address1 = cageCodesDTO.Address1,
+                Address2 = cageCodesDTO.Address2,
+                City = cageCodesDTO.City,
+                State = cageCodesDTO.State,
+                Zip = cageCodesDTO.Zip
+            };
+
+            return cageCodeViewModel;
+		}
 
         #region Contract Validate / Save
 
