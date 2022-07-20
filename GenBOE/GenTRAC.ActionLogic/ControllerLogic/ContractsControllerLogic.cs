@@ -363,6 +363,7 @@ namespace GenTRAC.ActionLogic
             model.EppRosDelegationNotes = dto.EppRosDelegationNotes;
             model.LmWon = dto.LmWon;
             model.ModCompletedDate = dto.ModCompletedDate;
+            model.CageCode = dto.CageCode;
 
             return model;
         }
