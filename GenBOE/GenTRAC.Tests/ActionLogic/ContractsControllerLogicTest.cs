@@ -161,6 +161,36 @@ namespace GenTRAC.Tests.ActionLogic
 
             int proposalId = 5;
 
+            ICollection<CageCodeDTO> cageCodesDTOsSetup = new List<CageCodeDTO>();
+
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
+            {
+                CageCode = "ABC123",
+                Address1 = "Test1",
+                Address2 = "Test2",
+                City = "TestCity",
+                State = "TestState",
+                Zip = "TestZip"
+            });
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
+            {
+                CageCode = "ABC1234",
+                Address1 = "Test11",
+                Address2 = "Test22",
+                City = "TestCityy",
+                State = "TestStatee",
+                Zip = "TestZipp"
+            });
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
+            {
+                CageCode = "ABC12345",
+                Address1 = "Test111",
+                Address2 = "Test222",
+                City = "TestCityyy",
+                State = "TestStateee",
+                Zip = "TestZippp"
+            });
+
             ContractsDto contractDto = new ContractsDto()
             {
                 Updateable = UpdateType.Upsert,
@@ -179,7 +209,8 @@ namespace GenTRAC.Tests.ActionLogic
                 CorporateEppDate = DateTime.Now,
                 EppRosDelegationNotes = "Test EppRosDelegationNotes",
                 LmWon = false,
-                ModCompletedDate = DateTime.Now
+                ModCompletedDate = DateTime.Now,
+                CageCode = "Test"
             };
 
             ICollection<SelectListItem> getRomProposalOptions = new Collection<SelectListItem>()
@@ -204,6 +235,8 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLoader.Setup(x => x.GetRomProposalOptions(contractDto.PreviouslySubmittedROM)).Returns(getRomProposalOptions);
 
             this.contractsLoader.Setup(x => x.GetContractForProposal(proposalId)).Returns(contractDto);
+
+            this.cageCodesLoader.Setup(x => x.GetAllCageCodesData()).Returns(cageCodesDTOsSetup);
 
             ProposalDto proposal = TestProposalHelper.GetProposalDtoForMocks(proposalId);
             this.proposalLoader.Setup(x => x.GetById(proposalId)).Returns(proposal);
@@ -570,13 +603,13 @@ namespace GenTRAC.Tests.ActionLogic
                 SpaceEppDate = new DateTime(2022, 04, 8),
                 PreSpaceEppDate = new DateTime(2022, 04, 07),
                 LobEppDate = new DateTime(2022, 04, 06),
-                ProgramEppDate = new DateTime(2022, 04, 05)
+                ProgramEppDate = new DateTime(2022, 04, 05),
             };
 
             bool pass = edh.AreEnteredDatesSequential(dto, errors);
 
             Assert.IsFalse(pass);
-            Assert.IsTrue(errors.First().Contains("Space EPP Date musSt be before Pre-Corporate EPP Date"));
+            Assert.IsTrue(errors.First().Contains("Space EPP Date must be before Pre-Corporate EPP Date"));
         }
 
         /// <summary>
@@ -618,9 +651,9 @@ namespace GenTRAC.Tests.ActionLogic
             // Create new Contracts Controller Logic object
             ContractsControllerLogic sut = this.CreateSystem();
 
-            ICollection<CageCodesDTO> cageCodesDTOsSetup = new List<CageCodesDTO>();
+            ICollection<CageCodeDTO> cageCodesDTOsSetup = new List<CageCodeDTO>();
 
-            cageCodesDTOsSetup.Add(new CageCodesDTO()
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
             {
                 CageCode = "ABC123",
                 Address1 = "Test1",
@@ -629,7 +662,7 @@ namespace GenTRAC.Tests.ActionLogic
                 State = "TestState",
                 Zip = "TestZip"
             });
-            cageCodesDTOsSetup.Add(new CageCodesDTO()
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
             {
                 CageCode = "ABC1234",
                 Address1 = "Test11",
@@ -638,7 +671,7 @@ namespace GenTRAC.Tests.ActionLogic
                 State = "TestStatee",
                 Zip = "TestZipp"
             });
-            cageCodesDTOsSetup.Add(new CageCodesDTO()
+            cageCodesDTOsSetup.Add(new CageCodeDTO()
             {
                 CageCode = "ABC12345",
                 Address1 = "Test111",
@@ -665,7 +698,7 @@ namespace GenTRAC.Tests.ActionLogic
             // Create new Contracts Controller Logic object
             ContractsControllerLogic sut = this.CreateSystem();
 
-            CageCodesDTO cageCodesDTOSetup = new CageCodesDTO()
+            CageCodeDTO cageCodesDTOSetup = new CageCodeDTO()
             {
                 CageCode = "XYZ098",
                 Address1 = "Address 1 Test",

@@ -19,13 +19,13 @@ namespace GenTRAC.DataBridge.DTO
 		/// Get all Cage Codes data
 		/// </summary>
 		/// <returns>All Cage Codes information</returns>
-		ICollection<CageCodesDTO> GetAllCageCodesData();
+		ICollection<CageCodeDTO> GetAllCageCodesData();
 
 		/// <summary>
 		/// Gets the data associated to a cage code by a given cage code.
 		/// </summary>
 		/// <param name="cageCode">Cage Code</param>
 		/// <returns>Specified cage code data</returns>
-		CageCodesDTO GetDataByCageCode(string cageCode);
+		CageCodeDTO GetDataByCageCode(string cageCode);
 	}
 }
