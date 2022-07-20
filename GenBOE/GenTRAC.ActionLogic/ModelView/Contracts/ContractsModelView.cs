@@ -6,17 +6,18 @@
 
 namespace GenTRAC.ActionLogic.ModelView
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
-    using System.Web.Mvc;
+	using System;
+	using System.Collections.Generic;
+	using System.ComponentModel.DataAnnotations;
+	using System.Linq;
+	using System.Web.Mvc;
 	using GenTRAC.ActionLogic.ModelView.Contracts;
 	using IES.Common;
 
-    /// <summary>
-    /// Contracts Tab MV
-    /// </summary>
-    public class ContractsModelView
+	/// <summary>
+	/// Contracts Tab MV
+	/// </summary>
+	public class ContractsModelView
     {
         /// <summary>
         /// ctor
@@ -114,6 +115,14 @@ namespace GenTRAC.ActionLogic.ModelView
         /// Collection of Cage Code View Models
         /// </summary>
         public ICollection<CageCodeModelView> CageCodes {get; set;}
+
+        public ICollection<SelectListItem> CageCodeSelectListItems
+		{
+            get
+			{
+                return CageCodes.Select(x => new SelectListItem() { Text = x.CageCode, Value = x.CageCode, Selected = x.CageCode == CageCode }).ToList();
+			}
+		}
 
         /// <summary>
         /// Contracts Correspondence Log Number

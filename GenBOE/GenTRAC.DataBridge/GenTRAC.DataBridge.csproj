@@ -136,7 +136,7 @@
     <Compile Include="DTO\Checklist\ChecklistResponseItem.cs" />
     <Compile Include="DTO\Checklist\IProposalChecklistLoader.cs" />
     <Compile Include="DTO\Checklist\ProposalChecklistSaveInfo.cs" />
-    <Compile Include="DTO\Contracts\CageCodesDTO.cs" />
+    <Compile Include="DTO\Contracts\CageCodeDTO.cs" />
     <Compile Include="DTO\Contracts\CageCodesLoader.cs" />
     <Compile Include="DTO\Contracts\ContractsLoader.cs" />
     <Compile Include="DTO\Contracts\ContractsDto.cs" />
