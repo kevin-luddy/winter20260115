@@ -184,7 +184,7 @@
             }, null);
         };
 
-        ContractsInfoWidget.cageNumberChanged = function (cageCodes) {
+        ContractsInfoWidget.cageNumberChanged = function () {
 			ContractsInfoWidget.getElement('#CageCodeAddress1').empty();
 			ContractsInfoWidget.getElement('#CageCodeAddress2').empty();
             ContractsInfoWidget.getElement('#CageCodeCityStateZip').empty();
@@ -215,6 +215,8 @@
                 });
             }
         };
+
+        ContractsInfoWidget.cageNumberChanged();
     });
 
     $(document).ready(function () {

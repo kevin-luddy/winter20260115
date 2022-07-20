@@ -10,7 +10,7 @@ namespace GenTRAC.ActionLogic.ModelView.Contracts
     /// Cage Code View Model
     /// </summary>
 	public class CageCodeModelView
-	{
+    {
         /// <summary>
         /// Cage Code
         /// </summary>

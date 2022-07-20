@@ -139,7 +139,7 @@ namespace GenTRAC.ActionLogic
             model.EppOptions = this.GetEppSelectOptions(model.EppDelegationAuthority);
             model.SetLostButtonEnabled = this.IsValidForLostStatus(dto, fullProposal);
             model.NoBidButtonEnabled = this.IsValidForNoBidStatus(fullProposal);
-            model.CompleteButtonEnabled = this.IsValidForCompleteStatus(dto, fullProposal); 
+            model.CompleteButtonEnabled = this.IsValidForCompleteStatus(dto, fullProposal);
             model.IsNoBid = fullProposal.ProposalStatus == ProposalStatus.NoBid;
             model.HasAccessToSetNoBid = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions) || this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
             model.HasAccessToSetLost = ValidForLostProposalStatusSave(fullProposal, null);
@@ -150,8 +150,7 @@ namespace GenTRAC.ActionLogic
 
             // Load in Cage Codes data
             model.CageCodes = GetAllCageCodesData();
-
-            // ToDo: Feed from UI the selected Cage Code data
+            model.CageCode = dto.CageCode;
 
             if (model.PreviouslySubmittedROM.HasValue)
             {
@@ -210,7 +209,7 @@ namespace GenTRAC.ActionLogic
         /// <param name="cageCode"></param>
         /// <returns>Cage code view model</returns>
         public CageCodeModelView GetDataByCageCode(string cageCode)
-		{
+        {
             CageCodeDTO cageCodesDTO = cageCodesLoader.GetDataByCageCode(cageCode);
 
             CageCodeModelView cageCodeViewModel = new CageCodeModelView()
@@ -224,7 +223,7 @@ namespace GenTRAC.ActionLogic
             };
 
             return cageCodeViewModel;
-		}
+        }
 
         #region Contract Validate / Save
 
@@ -264,7 +263,7 @@ namespace GenTRAC.ActionLogic
         {
             return this.contractsLoader.GetEppSelectValues(eppDelegationAuthority);
         }
-        
+
         /// <summary>
         /// Orchestrates the setting of the proposal status to "Lost"
         /// </summary>
@@ -326,6 +325,7 @@ namespace GenTRAC.ActionLogic
             dto.EppRosDelegationNotes = model.EppRosDelegationNotes;
             dto.LmWon = model.LmWon;
             dto.ModCompletedDate = model.ModCompletedDate;
+            dto.CageCode = model.CageCode;
 
             return dto;
         }
@@ -377,7 +377,7 @@ namespace GenTRAC.ActionLogic
         private bool IsValidForLostStatus(ContractsDto contractInfo, FullProposal fullProposal)
         {
             bool valid = false;
-            
+
             if ((fullProposal.ProposalStatus == ProposalStatus.PendingCertification || fullProposal.ProposalStatus == ProposalStatus.PendingAward)
                 && (!contractInfo.LmWon.HasValue || !contractInfo.LmWon.Value)) // null or false
             {
@@ -467,7 +467,7 @@ namespace GenTRAC.ActionLogic
         {
             Task<FullProposal> fullProposal = Task<FullProposal>.Run(() => this.GetFullProposalDto(proposalId));
             fullProposal.Wait();
-            
+
             return fullProposal.Result;
         }
 
@@ -536,7 +536,7 @@ namespace GenTRAC.ActionLogic
         {
             _ = fullProposal ?? throw new ArgumentNullException(nameof(fullProposal));
 
-            bool isValid = true;            
+            bool isValid = true;
 
             bool isLeadOrBackupContractsUser = this.IsContractsUser(fullProposal.CurrentUser.Id, fullProposal.Permissions);
             bool isAdmin = this.SecurityAccess.CurrentUserHasRole(PtmRole.Admin, null);
@@ -620,7 +620,7 @@ namespace GenTRAC.ActionLogic
                     log.Info(msg + $" ({dto?.EppDelegationAuthority})");
                     messages.Add(msg);
                     isValid = false;
-                    break;                 
+                    break;
             }
 
             // Cage Code required for validation

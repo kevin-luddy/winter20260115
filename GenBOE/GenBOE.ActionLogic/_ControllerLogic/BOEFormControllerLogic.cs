@@ -838,6 +838,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 validationMessages.Add(new ValidationMessage("Description is required."));
             }
 
+            if (string.IsNullOrWhiteSpace(boeForm.BasisAndRationale))
+			{
+                validationMessages.Add(new ValidationMessage("Basis and Rationale is required."));
+            }
+
             if (string.IsNullOrWhiteSpace(boeForm.Poc) || string.IsNullOrWhiteSpace(boeForm.Approver))
             {
                 validationMessages.Add(new ValidationMessage("Points of Contact are required."));

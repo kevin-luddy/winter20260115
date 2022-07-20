@@ -321,7 +321,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.proposalLogic.Setup(x => x.GetDataForProposalApprovals(fp.Id, false)).Returns(new ProposalApprovalsModelView()); // intercept and don't return data
             this.proposalLogic.Setup(x => x.GetDataForProposalUserInformation(fp.Id)).Returns(new ProposalUserInformationModelView());
             this.userMapper.Setup(x => x.GetByNtid(It.IsAny<string>())).Returns(fp.CurrentUser);
-                        this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
+            this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(fp);
 
             await sut.SetProposalLost(fp.Id, errors);
 
@@ -434,7 +434,7 @@ namespace GenTRAC.Tests.ActionLogic
             // ContractsControllerLogic sut = this.CreateSystem();
 
             // TODO: SaveContract unit test.
-            
+
             // Assert that the id return from the save is the one we expect.
             // Verify method - that it ran, but if we get an Id, may not be needed) 
         }
@@ -688,7 +688,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             Assert.IsTrue(cageCodesDTOsActuals.Any());
         }
-        
+
         /// <summary>
         /// Runs through a valid test of getting data by a cage code
         /// </summary>

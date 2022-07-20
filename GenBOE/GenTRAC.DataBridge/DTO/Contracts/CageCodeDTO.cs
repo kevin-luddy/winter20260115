@@ -19,27 +19,27 @@ namespace GenTRAC.DataBridge.DTO.Contracts
         /// Cage Code
         /// </summary>
         public string CageCode { get; set; }
-        
+
         /// <summary>
         /// Cage Code Address 1
         /// </summary>
         public string Address1 { get; set; }
-        
+
         /// <summary>
         /// Cage Code Address 2
         /// </summary>
         public string Address2 { get; set; }
-        
+
         /// <summary>
         /// City of Address
         /// </summary>
         public string City { get; set; }
-        
+
         /// <summary>
         /// State of Address
         /// </summary>
         public string State { get; set; }
-        
+
         /// <summary>
         /// Zip of Address
         /// </summary>
