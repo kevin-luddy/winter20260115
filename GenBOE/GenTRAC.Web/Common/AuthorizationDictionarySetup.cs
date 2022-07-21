@@ -246,6 +246,7 @@ namespace GenTRAC.Web.Common
             AddActionToController(WebConstants.Action.DISPLAY_CONTRACTS_INDEX, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsActions);
             AddActionToController(WebConstants.Action.CALCULATE_OFFER_FIELDS, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsActions);
             AddActionToController(WebConstants.Action.GET_SELECTED_ROM_DATA, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsActions);
+            AddActionToController(WebConstants.Action.GET_CAGE_CODE_DATA, PtmSecurityPage.Contracts, SecurityAuthorization.Read, contractsActions);
             AddActionToController(WebConstants.Action.SAVE_CONTRACT, PtmSecurityPage.Contracts, SecurityAuthorization.CreateReadUpdateDelete, contractsActions);
             AddActionToController(WebConstants.Action.SET_PROPOSAL_LOST, PtmSecurityPage.Contracts, SecurityAuthorization.ReadUpdate, contractsActions);
             AddActionToController(WebConstants.Action.SET_NO_BID, PtmSecurityPage.Contracts, SecurityAuthorization.ReadUpdate, contractsActions);

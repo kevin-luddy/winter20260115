@@ -436,14 +436,19 @@ namespace GenTRAC.Web.Common
             public const string DISPLAY_CONTRACTS_INDEX = "DisplayContractsIndex";
 
             /// <summary>
-            /// Display Contracts
+            /// Calculate Offer Fields
             /// </summary>
             public const string CALCULATE_OFFER_FIELDS = "CalculateOfferFields";
 
             /// <summary>
-            /// Display Contracts
+            /// Get Selected ROM Data
             /// </summary>
             public const string GET_SELECTED_ROM_DATA = "GetPreviouslySelectedRomData";
+
+            /// <summary>
+            /// Get Cage Code Data
+            /// </summary>
+            public const string GET_CAGE_CODE_DATA = "GetCageCodeData";
 
             /// <summary>
             /// Save Contracts

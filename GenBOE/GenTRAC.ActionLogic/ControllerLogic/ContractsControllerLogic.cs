@@ -19,12 +19,12 @@ namespace GenTRAC.ActionLogic
     using GenTRAC.ActionLogic.GeneralHelper;
     using GenTRAC.ActionLogic.Mediator;
     using GenTRAC.ActionLogic.ModelView;
-    using GenTRAC.ActionLogic.ModelView.Contracts;
-    using GenTRAC.ActionLogic.ModelView.Proposals;
+	using GenTRAC.ActionLogic.ModelView.Contracts;
+	using GenTRAC.ActionLogic.ModelView.Proposals;
     using GenTRAC.DataBridge.Common.Security;
     using GenTRAC.DataBridge.DTO;
-    using GenTRAC.DataBridge.DTO.Contracts;
-    using GenTRAC.Objects;
+	using GenTRAC.DataBridge.DTO.Contracts;
+	using GenTRAC.Objects;
     using GenTRAC.Objects.FullObject;
     using IES.Common;
 
@@ -49,6 +49,7 @@ namespace GenTRAC.ActionLogic
         /// The Contracts Loader
         /// </summary>
         private IContractsLoader contractsLoader = null;
+
 
         /// <summary>
         /// The Cage Codes Loader
@@ -182,12 +183,12 @@ namespace GenTRAC.ActionLogic
         /// </summary>
         /// <returns>All cage codes view models</returns>
         public ICollection<CageCodeModelView> GetAllCageCodesData()
-        {
+		{
             ICollection<CageCodeDTO> cageCodesDTOs = cageCodesLoader.GetAllCageCodesData();
             ICollection<CageCodeModelView> cageCodeViewModels = new List<CageCodeModelView>();
 
             foreach (CageCodeDTO cageCodesDTO in cageCodesDTOs)
-            {
+			{
                 cageCodeViewModels.Add(new CageCodeModelView()
                 {
                     CageCode = cageCodesDTO.CageCode,
@@ -197,7 +198,7 @@ namespace GenTRAC.ActionLogic
                     State = cageCodesDTO.State,
                     Zip = cageCodesDTO.Zip
                 });
-            }
+			}
 
             return cageCodeViewModels;
         }
