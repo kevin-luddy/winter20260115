@@ -7,11 +7,12 @@
 namespace IES.Common
 {
     using System.ComponentModel;
+	using System.ComponentModel.DataAnnotations;
 
-    /// <summary>
-    /// The pages security is configured to secure
-    /// </summary>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1027:MarkEnumsWithFlags")]
+	/// <summary>
+	/// The pages security is configured to secure
+	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1027:MarkEnumsWithFlags")]
     public enum PtmSecurityPage
     {
         /// <summary>
@@ -1360,36 +1361,42 @@ namespace IES.Common
         /// <summary>
         /// New Contract
         /// </summary>
+        [Display(Name = "New Contract")]
         [Description("New Contract")]
         NewContract = 1,
 
         /// <summary>
         /// Letter Contract
         /// </summary>
+        [Display(Name = "Letter Contract")]
         [Description("Letter Contract")]
         LetterContract = 2,
 
         /// <summary>
         /// Change Order
         /// </summary>
+        [Display(Name = "Change Order")]
         [Description("Change Order")]
         ChangeOrder = 3,
 
         /// <summary>
         /// Unpriced Order
         /// </summary>
+        [Display(Name = "Unpriced Order")]
         [Description("Unpriced Order")]
         UnpricedOrder = 4,
 
         /// <summary>
         /// Price Revision/Redetermination
         /// </summary>
+        [Display(Name = "Price Revision / Redetermination")]
         [Description("Price Revision / Redetermination")]
         PriceRevisionRedetermination = 5,
 
         /// <summary>
         /// Other - requires additional text
         /// </summary>
+        [Display(Name = "Other")]
         [Description("Other ")]
         Other = 6
 	}

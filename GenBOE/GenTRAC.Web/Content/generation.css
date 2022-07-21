@@ -2827,3 +2827,7 @@ div.fake-cell
     padding-left: 10px;
     display: inline-table;
 }
+
+#ContractActionTypeOtherText {
+    margin-left: 5px;
+}
