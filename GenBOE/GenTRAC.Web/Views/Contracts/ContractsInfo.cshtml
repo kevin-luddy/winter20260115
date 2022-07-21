@@ -189,7 +189,7 @@
 			ContractsInfoWidget.getElement('#CageCodeAddress2').empty();
             ContractsInfoWidget.getElement('#CageCodeCityStateZip').empty();
 
-			var cageNumber = ContractsInfoWidget.getElement('#CageCode').val();
+			const cageNumber = ContractsInfoWidget.getElement('#CageCode').val();
 
             if (cageNumber) {
                 const contractsUrl = GenSession.CreateUrl({
