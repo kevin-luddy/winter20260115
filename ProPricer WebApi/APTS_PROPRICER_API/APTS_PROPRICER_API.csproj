@@ -259,6 +259,7 @@
     <Compile Include="Controllers\ProposalCopyController.cs" />
     <Compile Include="Controllers\ProposalsController.cs" />
     <Compile Include="Controllers\ProPricerDirectImportController.cs" />
+    <Compile Include="Controllers\BatchReportsController.cs" />
     <Compile Include="Controllers\ReportsController.cs" />
     <Compile Include="Controllers\ResourcesController.cs" />
     <Compile Include="Controllers\ResourceRateTablesController.cs" />
@@ -274,6 +275,7 @@
     <Compile Include="Controllers\TravelRateTablesController.cs" />
     <Compile Include="Controllers\UserController.cs" />
     <Compile Include="DTOs\AssociatedCostsDto.cs" />
+    <Compile Include="DTOs\BatchReportDto.cs" />
     <Compile Include="DTOs\BurdenCostDto.cs" />
     <Compile Include="DTOs\BurdenRateTableDto.cs" />
     <Compile Include="DTOs\CurvesDto.cs" />
@@ -284,6 +286,7 @@
     <Compile Include="DTOs\PoolInstanceDto.cs" />
     <Compile Include="DTOs\ProposalDto.cs" />
     <Compile Include="DTOs\ProposalFolderInfo.cs" />
+    <Compile Include="DTOs\ProPricerImportContainer.cs" />
     <Compile Include="DTOs\ProPricerExportContainer.cs" />
     <Compile Include="DTOs\ResourceAssignmentDto.cs" />
     <Compile Include="DTOs\ResourceFieldsDto.cs" />
