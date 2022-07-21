@@ -1351,4 +1351,46 @@ namespace IES.Common
         [Description("Other")]
         Other = 3
     }
+
+    /// <summary>
+    /// Type of Contract Action for a Proposal
+    /// </summary>
+    public enum ContractActionType
+	{
+        /// <summary>
+        /// New Contract
+        /// </summary>
+        [Description("New Contract")]
+        NewContract = 1,
+
+        /// <summary>
+        /// Letter Contract
+        /// </summary>
+        [Description("Letter Contract")]
+        LetterContract = 2,
+
+        /// <summary>
+        /// Change Order
+        /// </summary>
+        [Description("Change Order")]
+        ChangeOrder = 3,
+
+        /// <summary>
+        /// Unpriced Order
+        /// </summary>
+        [Description("Unpriced Order")]
+        UnpricedOrder = 4,
+
+        /// <summary>
+        /// Price Revision/Redetermination
+        /// </summary>
+        [Description("Price Revision / Redetermination")]
+        PriceRevisionRedetermination = 5,
+
+        /// <summary>
+        /// Other - requires additional text
+        /// </summary>
+        [Description("Other ")]
+        Other = 6
+	}
 }
