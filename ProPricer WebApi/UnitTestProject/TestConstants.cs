@@ -12,8 +12,13 @@ namespace UnitTestProject
     public static class TestConstants
     {
         /// <summary>
-        /// The instance identifier
+        /// The RMS instance identifier
         /// </summary>
         public static readonly int InstanceId = 2;
+
+        /// <summary>
+        /// The Space instance identifier
+        /// </summary>
+        public static readonly int SpaceInstanceId = 1;
     }
 }

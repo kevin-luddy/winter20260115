@@ -12,11 +12,14 @@ namespace APTSPropricerApi.Controllers
 
     using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
     using System.Web.Http;
     using APTSPropricerApi.Connection;
     using APTSPropricerApi.DTOs;
     using EBS.Core;
     using EBS.ProPricer.Model;
+    using EBS.ProPricer.Reports;
 
     /// <summary>
     /// Batch Reports Controller
@@ -52,24 +55,63 @@ namespace APTSPropricerApi.Controllers
         /// </summary>
         /// <param name="instanceId">The instance identifier.</param>
         /// <param name="container"></param>
-        public void Post(int instanceId, [FromBody] ProPricerExportContainer container)
+        public string Post(int instanceId, [FromBody] ProPricerExportContainer container)
         {
+            string resultData = string.Empty;
             using (IProPricerConnection ppc = (IProPricerConnection)PoolManager.GetInstance(instanceId).GetObjectsFromPool())
             {
                 Guid proposalGuid = new Guid(container.proposalId);
                 Proposal proposal = ppc.Workspace.Proposals.Find(proposalGuid).Value();
+                BatchReport batchReport = null;
                 if (proposal != null)
                 {
-                    proposal.Open();
-                    
-                    // TODO custom export for Batch Report for this proposal
+                    try
+                    {
+                        proposal.Open();
+                        ppc.Workspace.Reports.BatchReports.Open();
+                        batchReport = ppc.Workspace.Reports.BatchReports.Items().FirstOrDefault(b => b.Id.ToString() == container.batchReportId);
+                        batchReport.Open();
 
-                    proposal.Close();
+                        string tempFile = Path.GetRandomFileName();
+                        
+                        System.Diagnostics.Debug.WriteLine(batchReport.IsEditable());
+                        BatchReportContextManager mgr = new BatchReportContextManager(proposal);
+                        BatchReportRuntimeContext ctx = new BatchReportRuntimeContext(batchReport, mgr);
+                        ctx.Options.ExportType = EBS.ProPricer.Reports.Export.ExportType.Excel;
+                        ctx.Options.Folder = Path.GetTempPath();
+                        ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
+                        ctx.Options.Destination = ReportDestination.File;
+                        ctx.Options.OutputMode = OutputMode.Combined;
+                        ctx.ProcessAll = true;
+                        
+                        BatchReportGenerator generator = new BatchReportGenerator(ctx);
+                        ctx.Generator = generator;
+
+                        generator.Process();
+
+                        // TODO Post process file
+                        tempFile = Path.Combine(ctx.Options.Folder, ctx.Options.FileName + ".xlsx");
+
+                        resultData = File.ReadAllText(tempFile);
+                        File.Delete(tempFile);
+                    }
+                    finally
+                    {
+                        if (batchReport != null)
+                        {
+                            batchReport.Close();
+                        }
+
+                        ppc.Workspace.Reports.BatchReports.Close();
+                        proposal.Close();
+                    }
                 }
                 else
                 {
-                    throw new ArgumentException("Proposal was not found or could not be opened in the workspace.", "proposalId");
+                    throw new ArgumentException("Proposal was not found or could not be opened in the workspace.");
                 }
+
+                return resultData;
             }
 
         }
