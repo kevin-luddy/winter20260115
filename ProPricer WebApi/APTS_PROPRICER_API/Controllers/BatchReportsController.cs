@@ -7,17 +7,17 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System;
-using System.Collections.Generic;
-using System.Web.Http;
-using APTSPropricerApi.Connection;
-using APTSPropricerApi.DTOs;
-using EBS.Core;
-using EBS.ProPricer.ImportExport.Ascii;
-using EBS.ProPricer.Model;
-
 namespace APTSPropricerApi.Controllers
 {
+
+    using System;
+    using System.Collections.Generic;
+    using System.Web.Http;
+    using APTSPropricerApi.Connection;
+    using APTSPropricerApi.DTOs;
+    using EBS.Core;
+    using EBS.ProPricer.Model;
+
     /// <summary>
     /// Batch Reports Controller
     /// </summary>

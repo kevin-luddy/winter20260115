@@ -2240,14 +2240,7 @@
             Class used to send back data about Batch Reports
             </summary>
         </member>
-        <member name="P:APTSPropricerApi.DTOs.BatchReportDto.Name">
-            <summary>
-            Gets or sets the name.
-            </summary>
-            <value>
-            The name.
-            </value>
-        </member>
+        <!-- Badly formed XML comment ignored for member "P:APTSPropricerApi.DTOs.BatchReportDto.Name" -->
         <member name="P:APTSPropricerApi.DTOs.BatchReportDto.Description">
             <summary>
             Gets or sets the Description.
@@ -2262,21 +2255,15 @@
             <summary>
             Gets or sets the identifier.
             </summary>
-            <value>
-            The identifier.
-            </value>
         </member>
         <member name="P:APTSPropricerApi.DTOs.BatchReportDto.Id">
             <summary>
             Gets the identifier.
             </summary>
-            <value>
-            The identifier.
-            </value>
         </member>
         <member name="M:APTSPropricerApi.DTOs.BatchReportDto.#ctor">
             <summary>
-            Initializes a new instance of the <see cref="T:APTSPropricerApi.ProposalFolderInfo"/> class.
+            Initializes a new instance of the <see cref="T:APTSPropricerApi.DTOs.BatchReportDto"/> class.
             </summary>
         </member>
         <member name="M:APTSPropricerApi.DTOs.BatchReportDto.#ctor(EBS.ProPricer.Model.BatchReport)">
