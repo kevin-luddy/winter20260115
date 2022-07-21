@@ -511,6 +511,9 @@ namespace GenTRAC.ActionLogic
                 }
             }
 
+            // ToDo: If model validation doesn't work for price range then run validation on here for Cost Through Coms
+            // Tip - Check if not null (if needed)
+
             #region Submit Validation
             // if this is a submit then do more validation checks including checking for required fields
             if (isSubmit)
@@ -554,6 +557,25 @@ namespace GenTRAC.ActionLogic
                     if (questions.Any() && string.IsNullOrEmpty(pricerComment))
                     {
                         inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.PRICER_COMMENT_NEEDED));
+                    }
+                }
+
+                if (DateTime.Now >= checklistProposalPricingData.CostThroughComStartingDate)
+                {
+                    if (string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeTotal))
+                    {
+                        inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.PROFIT_FEE_NEEDED));
+                    }
+
+                    // This is already checked for the Pricer, we do not want to display this validation message twice
+                    if (string.IsNullOrEmpty(checklistProposalPricingData.SubmittedValue) && checklistGeneralInfo.ShowChecklistResponse != ShowChecklistResponse.Pricer)
+                    {
+                        inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.SUBMITTED_VALUE_REQUIRED));
+                    }
+
+                    if (string.IsNullOrEmpty(checklistProposalPricingData.CostThroughCom))
+                    {
+                        inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.COST_THROUGH_COM_NEEDED));
                     }
                 }
 
@@ -1081,6 +1103,7 @@ namespace GenTRAC.ActionLogic
                     EstimatingSubmitsToContractsDate = string.IsNullOrEmpty(checklistGeneralInfo.EstimatingSubmitsToContractsDate) ? (DateTime?)null : checklistGeneralInfo.EstimatingSubmitsToContractsDate.ToDateTime("MM/dd/yyyy"),
                     SubmittedValue = !string.IsNullOrEmpty(checklistGeneralInfo.SubmittedValue) ? long.Parse(checklistGeneralInfo.SubmittedValue.Replace(",", string.Empty)) : (long?)null,
                     AbsoluteValue = !string.IsNullOrEmpty(checklistGeneralInfo.AbsoluteValue) ? long.Parse(checklistGeneralInfo.AbsoluteValue.Replace(",", string.Empty)) : (long?)null,
+                    CostThroughCom = !string.IsNullOrEmpty(checklistProposalPricingData.CostThroughCom) ? long.Parse(checklistProposalPricingData.CostThroughCom.Replace(",", string.Empty)) : (long?)null,
                     ProfitFeeWithCom = !string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeComTotal) ? long.Parse(checklistProposalPricingData.ProfitFeeComTotal.Replace(",", string.Empty)) : (long?)null,
                     Profit = !string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeTotal) ? long.Parse(checklistProposalPricingData.ProfitFeeTotal.Replace(",", string.Empty)) : (long?)null,
                     Com = !string.IsNullOrEmpty(checklistProposalPricingData.ComTotal) ? long.Parse(checklistProposalPricingData.ComTotal.Replace(",", string.Empty)) : (long?)null,
@@ -1350,6 +1373,7 @@ namespace GenTRAC.ActionLogic
                 model.IWTACost = string.Format("{0:#,###0}", checklist.IWTACost);
                 model.TravelCost = string.Format("{0:#,###0}", checklist.TravelCost);
                 model.OtherDirectCosts = string.Format("{0:#,###0}", checklist.OtherDirectCosts);
+                model.CostThroughCom = string.Format("{0:#,###0}", checklist.CostThroughCom);
                 model.ProfitFeeComTotal = string.Format("{0:#,###0}", checklist.ProfitFeeWithCom);
                 model.ProfitFeeTotal = string.Format("{0:#,###0}", checklist.Profit);
                 model.ComTotal = string.Format("{0:#,###0}", checklist.Com);

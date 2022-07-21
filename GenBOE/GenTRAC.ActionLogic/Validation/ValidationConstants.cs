@@ -578,7 +578,7 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// Proposal Submitted Value is required
             /// </summary>
-            public const string SUBMITTED_VALUE_REQUIRED = GENERAL_INFO_VALDIATION + "Proposal Submitted Value is required.";
+            public const string SUBMITTED_VALUE_REQUIRED = GENERAL_INFO_VALDIATION + "Proposal LM Space Total Price is required.";
 
             /// <summary>
             /// proposal submittal date format 
@@ -648,9 +648,24 @@ namespace GenTRAC.ActionLogic.Validation
             public const string PROFIT_FEE_COM_WHOLE_NUMBER = PROPOSAL_PRICING_DATA_VALDIATION + "Profit/Fee + COM must be in U.S. whole dollars in the range +- 999,999,999,999.";
 
             /// <summary>
+            /// Cost Through Com is a whole number
+            /// </summary>
+            public const string COST_THROUGH_COM_WHOLE_NUMBER = PROPOSAL_PRICING_DATA_VALDIATION + "Cost Through Com must be in U.S. whole dollars in the range +- 999,999,999,999.";
+
+            /// <summary>
+            /// If start date is on/after then Cost Through COM is required.
+            /// </summary>
+            public const string COST_THROUGH_COM_NEEDED = PROPOSAL_PRICING_DATA_VALDIATION + "Cost Through COM is required.";
+
+            /// <summary>
             /// profit/fee is a whole number
             /// </summary>
             public const string PROFIT_FEE_WHOLE_NUMBER = PROPOSAL_PRICING_DATA_VALDIATION + "Profit/Fee must be in U.S. whole dollars in the range +- 999,999,999,999.";
+
+            /// <summary>
+            /// If start date is on/after then Profit/Fee is required.
+            /// </summary>
+            public const string PROFIT_FEE_NEEDED = PROPOSAL_PRICING_DATA_VALDIATION + "Profit/Fee is required.";
 
             /// <summary>
             /// com is a whole number
