@@ -511,9 +511,6 @@ namespace GenTRAC.ActionLogic
                 }
             }
 
-            // ToDo: If model validation doesn't work for price range then run validation on here for Cost Through Coms
-            // Tip - Check if not null (if needed)
-
             #region Submit Validation
             // if this is a submit then do more validation checks including checking for required fields
             if (isSubmit)
