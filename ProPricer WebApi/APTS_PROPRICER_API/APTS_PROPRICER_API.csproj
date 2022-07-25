@@ -197,6 +197,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
+    <Folder Include="Views\HealthCheck\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -252,6 +253,7 @@
     <Compile Include="Controllers\CurvesController.cs" />
     <Compile Include="Controllers\DeptsController.cs" />
     <Compile Include="Controllers\FactorRateTablesController.cs" />
+    <Compile Include="Controllers\HealthCheckController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\PoolInstanceController.cs" />
     <Compile Include="Controllers\PoolDebugController.cs" />
