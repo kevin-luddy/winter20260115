@@ -635,7 +635,7 @@ namespace IES.Common
         /// <summary>
         /// Validation failed for Cage Code
         /// </summary>
-        public const string INVALID_CAGE_CODE = "Cage Code is required.";
+        public const string INVALID_CAGE_CODE = "Cage # is required.";
 
         /// <summary>
         /// Validation failed for Final Negotiated Value

@@ -210,10 +210,14 @@
                         if (response.Address2) {
                             ContractsInfoWidget.getElement('#CageCodeAddress2').text(response.Address2);
                         }
-						ContractsInfoWidget.getElement('#CageCodeCityStateZip').text(response.CityStateZip);
+                        ContractsInfoWidget.getElement('#CageCodeCityStateZip').text(response.CityStateZip);
+
+                        ContractsInfoWidget.refreshModule();
                     }
                 });
-            }
+            } else {
+				ContractsInfoWidget.refreshModule();
+			}
         };
 
         ContractsInfoWidget.cageNumberChanged();
