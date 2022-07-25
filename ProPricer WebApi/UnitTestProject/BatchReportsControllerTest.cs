@@ -11,7 +11,9 @@
     [TestClass]
     public class BatchReportsControllerTest
     {
-        // Tests retrieving batch reports
+        /// <summary>
+        /// Tests retrieving batch reports
+        /// </summary>
         [TestMethod]
         public void GetBatchReports()
         {
@@ -30,12 +32,7 @@
         public void ExportBatch()
         {
             string proposalId = "3ac7f35f-5e08-ed11-9f7b-64c901b7a0ad";
-            //using (ProposalsController prop = new ProposalsController())
-            //{
-            //    ICollection<ProposalFolderInfo> proposals = prop.Get(TestConstants.SpaceInstanceId);
-            //    proposalId = proposals.First(p => p.Name == "15-2 iii Reporting" && p.Version == "0").Id;
-            //}
-
+            
             using (BatchReportsController controller = new BatchReportsController())
             {
                 ICollection<BatchReportDto> results = controller.Get(TestConstants.SpaceInstanceId);
