@@ -105,6 +105,11 @@ namespace GenTRAC.DataBridge.DTO
         public long? Profit { get; set; }
 
         /// <summary>
+        /// Cost Through Com
+        /// </summary>
+        public long? CostThroughCom { get; set; }
+
+        /// <summary>
         /// COM
         /// </summary>
         public long? Com { get; set; }

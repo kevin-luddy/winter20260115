@@ -107,7 +107,7 @@ namespace GenTRAC.DataBridge.DTO
                                 dtoToUpsert.OtherDirectCosts, 
                                 dtoToUpsert.DeliverChecklistDFARS,
                                 dtoToUpsert.AbsoluteValue,
-                                null // TODO - Thomas - update with dto value in IES-1507
+                                dtoToUpsert.CostThroughCom
                                 ).FirstOrDefault();
 
                             ProposalChecklistSaveInfo pprUserSaveInfo = dtoToUpsert.UserSaveInfo[dtoToUpsert.ResponseType][ChecklistType.ProposalPricingReview];
@@ -274,7 +274,8 @@ namespace GenTRAC.DataBridge.DTO
                         IWTACost = entity.IWTACost,
                         TravelCost = entity.TravelCost,
                         OtherDirectCosts = entity.OtherDirectCost,
-                        DeliverChecklistDFARS = entity.DeliverChecklistDFARS
+                        DeliverChecklistDFARS = entity.DeliverChecklistDFARS,
+                        CostThroughCom = entity.CostThroughCom
                     };
 
                     proposalChecklist.PARResponses = dbModel.ProposalPARChecklistXREFs.Where(x => x.ProposalID == entity.ProposalID).Select(x => new ChecklistResponseItem()
