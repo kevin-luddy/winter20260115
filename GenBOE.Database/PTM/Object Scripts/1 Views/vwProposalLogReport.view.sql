@@ -22,6 +22,7 @@ CREATE VIEW [dbo].[vwProposalLogReport] AS
 **		3/7/2022	Dusan				IES-847 Modify Contracts Data data
 **      3/8/2022	Koovackal			IES-849 Changes to "Revise" button. 
 **										Removed contract offer code.
+**		7/25/2022	Dusan / Thomas		IES-1499, IES-1510, IES-1511: Added new fields into the report: Cage Codes, Type of Contract Action, Cost thru COM
 *******************************************************************************/
 SELECT	
 	P.ProposalID AS ProposalID,	
@@ -170,7 +171,14 @@ SELECT
 		WHEN pCD.LmWon = 0 THEN 'No'
 		ELSE NULL
 	END AS ContractsLmWon,
-	pCD.ModCompletedDate AS ContractsModCompletedDate
+	pCD.ModCompletedDate AS ContractsModCompletedDate,
+	-- end of Proposal Contract Data
+	pCD.CageCode,
+	CASE
+		WHEN p.ContractActionTypeOtherText IS NULL THEN aT.ContractActionType
+		ELSE aT.ContractActionType + ': ' + p.ContractActionTypeOtherText
+	END AS ContractActionType,
+	PC.CostThroughCom
   FROM [dbo].[Proposal] P
 	INNER JOIN [dbo].[ProgramAreaLU] PA ON P.ProgramAreaID = PA.ProgramAreaID
 	INNER JOIN [dbo].[LineOfBusinessLU] LOB ON P.LineOfBusinessID = LOB.LineOfBusinessID
@@ -293,4 +301,7 @@ SELECT
 	LEFT OUTER JOIN Proposal previousRomProposal ON pCD.PreviouslySubmittedROM = previousRomProposal.ProposalID
 	LEFT OUTER JOIN ProposalChecklist previousRomChecklist ON pCD.PreviouslySubmittedROM = previousRomChecklist.ProposalID
 	LEFT OUTER JOIN EppDelegationAuthorityLU eppLU ON eppLU.Id = pCD.EppDelegationAuthority
+	-- end of Proposal Contract Data
+
+	LEFT OUTER JOIN ContractActionTypeLU aT ON p.ContractActionType = aT.ID
 GO
