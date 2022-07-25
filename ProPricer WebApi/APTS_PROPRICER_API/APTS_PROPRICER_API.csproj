@@ -67,6 +67,7 @@
     </Reference>
     <Reference Include="DevExpress.Utils.v20.2">
       <HintPath>..\_ProPricer Libraries\DevExpress.Utils.v20.2.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="DevExpress.XtraBars.v20.2">
       <HintPath>..\_ProPricer Libraries\DevExpress.XtraBars.v20.2.dll</HintPath>
