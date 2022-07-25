@@ -564,7 +564,6 @@ namespace GenTRAC.ActionLogic
                         inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.PROFIT_FEE_NEEDED));
                     }
 
-                    // This is already checked for the Pricer, we do not want to display this validation message twice
                     if (string.IsNullOrEmpty(checklistProposalPricingData.SubmittedValue) && checklistGeneralInfo.ShowChecklistResponse != ShowChecklistResponse.Pricer)
                     {
                         inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.SUBMITTED_VALUE_REQUIRED));

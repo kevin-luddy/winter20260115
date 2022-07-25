@@ -568,27 +568,27 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// text to be concated to the front of a validation message 
             /// </summary>
-            private const string GENERAL_INFO_VALDIATION = "(General Information) - ";
+            private const string GENERAL_INFO_VALIDATION = "(General Information) - ";
 
             /// <summary>
             /// Proposal Submittal Date is required
             /// </summary>
-            public const string ESTIMATING_SUBMITS_TO_CONTRACTS_DATE_REQUIRED = GENERAL_INFO_VALDIATION + "Estimating Submits To Contracts Date is required.";
+            public const string ESTIMATING_SUBMITS_TO_CONTRACTS_DATE_REQUIRED = GENERAL_INFO_VALIDATION + "Estimating Submits To Contracts Date is required.";
 
             /// <summary>
             /// Proposal Submitted Value is required
             /// </summary>
-            public const string SUBMITTED_VALUE_REQUIRED = GENERAL_INFO_VALDIATION + "Proposal LM Space Total Price is required.";
+            public const string SUBMITTED_VALUE_REQUIRED = GENERAL_INFO_VALIDATION + "Proposal LM Space Total Price is required.";
 
             /// <summary>
             /// proposal submittal date format 
             /// </summary>
-            public const string SUBMITTAL_DATE_FORMAT = GENERAL_INFO_VALDIATION + "Proposal Submittal Date format must be mm/dd/yyyy";
+            public const string SUBMITTAL_DATE_FORMAT = GENERAL_INFO_VALIDATION + "Proposal Submittal Date format must be mm/dd/yyyy";
 
             /// <summary>
             /// Peer Reviewer invalid NTID
             /// </summary>
-            public const string PEER_REVIEWER_INVALID_NTID = GENERAL_INFO_VALDIATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Peer Reviewer.";
+            public const string PEER_REVIEWER_INVALID_NTID = GENERAL_INFO_VALIDATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Peer Reviewer.";
 
             #endregion Checklist General Section
             #region Checklist Proposal Pricing Data
