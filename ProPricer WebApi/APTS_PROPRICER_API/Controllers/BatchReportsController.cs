@@ -78,6 +78,8 @@ namespace APTSPropricerApi.Controllers
                         BatchReportContextManager mgr = new BatchReportContextManager(proposal);
                         BatchReportRuntimeContext ctx = new BatchReportRuntimeContext(batchReport, mgr);
                         ctx.Options.ExportType = EBS.ProPricer.Reports.Export.ExportType.Excel;
+                        // TODO:  we should be putting this into a custom folder named something like DeleteMe
+                        // Also, consider adding to global.asax.cs to delete any files in that folder on app shutdown
                         ctx.Options.Folder = Path.GetTempPath();
                         ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
                         ctx.Options.Destination = ReportDestination.File;

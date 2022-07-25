@@ -8,6 +8,9 @@
     using EBS.Core;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
+    /// <summary>
+    /// Tests for Batch Reports Controller
+    /// </summary>
     [TestClass]
     public class BatchReportsControllerTest
     {
