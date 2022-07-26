@@ -37,9 +37,9 @@ namespace APTSPropricerApi.Controllers
         /// </summary>
         /// <returns>Returns a collection of the pool manager instances.</returns>
         [HttpGet]
-        public ICollection<PoolInstanceDto> Get()
+        public ProPricerResponse<ICollection<PoolInstanceDto>> Get()
         {
-            ICollection<PoolInstanceDto> instances = null;
+            ProPricerResponse<ICollection<PoolInstanceDto>> response = new ProPricerResponse<ICollection<PoolInstanceDto>>();
 
             try
             {
@@ -47,15 +47,17 @@ namespace APTSPropricerApi.Controllers
 
                 using (PoolInstanceController pc = new PoolInstanceController())
                 {
-                    instances = pc.Get().ToList();
+                    response.Data = pc.Get().ToList();
+                    response.IsSuccessful = true;
                 }
             }
             catch (Exception ex)
             {
                 logger.Error(ex);
+                response.Messages.Add("Error retrieving Pool Instances");
             }
             
-            return instances;
+            return response;
         }
     }
 }

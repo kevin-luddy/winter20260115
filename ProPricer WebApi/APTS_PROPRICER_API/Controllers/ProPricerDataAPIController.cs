@@ -11,10 +11,8 @@ namespace APTSPropricerApi.Controllers
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Web.Http;
     using APTSPropricerApi.Common;
-    using APTSPropricerApi.DTOs;
 
     /// <summary>
     /// The Pro Pricer Data API Controller for ACV to call
@@ -38,9 +36,9 @@ namespace APTSPropricerApi.Controllers
         /// <param name="instanceId">The connection instance id to retrieve proposals on</param>
         /// <returns>A list of proposals inside folders</returns>
         [HttpGet]
-        public ICollection<ProposalFolderInfo> Get(int instanceId)
+        public ProPricerResponse<ICollection<ProposalFolderInfo>> Get(int instanceId)
         {
-            ICollection<ProposalFolderInfo> proposals = null;
+            ProPricerResponse<ICollection<ProposalFolderInfo>> response = new ProPricerResponse<ICollection<ProposalFolderInfo>>();
 
             try
             {
@@ -48,15 +46,17 @@ namespace APTSPropricerApi.Controllers
 
                 using (ProposalsController pc = new ProposalsController())
                 {
-                    proposals = pc.Get(instanceId);
+                    response.Data = pc.Get(instanceId);
+                    response.IsSuccessful = true;
                 }
             }
             catch (Exception ex)
             {
                 logger.Error(ex);
+                response.Messages.Add("Error retrieving proposals from Pro Pricer");
             }
 
-            return proposals; 
+            return response; 
         }
     }
 }
