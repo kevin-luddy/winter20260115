@@ -629,6 +629,7 @@ namespace GenTRAC.Tests.ActionLogic
                 SpaceEppDate = DateTime.Now,
                 PreSpaceEppDate = DateTime.Now,
                 ProgramEppDate = DateTime.Now,
+                CageCode = "ABC123",
                 LobEppDate = DateTime.Now
             };
 

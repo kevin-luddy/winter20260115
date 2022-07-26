@@ -1286,6 +1286,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProfitFeeTotal = string.Empty,
                 ComTotal = string.Empty,
                 ROSPercent = string.Empty,
+                CostThroughCom = string.Empty,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
 
@@ -1422,6 +1423,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProfitFeeTotal = "34",
                 ComTotal = "24",
                 ROSPercent = "22.56",
+                CostThroughCom = "22",
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
 
@@ -1694,6 +1696,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProfitFeeTotal = "4",
                 ComTotal = "2354",
                 ROSPercent = "22.56",
+                CostThroughCom = "22",
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
 
@@ -1829,6 +1832,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProfitFeeTotal = string.Empty,
                 ComTotal = string.Empty,
                 ROSPercent = string.Empty,
+                CostThroughCom = string.Empty,
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
 
@@ -1986,6 +1990,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProfitFeeTotal = "6875",
                 ComTotal = "41",
                 ROSPercent = "22.56",
+                CostThroughCom = "22",
                 ShowChecklistResponse = ShowChecklistResponse.Pricer
             };
 
