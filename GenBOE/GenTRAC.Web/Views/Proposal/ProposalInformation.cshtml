@@ -228,6 +228,20 @@
                 $(document).trigger('HIDE_STANDARD_PROPOSAL_FIELDS');
             }
         };
+
+        ProposalInfoWidget.ContractActionSelected = function () {
+            const contractActionType = ProposalInfoWidget.getElement("#ContractActionType").val();
+            let otherTextElement = ProposalInfoWidget.getElement("#ContractActionTypeOtherText");
+
+            if (contractActionType == '@((int)ContractActionType.Other)') {
+				otherTextElement.removeClass("display-none");
+			} else {
+                otherTextElement.addClass("display-none");
+                otherTextElement.val('');
+			}
+        }
+
+        ProposalInfoWidget.ContractActionSelected();
     });
 </script>
 
@@ -248,6 +262,17 @@
                 <div class="form-element">
                     @Html.TextBoxFor(model => model.ProposalTitle, new { maxlength = 75, style = "width:650px" })
                     @Html.HiddenFor(model => model.DocumentId)
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-label">
+                    Type of Contract Action*
+                </div>
+                <div class="form-element">
+                    @Html.EnumDropDownListFor(model => model.ContractActionType, new { name = "contractActionType", onchange = "ProposalInfoWidget.ContractActionSelected()" })
+                </div>
+                <div class="form-element">
+                    @Html.TextBoxFor(model => model.ContractActionTypeOtherText, new { maxlength = 100, name = "contractActionTypeOtherText"})
                 </div>
             </div>
             <div class="form-row">

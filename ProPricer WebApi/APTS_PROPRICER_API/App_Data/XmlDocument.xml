@@ -16,10 +16,6 @@
             </summary>
             <param name="routes">The routes.</param>
         </member>
-        <member name="M:APTSPropricerApi.UnityConfig.RegisterComponents">
-            Using dependency injection to inject the PROPRICER connection into the controllers.
-            
-        </member>
         <member name="T:APTSPropricerApi.WebApiConfig">
             <summary>
             The Web API Configuration
@@ -1531,6 +1527,41 @@
             <param name="attributeName">Attribute name</param>
             <returns>Attribute value, or null if none exists</returns>
         </member>
+        <member name="T:APTSPropricerApi.Common.TokenHandling">
+            <summary>
+            This is a Token Handling class that will help us to communicate between IES API (.Net 4.7) and the ACV IES API (.Net Core 5.0)
+            </summary>
+        </member>
+        <member name="F:APTSPropricerApi.Common.TokenHandling.AuthDomain">
+            <summary>
+            Auth Domain
+            </summary>
+        </member>
+        <member name="F:APTSPropricerApi.Common.TokenHandling.metadataAddressForAuthDomain">
+            <summary>
+            This is one of those things.. This URL is something that is a part of the OAuth2 (I'm guessing), so we just need to use it.
+            </summary>
+        </member>
+        <member name="F:APTSPropricerApi.Common.TokenHandling.logger">
+            <summary>
+            Logger
+            </summary>
+        </member>
+        <member name="M:APTSPropricerApi.Common.TokenHandling.GetNtidIfTokenIsValid(System.String)">
+            <summary>
+            Validate a Token, retrieve NTID from it
+            </summary>
+            <param name="token">Token to validate</param>
+            <exception cref="T:System.UnauthorizedAccessException">If there are any issues parsing the token, we will throw an unauthorized exception</exception>
+            <returns>If the token is valid, this method returns user's NTID. </returns>
+        </member>
+        <member name="M:APTSPropricerApi.Common.TokenHandling.AuthenticateUserFromAuthorizationToken">
+            <summary>
+            Authenticates the user based on the token that is coming in from the headers
+                The token is first validated, and if it is valid, then the user's NTID will be retrieved from it. 
+                Finally, the NTID will be set into the System's Current Principal
+            </summary>
+        </member>
         <member name="T:APTSPropricerApi.Connection.PoolManager">
              <summary>
              A class to manage objects in a pool. 
@@ -1813,6 +1844,17 @@
             A collection of factor rate tables.
             </returns>
         </member>
+        <member name="T:APTSPropricerApi.Controllers.HealthCheckController">
+            <summary>
+            Health Check Controller for Pro Pricer API
+            </summary>
+        </member>
+        <member name="M:APTSPropricerApi.Controllers.HealthCheckController.IsAlive">
+            <summary>
+            Is Service Alive?
+            </summary>
+            <returns>True/false</returns>
+        </member>
         <member name="M:APTSPropricerApi.Controllers.PoolInstanceController.Get">
             <summary>
             Gets the Pool Manager instances.
@@ -1946,6 +1988,27 @@
             <param name="allItemsFlat">Flattened tree.</param>
             <param name="child">The child.</param>
             <param name="folder">The folder.</param>
+        </member>
+        <member name="T:APTSPropricerApi.Controllers.ProPricerDataApiController">
+            <summary>
+            The Pro Pricer Data API Controller for ACV to call
+            </summary>
+        </member>
+        <member name="F:APTSPropricerApi.Controllers.ProPricerDataApiController.logger">
+            <summary>
+            The logger for the controller
+            </summary>
+        </member>
+        <member name="F:APTSPropricerApi.Controllers.ProPricerDataApiController.tokenHandler">
+            <summary>
+            Token handler 
+            </summary>
+        </member>
+        <member name="M:APTSPropricerApi.Controllers.ProPricerDataApiController.Test">
+            <summary>
+            Test Method for ACV Tokens
+            </summary>
+            <returns></returns>
         </member>
         <member name="T:APTSPropricerApi.Controllers.BatchReportsController">
             <summary>

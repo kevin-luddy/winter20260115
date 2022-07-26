@@ -198,7 +198,7 @@
             {
 
                 /// Act
-                ICollection<ProposalFolderInfo> data = controller.Get(TestConstants.InstanceId);
+                ICollection<ProposalFolderInfo> data = controller.Get(TestConstants.SpaceInstanceId);
 
                 Assert.IsTrue(data.Any());
             }

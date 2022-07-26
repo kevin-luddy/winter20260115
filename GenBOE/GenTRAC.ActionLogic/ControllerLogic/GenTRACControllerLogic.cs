@@ -570,6 +570,24 @@ namespace GenTRAC.ActionLogic
                     }
                 }
 
+                if (DateTime.Now >= checklistProposalPricingData.CostThroughComStartingDate)
+                {
+                    if (string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeTotal))
+                    {
+                        inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.PROFIT_FEE_NEEDED));
+                    }
+
+                    if (string.IsNullOrEmpty(checklistProposalPricingData.SubmittedValue) && checklistGeneralInfo.ShowChecklistResponse != ShowChecklistResponse.Pricer)
+                    {
+                        inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.SUBMITTED_VALUE_REQUIRED));
+                    }
+
+                    if (string.IsNullOrEmpty(checklistProposalPricingData.CostThroughCom))
+                    {
+                        inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.COST_THROUGH_COM_NEEDED));
+                    }
+                }
+
                 #region PAR Validation
                 // PAR checks
                 // Skip these validation messages if PAR was not displayed

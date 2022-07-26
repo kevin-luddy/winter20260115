@@ -57,7 +57,7 @@ namespace APTSPropricerApi.Connection
         {
             try
             {
-                string currentUser = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+                string currentUser = System.Threading.Thread.CurrentPrincipal.Identity.Name;
                 System.Diagnostics.Debug.WriteLine(currentUser);
                 // Assigning the server name and port to the datacenter
                 DataCenter datacenter = DataCenter.Open(serverName, port);
