@@ -53,36 +53,65 @@
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="EBS.Core, Version=1.0.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="DevExpress.Data.v20.2">
+      <HintPath>..\_ProPricer Libraries\DevExpress.Data.v20.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Office.v20.2.Core">
+      <HintPath>..\_ProPricer Libraries\DevExpress.Office.v20.2.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Printing.v20.2.Core">
+      <HintPath>..\_ProPricer Libraries\DevExpress.Printing.v20.2.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Spreadsheet.v20.2.Core">
+      <HintPath>..\_ProPricer Libraries\DevExpress.Spreadsheet.v20.2.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.Utils.v20.2">
+      <HintPath>..\_ProPricer Libraries\DevExpress.Utils.v20.2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DevExpress.XtraBars.v20.2">
+      <HintPath>..\_ProPricer Libraries\DevExpress.XtraBars.v20.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraEditors.v20.2">
+      <HintPath>..\_ProPricer Libraries\DevExpress.XtraEditors.v20.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DevExpress.XtraNavBar.v20.2">
+      <HintPath>..\_ProPricer Libraries\DevExpress.XtraNavBar.v20.2.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml">
+      <HintPath>..\_ProPricer Libraries\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.Core">
       <HintPath>..\_ProPricer Libraries\EBS.Core.dll</HintPath>
     </Reference>
-    <Reference Include="EBS.Core.Controls, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="EBS.Core.Controls">
       <HintPath>..\_ProPricer Libraries\EBS.Core.Controls.dll</HintPath>
     </Reference>
-    <Reference Include="EBS.Core.ServiceModel, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="EBS.Core.DocumentFormat">
+      <HintPath>..\_ProPricer Libraries\EBS.Core.DocumentFormat.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.Core.ServiceModel">
       <HintPath>..\_ProPricer Libraries\EBS.Core.ServiceModel.dll</HintPath>
     </Reference>
-    <Reference Include="EBS.PROPRICER.Client, Version=9.3.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="EBS.PROPRICER.Client">
       <HintPath>..\_ProPricer Libraries\EBS.PROPRICER.Client.dll</HintPath>
     </Reference>
-    <Reference Include="EBS.PROPRICER.Configuration, Version=9.3.108.14000, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="EBS.PROPRICER.Configuration">
       <HintPath>..\_ProPricer Libraries\EBS.PROPRICER.Configuration.dll</HintPath>
     </Reference>
-    <Reference Include="EBS.PROPRICER.ImportExport, Version=9.3.108.14000, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="EBS.ProPricer.EditionManager">
+      <HintPath>..\_ProPricer Libraries\EBS.ProPricer.EditionManager.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.PROPRICER.ImportExport">
       <HintPath>..\_ProPricer Libraries\EBS.PROPRICER.ImportExport.dll</HintPath>
     </Reference>
-    <Reference Include="EBS.PROPRICER.Registration, Version=9.3.108.14000, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="EBS.PROPRICER.Registration">
       <HintPath>..\_ProPricer Libraries\EBS.PROPRICER.Registration.dll</HintPath>
     </Reference>
-    <Reference Include="EBS.Registration, Version=1.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="EBS.ProPricer.Reports">
+      <HintPath>..\_ProPricer Libraries\EBS.ProPricer.Reports.dll</HintPath>
+    </Reference>
+    <Reference Include="EBS.Registration">
       <HintPath>..\_ProPricer Libraries\EBS.Registration.dll</HintPath>
     </Reference>
     <Reference Include="Elmah, Version=1.2.14706.0, Culture=neutral, processorArchitecture=MSIL">

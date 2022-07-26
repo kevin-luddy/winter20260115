@@ -726,6 +726,11 @@ namespace APTSPropricerApi.Controllers
         {
             List<ProposalFolderInfo> tree = new List<ProposalFolderInfo>();
 
+            if (string.IsNullOrWhiteSpace(ntid))
+            {
+                ntid = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+            }
+
             try
             {
                 if (ppc.Workspace != null)
