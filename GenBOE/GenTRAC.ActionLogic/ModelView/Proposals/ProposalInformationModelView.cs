@@ -51,6 +51,17 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public string ProposalTitle { get; set; }
 
         /// <summary>
+        /// Gets or sets selected contract action type
+        /// </summary>
+        [Required(ErrorMessage = ValidationConstants.ProposalValidationConstants.CONTRACT_ACTION_TYPE_REQUIRED)]
+        public ContractActionType ContractActionType { get; set; }
+
+        /// <summary>
+        /// Text for when Other is selected for Contract Action Type
+        /// </summary>
+        public string ContractActionTypeOtherText { get; set; }
+
+        /// <summary>
         /// Gets or sets Proposal Type
         /// </summary>
         [Range(1, int.MaxValue, ErrorMessage = ValidationConstants.ProposalValidationConstants.PROPOSAL_TYPE_REQUIRED)]
