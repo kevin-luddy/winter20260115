@@ -70,7 +70,7 @@ namespace APTSPropricerApi.Common
 
                 // Validates the token first (throws if invalid). If valid, it searches all claims for the right one. Finally, the string is in the format of ntid@fully.qualitified.domain, so we strip out what we don't need.
                 // ProPricer needs the id in the form of DOMAIN\ntid
-                string upn = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out _).Claims.First(x => x.Type == "lmco_upn").Value;// twilson3@acct04.us.lmco.com
+                string upn = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out _).Claims.First(x => x.Type == "lmco_upn").Value;
                 string[] parts = upn.Split('@');
                 userNtid = parts.First();
                 string fullyQualifiedDomain = parts.Last();
