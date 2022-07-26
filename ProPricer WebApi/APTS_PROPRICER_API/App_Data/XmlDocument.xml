@@ -1813,6 +1813,17 @@
             A collection of factor rate tables.
             </returns>
         </member>
+        <member name="T:APTSPropricerApi.Controllers.HealthCheckController">
+            <summary>
+            Health Check Controller for Pro Pricer API
+            </summary>
+        </member>
+        <member name="M:APTSPropricerApi.Controllers.HealthCheckController.IsAlive">
+            <summary>
+            Is Service Alive?
+            </summary>
+            <returns>True/false</returns>
+        </member>
         <member name="M:APTSPropricerApi.Controllers.PoolInstanceController.Get">
             <summary>
             Gets the Pool Manager instances.
