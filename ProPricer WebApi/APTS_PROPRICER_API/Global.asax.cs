@@ -13,6 +13,7 @@ namespace APTSPropricerApi
     using System.Web.Http;
     using System.Web.Mvc;
     using System.Web.Routing;
+    using APTSPropricerApi.Connection;
 
     public class WebApiApplication : System.Web.HttpApplication
     {
@@ -20,8 +21,7 @@ namespace APTSPropricerApi
         {
             AreaRegistration.RegisterAllAreas();
 
-            // Configure Unity DI (see UnityConfig.cs)
-            UnityConfig.RegisterComponents();
+            PoolManager.ResetPoolManagers();
 
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);

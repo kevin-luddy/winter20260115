@@ -7,7 +7,11 @@
         will use this file to expose properties for you to tokenize (it doesn’t actually transform the config at build time).-->
   
   <!--appSettings-->
-  <parameter name="CompanyConfiguration" description="doesn't matter" defaultvalue="__CompanyConfiguration__" tags="">
+  <parameter name="oAuthDomain" description="doesn't matter" defaultvalue="__oAuthDomain__" tags="">
+	<parameterValidation kind="AllowEmpty" />
+	<parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='oAuthDomain']/@value">
+	</parameterentry>
+  </parameter><parameter name="CompanyConfiguration" description="doesn't matter" defaultvalue="__CompanyConfiguration__" tags="">
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/appSettings/add[@key='CompanyConfiguration']/@value">
     </parameterentry>
   </parameter>
