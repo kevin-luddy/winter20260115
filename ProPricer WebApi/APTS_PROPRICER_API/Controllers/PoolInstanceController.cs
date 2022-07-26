@@ -7,13 +7,16 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System;
-using System.Collections.Generic;
-using APTSPropricerApi.Connection;
-using APTSPropricerApi.DTOs;
-
 namespace APTSPropricerApi.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using APTSPropricerApi.Connection;
+    using APTSPropricerApi.DTOs;
+
+    /// <summary>
+    /// The Pool Instance Controller
+    /// </summary>
     public class PoolInstanceController : ProPricerController
     {
         // GET api/poolinstance
