@@ -106,6 +106,7 @@
             @Html.HiddenFor(m => m.ProposalChecklistID)
             @Html.HiddenFor(m => m.ShowChecklistResponse)
             @Html.HiddenFor(m => m.SplitProfitFeeCOM)
+            @Html.HiddenFor(m => m.UseCostThroughCom)
             <div id="ProposalPriceDataHeaderText" class="proposalPriceDataText">Pricing data should reflect Customer <u>Submitted</u> Values in Whole U.S. Dollars (e.g., $1,000,000).<br /><span style="color: red">For International proposals, enter the U.S. dollar equivalent. Hours may be entered up to two decimal places (e.g., 1,500.05).</span></div><br />
             <table id="PriceTableOne" style="display: inline-block;">
                 <colgroup>
@@ -180,62 +181,82 @@
                     <col style="width: 136px" />
                 </colgroup>
                 <thead>
-                    <tr style="height: 25px;">
-                        @if (!Model.SplitProfitFeeCOM)
-                        {
-                            <th>
-                                <div style="width: 100px"> <span helptext="@ProfitComFeeHelpText">Profit/Fee + COM</span></div>
-                            </th>
-                        }
-                        else
-                        {
-                            <th>
-                                <div style="width: 100px"> <span helptext="@ProfitFeeHelpText">Profit/Fee</span></div>
-                            </th>
-                            <th>
-                                <div style="width: 100px"> <span helptext="@ComFeeHelpText">COM</span></div>
-                            </th>
-                        }
-                        <th>
-                            <div style="width: 100px"> <span>LM Space Total Price</span></div>
-                        </th>
-                        <th>
-                            <div style="width: 100px"> <span helptext="@ROSHelpText">ROS %</span></div>
-                        </th>
-                        <th class="hiddenColumn" />
-                        <th class="hiddenColumn" />
-                        <th class="hiddenColumn" />
-                        <th class="hiddenColumn" />
-                    </tr>
+					<tr style="height: 25px;">
+						@if (!Model.SplitProfitFeeCOM)
+						{
+							<th>
+								<div style="width: 100px"> <span helptext="@ProfitComFeeHelpText">Profit/Fee + COM</span></div>
+							</th>
+						}
+						else
+						{
+							if (Model.UseCostThroughCom)
+							{
+								<th>
+									<div style="width: 100px"> <span>Cost Through COM*</span></div>
+								</th>
+							}
+							<th>
+								<div style="width: 100px">
+									<span helptext="@ProfitFeeHelpText"><span>Profit/Fee</span>@if (Model.UseCostThroughCom) {<span>*</span>}</span>
+								</div>
+							</th>
+							if (!Model.UseCostThroughCom)
+							{
+							    <th>
+								    <div style="width: 100px"> <span helptext="@ComFeeHelpText">COM</span></div>
+							    </th>
+							}
+						}
+						<th>
+							<div style="width: 100px"> <span>LM Space Total Price</span></div>
+						</th>
+						<th>
+							<div style="width: 100px"> <span helptext="@ROSHelpText">ROS %</span></div>
+						</th>
+						<th class="hiddenColumn" />
+						<th class="hiddenColumn" />
+						<th class="hiddenColumn" />
+						<th class="hiddenColumn" />
+					</tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        @if (!Model.SplitProfitFeeCOM)
-                        {
-                            <td>
-                                @Html.TextBoxFor(model => model.ProfitFeeComTotal, new { size = 15, name = "ProfitFeeComTotal", maxInt = 12, numDecimals = 0 })
-                            </td>
-                        }
-                        else
-                        {
-                            <td>
-                                @Html.TextBoxFor(model => model.ProfitFeeTotal, new { size = 15, name = "ProfitFeeTotal", maxInt = 12, numDecimals = 0 })
-                            </td>
-                            <td>
-                                @Html.TextBoxFor(model => model.ComTotal, new { size = 15, name = "ComTotal", maxInt = 12, numDecimals = 0 })
-                            </td>
-                        }
-                        <td>
-                            <div name="SSCTotalPrice">@Html.DisplayTextFor(model => model.SubmittedValue)</div>
-                        </td>
-                        <td>
-                            @Html.TextBoxFor(model => model.ROSPercent, new { maxlength = 6, size = 6, name = "ROSPercent", maxInt = 2, numDecimals = 2 })
-                        </td>
-                        <td class="hiddenColumn"></td>
-                        <td class="hiddenColumn"></td>
-                        <td class="hiddenColumn"></td>
-                        <td class="hiddenColumn"></td>
-                    </tr>
+					<tr>
+						@if (!Model.SplitProfitFeeCOM)
+						{
+							<td>
+								@Html.TextBoxFor(model => model.ProfitFeeComTotal, new { size = 15, name = "ProfitFeeComTotal", maxInt = 12, numDecimals = 0 })
+							</td>
+						}
+						else
+						{
+							if (Model.UseCostThroughCom)
+							{
+								<td>
+									@Html.TextBoxFor(model => model.CostThroughCom, new { size = 15, name = "CostThroughCom", maxInt = 12, numDecimals = 0 })
+								</td>
+							}
+							<td>
+								@Html.TextBoxFor(model => model.ProfitFeeTotal, new { size = 15, name = "ProfitFeeTotal", maxInt = 12, numDecimals = 0 })
+							</td>
+							if (!Model.UseCostThroughCom)
+							{
+								<td>
+									@Html.TextBoxFor(model => model.ComTotal, new { size = 15, name = "ComTotal", maxInt = 12, numDecimals = 0 })
+								</td>
+							}
+						}
+						<td>
+							<div name="SSCTotalPrice">@Html.DisplayTextFor(model => model.SubmittedValue)</div>
+						</td>
+						<td>
+							@Html.TextBoxFor(model => model.ROSPercent, new { maxlength = 6, size = 6, name = "ROSPercent", maxInt = 2, numDecimals = 2 })
+						</td>
+						<td class="hiddenColumn"></td>
+						<td class="hiddenColumn"></td>
+						<td class="hiddenColumn"></td>
+						<td class="hiddenColumn"></td>
+					</tr>
                 </tbody>
             </table>
         }
