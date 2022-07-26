@@ -1989,6 +1989,27 @@
             <param name="child">The child.</param>
             <param name="folder">The folder.</param>
         </member>
+        <member name="T:APTSPropricerApi.Controllers.AvailableConnectionController">
+            <summary>
+            The Pro Pricer Data API Controller for ACV to call
+            </summary>
+        </member>
+        <member name="F:APTSPropricerApi.Controllers.AvailableConnectionController.logger">
+            <summary>
+            The logger for the controller
+            </summary>
+        </member>
+        <member name="F:APTSPropricerApi.Controllers.AvailableConnectionController.tokenHandler">
+            <summary>
+            Token handler 
+            </summary>
+        </member>
+        <member name="M:APTSPropricerApi.Controllers.AvailableConnectionController.Get">
+            <summary>
+            Gets the Available Connections.
+            </summary>
+            <returns>Returns a collection of the pool manager instances.</returns>
+        </member>
         <member name="T:APTSPropricerApi.Controllers.ProPricerDataApiController">
             <summary>
             The Pro Pricer Data API Controller for ACV to call
@@ -2004,11 +2025,12 @@
             Token handler 
             </summary>
         </member>
-        <member name="M:APTSPropricerApi.Controllers.ProPricerDataApiController.Test">
+        <member name="M:APTSPropricerApi.Controllers.ProPricerDataApiController.Get(System.Int32)">
             <summary>
-            Test Method for ACV Tokens
+            Gets the Proposals
             </summary>
-            <returns></returns>
+            <param name="instanceId">The connection instance id to retrieve proposals on</param>
+            <returns>A list of proposals inside folders</returns>
         </member>
         <member name="T:APTSPropricerApi.Controllers.BatchReportsController">
             <summary>

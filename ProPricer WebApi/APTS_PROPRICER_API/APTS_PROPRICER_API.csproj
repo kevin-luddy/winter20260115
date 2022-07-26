@@ -297,6 +297,7 @@
     <Compile Include="Controllers\ProposalandTasksController.cs" />
     <Compile Include="Controllers\ProposalCopyController.cs" />
     <Compile Include="Controllers\ProposalsController.cs" />
+    <Compile Include="Controllers\AvailableConnectionController.cs" />
     <Compile Include="Controllers\ProPricerDataApiController.cs" />
     <Compile Include="Controllers\ProPricerDirectImportController.cs" />
     <Compile Include="Controllers\BatchReportsController.cs" />

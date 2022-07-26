@@ -20,12 +20,12 @@ namespace APTSPropricerApi.Controllers
     /// The Pro Pricer Data API Controller for ACV to call
     /// </summary>
     [AllowAnonymous]
-    public class ProPricerDataApiController : ApiController
+    public class AvailableConnectionController : ApiController
     {
         /// <summary>
         /// The logger for the controller
         /// </summary>
-        private readonly Logger logger = new Logger(typeof(ProPricerDataApiController));
+        private readonly Logger logger = new Logger(typeof(AvailableConnectionController));
 
         /// <summary>
         /// Token handler 
@@ -33,30 +33,29 @@ namespace APTSPropricerApi.Controllers
         private readonly TokenHandling tokenHandler = new TokenHandling();
 
         /// <summary>
-        /// Gets the Proposals
+        /// Gets the Available Connections.
         /// </summary>
-        /// <param name="instanceId">The connection instance id to retrieve proposals on</param>
-        /// <returns>A list of proposals inside folders</returns>
+        /// <returns>Returns a collection of the pool manager instances.</returns>
         [HttpGet]
-        public ICollection<ProposalFolderInfo> Get(int instanceId)
+        public ICollection<PoolInstanceDto> Get()
         {
-            ICollection<ProposalFolderInfo> proposals = null;
+            ICollection<PoolInstanceDto> instances = null;
 
             try
             {
                 tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-                using (ProposalsController pc = new ProposalsController())
+                using (PoolInstanceController pc = new PoolInstanceController())
                 {
-                    proposals = pc.Get(instanceId);
+                    instances = pc.Get().ToList();
                 }
             }
             catch (Exception ex)
             {
                 logger.Error(ex);
             }
-
-            return proposals; 
+            
+            return instances;
         }
     }
 }
