@@ -138,6 +138,11 @@ namespace GenTRAC.ActionLogic.Validation
             public const string PROPOSAL_TITLE_MUST_BE_UNIQUE = PROPOSAL_INFO_VALDIATION + "Proposal Title must be unique.";
 
             /// <summary>
+            /// proposal contract action type other text required
+            /// </summary>
+            public const string PROPOSAL_CONTRACT_ACTION_TYPE_OTHER_TEXT_REQUIRED = PROPOSAL_INFO_VALDIATION + "Type of Contract Action text box is required if 'Other' is selected.";
+
+            /// <summary>
             ///  propsal type is required
             /// </summary>
             public const string PROPOSAL_TYPE_REQUIRED = PROPOSAL_INFO_VALDIATION + "Proposal Type is required.";

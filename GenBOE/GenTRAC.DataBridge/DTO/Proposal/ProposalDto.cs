@@ -352,6 +352,16 @@ namespace GenTRAC.DataBridge.DTO
         public DateTime? ProposalCompletedDate { get; set; }
 
         /// <summary>
+        /// Gets or sets selected contract action type
+        /// </summary>
+        public ContractActionType? ContractActionType { get; set; }
+
+        /// <summary>
+        /// Text for when Other is selected for Contract Action Type
+        /// </summary>
+        public string ContractActionTypeOtherText { get; set; }
+
+        /// <summary>
         /// Gets or sets the certification last emailed date.
         /// </summary>
         public DateTime? CertificationLastEmailed { get; set; }
