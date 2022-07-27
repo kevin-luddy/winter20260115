@@ -1563,7 +1563,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(proposal.RFPNumber, proposalInfo.RFPNumber);
             Assert.AreEqual(proposal.RFPIssuedDate.Value.ToString("MM/dd/yyyy"), proposalInfo.RFPIssuedDate);
             Assert.AreEqual(proposal.RFPReceivedDate.Value.ToString("MM/dd/yyyy"), proposalInfo.RFPReceivedDate);
-            Assert.AreEqual(ContractActionType.NewContract.GetDescription<ContractActionType>(), proposalInfo.ContractActionType.GetDescription<ContractActionType>());
+            Assert.AreEqual(ContractActionType.NewContract.GetDescription<ContractActionType>(), proposalInfo.ContractActionType.Value.GetDescription<ContractActionType>());
             Assert.AreEqual(proposal.ContractActionTypeOtherText, proposalInfo.ContractActionTypeOtherText);
             Assert.IsFalse(proposalInfo.IsNewRevision);
 
@@ -3674,7 +3674,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual("Not Set", result.ProposalClassText);
             Assert.AreEqual("Not Set", result.RequestTypeText);
             Assert.AreEqual(fullProposal.DocumentId, result.DocumentId);
-            Assert.AreEqual(ContractActionType.PriceRevisionRedetermination.GetDescription<ContractActionType>(), result.ContractActionType.GetDescription<ContractActionType>());
+            Assert.AreEqual(ContractActionType.PriceRevisionRedetermination.GetDescription<ContractActionType>(), result.ContractActionType.Value.GetDescription<ContractActionType>());
             Assert.AreEqual(fullProposal.ContractActionTypeOtherText, result.ContractActionTypeOtherText);
             Assert.IsTrue(result.CostElementsList.Any());
             Assert.IsTrue(result.CustomerTypesList.Any());

@@ -54,7 +54,7 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// Gets or sets selected contract action type
         /// </summary>
         [Required(ErrorMessage = ValidationConstants.ProposalValidationConstants.CONTRACT_ACTION_TYPE_REQUIRED)]
-        public ContractActionType ContractActionType { get; set; }
+        public ContractActionType? ContractActionType { get; set; }
 
         /// <summary>
         /// Text for when Other is selected for Contract Action Type
