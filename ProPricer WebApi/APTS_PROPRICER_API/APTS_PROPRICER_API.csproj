@@ -280,6 +280,7 @@
     <Compile Include="Common\ProPricer File Export Import\ProPricerExportOption.cs" />
     <Compile Include="Common\ProPricer File Export Import\ProPricerExportResults.cs" />
     <Compile Include="Common\ProPricer File Export Import\ProPricerExportResult.cs" />
+    <Compile Include="Common\ProPricerResponse.cs" />
     <Compile Include="Common\SystemConfiguration.cs" />
     <Compile Include="Common\SystemConfigurationSection.cs" />
     <Compile Include="Common\TokenHandling.cs" />

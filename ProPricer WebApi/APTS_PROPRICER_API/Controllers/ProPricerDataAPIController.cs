@@ -10,8 +10,11 @@
 namespace APTSPropricerApi.Controllers
 {
     using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Web.Http;
     using APTSPropricerApi.Common;
+    using APTSPropricerApi.DTOs;
 
     /// <summary>
     /// The Pro Pricer Data API Controller for ACV to call
@@ -30,24 +33,62 @@ namespace APTSPropricerApi.Controllers
         private readonly TokenHandling tokenHandler = new TokenHandling();
 
         /// <summary>
-        /// Test Method for ACV Tokens
+        /// Gets the Proposals
         /// </summary>
-        /// <returns></returns>
+        /// <param name="instanceId">The connection instance id to retrieve proposals on</param>
+        /// <returns>A list of proposals inside folders</returns>
+        [Route("api/ProPricerData/Proposals/{instanceId}")]
         [HttpGet]
-        public string Test()
+        public ProPricerResponse<ICollection<ProposalFolderInfo>> Get(int instanceId)
         {
+            ProPricerResponse<ICollection<ProposalFolderInfo>> response = new ProPricerResponse<ICollection<ProposalFolderInfo>>();
+
             try
             {
                 tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-                return "Hello World";
+                using (ProposalsController pc = new ProposalsController())
+                {
+                    response.Data = pc.Get(instanceId);
+                    response.IsSuccessful = true;
+                }
             }
             catch (Exception ex)
             {
                 logger.Error(ex);
+                response.Messages.Add("Error retrieving proposals from Pro Pricer");
             }
 
-            return "failed";
+            return response; 
+        }
+
+        /// <summary>
+        /// Gets the Available Connections.
+        /// </summary>
+        /// <returns>Returns a collection of the pool manager instances.</returns>
+        [Route("api/ProPricerData/AvailableConnections")]
+        [HttpGet]
+        public ProPricerResponse<ICollection<PoolInstanceDto>> Get()
+        {
+            ProPricerResponse<ICollection<PoolInstanceDto>> response = new ProPricerResponse<ICollection<PoolInstanceDto>>();
+
+            try
+            {
+                tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+                using (PoolInstanceController pc = new PoolInstanceController())
+                {
+                    response.Data = pc.Get().ToList();
+                    response.IsSuccessful = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex);
+                response.Messages.Add("Error retrieving Pool Instances");
+            }
+
+            return response;
         }
     }
 }

@@ -1436,6 +1436,61 @@
             <param name="exceptionFile">Fully qualified path to the exception file.</param>
             <param name="logFile">Fully qualified path to the log file.</param>
         </member>
+        <member name="T:APTSPropricerApi.Common.ProPricerResponse`1">
+            <summary>
+            A Pro Pricer Response
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.ProPricerResponse`1.IsSuccessful">
+            <summary>
+            True if the request succeeded, false otherwise.
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.ProPricerResponse`1.Messages">
+            <summary>
+            Error or other informational messages
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.ProPricerResponse`1.Data">
+            <summary>
+            Data meeting the request criteria
+            </summary>
+        </member>
+        <member name="T:APTSPropricerApi.Common.TokenHandling">
+            <summary>
+            This is a Token Handling class that will help us to communicate between IES API (.Net 4.7) and the ACV IES API (.Net Core 5.0)
+            </summary>
+        </member>
+        <member name="F:APTSPropricerApi.Common.TokenHandling.AuthDomain">
+            <summary>
+            Auth Domain
+            </summary>
+        </member>
+        <member name="F:APTSPropricerApi.Common.TokenHandling.metadataAddressForAuthDomain">
+            <summary>
+            This is one of those things.. This URL is something that is a part of the OAuth2 (I'm guessing), so we just need to use it.
+            </summary>
+        </member>
+        <member name="F:APTSPropricerApi.Common.TokenHandling.logger">
+            <summary>
+            Logger
+            </summary>
+        </member>
+        <member name="M:APTSPropricerApi.Common.TokenHandling.GetNtidIfTokenIsValid(System.String)">
+            <summary>
+            Validate a Token, retrieve NTID from it
+            </summary>
+            <param name="token">Token to validate</param>
+            <exception cref="T:System.UnauthorizedAccessException">If there are any issues parsing the token, we will throw an unauthorized exception</exception>
+            <returns>If the token is valid, this method returns user's NTID. </returns>
+        </member>
+        <member name="M:APTSPropricerApi.Common.TokenHandling.AuthenticateUserFromAuthorizationToken">
+            <summary>
+            Authenticates the user based on the token that is coming in from the headers
+                The token is first validated, and if it is valid, then the user's NTID will be retrieved from it. 
+                Finally, the NTID will be set into the System's Current Principal
+            </summary>
+        </member>
         <member name="T:APTSPropricerApi.SystemConfiguration">
             <summary>
             Singleton that stores system configurations from web.config
@@ -1526,41 +1581,6 @@
             <param name="node">XML node</param>
             <param name="attributeName">Attribute name</param>
             <returns>Attribute value, or null if none exists</returns>
-        </member>
-        <member name="T:APTSPropricerApi.Common.TokenHandling">
-            <summary>
-            This is a Token Handling class that will help us to communicate between IES API (.Net 4.7) and the ACV IES API (.Net Core 5.0)
-            </summary>
-        </member>
-        <member name="F:APTSPropricerApi.Common.TokenHandling.AuthDomain">
-            <summary>
-            Auth Domain
-            </summary>
-        </member>
-        <member name="F:APTSPropricerApi.Common.TokenHandling.metadataAddressForAuthDomain">
-            <summary>
-            This is one of those things.. This URL is something that is a part of the OAuth2 (I'm guessing), so we just need to use it.
-            </summary>
-        </member>
-        <member name="F:APTSPropricerApi.Common.TokenHandling.logger">
-            <summary>
-            Logger
-            </summary>
-        </member>
-        <member name="M:APTSPropricerApi.Common.TokenHandling.GetNtidIfTokenIsValid(System.String)">
-            <summary>
-            Validate a Token, retrieve NTID from it
-            </summary>
-            <param name="token">Token to validate</param>
-            <exception cref="T:System.UnauthorizedAccessException">If there are any issues parsing the token, we will throw an unauthorized exception</exception>
-            <returns>If the token is valid, this method returns user's NTID. </returns>
-        </member>
-        <member name="M:APTSPropricerApi.Common.TokenHandling.AuthenticateUserFromAuthorizationToken">
-            <summary>
-            Authenticates the user based on the token that is coming in from the headers
-                The token is first validated, and if it is valid, then the user's NTID will be retrieved from it. 
-                Finally, the NTID will be set into the System's Current Principal
-            </summary>
         </member>
         <member name="T:APTSPropricerApi.Connection.PoolManager">
              <summary>
@@ -1855,6 +1875,11 @@
             </summary>
             <returns>True/false</returns>
         </member>
+        <member name="T:APTSPropricerApi.Controllers.PoolInstanceController">
+            <summary>
+            The Pool Instance Controller
+            </summary>
+        </member>
         <member name="M:APTSPropricerApi.Controllers.PoolInstanceController.Get">
             <summary>
             Gets the Pool Manager instances.
@@ -2004,11 +2029,18 @@
             Token handler 
             </summary>
         </member>
-        <member name="M:APTSPropricerApi.Controllers.ProPricerDataApiController.Test">
+        <member name="M:APTSPropricerApi.Controllers.ProPricerDataApiController.Get(System.Int32)">
             <summary>
-            Test Method for ACV Tokens
+            Gets the Proposals
             </summary>
-            <returns></returns>
+            <param name="instanceId">The connection instance id to retrieve proposals on</param>
+            <returns>A list of proposals inside folders</returns>
+        </member>
+        <member name="M:APTSPropricerApi.Controllers.ProPricerDataApiController.Get">
+            <summary>
+            Gets the Available Connections.
+            </summary>
+            <returns>Returns a collection of the pool manager instances.</returns>
         </member>
         <member name="T:APTSPropricerApi.Controllers.BatchReportsController">
             <summary>
