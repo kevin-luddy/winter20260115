@@ -1,4 +1,4 @@
-﻿EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2022.25';
+﻿EXEC [dbo].[UpdateDbVersion] @DbVersion = '1', @AppVersion = '2022.27';
 GO
 
 /*
