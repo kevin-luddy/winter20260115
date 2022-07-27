@@ -70,16 +70,21 @@ namespace APTSPropricerApi.Common
 
                 // Validates the token first (throws if invalid). If valid, it searches all claims for the right one. Finally, the string is in the format of ntid@fully.qualitified.domain, so we strip out what we don't need.
                 // ProPricer needs the id in the form of DOMAIN\ntid
-                string upn = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out _).Claims.First(x => x.Type == "lmco_upn").Value;
-                string[] parts = upn.Split('@');
-                userNtid = parts.First();
-                string fullyQualifiedDomain = parts.Last();
-
-                if (!string.IsNullOrWhiteSpace(fullyQualifiedDomain))
+                string upn = new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out _).Claims.FirstOrDefault(x => x.Type == "lmco_upn")?.Value;
+                if (!string.IsNullOrEmpty(upn))
                 {
-                    string domain = fullyQualifiedDomain.Split('.').First().ToUpper();
+                    string[] parts = upn.Split('@');
+                    if (parts.Length == 2)
+                    {
+                        userNtid = parts.First();
+                        string fullyQualifiedDomain = parts.Last();
 
-                    userNtid = domain + @"\" + userNtid;
+                        if (!string.IsNullOrWhiteSpace(fullyQualifiedDomain))
+                        {
+                            string domain = fullyQualifiedDomain.Split('.').First().ToUpper();
+                            userNtid = domain + @"\" + userNtid;
+                        }
+                    }
                 }
             }
             catch (Exception ex)
