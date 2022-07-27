@@ -2057,6 +2057,12 @@
             <param name="instanceId">The connection instance id to retrieve proposals on</param>
             <returns>A list of proposals inside folders</returns>
         </member>
+        <member name="M:APTSPropricerApi.Controllers.ProPricerDataApiController.Get">
+            <summary>
+            Gets the Available Connections.
+            </summary>
+            <returns>Returns a collection of the pool manager instances.</returns>
+        </member>
         <member name="T:APTSPropricerApi.Controllers.BatchReportsController">
             <summary>
             Batch Reports Controller
