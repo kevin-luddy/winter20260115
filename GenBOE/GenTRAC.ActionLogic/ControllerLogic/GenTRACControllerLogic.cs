@@ -527,6 +527,19 @@ namespace GenTRAC.ActionLogic
                     {
                         inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.SUBMITTED_VALUE_REQUIRED));
                     }
+
+                    if (checklistProposalPricingData.UseCostThroughCom)
+                    {
+                        if (string.IsNullOrEmpty(checklistProposalPricingData.CostThroughCom))
+                        {
+                            inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.COST_THROUGH_COM_NEEDED));
+                        }
+
+                        if (string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeTotal))
+                        {
+                            inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.PROFIT_FEE_NEEDED));
+                        }
+                    }
                 }
 
                 // only do PPR validation on a submit if its the Pricer saving and 
@@ -554,24 +567,6 @@ namespace GenTRAC.ActionLogic
                     if (questions.Any() && string.IsNullOrEmpty(pricerComment))
                     {
                         inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.PRICER_COMMENT_NEEDED));
-                    }
-                }
-
-                if (DateTime.Now >= checklistProposalPricingData.CostThroughComStartingDate)
-                {
-                    if (string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeTotal))
-                    {
-                        inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.PROFIT_FEE_NEEDED));
-                    }
-
-                    if (string.IsNullOrEmpty(checklistProposalPricingData.SubmittedValue) && checklistGeneralInfo.ShowChecklistResponse != ShowChecklistResponse.Pricer)
-                    {
-                        inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.SUBMITTED_VALUE_REQUIRED));
-                    }
-
-                    if (string.IsNullOrEmpty(checklistProposalPricingData.CostThroughCom))
-                    {
-                        inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.COST_THROUGH_COM_NEEDED));
                     }
                 }
 
@@ -1353,6 +1348,7 @@ namespace GenTRAC.ActionLogic
             {
                 ProposalID = proposal.Id,
                 SplitProfitFeeCOM = (proposal.DateCreated ?? DateTime.Now) >= ConfigurationUtilities.GetAppSetting<DateTime>("ProfitFeeComSplitStartDate"),
+                UseCostThroughCom = (proposal.DateCreated ?? DateTime.Now) >= ConfigurationUtilities.GetAppSetting<DateTime>("CostThroughComStartDate"),
                 IsReadOnly = this.IsProposalChecklistReadOnly(proposal),
                 ShowChecklistResponse = this.GetShowChecklistResponse(proposal)
             };

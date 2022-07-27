@@ -82,9 +82,9 @@ namespace GenTRAC.ActionLogic.ModelView.Checklist
         public string CostThroughCom { get; set; }
 
         /// <summary>
-        /// Cost through COM starting date from Web Config
+        /// Should Cost Through COM replace COM and Profit/Fee is required
         /// </summary>
-        public DateTime CostThroughComStartingDate { get => ConfigurationUtilities.GetAppSetting<DateTime>("CostThroughComStartDate"); }
+        public bool UseCostThroughCom { get; set; }
 
         /// <summary>
         /// Gets or sets profit/fee + com value
@@ -118,7 +118,7 @@ namespace GenTRAC.ActionLogic.ModelView.Checklist
         public string ROSPercent { get; set; }
 
         /// <summary>
-        /// Gets or sets the LM Space Total Price value.
+        /// Gets or sets the LM Space Total Price value - based on Submitted Value in General Information
         /// </summary>
         public string SubmittedValue { get; set; }
 

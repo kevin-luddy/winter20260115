@@ -588,7 +588,7 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// Proposal Submitted Value is required
             /// </summary>
-            public const string SUBMITTED_VALUE_REQUIRED = GENERAL_INFO_VALIDATION + "Proposal LM Space Total Price is required.";
+            public const string SUBMITTED_VALUE_REQUIRED = GENERAL_INFO_VALIDATION + "Submitted Value is required.";
 
             /// <summary>
             /// proposal submittal date format 
