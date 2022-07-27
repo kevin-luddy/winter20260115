@@ -130,7 +130,7 @@ namespace GenTRAC.ActionLogic.Validation
             /// <summary>
             /// Contract Action Type is required
             /// </summary>
-            public const string CONTRACT_ACTION_TYPE_REQUIRED = PROPOSAL_INFO_VALDIATION + "Contract Action Type is required.";
+            public const string CONTRACT_ACTION_TYPE_REQUIRED = PROPOSAL_INFO_VALDIATION + "Type of Contract Action is required.";
 
             /// <summary>
             /// proposal title must be unique
