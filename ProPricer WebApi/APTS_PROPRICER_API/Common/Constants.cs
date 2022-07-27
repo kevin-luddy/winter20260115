@@ -10,6 +10,8 @@
 namespace APTSPropricerApi
 {
     using System;
+    using System.IO;
+    using System.Reflection;
 
     /// <summary>
     /// The constants class, containing shared constants to be used across the entire solution.
@@ -93,5 +95,10 @@ namespace APTSPropricerApi
         /// It is set to 5 minutes.. This is not meant as a performance benchmark, just as a fail-safe to prevent the application from locking up IIS
         /// </summary>
         public static readonly TimeSpan REGEX_TIMEOUT = new TimeSpan(0, 5, 0);
+
+        /// <summary>
+        /// Temporary directory for files
+        /// </summary>
+        public static readonly string TEMP_DIRECTORY = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DeleteMe");
     }
 }

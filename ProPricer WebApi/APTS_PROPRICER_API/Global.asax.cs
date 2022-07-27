@@ -10,6 +10,7 @@
 namespace APTSPropricerApi
 {
     using System;
+    using System.IO;
     using System.Web.Http;
     using System.Web.Mvc;
     using System.Web.Routing;
@@ -29,6 +30,33 @@ namespace APTSPropricerApi
 
             // remove XML as default response http://stackoverflow.com/a/12905075/231025 
             GlobalConfiguration.Configuration.Formatters.XmlFormatter.SupportedMediaTypes.Clear();
+
+            // Clear out old temporary files
+            try
+            {
+                if (Directory.Exists(Constants.TEMP_DIRECTORY))
+                {
+                    string[] files = Directory.GetFiles(Constants.TEMP_DIRECTORY, "*.xlsx");
+                    if (files != null && files.Length > 0)
+                    {
+                        foreach (string file in files)
+                        {
+                            File.Delete(file);
+                        }
+                    }
+                } 
+                else
+                {
+                    Directory.CreateDirectory(Constants.TEMP_DIRECTORY);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Let's not exit out of the application if we can't delete old temp files
+                System.Diagnostics.Debug.WriteLine(ex.ToString());
+            }
+
+            new Aspose.Cells.License().SetLicense("Aspose.Total.lic");
         }
 
         /// <summary>
