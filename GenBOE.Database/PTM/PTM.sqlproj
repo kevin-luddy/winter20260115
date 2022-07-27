@@ -73,22 +73,6 @@
     <Folder Include="Object Scripts\X_Data Cleanup" />
     <Folder Include="Release Scripts\Older" />
     <Folder Include="Release Scripts\Older\Release 2020.5.2" />
-    <Folder Include="Release Scripts\Older\Release 1.0" />
-    <Folder Include="Release Scripts\Older\Release 1.1" />
-    <Folder Include="Release Scripts\Older\Release 1.2" />
-    <Folder Include="Release Scripts\Older\Release 1.3" />
-    <Folder Include="Release Scripts\Older\Release 1.4" />
-    <Folder Include="Release Scripts\Older\Release 2018.1" />
-    <Folder Include="Release Scripts\Older\Release 2018.2" />
-    <Folder Include="Release Scripts\Older\Release 2018.3" />
-    <Folder Include="Release Scripts\Older\Release 2018.5" />
-    <Folder Include="Release Scripts\Older\Release 2018.6" />
-    <Folder Include="Release Scripts\Older\Release 2018.7" />
-    <Folder Include="Release Scripts\Older\Release 2018.8" />
-    <Folder Include="Release Scripts\Older\Release 2019.2" />
-    <Folder Include="Release Scripts\Older\Release 2019.4" />
-    <Folder Include="Release Scripts\Older\Release 2019.7" />
-    <Folder Include="Release Scripts\Older\Release 2019.8" />
     <Folder Include="Release Scripts\Older\Release 2020.2" />
     <Folder Include="Release Scripts\Older\Release 2020.4" />
     <Folder Include="Release Scripts\Release 2021.2" />
@@ -97,8 +81,7 @@
     <Folder Include="Release Scripts\Release 2021.7" />
     <Folder Include="Release Scripts\Release 2021.23" />
     <Folder Include="Release Scripts\Release 2022.15" />
-    <Folder Include="Release Scripts\IES-954" />
-    <Folder Include="Release Scripts\Release 2022.25" />
+    <Folder Include="Release Scripts\Release 2022.27" />
   </ItemGroup>
   <ItemGroup>
     <Build Include="Object Scripts\Stored Procedures\upsertProposalChecklistTemplate.sql" />
@@ -144,11 +127,7 @@
     <Build Include="Object Scripts\1 Views\vwProposalActivityReport.view.sql" />
     <Build Include="Object Scripts\Stored Procedures\deleteAttachment.proc.sql" />
     <Build Include="Object Scripts\Stored Procedures\upsertAttachment.sql" />
-    <Build Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 1.3 Generated On 6_12_2017.sql" />
-    <Build Include="_Full Script Files For Specific Versions\Older\Sql Script For Release 1.4 Generated On 11_27_2017.sql" />
     <Build Include="Object Scripts\Stored Procedures\updateProposalForecastEmailSent.proc.sql" />
-    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2018.1 Generated On 1_30_2018.sql" />
-    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2018.2 Generated On 2_19_2018.sql" />
     <Build Include="Object Scripts\Stored Procedures\deleteChecklist.sql" />
     <None Include="Object Scripts\X_Data Cleanup\DeleteErrorLogs.sql" />
     <Build Include="Object Scripts\Stored Procedures\upsertContractType.sql" />
@@ -161,35 +140,10 @@
     <Build Include="Object Scripts\Stored Procedures\deleteProgramArea.sql" />
     <Build Include="Object Scripts\1 Views\vwProgramArea.view.sql" />
     <Build Include="Object Scripts\Stored Procedures\rsProgramArea.proc.sql" />
-    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2018.3 Generated On 4_4_2018.sql" />
-    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2018.5 Generated On 6_13_2018.sql" />
-    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2018.6 Generated On 7_23_2018.sql" />
-    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2018.7 Generated On 10_9_2018.sql" />
-    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2018.8 Generated On 10_29_2018.sql" />
     <Build Include="Object Scripts\1 Views\vwDfarsChecklistResponseReport.sql" />
     <Build Include="Object Scripts\Stored Procedures\CreateDfarsChecklistResponseReport.proc.sql" />
-    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2019.2 Generated On 5_21_2019.sql" />
-    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2019.8 Generated On 12_2_2019.sql" />
-    <Build Include="_Full Script Files For Specific Versions\Older\PTM - Sql Script For Release 2019.4 Generated On 7_1_2019.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2020.2 Generated On 6_9_2020.sql" />
     <Build Include="Release Scripts\Older\Release 2020.5.2\Release 2020.5.2.sql" />
-    <Build Include="Release Scripts\Older\Release 1.0\1 - Release 1.0 Script.sql" />
-    <Build Include="Release Scripts\Older\Release 1.1\1 - Release 1.1 Script.sql" />
-    <Build Include="Release Scripts\Older\Release 1.2\1 - Release 1.2 Script.sql" />
-    <None Include="Release Scripts\Older\Release 1.3\Release 1.3 Script.sql" />
-    <None Include="Release Scripts\Older\Release 1.3\Release 1.3.2 Script.sql" />
-    <None Include="Release Scripts\Older\Release 1.4\Release 1.4 Script.sql" />
-    <None Include="Release Scripts\Older\Release 2018.1\1 - Release 2018.1 Script.sql" />
-    <None Include="Release Scripts\Older\Release 2018.2\1 - Release 2018.2 Script.sql" />
-    <None Include="Release Scripts\Older\Release 2018.3\1 - Release 2018.3 Script.sql" />
-    <None Include="Release Scripts\Older\Release 2018.5\1 - Release 2018.5 Script.sql" />
-    <None Include="Release Scripts\Older\Release 2018.6\1 - Release 2018.6 Script.sql" />
-    <Build Include="Release Scripts\Older\Release 2018.7\1 - Release 2018.7 Script.sql" />
-    <Build Include="Release Scripts\Older\Release 2018.8\1 - Release 2018.8 Script.sql" />
-    <None Include="Release Scripts\Older\Release 2019.2\Release 2019.2.sql" />
-    <None Include="Release Scripts\Older\Release 2019.4\Release 2019.4.sql" />
-    <None Include="Release Scripts\Older\Release 2019.7\Release 2019.7.sql" />
-    <None Include="Release Scripts\Older\Release 2019.8\Release 2019.8.sql" />
     <Build Include="Release Scripts\Older\Release 2020.2\Release 2020.2.sql" />
     <Build Include="Release Scripts\Older\Release 2020.4\Release 2020.4.sql" />
     <Build Include="Release Scripts\Release 2021.2\Release 2021.2.sql" />
@@ -203,7 +157,8 @@
     <Build Include="Object Scripts\Stored Procedures\upsertProposalContractsData.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2021.2 Generated On 2_25_2021.sql" />
     <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.10 Generated On 3_22_2022.sql" />
-    <Build Include="_Full Script Files For Specific Versions\PTM - 2022.15 Generated On 5_16_2022.sql" />
+    <Build Include="_Full Script Files For Specific Versions\PTM - 2022.27 Generated On 7_27_2022.sql" />
+    <Build Include="_Full Script Files For Specific Versions\Older\PTM - 2022.15 Generated On 5_16_2022.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="_Other Scripts\FindProposalsForMigrationToLockedState.sql" />
@@ -214,6 +169,6 @@
     <None Include="Release Scripts\Release 2021.7\Release 2021.7.sql" />
   </ItemGroup>
   <ItemGroup>
-    <PostDeploy Include="Release Scripts\Release 2022.25\Release 2022.25.sql" />
+    <PostDeploy Include="Release Scripts\Release 2022.27\Release 2022.27.sql" />
   </ItemGroup>
 </Project>
