@@ -57,8 +57,9 @@ namespace APTSPropricerApi.Controllers
             }
             catch (Exception ex)
             {
-                logger.Error(ex);
-                response.Messages.Add("Error retrieving Batch Reports from Pro Pricer");
+                string message = $"Error retrieving Batch Reports from Pro Pricer for Connection Id: {instanceId}";
+                logger.Error(ex, message);
+                response.Messages.Add(message);
             }
 
             return response;
@@ -76,31 +77,48 @@ namespace APTSPropricerApi.Controllers
         public ProPricerResponse<ICollection<Table>> ExportBatchReport(int instanceId, [FromBody] ProPricerExportContainer container)
         {
             ProPricerResponse<ICollection<Table>> response = new ProPricerResponse<ICollection<Table>>();
-            
-            string tempFile = null;
-            try
+
+            if (container == null)
             {
-                tokenHandler.AuthenticateUserFromAuthorizationToken();
-                response = ExportBatchReport(instanceId, container, out tempFile);
+                response.Messages.Add("The [POST] container passed in cannot be null.");
             }
-            catch (Exception ex)
+            else if (string.IsNullOrEmpty(container.proposalId))
             {
-                logger.Error(ex);
-                response.Messages.Add("Error retrieving proposals from Pro Pricer");
+                response.Messages.Add("The Proposal Id cannot be null.");
             }
-            finally
+            else if (string.IsNullOrEmpty(container.batchReportId))
             {
-                // Delete the temp file if it exists, swallow the error
+                response.Messages.Add("The Batch Report Id cannot be null.");
+            }
+            else
+            {
+
+                string tempFile = null;
                 try
                 {
-                    if (File.Exists(tempFile))
-                    {
-                        File.Delete(tempFile);
-                    }
+                    tokenHandler.AuthenticateUserFromAuthorizationToken();
+                    response = ExportBatchReport(instanceId, container, out tempFile);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    // error deleting file, will delete during next app startup
+                    string message = $"Error exporting Batch Report from Pro Pricer for Connection Id: {instanceId}, Proposal Id: {container.proposalId}, and Batch Report Id: {container.batchReportId}";
+                    logger.Error(ex, message);
+                    response.Messages.Add(message);
+                }
+                finally
+                {
+                    // Delete the temp file if it exists, swallow the error
+                    try
+                    {
+                        if (File.Exists(tempFile))
+                        {
+                            File.Delete(tempFile);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // error deleting file, will delete during next app startup
+                    }
                 }
             }
 
