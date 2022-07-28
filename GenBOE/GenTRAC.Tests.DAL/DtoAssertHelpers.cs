@@ -47,7 +47,7 @@ namespace GenTRAC.Tests.DAL
 
             // 4 UNTESTABLE_PROPOERTIES properties we can't test from UpdateableDTO
             // 70 testable DTO properties that are asserted below
-            Assert.AreEqual(UNTESTABLE_PROPERTIES + 70, numProperties, "Untested properties exist in the DTO.");
+            Assert.AreEqual(UNTESTABLE_PROPERTIES + 72, numProperties, "Untested properties exist in the DTO.");
 
             // 0
             Assert.AreEqual(expectedResult.ProposalTitle, actualResult.ProposalTitle);
@@ -142,6 +142,8 @@ namespace GenTRAC.Tests.DAL
             Assert.AreEqual(expectedResult.ModExecutedLastEmailed, actualResult.ModExecutedLastEmailed);
             Assert.AreEqual(expectedResult.ProposalCompletedDate, actualResult.ProposalCompletedDate);
             //70
+            Assert.AreEqual(expectedResult.ContractActionType, actualResult.ContractActionType);
+            Assert.AreEqual(expectedResult.ContractActionTypeOtherText, actualResult.ContractActionTypeOtherText);
 
             #region Additional Verification
 
@@ -308,7 +310,7 @@ namespace GenTRAC.Tests.DAL
             int numProperties = dtoType.GetProperties().Count();
 
             // 3 properties we can't test (primary key, update date, updatable), plus response type, and save info, plus the ones below 
-            Assert.AreEqual(UNTESTABLE_PROPERTIES + 3 + 18, numProperties, "Untested properties exist in the DTO.");
+            Assert.AreEqual(UNTESTABLE_PROPERTIES + 3 + 19, numProperties, "Untested properties exist in the DTO.");
 
             Assert.AreEqual(expectedResult.LMLaborHrs, actualResult.LMLaborHrs);
             Assert.AreEqual(expectedResult.LMLaborCost, actualResult.LMLaborCost);

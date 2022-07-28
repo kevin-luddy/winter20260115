@@ -476,6 +476,8 @@ namespace GenTRAC.Tests.DAL
                         newProposal.ProgramProposalStatus = ProgramProposalStatus.UnderStrategicReviewISGS;
                         newProposal.IsCostVolumeClassified = false;
                         newProposal.RevisionOfId = revisionOfId;
+                        newProposal.ContractActionType = ContractActionType.Other;
+                        newProposal.ContractActionTypeOtherText = "Test";
 
                         if (isForecasted)
                         {
@@ -642,6 +644,7 @@ namespace GenTRAC.Tests.DAL
                     newChecklist.ResponseType = ChecklistResponseType.Pricer;
                     newChecklist.UpdateDate = DateTime.Now;
                     newChecklist.Updateable = UpdateType.Upsert;
+                    newChecklist.CostThroughCom = 0;
                 }
 
                 this.proposalChecklistLoader.Save(newChecklist);

@@ -66,7 +66,9 @@ namespace GenTRAC.Tests.Objects
                 ProposalClass = 1,
                 RFPNumber = "ghi",
                 DateAssigned = new DateTime(2014, 5, 1),
-                DateCreated = new DateTime(2015, 12, 30)
+                DateCreated = new DateTime(2015, 12, 30),
+                ContractActionType = ContractActionType.Other,
+                ContractActionTypeOtherText = "Other text."
             };
 
             Mock<IRetriever> retriever = new Mock<IRetriever>();
@@ -113,7 +115,9 @@ namespace GenTRAC.Tests.Objects
                 ProposalClass = 1,
                 RFPNumber = "ghi",
                 DateAssigned = new DateTime(2014, 5, 1),
-                DateCreated = new DateTime(2015, 12, 30)
+                DateCreated = new DateTime(2015, 12, 30),
+                ContractActionType = ContractActionType.Other,
+                ContractActionTypeOtherText = "Other text."
             };
 
             Mock<IRetriever> retriever = new Mock<IRetriever>();

@@ -194,7 +194,9 @@ namespace GenTRAC.DataBridge.DTO
                             ProposalSetupComments = entity.SetupComments,
                             InformationComments = entity.InformationComments,
                             ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
-                            ProposalCompletedDate = entity.ProposalCompletedDate
+                            ProposalCompletedDate = entity.ProposalCompletedDate,
+                            ContractActionType = entity.ContractActionType,
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -265,7 +267,9 @@ namespace GenTRAC.DataBridge.DTO
                             ProposalSetupComments = entity.ProposalSetupComments,
                             ManageProposalInfoComments = entity.InformationComments,
                             ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
-                            ProposalCompletedDate = entity.ProposalCompletedDate
+                            ProposalCompletedDate = entity.ProposalCompletedDate,
+                            ContractActionType = (ContractActionType?)entity.ContractActionType,
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
                         }).ToList();
                 }
             }
@@ -574,8 +578,8 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.ProposalSetupComments,
                             dtoToUpsert.ModExecutedLastEmailed,
                             dtoToUpsert.ProposalCompletedDate,
-                            null, // TODO - Update this and next line with dto values in IES-1506 by Thomas
-                            string.Empty).FirstOrDefault();
+                            (int?)dtoToUpsert.ContractActionType,
+                            dtoToUpsert.ContractActionTypeOtherText).FirstOrDefault();
                     }
                 }
             }
@@ -721,7 +725,9 @@ namespace GenTRAC.DataBridge.DTO
                                     ProposalTitle = p.ProposalTitle,
                                     DocumentId = p.DocumentId,
                                     CustomerType = (CustomerType)p.CustomerTypeID,
-                                    IsForecastProposal = p.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED
+                                    IsForecastProposal = p.ProposalClassLU.ProposalClass == Constants.PROPOSAL_CLASS_FORECASTED,
+                                    ContractActionType = (ContractActionType?)p.ContractActionType,
+                                    ContractActionTypeOtherText = p.ContractActionTypeOtherText
                                 }).ToCollection();
                 }
             }
@@ -908,7 +914,9 @@ namespace GenTRAC.DataBridge.DTO
                         entity.OtherReasonComment,
                         ProposalSetupComments = entity.SetupComments,
                         InformationComments = entity.InformationComments,
-                        ModExecutedLastEmailed = entity.ModExecutedLastEmailed
+                        ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
+                        ContractActionType = entity.ContractActionType,
+                        ContractActionTypeOtherText = entity.ContractActionTypeOtherText
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -978,7 +986,9 @@ namespace GenTRAC.DataBridge.DTO
                             OtherReasonComment = entity.OtherReasonComment,
                             ProposalSetupComments = entity.ProposalSetupComments,
                             ManageProposalInfoComments = entity.InformationComments,
-                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
+                            ContractActionType = (ContractActionType?)entity.ContractActionType,
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
                         }).ToList();
                 }
             }
@@ -1069,7 +1079,9 @@ namespace GenTRAC.DataBridge.DTO
                         entity.OtherReasonComment,
                         ProposalSetupComments = entity.SetupComments,
                         InformationComments = entity.InformationComments,
-                        ModExecutedLastEmailed = entity.ModExecutedLastEmailed
+                        ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
+                        ContractActionType = entity.ContractActionType,
+                        ContractActionTypeOtherText = entity.ContractActionTypeOtherText
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1139,7 +1151,9 @@ namespace GenTRAC.DataBridge.DTO
                             OtherReasonComment = entity.OtherReasonComment,
                             ProposalSetupComments = entity.ProposalSetupComments,
                             ManageProposalInfoComments = entity.InformationComments,
-                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
+                            ContractActionType = (ContractActionType?)entity.ContractActionType,
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
                         }).ToList();
                 }
             }
@@ -1232,7 +1246,9 @@ namespace GenTRAC.DataBridge.DTO
                             entity.OtherReasonComment,
                             ProposalSetupComments = entity.SetupComments,
                             InformationComments = entity.InformationComments,
-                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
+                            ContractActionType = entity.ContractActionType,
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1302,7 +1318,9 @@ namespace GenTRAC.DataBridge.DTO
                             OtherReasonComment = entity.OtherReasonComment,
                             ProposalSetupComments = entity.ProposalSetupComments,
                             ManageProposalInfoComments = entity.InformationComments,
-                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
+                            ContractActionType = (ContractActionType?)entity.ContractActionType,
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
                         }).ToList();
                 }
             }
@@ -1412,7 +1430,9 @@ namespace GenTRAC.DataBridge.DTO
                             entity.OtherReasonComment,
                             ProposalSetupComments = entity.SetupComments,
                             InformationComments = entity.InformationComments,
-                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
+                            ContractActionType = entity.ContractActionType,
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1482,7 +1502,9 @@ namespace GenTRAC.DataBridge.DTO
                             OtherReasonComment = entity.OtherReasonComment,
                             ProposalSetupComments = entity.ProposalSetupComments,
                             ManageProposalInfoComments = entity.InformationComments,
-                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
+                            ContractActionType = (ContractActionType?)entity.ContractActionType,
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
                         }).ToList();
                 }
             }
@@ -1589,7 +1611,9 @@ namespace GenTRAC.DataBridge.DTO
                     OtherReasonComment = x.Proposals.OtherReasonComment,
                     ProposalSetupComments = x.Proposals.SetupComments,
                     ManageProposalInfoComments = x.Proposals.InformationComments,
-                    ModExecutedLastEmailed = x.Proposals.ModExecutedLastEmailed
+                    ModExecutedLastEmailed = x.Proposals.ModExecutedLastEmailed,
+                    ContractActionType = (ContractActionType?)x.Proposals.ContractActionType,
+                    ContractActionTypeOtherText = x.Proposals.ContractActionTypeOtherText
                 }).ToList();
             }
 
@@ -1687,7 +1711,9 @@ namespace GenTRAC.DataBridge.DTO
                         entity.Proposals.OtherReasonComment,
                         ProposalSetupComments = entity.Proposals.SetupComments,
                         InformationComments = entity.Proposals.InformationComments,
-                        ModExecutedLastEmailed = entity.Proposals.ModExecutedLastEmailed
+                        ModExecutedLastEmailed = entity.Proposals.ModExecutedLastEmailed,
+                        ContractActionType = entity.Proposals.ContractActionType,
+                        ContractActionTypeOtherText = entity.Proposals.ContractActionTypeOtherText
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1757,7 +1783,9 @@ namespace GenTRAC.DataBridge.DTO
                             OtherReasonComment = entity.OtherReasonComment,
                             ProposalSetupComments = entity.ProposalSetupComments,
                             ManageProposalInfoComments = entity.InformationComments,
-                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed
+                            ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
+                            ContractActionType = (ContractActionType?)entity.ContractActionType,
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
                         }).ToList();
                 }
             }

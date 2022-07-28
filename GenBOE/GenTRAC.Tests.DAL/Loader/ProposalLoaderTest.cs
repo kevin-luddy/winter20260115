@@ -134,7 +134,9 @@ namespace GenTRAC.Tests.DAL.Loader
                 ReasonCertificationNotRequired = ReasonCertificationNotRequired.Other,
                 OtherReasonComment = "Other comment",
                 ProposalSetupComments = "Setup comment",
-                ModExecutedLastEmailed = DateTime.UtcNow
+                ModExecutedLastEmailed = DateTime.UtcNow,
+                ContractActionType = ContractActionType.Other,
+                ContractActionTypeOtherText = "Other text."
             };
 
             int? newProposalID;

@@ -527,6 +527,19 @@ namespace GenTRAC.ActionLogic
                     {
                         inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.SUBMITTED_VALUE_REQUIRED));
                     }
+
+                    if (checklistProposalPricingData.UseCostThroughCom)
+                    {
+                        if (string.IsNullOrEmpty(checklistProposalPricingData.CostThroughCom))
+                        {
+                            inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.COST_THROUGH_COM_NEEDED));
+                        }
+
+                        if (string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeTotal))
+                        {
+                            inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.PROFIT_FEE_NEEDED));
+                        }
+                    }
                 }
 
                 // only do PPR validation on a submit if its the Pricer saving and 
@@ -1081,6 +1094,7 @@ namespace GenTRAC.ActionLogic
                     EstimatingSubmitsToContractsDate = string.IsNullOrEmpty(checklistGeneralInfo.EstimatingSubmitsToContractsDate) ? (DateTime?)null : checklistGeneralInfo.EstimatingSubmitsToContractsDate.ToDateTime("MM/dd/yyyy"),
                     SubmittedValue = !string.IsNullOrEmpty(checklistGeneralInfo.SubmittedValue) ? long.Parse(checklistGeneralInfo.SubmittedValue.Replace(",", string.Empty)) : (long?)null,
                     AbsoluteValue = !string.IsNullOrEmpty(checklistGeneralInfo.AbsoluteValue) ? long.Parse(checklistGeneralInfo.AbsoluteValue.Replace(",", string.Empty)) : (long?)null,
+                    CostThroughCom = !string.IsNullOrEmpty(checklistProposalPricingData.CostThroughCom) ? long.Parse(checklistProposalPricingData.CostThroughCom.Replace(",", string.Empty)) : (long?)null,
                     ProfitFeeWithCom = !string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeComTotal) ? long.Parse(checklistProposalPricingData.ProfitFeeComTotal.Replace(",", string.Empty)) : (long?)null,
                     Profit = !string.IsNullOrEmpty(checklistProposalPricingData.ProfitFeeTotal) ? long.Parse(checklistProposalPricingData.ProfitFeeTotal.Replace(",", string.Empty)) : (long?)null,
                     Com = !string.IsNullOrEmpty(checklistProposalPricingData.ComTotal) ? long.Parse(checklistProposalPricingData.ComTotal.Replace(",", string.Empty)) : (long?)null,
@@ -1334,6 +1348,7 @@ namespace GenTRAC.ActionLogic
             {
                 ProposalID = proposal.Id,
                 SplitProfitFeeCOM = (proposal.DateCreated ?? DateTime.Now) >= ConfigurationUtilities.GetAppSetting<DateTime>("ProfitFeeComSplitStartDate"),
+                UseCostThroughCom = (proposal.DateCreated ?? DateTime.Now) >= ConfigurationUtilities.GetAppSetting<DateTime>("CostThroughComStartDate"),
                 IsReadOnly = this.IsProposalChecklistReadOnly(proposal),
                 ShowChecklistResponse = this.GetShowChecklistResponse(proposal)
             };
@@ -1350,6 +1365,7 @@ namespace GenTRAC.ActionLogic
                 model.IWTACost = string.Format("{0:#,###0}", checklist.IWTACost);
                 model.TravelCost = string.Format("{0:#,###0}", checklist.TravelCost);
                 model.OtherDirectCosts = string.Format("{0:#,###0}", checklist.OtherDirectCosts);
+                model.CostThroughCom = string.Format("{0:#,###0}", checklist.CostThroughCom);
                 model.ProfitFeeComTotal = string.Format("{0:#,###0}", checklist.ProfitFeeWithCom);
                 model.ProfitFeeTotal = string.Format("{0:#,###0}", checklist.Profit);
                 model.ComTotal = string.Format("{0:#,###0}", checklist.Com);

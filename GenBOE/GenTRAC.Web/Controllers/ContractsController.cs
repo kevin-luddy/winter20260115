@@ -15,7 +15,8 @@ namespace GenTRAC.Web.Controllers
     using System.Web.Mvc;
     using GenTRAC.ActionLogic;
     using GenTRAC.ActionLogic.ModelView;
-    using GenTRAC.DataBridge.DTO;
+	using GenTRAC.ActionLogic.ModelView.Contracts;
+	using GenTRAC.DataBridge.DTO;
     using GenTRAC.Web.Common;
     using IES.Common;
 
@@ -67,6 +68,20 @@ namespace GenTRAC.Web.Controllers
             Tuple<DateTime?, decimal?> data = this.contractsLogic.GetRomDateAndValue(previousRomProposalId);
 
             return Json(new { Date = data?.Item1?.ToShortDateString() ?? "N/A", Value = data?.Item2?.ToString("C") ?? "N/A" });
+        }
+
+		/// <summary>
+		/// Get Cage Code data for given cage code
+		/// </summary>
+		/// <param name="proposalId">Needed by MVC routing</param>
+		/// <param name="cageCode">cage code</param>
+		/// <returns>cage code data</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "proposalId")]
+		public JsonResult GetCageCodeData(int proposalId, string cageCode)
+		{
+			CageCodeModelView cageCodeData = this.contractsLogic.GetDataByCageCode(cageCode);
+
+            return Json(new {Address1 = cageCodeData.Address1, Address2 = cageCodeData.Address2, CityStateZip = $"{cageCodeData.City}, {cageCodeData.State} {cageCodeData.Zip}" });
         }
 
         /// <summary>

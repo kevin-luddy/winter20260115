@@ -38,6 +38,7 @@ AS
 **		7/30/2020	Dusan				BOEJ-4639 Add Latest Revision
 **		1/16/2022   Dusan				IES-174 Add Contract Data to the report
 **		3/7/2022	Dusan				IES-847 Modify Contracts Data data
+**		7/25/2022	Dusan / Thomas		IES-1499, IES-1510, IES-1511: Added new fields into the report: Cage Codes, Type of Contract Action, Cost thru COM
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -321,6 +322,10 @@ SELECT V.[ProposalID]
 	 ,V.ContractsEppRosDelegationNotes
 	 ,V.ContractsLmWon
 	 ,V.ContractsModCompletedDate
+	 -- end of Proposal Contract Data
+	 ,V.CageCode
+	 ,V.ContractActionType
+	 ,V.CostThroughCom
 FROM [dbo].[vwProposalLogReport] V
 	LEFT OUTER JOIN @MaxRev M ON 
 		(

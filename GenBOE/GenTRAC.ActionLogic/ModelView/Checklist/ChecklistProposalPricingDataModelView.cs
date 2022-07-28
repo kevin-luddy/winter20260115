@@ -6,6 +6,7 @@
 
 namespace GenTRAC.ActionLogic.ModelView.Checklist
 {
+    using System;
     using System.ComponentModel.DataAnnotations;
     using GenTRAC.ActionLogic.Validation;
     using IES.Common;
@@ -75,6 +76,17 @@ namespace GenTRAC.ActionLogic.ModelView.Checklist
         public string OtherDirectCosts { get; set; }
 
         /// <summary>
+        /// Gets or sets cost through com
+        /// </summary>
+        [RegularExpression(Validation.ValidationConstants.PRICE_RANGE_FORMAT, ErrorMessage = ValidationConstants.ChecklistValidationConstants.COST_THROUGH_COM_WHOLE_NUMBER)]
+        public string CostThroughCom { get; set; }
+
+        /// <summary>
+        /// Should Cost Through COM replace COM and Profit/Fee is required
+        /// </summary>
+        public bool UseCostThroughCom { get; set; }
+
+        /// <summary>
         /// Gets or sets profit/fee + com value
         /// 
         /// This field is being split into 2, but this is required for historical data
@@ -106,7 +118,7 @@ namespace GenTRAC.ActionLogic.ModelView.Checklist
         public string ROSPercent { get; set; }
 
         /// <summary>
-        /// Gets or sets the submitted value.
+        /// Gets or sets the LM Space Total Price value - based on Submitted Value in General Information
         /// </summary>
         public string SubmittedValue { get; set; }
 

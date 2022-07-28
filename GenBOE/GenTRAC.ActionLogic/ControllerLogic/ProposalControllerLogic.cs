@@ -281,7 +281,9 @@ namespace GenTRAC.ActionLogic
                     IsForecastProposal = isForecasted,
                     DocumentId = proposalInfo.DocumentId,
                     RevisionOfId = revisionOfId,
-                    ProposalSetupComments = proposalComments.Comments
+                    ProposalSetupComments = proposalComments.Comments,
+                    ContractActionType = (ContractActionType?)proposalInfo.ContractActionType,
+                    ContractActionTypeOtherText = proposalInfo.ContractActionTypeOtherText
                 };
 
                 // copy the old values for approvals/certification (comments, workflow status, signatures, additionalapprovalemailtext)
@@ -1115,6 +1117,12 @@ namespace GenTRAC.ActionLogic
                 model.RequestType = fullProposalDto.Request;
                 model.ProposalClass = fullProposalDto.ProposalClass;
                 model.RFPNumber = fullProposalDto.RFPNumber;
+                if (fullProposalDto.ContractActionType.HasValue)
+                {
+                    model.ContractActionType = (ContractActionType)fullProposalDto.ContractActionType;
+                }
+
+                model.ContractActionTypeOtherText = fullProposalDto.ContractActionTypeOtherText;
                 model.RFPIssuedDate = fullProposalDto.RFPIssuedDate.HasValue ?
                     fullProposalDto.RFPIssuedDate.Value.ToString("MM/dd/yyyy") : string.Empty;
                 model.RFPReceivedDate = fullProposalDto.RFPReceivedDate.HasValue ?
@@ -1248,6 +1256,12 @@ namespace GenTRAC.ActionLogic
                 model.CostElements = fullProposalDto.CostElementTypeIds;
                 model.Customer = fullProposalDto.Customer;
                 model.CustomerType = fullProposalDto.CustomerType;
+                if (fullProposalDto.ContractActionType.HasValue)
+                {
+                    model.ContractActionType = (ContractActionType)fullProposalDto.ContractActionType;
+                }
+
+                model.ContractActionTypeOtherText = fullProposalDto.ContractActionTypeOtherText;
                 model.ISGSRole = fullProposalDto.ISGSRole;
                 model.IsScheduleProposal = fullProposalDto.IsScheduleProposal;
                 model.RequestType = fullProposalDto.Request;
@@ -1911,6 +1925,11 @@ namespace GenTRAC.ActionLogic
             }
             else
             {
+                if (proposalInfo.ContractActionType.Equals(ContractActionType.Other) && string.IsNullOrWhiteSpace(proposalInfo.ContractActionTypeOtherText))
+                {
+                    inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.PROPOSAL_CONTRACT_ACTION_TYPE_OTHER_TEXT_REQUIRED));
+                }
+
                 if (!proposalInfo.RequestType.HasValue)
                 {
                     inValidationErrors.Add(new ValidationMessage(ValidationConstants.ProposalValidationConstants.TYPE_OF_REQUEST_REQUIRED));

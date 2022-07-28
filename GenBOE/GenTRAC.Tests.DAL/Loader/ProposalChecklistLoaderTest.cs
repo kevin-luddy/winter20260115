@@ -628,6 +628,7 @@ namespace GenTRAC.Tests.DAL.Loader
                 PPRResponses = pprResponses,
                 PARResponses = parResponses,
                 Updateable = UpdateType.Upsert,
+                CostThroughCom = 1000,
                 IsSubmit = false
             };
 
