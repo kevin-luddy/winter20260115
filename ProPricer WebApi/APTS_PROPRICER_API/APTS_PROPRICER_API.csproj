@@ -53,6 +53,9 @@
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="Aspose.Cells, Version=22.7.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
+      <HintPath>..\packages\Aspose.Cells.22.7.0\lib\net40\Aspose.Cells.dll</HintPath>
+    </Reference>
     <Reference Include="DevExpress.Data.v20.2">
       <HintPath>..\_ProPricer Libraries\DevExpress.Data.v20.2.dll</HintPath>
     </Reference>
@@ -281,6 +284,8 @@
     <Compile Include="Common\ProPricer File Export Import\ProPricerExportResults.cs" />
     <Compile Include="Common\ProPricer File Export Import\ProPricerExportResult.cs" />
     <Compile Include="Common\ProPricerResponse.cs" />
+    <Compile Include="Common\Row.cs" />
+    <Compile Include="Common\Table.cs" />
     <Compile Include="Common\SystemConfiguration.cs" />
     <Compile Include="Common\SystemConfigurationSection.cs" />
     <Compile Include="Common\TokenHandling.cs" />
@@ -360,6 +365,7 @@
   <ItemGroup>
     <Content Include="App_Data\XmlDocument.xml" />
     <Content Include="Areas\HelpPage\HelpPage.css" />
+    <Content Include="DeleteMe\readme.txt" />
     <Content Include="Error.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -383,6 +389,7 @@
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\CollectionModelDescription.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\DisplayTemplates\ApiGroup.cshtml" />
     <Content Include="Areas\HelpPage\Views\Help\Api.cshtml" />
+    <EmbeddedResource Include="Aspose.Total.lic" />
     <None Include="Properties\PublishProfiles\ReleaseTFS.pubxml" />
     <None Include="Properties\PublishProfiles\Dev.pubxml" />
     <Content Include="logs\readme.txt" />

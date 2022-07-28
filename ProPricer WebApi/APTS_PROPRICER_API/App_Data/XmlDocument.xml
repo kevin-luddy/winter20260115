@@ -655,6 +655,11 @@
             It is set to 5 minutes.. This is not meant as a performance benchmark, just as a fail-safe to prevent the application from locking up IIS
             </summary>
         </member>
+        <member name="F:APTSPropricerApi.Constants.TEMP_DIRECTORY">
+            <summary>
+            Temporary directory for files
+            </summary>
+        </member>
         <member name="T:APTSPropricerApi.SortOrder">
             <summary>
             Sort Order
@@ -1456,6 +1461,26 @@
             Data meeting the request criteria
             </summary>
         </member>
+        <member name="T:APTSPropricerApi.Common.Row">
+            <summary>
+            A row inside of a Table
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.Row.Cells">
+            <summary>
+            Gets or sets the Cells of a Row
+            </summary>
+        </member>
+        <member name="T:APTSPropricerApi.Common.Table">
+            <summary>
+            A table representing a grid of data in rows and cells
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.Table.Rows">
+            <summary>
+            Gets or sets the Rows in a table
+            </summary>
+        </member>
         <member name="T:APTSPropricerApi.Common.TokenHandling">
             <summary>
             This is a Token Handling class that will help us to communicate between IES API (.Net 4.7) and the ACV IES API (.Net Core 5.0)
@@ -2047,18 +2072,63 @@
             Batch Reports Controller
             </summary>
         </member>
+        <member name="F:APTSPropricerApi.Controllers.BatchReportsController.logger">
+            <summary>
+            The logger for the controller
+            </summary>
+        </member>
+        <member name="F:APTSPropricerApi.Controllers.BatchReportsController.tokenHandler">
+            <summary>
+            Token handler 
+            </summary>
+        </member>
         <member name="M:APTSPropricerApi.Controllers.BatchReportsController.Get(System.Int32)">
             <summary>
             Return the list of batch reports from the global library.
             </summary>
-            <param name="instanceId">The instance identifier.</param>
+            <param name="instanceId">The connection instance identifier.</param>
+            <returns>Pro Pricer Response containing the List of Batch Reports</returns>
         </member>
-        <member name="M:APTSPropricerApi.Controllers.BatchReportsController.Post(System.Int32,APTSPropricerApi.DTOs.ProPricerExportContainer)">
+        <member name="M:APTSPropricerApi.Controllers.BatchReportsController.ExportBatchReport(System.Int32,APTSPropricerApi.DTOs.ProPricerExportContainer)">
             <summary>
             Creates a batch report export
             </summary>
-            <param name="instanceId">The instance identifier.</param>
-            <param name="container"></param>
+            <param name="instanceId">The connection instance identifier.</param>
+            <param name="container">The param container for the Post event</param>
+            <returns>Pro Pricer Response containing the Tables of data</returns>
+        </member>
+        <member name="M:APTSPropricerApi.Controllers.BatchReportsController.GetBatchReports(System.Int32)">
+            <summary>
+            Gets the Batch Reports
+            </summary>
+            <param name="instanceId">The connection instance identifier.</param>
+            <returns>A pro pricer response object containing reports</returns>
+        </member>
+        <member name="M:APTSPropricerApi.Controllers.BatchReportsController.ExportBatchReport(System.Int32,APTSPropricerApi.DTOs.ProPricerExportContainer,System.String@)">
+            <summary>
+            Exports a Batch Report
+            </summary>
+            <param name="instanceId">The connection instance identifier.</param>
+            <param name="container">The param container for the Post event</param>
+            <param name="tempFile">The location of the temporary file created by Pro Pricer export</param>
+            <returns>A ProPricerResponse object containing Tables from an exported Batch Report</returns>
+        </member>
+        <member name="M:APTSPropricerApi.Controllers.BatchReportsController.ReadBatchFile(System.String,APTSPropricerApi.Common.ProPricerResponse{System.Collections.Generic.ICollection{APTSPropricerApi.Common.Table}})">
+            <summary>
+            Reads the Pro Pricer Batch File and Converts into Tables
+            </summary>
+            <param name="tempFile">The location of the temp file to read</param>
+            <param name="response">The response object used to add Table data and error messages</param>
+        </member>
+        <member name="M:APTSPropricerApi.Controllers.BatchReportsController.GenerateBatchReportFile(System.Int32,System.String,System.String,APTSPropricerApi.Common.ProPricerResponse{System.Collections.Generic.ICollection{APTSPropricerApi.Common.Table}})">
+            <summary>
+            Generates a Batch Report File
+            </summary>
+            <param name="instanceId">The connection instance identifier.</param>
+            <param name="proposalId">The proposal Id to use for the Batch Report</param>
+            <param name="batchReportId">The batch report Id</param>
+            <param name="response">The response object used to add error messages into.</param>
+            <returns>The temporary File location that was generated.</returns>
         </member>
         <member name="T:APTSPropricerApi.Controllers.ReportsController">
             <summary>
