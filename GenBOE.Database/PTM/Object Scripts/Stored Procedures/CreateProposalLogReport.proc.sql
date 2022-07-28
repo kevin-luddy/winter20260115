@@ -39,6 +39,7 @@ AS
 **		1/16/2022   Dusan				IES-174 Add Contract Data to the report
 **		3/7/2022	Dusan				IES-847 Modify Contracts Data data
 **		7/25/2022	Dusan / Thomas		IES-1499, IES-1510, IES-1511: Added new fields into the report: Cage Codes, Type of Contract Action, Cost thru COM
+**		7/28/2022	Dusan				IES-1578 Add [Profit/Fee] and [COM] individual fields to the report
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -254,6 +255,8 @@ SELECT V.[ProposalID]
       ,V.[TravelCost]
       ,V.[OtherDirectCost]
       ,V.[Profit/Fee + COM]
+	  ,V.[Profit/Fee]
+	  ,V.[COM]
       ,V.[Total Price]
       ,V.[ROS %]
       ,V.[Actual Submittal Date]
