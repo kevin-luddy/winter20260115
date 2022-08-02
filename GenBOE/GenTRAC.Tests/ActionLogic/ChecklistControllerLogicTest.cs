@@ -2129,6 +2129,84 @@ namespace GenTRAC.Tests.ActionLogic
         }
 
         /// <summary>
+        /// Test ValidateChecklist for fields related to the Cost Through COM changes
+        /// </summary>
+        [TestMethod]
+        public void ValidateChecklistTest_CostThroughCOM()
+        {
+            ChecklistControllerLogic sut = this.CreateSystem();
+            int proposalId = 1;
+            int checklistID = 1;
+
+            ChecklistProposalPricingDataModelView checklistProposalPricingData = new ChecklistProposalPricingDataModelView()
+            {
+                ProposalChecklistID = checklistID,
+                ProposalID = proposalId,
+                UpdateDate = DateTime.Now,
+                LMLaborHrs = string.Empty,
+                LMLaborCost = string.Empty,
+                SubcontractorCost = string.Empty,
+                MaterialCost = string.Empty,
+                IWTACost = string.Empty,
+                TravelCost = string.Empty,
+                OtherDirectCosts = string.Empty,
+                ProfitFeeComTotal = string.Empty,
+                ProfitFeeTotal = string.Empty,
+                ComTotal = string.Empty,
+                ROSPercent = string.Empty,
+                CostThroughCom = string.Empty,
+                UseCostThroughCom = true,
+                ShowChecklistResponse = ShowChecklistResponse.Pricer
+            };
+
+            ChecklistGeneralInformationModelView checklistGeneralInfo = new ChecklistGeneralInformationModelView() { ProposalID = proposalId };
+            ChecklistProposalPricingReviewDocumentModelView checklistPPRData = new ChecklistProposalPricingReviewDocumentModelView() { ProposalID = proposalId };
+            ChecklistProposalAdequacyReviewDocumentModelView checklistPARData = new ChecklistProposalAdequacyReviewDocumentModelView() { ProposalID = proposalId };
+            ProposalDto proposal = new ProposalDto() { Id = proposalId };
+
+            ChecklistContentDto checklistContent = new ChecklistContentDto();
+            ProposalChecklistDto proposalChecklist = new ProposalChecklistDto();
+            ICollection<ChecklistResponseItem> responses = new Collection<ChecklistResponseItem>();
+
+            FullProposal fullProposal = new FullProposal(proposal);
+
+            this.proposalLoader.Setup(x => x.GetById(proposalId)).Returns(proposal);
+            this.objectFactory.Setup(x => x.CreateFullProposal(proposal)).Returns(fullProposal);
+            this.retriever.Setup(x => x.GetPPRChecklistContent(proposalId)).Returns(checklistContent);
+            this.retriever.Setup(x => x.GetProposalChecklists(proposalId)).Returns(new Collection<ProposalChecklistDto> { proposalChecklist });
+            this.proposalChecklistLoader.Setup(x => x.GetPPRResponses(proposalId)).Returns(responses);
+
+            ICollection<ValidationMessage> validationMessages = new Collection<ValidationMessage>();
+
+            // assert that when Cost Through COM, Profit/Fee, and Submitted Value are empty/null, validation will pass
+            sut.ValidateChecklist(checklistGeneralInfo, checklistProposalPricingData, checklistPPRData, checklistPARData, false, validationMessages);
+
+            IList<string> validationIssues = (from v in validationMessages
+                                    select v.ValidationIssue).ToList();
+            Assert.IsFalse(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.COST_THRU_COM_PROFIT_FEE_SUM));
+
+            checklistProposalPricingData.CostThroughCom = "1,000";
+            checklistProposalPricingData.ProfitFeeTotal = "2,000";
+            checklistGeneralInfo.SubmittedValue = "3,000";
+
+            // assert that when Cost Through COM, Profit/Fee, and Submitted Value have values and CTC+PF=SV validation will pass
+            sut.ValidateChecklist(checklistGeneralInfo, checklistProposalPricingData, checklistPPRData, checklistPARData, false, validationMessages);
+
+            validationIssues = (from v in validationMessages
+                                              select v.ValidationIssue).ToList();
+            Assert.IsFalse(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.COST_THRU_COM_PROFIT_FEE_SUM));
+
+            checklistGeneralInfo.SubmittedValue = "3,001";
+
+            // assert that when Cost Through COM, Profit/Fee, and Submitted Value have values and CTC+PF!=SV validation will fail
+            sut.ValidateChecklist(checklistGeneralInfo, checklistProposalPricingData, checklistPPRData, checklistPARData, false, validationMessages);
+
+            validationIssues = (from v in validationMessages
+                                select v.ValidationIssue).ToList();
+            Assert.IsTrue(validationIssues.Contains(ValidationConstants.ChecklistValidationConstants.COST_THRU_COM_PROFIT_FEE_SUM));
+        }
+
+        /// <summary>
         /// Proposal checklist read only test
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), TestMethod]

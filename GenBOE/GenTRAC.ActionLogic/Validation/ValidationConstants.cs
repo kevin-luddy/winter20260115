@@ -678,6 +678,11 @@ namespace GenTRAC.ActionLogic.Validation
             public const string PROFIT_FEE_NEEDED = PROPOSAL_PRICING_DATA_VALDIATION + "Profit/Fee is required.";
 
             /// <summary>
+            /// The sum of Cost through COM and Profit/Fee must be equal to LM Space Total Price (Submitted Value)
+            /// </summary>
+            public const string COST_THRU_COM_PROFIT_FEE_SUM = PROPOSAL_PRICING_DATA_VALDIATION + "The sum of the Cost Through COM + Profit/Fee does not equal the LM Space Total Price. Please update either the Submitted Value or the values entered for Cost Through COM and Profit/Fee.";
+
+            /// <summary>
             /// com is a whole number
             /// </summary>
             public const string COM_WHOLE_NUMBER = PROPOSAL_PRICING_DATA_VALDIATION + "COM must be in U.S. whole dollars in the range +- 999,999,999,999.";
