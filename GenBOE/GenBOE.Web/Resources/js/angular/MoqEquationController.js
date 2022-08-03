@@ -2,7 +2,7 @@
 
 /// <reference path="directives.js" />
 // The controller for the MOQ equation section.
-moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uibModal', '$window', 'ManageTaskModel', '$timeout', '$http', function ($scope, $document, $uibModal, $window, ManageTaskModel, $timeout, $http) {
+moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$window', 'ManageTaskModel', '$timeout', '$http', function ($scope, $uibModal, $window, ManageTaskModel, $timeout, $http) {
     $scope.init = function () {
 
         $scope.model = $window.MOQEquationFieldModel;
@@ -17,7 +17,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
             angular.forEach($scope.model.SelectedMoqTypes.map(e => e.SelectedMOQType.toString()), function (id) {
                 $scope.InitializeRteFields(id);
-            });
+			});
+
+			$scope.refreshDisableSave();
         }, 10);
     };
 
@@ -54,10 +56,52 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 	};
 
 	$scope.actualsValidation = {
-		errors: new Map()
+		errors: new Map(),
+		isDirty: new Map()
 	};
 
-    $scope.isExporting = false;
+	$scope.isExporting = false;
+
+	$scope.refreshDisableSave = function () {
+		// only check for disabling save if SAP is enabled
+		if ($scope.model.SAPEnabled) {
+			// check if any DateOfReport is older than 60 days
+			var olderThan60 = false;
+			var newTableNeedsCalculated = false;
+			const sixtyDays = new Date();
+			sixtyDays.setMonth(sixtyDays.getMonth() - 2);
+
+			// only look at historical and comparative moq
+			var moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+
+			moqTypes.forEach(moq => {
+				if (moq.TableData) {
+					moq.TableData.forEach(tableData => {
+						if (tableData.DateOfReport < sixtyDays) {
+							olderThan60 = true;
+						}
+
+						if (tableData.TotalRelevantHours === undefined) {
+							newTableNeedsCalculated = true;
+						}
+					});
+				}
+			});
+
+			if (olderThan60) {
+				ManageTaskModel.DisableSave = true;
+				ManageTaskModel.DisableSaveText = 'All MOQ Tables older than two months need to have Actuals recalculated before Saving'
+			} else if (newTableNeedsCalculated) {
+				ManageTaskModel.DisableSave = true;
+				ManageTaskModel.DisableSaveText = 'All new MOQ Tables need to have Actuals calculated before Saving';
+			} else if ($scope.actualsValidation.isDirty.size > 0) {
+				ManageTaskModel.DisableSave = true;
+				ManageTaskModel.DisableSaveText = 'All MOQ Tables that have had filters updated need to have Actuals recalculated before Saving';
+			} else {
+				ManageTaskModel.DisableSave = false;
+			}
+		}
+	};
 
     // Called when the Insert Workspace Variable dropdown item is clicked.
     $scope.InsertWorkspaceVariableClicked = function () {
@@ -130,7 +174,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
                 var index = $scope.model.SelectedMoqTypes.indexOf(item);
                 $scope.model.SelectedMoqTypes.splice(index, 1);
                 $scope.$emit('MOQ_TYPE_SELECTION_CHANGED', $scope.model.SelectedMoqTypes);
-                MOQEquationFieldWidget.setDirty();
+				MOQEquationFieldWidget.setDirty();
+				$scope.refreshDisableSave();
             });
         });
     }
@@ -162,20 +207,20 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
     }
 
     // Actual Read Only, including reversal
-	$scope.ActualReadOnly = function ()
-    {
-        return $scope.model.IsReadOnly && !$scope.model.ShouldMoqReadOnlyBeReversed;
-    }
+	$scope.ActualReadOnly = function () {
+		return $scope.model.IsReadOnly && !$scope.model.ShouldMoqReadOnlyBeReversed;
+	};
 
     // Create New Table Data for the MOQ Type
-    $scope.CreateNewTable = function (tableDataArray) {
-        var newTable = {};
-        newTable.Id = $scope.newTableId--;
-        newTable.Order = 2000;
+	$scope.CreateNewTable = function (tableDataArray) {
+		var newTable = {};
+		newTable.Id = $scope.newTableId--;
+		newTable.Order = 2000;
 
-        tableDataArray.push(newTable);
-        MOQEquationFieldWidget.setDirty();
-    }
+		tableDataArray.push(newTable);
+		MOQEquationFieldWidget.setDirty();
+		$scope.refreshDisableSave();
+	};
 
     // Remove existing Table Data
     $scope.RemoveTable = function (item, tableDataArray) {
@@ -183,7 +228,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
             $scope.$apply(function () {
                 var index = tableDataArray.indexOf(item);
                 tableDataArray.splice(index, 1);
-                MOQEquationFieldWidget.setDirty();
+				MOQEquationFieldWidget.setDirty();
+				$scope.refreshDisableSave();
             });
         });
     }
@@ -620,7 +666,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 				} else {
 					$scope.filterDialog.originalData.AdditionalQueryFilters = [''];
 				}
-				
+				$scope.actualsValidation.isDirty.set($scope.filterDialog.originalData.Id, true);
+				$scope.refreshDisableSave();
 				$scope.filterDialog.open = false;
 			} else {
 				$scope.ShowFilterError(response.data.Messages);
@@ -891,7 +938,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 		};
 
 		if (Array.isArray(tableData.AdditionalQueryFilters)) {
-			table.Filters = table.AdditionalQueryFilters.join("\n");
+			table.Filters = tableData.AdditionalQueryFilters.join("\n");
 		}
 
 		data.tableData.push(table);
@@ -925,6 +972,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 									tableData.TotalWbsHours = 0;
 								}
 								MOQEquationFieldWidget.setDirty();
+								$scope.actualsValidation.isDirty.delete(res.TableId);
+								$scope.refreshDisableSave();
 							}
 						});
 					}
@@ -942,7 +991,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
 	$scope.calculateAllMoqActuals = function () {
 		$scope.actualsValidation.errors = new Map();
-
+		$scope.actualsValidation.isDirty = new Map();
 		// Get all the data tables
 		var data = {
 			tableData: []
@@ -962,7 +1011,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 						};
 
 						if (Array.isArray(tableData.AdditionalQueryFilters)) {
-							table.Filters = table.AdditionalQueryFilters.join("\n");
+							table.Filters = tableData.AdditionalQueryFilters.join("\n");
 						}
 
 						data.tableData.push(table);
@@ -1010,6 +1059,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 							}
 						});
 					}
+
+					$scope.refreshDisableSave();
 				} else {
 					RaiseNotification('Error talking to backend to Calculate All Actuals');
 				}
@@ -1020,6 +1071,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 				$(document).trigger("HIDE_LOADING_BOX");
 			});
 		}
+
+		$scope.refreshDisableSave();
 	};
 
 	$scope.setActualsErrors = function (id, errors) {
@@ -1181,7 +1234,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$document', '$uib
 
     $scope.convertJsonDate = function (date) {
         return new Date(JSON.parse(date.match(/\d+/)));
-    };
+	};
 }]);
 
 // initialize MOQ Equation Widget.. moved here so that way this much script is not in the ascx page
