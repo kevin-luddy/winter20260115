@@ -38,6 +38,11 @@ namespace GenTRAC.Web.Controllers
         private IProposalLoader loader;
 
         /// <summary>
+        /// Cover Sheet Loader
+        /// </summary>
+        private ICoverSheetDataLoader coverSheetLoader;
+
+        /// <summary>
         /// Token Handling
         /// </summary>
         private TokenHandling tokenHandler;
@@ -50,10 +55,11 @@ namespace GenTRAC.Web.Controllers
         /// <summary>
         /// Ctor
         /// </summary>
-        public PtmDataAPIController(ISecurityInformation security, IProposalLoader loader, ISecurityAccess securityAccess, TokenHandling tokenHandler)
+        public PtmDataAPIController(ISecurityInformation security, IProposalLoader loader, ICoverSheetDataLoader coverSheetLoader, ISecurityAccess securityAccess, TokenHandling tokenHandler)
         {
             this.security = security;
             this.loader = loader;
+            this.coverSheetLoader = coverSheetLoader;
             this.securityAccess = securityAccess;
             this.tokenHandler = tokenHandler;
         }
@@ -80,6 +86,32 @@ namespace GenTRAC.Web.Controllers
                 result = data.Select(x => new AcvProposalData() { PtmTrackingNumber = x.PtmTrackingNumber, ProposalTitle = x.ProposalTitle, ProposalId = x.ProposalId }).ToList();
             }
             catch(Exception ex)
+            {
+                logger.Error(ex);
+                result = null;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get Cover Sheet data.
+        /// </summary>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Cover Sheet Data</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+        [HttpGet]
+        public CoverSheetDataDto GetCoverSheetData(int proposalId)
+        {
+            CoverSheetDataDto result = new CoverSheetDataDto();
+
+            try
+            {
+                tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+                result = coverSheetLoader.GetCoverSheetDataById(proposalId);
+            }
+            catch (Exception ex)
             {
                 logger.Error(ex);
                 result = null;

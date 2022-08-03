@@ -81,6 +81,7 @@
     <Compile Include="InitializeCleanup.cs" />
     <Compile Include="Loader\BulkArchiveLoaderTest.cs" />
     <Compile Include="Loader\ContractsLoaderTest.cs" />
+    <Compile Include="Loader\CoverSheetDataLoaderTest.cs" />
     <Compile Include="Loader\PickListLoadersTests.cs" />
     <Compile Include="Loader\ChecklistContentLoaderTest.cs" />
     <Compile Include="Loader\EmailInformationLoaderTest.cs" />
