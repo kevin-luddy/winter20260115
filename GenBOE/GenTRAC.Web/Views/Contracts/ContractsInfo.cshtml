@@ -183,44 +183,6 @@
                     });
             }, null);
         };
-
-        ContractsInfoWidget.cageNumberChanged = function () {
-			ContractsInfoWidget.getElement('#CageCodeAddress1').empty();
-			ContractsInfoWidget.getElement('#CageCodeAddress2').empty();
-            ContractsInfoWidget.getElement('#CageCodeCityStateZip').empty();
-
-			const cageNumber = ContractsInfoWidget.getElement('#CageCode').val();
-
-            if (cageNumber) {
-                const contractsUrl = GenSession.CreateUrl({
-                    controller: '@WebConstants.Controller.CONTRACTS',
-                    action: '@WebConstants.Action.GET_CAGE_CODE_DATA',
-                    id: '@ViewBag.proposalid'
-                });
-
-                const data = { cageCode: cageNumber };
-
-                $.ajax({
-                    type: "POST",
-                    url: contractsUrl,
-                    contentType: 'application/json; charset=utf-8',
-                    data: JSON.stringify(data),
-                    success: function (response) {
-                        ContractsInfoWidget.getElement('#CageCodeAddress1').text(response.Address1);
-                        if (response.Address2) {
-                            ContractsInfoWidget.getElement('#CageCodeAddress2').text(response.Address2);
-                        }
-                        ContractsInfoWidget.getElement('#CageCodeCityStateZip').text(response.CityStateZip);
-
-                        ContractsInfoWidget.refreshModule();
-                    }
-                });
-            } else {
-				ContractsInfoWidget.refreshModule();
-			}
-        };
-
-        ContractsInfoWidget.cageNumberChanged();
     });
 
     $(document).ready(function () {
@@ -318,11 +280,6 @@
 				<div class="form-label">@Html.LabelFor(x => x.CageCode)</div>
 				<div class="form-element">
 					@Html.DropDownListFor(x => x.CageCode, Model.CageCodeSelectListItems, string.Empty, new { @class = "half", onchange = "ContractsInfoWidget.cageNumberChanged()" })
-				</div>
-				<div class="cage-code-address">
-					<div id="CageCodeAddress1"></div>
-					<div id="CageCodeAddress2"></div>
-					<div id="CageCodeCityStateZip"></div>
 				</div>
 			</div>
             <div class="form-row">

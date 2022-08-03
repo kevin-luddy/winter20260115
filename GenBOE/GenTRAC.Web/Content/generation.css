@@ -2823,11 +2823,6 @@ div.fake-cell
     text-align: center;
 }
 
-.cage-code-address {
-    padding-left: 10px;
-    display: inline-table;
-}
-
 #ContractActionTypeOtherText {
     margin-left: 5px;
 }
