@@ -253,6 +253,7 @@ namespace GenTRAC
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterType(typeof(GenBOE.DataBridge.DTO.IWorkspaceDTODataLoader), typeof(GenBOE.DataBridge.DTO.WorkspaceDTODataLoader), this.GetLifetimeManager(), new InjectionConstructor());
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterType(typeof(GenBOE.DataBridge.DTO.IPermissionsDTODataLoader), typeof(GenBOE.DataBridge.DTO.PermissionsDTODataLoader), this.GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<GenBOE.DataBridge.DTO.IPermissionsDTODataLoader>(new InterfaceInterceptor());
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterType(typeof(ICageCodesLoader), typeof(CageCodesLoader), this.GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<ICageCodesLoader>(new InterfaceInterceptor());
+            IES.Common.classes.GenBOEUnityContainer.Container.RegisterType(typeof(ICoverSheetDataLoader), typeof(CoverSheetDataLoader), this.GetLifetimeManager(), new InjectionMember[] { }).Configure<Interception>().SetInterceptorFor<ICoverSheetDataLoader>(new InterfaceInterceptor());
 
             #endregion
 

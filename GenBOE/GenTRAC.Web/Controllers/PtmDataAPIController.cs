@@ -55,7 +55,7 @@ namespace GenTRAC.Web.Controllers
         /// <summary>
         /// Ctor
         /// </summary>
-        public PtmDataAPIController(ISecurityInformation security, IProposalLoader loader, ICoverSheetDataLoader coverSheetLoader, ISecurityAccess securityAccess, TokenHandling tokenHandler)
+        public PtmDataAPIController(ISecurityInformation security, IProposalLoader loader, ISecurityAccess securityAccess, TokenHandling tokenHandler, ICoverSheetDataLoader coverSheetLoader)
         {
             this.security = security;
             this.loader = loader;
