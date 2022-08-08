@@ -66,13 +66,13 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		// only check for disabling save if SAP is enabled
 		if ($scope.model.SAPEnabled) {
 			// check if any DateOfReport is older than 60 days
-			var olderThan60 = false;
-			var newTableNeedsCalculated = false;
+			let olderThan60 = false;
+			let newTableNeedsCalculated = false;
 			const sixtyDays = new Date();
 			sixtyDays.setMonth(sixtyDays.getMonth() - 2);
 
 			// only look at historical and comparative moq
-			var moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+			let moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
 
 			moqTypes.forEach(moq => {
 				if (moq.TableData) {
