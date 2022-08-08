@@ -44,7 +44,9 @@
 			ConvertSapFilterAction: '<%: WebConstants.ACTION_CONVERT_SAP_FILTER %>',
 			ValidateActualsSapAction: '<%: WebConstants.ACTION_VALIDATE_ACTUALS_SAP %>',
 			CalculateAllActualsSapAction: '<%: WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP %>',
-			ExportActualsSapAction: '<%: WebConstants.ACTION_EXPORT_ACTUALS_SAP %>'
+			ExportActualsSapAction: '<%: WebConstants.ACTION_EXPORT_ACTUALS_SAP %>',
+			DisableSave: false,
+			DisableSaveText: ''
         });
 
         $(function () {
