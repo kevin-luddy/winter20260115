@@ -7,7 +7,9 @@
 namespace GenTRAC.DataBridge.DTO
 {
     using System.Collections.Generic;
+    using System.Linq;
     using GenTRAC.DataBridge.DTO.Contracts;
+    using GenTRAC.Models;
     using GenTRAC.Objects;
     using GenTRAC.Objects.FullObject;
     using IES.Common;
@@ -23,24 +25,9 @@ namespace GenTRAC.DataBridge.DTO
         public Logger Log { get; }
 
         /// <summary>
-        /// Gets or sets the Contracts Loader.
-        /// </summary>
-        private IContractsLoader ContractsLoader { get; set; }
-
-        /// <summary>
         /// Gets or sets the Proposal Loader.
         /// </summary>
         private IProposalLoader ProposalLoader { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Proposal Checklist Loader.
-        /// </summary>
-        private IProposalChecklistLoader ProposalChecklistLoader { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Cage Codes Loader.
-        /// </summary>
-        private ICageCodesLoader CageCodesLoader { get; set; }
 
         /// <summary>
         /// Object Factory
@@ -64,18 +51,11 @@ namespace GenTRAC.DataBridge.DTO
         /// Default constructor
         /// </summary>
         /// <param name="proposalLoader">Proposal Loader</param>
-        /// <param name="proposalChecklistLoader">Checklist Loader</param>
-        /// <param name="contractsLoader">Contracts Loader</param>
-        /// <param name="cageCodesLoader">Cage Codes Loader</param>
         /// <param name="objectFactory">Object Factory</param>
         /// <param name="userMapper">User Mapper</param>
-        public CoverSheetDataLoader(IProposalLoader proposalLoader, IProposalChecklistLoader proposalChecklistLoader, IContractsLoader contractsLoader,
-            ICageCodesLoader cageCodesLoader, IFullObjectFactory objectFactory, IUserMapper userMapper) : this()
+        public CoverSheetDataLoader(IProposalLoader proposalLoader, IFullObjectFactory objectFactory, IUserMapper userMapper) : this()
         {
             this.ProposalLoader = proposalLoader;
-            this.ProposalChecklistLoader = proposalChecklistLoader;
-            this.ContractsLoader = contractsLoader;
-            this.CageCodesLoader = cageCodesLoader;
             this.ObjectFactory = objectFactory;
             this.UserMapper = userMapper;
         }
@@ -87,56 +67,78 @@ namespace GenTRAC.DataBridge.DTO
         /// <returns>Cover Sheet DTO</returns>
         public CoverSheetDataDto GetCoverSheetDataById(int id)
         {
-            CoverSheetDataDto coverSheetDto = new CoverSheetDataDto();
+            CoverSheetDataDto coverSheetData = new CoverSheetDataDto();
 
-            ProposalDto proposal = ProposalLoader.GetById(id);
-            ProposalChecklistDto proposalChecklist = ProposalChecklistLoader.GetById(id);
-            ContractsDto contracts = ContractsLoader.GetById(id);
-            CageCodeDTO cageCodesDTO = CageCodesLoader.GetDataByCageCode(contracts.CageCode);
-
-            // Get data from Proposal dto
-            coverSheetDto.IsCCPDRequired = proposal.IsCCPDRequired;
-            coverSheetDto.ContractActionType = proposal.ContractActionType;
-            coverSheetDto.ContractTypeGroup = proposal.ContractTypeGroup;
-            coverSheetDto.CoverSheetApproverSignedDate = proposal.CoverSheetApproverSignedDate;
-
-            // Get data from Proposal Checklist dto
-            coverSheetDto.CostThroughCom = proposalChecklist.CostThroughCom;
-            coverSheetDto.ProfitFee = proposalChecklist.Profit;
-            coverSheetDto.LMSpaceTotalPrice = proposalChecklist.SubmittedValue;
-
-            // Get data from Contracts dto
-            coverSheetDto.CustomerSubmittalDate = contracts.CustomerSubmittalDate;
-            coverSheetDto.CageCode = contracts.CageCode;
-            coverSheetDto.OfferorAddress.AddRange(new List<string>() { cageCodesDTO.Address1, cageCodesDTO.Address2, cageCodesDTO.City, cageCodesDTO.State, cageCodesDTO.Zip });
-
-            // Get Cover Sheet Approver and Contracts Lead NTID by creating full proposal and checking permissions
-            FullProposal fullProposal = ObjectFactory.CreateFullProposal(proposal);
-
-            foreach (ProposalPermissionDto permission in fullProposal.Permissions)
+            using (StopwatchTimer sw = new StopwatchTimer("CoverSheetDataLoader.GetCoverSheetDataById", Log))
             {
-                UserDTO user = this.UserMapper.GetById(permission.UserId);
-
-                switch (permission.Role)
+                using (genTRACEntities dbModel = new genTRACEntities())
                 {
-                    case PtmRole.CoverSheetApprover:
-                        if (user != null)
+                    coverSheetData = (from props in dbModel.Proposals
+                                      join pcl in dbModel.ProposalChecklists on props.ProposalID equals pcl.ProposalID into propspcl
+                                      from pcl in propspcl.DefaultIfEmpty()
+                                      join pc in dbModel.ProposalContractsDatas on (pcl == null ? 0 : pcl.ProposalID) equals pc.ProposalID into propspc
+                                      from pc in propspc.DefaultIfEmpty()
+                                      where props.ProposalID == id
+                                      select new CoverSheetDataDto
+                                      {
+                                          IsCCPDRequired = props.CCPDRequired,
+                                          ContractActionType = (ContractActionType?)props.ContractActionType,
+                                          ContractTypeGroup = props.ContractTypeGroupID.HasValue ? props.ContractTypeGroupID.Value : 0,
+                                          CoverSheetApproverSignedDate = props.CoverSheetApproverSignedDT,
+                                          CostThroughCom = pcl.CostThroughCom,
+                                          ProfitFee = pcl.Profit,
+                                          LMSpaceTotalPrice = pcl.ISGSTotalPrice,
+                                          CustomerSubmittalDate = pc.CustomerSubmittalDate,
+                                          CageCode = pc.CageCode
+                                      }).FirstOrDefault();
+
+                    if (coverSheetData.CageCode != null)
+                    {
+                        // Get data for offeror's address from Cage Codes
+                        CageCodeDTO cageCodeData = dbModel.CageCodes.Where(x => x.CageCode1 == coverSheetData.CageCode).Select(x => new CageCodeDTO()
                         {
-                            coverSheetDto.CoverSheetApproverNtid = user.Ntid;
-                        }
-                        break;
-                    case PtmRole.ContractsPOC:
-                        if (user != null)
+                            Address1 = x.Address1,
+                            Address2 = x.Address2,
+                            City = x.City,
+                            State = x.State,
+                            Zip = x.Zip,
+                        }).FirstOrDefault();
+
+                        coverSheetData.OfferorAddress = new List<string>() { cageCodeData.Address1, cageCodeData.Address2, cageCodeData.City, cageCodeData.State, cageCodeData.Zip };
+                    }
+
+                    FullProposal fullProposal = ObjectFactory.CreateFullProposal(ProposalLoader.GetById(id));
+
+                    if (fullProposal != null)
+                    {
+                        // Get Cover Sheet Approver and Contracts Lead NTID by creating full proposal and checking permissions
+                        foreach (ProposalPermissionDto permission in fullProposal.Permissions)
                         {
-                            coverSheetDto.ContractsLead = user.Ntid;
+                            UserDTO user = this.UserMapper.GetById(permission.UserId);
+
+                            switch (permission.Role)
+                            {
+                                case PtmRole.CoverSheetApprover:
+                                    if (user != null)
+                                    {
+                                        coverSheetData.CoverSheetApproverNtid = user.Ntid;
+                                    }
+                                    break;
+                                case PtmRole.ContractsPOC:
+                                    if (user != null)
+                                    {
+                                        coverSheetData.ContractsLead = user.Ntid;
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
-                        break;
-                    default:
-                        break;
+                    }
                 }
             }
 
-            return coverSheetDto;
+            return coverSheetData;
         }
     }
 }
