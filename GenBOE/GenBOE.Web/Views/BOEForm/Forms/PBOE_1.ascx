@@ -441,7 +441,7 @@
                 <div class="form-element"><%: Html.RadioButton("GovtPricingReceived", ScheduleEvent.NA, Model.PBOEModel.GovtPricingReceived == ScheduleEvent.NA, new { id = "GovtPricingReceived" }) %><label>N/A</label><br />
                     <%: Html.RadioButton("GovtPricingReceived", ScheduleEvent.Actual, Model.PBOEModel.GovtPricingReceived == ScheduleEvent.Actual, new { id = "GovtPricingReceived" }) %><label>Actual</label><br />
                     <%: Html.RadioButton("GovtPricingReceived", ScheduleEvent.Planned, Model.PBOEModel.GovtPricingReceived == ScheduleEvent.Planned, new { id = "GovtPricingReceived" }) %><label>Planned</label><br />
-                    <%: Html.TextBox("GovtPricingReceivedDate", !Model.PBOEModel.GovtPricingReceivedDate.HasValue ? string.Empty : Model.PBOEModel.GovtPricingDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "GovtPricingReceivedDate" })%><br />
+                    <%: Html.TextBox("GovtPricingReceivedDate", !Model.PBOEModel.GovtPricingReceivedDate.HasValue ? string.Empty : Model.PBOEModel.GovtPricingReceivedDate.Value.ToString("MM/dd/yyyy"), new { @class="schedule-event", id = "GovtPricingReceivedDate" })%><br />
                     <%: Html.TextBox("GovtPricingReceivedText", Model.PBOEModel.GovtPricingReceivedText, new { id = "GovtPricingReceivedText", maxlength="50" })%>
                 </div>
             </div>
