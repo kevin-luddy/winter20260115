@@ -170,9 +170,9 @@ namespace APTSPropricerApi.Controllers
         {
             return new PricingTotals
             {
-                GrandTotal = Math.Round(proposalDto.Tasks.SelectMany(x => x.ResourceAssignments.SelectMany(y => y.BurdenCost.Where(z => z.Name == "Total Prc"))).Sum(x => decimal.Parse(x.Value)), 2, MidpointRounding.AwayFromZero),
-                CostTotal = Math.Round(proposalDto.Tasks.SelectMany(x => x.ResourceAssignments.SelectMany(y => y.BurdenCost.Where(z => z.Name == "Total Cst"))).Sum(x => decimal.Parse(x.Value)), 2, MidpointRounding.AwayFromZero),
-                ProfitTotal = Math.Round(proposalDto.Tasks.SelectMany(x => x.ResourceAssignments.SelectMany(y => y.BurdenCost.Where(z => z.Name == "Fee/Prft"))).Sum(x => decimal.Parse(x.Value)), 2, MidpointRounding.AwayFromZero)
+                GrandTotal = Math.Round(proposalDto.Tasks.SelectMany(x => x.ResourceAssignments.SelectMany(y => y.BurdenCost.Where(z => z.Name == Constants.TOTAL_PRICE))).Sum(x => decimal.Parse(x.Value)), 2, MidpointRounding.AwayFromZero),
+                CostTotal = Math.Round(proposalDto.Tasks.SelectMany(x => x.ResourceAssignments.SelectMany(y => y.BurdenCost.Where(z => z.Name == Constants.TOTAL_COST))).Sum(x => decimal.Parse(x.Value)), 2, MidpointRounding.AwayFromZero),
+                ProfitTotal = Math.Round(proposalDto.Tasks.SelectMany(x => x.ResourceAssignments.SelectMany(y => y.BurdenCost.Where(z => z.Name == Constants.FEE_PROFIT))).Sum(x => decimal.Parse(x.Value)), 2, MidpointRounding.AwayFromZero)
             };
         }
 
@@ -187,9 +187,9 @@ namespace APTSPropricerApi.Controllers
                 .Select(x => new
                 {
                     Name = x.Name,
-                    CLIN = x.SummaryFields.First(y => y.Key == "CLIN" || y.Key == "CLIN #").Value,
-                    ClinDescription = x.SummaryFields.First(y => y.Key == "CLIN Desc" || y.Key == "CLIN Title").Value,
-                    Cost = x.ResourceAssignments.SelectMany(y => y.BurdenCost.Where(z => z.Name == "Total Prc")).Sum(t => decimal.Parse(t.Value))
+                    CLIN = x.SummaryFields.First(y => y.Key == Constants.CLIN || y.Key == Constants.CLIN_NUMBER).Value,
+                    ClinDescription = x.SummaryFields.First(y => y.Key == Constants.CLIN_DESC || y.Key == Constants.CLIN_TITLE).Value,
+                    Cost = x.ResourceAssignments.SelectMany(y => y.BurdenCost.Where(z => z.Name == Constants.TOTAL_PRICE)).Sum(t => decimal.Parse(t.Value))
                 })
                 .GroupBy(x => x.CLIN)
                 .Select(t => new PricingLineItem { Name = t.Key, Description = t.First().ClinDescription, Sum = Math.Round(t.Sum(s => s.Cost), 2, MidpointRounding.AwayFromZero) })

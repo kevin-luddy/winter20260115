@@ -100,5 +100,40 @@ namespace APTSPropricerApi
         /// Temporary directory for files
         /// </summary>
         public static readonly string TEMP_DIRECTORY = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DeleteMe");
+
+        /// <summary>
+        /// Total price for a Burden Cost
+        /// </summary>
+        public const string TOTAL_PRICE = "Total Prc";
+
+        /// <summary>
+        /// Total Cost for a Burden Cost
+        /// </summary>
+        public const string TOTAL_COST = "Total Cst";
+
+        /// <summary>
+        /// Fee/Profit for a Burden Cost
+        /// </summary>
+        public const string FEE_PROFIT = "Fee/Prft";
+
+        /// <summary>
+        /// Clin name inside a Summary Field
+        /// </summary>
+        public const string CLIN = "CLIN";
+
+        /// <summary>
+        /// Clin number inside a Summary Field
+        /// </summary>
+        public const string CLIN_NUMBER = "CLIN #";
+
+        /// <summary>
+        /// Clin Description inside a Summary Field
+        /// </summary>
+        public const string CLIN_DESC = "CLIN DESC";
+
+        /// <summary>
+        /// Clin Title inside a Summary Field
+        /// </summary>
+        public const string CLIN_TITLE = "CLIN Title";
     }
 }
