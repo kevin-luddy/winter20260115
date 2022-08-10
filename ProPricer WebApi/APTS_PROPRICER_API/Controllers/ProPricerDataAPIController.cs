@@ -161,6 +161,11 @@ namespace APTSPropricerApi.Controllers
             return response;
         }
 
+        /// <summary>
+        /// Get the Totals for a Proposal
+        /// </summary>
+        /// <param name="proposalDto">The proposal object</param>
+        /// <returns>Totals Data for a Proposal</returns>
         private PricingTotals GetTotals(ProposalDto proposalDto)
         {
             return new PricingTotals
@@ -171,6 +176,11 @@ namespace APTSPropricerApi.Controllers
             };
         }
 
+        /// <summary>
+        /// Get Line Item Data for a Proposal
+        /// </summary>
+        /// <param name="pDto">The proposal object</param>
+        /// <returns>Collection of Line Item Data for a Proposal</returns>
         private ICollection<PricingLineItem> GetLineItems(ProposalDto pDto)
         {
             List<PricingLineItem> totals = pDto.Tasks
