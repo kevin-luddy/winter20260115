@@ -1208,6 +1208,136 @@
             Gets the active user.
             </summary>
         </member>
+        <member name="T:APTSPropricerApi.Common.PricingData">
+            <summary>
+            The Pricing data for a Pro Pricer Proposal
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.PricingData.Totals">
+            <summary>
+            Totals data
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.PricingData.LineItems">
+            <summary>
+            Line Item Data
+            </summary>
+        </member>
+        <member name="T:APTSPropricerApi.Common.PricingLineItem">
+            <summary>
+            Line Item Data
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.PricingLineItem.Name">
+            <summary>
+            Name of the Line Item
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.PricingLineItem.Description">
+            <summary>
+            Description for Line Item
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.PricingLineItem.Sum">
+            <summary>
+            Total Sum for the Line Item
+            </summary>
+        </member>
+        <member name="T:APTSPropricerApi.Common.PricingTotals">
+            <summary>
+            Totals for a Pro Pricer Proposal
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.PricingTotals.GrandTotal">
+            <summary>
+            The Grand Total
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.PricingTotals.CostTotal">
+            <summary>
+            The Cost Total
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.PricingTotals.ProfitTotal">
+            <summary>
+            The Profit Total
+            </summary>
+        </member>
+        <member name="T:APTSPropricerApi.Common.ProPricerResponse`1">
+            <summary>
+            A Pro Pricer Response
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.ProPricerResponse`1.IsSuccessful">
+            <summary>
+            True if the request succeeded, false otherwise.
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.ProPricerResponse`1.Messages">
+            <summary>
+            Error or other informational messages
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.ProPricerResponse`1.Data">
+            <summary>
+            Data meeting the request criteria
+            </summary>
+        </member>
+        <member name="T:APTSPropricerApi.Common.Row">
+            <summary>
+            A row inside of a Table
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.Row.Cells">
+            <summary>
+            Gets or sets the Cells of a Row
+            </summary>
+        </member>
+        <member name="T:APTSPropricerApi.Common.Table">
+            <summary>
+            A table representing a grid of data in rows and cells
+            </summary>
+        </member>
+        <member name="P:APTSPropricerApi.Common.Table.Rows">
+            <summary>
+            Gets or sets the Rows in a table
+            </summary>
+        </member>
+        <member name="T:APTSPropricerApi.Common.TokenHandling">
+            <summary>
+            This is a Token Handling class that will help us to communicate between IES API (.Net 4.7) and the ACV IES API (.Net Core 5.0)
+            </summary>
+        </member>
+        <member name="F:APTSPropricerApi.Common.TokenHandling.AuthDomain">
+            <summary>
+            Auth Domain
+            </summary>
+        </member>
+        <member name="F:APTSPropricerApi.Common.TokenHandling.metadataAddressForAuthDomain">
+            <summary>
+            This is one of those things.. This URL is something that is a part of the OAuth2 (I'm guessing), so we just need to use it.
+            </summary>
+        </member>
+        <member name="F:APTSPropricerApi.Common.TokenHandling.logger">
+            <summary>
+            Logger
+            </summary>
+        </member>
+        <member name="M:APTSPropricerApi.Common.TokenHandling.GetNtidIfTokenIsValid(System.String)">
+            <summary>
+            Validate a Token, retrieve NTID from it
+            </summary>
+            <param name="token">Token to validate</param>
+            <exception cref="T:System.UnauthorizedAccessException">If there are any issues parsing the token, we will throw an unauthorized exception</exception>
+            <returns>If the token is valid, this method returns user's NTID. </returns>
+        </member>
+        <member name="M:APTSPropricerApi.Common.TokenHandling.AuthenticateUserFromAuthorizationToken">
+            <summary>
+            Authenticates the user based on the token that is coming in from the headers
+                The token is first validated, and if it is valid, then the user's NTID will be retrieved from it. 
+                Finally, the NTID will be set into the System's Current Principal
+            </summary>
+        </member>
         <member name="T:APTSPropricerApi.ProPricerProposalExporter">
             <summary>
             ProPricerProposalExporter handles exporting task and resource data directly to a ProPricer proposal.
@@ -1440,81 +1570,6 @@
             </summary>
             <param name="exceptionFile">Fully qualified path to the exception file.</param>
             <param name="logFile">Fully qualified path to the log file.</param>
-        </member>
-        <member name="T:APTSPropricerApi.Common.ProPricerResponse`1">
-            <summary>
-            A Pro Pricer Response
-            </summary>
-        </member>
-        <member name="P:APTSPropricerApi.Common.ProPricerResponse`1.IsSuccessful">
-            <summary>
-            True if the request succeeded, false otherwise.
-            </summary>
-        </member>
-        <member name="P:APTSPropricerApi.Common.ProPricerResponse`1.Messages">
-            <summary>
-            Error or other informational messages
-            </summary>
-        </member>
-        <member name="P:APTSPropricerApi.Common.ProPricerResponse`1.Data">
-            <summary>
-            Data meeting the request criteria
-            </summary>
-        </member>
-        <member name="T:APTSPropricerApi.Common.Row">
-            <summary>
-            A row inside of a Table
-            </summary>
-        </member>
-        <member name="P:APTSPropricerApi.Common.Row.Cells">
-            <summary>
-            Gets or sets the Cells of a Row
-            </summary>
-        </member>
-        <member name="T:APTSPropricerApi.Common.Table">
-            <summary>
-            A table representing a grid of data in rows and cells
-            </summary>
-        </member>
-        <member name="P:APTSPropricerApi.Common.Table.Rows">
-            <summary>
-            Gets or sets the Rows in a table
-            </summary>
-        </member>
-        <member name="T:APTSPropricerApi.Common.TokenHandling">
-            <summary>
-            This is a Token Handling class that will help us to communicate between IES API (.Net 4.7) and the ACV IES API (.Net Core 5.0)
-            </summary>
-        </member>
-        <member name="F:APTSPropricerApi.Common.TokenHandling.AuthDomain">
-            <summary>
-            Auth Domain
-            </summary>
-        </member>
-        <member name="F:APTSPropricerApi.Common.TokenHandling.metadataAddressForAuthDomain">
-            <summary>
-            This is one of those things.. This URL is something that is a part of the OAuth2 (I'm guessing), so we just need to use it.
-            </summary>
-        </member>
-        <member name="F:APTSPropricerApi.Common.TokenHandling.logger">
-            <summary>
-            Logger
-            </summary>
-        </member>
-        <member name="M:APTSPropricerApi.Common.TokenHandling.GetNtidIfTokenIsValid(System.String)">
-            <summary>
-            Validate a Token, retrieve NTID from it
-            </summary>
-            <param name="token">Token to validate</param>
-            <exception cref="T:System.UnauthorizedAccessException">If there are any issues parsing the token, we will throw an unauthorized exception</exception>
-            <returns>If the token is valid, this method returns user's NTID. </returns>
-        </member>
-        <member name="M:APTSPropricerApi.Common.TokenHandling.AuthenticateUserFromAuthorizationToken">
-            <summary>
-            Authenticates the user based on the token that is coming in from the headers
-                The token is first validated, and if it is valid, then the user's NTID will be retrieved from it. 
-                Finally, the NTID will be set into the System's Current Principal
-            </summary>
         </member>
         <member name="T:APTSPropricerApi.SystemConfiguration">
             <summary>
@@ -2066,6 +2121,22 @@
             Gets the Available Connections.
             </summary>
             <returns>Returns a collection of the pool manager instances.</returns>
+        </member>
+        <member name="M:APTSPropricerApi.Controllers.ProPricerDataApiController.GetPricingData(System.Int32,System.String)">
+            <summary>
+            Gets Pricing Data for a proposal
+            </summary>
+            <param name="instanceId">Connection instance Id</param>
+            <param name="proposalId">Proposal Id</param>
+            <returns>Pricing data for a Proposal</returns>
+        </member>
+        <member name="M:APTSPropricerApi.Controllers.ProPricerDataApiController.GetPricingDataTotals(System.Int32,System.String)">
+            <summary>
+            Gets Pricing Data Totals (only) for a proposal
+            </summary>
+            <param name="instanceId">Connection instance Id</param>
+            <param name="proposalId">Proposal Id</param>
+            <returns>Pricing data for a Proposal</returns>
         </member>
         <member name="T:APTSPropricerApi.Controllers.BatchReportsController">
             <summary>
