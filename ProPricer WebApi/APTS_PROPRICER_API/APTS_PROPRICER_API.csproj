@@ -278,6 +278,9 @@
     <Compile Include="Common\ExtensionMethods.cs" />
     <Compile Include="Common\HandleErrorAttribute.cs" />
     <Compile Include="Common\Logger.cs" />
+    <Compile Include="Common\PricingData.cs" />
+    <Compile Include="Common\PricingLineItem.cs" />
+    <Compile Include="Common\PricingTotals.cs" />
     <Compile Include="Common\ProPricer File Export Import\ProposalProPricerExporter.cs" />
     <Compile Include="Common\ProPricerController.cs" />
     <Compile Include="Common\ProPricer File Export Import\ProPricerExportOption.cs" />

@@ -90,5 +90,113 @@ namespace APTSPropricerApi.Controllers
 
             return response;
         }
+
+        /// <summary>
+        /// Gets Pricing Data for a proposal
+        /// </summary>
+        /// <param name="instanceId">Connection instance Id</param>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Pricing data for a Proposal</returns>
+        [Route("api/ProPricerData/PricingData/{instanceId}/{proposalId}")]
+        [HttpGet]
+        public ProPricerResponse<PricingData> GetPricingData(int instanceId, string proposalId)
+        {
+            ProPricerResponse<PricingData> response = new ProPricerResponse<PricingData>();
+            try
+            {
+                tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+                using (ProposalandTasksController ptc = new ProposalandTasksController())
+                {
+                    ProposalDto pDto = ptc.Get(instanceId, proposalId);
+
+                    response.Data = new PricingData
+                    {
+                        Totals = GetTotals(pDto),
+                        LineItems = GetLineItems(pDto)
+                    };
+
+                    response.IsSuccessful = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex);
+                response.Messages.Add("Error retrieving Proposal Pricing Data");
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Gets Pricing Data Totals (only) for a proposal
+        /// </summary>
+        /// <param name="instanceId">Connection instance Id</param>
+        /// <param name="proposalId">Proposal Id</param>
+        /// <returns>Pricing data for a Proposal</returns>
+        [Route("api/ProPricerData/PricingDataTotals/{instanceId}/{proposalId}")]
+        [HttpGet]
+        public ProPricerResponse<PricingTotals> GetPricingDataTotals(int instanceId, string proposalId)
+        {
+            ProPricerResponse<PricingTotals> response = new ProPricerResponse<PricingTotals>();
+            try
+            {
+                tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+                using (ProposalandTasksController ptc = new ProposalandTasksController())
+                {
+                    ProposalDto pDto = ptc.Get(instanceId, proposalId);
+
+                    response.Data = GetTotals(pDto);
+
+                    response.IsSuccessful = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex);
+                response.Messages.Add("Error retrieving Proposal Pricing Totals");
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Get the Totals for a Proposal
+        /// </summary>
+        /// <param name="proposalDto">The proposal object</param>
+        /// <returns>Totals Data for a Proposal</returns>
+        private PricingTotals GetTotals(ProposalDto proposalDto)
+        {
+            return new PricingTotals
+            {
+                GrandTotal = Math.Round(proposalDto.Tasks.SelectMany(x => x.ResourceAssignments.SelectMany(y => y.BurdenCost.Where(z => z.Name == Constants.TOTAL_PRICE))).Sum(x => decimal.Parse(x.Value)), 2, MidpointRounding.AwayFromZero),
+                CostTotal = Math.Round(proposalDto.Tasks.SelectMany(x => x.ResourceAssignments.SelectMany(y => y.BurdenCost.Where(z => z.Name == Constants.TOTAL_COST))).Sum(x => decimal.Parse(x.Value)), 2, MidpointRounding.AwayFromZero),
+                ProfitTotal = Math.Round(proposalDto.Tasks.SelectMany(x => x.ResourceAssignments.SelectMany(y => y.BurdenCost.Where(z => z.Name == Constants.FEE_PROFIT))).Sum(x => decimal.Parse(x.Value)), 2, MidpointRounding.AwayFromZero)
+            };
+        }
+
+        /// <summary>
+        /// Get Line Item Data for a Proposal
+        /// </summary>
+        /// <param name="pDto">The proposal object</param>
+        /// <returns>Collection of Line Item Data for a Proposal</returns>
+        private ICollection<PricingLineItem> GetLineItems(ProposalDto pDto)
+        {
+            List<PricingLineItem> totals = pDto.Tasks
+                .Select(x => new
+                {
+                    Name = x.Name,
+                    CLIN = x.SummaryFields.First(y => y.Key == Constants.CLIN || y.Key == Constants.CLIN_NUMBER).Value,
+                    ClinDescription = x.SummaryFields.First(y => y.Key == Constants.CLIN_DESC || y.Key == Constants.CLIN_TITLE).Value,
+                    Cost = x.ResourceAssignments.SelectMany(y => y.BurdenCost.Where(z => z.Name == Constants.TOTAL_PRICE)).Sum(t => decimal.Parse(t.Value))
+                })
+                .GroupBy(x => x.CLIN)
+                .Select(t => new PricingLineItem { Name = t.Key, Description = t.First().ClinDescription, Sum = Math.Round(t.Sum(s => s.Cost), 2, MidpointRounding.AwayFromZero) })
+                .OrderBy(x => x.Name)
+                .ToList();
+
+            return totals;
+        }
     }
 }
