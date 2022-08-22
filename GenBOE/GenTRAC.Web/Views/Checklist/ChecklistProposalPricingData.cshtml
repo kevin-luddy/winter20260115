@@ -48,6 +48,12 @@
             ChecklistProposalPricingDataWidget.CommaSeparator(dollarAmount, 'input[name="ProfitFeeTotal"]');
         });
 
+		//On lose focus, adds thousand comma separator for dollar amount input field.
+		ChecklistProposalPricingDataWidget.getElement('input[name="CostThroughCom"]').focusout(function () {
+			var dollarAmount = ChecklistProposalPricingDataWidget.getElement('input[name="CostThroughCom"]').val().replace(/\,/g, "");
+			ChecklistProposalPricingDataWidget.CommaSeparator(dollarAmount, 'input[name="CostThroughCom"]');
+		});
+
         //On lose focus, adds thousand comma separator for dollar amount input field.
         ChecklistProposalPricingDataWidget.getElement('input[name="ComTotal"]').focusout(function () {
             var dollarAmount = ChecklistProposalPricingDataWidget.getElement('input[name="ComTotal"]').val().replace(/\,/g, "");

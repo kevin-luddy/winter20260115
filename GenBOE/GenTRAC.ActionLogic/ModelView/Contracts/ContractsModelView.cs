@@ -116,11 +116,18 @@ namespace GenTRAC.ActionLogic.ModelView
         /// </summary>
         public ICollection<CageCodeModelView> CageCodes {get; set;}
 
+        /// <summary>
+        /// Select List for Cage Codes, including address
+        /// </summary>
         public ICollection<SelectListItem> CageCodeSelectListItems
 		{
             get
 			{
-                return CageCodes.Select(x => new SelectListItem() { Text = x.CageCode, Value = x.CageCode, Selected = x.CageCode == CageCode }).ToList();
+                return CageCodes.Select(x => new SelectListItem() { 
+                    Text = $"{x.CageCode} - {x.Address1}{(!string.IsNullOrEmpty(x.Address2) ? ", " + x.Address2 : String.Empty)}, {x.City}, {x.State} {x.Zip}", 
+                    Value = x.CageCode, 
+                    Selected = x.CageCode == CageCode 
+                }).ToList();
 			}
 		}
 

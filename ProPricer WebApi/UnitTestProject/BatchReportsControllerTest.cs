@@ -1,8 +1,11 @@
 ﻿namespace UnitTestProject
 {
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
+    using System.Web;
     using APTSPropricerApi;
+    using APTSPropricerApi.Common;
     using APTSPropricerApi.Controllers;
     using APTSPropricerApi.DTOs;
     using EBS.Core;
@@ -22,9 +25,10 @@
         {
             using (BatchReportsController controller = new BatchReportsController())
             {
-                ICollection<BatchReportDto> results = controller.Get(TestConstants.SpaceInstanceId);
+                ProPricerResponse<ICollection<BatchReportDto>> results = controller.GetBatchReports(TestConstants.SpaceInstanceId);
                 Assert.IsNotNull(results);
-                Assert.IsTrue(results.Any());
+                Assert.IsTrue(results.IsSuccessful);
+                Assert.IsTrue(results.Data.Any());
             }
         }
 
@@ -34,21 +38,27 @@
         [TestMethod]
         public void ExportBatch()
         {
+            if (!Directory.Exists(Constants.TEMP_DIRECTORY))
+            {
+                Directory.CreateDirectory(Constants.TEMP_DIRECTORY);
+            }
+
             string proposalId = "3ac7f35f-5e08-ed11-9f7b-64c901b7a0ad";
             
             using (BatchReportsController controller = new BatchReportsController())
             {
-                ICollection<BatchReportDto> results = controller.Get(TestConstants.SpaceInstanceId);
+                ProPricerResponse<ICollection<BatchReportDto>> results = controller.GetBatchReports(TestConstants.SpaceInstanceId);
                 // pick id for Batch Report
-                string batchId = results.First(b => b.Name.StartsWith("15-2 iii a")).Id;
+                string batchId = results.Data.First(b => b.Name.StartsWith("15-2 iii a")).Id;
+                string tempFile;
+                ProPricerResponse<ICollection<Table>> response = controller.ExportBatchReport(TestConstants.SpaceInstanceId, new ProPricerExportContainer
+                 {
+                     batchReportId = batchId,
+                     proposalId = proposalId
+                 },
+                out tempFile);
 
-                string fileAsString = controller.Post(TestConstants.SpaceInstanceId, new ProPricerExportContainer
-                {
-                    batchReportId = batchId,
-                    proposalId = proposalId
-                });
-
-                Assert.IsNotNull(fileAsString);
+                Assert.IsTrue(response.IsSuccessful);
             }
         }
     }

@@ -10,6 +10,8 @@
 namespace APTSPropricerApi
 {
     using System;
+    using System.IO;
+    using System.Reflection;
 
     /// <summary>
     /// The constants class, containing shared constants to be used across the entire solution.
@@ -93,5 +95,45 @@ namespace APTSPropricerApi
         /// It is set to 5 minutes.. This is not meant as a performance benchmark, just as a fail-safe to prevent the application from locking up IIS
         /// </summary>
         public static readonly TimeSpan REGEX_TIMEOUT = new TimeSpan(0, 5, 0);
+
+        /// <summary>
+        /// Temporary directory for files
+        /// </summary>
+        public static readonly string TEMP_DIRECTORY = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "DeleteMe");
+
+        /// <summary>
+        /// Total price for a Burden Cost
+        /// </summary>
+        public const string TOTAL_PRICE = "Total Prc";
+
+        /// <summary>
+        /// Total Cost for a Burden Cost
+        /// </summary>
+        public const string TOTAL_COST = "Total Cst";
+
+        /// <summary>
+        /// Fee/Profit for a Burden Cost
+        /// </summary>
+        public const string FEE_PROFIT = "Fee/Prft";
+
+        /// <summary>
+        /// Clin name inside a Summary Field
+        /// </summary>
+        public const string CLIN = "CLIN";
+
+        /// <summary>
+        /// Clin number inside a Summary Field
+        /// </summary>
+        public const string CLIN_NUMBER = "CLIN #";
+
+        /// <summary>
+        /// Clin Description inside a Summary Field
+        /// </summary>
+        public const string CLIN_DESC = "CLIN DESC";
+
+        /// <summary>
+        /// Clin Title inside a Summary Field
+        /// </summary>
+        public const string CLIN_TITLE = "CLIN Title";
     }
 }

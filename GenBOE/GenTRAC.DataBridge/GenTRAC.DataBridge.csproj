@@ -142,6 +142,9 @@
     <Compile Include="DTO\Contracts\ContractsDto.cs" />
     <Compile Include="DTO\Contracts\ICageCodesLoader.cs" />
     <Compile Include="DTO\Contracts\IContractsLoader.cs" />
+    <Compile Include="DTO\CoverSheetData\CoverSheetDataDto.cs" />
+    <Compile Include="DTO\CoverSheetData\CoverSheetDataLoader.cs" />
+    <Compile Include="DTO\CoverSheetData\ICoverSheetDataLoader.cs" />
     <Compile Include="DTO\Email\EmailInformationDto.cs" />
     <Compile Include="DTO\Email\EmailInformationLoader.cs" />
     <Compile Include="DTO\Email\IEmailInformationLoader.cs" />

@@ -50,7 +50,7 @@ namespace GenTRAC.DataBridge.DTO
         public DateTime? EstimatingSubmitsToContractsDate { get; set; }
 
         /// <summary>
-        /// Submitted Value
+        /// LM Space Total Price / Submitted Value
         /// </summary>
         public long? SubmittedValue { get; set; }
 
