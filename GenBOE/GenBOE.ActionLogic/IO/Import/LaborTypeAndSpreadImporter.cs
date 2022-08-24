@@ -801,13 +801,13 @@ namespace GenBOE.ActionLogic.IO.Import
             }
             else
             {
-                if (ImportUtils.IsMaxDecimalPlaces(percentSpread.ToString(), 3, out percentSpread))  // Percent Spread is always capped at 3 DP
+                if (ImportUtils.IsMaxDecimalPlaces(percentSpread.ToString(), 6, out percentSpread))  // Percent Spread is always capped at 6 DP
                 {
                     toReturn.PercentSpread = percentSpread;
                 }
-                else  // round the percent spread down to 3 DP, but do not flag an error
+                else  // round the percent spread down to 6 DP, but do not flag an error
                 {
-                    toReturn.PercentSpread = decimal.Round(percentSpread, 3, MidpointRounding.AwayFromZero);
+                    toReturn.PercentSpread = decimal.Round(percentSpread, 6, MidpointRounding.AwayFromZero);
                 }
             }
 
