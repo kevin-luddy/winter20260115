@@ -465,7 +465,7 @@ namespace GenBOE.ActionLogic.IO.Export
 
                         if (laborType.PercentSpreadLocked)
                         {
-                            row.Add(laborType.PercentSpread.HasValue ? laborType.PercentSpread.Value.ToString("F3") : "0");  // Percent Spread is always capped at 3 DPs
+                            row.Add(laborType.PercentSpread.HasValue ? laborType.PercentSpread.Value.ToString("F6") : "0");  // Percent Spread is always capped at 6 DPs
                             row.Add(string.Empty); // Hours Spread not being exported
                         }
                         else
