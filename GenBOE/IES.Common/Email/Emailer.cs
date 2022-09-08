@@ -519,7 +519,8 @@ namespace IES.Common
         public static readonly EmailContent PUBLISH_EMAIL = new EmailContent
         {
             Subject = "PPR&D REVISION {0} Published {1}",
-            Body = "The PPR&D has been revised and is available in RDM.<br/>" +
+            Body = "The PPR&D has been revised and is available in RDM.<br/><br/>" +
+                    "Program Contracts and Estimating are expected to review the revised PPR&D in full and provide the appropriate disclosures for your CCOPD proposal(s) to your Contracting Officers. Disclosable information may include data beyond rates and factors such as CAS, system status and Proposal Disclosures. Please note that disclosure artifacts are to be kept in the Contracts file and tracked in the proposal disclosure log for proper records retention and audit purposes.<br/>" +
                     "{0}<br/>" +
                         "<a href=\"{1}\">RDM Home</a><br/>" +
                         "<a href=\"{2}\">Export Current Published PPR&D</a><br/>" +
@@ -563,7 +564,7 @@ namespace IES.Common
         public static readonly EmailContent PREFERRED_PRICING_ESTIMATING_TOOL_EMAIL = new EmailContent
         {
             Subject = "PTM: PRICING/ESTIMATING TOOL ADJUSTED FOR PROPOSAL",
-            Body = "{0} has adjusted his/her tool selection for {1} {2}. Both tools are now set to our preferred tool(s). " 
+            Body = "{0} has adjusted his/her tool selection for {1} {2}. Both tools are now set to our preferred tool(s). "
             + "Justification for utilization of a non-preferred tool is no longer necessary upon proposal workflow approval."
         };
 
@@ -573,7 +574,7 @@ namespace IES.Common
         public static readonly EmailContent MISSING_OPTIONAL_DOCUMENT_REMINDER_EMAIL = new EmailContent
         {
             Subject = "PTM: DOCUMENT UPLOAD REMINDER",
-            Body = "Reminder: At the time of your approval, as Lead{0} Estimator of PTM record {1} - {2}, you had not uploaded the Documented " 
+            Body = "Reminder: At the time of your approval, as Lead{0} Estimator of PTM record {1} - {2}, you had not uploaded the Documented "
                 + "Approval to Submit (and DOA if applicable). This is a reminder to upload the document today or as soon as it becomes available.<br/>"
                 + "To upload the document, navigate to the <a href=\"{3}\">Post Submittal Attachments tab</a>."
         };
