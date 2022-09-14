@@ -83,6 +83,7 @@ namespace GenTRAC.DataBridge.DTO
                                       {
                                           IsCCPDRequired = props.CCPDRequired,
                                           ContractActionType = (ContractActionType?)props.ContractActionType,
+                                          OtherContractActionType = props.ContractActionTypeOtherText,
                                           ContractTypeGroup = props.ContractTypeGroupID.HasValue ? props.ContractTypeGroupID.Value : 0,
                                           CoverSheetApproverSignedDate = props.CoverSheetApproverSignedDT,
                                           CostThroughCom = pcl.CostThroughCom,
