@@ -756,7 +756,7 @@ namespace APTSPropricerApi.Controllers
                         }
                         user.ProposalPermissionInfo.Close();
 
-						var proposals = ppc.Workspace?.Proposals?.Items();
+						IEnumerable<Proposal> proposals = ppc.Workspace?.Proposals?.Items();
 						if (proposals != null)
 						{
 							// This piece is necessary because the above misses a small subset of proposals that are owned by the user... (facepalm)
