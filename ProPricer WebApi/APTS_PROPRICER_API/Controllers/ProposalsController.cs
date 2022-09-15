@@ -728,7 +728,7 @@ namespace APTSPropricerApi.Controllers
 
             if (string.IsNullOrWhiteSpace(ntid))
             {
-                ntid = System.Security.Principal.WindowsIdentity.GetCurrent().Name;
+                ntid = System.Security.Principal.WindowsIdentity.GetCurrent()?.Name;
             }
 
             try
@@ -756,11 +756,15 @@ namespace APTSPropricerApi.Controllers
                         }
                         user.ProposalPermissionInfo.Close();
 
-                        // This piece is necessary because the above misses a small subset of proposals that are owned by the user... (facepalm)
-                        foreach (Proposal proposal in ppc.Workspace.Proposals.Items().Cast<Proposal>().Where(x => x.ActualOwner?.LoginName.ToLower() == ntid.ToLower()))
-                        {
-                            this.BuildTreeBottomUp(tree, allItemsFlat, new ProposalFolderInfo(proposal), proposal.ParentFolder);
-                        }
+						IEnumerable<Proposal> proposals = ppc.Workspace?.Proposals?.Items();
+						if (proposals != null)
+						{
+							// This piece is necessary because the above misses a small subset of proposals that are owned by the user... (facepalm)
+							foreach (Proposal proposal in proposals.Cast<Proposal>().Where(x => x.ActualOwner?.LoginName?.ToLower() == ntid.ToLower()))
+							{
+								this.BuildTreeBottomUp(tree, allItemsFlat, new ProposalFolderInfo(proposal), proposal.ParentFolder);
+							}
+						}
                     }
                 }
             }
