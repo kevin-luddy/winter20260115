@@ -57,6 +57,11 @@ namespace GenTRAC.DataBridge.DTO
         public ContractActionType? ContractActionType { get; set; }
 
         /// <summary>
+        /// Gets or sets the text for the "Other" Contract Action Type
+        /// </summary>
+        public string OtherContractActionType { get; set; }
+
+        /// <summary>
         /// Contract Type Group / Contract Type
         /// </summary>
         public int ContractTypeGroup { get; set; }
