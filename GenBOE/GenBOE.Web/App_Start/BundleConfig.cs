@@ -177,7 +177,11 @@ namespace GenBOE.Web
                 "~/Resources/js/angular/manageWBSController.js"
                 ));
 
-            bundles.Add(new ScriptBundle("~/bundles/manageBOE").Include(
+			bundles.Add(new ScriptBundle("~/bundles/calculateActuals").Include(
+				"~/Resources/js/angular/workspaceCalculateActualsController.js"
+				));
+
+			bundles.Add(new ScriptBundle("~/bundles/manageBOE").Include(
                 "~/Resources/js/angular/manageBOEController.js"
                 ));
 

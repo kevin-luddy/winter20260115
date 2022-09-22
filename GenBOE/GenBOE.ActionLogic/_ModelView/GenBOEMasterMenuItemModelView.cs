@@ -176,6 +176,15 @@ namespace GenBOE.ActionLogic.ModelView
                             securityPage = SecurityPage.ManageBOEForms,
                             routeName = WebConstants.ROUTE_WORKSPACE
                         },
+						 new GenBOEMasterMenuItemModelView {
+							linkText = "Calculate Actuals",
+							actionName = WebConstants.ACTION_INDEX,
+							controllerName = WebConstants.CONTROLLER_WORKSPACE_CALCULATE_ACTUALS,
+							routeValues = new { workspace = ws.Shortname },
+							htmlAttributes = new { name = "CalculateActualsMenuLink" },
+							securityPage = SecurityPage.WorkspaceCalculateActuals,
+							routeName = WebConstants.ROUTE_WORKSPACE
+						},
                         new GenBOEMasterMenuItemModelView {
                             linkText = "Find/Replace BOE Text",
                             actionName = WebConstants.ACTION_INDEX,
