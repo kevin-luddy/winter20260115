@@ -6,56 +6,64 @@
 
 namespace GenBOE.ActionLogic.ControllerLogic
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Globalization;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using System.Transactions;
-    using System.Web.Configuration;
-    using GenBOE.ActionLogic;
-    using GenBOE.ActionLogic.Common;
-    using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.ActionLogic.IO.Export;
-    using GenBOE.ActionLogic.IO.Export.BOE;
-    using GenBOE.ActionLogic.IO.Import;
-    using GenBOE.ActionLogic.ModelView;
-    using GenBOE.ActionLogic.ModelView.Workspace;
-    using GenBOE.ActionLogic.Validation;
-    using GenBOE.DataBridge.Common;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.DataBridge.Reference;
-    using GenBOE.Dtos;
-    using GenBOE.Models;
-    using GenBOE.Objects;
-    using IES.Common;
-    using IES.Common.classes;
-    using IES.Common.Exceptions;
-    using IES.Common.PickList;
-    using MoreLinq;
-    using static IES.Common.Constants;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Globalization;
+	using System.Linq;
+	using System.Threading.Tasks;
+	using System.Transactions;
+	using System.Web.Configuration;
+	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.BOETransitions;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.IESSAPClient;
+	using GenBOE.ActionLogic.IO.Export;
+	using GenBOE.ActionLogic.IO.Export.BOE;
+	using GenBOE.ActionLogic.IO.Import;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.ModelView.Workspace;
+	using GenBOE.ActionLogic.Validation;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.DataBridge.Reference;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using IES.Common;
+	using IES.Common.classes;
+	using IES.Common.Exceptions;
+	using IES.Common.PickList;
+	using MoreLinq;
+	using static IES.Common.Constants;
 
-    public abstract class WorkspaceControllerLogic : IWorkspaceControllerLogic
+	public abstract class WorkspaceControllerLogic : IWorkspaceControllerLogic
     {
         #region Protected Properties and Constructor
 
-        private IProjectMapDataLoader projectMapDataLoader;
-        private ITMResourceRateDTODataLoader tmResourceRateLoader;
-        private BoeTaskElementRecalculation boeTaskElementRecalculation;
-        private IInUseDataLoader inUseDataLoader;
-        private IFullObjectFactory factory;
-        private ICommonDataMapper commonDataMapper;
-        private FullBoeDataImporter fullBoeImporter;
-        private IBOELaborControllerLogic boeLaborControllerLogic;
-        private IWorkspaceVariableDTODataLoader workspaceVariableLoader;
-        private ICustomFieldValueDTODataLoader customFieldValueLoader;
-        private ICustomFieldDTODataLoader customFieldLoader = null;
-        private IPickListMapper boePickListMapper;
-        private IPickListMapper ptmPickListMapper;
-        private IMoqTypeDataLoader moqTypeLoader;
+        private readonly IProjectMapDataLoader projectMapDataLoader;
+        private readonly ITMResourceRateDTODataLoader tmResourceRateLoader;
+        private readonly BoeTaskElementRecalculation boeTaskElementRecalculation;
+        private readonly IInUseDataLoader inUseDataLoader;
+        private readonly IFullObjectFactory factory;
+        private readonly ICommonDataMapper commonDataMapper;
+        private readonly FullBoeDataImporter fullBoeImporter;
+        private readonly IBOELaborControllerLogic boeLaborControllerLogic;
+        private readonly IWorkspaceVariableDTODataLoader workspaceVariableLoader;
+        private readonly ICustomFieldValueDTODataLoader customFieldValueLoader;
+        private readonly ICustomFieldDTODataLoader customFieldLoader = null;
+        private readonly IPickListMapper boePickListMapper;
+        private readonly IPickListMapper ptmPickListMapper;
+        private readonly IMoqTypeDataLoader moqTypeLoader;
 
-        private IPermissionsDTODataLoader PermissionLoader { get; }
+		/// <summary>
+		/// Boe State Machine
+		/// </summary>
+		private readonly IBOEStateMachine boeStateMachine;
+
+
+
+		private IPermissionsDTODataLoader PermissionLoader { get; }
 
         /// <summary>
         /// Full WS Recalculation
@@ -80,12 +88,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <summary>
         /// Contact Type Loader
         /// </summary>
-        private ContractTypeLoader contractTypeLoader;
+        private readonly ContractTypeLoader contractTypeLoader;
 
         /// <summary>
         /// Workspace Exporter
         /// </summary>
-        private WorkspaceExporter workspaceExporter;
+        private readonly WorkspaceExporter workspaceExporter;
 
         /// <summary>
         /// The PTM LOB conversion error.
@@ -127,6 +135,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="contractTypeLoader">Contract Type Loader</param>
         /// <param name="workspaceExporter">WS Exporter</param>
         /// <param name="moqTypeLoader">Moq Type Loader</param>
+		/// <param name="boeStateMachine">Boe State Machine</param>
         protected WorkspaceControllerLogic(
             IWorkspaceDTODataLoader workspaceLoader,
             IUserDTODataLoader inuserLoader,
@@ -145,7 +154,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IPickListMapper ptmPickListMapper,
             ContractTypeLoader contractTypeLoader,
             WorkspaceExporter workspaceExporter,
-            IMoqTypeDataLoader moqTypeLoader)
+            IMoqTypeDataLoader moqTypeLoader,
+			IBOEStateMachine boeStateMachine)
         {
             this.WorkspaceLoader = workspaceLoader;
             this.UserLoader = inuserLoader;
@@ -168,6 +178,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.contractTypeLoader = contractTypeLoader;
             this.workspaceExporter = workspaceExporter;
             this.moqTypeLoader = moqTypeLoader;
+			this.boeStateMachine = boeStateMachine;
         }
 
         #endregion
@@ -2196,13 +2207,133 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.customFieldValueLoader.Save(customFieldValues);
         }
 
-        /// <summary>
-        /// Check if a custom field exists for the given name
-        /// </summary>
-        /// <param name="customFieldName">Name to check</param>
-        /// <param name="existingCustomFields">Existing custom fields</param>
-        /// <returns>True if custom field already exists, otherwise false</returns>
-        private bool CustomFieldAlreadyExists(string customFieldName, ICollection<CustomFieldDTO> existingCustomFields)
+		/// <summary>
+		/// Calculates (SAP) Actuals over a Workspace
+		/// </summary>
+		/// <param name="ws">The workspace</param>
+		/// <returns>Updated list of Calculated Actuals model views</returns>
+		public async Task<ICollection<WorkspaceCalculateActualsModelView>> CalculateActuals(FullWorkspace ws)
+		{
+			List<WorkspaceCalculateActualsModelView> result = new List<WorkspaceCalculateActualsModelView>();
+
+			Dictionary<int, FullBoe> boes = ws.Boes.ToDictionary(b => b.Id);
+			Dictionary<int, string> tasks = ws.TaskElements.ToDictionary(t => t.Id, x => x.TaskTitle);
+			Dictionary<int, MoqTableData> tables = new Dictionary<int, MoqTableData>();
+			Dictionary<int, MoqTypeSelection> tableIdToMoqType = new Dictionary<int, MoqTypeSelection>();
+			IReadOnlyCollection<MoqTypeSelection> moqTypeSelections = ws.MoqTypeSelections;
+			List<MoqTypeSelection> moqTypesToSave = new List<MoqTypeSelection>();
+			foreach(MoqTypeSelection moqType in moqTypeSelections)
+			{
+				if ((moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative) && 
+					moqType.TableData != null && moqType.TableData.Any())
+				{
+					moqTypesToSave.Add(moqType);
+					moqType.Updateable = UpdateType.Upsert;
+
+					foreach (MoqTableData table in moqType.TableData)
+					{
+						tables.Add(table.Id, table);
+						tableIdToMoqType.Add(table.Id, moqType);
+					}
+				}
+			}
+
+			if (tables.Any())
+			{
+				ICollection<MoqTableDataModelView> tableData = tables.Values.Select(t => 
+					new MoqTableDataModelView()
+					{
+						Filters = t.AdditionalQueryFilters,
+						PoPStart = t.PoPStart,
+						PoPEnd = t.PoPEnd,
+						TableId = t.Id,
+						WbsElement = t.WbsElement
+					}
+				).ToList();
+
+				// Make one bulk call to SAP
+				ICollection<IESResponse<CalculateActualsViewModel>> responses = await this.boeLaborControllerLogic.CalculateAllActualsSap(tableData);
+
+				List<int> boesUpdated = new List<int>();
+
+				foreach (IESResponse<CalculateActualsViewModel> response in responses)
+				{
+					WorkspaceCalculateActualsModelView resultModel = new WorkspaceCalculateActualsModelView();
+					CalculateActualsViewModel model = response.Data.First();
+
+					// get the original table and moqType
+					MoqTableData table = tables[model.TableId];
+					MoqTypeSelection moqType = tableIdToMoqType[model.TableId];
+					FullBoe boe = boes[moqType.BoeId];
+
+					resultModel.TableName = table.TableName;
+					resultModel.WbsHoursPrevious = table.TotalWbsHours;
+					resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
+					resultModel.BoeStatePrevious = boe.State.GetDescription();
+					resultModel.BoeTitle = boe.Title;
+					resultModel.Task = tasks[moqType.TaskId];
+					resultModel.Order = table.Order;
+					resultModel.IsSuccessful = response.IsSuccessful;
+
+					if (response.IsSuccessful)
+					{
+						if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
+						{
+							resultModel.WbsHoursPrevious = table.TotalWbsHours;
+							table.TotalWbsHours = model.WbsHours.HasValue ? Convert.ToDecimal(model.WbsHours.Value) : default(decimal);
+							resultModel.WbsHours = table.TotalWbsHours;
+						}
+
+						resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
+						table.DateOfReport = DateTime.Now;
+						table.TotalRelevantHours = Convert.ToDecimal(model.TotalHours);
+						resultModel.TotalRelevantHours = table.TotalRelevantHours;
+						
+						// only return to UI if Total Relevant Hours changes
+						if (resultModel.TotalRelevantHours != resultModel.TotalRelevantHoursPrevious)
+						{
+							result.Add(resultModel);
+							boesUpdated.Add(moqType.BoeId);
+						}
+					}
+					else
+					{
+						resultModel.Messages = response.Messages;
+						result.Add(resultModel);
+
+					}
+				}
+
+				// Save the moq types (updated hours and report date)
+				this.moqTypeLoader.Save(moqTypesToSave);
+
+				// run boes through boe state machine to set back to draft
+				boesUpdated = boesUpdated.Distinct().ToList();
+				List<FullBoe> updatedBoes = boes.Values.Where(b => boesUpdated.Contains(b.Id)).ToList();
+
+				foreach (FullBoe boe in updatedBoes)
+				{
+					this.boeStateMachine.PerformStateTransitionAction(boe, ws, boe.State, BOEState.Draft);
+				}
+
+				ws.RefreshBoes();
+			}
+
+			// Reorder and reset the Order property on the results
+			result = result.OrderBy(r => r.BoeTitle).ThenBy(t => t.Task).ThenBy(o => o.Order).ToList();
+			int order = 0;
+			result.ForEach(r => r.Order = order++);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Check if a custom field exists for the given name
+		/// </summary>
+		/// <param name="customFieldName">Name to check</param>
+		/// <param name="existingCustomFields">Existing custom fields</param>
+		/// <returns>True if custom field already exists, otherwise false</returns>
+		private bool CustomFieldAlreadyExists(string customFieldName, ICollection<CustomFieldDTO> existingCustomFields)
         {
             return existingCustomFields.Any(x => x.CustomFieldName.ToLower() == customFieldName.ToLower());
         }

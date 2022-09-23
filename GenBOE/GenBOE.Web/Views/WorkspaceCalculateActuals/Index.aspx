@@ -78,15 +78,18 @@
                             <tr data-ng-repeat="actual in (filteredResults = (data | filter:filterActuals | orderBy:predicate:reverse)) | limitTo:pageSize:currentPage*pageSize">
                                 <td class="text" title="{{::actual.BoeTitle}}">{{::actual.BoeTitle}}</td>
                                 <td class="text"  title="{{::actual.Task}}">{{::actual.Task}}</td>
-                                <td class="text"  title="{{::actual.Table}}">{{::actual.Table}}</td>
-								<td class="text"  title="{{::actual.BoePreviousState}}">{{::actual.BoePreviousState}}</td>
+                                <td class="text"  title="{{::actual.TableName}}">{{::actual.TableName}}</td>
+								<td colspan="{{colSpan - 3}}" data-ng-if="!actual.IsSuccessful">
+									<div ng-repeat="message in actual.Messages"><strong>{{::message}}</strong></div>
+								</td>
+								<td class="text" data-ng-if="actual.IsSuccessful" title="{{::actual.BoePreviousState}}">{{::actual.BoeStatePrevious}}</td>
 								<% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) 
 								   {  %>
-								<td class="text"  title="{{::actual.WbsHoursPrevious}}">{{::actual.WbsHoursPrevious}}</td>
-								<td class="text"  title="{{::actual.WbsHours}}">{{::actual.WbsHours}}</td>
+								<td class="text" data-ng-if="actual.IsSuccessful" title="{{::actual.WbsHoursPrevious}}">{{::actual.WbsHoursPrevious}}</td>
+								<td class="text" data-ng-if="actual.IsSuccessful" title="{{::actual.WbsHours}}">{{::actual.WbsHours}}</td>
 								<% } %>
-								<td class="text"  title="{{::actual.HoursPrevious}}">{{::actual.HoursPrevious}}</td>
-								<td class="text"  title="{{::actual.Hours}}">{{::actual.Hours}}</td>
+								<td class="text" data-ng-if="actual.IsSuccessful" title="{{::actual.TotalRelevantHoursPrevious}}">{{::actual.TotalRelevantHoursPrevious}}</td>
+								<td class="text" data-ng-if="actual.IsSuccessful" title="{{::actual.TotalRelevantHours}}">{{::actual.TotalRelevantHours}}</td>
                             </tr>
                         </tbody>
                     </table>

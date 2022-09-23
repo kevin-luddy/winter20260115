@@ -10,7 +10,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.BOETransitions;
+	using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
     using GenBOE.ActionLogic.IO.Export;
     using GenBOE.ActionLogic.IO.Import;
@@ -88,7 +89,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
             IPickListMapper ptmPickListMapper,
             ContractTypeLoader contractTypeLoader,
             WorkspaceExporter workspaceExporter,
-            IMoqTypeDataLoader moqTypeLoader)
+            IMoqTypeDataLoader moqTypeLoader,
+			IBOEStateMachine boeStateMachine
+			)
             : base(
                 workspaceLoader,
                 userLoader,
@@ -110,8 +113,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 ptmPickListMapper,
                 contractTypeLoader,
                 workspaceExporter,
-                moqTypeLoader
-        )
+                moqTypeLoader,
+				boeStateMachine
+		)
         {
             this.zoneTravelRatesFeesLoader = zoneTravelRatesFeesLoader;
             this.systemEscalationRatesLoader = systemEscalationRatesLoader;

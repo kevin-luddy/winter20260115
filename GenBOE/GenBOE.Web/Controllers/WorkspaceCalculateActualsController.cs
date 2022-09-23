@@ -11,7 +11,8 @@ namespace GenBOE.Web.Controllers
     using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.Linq;
-    using System.Transactions;
+	using System.Threading.Tasks;
+	using System.Transactions;
     using System.Web.Mvc;
     using System.Web.Script.Serialization;
     using ActionLogic.ModelView.Clin;
@@ -25,7 +26,8 @@ namespace GenBOE.Web.Controllers
     using GenBOE.ActionLogic.IO.Import;
     using GenBOE.ActionLogic.Metrics;
     using GenBOE.ActionLogic.ModelView;
-    using GenBOE.ActionLogic.Validation;
+	using GenBOE.ActionLogic.ModelView.Workspace;
+	using GenBOE.ActionLogic.Validation;
     using GenBOE.ActionLogic.WBS;
     using GenBOE.DataBridge.Common;
     using GenBOE.DataBridge.Common.Interfaces;
@@ -40,30 +42,33 @@ namespace GenBOE.Web.Controllers
 
     public class WorkspaceCalculateActualsController : GenBOEController
     {
+		/// <summary>
+		/// logger
+		/// </summary>
         private readonly Logger _log = new Logger(typeof(WBSController));
 
-        private readonly BOEStateMachine _BOEStateMachine = null;
-        private readonly BoeMediator _BoeMediator = null;
-        
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        public WorkspaceCalculateActualsController(ISecurityAccess inSecurityAccess,
+		/// <summary>
+		/// Workspace controller logic
+		/// </summary>
+		private readonly IWorkspaceControllerLogic workspaceControllerLogic;
+
+		/// <summary>
+		/// Constructor
+		/// </summary>
+		public WorkspaceCalculateActualsController(ISecurityAccess inSecurityAccess,
             CommonDataMapper inCommonDataMapper,
             SiteMasterUtilities inSiteMasterUtilities,
-            BOEStateMachine inBOEStateMachine,
-            BoeMediator inBoeMediator,
             SystemMetrics inSystemMetrics,
             IFullObjectFactory factory,
             IUserDTODataLoader userLoader,
             IPermissionsDTODataLoader permissionLoader,
-            IGenBOEControllerLogic inControllerLogic
+            IGenBOEControllerLogic inControllerLogic,
+			IWorkspaceControllerLogic workspaceControllerLogic
             )
             : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, userLoader, permissionLoader, inControllerLogic)
         {
-            this._BOEStateMachine = inBOEStateMachine;
-            this._BoeMediator = inBoeMediator;
-        }
+			this.workspaceControllerLogic = workspaceControllerLogic;
+		}
 
         /// <summary>
         /// Returns the WorkspaceCalculateActuals view
@@ -94,23 +99,19 @@ namespace GenBOE.Web.Controllers
 		/// </summary>
 		/// <param name="workspace">the workspace</param>
 		/// <returns>The MV for the Manage WBS grid</returns>
-		public JsonResult GetWorkspaceCalculateActualsModel(string workspace)
+		public async Task<JsonResult> GetWorkspaceCalculateActualsModel(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_WORKSPACE_CALCULATE_ACTUALS_MODEL, SecurityPage.WorkspaceCalculateActuals, SecurityAuthorization.ReadUpdate, ws, null);
 
-			// TODO: we will need these eventually so we need to use them for the compiler not to complain
-			this._BoeMediator.GetType();
-			this._BOEStateMachine.GetType();
-
-			// TODO: return the actual models
-			object model = new object();
+			ICollection<WorkspaceCalculateActualsModelView> actuals = await this.workspaceControllerLogic.CalculateActuals(ws);
+			
 			// Finalize Action
 			FinalizeAction(_log, WebConstants.ACTION_GET_WORKSPACE_CALCULATE_ACTUALS_MODEL, sw);
 
-			return this.Json(model);
+			return this.Json(actuals);
 		}
 
 		#endregion Display

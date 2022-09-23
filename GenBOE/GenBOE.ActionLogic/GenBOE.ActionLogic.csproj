@@ -432,6 +432,7 @@
     <Compile Include="_ModelView\Workspace\HomeWorkspaceGridApproverModelView.cs" />
     <Compile Include="_ModelView\Workspace\HomeWorkspaceGridModelView.cs" />
     <Compile Include="_ModelView\Workspace\HomeWorkspaceModelView.cs" />
+    <Compile Include="_ModelView\Workspace\WorkspaceCalculateActualsModelView.cs" />
     <Compile Include="_ModelView\Workspace\WorkspaceEmailOverrideModelView.cs" />
     <Compile Include="_ModelView\Workspace\WorkspaceIdentificationMSTModelView.cs" />
     <Compile Include="_ModelView\Workspace\WorkspaceResourceRateGridTMModelView.cs" />

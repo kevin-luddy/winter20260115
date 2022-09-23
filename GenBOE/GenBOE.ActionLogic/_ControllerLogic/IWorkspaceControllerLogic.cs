@@ -9,7 +9,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.Web.Mvc;
+	using System.Threading.Tasks;
+	using System.Web.Mvc;
     using GenBOE.ActionLogic.ModelView;
     using GenBOE.ActionLogic.ModelView.Workspace;
     using GenBOE.DataBridge.DTO;
@@ -74,12 +75,20 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <returns></returns>
         ICollection<ResourceDTO> GetFilteredWorkspaceResourcesTM(IReadOnlyCollection<ResourceDTO> workspaceResources);
 
-        /// <summary>
-        /// Gets a filtered list of Resources
-        /// </summary>
-        /// <param name="inWorkspaceResources">The list of resources to filter</param>
-        /// <returns></returns>
-        ICollection<ResourceDTO> GetFilteredOtherWorkspaceResources(IReadOnlyCollection<ResourceDTO> inWorkspaceResources);
+		/// <summary>
+		/// Calculates (SAP) Actuals over a Workspace
+		/// </summary>
+		/// <param name="ws">The workspace</param>
+		/// <returns>Updated list of Calculated Actuals model views</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
+		Task<ICollection<WorkspaceCalculateActualsModelView>> CalculateActuals(FullWorkspace ws);
+
+		/// <summary>
+		/// Gets a filtered list of Resources
+		/// </summary>
+		/// <param name="inWorkspaceResources">The list of resources to filter</param>
+		/// <returns></returns>
+		ICollection<ResourceDTO> GetFilteredOtherWorkspaceResources(IReadOnlyCollection<ResourceDTO> inWorkspaceResources);
 
         /// <summary>
         /// Get a collection of ModelView objects for BOEs that are potential candidates for Workoffline export.
