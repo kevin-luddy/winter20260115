@@ -684,7 +684,8 @@ namespace GenBOE
                                                                                                                               new ResolvedParameter(typeof(ContractTypeLoader)),
                                                                                                                               new ResolvedParameter(typeof(WorkspaceExporter)),
                                                                                                                               new ResolvedParameter(typeof(IMoqTypeDataLoader)),
-																															  new ResolvedParameter(typeof(IBOEStateMachine))));
+																															  new ResolvedParameter(typeof(IBOEStateMachine)),
+																															  new ResolvedParameter(typeof(IBoeMediator))));
 
                     GenBOEUnityContainer.Container.RegisterType(typeof(IAdminControllerLogic), typeof(AdminControllerLogicMST), GetLifetimeManager(), new InjectionConstructor(
                                                                                                                               new ResolvedParameter(typeof(ICommonDataMapper)),
@@ -723,7 +724,8 @@ namespace GenBOE
                                                                                                                               new ResolvedParameter(typeof(ContractTypeLoader)),
                                                                                                                               new ResolvedParameter(typeof(WorkspaceExporter)),
                                                                                                                               new ResolvedParameter(typeof(IMoqTypeDataLoader)),
-																															  new ResolvedParameter(typeof(IBOEStateMachine))));
+																															  new ResolvedParameter(typeof(IBOEStateMachine)),
+																															  new ResolvedParameter(typeof(IBoeMediator))));
 
                     GenBOEUnityContainer.Container.RegisterType(typeof(IHomeControllerLogic), typeof(HomeControllerLogicSpaceSystems), GetLifetimeManager(), new InjectionConstructor(
                                                                                                                               new ResolvedParameter(typeof(IActiveDirectoryUtilities))

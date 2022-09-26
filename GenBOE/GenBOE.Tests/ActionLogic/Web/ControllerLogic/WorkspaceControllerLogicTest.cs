@@ -97,6 +97,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this.contractTypeLoader.Object,
                 null, 
                 null,
+				null,
 				null);
         }
 
@@ -128,6 +129,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this.contractTypeLoader.Object,
                 null,
                 null,
+				null,
 				null);
         }
 

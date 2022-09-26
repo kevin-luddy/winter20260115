@@ -15,6 +15,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 	using System.Transactions;
 	using System.Web.Configuration;
 	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common;
 	using GenBOE.ActionLogic.Common.Calculations;
@@ -55,14 +56,16 @@ namespace GenBOE.ActionLogic.ControllerLogic
         private readonly IPickListMapper boePickListMapper;
         private readonly IPickListMapper ptmPickListMapper;
         private readonly IMoqTypeDataLoader moqTypeLoader;
+		private readonly IBoeMediator boeMediator;
 
 		/// <summary>
 		/// Boe State Machine
 		/// </summary>
 		private readonly IBOEStateMachine boeStateMachine;
 
-
-
+		/// <summary>
+		/// Permission Loader
+		/// </summary>
 		private IPermissionsDTODataLoader PermissionLoader { get; }
 
         /// <summary>
@@ -119,7 +122,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="inTMResourceRateDTODataLoader">The in tm resource rate dto data loader.</param>
         /// <param name="inBoeTaskElementRecalc">The boe task element recalc.</param>
         /// <param name="inUseDataLoader">The use data loader.</param>
-        /// <param name="retriever">The retriever.</param>
         /// <param name="factory">The factory.</param>
         /// <param name="inCommonDataMapper">The common data mapper.</param>
         /// <param name="inPermissionLoader">The permission loader.</param>
@@ -136,6 +138,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
         /// <param name="workspaceExporter">WS Exporter</param>
         /// <param name="moqTypeLoader">Moq Type Loader</param>
 		/// <param name="boeStateMachine">Boe State Machine</param>
+		/// <param name="boeMediator">The BOE Mediator</param>
         protected WorkspaceControllerLogic(
             IWorkspaceDTODataLoader workspaceLoader,
             IUserDTODataLoader inuserLoader,
@@ -155,7 +158,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             ContractTypeLoader contractTypeLoader,
             WorkspaceExporter workspaceExporter,
             IMoqTypeDataLoader moqTypeLoader,
-			IBOEStateMachine boeStateMachine)
+			IBOEStateMachine boeStateMachine,
+			IBoeMediator boeMediator)
         {
             this.WorkspaceLoader = workspaceLoader;
             this.UserLoader = inuserLoader;
@@ -179,7 +183,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
             this.workspaceExporter = workspaceExporter;
             this.moqTypeLoader = moqTypeLoader;
 			this.boeStateMachine = boeStateMachine;
-        }
+			this.boeMediator = boeMediator;
+
+		}
 
         #endregion
 
@@ -2313,7 +2319,26 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 				foreach (FullBoe boe in updatedBoes)
 				{
-					this.boeStateMachine.PerformStateTransitionAction(boe, ws, boe.State, BOEState.Draft);
+					FullBoe readjustBoe = this.factory.CreateFullBoe(boe);
+					BOEState oldBOEState = readjustBoe.State;
+					BOEState newBOEState = BOEState.Draft;
+
+					// Validate the Awaiting Approval or Approved to Draft state transition
+					string validationMessage;
+					if (!this.boeStateMachine.PerformStateTransitionValidation(readjustBoe, ws, readjustBoe.State, newBOEState, out validationMessage))
+					{
+						// not valid ... communicate to user
+						throw new ValidationException(validationMessage);
+					}
+
+					// If the transition is valid, set the BOE to Draft and save it
+					readjustBoe.Updateable = UpdateType.Upsert;
+					readjustBoe.State = newBOEState;
+					readjustBoe.UpdatedByUserId = ws.CurrentActiveUser.UserID;
+					this.boeMediator.MediatedSave(ws, readjustBoe);
+
+					// Perform common state transition actions
+					this.boeStateMachine.PerformStateTransitionAction(readjustBoe, ws, oldBOEState, readjustBoe.State);
 				}
 
 				ws.RefreshBoes();

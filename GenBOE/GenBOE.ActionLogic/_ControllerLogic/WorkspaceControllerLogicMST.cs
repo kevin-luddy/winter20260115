@@ -10,6 +10,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+	using GenBOE.ActionLogic.BLL;
 	using GenBOE.ActionLogic.BOETransitions;
 	using GenBOE.ActionLogic.Common;
     using GenBOE.ActionLogic.Common.Calculations;
@@ -90,7 +91,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
             ContractTypeLoader contractTypeLoader,
             WorkspaceExporter workspaceExporter,
             IMoqTypeDataLoader moqTypeLoader,
-			IBOEStateMachine boeStateMachine
+			IBOEStateMachine boeStateMachine,
+			IBoeMediator boeMediator
 			)
             : base(
                 workspaceLoader,
@@ -114,7 +116,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 contractTypeLoader,
                 workspaceExporter,
                 moqTypeLoader,
-				boeStateMachine
+				boeStateMachine,
+				boeMediator
 		)
         {
             this.zoneTravelRatesFeesLoader = zoneTravelRatesFeesLoader;
