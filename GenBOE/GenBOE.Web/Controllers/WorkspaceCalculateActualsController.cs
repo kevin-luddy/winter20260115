@@ -25,11 +25,11 @@ namespace GenBOE.Web.Controllers
 	/// Workspace Actuals Controller
 	/// </summary>
 	public class WorkspaceCalculateActualsController : GenBOEController
-    {
+	{
 		/// <summary>
 		/// logger
 		/// </summary>
-        private readonly Logger _log = new Logger(typeof(WBSController));
+		private readonly Logger _log = new Logger(typeof(WBSController));
 
 		/// <summary>
 		/// Workspace controller logic
@@ -40,41 +40,41 @@ namespace GenBOE.Web.Controllers
 		/// Constructor
 		/// </summary>
 		public WorkspaceCalculateActualsController(ISecurityAccess inSecurityAccess,
-            CommonDataMapper inCommonDataMapper,
-            SiteMasterUtilities inSiteMasterUtilities,
-            SystemMetrics inSystemMetrics,
-            IFullObjectFactory factory,
-            IUserDTODataLoader userLoader,
-            IPermissionsDTODataLoader permissionLoader,
-            IGenBOEControllerLogic inControllerLogic,
+			CommonDataMapper inCommonDataMapper,
+			SiteMasterUtilities inSiteMasterUtilities,
+			SystemMetrics inSystemMetrics,
+			IFullObjectFactory factory,
+			IUserDTODataLoader userLoader,
+			IPermissionsDTODataLoader permissionLoader,
+			IGenBOEControllerLogic inControllerLogic,
 			IWorkspaceControllerLogic workspaceControllerLogic
-            )
-            : base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, userLoader, permissionLoader, inControllerLogic)
-        {
+			)
+			: base(inSecurityAccess, inCommonDataMapper, inSiteMasterUtilities, inSystemMetrics, factory, userLoader, permissionLoader, inControllerLogic)
+		{
 			this.workspaceControllerLogic = workspaceControllerLogic;
 		}
 
-        /// <summary>
-        /// Returns the WorkspaceCalculateActuals view
-        /// </summary>
-        /// <param name="workspace"></param>
-        /// <returns>Main page for workspace calculate actuals</returns>
-        public ViewResult Index(string workspace)
-        {
-            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
+		/// <summary>
+		/// Returns the WorkspaceCalculateActuals view
+		/// </summary>
+		/// <param name="workspace"></param>
+		/// <returns>Main page for workspace calculate actuals</returns>
+		public ViewResult Index(string workspace)
+		{
+			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
-            // Initialize Action
-            Stopwatch sw = InitializeAction(_log, "Index", SecurityPage.WorkspaceCalculateActuals, SecurityAuthorization.ReadUpdate, ws, null);
+			// Initialize Action
+			Stopwatch sw = InitializeAction(_log, "Index", SecurityPage.WorkspaceCalculateActuals, SecurityAuthorization.ReadUpdate, ws, null);
 
-            ViewData["WorkspaceID"] = ws.Id;
+			ViewData["WorkspaceID"] = ws.Id;
 
-            // Perform Action
-            ViewResult toReturn = GetMasterView(WebConstants.VIEW_INDEX, workspace);
+			// Perform Action
+			ViewResult toReturn = GetMasterView(WebConstants.VIEW_INDEX, workspace);
 
-            // Finalize Action
-            FinalizeAction(_log, "Index", sw);
-            return toReturn;
-        }
+			// Finalize Action
+			FinalizeAction(_log, "Index", sw);
+			return toReturn;
+		}
 
 		#region Display
 
@@ -91,7 +91,7 @@ namespace GenBOE.Web.Controllers
 			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_WORKSPACE_CALCULATE_ACTUALS_MODEL, SecurityPage.WorkspaceCalculateActuals, SecurityAuthorization.ReadUpdate, ws, null);
 
 			ICollection<WorkspaceCalculateActualsModelView> actuals = await this.workspaceControllerLogic.CalculateActuals(ws);
-			
+
 			// Finalize Action
 			FinalizeAction(_log, WebConstants.ACTION_GET_WORKSPACE_CALCULATE_ACTUALS_MODEL, sw);
 
