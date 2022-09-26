@@ -19,8 +19,7 @@
     $scope.isExporting = false;
     // Calculate Actuals can be done when workspace state is Working
 	$scope.isWorkingState = WorkspaceCalculateActualsModel.workspaceState === 'Working';
-	$scope.isWorkspaceLocked = WorkspaceCalculateActualsModel.workspaceState === 'Locked';
-
+	
     $scope.data = [];
     $scope.isLoading = true;
 
