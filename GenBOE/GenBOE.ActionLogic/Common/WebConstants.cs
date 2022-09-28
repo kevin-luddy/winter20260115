@@ -134,7 +134,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string CONTROLLER_REPORTS = "Reports";
         public static readonly string CONTROLLER_WBS = "WBS";
         public static readonly string CONTROLLER_WORKSPACE = "Workspace";
-		public static readonly string CONTROLLER_WORKSPACE_CALCULATE_ACTUALS = "WorkspaceCalculateActuals";
+		public static readonly string CONTROLLER_WORKSPACE_RECALCULATE_ACTUALS = "WorkspaceRecalculateActuals";
 		public static readonly string CONTROLLER_FIND_REPLACE = "FindReplace";
         public static readonly string CONTROLLER_BOE_OTHER_DIRECT_COST = "BOEOtherDirectCost";
         public static readonly string CONTROLLER_BOE_MATERIAL = "BOEMaterial";
@@ -680,7 +680,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_GET_MANAGE_WBS_MODEL = "GetManageWBSGridModel";
         public static readonly string ACTION_GET_MANAGE_BOE_MODEL = "GetManageBOEGridModel";
         public static readonly string ACTION_FIND_ADJACENT_BOES = "FindAdjacentBoes";
-		public static readonly string ACTION_GET_WORKSPACE_CALCULATE_ACTUALS_MODEL = "GetWorkspaceCalculateActualsModel";
+		public static readonly string ACTION_GET_WORKSPACE_RECALCULATE_ACTUALS_MODEL = "GetWorkspaceRecalculateActualsModel";
 
 		#endregion Workspace
 

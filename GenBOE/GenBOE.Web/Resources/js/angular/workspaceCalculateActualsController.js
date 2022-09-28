@@ -49,9 +49,11 @@
 		const compareValue = $scope.searchText.toLowerCase();
 		
 		// filter based on search term
-		if ((data.BoeTitle && data.BoeTitle.toLowerCase().indexOf(compareValue) !== -1) ||
+		if (compareValue === undefined || compareValue === '' ||
+			(data.BoeTitle && data.BoeTitle.toLowerCase().indexOf(compareValue) !== -1) ||
 			(data.BoePrevState && data.BoePrevState.toLowerCase().indexOf(compareValue) !== -1) ||
-			(data.BoeState && data.BoeState.toLowerCase().indexOf(compareValue) !== -1)) {
+			(data.TableName && data.TableName.toLowerCase().indexOf(compareValue) !== -1) ||
+			(data.Task && data.Task.toLowerCase().indexOf(compareValue) !== -1)) {
 			return true;
 		}
 
@@ -94,8 +96,7 @@
 			url: CreatePostURL(WorkspaceCalculateActualsModel.workspace, WorkspaceCalculateActualsModel.controller, WorkspaceCalculateActualsModel.action, '')
         }).then(function (response) {
 
-			// TODO
-            // $scope.data = response.data.WbsResults;
+			$scope.data = response.data;
 
 			$scope.isLoading = false;
             

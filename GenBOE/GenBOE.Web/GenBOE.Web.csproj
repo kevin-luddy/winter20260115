@@ -234,7 +234,7 @@
     <Compile Include="Common\StringNonPrintableCharRemovalModelBinder.cs" />
     <Compile Include="Common\WorkspaceIdentificationModelBinder.cs" />
     <Compile Include="Controllers\BoeDataBaseAPIController.cs" />
-    <Compile Include="Controllers\WorkspaceCalculateActualsController.cs" />
+    <Compile Include="Controllers\WorkspaceRecalculateActualsController.cs" />
     <Compile Include="ModelView\AcvWorkspaceData.cs" />
     <Compile Include="Controllers\BOEBulkSubmitController.cs" />
     <Compile Include="Controllers\BOEFormController.cs" />
@@ -902,7 +902,7 @@
     <Content Include="Views\Reports\ValidateAllBOEReport.ascx" />
     <Content Include="Views\RTETemplates\ManageRTETemplates.aspx" />
     <Content Include="Views\Shared\RteTemplate.ascx" />
-    <Content Include="Views\WorkspaceCalculateActuals\Index.aspx" />
+    <Content Include="Views\WorkspaceRecalculateActuals\Index.aspx" />
     <Content Include="Views\Workspace\AddWorkspaceResourceRateTM.ascx" />
     <Content Include="Views\Workspace\CreateWorkspaceDiv.ascx" />
     <Content Include="Views\Workspace\DiscreteWorkspaceVariables.ascx" />

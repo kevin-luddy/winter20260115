@@ -132,7 +132,7 @@ namespace IES.Common
         GettingStartedMenuOption = 72,
         WorkspaceSettingsShareAndAllowSearch = 73,
         RTETemplates = 74,
-		WorkspaceCalculateActuals = 75
+		WorkspaceRecalculateActuals = 75
     }
 
     /// <summary>

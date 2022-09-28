@@ -177,12 +177,12 @@ namespace GenBOE.ActionLogic.ModelView
                             routeName = WebConstants.ROUTE_WORKSPACE
                         },
 						 new GenBOEMasterMenuItemModelView {
-							linkText = "Calculate Actuals",
+							linkText = "Recalculate Actuals",
 							actionName = WebConstants.ACTION_INDEX,
-							controllerName = WebConstants.CONTROLLER_WORKSPACE_CALCULATE_ACTUALS,
+							controllerName = WebConstants.CONTROLLER_WORKSPACE_RECALCULATE_ACTUALS,
 							routeValues = new { workspace = ws.Shortname },
 							htmlAttributes = new { name = "CalculateActualsMenuLink" },
-							securityPage = SecurityPage.WorkspaceCalculateActuals,
+							securityPage = SecurityPage.WorkspaceRecalculateActuals,
 							routeName = WebConstants.ROUTE_WORKSPACE
 						},
                         new GenBOEMasterMenuItemModelView {

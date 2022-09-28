@@ -96,7 +96,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this.ptmPickListMapper.Object,
                 this.contractTypeLoader.Object,
                 null, 
-                null);
+                null,
+				null,
+				null);
         }
 
         private WorkspaceControllerLogicMST CreateSystemMST()
@@ -126,7 +128,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this.ptmPickListMapper.Object,
                 this.contractTypeLoader.Object,
                 null,
-                null);
+                null,
+				null,
+				null);
         }
 
         /// <summary>
