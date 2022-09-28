@@ -2213,7 +2213,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		}
 
 		/// <summary>
-		/// Calculates (SAP) Actuals over a Workspace
+		/// Calculates (SAP) Actuals for MOQ Types inside a Workspace, then saves the changes to the database, 
+		/// and sets BOE State to Draft and sends out emails (if BOE State needed changed)
 		/// </summary>
 		/// <param name="ws">The workspace</param>
 		/// <returns>Updated list of Calculated Actuals model views</returns>
@@ -2308,6 +2309,29 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					}
 				}
 
+				SaveRecalculateActuals(ws, boes, moqTypesToSave, boesUpdated);
+			}
+
+			// Reorder and reset the Order property on the results
+			result = result.OrderBy(r => r.BoeTitle).ThenBy(t => t.Task).ThenBy(o => o.Order).ToList();
+			int order = 0;
+			result.ForEach(r => r.Order = order++);
+
+			return result;
+		}
+
+		/// <summary>
+		/// Saves the output from Recalculating the Actuals on MOQ Types for a Workspace
+		/// </summary>
+		/// <param name="ws">The workspace</param>
+		/// <param name="boes">Dictionary of BOEs for a Workspace keyed by BoeId</param>
+		/// <param name="moqTypesToSave">The Moq Types to save</param>
+		/// <param name="boesUpdated">The list of BOE Ids that were updated</param>
+		/// <exception cref="ValidationException">Thrown when a BOE tries to move to an invalid BOE State</exception>
+		private void SaveRecalculateActuals(FullWorkspace ws, Dictionary<int, FullBoe> boes, List<MoqTypeSelection> moqTypesToSave, List<int> boesUpdated)
+		{
+			using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, ConfigurationUtilities.GetAppSetting<int>("TransactionTimeout", Constants.DB_TRANSACTION_SCOPE_TIMEOUT_SECONDS_DEFAULT)) }))
+			{
 				// Save the moq types (updated hours and report date)
 				this.moqTypeLoader.Save(moqTypesToSave);
 
@@ -2338,16 +2362,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					// Perform common state transition actions
 					this.boeStateMachine.PerformStateTransitionAction(readjustBoe, ws, oldBOEState, readjustBoe.State);
 				}
-
-				ws.RefreshBoes();
 			}
 
-			// Reorder and reset the Order property on the results
-			result = result.OrderBy(r => r.BoeTitle).ThenBy(t => t.Task).ThenBy(o => o.Order).ToList();
-			int order = 0;
-			result.ForEach(r => r.Order = order++);
-
-			return result;
+			ws.RefreshBoes();
 		}
 
 		/// <summary>
