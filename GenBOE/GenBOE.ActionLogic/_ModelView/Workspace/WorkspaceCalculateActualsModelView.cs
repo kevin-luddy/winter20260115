@@ -4,10 +4,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Collections.Generic;
-
 namespace GenBOE.ActionLogic.ModelView.Workspace
 {
+	using System.Collections.Generic;
 
 	/// <summary>
 	/// Workspace Calculate Actuals Model View

@@ -184,7 +184,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			this.moqTypeLoader = moqTypeLoader;
 			this.boeStateMachine = boeStateMachine;
 			this.boeMediator = boeMediator;
-
 		}
 
 		#endregion
@@ -2306,7 +2305,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
 					{
 						resultModel.Messages = response.Messages;
 						result.Add(resultModel);
-
 					}
 				}
 
