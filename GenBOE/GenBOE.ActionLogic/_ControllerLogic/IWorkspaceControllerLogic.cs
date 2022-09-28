@@ -80,7 +80,7 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// <param name="ws">The workspace</param>
 		/// <returns>Updated list of Calculated Actuals model views</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-		Task<ICollection<WorkspaceCalculateActualsModelView>> CalculateActuals(FullWorkspace ws);
+		Task<ICollection<WorkspaceCalculateActualsModelView>> RecalculateActuals(FullWorkspace ws);
 
 		/// <summary>
 		/// Gets a filtered list of Resources

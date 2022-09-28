@@ -22,9 +22,9 @@ namespace GenBOE.Web.Controllers
 	using IES.Common;
 
 	/// <summary>
-	/// Workspace Actuals Controller
+	/// Workspace Recalculate Actuals Controller
 	/// </summary>
-	public class WorkspaceCalculateActualsController : GenBOEController
+	public class WorkspaceRecalculateActualsController : GenBOEController
 	{
 		/// <summary>
 		/// logger
@@ -39,7 +39,7 @@ namespace GenBOE.Web.Controllers
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		public WorkspaceCalculateActualsController(ISecurityAccess inSecurityAccess,
+		public WorkspaceRecalculateActualsController(ISecurityAccess inSecurityAccess,
 			CommonDataMapper inCommonDataMapper,
 			SiteMasterUtilities inSiteMasterUtilities,
 			SystemMetrics inSystemMetrics,
@@ -55,16 +55,16 @@ namespace GenBOE.Web.Controllers
 		}
 
 		/// <summary>
-		/// Returns the WorkspaceCalculateActuals view
+		/// Returns the WorkspaceRecalculateActuals view
 		/// </summary>
 		/// <param name="workspace"></param>
-		/// <returns>Main page for workspace calculate actuals</returns>
+		/// <returns>Main page for workspace recalculate actuals</returns>
 		public ViewResult Index(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, "Index", SecurityPage.WorkspaceCalculateActuals, SecurityAuthorization.ReadUpdate, ws, null);
+			Stopwatch sw = InitializeAction(_log, "Index", SecurityPage.WorkspaceRecalculateActuals, SecurityAuthorization.ReadUpdate, ws, null);
 
 			ViewData["WorkspaceID"] = ws.Id;
 
@@ -79,21 +79,21 @@ namespace GenBOE.Web.Controllers
 		#region Display
 
 		/// <summary>
-		/// Get the Workspace Calculate Actuals Model for grid
+		/// Get the Workspace Recalculate Actuals Model for grid
 		/// </summary>
 		/// <param name="workspace">the workspace</param>
 		/// <returns>The MV for the Workspace Calculate Actuals grid</returns>
-		public async Task<JsonResult> GetWorkspaceCalculateActualsModel(string workspace)
+		public async Task<JsonResult> GetWorkspaceRecalculateActualsModel(string workspace)
 		{
 			FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
 
 			// Initialize Action
-			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_WORKSPACE_CALCULATE_ACTUALS_MODEL, SecurityPage.WorkspaceCalculateActuals, SecurityAuthorization.ReadUpdate, ws, null);
+			Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_GET_WORKSPACE_RECALCULATE_ACTUALS_MODEL, SecurityPage.WorkspaceRecalculateActuals, SecurityAuthorization.ReadUpdate, ws, null);
 
-			ICollection<WorkspaceCalculateActualsModelView> actuals = await this.workspaceControllerLogic.CalculateActuals(ws);
+			ICollection<WorkspaceCalculateActualsModelView> actuals = await this.workspaceControllerLogic.RecalculateActuals(ws);
 
 			// Finalize Action
-			FinalizeAction(_log, WebConstants.ACTION_GET_WORKSPACE_CALCULATE_ACTUALS_MODEL, sw);
+			FinalizeAction(_log, WebConstants.ACTION_GET_WORKSPACE_RECALCULATE_ACTUALS_MODEL, sw);
 
 			return this.Json(actuals);
 		}

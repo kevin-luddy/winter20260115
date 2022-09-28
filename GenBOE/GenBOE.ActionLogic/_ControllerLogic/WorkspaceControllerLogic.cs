@@ -2218,17 +2218,15 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		/// </summary>
 		/// <param name="ws">The workspace</param>
 		/// <returns>Updated list of Calculated Actuals model views</returns>
-		public async Task<ICollection<WorkspaceCalculateActualsModelView>> CalculateActuals(FullWorkspace ws)
+		public async Task<ICollection<WorkspaceCalculateActualsModelView>> RecalculateActuals(FullWorkspace ws)
 		{
 			List<WorkspaceCalculateActualsModelView> result = new List<WorkspaceCalculateActualsModelView>();
 
 			Dictionary<int, FullBoe> boes = ws.Boes.ToDictionary(b => b.Id);
-			Dictionary<int, string> tasks = ws.TaskElements.ToDictionary(t => t.Id, x => x.TaskTitle);
 			Dictionary<int, MoqTableData> tables = new Dictionary<int, MoqTableData>();
 			Dictionary<int, MoqTypeSelection> tableIdToMoqType = new Dictionary<int, MoqTypeSelection>();
-			IReadOnlyCollection<MoqTypeSelection> moqTypeSelections = ws.MoqTypeSelections;
 			List<MoqTypeSelection> moqTypesToSave = new List<MoqTypeSelection>();
-			foreach (MoqTypeSelection moqType in moqTypeSelections)
+			foreach (MoqTypeSelection moqType in ws.MoqTypeSelections)
 			{
 				if ((moqType.SelectedMOQType == MOQType.Historical || moqType.SelectedMOQType == MOQType.Comparative) &&
 					moqType.TableData != null && moqType.TableData.Any())
@@ -2246,69 +2244,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 			if (tables.Any())
 			{
-				ICollection<MoqTableDataModelView> tableData = tables.Values.Select(t =>
-					new MoqTableDataModelView()
-					{
-						Filters = t.AdditionalQueryFilters,
-						PoPStart = t.PoPStart,
-						PoPEnd = t.PoPEnd,
-						TableId = t.Id,
-						WbsElement = t.WbsElement
-					}
-				).ToList();
-
-				// Make one bulk call to SAP
-				ICollection<IESResponse<CalculateActualsViewModel>> responses = await this.boeLaborControllerLogic.CalculateAllActualsSap(tableData);
-
-				List<int> boesUpdated = new List<int>();
-
-				foreach (IESResponse<CalculateActualsViewModel> response in responses)
-				{
-					WorkspaceCalculateActualsModelView resultModel = new WorkspaceCalculateActualsModelView();
-					CalculateActualsViewModel model = response.Data.First();
-
-					// get the original table and moqType
-					MoqTableData table = tables[model.TableId];
-					MoqTypeSelection moqType = tableIdToMoqType[model.TableId];
-					FullBoe boe = boes[moqType.BoeId];
-
-					resultModel.TableName = table.TableName;
-					resultModel.WbsHoursPrevious = table.TotalWbsHours;
-					resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
-					resultModel.BoeStatePrevious = boe.State.GetDescription();
-					resultModel.BoeTitle = boe.Title;
-					resultModel.Task = tasks[moqType.TaskId];
-					resultModel.Order = table.Order;
-					resultModel.IsSuccessful = response.IsSuccessful;
-
-					if (response.IsSuccessful)
-					{
-						if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
-						{
-							resultModel.WbsHoursPrevious = table.TotalWbsHours;
-							table.TotalWbsHours = model.WbsHours.HasValue ? Convert.ToDecimal(model.WbsHours.Value) : default(decimal);
-							resultModel.WbsHours = table.TotalWbsHours;
-						}
-
-						resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
-						table.DateOfReport = DateTime.Now;
-						table.TotalRelevantHours = Convert.ToDecimal(model.TotalHours);
-						resultModel.TotalRelevantHours = table.TotalRelevantHours;
-
-						// only return to UI if Total Relevant Hours changes
-						if (resultModel.TotalRelevantHours != resultModel.TotalRelevantHoursPrevious)
-						{
-							result.Add(resultModel);
-							boesUpdated.Add(moqType.BoeId);
-						}
-					}
-					else
-					{
-						resultModel.Messages = response.Messages;
-						result.Add(resultModel);
-					}
-				}
-
+				Dictionary<int, string> tasks = ws.TaskElements.ToDictionary(t => t.Id, x => x.TaskTitle);
+				List<int> boesUpdated = await RecalculateActualsAcrossWorkspace(result, boes, tasks, tables, tableIdToMoqType);
 				SaveRecalculateActuals(ws, boes, moqTypesToSave, boesUpdated);
 			}
 
@@ -2318,6 +2255,83 @@ namespace GenBOE.ActionLogic.ControllerLogic
 			result.ForEach(r => r.Order = order++);
 
 			return result;
+		}
+
+		/// <summary>
+		/// Recalculates the SAP Actuals across a Workspace, and finds any BOEs that were updated
+		/// </summary>
+		/// <param name="result">The list of Models that were updated</param>
+		/// <param name="boes">Dictionary of BOEs</param>
+		/// <param name="tasks">Dictionary of Tasks</param>
+		/// <param name="tables">Dictionary of MOQ Tables</param>
+		/// <param name="tableIdToMoqType">Dictionary of MOQ Types keyed by Table Id</param>
+		/// <returns></returns>
+		private async Task<List<int>> RecalculateActualsAcrossWorkspace(List<WorkspaceCalculateActualsModelView> result, Dictionary<int, FullBoe> boes, Dictionary<int, string> tasks, Dictionary<int, MoqTableData> tables, Dictionary<int, MoqTypeSelection> tableIdToMoqType)
+		{
+			ICollection<MoqTableDataModelView> tableData = tables.Values.Select(t =>
+								new MoqTableDataModelView()
+								{
+									Filters = t.AdditionalQueryFilters,
+									PoPStart = t.PoPStart,
+									PoPEnd = t.PoPEnd,
+									TableId = t.Id,
+									WbsElement = t.WbsElement
+								}
+							).ToList();
+
+			// Make one bulk call to SAP
+			ICollection<IESResponse<CalculateActualsViewModel>> responses = await this.boeLaborControllerLogic.CalculateAllActualsSap(tableData);
+
+			List<int> boesUpdated = new List<int>();
+
+			foreach (IESResponse<CalculateActualsViewModel> response in responses)
+			{
+				WorkspaceCalculateActualsModelView resultModel = new WorkspaceCalculateActualsModelView();
+				CalculateActualsViewModel model = response.Data.First();
+
+				// get the original table and moqType
+				MoqTableData table = tables[model.TableId];
+				MoqTypeSelection moqType = tableIdToMoqType[model.TableId];
+				FullBoe boe = boes[moqType.BoeId];
+
+				resultModel.TableName = table.TableName;
+				resultModel.WbsHoursPrevious = table.TotalWbsHours;
+				resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
+				resultModel.BoeStatePrevious = boe.State.GetDescription();
+				resultModel.BoeTitle = boe.Title;
+				resultModel.Task = tasks[moqType.TaskId];
+				resultModel.Order = table.Order;
+				resultModel.IsSuccessful = response.IsSuccessful;
+
+				if (response.IsSuccessful)
+				{
+					if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST)
+					{
+						resultModel.WbsHoursPrevious = table.TotalWbsHours;
+						table.TotalWbsHours = model.WbsHours.HasValue ? Convert.ToDecimal(model.WbsHours.Value) : default(decimal);
+						resultModel.WbsHours = table.TotalWbsHours;
+					}
+
+					resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
+					table.DateOfReport = DateTime.Now;
+					table.TotalRelevantHours = Convert.ToDecimal(model.TotalHours);
+					resultModel.TotalRelevantHours = table.TotalRelevantHours;
+
+					// only return to UI if Total Relevant Hours changes
+					if (resultModel.TotalRelevantHours != resultModel.TotalRelevantHoursPrevious)
+					{
+						result.Add(resultModel);
+						boesUpdated.Add(moqType.BoeId);
+					}
+				}
+				else
+				{
+					resultModel.Messages = response.Messages;
+					result.Add(resultModel);
+				}
+			}
+
+			return boesUpdated;
 		}
 
 		/// <summary>

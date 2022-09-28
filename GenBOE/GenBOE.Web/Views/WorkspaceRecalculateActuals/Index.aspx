@@ -14,8 +14,8 @@
 <script type="text/javascript">
 	app.value('WorkspaceCalculateActualsModel', {
         workspace: '<%: SiteMasterUtilities.GetCurrentWorkspace() %>',
-        controller: '<%:WebConstants.CONTROLLER_WORKSPACE_CALCULATE_ACTUALS %>',
-        action: '<%:WebConstants.ACTION_GET_WORKSPACE_CALCULATE_ACTUALS_MODEL %>',
+        controller: '<%:WebConstants.CONTROLLER_WORKSPACE_RECALCULATE_ACTUALS %>',
+        action: '<%:WebConstants.ACTION_GET_WORKSPACE_RECALCULATE_ACTUALS_MODEL %>',
 		workspaceState: '<%: ((GenBOEMasterModelView)Model).WorkspaceState %>',
 		colSpan: <%: (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) ? 8 : 6 %>
      });

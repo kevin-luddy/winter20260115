@@ -155,7 +155,7 @@ namespace GenBOE.DataBridge.Common
                      new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
                      SecurityAuthorization.CreateReadUpdateDelete);
 
-			InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceCalculateActuals },
+			InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceRecalculateActuals },
 					 new WorkspaceState[] { WorkspaceState.Working },
 					 new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
 					 SecurityAuthorization.CreateReadUpdateDelete);
@@ -804,7 +804,7 @@ namespace GenBOE.DataBridge.Common
                 case SecurityPage.WorkspaceRestore:
                 case SecurityPage.GettingStartedMenuOption:
                 case SecurityPage.RTETemplates:
-				case SecurityPage.WorkspaceCalculateActuals:
+				case SecurityPage.WorkspaceRecalculateActuals:
 					wsRequired = true;
                     boeRequired = false;
                     break;
