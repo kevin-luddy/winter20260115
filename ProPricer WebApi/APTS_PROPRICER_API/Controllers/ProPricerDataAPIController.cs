@@ -187,12 +187,12 @@ namespace APTSPropricerApi.Controllers
                 .Select(x => new
                 {
                     Name = x.Name,
-                    CLIN = x.SummaryFields.First(y => y.Key == Constants.CLIN || y.Key == Constants.CLIN_NUMBER).Value,
-                    ClinDescription = x.SummaryFields.First(y => y.Key == Constants.CLIN_DESC || y.Key == Constants.CLIN_TITLE).Value,
-                    Cost = x.ResourceAssignments.SelectMany(y => y.BurdenCost.Where(z => z.Name == Constants.TOTAL_PRICE)).Sum(t => decimal.Parse(t.Value))
+                    CLIN = x.SummaryFields.First(y => y.Key?.ToUpper() == Constants.CLIN || y.Key?.ToUpper() == Constants.CLIN_NUMBER).Value ?? String.Empty,
+					ClinDescription = x.SummaryFields.First(y => y.Key?.ToUpper() == Constants.CLIN_DESC || y.Key?.ToUpper() == Constants.CLIN_TITLE)?.Value ?? String.Empty,
+					Cost = x.ResourceAssignments.SelectMany(y => y.BurdenCost.Where(z => z.Name == Constants.TOTAL_PRICE)).Sum(t => decimal.Parse(t.Value))
                 })
                 .GroupBy(x => x.CLIN)
-                .Select(t => new PricingLineItem { Name = t.Key, Description = t.First().ClinDescription, Sum = Math.Round(t.Sum(s => s.Cost), 2, MidpointRounding.AwayFromZero) })
+                .Select(t => new PricingLineItem { Name = t.Key, Description = t.FirstOrDefault()?.ClinDescription, Sum = Math.Round(t.Sum(s => s.Cost), 2, MidpointRounding.AwayFromZero) })
                 .OrderBy(x => x.Name)
                 .ToList();
 

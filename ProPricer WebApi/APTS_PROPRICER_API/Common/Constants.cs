@@ -134,6 +134,6 @@ namespace APTSPropricerApi
         /// <summary>
         /// Clin Title inside a Summary Field
         /// </summary>
-        public const string CLIN_TITLE = "CLIN Title";
+        public const string CLIN_TITLE = "CLIN TITLE";
     }
 }
