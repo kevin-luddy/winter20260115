@@ -2542,11 +2542,13 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, false, ws.DecimalPrecision, ws.CostDecimalPrecision)).Returns(tasks);
 			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(boes);
 			this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(ws.Id)).Returns(moqs);
+			this.retriever.Setup(x => x.GetCurrentActiveUser()).Returns(new UserDTO());
 			this._BOELaborControllerLogic.Setup(x => x.CalculateAllActualsSap(It.IsAny<ICollection<MoqTableDataModelView>>())).Returns(Task.FromResult(sapResponse));
 			this.factory.Setup(x => x.CreateFullBoe(boe1)).Returns(boe1);
 			this.factory.Setup(x => x.CreateFullBoe(boe2)).Returns(boe2);
-			this._boeStateMachine.Setup(x => x.PerformStateTransitionAction(boe1, It.IsAny<FullWorkspace>(), BOEState.Draft, BOEState.Draft));
-			this._boeStateMachine.Setup(x => x.PerformStateTransitionAction(boe2, It.IsAny<FullWorkspace>(), BOEState.AwaitingApproval, BOEState.Draft));
+			string validationMessage;
+			this._boeStateMachine.Setup(x => x.PerformStateTransitionValidation(boe1, It.IsAny<FullWorkspace>(), BOEState.Draft, BOEState.Draft, out validationMessage)).Returns(true);
+			this._boeStateMachine.Setup(x => x.PerformStateTransitionValidation(boe2, It.IsAny<FullWorkspace>(), BOEState.AwaitingApproval, BOEState.Draft, out validationMessage)).Returns(true);
 
 			ICollection<WorkspaceCalculateActualsModelView> models = await sut.RecalculateActuals(ws);
 
