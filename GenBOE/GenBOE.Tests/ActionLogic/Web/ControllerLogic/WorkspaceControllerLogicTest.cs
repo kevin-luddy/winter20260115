@@ -6,36 +6,36 @@
 
 namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Collections.ObjectModel;
-    using System.Linq;
-    using System.Web.Mvc;
-    using GenBOE.ActionLogic;
-    using GenBOE.ActionLogic.BLL;
-    using GenBOE.ActionLogic.BOETransitions;
-    using GenBOE.ActionLogic.Common;
-    using GenBOE.ActionLogic.Common.Calculations;
-    using GenBOE.ActionLogic.ControllerLogic;
-    using GenBOE.ActionLogic.IO.Import;
-    using GenBOE.ActionLogic.ModelView;
-    using GenBOE.ActionLogic.ModelView.Workspace;
-    using GenBOE.ActionLogic.Validation;
-    using GenBOE.DataBridge.Common;
-    using GenBOE.DataBridge.DTO;
-    using GenBOE.DataBridge.Reference;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common;
-    using IES.Common.classes;
-    using IES.Common.Exceptions;
-    using IES.Common.PickList;
-    using Microsoft.Practices.Unity;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Moq;
-    using UserDTO = GenBOE.Dtos.UserDTO;
+	using System;
+	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
+	using System.Linq;
+	using System.Threading.Tasks;
+	using GenBOE.ActionLogic;
+	using GenBOE.ActionLogic.BLL;
+	using GenBOE.ActionLogic.BOETransitions;
+	using GenBOE.ActionLogic.Common;
+	using GenBOE.ActionLogic.Common.Calculations;
+	using GenBOE.ActionLogic.ControllerLogic;
+	using GenBOE.ActionLogic.IO.Import;
+	using GenBOE.ActionLogic.ModelView;
+	using GenBOE.ActionLogic.ModelView.Workspace;
+	using GenBOE.ActionLogic.Validation;
+	using GenBOE.DataBridge.Common;
+	using GenBOE.DataBridge.DTO;
+	using GenBOE.DataBridge.Reference;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using IES.Common;
+	using IES.Common.classes;
+	using IES.Common.PickList;
+	using Microsoft.Practices.Unity;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
+	using Moq;
+	using UserDTO = GenBOE.Dtos.UserDTO;
+	using IESSAPClient = GenBOE.ActionLogic.IESSAPClient;
 
-    [TestClass]
+	[TestClass]
     public class WorkspaceControllerLogicTest : MOQObject
     {
         #region Private members
@@ -70,7 +70,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         private Mock<IPickListMapper> ptmPickListMapper;
         private Mock<IPickListMapper> boePickListMapper;
         private Mock<ContractTypeLoader> contractTypeLoader;
-        private Mock<IRteTemplateDataLoader> rteTemplateDataLoader;
+		private Mock<IMoqTypeDataLoader> moqTypeDataLoader;
 
         private WorkspaceControllerLogicSpaceSystems CreateSystemSpaceSystems()
         {
@@ -95,10 +95,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this.boePickListMapper.Object,
                 this.ptmPickListMapper.Object,
                 this.contractTypeLoader.Object,
-                null, 
                 null,
-				null,
-				null);
+				this.moqTypeDataLoader.Object,
+				this._boeStateMachine.Object,
+				this._BoeMediator.Object);
         }
 
         private WorkspaceControllerLogicMST CreateSystemMST()
@@ -128,10 +128,10 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
                 this.ptmPickListMapper.Object,
                 this.contractTypeLoader.Object,
                 null,
-                null,
-				null,
-				null);
-        }
+                this.moqTypeDataLoader.Object,
+				this._boeStateMachine.Object,
+				this._BoeMediator.Object);
+		}
 
         /// <summary>
         /// Sets up the common components of the system needed for tests
@@ -188,7 +188,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), this._permissionLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ValidationFactory), CreateValidationFactoryMock().Object);
 
-            this.rteTemplateDataLoader = new Mock<IRteTemplateDataLoader>();
+			this.moqTypeDataLoader = new Mock<IMoqTypeDataLoader>();
         }
 
         private void DoGetWorkspaceIdentificationTest(IWorkspaceControllerLogic sut, CompanyConfiguration config)
@@ -2356,7 +2356,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             };
 
             this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, false, ws.DecimalPrecision, ws.CostDecimalPrecision)).Returns(input);
-
+			
             ICollection<MoqTypeSelection> result = sut.GetMoqTypesDataForBoeTemplateSettingChange(ws);
 
             Assert.AreEqual(input[0].Id, result.ElementAt(0).TaskId);
@@ -2370,11 +2370,213 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             Assert.AreEqual(UpdateType.Upsert, result.ElementAt(1).Updateable);
         }
 
-        /// <summary>
-        /// Creates a mocked validation factory which returns all valid
-        /// </summary>
-        /// <returns>Mocked out validation factory</returns>
-        public Mock<ValidationFactory> CreateValidationFactoryMock()
+		/// <summary>
+		/// Test Recalculating SAP Actuals
+		/// </summary>
+		[TestMethod]
+		public async Task TestRecalculateActuals()
+		{
+			WorkspaceControllerLogicSpaceSystems sut = this.CreateSystemSpaceSystems();
+
+			FullWorkspace ws = new FullWorkspace() { Id = 101, CostDecimalPrecision = 0, ResourceDecimalPrecision = 0, CreationDate = DateTime.Now };
+
+			FullBoe boe1 = new FullBoe
+			{
+				Id = 1,
+				State = BOEState.Draft,
+				Title = "First Boe",
+			};
+
+			FullBoe boe2 = new FullBoe
+			{
+				Id = 2,
+				State = BOEState.AwaitingApproval,
+				Title = "Second Boe"
+			};
+
+			List<FullBoe> boes = new List<FullBoe>()
+			{
+				boe1,
+				boe2
+			};
+
+			BoeTaskElementDTO task1 = new BoeTaskElementDTO()
+			{
+				Id = 1,
+				BoeID = boe1.Id,
+				MOQType = MOQType.SSCActual,
+				MOQText = "Text 1"
+			};
+
+			BoeTaskElementDTO task2 = new BoeTaskElementDTO()
+			{
+				Id = 2,
+				BoeID = boe2.Id,
+				MOQType = MOQType.SSCBottomUp,
+				MOQText = "Text 2"
+			};
+
+			List<BoeTaskElementDTO> tasks = new List<BoeTaskElementDTO>()
+			{
+				task1,
+				task2	
+			};
+
+			List<MoqTypeSelection> moqs = new List<MoqTypeSelection>()
+			{
+				new MoqTypeSelection()
+				{
+					BoeId = boe1.Id,
+					TaskId = task1.Id,
+					Id = 1,
+					SelectedMOQType = MOQType.Historical,
+					TableData = new List<MoqTableData>
+					{
+						new MoqTableData()
+						{
+							TableName = "First table",
+							Id = 1,
+							DateOfReport = DateTime.Today.AddDays(-1),
+							TotalRelevantHours = 10
+						},
+						new MoqTableData()
+						{
+							TableName = "Second table",
+							Id = 2,
+							DateOfReport = DateTime.Today.AddDays(-1),
+							TotalRelevantHours = 15
+						}
+					}
+				},
+				new MoqTypeSelection()
+				{
+					BoeId = boe1.Id,
+					TaskId = task1.Id,
+					Id = 2,
+					SelectedMOQType = MOQType.Comparative,
+					TableData = new List<MoqTableData>
+					{
+						new MoqTableData()
+						{
+							TableName = "Third table",
+							Id = 3,
+							DateOfReport = DateTime.Today.AddDays(-1),
+							TotalRelevantHours = 20
+						}
+					}
+				},
+				new MoqTypeSelection()
+				{
+					BoeId = boe2.Id,
+					TaskId = task2.Id,
+					Id = 3,
+					SelectedMOQType = MOQType.Comparative,
+					TableData = new List<MoqTableData>
+					{
+						new MoqTableData()
+						{
+							TableName = "Fourth table",
+							Id = 4,
+							DateOfReport = DateTime.Today.AddDays(-1),
+							TotalRelevantHours = 25
+						}
+					}
+				}
+			};
+
+			ICollection<IESResponse<IESSAPClient.CalculateActualsViewModel>> sapResponse = new List<IESResponse<IESSAPClient.CalculateActualsViewModel>>
+			{
+				new IESResponse<IESSAPClient.CalculateActualsViewModel>
+				{
+					IsSuccessful = true,
+					Data = new List<IESSAPClient.CalculateActualsViewModel> ()
+					{
+						new IESSAPClient.CalculateActualsViewModel()
+						{
+							TableId = 1,
+							TotalHours = 30
+						}
+					}
+				},
+				new IESResponse<IESSAPClient.CalculateActualsViewModel>
+				{
+					IsSuccessful = false,
+					Data = new List<IESSAPClient.CalculateActualsViewModel> ()
+					{
+						new IESSAPClient.CalculateActualsViewModel()
+						{
+							TableId = 2
+						}
+					},
+					Messages = new List<string>()
+					{
+						"Error happened"
+					}
+				},
+				new IESResponse<IESSAPClient.CalculateActualsViewModel>
+				{
+					IsSuccessful = true,
+					Data = new List<IESSAPClient.CalculateActualsViewModel> ()
+					{
+						new IESSAPClient.CalculateActualsViewModel()
+						{
+							TableId = 3,
+							TotalHours = 20  // same total hours
+						}
+					}
+				},
+				new IESResponse<IESSAPClient.CalculateActualsViewModel>
+				{
+					IsSuccessful = true,
+					Data = new List<IESSAPClient.CalculateActualsViewModel> ()
+					{
+						new IESSAPClient.CalculateActualsViewModel()
+						{
+							TableId = 4,
+							TotalHours = 50
+						}
+					}
+				},
+			};
+
+			this.retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, false, ws.DecimalPrecision, ws.CostDecimalPrecision)).Returns(tasks);
+			this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(boes);
+			this.retriever.Setup(x => x.GetMoqTypeSelectionsByWorkspaceId(ws.Id)).Returns(moqs);
+			this.retriever.Setup(x => x.GetCurrentActiveUser()).Returns(new UserDTO());
+			this._BOELaborControllerLogic.Setup(x => x.CalculateAllActualsSap(It.IsAny<ICollection<MoqTableDataModelView>>())).Returns(Task.FromResult(sapResponse));
+			this.factory.Setup(x => x.CreateFullBoe(boe1)).Returns(boe1);
+			this.factory.Setup(x => x.CreateFullBoe(boe2)).Returns(boe2);
+			string validationMessage;
+			this._boeStateMachine.Setup(x => x.PerformStateTransitionValidation(boe1, It.IsAny<FullWorkspace>(), BOEState.Draft, BOEState.Draft, out validationMessage)).Returns(true);
+			this._boeStateMachine.Setup(x => x.PerformStateTransitionValidation(boe2, It.IsAny<FullWorkspace>(), BOEState.AwaitingApproval, BOEState.Draft, out validationMessage)).Returns(true);
+
+			ICollection<WorkspaceCalculateActualsModelView> models = await sut.RecalculateActuals(ws);
+
+			Assert.IsNotNull(models);
+			Assert.AreEqual(3, models.Count); // only getting 3 models because one had same hours as previous
+
+			WorkspaceCalculateActualsModelView first = models.First();
+			WorkspaceCalculateActualsModelView second = models.Skip(1).First();
+			WorkspaceCalculateActualsModelView fourth = models.Last(); // the fourth table
+
+			Assert.IsTrue(first.IsSuccessful);
+			Assert.IsFalse(second.IsSuccessful);
+			Assert.IsTrue(second.Messages.Any());
+			Assert.AreEqual(BOEState.Draft.GetDescription(), first.BoeStatePrevious);
+			Assert.AreEqual(BOEState.AwaitingApproval.GetDescription(), fourth.BoeStatePrevious);
+			Assert.AreEqual(30, first.TotalRelevantHours);
+			Assert.AreEqual(10, first.TotalRelevantHoursPrevious);
+			Assert.AreEqual(50, fourth.TotalRelevantHours);
+			Assert.AreEqual(25, fourth.TotalRelevantHoursPrevious);
+			Assert.AreEqual(BOEState.Draft, boe1.State);
+			Assert.AreEqual(BOEState.Draft, boe2.State);
+		}
+
+		/// <summary>
+		/// Creates a mocked validation factory which returns all valid
+		/// </summary>
+		/// <returns>Mocked out validation factory</returns>
+		public Mock<ValidationFactory> CreateValidationFactoryMock()
         {
             Mock<Validator> validator = new Mock<Validator>();
 
