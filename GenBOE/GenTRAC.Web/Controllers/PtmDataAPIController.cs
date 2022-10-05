@@ -73,9 +73,9 @@ namespace GenTRAC.Web.Controllers
         /// <returns>Proposal Data</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         [HttpGet]
-        public ICollection<AcvProposalData> GetProposalDataForCostVolume(string searchString)
+        public IESResponse<AcvProposalData> GetProposalDataForCostVolume(string searchString)
         {
-            List<AcvProposalData> result;
+            IESResponse<AcvProposalData> result = new IESResponse<AcvProposalData>();
 
             try
             {
@@ -83,12 +83,13 @@ namespace GenTRAC.Web.Controllers
 
                 bool isAdmin = this.securityAccess.CurrentUserHasRole(PtmRole.Admin, null);
                 ICollection<(string PtmTrackingNumber, string ProposalTitle, int ProposalId)> data = this.loader.GetCostVolumeProposalData(security.ActiveUserNTID, isAdmin, searchString);
-                result = data.Select(x => new AcvProposalData() { PtmTrackingNumber = x.PtmTrackingNumber, ProposalTitle = x.ProposalTitle, ProposalId = x.ProposalId }).ToList();
+                result.Data = data.Select(x => new AcvProposalData() { PtmTrackingNumber = x.PtmTrackingNumber, ProposalTitle = x.ProposalTitle, ProposalId = x.ProposalId }).ToList();
+                result.IsSuccessful = true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.Error(ex);
-                result = null;
+                result.Messages.Add($"Unknown error occurred returning Proposal data: {ex.Message}");
             }
 
             return result;
@@ -101,20 +102,21 @@ namespace GenTRAC.Web.Controllers
         /// <returns>Cover Sheet Data</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
         [HttpGet]
-        public CoverSheetDataDto GetCoverSheetData(int proposalId)
+        public IESResponse<CoverSheetDataDto> GetCoverSheetData(int proposalId)
         {
-            CoverSheetDataDto result = new CoverSheetDataDto();
+            IESResponse<CoverSheetDataDto> result = new IESResponse<CoverSheetDataDto>();
 
             try
             {
                 tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-                result = coverSheetLoader.GetCoverSheetDataById(proposalId);
+                result.Data.Add(coverSheetLoader.GetCoverSheetDataById(proposalId));
+                result.IsSuccessful = true;
             }
             catch (Exception ex)
             {
                 logger.Error(ex);
-                result = null;
+                result.Messages.Add($"Unknown error occurred returning Cover Sheet data: {ex.Message}");
             }
 
             return result;
