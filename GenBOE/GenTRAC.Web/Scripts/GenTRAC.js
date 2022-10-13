@@ -152,6 +152,9 @@ GenTRACUtilities.prototype.toggleTextBox = function (widget) {
         else if (e.target.id == 'ProposalLocation') {
             $('#ProposalLocationName').toggle((e.target.value) == 9);
         }
+        else if (e.target.id == 'CostVolumeTool') {
+            $('#CostVolumeToolName').toggle((e.target.value) == 3);
+        }
     });
 }
 

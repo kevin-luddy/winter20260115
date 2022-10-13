@@ -90,6 +90,11 @@ namespace GenTRAC.ActionLogic.Validation
             public const string BOE_TOOL_FORMAT_ERROR = GENERAL_INFO_VALIDATION + "BOE Tool must begin with an alphanumeric character.";
 
             /// <summary>
+            /// BOE Tool free text must start with an alphanumeric character.
+            /// </summary>
+            public const string COST_VOLUME_TOOL_FORMAT_ERROR = GENERAL_INFO_VALIDATION + "Cost Volume Tool must begin with an alphanumeric character.";
+
+            /// <summary>
             /// The certified cost pricing data is required on the Proposal tab.
             /// </summary>
             public const string CERTIFIED_COST_PRICING_DATA_REQUIRED = GENERAL_INFO_VALIDATION + "\"Is Certified Cost and Pricing Data Required?\" response is required.";
@@ -113,6 +118,11 @@ namespace GenTRAC.ActionLogic.Validation
             /// Response to "What BOE tool will be utilized?" is required
             /// </summary>
             public const string BOE_TOOL_REQUIRED = GENERAL_INFO_VALIDATION + "\"What BOE tool will be utilized?\" response is required.";
+
+            /// <summary>
+            /// Response to "What application will be used to prepare the Cost Volume?" is required
+            /// </summary>
+            public const string COST_VOLUME_TOOL_REQUIRED = GENERAL_INFO_VALIDATION + "\"What application will be used to prepare the Cost Volume?\" response is required.";
 
             #endregion Proposal General Info Section
 
@@ -206,7 +216,7 @@ namespace GenTRAC.ActionLogic.Validation
             /// anticipated delivery date for Forecasted too close to today's date. 
             /// </summary>
             public const string ANTICIPATED_DELIVERY_DATE_INVALID_FORECAST = PROPOSAL_INFO_VALDIATION + "Anticipated Delivery Date must be more than {0} days away for Forecasted Proposals.";
-            
+
             /// <summary>
             /// revised submittal date 
             /// </summary>

@@ -249,7 +249,7 @@ namespace GenTRAC.Tests.ActionLogic
             return new ProposalControllerLogic(this.securityAccess.Object, this.proposalLoader.Object, this.validationMethods.Object,
                 this.proposalMediator.Object, this.userMapper.Object, this.objectFactory.Object,
                 this.orgStructureDataMapper.Object, this.proposalPermissionMediator.Object, this.securityInformation.Object, this.cacheDataLoader.Object,
-                this.pickListMapper.Object, this.userLoader.Object, this.approvalsLoader.Object, this.proposalChecklistLoader.Object, 
+                this.pickListMapper.Object, this.userLoader.Object, this.approvalsLoader.Object, this.proposalChecklistLoader.Object,
                 this.checklistMediator.Object, this.workspaceLoader.Object, this.genBoePermissionsLoader.Object, this.ptmEmailer.Object);
         }
 
@@ -321,7 +321,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(proposalId, savedProposalId.Value);
             this.proposalPermissionMediator.Verify(x => x.SaveProposalPermissionDtos(It.IsAny<ICollection<ProposalPermissionDto>>()), Times.Once());
         }
-        
+
         /// <summary>
         /// Test Save New Proposal when saving a new Revision
         /// </summary>
@@ -448,7 +448,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             this.proposalLoader.Setup(x => x.IsProposalTitleUnique(It.IsAny<int>(), It.IsAny<string>())).Returns(true);
 
-            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), 
+            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(),
                 new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeId2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, new ProposalUserInformationModelView(), validationMessages, false);
 
             Assert.AreEqual(2, validationMessages.Count);
@@ -490,7 +490,7 @@ namespace GenTRAC.Tests.ActionLogic
                 ProgramArea = "1",
                 LineOfBusiness = "1"
             };
-                        
+
             // setup all 9 user ids
             string ntid = "myNtid";
             ProposalApprovalsModelView proposalApprovalsInfo = new ProposalApprovalsModelView()
@@ -611,7 +611,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ProposalValidationConstants.ANTICIPATED_DELIVERY_DATE_FORMAT)).Count());
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ProposalValidationConstants.RFP_ISSUED_DATE_FORMAT)).Count());
             Assert.AreEqual(1, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ProposalValidationConstants.RFP_RECEIVED_DATE_FORMAT)).Count());
-            
+
             validationMessages.Clear();
             sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeId2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId", IndependentReviewerNtid = "fakeId" }, new ProposalUserInformationModelView(), validationMessages, true);
             Assert.AreEqual(1, validationMessages.Count);
@@ -898,7 +898,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             Assert.AreEqual(0, validationMessages.Where(x => x.ValidationIssue.Contains(ValidationConstants.ProposalValidationConstants.LEAD_ESTIMATOR_AND_INDEPENDENT_REVIEWER_CANNOT_BE_SAME_PERSON)).Count());
         }
-        
+
         /// <summary>
         /// Tests IndepedentReviewer Validation
         /// </summary>
@@ -918,7 +918,7 @@ namespace GenTRAC.Tests.ActionLogic
             proposalApprovalsMV.IndependentReviewerNtid = string.Empty;
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, false);
             Assert.AreEqual(1, validationMessages.Count);
-            Assert.IsTrue( validationMessages.First().ValidationIssue.ContainsEquivalent("Independent Reviewer is Required") );
+            Assert.IsTrue(validationMessages.First().ValidationIssue.ContainsEquivalent("Independent Reviewer is Required"));
             validationMessages = new List<ValidationMessage>();
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, true);
             Assert.AreEqual(0, validationMessages.Count);
@@ -970,7 +970,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // CASE: Pricing verification not set
             proposalApprovalsMV.PricingVerificationNtid = string.Empty;
-            
+
             sut.ValidateProposal(proposalInfoVM, new ProposalGeneralInformationModelView(), proposalApprovalsMV, proposalUserInfoVM, validationMessages, false);
             Assert.AreEqual(1, validationMessages.Count);
             validationMessages = new List<ValidationMessage>();
@@ -1429,7 +1429,7 @@ namespace GenTRAC.Tests.ActionLogic
                 AdditionalPricingResource2Type = ResourceType.Strategist
             };
 
-           sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeId2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId" }, proposalUserInfo, validationMessages, true);
+            sut.ValidateProposal(proposalInfo, new ProposalGeneralInformationModelView(), new ProposalApprovalsModelView() { LeadEstimatorNtid = "fakeId2", CoverSheetApproverNtid = "fakeId", PricingVerificationNtid = "fakeId" }, proposalUserInfo, validationMessages, true);
 
             Assert.AreEqual(1, validationMessages.Count);
         }
@@ -1676,7 +1676,8 @@ namespace GenTRAC.Tests.ActionLogic
                 UpdateDate = DateTime.Now,
                 ProgramProposalStatus = ProgramProposalStatus.LMRetainedMST,
                 IsCCPDRequired = true,
-                IsCostVolumeClassified = false
+                IsCostVolumeClassified = false,
+                CostVolumeTool = CostVolumeTool.ACV
             };
 
             PickListDto lineOfBusiness = new PickListDto()
@@ -1749,6 +1750,8 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(proposal.ProgramProposalStatus, proposalGeneralInfo.ProgramProposalStatus);
             Assert.AreEqual(proposal.IsCCPDRequired, proposalGeneralInfo.IsCCPDRequired);
             Assert.AreEqual(proposal.IsCostVolumeClassified, proposalGeneralInfo.IsCostVolumeClassified);
+            Assert.AreEqual(proposal.CostVolumeTool, proposalGeneralInfo.CostVolumeTool);
+            Assert.IsTrue(string.IsNullOrEmpty(proposalGeneralInfo.CostVolumeToolName));
 
             Assert.AreEqual(lineOfBusiness.Text, proposalGeneralInfo.LineOfBusinessSelectedText);
             Assert.AreEqual(programArea.Text, proposalGeneralInfo.ProgramAreaSelectedText);
@@ -1760,6 +1763,8 @@ namespace GenTRAC.Tests.ActionLogic
             proposal.PricingToolName = "Custom Pricing Tool";
             proposal.BoeTool = BOETool.Other;
             proposal.BoeToolName = "Custom BOE Tool";
+            proposal.CostVolumeTool = CostVolumeTool.Other;
+            proposal.CostVolumeToolName = "Custom CV Tool";
 
             fullProposal = new FullProposal(proposal);
             this.proposalLoader.Setup(x => x.GetById(proposalId.Value)).Returns(proposal);
@@ -1773,15 +1778,17 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(proposal.PricingToolName, proposalGeneralInfo.PricingToolName);
             Assert.AreEqual(proposal.BoeTool, proposalGeneralInfo.BOETool);
             Assert.AreEqual(proposal.BoeToolName, proposalGeneralInfo.BOEToolName);
+            Assert.AreEqual(proposal.CostVolumeTool, proposalGeneralInfo.CostVolumeTool);
+            Assert.AreEqual(proposal.CostVolumeToolName, proposalGeneralInfo.CostVolumeToolName);
 
             // verify values for new proposal
             proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(null, false);
             Assert.AreEqual(-1, proposalGeneralInfo.ProposalID);
             Assert.IsTrue(string.IsNullOrEmpty(proposalGeneralInfo.ProposalLocationName));
             Assert.AreEqual(BOETool.NotSet, proposalGeneralInfo.BOETool);
-            Assert.IsTrue(string.IsNullOrEmpty( proposalGeneralInfo.BOEToolName));
+            Assert.IsTrue(string.IsNullOrEmpty(proposalGeneralInfo.BOEToolName));
             Assert.IsTrue(string.IsNullOrEmpty(proposalGeneralInfo.ProgramArea));
-            Assert.AreEqual(0, (int)proposalGeneralInfo.PricingTool);
+            Assert.AreEqual(PricingTool.NotSet, proposalGeneralInfo.PricingTool);
             Assert.IsTrue(string.IsNullOrEmpty(proposalGeneralInfo.PricingToolName));
             Assert.IsTrue(string.IsNullOrEmpty(proposalGeneralInfo.LineOfBusiness));
             Assert.IsTrue(string.IsNullOrEmpty(proposalGeneralInfo.ProgramName));
@@ -1789,6 +1796,8 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(ProgramProposalStatus.LMRetainedSSC, proposalGeneralInfo.ProgramProposalStatus);
             Assert.IsNull(proposalGeneralInfo.IsCCPDRequired);
             Assert.IsNull(proposalGeneralInfo.IsCostVolumeClassified);
+            Assert.AreEqual(CostVolumeTool.NotSet, proposalGeneralInfo.CostVolumeTool);
+            Assert.IsTrue(string.IsNullOrEmpty(proposalGeneralInfo.CostVolumeToolName));
 
             // Assert CCoPD is cleared when getting data for a new revision
             proposalGeneralInfo = sut.GetDataForProposalGeneralInformation(proposalId, true);
@@ -1876,7 +1885,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(proposalApprovalsInfo.CoverSheetApproverList.Any(x => x.Ntid == user.Ntid));
             Assert.IsTrue(proposalApprovalsInfo.IndependentReviewerList.Any(x => x.Ntid == user.Ntid));
         }
-        
+
         /// <summary>
         /// Test GetDataForProposalApprovals for a new revision
         /// </summary>
@@ -2383,7 +2392,7 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.IsTrue(permissionsToAdd.Contains(newPermission));
             Assert.IsTrue(permissionsToDelete.Contains(existingPermission));
         }
-                
+
         /// <summary>
         /// Test for Get Program Areas For Line of Business
         /// </summary>
@@ -2418,7 +2427,8 @@ namespace GenTRAC.Tests.ActionLogic
                 OTISOpportunityID = "OTIS for the Mostest",
                 ProposalLocation = ProposalLocation.ColoradoSpringsCO,
                 PricingTool = PricingTool.Excel,
-                BOETool = BOETool.Word
+                BOETool = BOETool.Word,
+                CostVolumeTool = CostVolumeTool.ACV
             };
 
             // Validator.TryValidateObject returns true if the validation succeeds
@@ -2439,7 +2449,7 @@ namespace GenTRAC.Tests.ActionLogic
             result = Validator.TryValidateObject(generalInfo, ctx, validationResults, true);
             Assert.IsFalse(result);
             Assert.AreEqual(5, validationResults.Count);
-            
+
             // In this case, none of the fields are populated.  Since two fields are mandatory, we expect
             // the validation count to fail with two failures.
             generalInfo = new ProposalGeneralInformationModelView();
@@ -2485,7 +2495,7 @@ namespace GenTRAC.Tests.ActionLogic
             var sut = this.CreateSystem();
             List<ValidationMessage> inValidationErrors = new List<ValidationMessage>();
 
-            ProposalGeneralInformationModelView proposalGeneralInfo = new ProposalGeneralInformationModelView() 
+            ProposalGeneralInformationModelView proposalGeneralInfo = new ProposalGeneralInformationModelView()
             {
                 ProposalID = 1,
                 LineOfBusiness = "My line of business",
@@ -2497,6 +2507,8 @@ namespace GenTRAC.Tests.ActionLogic
                 PricingToolName = null,
                 BOETool = BOETool.Other,
                 BOEToolName = null,
+                CostVolumeTool = CostVolumeTool.ACV,
+                CostVolumeToolName = null,
                 IsCCPDRequired = true,
                 IsCostVolumeClassified = false
             };
@@ -2580,10 +2592,10 @@ namespace GenTRAC.Tests.ActionLogic
         }
 
         /// <summary>
-        /// Test ValidateGeneralInfoTypes for missing required fields for Pricing Tool and BOE Tool
+        /// Test ValidateGeneralInfoTypes for missing required fields for Pricing Tool, BOE Tool, and Cost Volume Tool
         /// </summary>
         [TestMethod]
-        public void C_ValidateGeneralInfoTypes_MissingPricingBoeTools()
+        public void C_ValidateGeneralInfoTypes_MissingPricingBoeCVTools()
         {
             ProposalControllerLogic sut = this.CreateSystem();
             ProposalGeneralInformationModelView mv = new ProposalGeneralInformationModelView()
@@ -2596,7 +2608,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             sut.ValidateGeneralInfoTypes(mv, validationErrors, false);
 
-            Assert.AreEqual(2, validationErrors.Count);
+            Assert.AreEqual(3, validationErrors.Count);
             Assert.IsTrue(validationErrors.Select(x => x.ValidationIssue).Contains(ValidationConstants.ProposalValidationConstants.PRICING_TOOL_REQUIRED));
             Assert.IsTrue(validationErrors.Select(x => x.ValidationIssue).Contains(ValidationConstants.ProposalValidationConstants.BOE_TOOL_REQUIRED));
         }
@@ -2644,7 +2656,7 @@ namespace GenTRAC.Tests.ActionLogic
             };
 
             List<ProposalPermissionDto> savedUserPermissions = PopulateUserAndPermissions(savedUser, proposal);
-            
+
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(proposalId.Value)).Returns(proposal); // GetFullProposal
             this.objectFactory.Setup(x => x.CreateFullProposal(proposal)).Returns(fullProposal); // GetFullProposal
@@ -2717,10 +2729,10 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(1, validationErrors.Count); // Role not required, so no additional errors should return
         }
 
-    /// <summary>
-    /// Test the ValidateUserTypes functionality, verify the failed validation handling
-    /// </summary>
-    [TestMethod]
+        /// <summary>
+        /// Test the ValidateUserTypes functionality, verify the failed validation handling
+        /// </summary>
+        [TestMethod]
         public void C_ValidateUserTypesFailedValidationTest()
         {
             var sut = this.CreateSystem();
@@ -2826,7 +2838,7 @@ namespace GenTRAC.Tests.ActionLogic
             };
 
             List<ProposalPermissionDto> savedUserPermissions = PopulateUserAndPermissions(savedUser, proposal);
-            
+
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(proposalId.Value)).Returns(proposal); // GetFullProposal
             this.objectFactory.Setup(x => x.CreateFullProposal(proposal)).Returns(fullProposal); // GetFullProposal
@@ -2901,7 +2913,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             userInfo.CaptureManagerNtid = user.Ntid;
             userInfo.CaptureManagerDisplayName = user.DisplayName;
-            
+
             userInfo.CostVolumeLeadNtid = user.Ntid;
             userInfo.CostVolumeLeadDisplayName = user.DisplayName;
 
@@ -3016,7 +3028,7 @@ namespace GenTRAC.Tests.ActionLogic
             var sut = this.CreateSystem();
             sut.SaveProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), null, null, new ProposalCommentsModelView(), null);
         }
-        
+
         /// <summary>
         /// Exception Test
         /// </summary>
@@ -3058,7 +3070,7 @@ namespace GenTRAC.Tests.ActionLogic
         public void C_ValidateProposal_ExceptionTest4()
         {
             var sut = this.CreateSystem();
-            sut.ValidateProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(), 
+            sut.ValidateProposal(new ProposalInformationModelView(), new ProposalGeneralInformationModelView(),
                 null, null, new List<ValidationMessage>(), false);
         }
 
@@ -3089,7 +3101,7 @@ namespace GenTRAC.Tests.ActionLogic
             };
 
             // GetDataForProposalUserInformation
-            this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal); 
+            this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
 
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView();
 
@@ -3124,7 +3136,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
-            
+
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
             {
                 AgreementDate = "01/01/2018",
@@ -3151,7 +3163,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
-            
+
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
             {
                 AgreementDate = "01/01/2018",
@@ -3179,7 +3191,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
-            
+
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
             {
                 AgreementDate = "01/01/2018",
@@ -3207,7 +3219,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
-            
+
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
             {
                 CertificationDate = "01/03/2018",
@@ -3235,7 +3247,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
-            
+
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
             {
                 AgreementDate = "01/01/2018",
@@ -3263,7 +3275,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
-            
+
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
             {
                 AgreementDate = "01/01/2018",
@@ -3428,7 +3440,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             sut.ValidateSaveNewRevision(proposal.Id);
         }
-        
+
         /// <summary>
         /// Test ValidateSaveNewRevision throws an exception when the user is not the lead or backup estimator
         /// </summary>

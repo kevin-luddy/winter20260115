@@ -146,6 +146,16 @@ namespace GenTRAC.DataBridge.DTO
         public ICollection<int> ContractTypeIds { get; set; }
 
         /// <summary>
+        /// Cost Volume Tool
+        /// </summary>
+        public CostVolumeTool CostVolumeTool { get; set; }
+
+        /// <summary>
+        /// Cost Volume Tool Name
+        /// </summary>
+        public string CostVolumeToolName { get; set; }
+
+        /// <summary>
         /// Anticipated Delivery Date
         /// </summary>
         public DateTime DeliveryDate { get; set; }
@@ -310,7 +320,7 @@ namespace GenTRAC.DataBridge.DTO
         /// This is the unique string that is used for a proposal when it is in the "Forecasted" class.
         /// </summary>
         public string ForecastedTrackingNumber { get; set; }
-        
+
         /// <summary>
         /// Gets or sets a value indicating whether this instance is forecast proposal.
         /// </summary>
@@ -320,7 +330,7 @@ namespace GenTRAC.DataBridge.DTO
         /// Gets or sets a value indicating whether the forecast alert email has been sent.
         /// </summary>
         public bool ForecastEmailSent { get; set; }
-        
+
         /// <summary>
         /// Does the user have write access to the linked (RDSB) document, for this proposal?
         /// </summary>

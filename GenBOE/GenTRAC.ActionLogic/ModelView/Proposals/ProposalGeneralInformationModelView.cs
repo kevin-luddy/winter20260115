@@ -56,7 +56,7 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// </summary>
         [StringLength(50)]
         public string ProposalLocationName { get; set; }
-        
+
         /// <summary>
         /// Gets or sets Pricing Tool
         /// </summary>
@@ -74,10 +74,21 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         public BOETool BOETool { get; set; }
 
         /// <summary>
-        /// When the BOE Tool is set to Other, then populate the BOEToolNameField
+        /// When the BOE Tool is set to Other, then populate the BOEToolName field
         /// </summary>
         [StringLength(50)]
         public string BOEToolName { get; set; }
+
+        /// <summary>
+        /// Gets or sets Cost Volume Tool
+        /// </summary>
+        public CostVolumeTool CostVolumeTool { get; set; }
+
+        /// <summary>
+        /// When Cost Volume Tool is set to Other, then populate CostVolumeToolName field
+        /// </summary>
+        [StringLength(50)]
+        public string CostVolumeToolName { get; set; }
 
         /// <summary>
         /// Gets or sets text for selected Line of Business
@@ -113,6 +124,11 @@ namespace GenTRAC.ActionLogic.ModelView.Proposals
         /// List of allowed BOE tools
         /// </summary>
         public ICollection<SelectListItem> BOEToolsList { get; set; }
+
+        /// <summary>
+        /// List of allowed Cost Volume tools
+        /// </summary>
+        public ICollection<SelectListItem> CostVolumeToolsList { get; set; }
 
         /// <summary>
         /// Program Area help text
