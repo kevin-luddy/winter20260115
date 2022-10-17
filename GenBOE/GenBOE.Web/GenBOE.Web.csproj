@@ -234,6 +234,7 @@
     <Compile Include="Common\StringNonPrintableCharRemovalModelBinder.cs" />
     <Compile Include="Common\WorkspaceIdentificationModelBinder.cs" />
     <Compile Include="Controllers\BoeDataBaseAPIController.cs" />
+    <Compile Include="Controllers\WorkspaceRecalculateActualsController.cs" />
     <Compile Include="ModelView\AcvWorkspaceData.cs" />
     <Compile Include="Controllers\BOEBulkSubmitController.cs" />
     <Compile Include="Controllers\BOEFormController.cs" />
@@ -568,6 +569,7 @@
     <Content Include="Content\images\ui-icons_888888_256x240.png" />
     <Content Include="Content\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Resources\css\tinymce.css" />
+    <Content Include="Resources\js\angular\workspaceCalculateActualsController.js" />
     <Content Include="Resources\js\angular\rteTemplatesController.js" />
     <Content Include="Resources\js\angular\boeBulkSubmitController.js" />
     <Content Include="Resources\js\angular\createWorkspaceController.js" />
@@ -900,6 +902,7 @@
     <Content Include="Views\Reports\ValidateAllBOEReport.ascx" />
     <Content Include="Views\RTETemplates\ManageRTETemplates.aspx" />
     <Content Include="Views\Shared\RteTemplate.ascx" />
+    <Content Include="Views\WorkspaceRecalculateActuals\Index.aspx" />
     <Content Include="Views\Workspace\AddWorkspaceResourceRateTM.ascx" />
     <Content Include="Views\Workspace\CreateWorkspaceDiv.ascx" />
     <Content Include="Views\Workspace\DiscreteWorkspaceVariables.ascx" />

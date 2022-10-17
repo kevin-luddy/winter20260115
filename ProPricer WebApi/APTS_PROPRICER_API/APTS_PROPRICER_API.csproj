@@ -56,30 +56,29 @@
     <Reference Include="Aspose.Cells, Version=22.7.0.0, Culture=neutral, PublicKeyToken=716fcc553a201e56, processorArchitecture=MSIL">
       <HintPath>..\packages\Aspose.Cells.22.7.0\lib\net40\Aspose.Cells.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Data.v20.2">
-      <HintPath>..\_ProPricer Libraries\DevExpress.Data.v20.2.dll</HintPath>
+    <Reference Include="DevExpress.Data.v21.2">
+      <HintPath>..\_ProPricer Libraries\DevExpress.Data.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Office.v20.2.Core">
-      <HintPath>..\_ProPricer Libraries\DevExpress.Office.v20.2.Core.dll</HintPath>
+    <Reference Include="DevExpress.Office.v21.2.Core">
+      <HintPath>..\_ProPricer Libraries\DevExpress.Office.v21.2.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Printing.v20.2.Core">
-      <HintPath>..\_ProPricer Libraries\DevExpress.Printing.v20.2.Core.dll</HintPath>
+    <Reference Include="DevExpress.Printing.v21.2.Core">
+      <HintPath>..\_ProPricer Libraries\DevExpress.Printing.v21.2.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Spreadsheet.v20.2.Core">
-      <HintPath>..\_ProPricer Libraries\DevExpress.Spreadsheet.v20.2.Core.dll</HintPath>
+    <Reference Include="DevExpress.Spreadsheet.v21.2.Core">
+      <HintPath>..\_ProPricer Libraries\DevExpress.Spreadsheet.v21.2.Core.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.Utils.v20.2">
-      <HintPath>..\_ProPricer Libraries\DevExpress.Utils.v20.2.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="DevExpress.Utils.v21.2">
+      <HintPath>..\_ProPricer Libraries\DevExpress.Utils.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.XtraBars.v20.2">
-      <HintPath>..\_ProPricer Libraries\DevExpress.XtraBars.v20.2.dll</HintPath>
+    <Reference Include="DevExpress.XtraBars.v21.2">
+      <HintPath>..\_ProPricer Libraries\DevExpress.XtraBars.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.XtraEditors.v20.2">
-      <HintPath>..\_ProPricer Libraries\DevExpress.XtraEditors.v20.2.dll</HintPath>
+    <Reference Include="DevExpress.XtraEditors.v21.2">
+      <HintPath>..\_ProPricer Libraries\DevExpress.XtraEditors.v21.2.dll</HintPath>
     </Reference>
-    <Reference Include="DevExpress.XtraNavBar.v20.2">
-      <HintPath>..\_ProPricer Libraries\DevExpress.XtraNavBar.v20.2.dll</HintPath>
+    <Reference Include="DevExpress.XtraNavBar.v21.2">
+      <HintPath>..\_ProPricer Libraries\DevExpress.XtraNavBar.v21.2.dll</HintPath>
     </Reference>
     <Reference Include="DocumentFormat.OpenXml">
       <HintPath>..\_ProPricer Libraries\DocumentFormat.OpenXml.dll</HintPath>

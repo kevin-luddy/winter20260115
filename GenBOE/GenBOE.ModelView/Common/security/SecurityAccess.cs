@@ -155,8 +155,13 @@ namespace GenBOE.DataBridge.Common
                      new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
                      SecurityAuthorization.CreateReadUpdateDelete);
 
-            // Manage INL Forms
-            InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageBOEForms },
+			InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.WorkspaceRecalculateActuals },
+					 new WorkspaceState[] { WorkspaceState.Working },
+					 new Role[] { Role.WorkspaceAdmin, Role.SystemAdmin },
+					 SecurityAuthorization.CreateReadUpdateDelete);
+
+			// Manage INL Forms
+			InitialMatrixAllBOEStates(new SecurityPage[] { SecurityPage.ManageBOEForms },
                     new WorkspaceState[] { WorkspaceState.Initialization, WorkspaceState.Working, WorkspaceState.Locked },
                     new Role[] { Role.SubcontractAdmin, Role.SystemAdmin, Role.WorkspaceAdmin }, 
                     SecurityAuthorization.CreateReadUpdateDelete);
@@ -799,7 +804,8 @@ namespace GenBOE.DataBridge.Common
                 case SecurityPage.WorkspaceRestore:
                 case SecurityPage.GettingStartedMenuOption:
                 case SecurityPage.RTETemplates:
-                    wsRequired = true;
+				case SecurityPage.WorkspaceRecalculateActuals:
+					wsRequired = true;
                     boeRequired = false;
                     break;
 

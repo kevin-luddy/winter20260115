@@ -176,6 +176,15 @@ namespace GenBOE.ActionLogic.ModelView
                             securityPage = SecurityPage.ManageBOEForms,
                             routeName = WebConstants.ROUTE_WORKSPACE
                         },
+                         new GenBOEMasterMenuItemModelView {
+                            linkText = "Recalculate Actuals",
+                            actionName = WebConstants.ACTION_INDEX,
+                            controllerName = WebConstants.CONTROLLER_WORKSPACE_RECALCULATE_ACTUALS,
+                            routeValues = new { workspace = ws.Shortname },
+                            htmlAttributes = new { name = "CalculateActualsMenuLink" },
+                            securityPage = SecurityPage.WorkspaceRecalculateActuals,
+                            routeName = WebConstants.ROUTE_WORKSPACE
+                        },
                         new GenBOEMasterMenuItemModelView {
                             linkText = "Find/Replace BOE Text",
                             actionName = WebConstants.ACTION_INDEX,
@@ -249,7 +258,7 @@ namespace GenBOE.ActionLogic.ModelView
                     routeName = WebConstants.ROUTE_WORKSPACE
                 });
             }
-            
+
             // Per Les, Project Map admins will never be pricers, and pricers will never be admins.. So we show this to all project maps
             if (securityInformation.IsAllowedProPricerAccess(securityInformation.ActiveUserNTID) || ws.IsProjectMapWorkspace)
             {
@@ -267,7 +276,7 @@ namespace GenBOE.ActionLogic.ModelView
             }
 
             // Only show this menu item when in Initialization and Working states, and we are a standard workspace, not a project map
-            if(!ws.IsProjectMapWorkspace && (ws.WorkspaceState == WorkspaceState.Initialization || ws.WorkspaceState == WorkspaceState.Working))
+            if (!ws.IsProjectMapWorkspace && (ws.WorkspaceState == WorkspaceState.Initialization || ws.WorkspaceState == WorkspaceState.Working))
             {
                 menuItems.First(x => x.linkText == "Workspace Administration").subMenuItems.Add(new GenBOEMasterMenuItemModelView
                 {
@@ -279,7 +288,7 @@ namespace GenBOE.ActionLogic.ModelView
                     routeName = WebConstants.ROUTE_WORKSPACE
                 });
             }
-             
+
             return menuItems;
         }
 
@@ -289,7 +298,7 @@ namespace GenBOE.ActionLogic.ModelView
         /// <returns>the Collection of <see cref="GenBOEMasterMenuItemModelView"/> objects for the home menu</returns>
         public static Collection<GenBOEMasterMenuItemModelView> BuildHomeMasterMenuItems()
         {
-             Collection<GenBOEMasterMenuItemModelView> menuItems = new Collection<GenBOEMasterMenuItemModelView> {
+            Collection<GenBOEMasterMenuItemModelView> menuItems = new Collection<GenBOEMasterMenuItemModelView> {
                 new GenBOEMasterMenuItemModelView {
                     linkText = "Home",
                     actionName = WebConstants.ACTION_INDEX,
@@ -342,7 +351,7 @@ namespace GenBOE.ActionLogic.ModelView
         /// SSC Help URL
         /// </summary>
         private const string SSC_HELP_LINK = "https://space.p.external.lmco.com/sites/fbo/CCDME/Estimating/SiteLinks/Forms/Web%20Part%20View.aspx?RootFolder=%2fsites%2ffbo%2fCCDME%2fEstimating%2fSiteLinks%2fLabor%20BOE%20Resources&FolderCTID=0x0120009F5DB497892BA747B0B971EB66794691";
-        
+
         /// <summary>
         /// RMS Help URL - Author Training
         /// </summary>
@@ -419,9 +428,14 @@ namespace GenBOE.ActionLogic.ModelView
                                 securityPage = SecurityPage.Home,
                                 linkText = "RMS BOE Writing Training",
                                 linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("RmsHelpBaseLinkNew") + RMS_HELP_BOE_WRITING_LINK)
+                            },
+                            new GenBOEMasterMenuItemModelView {
+                                securityPage = SecurityPage.Home,
+                                linkText = "All Things BOE",
+                                linkUrl = new Uri(ConfigurationUtilities.GetAppSetting("AllThingsBoeLink"))
                             }
                         }
-                    });
+                        });
                 }
             }
         }

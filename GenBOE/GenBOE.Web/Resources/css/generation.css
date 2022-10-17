@@ -1907,12 +1907,16 @@ button.ui-datepicker-trigger
     width: 962px;
 }
 
+.calculate-actuals-grid .grid,
 .manage-wbs-grid .grid,
 .manage-clin-grid .grid,
 .manage-boe-grid .grid,
-.bulk-assign-grid .grid
-{
+.bulk-assign-grid .grid {
     width: 100%
+}
+
+.calculate-actuals-grid .grid th {
+    white-space: normal;
 }
 
 .manage-clin .paging-control {

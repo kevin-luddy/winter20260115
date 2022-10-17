@@ -134,7 +134,8 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string CONTROLLER_REPORTS = "Reports";
         public static readonly string CONTROLLER_WBS = "WBS";
         public static readonly string CONTROLLER_WORKSPACE = "Workspace";
-        public static readonly string CONTROLLER_FIND_REPLACE = "FindReplace";
+		public static readonly string CONTROLLER_WORKSPACE_RECALCULATE_ACTUALS = "WorkspaceRecalculateActuals";
+		public static readonly string CONTROLLER_FIND_REPLACE = "FindReplace";
         public static readonly string CONTROLLER_BOE_OTHER_DIRECT_COST = "BOEOtherDirectCost";
         public static readonly string CONTROLLER_BOE_MATERIAL = "BOEMaterial";
         public static readonly string CONTROLLER_BOE_TRAVEL = "BOETravel";
@@ -316,6 +317,7 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_DISPLAY_LABOR_RESOURCES = "DisplayResources";
         public static readonly string ACTION_DISPLAY_LABOR_PERF_ORGS = "DisplayPerfOrgs";
         public static readonly string ACTION_DISPLAY_MANAGE_BOE = "DisplayManageBOE";
+		public static readonly string ACTION_DISPLAY_WORKSPACE_CALCULATE_ACTUALS = "DisplayWorkspaceCalculateActuals";
         public static readonly string ACTION_DISPLAY_MANAGE_BOE_FORMS = "DisplayManageBOEForms";
         public static readonly string ACTION_DISPLAY_MANAGE_BOE_FORMS_GRID = "DisplayManageBOEFormsGrid";
         public static readonly string ACTION_DISPLAY_MANAGE_BOE_GRID = "DisplayManageBOEGrid";
@@ -345,7 +347,8 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_VALIDATE_IBOE_FORM = "ValidateIBOEForm";
         public static readonly string ACTION_VALIDATE_PBOE_FORM = "ValidatePBOEForm";
         public static readonly string ACTION_SAVE_MANAGE_BOE = "SaveManageBOE";
-        public static readonly string ACTION_SAVE_BOE_STATES = "SaveBOEStates";
+		public static readonly string ACTION_WORKSPACE_CALCULATE_ACTUALS = "WorkspaceCalculateActuals";
+		public static readonly string ACTION_SAVE_BOE_STATES = "SaveBOEStates";
         public static readonly string ACTION_SUBMIT_FOR_APPROVAL = "SubmitForApproval";
         public static readonly string ACTION_VALIDATE_BOE = "ValidateBOE";
         public static readonly string ACTION_BOE_CONTAINS_SUM_OF_BOES = "BOEContainsSumOfBOEs";
@@ -677,12 +680,13 @@ namespace GenBOE.ActionLogic.Common
         public static readonly string ACTION_GET_MANAGE_WBS_MODEL = "GetManageWBSGridModel";
         public static readonly string ACTION_GET_MANAGE_BOE_MODEL = "GetManageBOEGridModel";
         public static readonly string ACTION_FIND_ADJACENT_BOES = "FindAdjacentBoes";
+		public static readonly string ACTION_GET_WORKSPACE_RECALCULATE_ACTUALS_MODEL = "GetWorkspaceRecalculateActualsModel";
 
-        #endregion Workspace
+		#endregion Workspace
 
-        #region RTE Custom Templates
+		#region RTE Custom Templates
 
-        public static readonly string ACTION_DISPLAY_MANAGE_RTE_TEMPLATES = "Index";
+		public static readonly string ACTION_DISPLAY_MANAGE_RTE_TEMPLATES = "Index";
         public static readonly string VIEW_MANAGE_RTE_TEMPLATES = "ManageRTETemplates";
         public static readonly string ACTION_GET_RTE_TEMPLATES = "GetRTETemplatesModel";
         public static readonly string ACTION_SAVE_RTE_TEMPLATES = "SaveRTETemplatesModel";

@@ -177,7 +177,7 @@ namespace APTSPropricerApi.Controllers
 
                                     r.GetCost();
 
-                                    if (r.Spread.Distribution != null)
+                                    if (r.Spread != null)
                                     {
                                         spread.AddRange(r.Spread.Distribution.Select(s => new SpreadDto
                                         {
@@ -260,7 +260,7 @@ namespace APTSPropricerApi.Controllers
 
                                 if (ma.Spread != null)
                                 {
-                                    foreach (KeyValuePair<TimeFrame, double> s in ma.Spread)
+                                    foreach (KeyValuePair<TimeFrame, double> s in ma.Spread.Distribution)
                                     {
                                         SpreadDto sdto = new SpreadDto
                                         {
@@ -325,7 +325,7 @@ namespace APTSPropricerApi.Controllers
 
                                     if (asc.Spread != null)
                                     {
-                                        foreach (KeyValuePair<TimeFrame, double> s in asc.Spread)
+                                        foreach (KeyValuePair<TimeFrame, double> s in asc.Spread.Distribution)
                                         {
                                             SpreadDto sdto = new SpreadDto
                                             {
@@ -414,7 +414,7 @@ namespace APTSPropricerApi.Controllers
                             List<SpreadDto> trvspread = new List<SpreadDto>();
                             if (trv.Spread != null)
                             {
-                                foreach (KeyValuePair<TimeFrame, double> s in trv.Spread)
+                                foreach (KeyValuePair<TimeFrame, double> s in trv.Spread.Distribution)
                                 {
                                     SpreadDto sdto = new SpreadDto
                                     {
@@ -927,9 +927,9 @@ namespace APTSPropricerApi.Controllers
                                 //  7ma.MaterialDescription = newma.description;
 
                                 whichvar = "material assignment spread";
-                                IAmountCollection rsd = ma.Spread.Distribution;
+                                SpreadInfo rsd = ma.Spread;
 
-                                foreach (SpreadDto s in newma.ResourceAssignment.Spread)
+								foreach (SpreadDto s in newma.ResourceAssignment.Spread)
                                 {
                                     TimeFrame mnyr = TimeFrame.FromMonth(s.Year, s.Month);
                                     rsd[mnyr] = double.Parse(s.Value);
@@ -1050,7 +1050,7 @@ namespace APTSPropricerApi.Controllers
                                         }
 
                                         whichvar = "material associated costs spread";
-                                        IAmountCollection asd = maasc.Spread.Distribution;
+                                        SpreadInfo asd = maasc.Spread;
 
                                         foreach (SpreadDto s in ascitem.Spread)
                                         {
@@ -1164,7 +1164,7 @@ namespace APTSPropricerApi.Controllers
                         //  tra.totalCost = newtr.TotalCost;
 
                         whichvar = "travel assignment spread";
-                        IAmountCollection rsd = tra.Spread.Distribution;
+                        SpreadInfo rsd = tra.Spread;
 
                         foreach (SpreadDto s in newtr.ResourceAssignment.Spread)
                         {
@@ -1332,7 +1332,7 @@ namespace APTSPropricerApi.Controllers
                                     resource.Spread.Curve = c;
                                 }
 
-                                IAmountCollection rsd = resource.Spread.Distribution;
+								SpreadInfo rsd = resource.Spread;
 
                                 whichvar = "resource spread";
                                 foreach (SpreadDto s in item.Spread)
