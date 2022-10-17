@@ -82,8 +82,8 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @ProposalCompletedDate datetime2 = NULL,
 	  @ContractActionType int = NULL,
 	  @ContractActionTypeOtherText VARCHAR(100) = NULL,
-	  @CostVolumeToolID int = NULL,
-	  @CostVolumeToolName VARCHAR(50) = NULL
+	  @CostVolumeToolID int,
+	  @CostVolumeToolName VARCHAR(50)
 )
 AS
 /******************************************************************************
