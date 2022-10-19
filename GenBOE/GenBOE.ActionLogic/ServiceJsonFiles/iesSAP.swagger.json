@@ -707,6 +707,10 @@
 					"value": {
 						"type": "string",
 						"nullable": true
+					},
+					"dropdownText": {
+						"type": "string",
+						"nullable": true
 					}
 				},
 				"additionalProperties": false

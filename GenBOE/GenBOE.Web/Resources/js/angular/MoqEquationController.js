@@ -646,11 +646,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 		var data = {};
 		data.filters = angular.copy($scope.filterDialog.data);
-		data.filters.forEach(item => {
-			if (item.Operator) {
-				item.Operator = item.Operator.Value;
-			}
-		});
 		data.boeId = ManageTaskModel.boeId;
 
 		// Convert view models into text
@@ -848,9 +843,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					item.ParensChecked = false;
 					if (item.Field) {
 						item.Type = $scope.filterDialog.fields[item.Field].Type;
-						if (item.Operator && $scope.filterDialog.operators[item.Type]) {
-							item.Operator = $scope.filterDialog.operators[item.Type].find(i => i.Value === item.Operator);
-						}
 					}
 
 					if (!item.Value) {

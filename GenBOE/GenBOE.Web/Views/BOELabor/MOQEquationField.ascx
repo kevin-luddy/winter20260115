@@ -623,7 +623,7 @@
 							<tr data-ng-show="!filterDialog.isLoading && (filterDialog.data === undefined || filterDialog.data.length === 0)"><td colspan="9"><div class="empty-grid-text">There are no Filters, please Add a new row.</div></td></tr>
                             <tr data-ng-repeat="queryFilter in filterDialog.data">
 								<td>
-									<span data-ng-if="queryFilter.StartParens">{</span>
+									<span data-ng-if="queryFilter.StartParens">(</span>
 									<div data-ng-if="!queryFilter.StartParens && !queryFilter.EndParens">
                                         <input class="parens-chck" type="checkbox" data-ng-model="queryFilter.ParensChecked" data-ng-click="$event.stopPropagation()" />
                                     </div>
@@ -634,7 +634,7 @@
 									</select>
 								</td>
 								<td>
-									<select data-ng-if="queryFilter.Type" data-ng-model="queryFilter.Operator" data-ng-options="item.Value for item in filterDialog.operators[queryFilter.Type]">
+									<select data-ng-if="queryFilter.Type" data-ng-model="queryFilter.Operator" data-ng-options="item.Value as item.DropdownText for item in filterDialog.operators[queryFilter.Type]">
 										<option value=""></option>
 									</select>
 								</td>
@@ -647,7 +647,7 @@
 										</div>
 									</div>
 								</td>
-								<td><span data-ng-if="queryFilter.EndParens">}</span></td>
+								<td><span data-ng-if="queryFilter.EndParens">)</span></td>
 								<td>
 									<select data-ng-if="!$last" data-ng-model="queryFilter.Join">
 										<option></option>
