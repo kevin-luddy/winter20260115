@@ -64,7 +64,8 @@ input[type=radio] {
 }
 
 #BOEToolName, .free-text,
-#PricingToolName, .free-text
+#PricingToolName, .free-text,
+#CostVolumeToolName
 {
     padding: 3px;
     margin-left: 5px;
@@ -79,6 +80,7 @@ input[type=radio] {
 
 #BOETool .select,
 #PricingTool .select,
+#CostVolumeTool .select
 .selection-width 
 {
     width: 119px;

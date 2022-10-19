@@ -40,6 +40,7 @@ AS
 **		3/7/2022	Dusan				IES-847 Modify Contracts Data data
 **		7/25/2022	Dusan / Thomas		IES-1499, IES-1510, IES-1511: Added new fields into the report: Cage Codes, Type of Contract Action, Cost thru COM
 **		7/28/2022	Dusan				IES-1578 Add [Profit/Fee] and [COM] individual fields to the report
+**		10/13/2022	RJ					IES-1933 Cost Volume Tool
 *******************************************************************************/
 
 SET NOCOUNT ON
@@ -275,6 +276,7 @@ SELECT V.[ProposalID]
       ,V.[OTIS #]
       ,V.[Pricing Tool]
       ,V.[BOE Tool]
+	  ,V.[Cost Volume Tool]
       ,V.[RFP Issued Date]
       ,V.[RFP Received Date]
       ,V.[Comments]

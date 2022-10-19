@@ -20,6 +20,7 @@
         $('select[name="ProposalLocation"]').val(@((int)Model.ProposalLocation))
         $('select[name="PricingTool"]').val(@((int)Model.PricingTool))
         $('select[name="BOETool"]').val(@((int)Model.BOETool))
+        $('select[name="CostVolumeTool"]').val(@((int)Model.CostVolumeTool))
         $('select[name="ProgramProposalStatus"]').val(@((int)Model.ProgramProposalStatus))
 
         if ('@(string.IsNullOrWhiteSpace(Model.LineOfBusiness).ToString().ToLower())'.isTrue()) {
@@ -70,6 +71,10 @@
             if('@Model.BOETool.GetDescription()' == '@BOETool.Other') {
                 ProposalGeneralInformationWidget.getElement('#BOEToolName').after('<div class="replacedWidgetText">' + '@Model.BOEToolName' + '</div>');
             }
+            ProposalGeneralInformationWidget.getElement('select[name=CostVolumeTool]').next('.replacedWidgetText').html('@Model.CostVolumeTool.GetDescription()');
+            if('@Model.CostVolumeTool.GetDescription()' == '@CostVolumeTool.Other') {
+                ProposalGeneralInformationWidget.getElement('#CostVolumeToolName').after('<div class="replacedWidgetText">' + '@Model.CostVolumeToolName' + '</div>');
+            }
             if ('@Model.ProgramProposalStatus' == '@ProgramProposalStatus.NotSet') {
                 ProposalGeneralInformationWidget.getElement('select[name=ProgramProposalStatus]').next('.replacedWidgetText').html('');
             } else {
@@ -83,7 +88,7 @@
         $('#ProposalLocationName').hide();
         $('#PricingToolName').hide();
         $('#BOEToolName').hide();
-
+        $('#CostVolumeToolName').hide();
 
         // If Other is selected, update the value but do NOT show the textbox as ProposalLocationName
         //  is now a legacy field.  It is no longer displayed, but we want to retain current values
@@ -102,6 +107,11 @@
         if ('@Model.BOETool' == 'Other') {
             $('#BOEToolName').show();
             $('#BOEToolName').val('@Model.BOEToolName');
+        };
+
+        if ('@Model.CostVolumeTool' == 'Other') {
+            $('#CostVolumeToolName').show();
+            $('#CostVolumeToolName').val('@Model.CostVolumeToolName');
         };
 
         // Define functionality based on whether or not we are displaying new (PTM) or old (GenTRAC) checklists
@@ -211,6 +221,17 @@
                 </div>
                 <div class="form-element">
                     <input class="free-text" id="BOEToolName" name="BOEToolName" type="text" maxlength="50" />
+                </div>
+            </div>
+            <div class="form-row" data-proposal-type="standard">
+                <div class="form-label">
+                    What application will be used to prepare the Cost Volume? *
+                </div>
+                <div class="form-element">
+                    @Html.DropDownListFor(model => model.CostVolumeTool, Model.CostVolumeToolsList, new { maxlength = 50, @class = "selection-width", @name = "CostVolumeTool" })
+                </div>
+                <div class="form-element">
+                    <input class="free-text" id="CostVolumeToolName" name="CostVolumeToolName" type="text" maxlength="50" />
                 </div>
             </div>
             <div class="form-row">

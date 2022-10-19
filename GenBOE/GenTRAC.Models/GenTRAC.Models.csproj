@@ -109,6 +109,9 @@
     <Compile Include="CostElementLU.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="CostVolumeToolLU.cs">
+      <DependentUpon>PTMEntityModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="CreateDfarsChecklistResponseReport_Result.cs">
       <DependentUpon>PTMEntityModel.tt</DependentUpon>
     </Compile>

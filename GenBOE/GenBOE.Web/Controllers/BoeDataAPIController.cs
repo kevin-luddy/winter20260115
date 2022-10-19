@@ -14,6 +14,7 @@ namespace GenBOE.Web.Controllers
 	using System.Net.Http;
 	using System.Net.Http.Headers;
 	using System.Web.Http;
+	using System.Web.Http.Results;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.IO.Export;
@@ -27,7 +28,6 @@ namespace GenBOE.Web.Controllers
 	using GenBOE.Web.Common;
 	using GenBOE.Web.ModelView;
 	using IES.Common;
-	using IES.Common.OfficeUtilities;
 	using IES.Common.PickList;
 
 	/// <summary>
@@ -104,7 +104,7 @@ namespace GenBOE.Web.Controllers
 		/// <param name="traceTableExporter">Trace Table data exporter</param>
 		/// <param name="boeFormControllerLogic">BOE Form Controller logic</param>
 		/// <param name="contractTypeLoader">Pick List loader for Contract Types</param>
-		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, ContractTypeLoader contractTypeLoader) 
+		public BoeDataAPIController(IWorkspaceDTODataLoader loader, TokenHandling tokenHandler, IReportsControllerLogic reportsControllerLogic, ISecurityAccess securityAccess, IFullObjectFactory factory, IUserDTODataLoader userLoader, IPermissionsDTODataLoader permissionsLoader, IBOEExporter boeExporter, IBOECustomExporter boeCustomExporter, IWorkspaceExportFormatDTODataLoader workspaceExportFormatDTOLoader, ITraceTableExporter traceTableExporter, IBOEFormControllerLogic boeFormControllerLogic, ContractTypeLoader contractTypeLoader)
 			: base(securityAccess, factory, userLoader, permissionsLoader)
 		{
 			this.loader = loader;
@@ -126,21 +126,22 @@ namespace GenBOE.Web.Controllers
 		/// <returns>Proposal Data</returns>
 		[HttpGet]
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
-		public ICollection<AcvWorkspaceData> GetWorkspaceDataForProposal(string ptmTrackingNumber)
+		public IESResponse<AcvWorkspaceData> GetWorkspaceDataForProposal(string ptmTrackingNumber)
 		{
-			List<AcvWorkspaceData> result;
+			IESResponse<AcvWorkspaceData> result = new IESResponse<AcvWorkspaceData>();
 
 			try
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
 				ICollection<(int Id, string shortName, string longName)> data = this.loader.GetWorkspaceDataForProposal(ptmTrackingNumber);
-				result = data.Select(x => new AcvWorkspaceData() { Id = x.Id, ShortName = x.shortName, LongName = x.longName }).ToList();
+				result.Data = data.Select(x => new AcvWorkspaceData() { Id = x.Id, ShortName = x.shortName, LongName = x.longName }).ToCollection();
+				result.IsSuccessful = true;
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result = null;
+				result.Messages.Add($"Unknown error occurred returning Workspace data: {ex.Message}");
 			}
 
 			return result;
@@ -153,9 +154,9 @@ namespace GenBOE.Web.Controllers
 		/// <returns>HttpResponseMessage</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpGet]
-		public ICollection<string> GetWorkspaceCustomFieldNames(string workspaceShortName)
+		public IESResponse<string> GetWorkspaceCustomFieldNames(string workspaceShortName)
 		{
-			ICollection<string> result = null;
+			IESResponse<string> result = new IESResponse<string>();
 
 			try
 			{
@@ -166,12 +167,14 @@ namespace GenBOE.Web.Controllers
 
 				if (permission >= SecurityAuthorization.Read)
 				{
-					result = workspace.CustomFields.Select(c => c.CustomFieldName).ToList();
+					result.Data = workspace.CustomFields.Select(c => c.CustomFieldName).ToList();
+					result.IsSuccessful = true;
 				}
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
+				result.Messages.Add($"Unknown error occurred returning Workspace Custom Field Name data: {ex.Message}");
 			}
 
 			return result;
@@ -321,15 +324,15 @@ namespace GenBOE.Web.Controllers
 				MemoryStream stream = new MemoryStream();
 
 				this.reportsControllerLogic.PrepareAllBOEsReport(workspace, this.PermissionsLoader.GetBOEPotentialPermissionsForWorkspace(workspace.Id)
-																									.Any(p => p.Role == Role.SubcontractorAuthor && p.ETIUserId == workspace.CurrentActiveUser.UserID), 
-																												null, 
-																												null, 
-																												null, 
-																												out bool isCustomExport, 
-																												out WorkspaceExportFormatDTO wsExportFormatDTO, 
-																												out BOEExportInputs exportInputs, 
-																												out ICollection<BOEExportModelView> boeExportModelViews, 
-																												out List<BOESummaryGridModelView> boeSummaryGridModelViews, 
+																									.Any(p => p.Role == Role.SubcontractorAuthor && p.ETIUserId == workspace.CurrentActiveUser.UserID),
+																												null,
+																												null,
+																												null,
+																												out bool isCustomExport,
+																												out WorkspaceExportFormatDTO wsExportFormatDTO,
+																												out BOEExportInputs exportInputs,
+																												out ICollection<BOEExportModelView> boeExportModelViews,
+																												out List<BOESummaryGridModelView> boeSummaryGridModelViews,
 																												false);
 
 				if (isCustomExport)
@@ -391,9 +394,9 @@ namespace GenBOE.Web.Controllers
 		/// <returns>genBOE Workspace data for use with a Trace Table in ACV</returns>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		[HttpPost]
-		public ICollection<TraceTableBoeData> GetWorkspaceDataForTraceTable(string workspaceShortName, TraceTableSettingsData settingsData)
+		public IESResponse<TraceTableBoeData> GetWorkspaceDataForTraceTable(string workspaceShortName, TraceTableSettingsData settingsData)
 		{
-			ICollection<TraceTableBoeData> boeData = null;
+			IESResponse<TraceTableBoeData> boeData = new IESResponse<TraceTableBoeData>();
 
 			try
 			{
@@ -405,12 +408,14 @@ namespace GenBOE.Web.Controllers
 
 				if (permission >= SecurityAuthorization.Read)
 				{
-					boeData = traceTableExporter.ExportTraceTableData(workspace, settingsData);
+					boeData.Data = traceTableExporter.ExportTraceTableData(workspace, settingsData);
+					boeData.IsSuccessful = true;
 				}
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
+				boeData.Messages.Add($"Unknown error occurred returning Workspace data for Trace Table: {ex.Message}");
 			}
 
 			return boeData;

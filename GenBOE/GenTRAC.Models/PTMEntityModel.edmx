@@ -138,6 +138,14 @@
           <Property Name="CostElement" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="IsActive" Type="bit" Nullable="false" />
         </EntityType>
+        <EntityType Name="CostVolumeToolLU">
+          <Key>
+            <PropertyRef Name="CostVolumeToolID" />
+          </Key>
+          <Property Name="CostVolumeToolID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CostVolumeTool" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="IsActive" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="CustomerTypeLU">
           <Key>
             <PropertyRef Name="CustomerTypeID" />
@@ -340,6 +348,8 @@
           <Property Name="ProposalCompletedDate" Type="datetime2" Precision="7" />
           <Property Name="ContractActionType" Type="int" />
           <Property Name="ContractActionTypeOtherText" Type="varchar" MaxLength="100" />
+          <Property Name="CostVolumeToolID" Type="int" Nullable="false" />
+          <Property Name="CostVolumeToolName" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="ProposalAdequacyReview">
           <Key>
@@ -613,6 +623,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <PropertyRef Name="CustomerType" />
             <PropertyRef Name="PricingTool" />
             <PropertyRef Name="BOETool" />
+            <PropertyRef Name="CostVolumeTool" />
             <PropertyRef Name="IWTA" />
             <PropertyRef Name="PrimeOrSub" />
             <PropertyRef Name="TrackingNumber" />
@@ -643,6 +654,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="Manager" Type="varchar" MaxLength="256" />
           <Property Name="PricingTool" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="BOETool" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="CostVolumeTool" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="ContractType" Type="varchar" MaxLength="1000" />
           <Property Name="ElementsOfCost" Type="varchar" MaxLength="1000" />
           <Property Name="IWTA" Type="bit" Nullable="false" />
@@ -676,6 +688,18 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Principal>
             <Dependent Role="Proposal">
               <PropertyRef Name="ContractActionType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Proposal__CostVo__1D072A30">
+          <End Role="CostVolumeToolLU" Type="Self.CostVolumeToolLU" Multiplicity="1" />
+          <End Role="Proposal" Type="Self.Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CostVolumeToolLU">
+              <PropertyRef Name="CostVolumeToolID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="CostVolumeToolID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -1747,6 +1771,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Parameter Name="ProposalCompletedDate" Type="datetime2" Mode="In" />
           <Parameter Name="ContractActionType" Type="int" Mode="In" />
           <Parameter Name="ContractActionTypeOtherText" Type="varchar" Mode="In" />
+          <Parameter Name="CostVolumeToolID" Type="int" Mode="In" />
+          <Parameter Name="CostVolumeToolName" Type="varchar" Mode="In" />
         </Function>
         <Function Name="upsertProposalChecklist" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="ProposalChecklistID" Type="int" Mode="In" />
@@ -1824,6 +1850,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySet Name="ContractTypeGroupXREF" EntityType="Self.ContractTypeGroupXREF" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ContractTypeLU" EntityType="Self.ContractTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CostElementLU" EntityType="Self.CostElementLU" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CostVolumeToolLU" EntityType="Self.CostVolumeToolLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CustomerTypeLU" EntityType="Self.CustomerTypeLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CutOffDateUtilizationLU" EntityType="Self.CutOffDateUtilizationLU" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ELMAH_Error" EntityType="Self.ELMAH_Error" Schema="dbo" store:Type="Tables" />
@@ -1907,6 +1934,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
     [genTracData].[Manager] AS [Manager], 
     [genTracData].[PricingTool] AS [PricingTool], 
     [genTracData].[BOETool] AS [BOETool], 
+    [genTracData].[CostVolumeTool] AS [CostVolumeTool], 
     [genTracData].[ContractType] AS [ContractType], 
     [genTracData].[ElementsOfCost] AS [ElementsOfCost], 
     [genTracData].[IWTA] AS [IWTA], 
@@ -1926,6 +1954,10 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           </AssociationSet>
           <AssociationSet Name="FK__Proposal__Contra__7310F064" Association="Self.FK__Proposal__Contra__7310F064">
             <End Role="ContractActionTypeLU" EntitySet="ContractActionTypeLU" />
+            <End Role="Proposal" EntitySet="Proposal" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Proposal__CostVo__1D072A30" Association="Self.FK__Proposal__CostVo__1D072A30">
+            <End Role="CostVolumeToolLU" EntitySet="CostVolumeToolLU" />
             <End Role="Proposal" EntitySet="Proposal" />
           </AssociationSet>
           <AssociationSet Name="FK__Proposal__Reason__04DA9AE4" Association="Self.FK__Proposal__Reason__04DA9AE4">
@@ -3098,6 +3130,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <Parameter Name="ProposalCompletedDate" Mode="In" Type="DateTime" />
             <Parameter Name="ContractActionType" Mode="In" Type="Int32" />
             <Parameter Name="ContractActionTypeOtherText" Mode="In" Type="String" />
+            <Parameter Name="CostVolumeToolID" Mode="In" Type="Int32" />
+            <Parameter Name="CostVolumeToolName" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="upsertProposalChecklist" ReturnType="Collection(Int32)">
             <Parameter Name="ProposalChecklistID" Mode="In" Type="Int32" />
@@ -3477,6 +3511,11 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <End Role="ContractActionTypeLU" EntitySet="ContractActionTypeLUs" />
             <End Role="Proposal" EntitySet="Proposals" />
           </AssociationSet>
+          <EntitySet Name="CostVolumeToolLUs" EntityType="genTRACModel.CostVolumeToolLU" />
+          <AssociationSet Name="FK__Proposal__CostVo__1D072A30" Association="genTRACModel.FK__Proposal__CostVo__1D072A30">
+            <End Role="CostVolumeToolLU" EntitySet="CostVolumeToolLUs" />
+            <End Role="Proposal" EntitySet="Proposals" />
+          </AssociationSet>
           </EntityContainer>
         <ComplexType Name="CreatePARChecklistReport_Result">
           <Property Type="String" Name="QuestionNumber" Nullable="true" MaxLength="50" />
@@ -3623,6 +3662,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             <PropertyRef Name="IWTA" />
             <PropertyRef Name="PrimeOrSub" />
             <PropertyRef Name="RFPNumber" />
+            <PropertyRef Name="CostVolumeTool" />
           </Key>
           <Property Name="genTracProposalID" Type="Int32" Nullable="false" />
           <Property Name="TrackingNumber" Type="String" Nullable="false" MaxLength="13" FixedLength="false" Unicode="false" />
@@ -3660,6 +3700,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="IndependentReviewer" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
           <Property Name="MaterialLead" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
           <Property Name="SubcontractLead" Type="String" MaxLength="256" FixedLength="false" Unicode="false" />
+          <Property Name="CostVolumeTool" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="ContractTypeGroupLU">
           <Key>
@@ -4112,6 +4153,9 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <Property Name="ContractActionType" Type="Int32" />
           <Property Name="ContractActionTypeOtherText" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="ContractActionTypeLU" Relationship="genTRACModel.FK__Proposal__Contra__7310F064" FromRole="Proposal" ToRole="ContractActionTypeLU" />
+          <Property Name="CostVolumeToolID" Type="Int32" Nullable="false" />
+          <Property Name="CostVolumeToolName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="CostVolumeToolLU" Relationship="genTRACModel.FK__Proposal__CostVo__1D072A30" FromRole="Proposal" ToRole="CostVolumeToolLU" />
         </EntityType>
         <Association Name="FK_Proposal_BOEToolLU">
           <End Type="genTRACModel.BOEToolLU" Role="BOEToolLU" Multiplicity="1" />
@@ -4462,6 +4506,27 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
             </Principal>
             <Dependent Role="Proposal">
               <PropertyRef Name="ContractActionType" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CostVolumeToolLU">
+          <Key>
+            <PropertyRef Name="CostVolumeToolID" />
+          </Key>
+          <Property Name="CostVolumeToolID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CostVolumeTool" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="IsActive" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Proposals" Relationship="genTRACModel.FK__Proposal__CostVo__1D072A30" FromRole="CostVolumeToolLU" ToRole="Proposal" />
+        </EntityType>
+        <Association Name="FK__Proposal__CostVo__1D072A30">
+          <End Type="genTRACModel.CostVolumeToolLU" Role="CostVolumeToolLU" Multiplicity="1" />
+          <End Type="genTRACModel.Proposal" Role="Proposal" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CostVolumeToolLU">
+              <PropertyRef Name="CostVolumeToolID" />
+            </Principal>
+            <Dependent Role="Proposal">
+              <PropertyRef Name="CostVolumeToolID" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -4871,6 +4936,7 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="genTracDatas">
             <EntityTypeMapping TypeName="genTRACModel.genTracData">
               <MappingFragment StoreEntitySet="genTracData">
+                <ScalarProperty Name="CostVolumeTool" ColumnName="CostVolumeTool" />
                 <ScalarProperty Name="SubcontractLead" ColumnName="SubcontractLead" />
                 <ScalarProperty Name="MaterialLead" ColumnName="MaterialLead" />
                 <ScalarProperty Name="IndependentReviewer" ColumnName="IndependentReviewer" />
@@ -5226,6 +5292,8 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
           <EntitySetMapping Name="Proposals">
             <EntityTypeMapping TypeName="genTRACModel.Proposal">
               <MappingFragment StoreEntitySet="Proposal">
+                <ScalarProperty Name="CostVolumeToolName" ColumnName="CostVolumeToolName" />
+                <ScalarProperty Name="CostVolumeToolID" ColumnName="CostVolumeToolID" />
                 <ScalarProperty Name="ContractActionTypeOtherText" ColumnName="ContractActionTypeOtherText" />
                 <ScalarProperty Name="ContractActionType" ColumnName="ContractActionType" />
                 <ScalarProperty Name="ProposalCompletedDate" ColumnName="ProposalCompletedDate" />
@@ -5332,6 +5400,15 @@ warning 6002: The table/view 'genTrac.genBOE.genTracData' does not have a primar
               <MappingFragment StoreEntitySet="ContractActionTypeLU">
                 <ScalarProperty Name="ContractActionType" ColumnName="ContractActionType" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CostVolumeToolLUs">
+            <EntityTypeMapping TypeName="genTRACModel.CostVolumeToolLU">
+              <MappingFragment StoreEntitySet="CostVolumeToolLU">
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="CostVolumeTool" ColumnName="CostVolumeTool" />
+                <ScalarProperty Name="CostVolumeToolID" ColumnName="CostVolumeToolID" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
