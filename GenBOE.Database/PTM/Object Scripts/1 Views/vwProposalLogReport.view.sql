@@ -90,6 +90,10 @@ SELECT
 		WHEN P.BOEToolID = 6 AND P.BOEToolName IS NOT NULL THEN P.BOEToolName
 		ELSE B.BOETool
 	END AS [BOE Tool],
+	CASE
+		WHEN P.CostVolumeToolID = 3 AND P.CostVolumeToolName IS NOT NULL THEN P.CostVolumeToolName
+		ELSE CV.CostVolumeTool
+	END AS [Cost Volume Tool],
 	CAST(P.RFPIssuedDate AS DATE) AS [RFP Issued Date],
 	CAST(P.RFPReceivedDate AS DATE) AS [RFP Received Date],
 	P.[Comments],
@@ -185,6 +189,7 @@ SELECT
 	INNER JOIN dbo.ProposalTypeLU PT ON P.ProposalTypeID = PT.ProposalTypeID
 	INNER JOIN dbo.PricingToolLU T ON P.PricingToolID = T.PricingToolID
 	INNER JOIN dbo.BOEToolLU B ON P.BOEToolID = B.BOEToolID
+	INNER JOIN dbo.CostVolumeToolLU CV on P.CostVolumeToolID = CV.CostVolumeToolID
 	INNER JOIN dbo.ProposalLocationLU PLoc ON P.ProposalLocationID = PLoc.ProposalLocationID
 	INNER JOIN dbo.ProposalStatusLU PS ON P.ProposalStatusID = PS.ProposalStatusID
 	INNER JOIN dbo.CustomerTypeLU CusType ON P.CustomerTypeID = CusType.CustomerTypeID

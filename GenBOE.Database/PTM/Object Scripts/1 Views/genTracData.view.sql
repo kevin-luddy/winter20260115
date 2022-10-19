@@ -23,6 +23,7 @@ CREATE VIEW [genBOE].[genTracData] AS
 **		6/06/18		brunworg			BOEJ-3480 Renamed ProductLine and LineOfBusiness tables.
 **		11/19/19	twilson3			BOEJ-4312 Do not return Deleted Proposals
 **		10/29/21	Dusan				IES-460: Use Revised Anticipated Delivery Date when Available
+**		10/12/22	RJ					IES-1933 Cost Volume Tool
 *******************************************************************************/
 SELECT DISTINCT
 	P.ProposalID AS [genTracProposalID],
@@ -63,6 +64,8 @@ SELECT DISTINCT
 	PrcT.PricingTool AS [PricingTool],
 	
 	BT.BOETool AS [BOETool],
+
+	CVT.CostVolumeTool AS [CostVolumeTool],
 	
 	dbo.udfCreateCommaSeparatedList (P.ProposalID, 1) AS [ContractType],
 	dbo.udfCreateCommaSeparatedList (P.ProposalID, 2) AS [ElementsOfCost],
@@ -186,6 +189,7 @@ FROM [dbo].[Proposal] P
 	LEFT OUTER JOIN [dbo].[ProposalChecklist] PC ON P.ProposalID = PC.ProposalID
 	INNER JOIN [dbo].[BOEToolLU] BT ON BT.BOEToolID = P.BOEToolID
 	INNER JOIN [dbo].[PricingToolLU] PrcT ON PrcT.PricingToolID = P.PricingToolID
+	INNER JOIN [dbo].[CostVolumeToolLU] CVT ON CVT.CostVolumeToolID = P.CostVolumeToolID
 	INNER JOIN [dbo].[ProposalStatusLU] PS ON PS.ProposalStatusID = P.ProposalStatusID
 	INNER JOIN [dbo].[CustomerTypeLU] CT ON CT.CustomerTypeID = P.CustomerTypeID
 	INNER JOIN [dbo].[ISGSRoleLU] I ON I.ISGSRoleID = P.ISGSRoleID

@@ -98,7 +98,7 @@ namespace GenTRAC.Tests.DAL.Loader
                 BoeTool = BOETool.Excel,
                 ContractTypeGroup = 1, // ContractTypeGroup.CP,
                 ContractTypeIds = new List<int>() { 1, 4 }, // CostPlusAwardFee, FirmFixedPrice
-                CostElementTypeIds = new List<int> { (int)CostElementType.Labor},
+                CostElementTypeIds = new List<int> { (int)CostElementType.Labor },
                 Customer = proposalIdentifier,
                 CustomerType = CustomerType.InternationalForeignMilitarySaleUSGovt,
                 DeliveryDate = new DateTime(2013, 6, 1),
@@ -114,7 +114,7 @@ namespace GenTRAC.Tests.DAL.Loader
                 ProposalClass = 1,
                 RFPNumber = proposalIdentifier,
                 IsScheduleProposal = false,
-                DateAssigned = DateTime.Now, 
+                DateAssigned = DateTime.Now,
                 DateCreated = DateTime.Now,
                 RFPIssuedDate = new DateTime(2013, 4, 4),
                 RFPReceivedDate = new DateTime(2013, 5, 5),
@@ -136,7 +136,8 @@ namespace GenTRAC.Tests.DAL.Loader
                 ProposalSetupComments = "Setup comment",
                 ModExecutedLastEmailed = DateTime.UtcNow,
                 ContractActionType = ContractActionType.Other,
-                ContractActionTypeOtherText = "Other text."
+                ContractActionTypeOtherText = "Other text.",
+                CostVolumeTool = CostVolumeTool.ACV
             };
 
             int? newProposalID;
@@ -185,6 +186,7 @@ namespace GenTRAC.Tests.DAL.Loader
             ProposalLoader sut = this.CreateSystem();
             string boeToolName = "Big BOE";
             string pricingToolName = "Big Pricer";
+            string costVolumeToolName = "Big Cost Volume";
             string proposalLocationName = "Kansas City, MO";
 
             string proposalIdentifier = TestData.CreateRandomWord(6);
@@ -224,7 +226,9 @@ namespace GenTRAC.Tests.DAL.Loader
                 RFPReceivedDate = new DateTime(2013, 5, 5),
                 Comments = "my comment",
                 ProgramProposalStatus = ProgramProposalStatus.UnderStrategicReviewISGS,
-                IsCostVolumeClassified = false
+                IsCostVolumeClassified = false,
+                CostVolumeTool = CostVolumeTool.Other,
+                CostVolumeToolName = costVolumeToolName
             };
 
             int? newProposalID;
@@ -243,6 +247,8 @@ namespace GenTRAC.Tests.DAL.Loader
             Assert.AreEqual(pricingToolName, newProposal.PricingToolName);
             Assert.AreEqual(BOETool.Other, newProposal.BoeTool);
             Assert.AreEqual(boeToolName, newProposal.BoeToolName);
+            Assert.AreEqual(CostVolumeTool.Other, newProposal.CostVolumeTool);
+            Assert.AreEqual(costVolumeToolName, newProposal.CostVolumeToolName);
 
             // Make the proposal updateable
             newProposal.Id = (int)newProposalID;
@@ -253,7 +259,8 @@ namespace GenTRAC.Tests.DAL.Loader
             newProposal.ProposalLocation = ProposalLocation.ValleyForgePA;
             newProposal.PricingTool = PricingTool.Excel;
             newProposal.BoeTool = BOETool.ABE;
- 
+            newProposal.CostVolumeTool = CostVolumeTool.ACV;
+
             // Save the proposal
             using (TransactionScope scope = new TransactionScope())
             {
@@ -268,6 +275,8 @@ namespace GenTRAC.Tests.DAL.Loader
             Assert.IsTrue(string.IsNullOrEmpty(newProposal.PricingToolName));
             Assert.AreEqual(BOETool.ABE, newProposal.BoeTool);
             Assert.IsTrue(string.IsNullOrEmpty(newProposal.BoeToolName));
+            Assert.AreEqual(CostVolumeTool.ACV, newProposal.CostVolumeTool);
+            Assert.IsTrue(string.IsNullOrEmpty(newProposal.CostVolumeToolName));
 
             // add the created proposal to TestData so it is cleaned up
             this.testData.AddProposal(newProposal);
@@ -288,7 +297,7 @@ namespace GenTRAC.Tests.DAL.Loader
             Assert.AreEqual(testProposal.Id, toTest);
 
             // Test one that doesn't exist, and make sure that it doesn't start with F
-            Assert.AreEqual(-1, sut.GetIdByTrackingNumber("1" + TestData.CreateRandomWord(9))); 
+            Assert.AreEqual(-1, sut.GetIdByTrackingNumber("1" + TestData.CreateRandomWord(9)));
         }
 
         /// <summary>
@@ -437,7 +446,7 @@ namespace GenTRAC.Tests.DAL.Loader
         public void L_GetProposals_Forecasted()
         {
             ProposalLoader sut = this.CreateSystem();
-            
+
             ProposalDto proposal = this.testData.GetProposal(inCreateNew: true, isForecasted: true);
             UserDTO user = this.testData.GetUser(inCreateNew: true);
             this.testData.GetProposalPermission(true, new ProposalPermissionDto()
@@ -793,7 +802,7 @@ namespace GenTRAC.Tests.DAL.Loader
             proposal.LOBEstimatingLeadSignatureComment = "lob comment";
             proposal.LOBEstimatingLeadSignedDate = DateTime.Now;
 
-            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot}))
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Snapshot }))
             {
                 proposal.Updateable = UpdateType.Upsert;
                 sut.Save(proposal);
@@ -942,7 +951,7 @@ namespace GenTRAC.Tests.DAL.Loader
             ContractsDto contractsDto = new ContractsDto();
 
             using (TransactionScope scope = new TransactionScope())
-            {   
+            {
                 proposal.CertificationDate = DateTime.Now;
                 proposal.Updateable = UpdateType.Upsert;
 
@@ -953,7 +962,7 @@ namespace GenTRAC.Tests.DAL.Loader
                 contractsDto.PreviouslySubmittedROM = previouslySubmittedRom.Id; // FK, must exist
                 contractsDto.ContractsCorrespondenceLogNumber = "ABC123ABC";
                 contractsDto.Updateable = UpdateType.Upsert;
-                
+
                 contractsLoader.Save(contractsDto);
 
                 scope.Complete();
@@ -1199,7 +1208,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
             Assert.AreEqual("Due: " + anticipatedDeliveryDate.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR), result);
         }
-        
+
         /// <summary>
         /// Tests GetWorkflowCompletedLineText for In Progress proposals with a revised delivery date
         /// </summary>
@@ -1287,8 +1296,8 @@ namespace GenTRAC.Tests.DAL.Loader
 
             int userId = userLoader.GetByNtid(ntid).Id;
             ICollection<EppProposalData> result = sut.GetEppProposalData(ntid, isAdmin, null);
-            
-            foreach(int id in result.Select(x => x.ProposalId).ToList())
+
+            foreach (int id in result.Select(x => x.ProposalId).ToList())
             {
                 Assert.IsTrue(permissionsLoader.GetByIds(permissionsLoader.GetIdsByProposalId(id)).Any(x => x.UserId == userId && (x.Role == PtmRole.ContractsPOC || x.Role == PtmRole.BackupContractsPOC)));
             }

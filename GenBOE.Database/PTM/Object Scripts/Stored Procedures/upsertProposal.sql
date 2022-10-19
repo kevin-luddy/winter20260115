@@ -81,7 +81,9 @@ CREATE PROCEDURE [dbo].[upsertProposal]
 	  @ModExecutedLastEmailed datetime2 = NULL,
 	  @ProposalCompletedDate datetime2 = NULL,
 	  @ContractActionType int = NULL,
-	  @ContractActionTypeOtherText VARCHAR(100) = NULL
+	  @ContractActionTypeOtherText VARCHAR(100) = NULL,
+	  @CostVolumeToolID int,
+	  @CostVolumeToolName VARCHAR(50)
 )
 AS
 /******************************************************************************
@@ -119,6 +121,7 @@ AS
 **			3/10/2022   jquijano                IES-854 Add new email (Mod)
 **			4/28/2022	jquijano				IES-1067 Show Certification TimelineCompleted Date
 **			7/19/2022	ranzalon				IES-1504 - Contract Action Type
+**			10/12/2022	ranzalon				IES-1933 - Cost Volume Tool
 ******************************************************************************/
 SET NOCOUNT ON 
 DECLARE @ErrorMessage varchar (500)
@@ -265,6 +268,8 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,[ProposalCompletedDate]
 		,[ContractActionType]
 		,[ContractActionTypeOtherText]
+		,[CostVolumeToolID]
+		,[CostVolumeToolName]
 		)
 	OUTPUT inserted.ProposalID INTO @Inserted
 	VALUES
@@ -334,6 +339,8 @@ IF @ProposalID  < 0  /*Insert Record*/
 		,@ProposalCompletedDate
 		,@ContractActionType
 		,@ContractActionTypeOtherText
+		,@CostVolumeToolID
+		,@CostVolumeToolName
 		)
 
 		SELECT @ProposalID = ID FROM @Inserted
@@ -437,6 +444,8 @@ ELSE
 						,[ProposalCompletedDate] = @ProposalCompletedDate
 						,[ContractActionType] = @ContractActionType
 						,[ContractActionTypeOtherText] = @ContractActionTypeOtherText
+						,[CostVolumeToolID] = @CostVolumeToolID
+						,[CostVolumeToolName] = @CostVolumeToolName
 						WHERE 
 							ProposalID = @ProposalID;
 

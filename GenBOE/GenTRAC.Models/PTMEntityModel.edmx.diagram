@@ -111,6 +111,8 @@
         <AssociationConnector Association="genTRACModel.FK__ProposalC__CageC__6E4C3B47" />
         <EntityTypeShape EntityType="genTRACModel.ContractActionTypeLU" Width="1.5" PointX="16.375" PointY="0.875" />
         <AssociationConnector Association="genTRACModel.FK__Proposal__Contra__7310F064" />
+        <EntityTypeShape EntityType="genTRACModel.CostVolumeToolLU" Width="1.5" PointX="16.375" PointY="3.875" />
+        <AssociationConnector Association="genTRACModel.FK__Proposal__CostVo__1D072A30" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

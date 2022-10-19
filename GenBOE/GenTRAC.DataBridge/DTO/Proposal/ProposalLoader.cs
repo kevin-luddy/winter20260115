@@ -196,7 +196,9 @@ namespace GenTRAC.DataBridge.DTO
                             ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
                             ProposalCompletedDate = entity.ProposalCompletedDate,
                             ContractActionType = entity.ContractActionType,
-                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
+                            CostVolumeTool = (CostVolumeTool)entity.CostVolumeToolID,
+                            CostVolumeToolName = entity.CostVolumeToolName
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -234,7 +236,7 @@ namespace GenTRAC.DataBridge.DTO
                             CreatedByUserId = entity.CreatedByUserId,
                             IsScheduleProposal = entity.IsScheduleProposal,
                             ProgramProposalStatus = entity.ProgramProposalStatus,
-                            WorkflowStatus = (WorkflowStatus)entity.WorkflowStatus,
+                            WorkflowStatus = entity.WorkflowStatus,
                             WorkflowStatusLastUpdated = entity.WorkflowStatusLastUpdated,
                             LeadEstimatorSignedDate = entity.LeadEstimatorSignedDate,
                             LeadEstimatorSignatureComment = entity.LeadEstimatorSignatureComment,
@@ -269,7 +271,9 @@ namespace GenTRAC.DataBridge.DTO
                             ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
                             ProposalCompletedDate = entity.ProposalCompletedDate,
                             ContractActionType = (ContractActionType?)entity.ContractActionType,
-                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
+                            CostVolumeTool = entity.CostVolumeTool,
+                            CostVolumeToolName = entity.CostVolumeToolName
                         }).ToList();
                 }
             }
@@ -514,7 +518,7 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.ProposalTitle,
                             dtoToUpsert.OTISOpportunityID,
                             Convert.ToInt32(dtoToUpsert.ProposalStatus),
-                            (int)dtoToUpsert.ProposalType,
+                            dtoToUpsert.ProposalType,
                             false,
                             dtoToUpsert.ProgramName,
                             dtoToUpsert.Customer,
@@ -522,8 +526,8 @@ namespace GenTRAC.DataBridge.DTO
                             (int)dtoToUpsert.ISGSRole,
                             dtoToUpsert.Request,
                             dtoToUpsert.RFPNumber,
-                            (int)dtoToUpsert.LineOfBusinessID,
-                            (int)dtoToUpsert.ProgramAreaId,
+                            dtoToUpsert.LineOfBusinessID,
+                            dtoToUpsert.ProgramAreaId,
                             (int)dtoToUpsert.PricingTool,
                             (int)dtoToUpsert.BoeTool,
                             dtoToUpsert.DeliveryDate,
@@ -535,7 +539,7 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.RFPIssuedDate,
                             dtoToUpsert.RFPReceivedDate,
                             dtoToUpsert.Comments,
-                            (int)dtoToUpsert.ContractTypeGroup,
+                            dtoToUpsert.ContractTypeGroup,
                             dtoToUpsert.IsScheduleProposal,
                             (int)dtoToUpsert.ProposalLocation,
                             dtoToUpsert.ProposalLocationName = (dtoToUpsert.ProposalLocation != ProposalLocation.Other) ? string.Empty : dtoToUpsert.ProposalLocationName,
@@ -544,7 +548,7 @@ namespace GenTRAC.DataBridge.DTO
                             (int)((ProposalChecklistType.InternationalCommercial.IsActive() && (dtoToUpsert.CustomerType == CustomerType.InternationalCommercial || dtoToUpsert.CustomerType == CustomerType.StateAndLocal || dtoToUpsert.CustomerType == CustomerType.Commercial)) ? ProposalChecklistType.InternationalCommercial : ProposalChecklistType.Default),
                             dtoToUpsert.ChangeChecklist,
                             (int)dtoToUpsert.ProgramProposalStatus,
-                            (int)dtoToUpsert.ProposalClass,
+                            dtoToUpsert.ProposalClass,
                             (int)dtoToUpsert.WorkflowStatus,
                             dtoToUpsert.WorkflowStatusLastUpdated,
                             dtoToUpsert.LeadEstimatorSignedDate,
@@ -579,7 +583,9 @@ namespace GenTRAC.DataBridge.DTO
                             dtoToUpsert.ModExecutedLastEmailed,
                             dtoToUpsert.ProposalCompletedDate,
                             (int?)dtoToUpsert.ContractActionType,
-                            dtoToUpsert.ContractActionTypeOtherText).FirstOrDefault();
+                            dtoToUpsert.ContractActionTypeOtherText,
+                            (int)dtoToUpsert.CostVolumeTool,
+                            dtoToUpsert.CostVolumeToolName = dtoToUpsert.CostVolumeTool != CostVolumeTool.Other ? string.Empty : dtoToUpsert.CostVolumeToolName).FirstOrDefault();
                     }
                 }
             }
@@ -916,7 +922,9 @@ namespace GenTRAC.DataBridge.DTO
                         InformationComments = entity.InformationComments,
                         ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
                         ContractActionType = entity.ContractActionType,
-                        ContractActionTypeOtherText = entity.ContractActionTypeOtherText
+                        ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
+                        CostVolumeTool = (CostVolumeTool)entity.CostVolumeToolID,
+                        CostVolumeToolName = entity.CostVolumeToolName
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -954,7 +962,7 @@ namespace GenTRAC.DataBridge.DTO
                             CreatedByUserId = entity.CreatedByUserId,
                             IsScheduleProposal = entity.IsScheduleProposal,
                             ProgramProposalStatus = entity.ProgramProposalStatus,
-                            WorkflowStatus = (WorkflowStatus)entity.WorkflowStatus,
+                            WorkflowStatus = entity.WorkflowStatus,
                             WorkflowStatusLastUpdated = entity.WorkflowStatusLastUpdated,
                             LeadEstimatorSignedDate = entity.LeadEstimatorSignedDate,
                             LeadEstimatorSignatureComment = entity.LeadEstimatorSignatureComment,
@@ -988,7 +996,9 @@ namespace GenTRAC.DataBridge.DTO
                             ManageProposalInfoComments = entity.InformationComments,
                             ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
                             ContractActionType = (ContractActionType?)entity.ContractActionType,
-                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
+                            CostVolumeTool = entity.CostVolumeTool,
+                            CostVolumeToolName = entity.CostVolumeToolName
                         }).ToList();
                 }
             }
@@ -1081,7 +1091,9 @@ namespace GenTRAC.DataBridge.DTO
                         InformationComments = entity.InformationComments,
                         ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
                         ContractActionType = entity.ContractActionType,
-                        ContractActionTypeOtherText = entity.ContractActionTypeOtherText
+                        ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
+                        CostVolumeTool = (CostVolumeTool)entity.CostVolumeToolID,
+                        CostVolumeToolName = entity.CostVolumeToolName
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1119,7 +1131,7 @@ namespace GenTRAC.DataBridge.DTO
                             CreatedByUserId = entity.CreatedByUserId,
                             IsScheduleProposal = entity.IsScheduleProposal,
                             ProgramProposalStatus = entity.ProgramProposalStatus,
-                            WorkflowStatus = (WorkflowStatus)entity.WorkflowStatus,
+                            WorkflowStatus = entity.WorkflowStatus,
                             WorkflowStatusLastUpdated = entity.WorkflowStatusLastUpdated,
                             LeadEstimatorSignedDate = entity.LeadEstimatorSignedDate,
                             LeadEstimatorSignatureComment = entity.LeadEstimatorSignatureComment,
@@ -1153,7 +1165,9 @@ namespace GenTRAC.DataBridge.DTO
                             ManageProposalInfoComments = entity.InformationComments,
                             ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
                             ContractActionType = (ContractActionType?)entity.ContractActionType,
-                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
+                            CostVolumeTool = entity.CostVolumeTool,
+                            CostVolumeToolName = entity.CostVolumeToolName
                         }).ToList();
                 }
             }
@@ -1248,7 +1262,9 @@ namespace GenTRAC.DataBridge.DTO
                             InformationComments = entity.InformationComments,
                             ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
                             ContractActionType = entity.ContractActionType,
-                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
+                            CostVolumeTool = (CostVolumeTool)entity.CostVolumeToolID,
+                            CostVolumeToolName = entity.CostVolumeToolName
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1286,7 +1302,7 @@ namespace GenTRAC.DataBridge.DTO
                             CreatedByUserId = entity.CreatedByUserId,
                             IsScheduleProposal = entity.IsScheduleProposal,
                             ProgramProposalStatus = entity.ProgramProposalStatus,
-                            WorkflowStatus = (WorkflowStatus)entity.WorkflowStatus,
+                            WorkflowStatus = entity.WorkflowStatus,
                             WorkflowStatusLastUpdated = entity.WorkflowStatusLastUpdated,
                             LeadEstimatorSignedDate = entity.LeadEstimatorSignedDate,
                             LeadEstimatorSignatureComment = entity.LeadEstimatorSignatureComment,
@@ -1320,7 +1336,9 @@ namespace GenTRAC.DataBridge.DTO
                             ManageProposalInfoComments = entity.InformationComments,
                             ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
                             ContractActionType = (ContractActionType?)entity.ContractActionType,
-                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
+                            CostVolumeTool = entity.CostVolumeTool,
+                            CostVolumeToolName = entity.CostVolumeToolName
                         }).ToList();
                 }
             }
@@ -1432,7 +1450,9 @@ namespace GenTRAC.DataBridge.DTO
                             InformationComments = entity.InformationComments,
                             ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
                             ContractActionType = entity.ContractActionType,
-                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
+                            CostVolumeTool = (CostVolumeTool)entity.CostVolumeToolID,
+                            CostVolumeToolName = entity.CostVolumeToolName
                         }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1470,7 +1490,7 @@ namespace GenTRAC.DataBridge.DTO
                             CreatedByUserId = entity.CreatedByUserId,
                             IsScheduleProposal = entity.IsScheduleProposal,
                             ProgramProposalStatus = entity.ProgramProposalStatus,
-                            WorkflowStatus = (WorkflowStatus)entity.WorkflowStatus,
+                            WorkflowStatus = entity.WorkflowStatus,
                             WorkflowStatusLastUpdated = entity.WorkflowStatusLastUpdated,
                             LeadEstimatorSignedDate = entity.LeadEstimatorSignedDate,
                             LeadEstimatorSignatureComment = entity.LeadEstimatorSignatureComment,
@@ -1504,7 +1524,9 @@ namespace GenTRAC.DataBridge.DTO
                             ManageProposalInfoComments = entity.InformationComments,
                             ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
                             ContractActionType = (ContractActionType?)entity.ContractActionType,
-                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
+                            CostVolumeTool = entity.CostVolumeTool,
+                            CostVolumeToolName = entity.CostVolumeToolName
                         }).ToList();
                 }
             }
@@ -1529,7 +1551,7 @@ namespace GenTRAC.DataBridge.DTO
                 var data = context.Proposals.GroupJoin(context.ProposalContractsDatas, p => p.ProposalID, c => c.ProposalID, (p, c) => new { p, c })
                         .SelectMany(prop => prop.c.DefaultIfEmpty(), (prop, cont) => new { Proposals = prop.p, Contracts = cont })
                         .Where(x =>
-                            (x.Contracts.ModCompletedDate == null 
+                            (x.Contracts.ModCompletedDate == null
                                 && x.Contracts.LmWon != false
                                 && x.Proposals.CertificationDate > featureStartDate
                             ) // Overall filtering - Mod date missing, proposal not marked as lost, proposal was completed after the feature was deployed
@@ -1613,7 +1635,9 @@ namespace GenTRAC.DataBridge.DTO
                     ManageProposalInfoComments = x.Proposals.InformationComments,
                     ModExecutedLastEmailed = x.Proposals.ModExecutedLastEmailed,
                     ContractActionType = (ContractActionType?)x.Proposals.ContractActionType,
-                    ContractActionTypeOtherText = x.Proposals.ContractActionTypeOtherText
+                    ContractActionTypeOtherText = x.Proposals.ContractActionTypeOtherText,
+                    CostVolumeTool = (CostVolumeTool)x.Proposals.CostVolumeToolID,
+                    CostVolumeToolName = x.Proposals.CostVolumeToolName
                 }).ToList();
             }
 
@@ -1713,7 +1737,9 @@ namespace GenTRAC.DataBridge.DTO
                         InformationComments = entity.Proposals.InformationComments,
                         ModExecutedLastEmailed = entity.Proposals.ModExecutedLastEmailed,
                         ContractActionType = entity.Proposals.ContractActionType,
-                        ContractActionTypeOtherText = entity.Proposals.ContractActionTypeOtherText
+                        ContractActionTypeOtherText = entity.Proposals.ContractActionTypeOtherText,
+                        CostVolumeTool = (CostVolumeTool)entity.Proposals.CostVolumeToolID,
+                        CostVolumeToolName = entity.Proposals.CostVolumeToolName
                     }).ToList()
                         .Select(entity => new ProposalDto() // this is needed to deal w/ the .ToList()
                         {
@@ -1751,7 +1777,7 @@ namespace GenTRAC.DataBridge.DTO
                             CreatedByUserId = entity.CreatedByUserId,
                             IsScheduleProposal = entity.IsScheduleProposal,
                             ProgramProposalStatus = entity.ProgramProposalStatus,
-                            WorkflowStatus = (WorkflowStatus)entity.WorkflowStatus,
+                            WorkflowStatus = entity.WorkflowStatus,
                             WorkflowStatusLastUpdated = entity.WorkflowStatusLastUpdated,
                             LeadEstimatorSignedDate = entity.LeadEstimatorSignedDate,
                             LeadEstimatorSignatureComment = entity.LeadEstimatorSignatureComment,
@@ -1785,7 +1811,9 @@ namespace GenTRAC.DataBridge.DTO
                             ManageProposalInfoComments = entity.InformationComments,
                             ModExecutedLastEmailed = entity.ModExecutedLastEmailed,
                             ContractActionType = (ContractActionType?)entity.ContractActionType,
-                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText
+                            ContractActionTypeOtherText = entity.ContractActionTypeOtherText,
+                            CostVolumeTool = entity.CostVolumeTool,
+                            CostVolumeToolName = entity.CostVolumeToolName
                         }).ToList();
                 }
             }
@@ -2004,7 +2032,7 @@ namespace GenTRAC.DataBridge.DTO
                             LobDescription = entity.LineOfBusinessLU.LineOfBusinessName,
                             PaDescription = entity.ProgramAreaLU.ProgramAreaName,
                             ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
-                            Customer = entity.Customer                            
+                            Customer = entity.Customer
                         }).Take(50).ToList()
                         .Select(entity => new EppProposalData()
                         {
@@ -2090,7 +2118,7 @@ namespace GenTRAC.DataBridge.DTO
                             ProposalTitle = entity.ProposalTitle,
                             ProgramAreaId = entity.ProgramAreaID,
                             // IES-891: If Revised Anticipated Delivery Date (DB field RevisedSubmittalDate) is available, use that date in place of the Anticipated Delivery Date
-                            AnticipatedDeliveryDate = entity.RevisedSubmittalDate ?? entity.AnticipatedDeliveryDate, 
+                            AnticipatedDeliveryDate = entity.RevisedSubmittalDate ?? entity.AnticipatedDeliveryDate,
                             LobDescription = entity.LineOfBusinessLU.LineOfBusinessName,
                             PaDescription = entity.ProgramAreaLU.ProgramAreaName,
                             ContractTypeIds = entity.ContractTypeLUs.Select(x => x.ContractTypeID),
@@ -2123,7 +2151,7 @@ namespace GenTRAC.DataBridge.DTO
         public ICollection<SelectListItem> GetRomProposalOptions(int? selectedValue)
         {
             ICollection<SelectListItem> result;
- 
+
             using (StopwatchTimer sw = new StopwatchTimer("ProposalLoader.GetRomProposalOptions", Log))
             {
                 using (genTRACEntities dbModel = new genTRACEntities())

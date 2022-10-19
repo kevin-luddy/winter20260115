@@ -50,5 +50,6 @@ namespace GenTRAC.Models
         public string IndependentReviewer { get; set; }
         public string MaterialLead { get; set; }
         public string SubcontractLead { get; set; }
+        public string CostVolumeTool { get; set; }
     }
 }

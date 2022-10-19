@@ -100,6 +100,8 @@ namespace GenTRAC.Models
         public Nullable<System.DateTime> ProposalCompletedDate { get; set; }
         public Nullable<int> ContractActionType { get; set; }
         public string ContractActionTypeOtherText { get; set; }
+        public int CostVolumeToolID { get; set; }
+        public string CostVolumeToolName { get; set; }
     
         public virtual BOEToolLU BOEToolLU { get; set; }
         public virtual ContractTypeGroupLU ContractTypeGroupLU { get; set; }
@@ -141,5 +143,6 @@ namespace GenTRAC.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CostElementLU> CostElementLUs { get; set; }
         public virtual ContractActionTypeLU ContractActionTypeLU { get; set; }
+        public virtual CostVolumeToolLU CostVolumeToolLU { get; set; }
     }
 }
