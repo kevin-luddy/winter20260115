@@ -47,7 +47,7 @@ namespace GenTRAC.Tests.DAL
 
             // 4 UNTESTABLE_PROPOERTIES properties we can't test from UpdateableDTO
             // 70 testable DTO properties that are asserted below
-            Assert.AreEqual(UNTESTABLE_PROPERTIES + 72, numProperties, "Untested properties exist in the DTO.");
+            Assert.AreEqual(UNTESTABLE_PROPERTIES + 74, numProperties, "Untested properties exist in the DTO.");
 
             // 0
             Assert.AreEqual(expectedResult.ProposalTitle, actualResult.ProposalTitle);
@@ -144,6 +144,8 @@ namespace GenTRAC.Tests.DAL
             //70
             Assert.AreEqual(expectedResult.ContractActionType, actualResult.ContractActionType);
             Assert.AreEqual(expectedResult.ContractActionTypeOtherText, actualResult.ContractActionTypeOtherText);
+            Assert.AreEqual(expectedResult.CostVolumeTool, actualResult.CostVolumeTool);
+            Assert.AreEqual(expectedResult.CostVolumeToolName, actualResult.CostVolumeToolName);
 
             #region Additional Verification
 
@@ -165,7 +167,7 @@ namespace GenTRAC.Tests.DAL
             if (legacy)
             {
                 Assert.IsTrue(actualResult.TrackingNumber.StartsWith(DateTime.Now.Year.ToString()));
-                Assert.IsTrue(actualResult.TrackingNumber.Length <= 13); 
+                Assert.IsTrue(actualResult.TrackingNumber.Length <= 13);
             }
             else
             {
@@ -331,7 +333,7 @@ namespace GenTRAC.Tests.DAL
             Assert.AreEqual(expectedResult.IsSubmit, actualResult.IsSubmit);
 
             Assert.AreEqual(expectedResult.DeliverChecklistDFARS, actualResult.DeliverChecklistDFARS);
-            
+
             // TODO: check if this value should be false or null, assert is failing
             // Assert.AreEqual(expectedResult.IsCCPDRequired, actualResult.IsCCPDRequired);
 
@@ -354,9 +356,9 @@ namespace GenTRAC.Tests.DAL
         /// <param name="actualResponses">Actual responses</param>
         public static void AssertChecklistResponses(ICollection<ChecklistResponseItem> expectedResponses, ICollection<ChecklistResponseItem> actualResponses)
         {
-            if (expectedResponses == null) 
-            { 
-                throw new ArgumentNullException(nameof(expectedResponses)); 
+            if (expectedResponses == null)
+            {
+                throw new ArgumentNullException(nameof(expectedResponses));
             }
 
             if (actualResponses == null)
@@ -497,7 +499,7 @@ namespace GenTRAC.Tests.DAL
                 Assert.AreEqual(expectedResult.ParentIds.Count, actualResult.ParentIds.Count);
                 Assert.AreEqual(expectedResult.ParentIds.First(), actualResult.ParentIds.First());
             }
-            
+
             Assert.AreEqual(expectedResult.IsActive, actualResult.IsActive);
         }
     }

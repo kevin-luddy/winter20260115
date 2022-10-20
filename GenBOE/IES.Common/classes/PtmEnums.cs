@@ -740,6 +740,43 @@ namespace IES.Common
 	}
 
 	/// <summary>
+	/// Defines Cost Volume tool
+	/// "Other" allows free form Cost Volume Tool data to be entered
+	/// </summary>
+	public enum CostVolumeTool
+	{
+		/// <summary>
+		/// Uninitialized/default value
+		/// </summary>
+		[Description("Select Cost Volume Tool")]
+		NotSet = 0,
+
+		/// <summary>
+		/// ACV
+		/// </summary>
+		[Description("ACV")]
+		ACV = 1,
+
+		/// <summary>
+		/// MS Word
+		/// </summary>
+		[Description("Word")]
+		Word = 2,
+
+		/// <summary>
+		/// Other
+		/// </summary>
+		[Description("Other")]
+		Other = 3,
+
+		/// <summary>
+		/// N/A
+		/// </summary>
+		[Description("N/A")]
+		NA = 4
+	}
+
+	/// <summary>
 	/// Defines resource type
 	/// </summary>
 	public enum ResourceType
