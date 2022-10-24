@@ -510,7 +510,17 @@ namespace GenTRAC.Tests.DAL
         /// <param name="actualResult">Actual result, from the DB.</param>
         public static void AssertDtos(CoverSheetDataDto expectedResult, CoverSheetDataDto actualResult)
         {
-            Assert.AreEqual(expectedResult.CageCode, actualResult.CageCode);
+			if (actualResult == null)
+			{
+				throw new ArgumentNullException(nameof(actualResult));
+			}
+
+			if (expectedResult == null)
+			{
+				throw new ArgumentNullException(nameof(expectedResult));
+			}
+
+			Assert.AreEqual(expectedResult.CageCode, actualResult.CageCode);
             Assert.AreEqual(expectedResult.IsCCPDRequired, actualResult.IsCCPDRequired);
             Assert.AreEqual(expectedResult.ContractActionType, actualResult.ContractActionType);
             Assert.AreEqual(expectedResult.ContractsLead, actualResult.ContractsLead);
