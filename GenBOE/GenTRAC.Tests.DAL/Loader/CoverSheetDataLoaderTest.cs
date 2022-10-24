@@ -120,7 +120,6 @@ namespace GenTRAC.Tests.DAL.Loader
 
 			CageCodesLoader cageCodesLoader = new CageCodesLoader();
 			ContractsLoader contractsLoader = new ContractsLoader();
-			UserLoader userLoader = new UserLoader();
 
 			CageCodeDTO cageCode = cageCodesLoader.GetAllCageCodesData().First();
 
