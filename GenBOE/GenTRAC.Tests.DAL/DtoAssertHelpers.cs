@@ -532,11 +532,18 @@ namespace GenTRAC.Tests.DAL
             Assert.AreEqual(expectedResult.LMSpaceTotalPrice, actualResult.LMSpaceTotalPrice);
             Assert.AreEqual(expectedResult.OtherContractActionType, actualResult.OtherContractActionType);
             Assert.AreEqual(expectedResult.ProfitFee, actualResult.ProfitFee);
-            
-            Assert.AreEqual(expectedResult.OfferorAddress.Count, actualResult.OfferorAddress.Count);
-            for (int i = 0; i < expectedResult.OfferorAddress.Count; i++)
+
+            if (expectedResult.OfferorAddress is null)
             {
-                Assert.AreEqual(expectedResult.OfferorAddress.ElementAt(i), actualResult.OfferorAddress.ElementAt(i));
+                Assert.IsNull(actualResult.OfferorAddress);
+            }
+            else
+            {
+                Assert.AreEqual(expectedResult.OfferorAddress.Count, actualResult.OfferorAddress.Count);
+                for (int i = 0; i < expectedResult.OfferorAddress.Count; i++)
+                {
+                    Assert.AreEqual(expectedResult.OfferorAddress.ElementAt(i), actualResult.OfferorAddress.ElementAt(i));
+                }
             }
         }
 	}

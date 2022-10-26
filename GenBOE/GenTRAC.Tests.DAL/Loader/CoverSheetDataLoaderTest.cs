@@ -247,7 +247,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
 				// missing cage codes
 				CageCode = null,
-				OfferorAddress = new List<string>() { null }
+				OfferorAddress = null
 			};
 
 
@@ -317,7 +317,7 @@ namespace GenTRAC.Tests.DAL.Loader
 
 				// missing contracts data
 				CageCode = null,
-				OfferorAddress = new List<string>() { null },
+				OfferorAddress = null,
 				CustomerSubmittalDate = null,
 			};
 
