@@ -6,138 +6,323 @@
 
 namespace GenTRAC.Tests.DAL.Loader
 {
-    using System;
-    using System.Collections.Generic;
-    using GenTRAC.DataBridge.DTO;
-    using GenTRAC.Objects;
-    using IES.Common;
-    using Microsoft.Practices.Unity;
-    using Microsoft.VisualStudio.TestTools.UnitTesting;
-    using Moq;
+	using System;
+	using System.Collections.Generic;
+	using System.Linq;
+	using System.Transactions;
+	using GenTRAC.DataBridge.DTO;
+	using GenTRAC.DataBridge.DTO.Contracts;
+	using IES.Common;
+	using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-    /// <summary>
-    /// Tests for the Cover Sheet Data Loader
-    /// </summary>
-    [TestClass]
+	/// <summary>
+	/// Tests for the Cover Sheet Data Loader
+	/// </summary>
+	[TestClass]
     public class CoverSheetDataLoaderTest
     {
-        /// <summary>
-        /// Gets or sets the Cover Sheet Data Loader
+		/// <summary>
+        /// Handle to the test data
         /// </summary>
-        private Mock<ICoverSheetDataLoader> CoverSheetDataLoader { get; set; }
+        private TestData testData = TestData.GetInstance();
 
-        /// <summary>
-        /// Gets or sets the Proposal Loader.
-        /// </summary>
-        private Mock<IProposalLoader> ProposalLoader { get; set; }
-
-        /// <summary>
-        /// Object Factory
-        /// </summary>
-        protected Mock<IFullObjectFactory> ObjectFactory { get; set; }
-
-        /// <summary>
-        /// The user mapper
-        /// </summary>
-        protected Mock<IUserMapper> UserMapper { get; set; }
-
-        /// <summary>
-        /// Retriever
-        /// </summary>
-        private Mock<IRetriever> retriever = null;
-
-        /// <summary>
-        /// Initialize
-        /// </summary>
-        [TestInitialize]
-        public void Initialize()
+		/// <summary>
+		/// Get Cover Sheet Data by Id - Without Checklist
+		/// </summary>
+		[TestMethod]
+        public void GetCoverSheetDataByIdTest_WithoutChecklist()
         {
-            // De-null properties with Mock data
-            CoverSheetDataLoader = new Mock<ICoverSheetDataLoader>();
-            ProposalLoader = new Mock<IProposalLoader>();
-            ObjectFactory = new Mock<IFullObjectFactory>();
-            UserMapper = new Mock<IUserMapper>();
+            CoverSheetDataLoader sut = new CoverSheetDataLoader();
 
-            this.retriever = new Mock<IRetriever>();
-            IES.Common.classes.GenBOEUnityContainer.Container.RegisterInstance(this.retriever.Object);
-        }
+			CageCodesLoader cageCodesLoader = new CageCodesLoader();
+			ContractsLoader contractsLoader = new ContractsLoader();
+			ProposalPermissionLoader proposalPermissionLoader = new ProposalPermissionLoader();
+            UserLoader userLoader = new UserLoader();
 
-        /// <summary>
-        /// Get Cover Sheet Data by Id
-        /// </summary>
-        [TestMethod]
-        public void GetCoverSheetDataByIdTest()
-        {
-            int proposalId = 1;
-            DateTime dateToTest = new DateTime(2010, 8, 18, 16, 32, 0);
-                        
-            // Prepare a fake proposal Dto
-            ProposalDto fakeProposalDto = new ProposalDto()
-            {
-                Id = proposalId,
-                ProposalTitle = "Test Title",
-                TrackingNumber = "123456",
-                OTISOpportunityID = "9999",
-                ProposalStatus = ProposalStatus.InProgress,
-                ContractActionType = ContractActionType.PriceRevisionRedetermination,
-                ContractTypeGroup = 1,
-                ContractTypeIds = new List<int>() { 1, 2, 3, 4 },
-                CostElementTypeIds = new List<int>() { 1, 2, 3, 4 },
-                UpdateDateAssigned = false,
-                ForecastedTrackingNumber = "ABC",
-                IsForecastProposal = false,
-                HasWriteAccessToLinkedDocument = false,
-                CoverSheetApproverSignedDate = dateToTest,
-                IsCCPDRequired = true
-            };
+			CageCodeDTO cageCode = cageCodesLoader.GetAllCageCodesData().First();
+            int userId = userLoader.GetByNtid("paliderd").Id;
 
-            // Prepare expected Cover Sheet Data
-            CoverSheetDataDto expectedCoverSheetDataDto = new CoverSheetDataDto()
-            {
-                IsCCPDRequired = true,
-                ContractActionType = ContractActionType.PriceRevisionRedetermination,
-                ContractTypeGroup = 1,
-                CoverSheetApproverNtid = "fakeuser2",
-                CoverSheetApproverSignedDate = dateToTest,
-                CustomerSubmittalDate = dateToTest,
-                CageCode = "ABCXYZ",
-                OfferorAddress = new List<string>()
+			// Proposal Dto
+			ProposalDto prop = testData.GetProposal(true);
+
+			// Proposal Contract Data
+			ContractsDto contractsData = new ContractsDto()
+			{
+				Id = -1,
+				Updateable = UpdateType.Upsert,
+				CageCode = cageCode.CageCode,
+				CustomerSubmittalDate = DateTime.Now.Date,
+				ProposalId = prop.Id,
+                ContractsCorrespondenceLogNumber = "booo hoo"
+			};
+
+            List<ProposalPermissionDto> permissions = new List<ProposalPermissionDto>()
+            { 
+                new ProposalPermissionDto()
                 {
-                    "Address 1 Mock",
-                    "Address 2 Mock",
-                    "City Mock",
-                    "State Mock",
-                    "Zip Mock"
+                    ProposalID = prop.Id,
+                    Updateable = UpdateType.Upsert,
+                    Id = -1,
+                    Role = PtmRole.ContractsPOC,
+                    UserId = userId
                 },
-                ContractsLead = "fakeuser6"
-            };
+				new ProposalPermissionDto()
+				{
+					ProposalID = prop.Id,
+					Updateable = UpdateType.Upsert,
+					Id = -2,
+					Role = PtmRole.CoverSheetApprover,
+					UserId = userId
+				}
+			};
 
-            // Setup returns
-            ProposalLoader.Setup(x => x.GetById(proposalId)).Returns(fakeProposalDto);
-            CoverSheetDataLoader.Setup(x => x.GetCoverSheetDataById(proposalId)).Returns(expectedCoverSheetDataDto);
+			using (TransactionScope scope = new TransactionScope())
+            {
+				contractsLoader.Save(contractsData);
+                proposalPermissionLoader.Save(permissions);
 
-            CoverSheetDataDto resultingCoverSheetDataDto = CoverSheetDataLoader.Object.GetCoverSheetDataById(proposalId);
+				scope.Complete();
+            }
 
-            Assert.IsNotNull(resultingCoverSheetDataDto);
-            Assert.AreEqual(expectedCoverSheetDataDto, resultingCoverSheetDataDto);
+			CoverSheetDataDto actualData = sut.GetCoverSheetDataById(prop.Id);
+
+            CoverSheetDataDto expectedData = new CoverSheetDataDto()
+            {
+                CageCode = cageCode.CageCode,
+                OfferorAddress = new List<string>() { cageCode.Address1, cageCode.Address2, cageCode.City, cageCode.State, cageCode.Zip },
+                CoverSheetApproverNtid = "paliderd",
+                ContractActionType = prop.ContractActionType,
+                ContractsLead = "paliderd",
+                CoverSheetApproverSignedDate = prop.CoverSheetApproverSignedDate,
+                OtherContractActionType = prop.ContractActionTypeOtherText,
+                ContractTypeGroup = prop.ContractTypeGroup,
+                CustomerSubmittalDate = contractsData.CustomerSubmittalDate,
+                IsCCPDRequired = prop.IsCCPDRequired,
+
+				// missing checklist data..
+				CostThroughCom = null,
+				ProfitFee = null,
+				LMSpaceTotalPrice = null
+			};
+
+
+			Assert.IsNotNull(actualData);
+            DtoAssertHelpers.AssertDtos(expectedData, actualData);
         }
 
-        /// <summary>
-        /// Get Cover Sheet Data by Id empty proposal test
-        /// </summary>
-        [TestMethod]
-        public void GetCoverSheetDataByIdTestEmptyProposal()
-        {
-            int proposalId = 1;
-            DateTime dateToTest = new DateTime(2010, 8, 18, 16, 32, 0);
+		/// <summary>
+		/// Get Cover Sheet Data by Id - Without roles
+		/// </summary>
+		[TestMethod]
+		public void GetCoverSheetDataByIdTest_WithoutRoles()
+		{
+			CoverSheetDataLoader sut = new CoverSheetDataLoader();
 
-            // Prepare a fake proposal Dto
-            ProposalDto fakeProposalDto = null;
+			CageCodesLoader cageCodesLoader = new CageCodesLoader();
+			ContractsLoader contractsLoader = new ContractsLoader();
 
-            // Setup expected data
-            ProposalLoader.Setup(x => x.GetById(proposalId)).Returns(fakeProposalDto);
+			CageCodeDTO cageCode = cageCodesLoader.GetAllCageCodesData().First();
 
-            Assert.IsNull(CoverSheetDataLoader.Object.GetCoverSheetDataById(proposalId));
-        }
-    }
+			// Proposal Dto
+			ProposalDto prop = testData.GetProposal(true);
+
+			// Proposal Contract Data
+			ContractsDto contractsData = new ContractsDto()
+			{
+				Id = -1,
+				Updateable = UpdateType.Upsert,
+				CageCode = cageCode.CageCode,
+				CustomerSubmittalDate = DateTime.Now.Date,
+				ProposalId = prop.Id,
+				ContractsCorrespondenceLogNumber = "booo hoo"
+			};
+
+			using (TransactionScope scope = new TransactionScope())
+			{
+				contractsLoader.Save(contractsData);
+
+				scope.Complete();
+			}
+
+			CoverSheetDataDto actualData = sut.GetCoverSheetDataById(prop.Id);
+
+			CoverSheetDataDto expectedData = new CoverSheetDataDto()
+			{
+				CageCode = cageCode.CageCode,
+				OfferorAddress = new List<string>() { cageCode.Address1, cageCode.Address2, cageCode.City, cageCode.State, cageCode.Zip },
+				ContractActionType = prop.ContractActionType,
+				CoverSheetApproverSignedDate = prop.CoverSheetApproverSignedDate,
+				OtherContractActionType = prop.ContractActionTypeOtherText,
+				ContractTypeGroup = prop.ContractTypeGroup,
+				CustomerSubmittalDate = contractsData.CustomerSubmittalDate,
+				IsCCPDRequired = prop.IsCCPDRequired,
+
+				// missing checklist data..
+				CostThroughCom = null,
+				ProfitFee = null,
+				LMSpaceTotalPrice = null,
+
+				// missing roles
+				ContractsLead = null,
+				CoverSheetApproverNtid = null
+			};
+
+
+			Assert.IsNotNull(actualData);
+			DtoAssertHelpers.AssertDtos(expectedData, actualData);
+		}
+
+		/// <summary>
+		/// Get Cover Sheet Data by Id - Without Cage Code
+		/// </summary>
+		[TestMethod]
+		public void GetCoverSheetDataByIdTest_WithoutCageCode()
+		{
+			CoverSheetDataLoader sut = new CoverSheetDataLoader();
+
+			ContractsLoader contractsLoader = new ContractsLoader();
+			ProposalPermissionLoader proposalPermissionLoader = new ProposalPermissionLoader();
+			UserLoader userLoader = new UserLoader();
+
+			int userId = userLoader.GetByNtid("paliderd").Id;
+
+			// Proposal Dto
+			ProposalDto prop = testData.GetProposal(true);
+
+			// Proposal Contract Data
+			ContractsDto contractsData = new ContractsDto()
+			{
+				Id = -1,
+				Updateable = UpdateType.Upsert,
+				CustomerSubmittalDate = DateTime.Now.Date,
+				ProposalId = prop.Id,
+				ContractsCorrespondenceLogNumber = "booo hoo"
+			};
+
+			List<ProposalPermissionDto> permissions = new List<ProposalPermissionDto>()
+			{
+				new ProposalPermissionDto()
+				{
+					ProposalID = prop.Id,
+					Updateable = UpdateType.Upsert,
+					Id = -1,
+					Role = PtmRole.ContractsPOC,
+					UserId = userId
+				},
+				new ProposalPermissionDto()
+				{
+					ProposalID = prop.Id,
+					Updateable = UpdateType.Upsert,
+					Id = -2,
+					Role = PtmRole.CoverSheetApprover,
+					UserId = userId
+				}
+			};
+
+			using (TransactionScope scope = new TransactionScope())
+			{
+				contractsLoader.Save(contractsData);
+				proposalPermissionLoader.Save(permissions);
+
+				scope.Complete();
+			}
+
+			CoverSheetDataDto actualData = sut.GetCoverSheetDataById(prop.Id);
+
+			CoverSheetDataDto expectedData = new CoverSheetDataDto()
+			{
+				CoverSheetApproverNtid = "paliderd",
+				ContractActionType = prop.ContractActionType,
+				ContractsLead = "paliderd",
+				CoverSheetApproverSignedDate = prop.CoverSheetApproverSignedDate,
+				OtherContractActionType = prop.ContractActionTypeOtherText,
+				ContractTypeGroup = prop.ContractTypeGroup,
+				CustomerSubmittalDate = contractsData.CustomerSubmittalDate,
+				IsCCPDRequired = prop.IsCCPDRequired,
+
+				// missing checklist data..
+				CostThroughCom = null,
+				ProfitFee = null,
+				LMSpaceTotalPrice = null,
+
+				// missing cage codes
+				CageCode = null,
+				OfferorAddress = null
+			};
+
+
+			Assert.IsNotNull(actualData);
+			DtoAssertHelpers.AssertDtos(expectedData, actualData);
+		}
+
+		/// <summary>
+		/// Get Cover Sheet Data by Id - Without Checklist
+		/// </summary>
+		[TestMethod]
+		public void GetCoverSheetDataByIdTest_WithoutContractsData()
+		{
+			CoverSheetDataLoader sut = new CoverSheetDataLoader();
+
+			ProposalPermissionLoader proposalPermissionLoader = new ProposalPermissionLoader();
+			UserLoader userLoader = new UserLoader();
+
+			int userId = userLoader.GetByNtid("paliderd").Id;
+
+			// Proposal Dto
+			ProposalDto prop = testData.GetProposal(true);
+
+			List<ProposalPermissionDto> permissions = new List<ProposalPermissionDto>()
+			{
+				new ProposalPermissionDto()
+				{
+					ProposalID = prop.Id,
+					Updateable = UpdateType.Upsert,
+					Id = -1,
+					Role = PtmRole.ContractsPOC,
+					UserId = userId
+				},
+				new ProposalPermissionDto()
+				{
+					ProposalID = prop.Id,
+					Updateable = UpdateType.Upsert,
+					Id = -2,
+					Role = PtmRole.CoverSheetApprover,
+					UserId = userId
+				}
+			};
+
+			using (TransactionScope scope = new TransactionScope())
+			{
+				proposalPermissionLoader.Save(permissions);
+
+				scope.Complete();
+			}
+
+			CoverSheetDataDto actualData = sut.GetCoverSheetDataById(prop.Id);
+
+			CoverSheetDataDto expectedData = new CoverSheetDataDto()
+			{
+				CoverSheetApproverNtid = "paliderd",
+				ContractActionType = prop.ContractActionType,
+				ContractsLead = "paliderd",
+				CoverSheetApproverSignedDate = prop.CoverSheetApproverSignedDate,
+				OtherContractActionType = prop.ContractActionTypeOtherText,
+				ContractTypeGroup = prop.ContractTypeGroup,
+				IsCCPDRequired = prop.IsCCPDRequired,
+
+				// missing checklist data..
+				CostThroughCom = null,
+				ProfitFee = null,
+				LMSpaceTotalPrice = null,
+
+				// missing contracts data
+				CageCode = null,
+				OfferorAddress = null,
+				CustomerSubmittalDate = null,
+			};
+
+			Assert.IsNotNull(actualData);
+			DtoAssertHelpers.AssertDtos(expectedData, actualData);
+		}
+	}
 }
