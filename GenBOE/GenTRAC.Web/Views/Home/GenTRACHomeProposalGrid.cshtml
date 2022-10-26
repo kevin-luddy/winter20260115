@@ -142,7 +142,7 @@
                 @if (!item.IsForecastProposal)
                 {
                     <br />
-                    <a title="View or Edit Post Submittal Attachments" class="fa fa-paperclip button psa-button" onmousedown="HomeProposalWidget.ShowPostSubmittalAttachments(event, '@item.ProposalId');"></a>
+                    <a title="View or Edit Attachments" class="fa fa-paperclip button psa-button" onmousedown="HomeProposalWidget.ShowPostSubmittalAttachments(event, '@item.ProposalId');"></a>
                     if (item.Workspaces.Any() || (Model.CanCreateBOEWorkspace && item.Status != ProposalStatus.NoBid && item.Status != ProposalStatus.Revised))
                     {
                         <div class="dropdown">
