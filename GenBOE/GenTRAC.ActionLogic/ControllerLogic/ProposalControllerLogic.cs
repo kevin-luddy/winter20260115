@@ -93,6 +93,11 @@ namespace GenTRAC.ActionLogic
 		private IPtmEmailer emailer;
 
 		/// <summary>
+		/// Contracts Loader
+		/// </summary>
+		private IContractsLoader contractsLoader;
+
+		/// <summary>
 		/// Create static Regex object for FreeText.
 		/// </summary>
 		private static Regex regexFreeText = new Regex(ValidationConstants.FREE_TEXT_FORMAT);
@@ -148,6 +153,7 @@ namespace GenTRAC.ActionLogic
 		/// <param name="workspaceDTODataLoader">The workspace dto data loader.</param>
 		/// <param name="genBoePermissionLoader">The GenBOE Permission Loader</param>
 		/// <param name="emailer">The PTM Emailer</param>
+		/// <param name="contractsLoader">Contracts loader</param>
 		public ProposalControllerLogic(
 			ISecurityAccess inSecurityAccess,
 			IProposalLoader inProposalLoader,
@@ -166,7 +172,8 @@ namespace GenTRAC.ActionLogic
 			IChecklistMediator inChecklistMediator,
 			IWorkspaceDTODataLoader workspaceDTODataLoader,
 			IPermissionsDTODataLoader genBoePermissionLoader,
-			IPtmEmailer emailer)
+			IPtmEmailer emailer,
+			IContractsLoader contractsLoader)
 			: base(inSecurityAccess, inProposalLoader, inUserMapper, objectFactory, approvalsLoader, proposalChecklistLoader, inChecklistMediator, inProposalMediator)
 		{
 			this.validationMethods = inValidationMethods;
@@ -179,6 +186,7 @@ namespace GenTRAC.ActionLogic
 			this.workspaceDTODataLoader = workspaceDTODataLoader;
 			this.genBoePermissionLoader = genBoePermissionLoader;
 			this.emailer = emailer;
+			this.contractsLoader = contractsLoader;
 		}
 
 		/// <summary>
@@ -2570,6 +2578,7 @@ namespace GenTRAC.ActionLogic
 			}
 
 			ProposalDto proposal = this.ProposalLoader.GetById(proposalId);
+			ContractsDto contract = contractsLoader.GetContractForProposal(proposalId);
 
 			if (model.ReasonCertificationNotRequired.HasValue && isComplete)
 			{
@@ -2587,22 +2596,18 @@ namespace GenTRAC.ActionLogic
 				throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.OTHER_REASON_COMMENT_REQUIRED);
 			}
 
+			DateTime? agreement = DateTime.TryParse(model.AgreementDate, out DateTime agreementDt) ? (DateTime?)agreementDt : null;
+			DateTime? certification = DateTime.TryParse(model.CertificationDate, out DateTime certificationDt) ? (DateTime?)certificationDt : null;
+			TimeSpan daysToCert = agreement.HasValue && certification.HasValue ? certification.Value - agreement.Value : new TimeSpan(0);
+
 			if (!model.ReasonCertificationNotRequired.HasValue)
 			{
-				DateTime? agreement = DateTime.TryParse(model.AgreementDate, out DateTime agreementDt) ? (DateTime?)agreementDt : null;
-				DateTime? certification = DateTime.TryParse(model.CertificationDate, out DateTime certificationDt) ? (DateTime?)certificationDt : null;
-
-				if (agreement.HasValue && certification.HasValue)
+				if (agreement.HasValue && certification.HasValue && daysToCert.TotalDays > 5.0)
 				{
-					TimeSpan span = certification.Value - agreement.Value;
-
-					if (span.TotalDays > 5.0)
+					// Comments are now required
+					if (string.IsNullOrWhiteSpace(model.Comments))
 					{
-						// Comments are now required
-						if (string.IsNullOrWhiteSpace(model.Comments))
-						{
-							throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.COMMENTS_REQUIRED);
-						}
+						throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.COMMENTS_REQUIRED);
 					}
 				}
 
@@ -2624,6 +2629,16 @@ namespace GenTRAC.ActionLogic
 						throw new ValidationException(ValidationConstants.CertificationTimelineValidationConstants.CUTOFF_DATE_UTILIZATION_REQUIRED);
 					}
 				}
+			}
+
+			if (contract.NegotiationsSubmitted < agreement)
+			{
+				throw new ValidationException(Constants.INVALID_NEGOTIATIONS_SUBMITTED);
+			}
+
+			if (daysToCert.TotalDays < 0)
+			{
+				throw new ValidationException(Constants.INVALID_DAYS_TO_CERT);
 			}
 		}
 
