@@ -379,7 +379,8 @@ namespace GenTRAC.ActionLogic
             bool valid = false;
 
             if ((fullProposal.ProposalStatus == ProposalStatus.PendingCertification || fullProposal.ProposalStatus == ProposalStatus.PendingAward)
-                && (!contractInfo.LmWon.HasValue || !contractInfo.LmWon.Value)) // null or false
+                && (!contractInfo.LmWon.HasValue || !contractInfo.LmWon.Value) // null or false
+                && contractInfo.CustomerSubmittalDate.HasValue)
             {
                 valid = true;
             }
