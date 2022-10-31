@@ -80,15 +80,6 @@
                 <% } %>
             </ul>
         </div>
-        <div <% if (Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidWbsHours).Count() == 0) { %> class="display-none"<% } %>>
-            <div class="title"><%: Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidWbsHours).Count()%> MOQ Table(s) will not be added because the Total WBS/WBS Element Hours must be a positive numerical value:</div>
-            <ul>
-                <% foreach (ImportMoqTableResultsModelView result in Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidWbsHours))
-                   { %>
-                <li><%: result.TableName %></li>
-                <% } %>
-            </ul>
-        </div>
         <div <% if (Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidDateOfReport).Count() == 0) { %> class="display-none"<% } %>>
             <div class="title"><%: Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidDateOfReport).Count()%> MOQ Table(s) will not be added because the Date of Report must be a valid date and be on or before today's date:</div>
             <ul>

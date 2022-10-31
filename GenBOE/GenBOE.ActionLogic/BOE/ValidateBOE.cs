@@ -692,7 +692,6 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                 else
                                 {
                                     ValidateRequiredField(moqType.SelectedMOQType, row.ContractNumber, labels.ContractNumber, Constants.MOQ_TYPE_TEXT_FIELD_LENGTH, errorMessages);
-                                    if (row.TotalWbsHours <= 0) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalWbsHours} must be a number greater than 0."); }
                                 }
 
                                 if (row.DateOfReport.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} is required."); }
