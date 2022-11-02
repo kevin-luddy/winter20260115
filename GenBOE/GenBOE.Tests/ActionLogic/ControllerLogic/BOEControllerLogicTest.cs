@@ -43,45 +43,45 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 	public class BOEControllerLogicTest : MOQObject
 	{
 		#region Private members
-		private Mock<IRetriever> _retriever = new Mock<IRetriever>();
+		private readonly Mock<IRetriever> _retriever = new Mock<IRetriever>();
 
-		private Mock<IMSTMetricLoader> _mstMetricLoader = new Mock<IMSTMetricLoader>();
-		private Mock<ICustomFieldValueDTODataLoader> _customFieldValueDTODataLoader = new Mock<ICustomFieldValueDTODataLoader>();
-		private Mock<IResourceDTODataLoader> _resourceDTODataLoader = new Mock<IResourceDTODataLoader>();
-		private Mock<IBOESummary> _boeSummary = new Mock<IBOESummary>();
-		private Mock<IUserDTODataLoader> _userLoader = new Mock<IUserDTODataLoader>();
-		private Mock<IActiveDirectoryUtilities> _ADUtils = new Mock<IActiveDirectoryUtilities>();
-		private Mock<IPermissionsDTODataLoader> _permissionsLoader = new Mock<IPermissionsDTODataLoader>();
-		private Mock<ICommonDataMapper> _commonDataMapper = new Mock<ICommonDataMapper>();
-		private Mock<IFullObjectFactory> Factory = new Mock<IFullObjectFactory>();
-		private Mock<IBOEExporter> _boeExporter = new Mock<IBOEExporter>();
-		private Mock<IBOECustomExporter> _boeCustomExporter = new Mock<IBOECustomExporter>();
-		private Mock<IGenBOEControllerLogic> _genBOEControllerLogic = new Mock<IGenBOEControllerLogic>();
-		private Mock<IBoeMediator> _boeMediator = new Mock<IBoeMediator>();
-		private Mock<IValidationHelper> _validationHelper = new Mock<IValidationHelper>();
-		private Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-		private Mock<IBoeEmailer> _emailer = new Mock<IBoeEmailer>();
-		private Mock<IBoeTaskElementMediator> _boeTaskElementMediator = new Mock<IBoeTaskElementMediator>();
-		private Mock<IWorkspaceVariableDTODataLoader> _workspaceVariableDTODataLoader = new Mock<IWorkspaceVariableDTODataLoader>();
-		private Mock<IBOEStateMachine> _boeStateMachine = new Mock<IBOEStateMachine>();
-		private Mock<IVariableSelectBOEtoSumCalculation> _variableSelectBOEtoSumCalculation = new Mock<IVariableSelectBOEtoSumCalculation>();
-		private Mock<IBOELaborControllerLogic> _boeLaborControllerLogic = new Mock<IBOELaborControllerLogic>();
-		private Mock<IValidateBOE> _validateBOE = new Mock<IValidateBOE>();
-		private Mock<ISecurityInformation> _securityInformation = new Mock<ISecurityInformation>();
-		private Mock<IBOESearchDTODataLoader> _boeSearchLoader = new Mock<IBOESearchDTODataLoader>();
-		private Mock<ISecurityAccess> _securityAccess = new Mock<ISecurityAccess>();
-		private Mock<IBoeTaskElementRecalculation> _boeTaskElementRecalculation = new Mock<IBoeTaskElementRecalculation>();
-		private Mock<IBOEImporter> _boeImporter = new Mock<IBOEImporter>();
-		private Mock<IVariableCircularReferenceChecker> _variableCircularReferenceChecker = new Mock<IVariableCircularReferenceChecker>();
-		private Mock<IConflictBOE> _conflictBOE = new Mock<IConflictBOE>();
-		private Mock<INestedWBSUtilities> _nestedWBSUtilities = new Mock<INestedWBSUtilities>();
-		private Mock<IBoeTaskElementMediator> _taskElementMediator = new Mock<GenBOE.ActionLogic.BLL.IBoeTaskElementMediator>();
-		private Mock<Validator> _validator = new Mock<Validator>();
-		private Mock<RMSZoneTravelRatesFeesDataLoader> _zoneTravelRatesFeesDataLoader = new Mock<RMSZoneTravelRatesFeesDataLoader>();
-		private Mock<IMoqTypeDataLoader> moqTypeLoader = new Mock<IMoqTypeDataLoader>();
-		private Mock<IBoeApproverResponseDTODataLoader> boeApproverResponseLoader = new Mock<IBoeApproverResponseDTODataLoader>();
-		private Mock<GenBOE.ActionLogic.IESSAPClient.IESSAPClient> iesSapClient = new Mock<GenBOE.ActionLogic.IESSAPClient.IESSAPClient>();
-		private ITokenService tokenService = new TokenService(new MemoryCache());
+		private readonly Mock<IMSTMetricLoader> _mstMetricLoader = new Mock<IMSTMetricLoader>();
+		private readonly Mock<ICustomFieldValueDTODataLoader> _customFieldValueDTODataLoader = new Mock<ICustomFieldValueDTODataLoader>();
+		private readonly Mock<IResourceDTODataLoader> _resourceDTODataLoader = new Mock<IResourceDTODataLoader>();
+		private readonly Mock<IBOESummary> _boeSummary = new Mock<IBOESummary>();
+		private readonly Mock<IUserDTODataLoader> _userLoader = new Mock<IUserDTODataLoader>();
+		private readonly Mock<IActiveDirectoryUtilities> _ADUtils = new Mock<IActiveDirectoryUtilities>();
+		private readonly Mock<IPermissionsDTODataLoader> _permissionsLoader = new Mock<IPermissionsDTODataLoader>();
+		private readonly Mock<ICommonDataMapper> _commonDataMapper = new Mock<ICommonDataMapper>();
+		private readonly Mock<IFullObjectFactory> Factory = new Mock<IFullObjectFactory>();
+		private readonly Mock<IBOEExporter> _boeExporter = new Mock<IBOEExporter>();
+		private readonly Mock<IBOECustomExporter> _boeCustomExporter = new Mock<IBOECustomExporter>();
+		private readonly Mock<IGenBOEControllerLogic> _genBOEControllerLogic = new Mock<IGenBOEControllerLogic>();
+		private readonly Mock<IBoeMediator> _boeMediator = new Mock<IBoeMediator>();
+		private readonly Mock<IValidationHelper> _validationHelper = new Mock<IValidationHelper>();
+		private readonly Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+		private readonly Mock<IBoeEmailer> _emailer = new Mock<IBoeEmailer>();
+		private readonly Mock<IBoeTaskElementMediator> _boeTaskElementMediator = new Mock<IBoeTaskElementMediator>();
+		private readonly Mock<IWorkspaceVariableDTODataLoader> _workspaceVariableDTODataLoader = new Mock<IWorkspaceVariableDTODataLoader>();
+		private readonly Mock<IBOEStateMachine> _boeStateMachine = new Mock<IBOEStateMachine>();
+		private readonly Mock<IVariableSelectBOEtoSumCalculation> _variableSelectBOEtoSumCalculation = new Mock<IVariableSelectBOEtoSumCalculation>();
+		private readonly Mock<IBOELaborControllerLogic> _boeLaborControllerLogic = new Mock<IBOELaborControllerLogic>();
+		private readonly Mock<IValidateBOE> _validateBOE = new Mock<IValidateBOE>();
+		private readonly Mock<ISecurityInformation> _securityInformation = new Mock<ISecurityInformation>();
+		private readonly Mock<IBOESearchDTODataLoader> _boeSearchLoader = new Mock<IBOESearchDTODataLoader>();
+		private readonly Mock<ISecurityAccess> _securityAccess = new Mock<ISecurityAccess>();
+		private readonly Mock<IBoeTaskElementRecalculation> _boeTaskElementRecalculation = new Mock<IBoeTaskElementRecalculation>();
+		private readonly Mock<IBOEImporter> _boeImporter = new Mock<IBOEImporter>();
+		private readonly Mock<IVariableCircularReferenceChecker> _variableCircularReferenceChecker = new Mock<IVariableCircularReferenceChecker>();
+		private readonly Mock<IConflictBOE> _conflictBOE = new Mock<IConflictBOE>();
+		private readonly Mock<INestedWBSUtilities> _nestedWBSUtilities = new Mock<INestedWBSUtilities>();
+		private readonly Mock<IBoeTaskElementMediator> _taskElementMediator = new Mock<GenBOE.ActionLogic.BLL.IBoeTaskElementMediator>();
+		private readonly Mock<Validator> _validator = new Mock<Validator>();
+		private readonly Mock<RMSZoneTravelRatesFeesDataLoader> _zoneTravelRatesFeesDataLoader = new Mock<RMSZoneTravelRatesFeesDataLoader>();
+		private readonly Mock<IMoqTypeDataLoader> moqTypeLoader = new Mock<IMoqTypeDataLoader>();
+		private readonly Mock<IBoeApproverResponseDTODataLoader> boeApproverResponseLoader = new Mock<IBoeApproverResponseDTODataLoader>();
+		private readonly Mock<GenBOE.ActionLogic.IESSAPClient.IESSAPClient> iesSapClient = new Mock<GenBOE.ActionLogic.IESSAPClient.IESSAPClient>(null, null);
+		private readonly ITokenService tokenService = new TokenService(new MemoryCache());
 
 		private BOEControllerLogic CreateSystem()
 		{
