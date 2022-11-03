@@ -662,13 +662,28 @@ namespace IES.Common
         /// </summary>
         public const string INVALID_LM_WIN_LOSS_FALSE = "Contract Won setting is No.";
 
-        #endregion
-
+        /// <summary>
+        /// Validation that Proposal Submittal Date must be on/after Date Estimating Submits to Contracts
+        /// </summary>
+        public const string INVALID_PROPOSAL_SUBMITTAL_DATE = "\"Proposal Submittal Date to the Customer\" must be on or after the \"Date Estimating Submits to Contracts.\"";
 
         /// <summary>
-        /// SSRS Report Names
+        /// Validation that Negotiations Submitted mush be on/after Agreement date
         /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
+        public const string INVALID_NEGOTIATIONS_SUBMITTED = "\"Date Confirmation of Negotiations Submitted\" must be on or after the \"Date of Agreement on Final Price (Handshake).\"";
+
+        /// <summary>
+        /// Validation that Days to Certification must be positive
+        /// </summary>
+        public const string INVALID_DAYS_TO_CERT = "\"The Date that the Certificate of CCoPD and any additional disclosures were delivered to the customer\" cannot be prior to the \"Date of Agreement on Final Price (Handshake)\"";
+
+		#endregion
+
+
+		/// <summary>
+		/// SSRS Report Names
+		/// </summary>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1034:NestedTypesShouldNotBeVisible")]
         public static class SSRSReportName
         {
             /// <summary>

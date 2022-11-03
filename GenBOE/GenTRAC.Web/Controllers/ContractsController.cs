@@ -15,8 +15,8 @@ namespace GenTRAC.Web.Controllers
     using System.Web.Mvc;
     using GenTRAC.ActionLogic;
     using GenTRAC.ActionLogic.ModelView;
-	using GenTRAC.ActionLogic.ModelView.Contracts;
-	using GenTRAC.DataBridge.DTO;
+    using GenTRAC.ActionLogic.ModelView.Contracts;
+    using GenTRAC.DataBridge.DTO;
     using GenTRAC.Web.Common;
     using IES.Common;
 
@@ -171,11 +171,12 @@ namespace GenTRAC.Web.Controllers
             _ = model ?? throw new ArgumentNullException(nameof(model));
 
             IESResponse<ContractsModelView> response = new IESResponse<ContractsModelView>();
+            ICollection<string> validationMessages = this.contractsLogic.ValidateContractModelView(model);
 
-            if (!ModelState.IsValid)
+			if (!ModelState.IsValid || validationMessages.Any())
             {
                 GetModelStateErrors(response);
-                return Json(response);
+                response.Messages.AddRange(validationMessages);
             }
             else
             {

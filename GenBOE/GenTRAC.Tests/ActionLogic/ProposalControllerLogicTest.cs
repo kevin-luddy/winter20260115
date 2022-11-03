@@ -138,6 +138,11 @@ namespace GenTRAC.Tests.ActionLogic
         /// </summary>
         private Mock<IPtmEmailer> ptmEmailer;
 
+        /// <summary>
+        /// Contracts loader
+        /// </summary>
+        private Mock<IContractsLoader> contractsLoader;
+
         #endregion
 
         /// <summary>
@@ -235,6 +240,7 @@ namespace GenTRAC.Tests.ActionLogic
             this.workspaceLoader = new Mock<IWorkspaceDTODataLoader>();
             this.genBoePermissionsLoader = new Mock<IPermissionsDTODataLoader>();
             this.ptmEmailer = new Mock<IPtmEmailer>();
+            this.contractsLoader = new Mock<IContractsLoader>();
 
             this.retriever = new Mock<IRetriever>();
             IES.Common.classes.GenBOEUnityContainer.Container.RegisterInstance(this.retriever.Object);
@@ -250,7 +256,8 @@ namespace GenTRAC.Tests.ActionLogic
                 this.proposalMediator.Object, this.userMapper.Object, this.objectFactory.Object,
                 this.orgStructureDataMapper.Object, this.proposalPermissionMediator.Object, this.securityInformation.Object, this.cacheDataLoader.Object,
                 this.pickListMapper.Object, this.userLoader.Object, this.approvalsLoader.Object, this.proposalChecklistLoader.Object,
-                this.checklistMediator.Object, this.workspaceLoader.Object, this.genBoePermissionsLoader.Object, this.ptmEmailer.Object);
+                this.checklistMediator.Object, this.workspaceLoader.Object, this.genBoePermissionsLoader.Object, this.ptmEmailer.Object,
+                this.contractsLoader.Object);
         }
 
         /// <summary>
@@ -3102,6 +3109,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
+            this.contractsLoader.Setup(x => x.GetContractForProposal(5)).Returns(new ContractsDto() { NegotiationsSubmitted = new DateTime(2022, 1, 1) });
 
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView();
 
@@ -3136,6 +3144,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
+            this.contractsLoader.Setup(x => x.GetContractForProposal(5)).Returns(new ContractsDto());
 
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
             {
@@ -3163,6 +3172,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
+            this.contractsLoader.Setup(x => x.GetContractForProposal(5)).Returns(new ContractsDto() { NegotiationsSubmitted = new DateTime(2022, 1, 1)});
 
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
             {
@@ -3191,6 +3201,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
+            this.contractsLoader.Setup(x => x.GetContractForProposal(5)).Returns(new ContractsDto());
 
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
             {
@@ -3219,6 +3230,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
+            this.contractsLoader.Setup(x => x.GetContractForProposal(5)).Returns(new ContractsDto());
 
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
             {
@@ -3247,6 +3259,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
+            this.contractsLoader.Setup(x => x.GetContractForProposal(5)).Returns(new ContractsDto());
 
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
             {
@@ -3275,11 +3288,72 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
+            this.contractsLoader.Setup(x => x.GetContractForProposal(5)).Returns(new ContractsDto());
 
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
             {
                 AgreementDate = "01/01/2018",
                 CertificationDate = "01/03/2018",
+                Comments = "55"
+            };
+
+            // missing cutoff utilization selection
+            sut.ValidateCertification(5, model, true);
+        }
+
+        /// <summary>
+        /// Validates the completing of certification timeline throws exception for Date Confirmation of Negotiations Submitted being before Date of Agreement on Final Price (Handshake)
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
+        public void ValidateCompletingCertificationTimeline_ex5()
+        {
+            var sut = this.CreateSystem();
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 5,
+                ProposalStatus = ProposalStatus.PendingCertification
+            };
+
+            // GetDataForProposalUserInformation
+            this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
+            this.contractsLoader.Setup(x => x.GetContractForProposal(5)).Returns(new ContractsDto() { NegotiationsSubmitted = new DateTime(2017, 1, 1) });
+
+            ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
+            {
+                AgreementDate = "01/01/2018",
+                CertificationDate = "01/03/2018",
+                CutOffDateUtilization = CutOffDateUtilization.Yes,
+                Comments = "55"
+            };
+
+            // missing cutoff utilization selection
+            sut.ValidateCertification(5, model, true);
+        }
+
+        /// <summary>
+        /// Validates the completing of certification timeline throws exception for The Date that the Certificate of CCoPD and any additional disclosures were delivered to the customer being before Date of Agreement on Final Price (Handshake)
+        /// </summary>
+        [TestMethod]
+        [ExpectedException(typeof(IES.Common.Exceptions.ValidationException))]
+        public void ValidateCompletingCertificationTimeline_ex6()
+        {
+            var sut = this.CreateSystem();
+            ProposalDto proposal = new ProposalDto()
+            {
+                Id = 5,
+                ProposalStatus = ProposalStatus.PendingCertification
+            };
+
+            // GetDataForProposalUserInformation
+            this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
+            this.contractsLoader.Setup(x => x.GetContractForProposal(5)).Returns(new ContractsDto() { NegotiationsSubmitted = new DateTime(2022, 1, 1) });
+
+            ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
+            {
+                AgreementDate = "01/03/2018",
+                CertificationDate = "01/01/2018",
+                CutOffDateUtilization = CutOffDateUtilization.Yes,
                 Comments = "55"
             };
 
@@ -3305,6 +3379,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
+            this.contractsLoader.Setup(x => x.GetContractForProposal(5)).Returns(new ContractsDto());
 
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
             {
@@ -3335,6 +3410,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             // GetDataForProposalUserInformation
             this.proposalLoader.Setup(x => x.GetById(5)).Returns(proposal);
+            this.contractsLoader.Setup(x => x.GetContractForProposal(5)).Returns(new ContractsDto() { NegotiationsSubmitted = new DateTime(2022, 1, 1) });
 
             ProposalCertificationTimelineModelView model = new ProposalCertificationTimelineModelView
             {
