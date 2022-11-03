@@ -239,12 +239,14 @@ namespace GenTRAC.ActionLogic
 			ICollection<string> validationMessages = new Collection<string>();
             FullProposal proposal = this.GetFullProposalDto(model.ProposalId);
 
-			if (model.CustomerSubmittalDt < model.NegotiationsSubmittedDt)
+			if (model.CustomerSubmittalDt.HasValue && model.NegotiationsSubmittedDt.HasValue 
+                && model.CustomerSubmittalDt < model.NegotiationsSubmittedDt)
 			{
 				validationMessages.Add(Constants.INVALID_PROPOSAL_SUBMITTAL_DATE);
 			}
 
-            if (model.NegotiationsSubmittedDt < proposal.AgreementDate)
+            if (model.NegotiationsSubmittedDt.HasValue && proposal.AgreementDate.HasValue
+				&& model.NegotiationsSubmittedDt < proposal.AgreementDate)
             {
                 validationMessages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED);
             }

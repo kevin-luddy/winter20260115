@@ -2598,11 +2598,12 @@ namespace GenTRAC.ActionLogic
 
 			DateTime? agreement = DateTime.TryParse(model.AgreementDate, out DateTime agreementDt) ? (DateTime?)agreementDt : null;
 			DateTime? certification = DateTime.TryParse(model.CertificationDate, out DateTime certificationDt) ? (DateTime?)certificationDt : null;
-			TimeSpan daysToCert = agreement.HasValue && certification.HasValue ? certification.Value - agreement.Value : new TimeSpan(0);
+			bool agreementAndCertSet = agreement.HasValue && certification.HasValue;
+			TimeSpan daysToCert = agreementAndCertSet ? certification.Value - agreement.Value : new TimeSpan(0);
 
 			if (!model.ReasonCertificationNotRequired.HasValue)
 			{
-				if (agreement.HasValue && certification.HasValue && daysToCert.TotalDays > 5.0)
+				if (agreementAndCertSet && daysToCert.TotalDays > 5.0)
 				{
 					// Comments are now required
 					if (string.IsNullOrWhiteSpace(model.Comments))
