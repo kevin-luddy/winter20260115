@@ -96,9 +96,33 @@ namespace GenBOE.Tests.ActionLogic
         }
 
         /// <summary>
-        /// This is a basic test using the global boe to validate
+        /// Create ValidateBOE sut
         /// </summary>
-        [TestMethod]
+        /// <returns>sut</returns>
+        private ValidateBOE CreateSystem()
+        {
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+			Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
+			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
+
+			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+			
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            
+            return sut;
+		}
+
+		/// <summary>
+		/// This is a basic test using the global boe to validate
+		/// </summary>
+		[TestMethod]
         public void BL_ValidateBOE()
         {
             // Set up
@@ -3304,5 +3328,131 @@ namespace GenBOE.Tests.ActionLogic
                 }
             }}
         }
-    }
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Monday
+		/// </summary>
+		[TestMethod]
+        public void BL_ValidateTemplateMoqForTask_PoPStartMonday()
+        {
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+			{
+				ValidateBOE sut = CreateSystem();
+
+				// need to test against RMS as this is RMS-only validation
+				SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["CompanyConfiguration"] = "RMS";
+
+				// Create a valid MOQ Table
+				MoqTypeSelection moqType = new MoqTypeSelection()
+                {
+                    SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+                    TableData = new Collection<MoqTableData>()
+                    {
+                        new MoqTableData()
+                        {
+                            TableName = "Test Table",
+                            ContractNumber = "1",
+                            DateOfReport = DateTime.Now,
+                            HistoricalProgramName = "Test Name",
+                            WbsElement = "Test WBS",
+                            PoPStart = new DateTime(2022, 1, 3), // Monday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "TestFilter",
+                            TotalRelevantHours = 1000
+                        }
+                    },
+                    Rationale = "Test Rationale",
+                    SkillMixRationale = "Test Skill Mix"
+                };
+
+				WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS"};
+				FullWorkspace ws = new FullWorkspace(workspace);
+
+				ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+                Assert.IsFalse(result.Any());
+
+                // Add a day so PoP start is no longer on a Monday
+                moqType.TableData.First().PoPStart = new DateTime(2022, 1, 4);
+
+				result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+				Assert.IsTrue(result.Any());
+                Assert.AreEqual(1, result.Count);
+                Assert.IsTrue(result.First().Contains("Monday"));
+
+                // Lastly clear the date to make sure we get the required field validation, but not the Monday validation
+                moqType.TableData.First().PoPStart = new DateTime(1, 1, 1);
+
+				result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+				Assert.IsTrue(result.Any());
+                Assert.IsTrue(result.Any(x => x.Contains("required")));
+				Assert.IsFalse(result.Any(x => x.Contains("Monday")));
+			}
+		}
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_PoPEndSunday()
+		{
+			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+			{
+				ValidateBOE sut = CreateSystem();
+
+				// need to test against RMS as this is RMS-only validation
+				SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["CompanyConfiguration"] = "RMS";
+
+				// Create a valid MOQ Table
+				MoqTypeSelection moqType = new MoqTypeSelection()
+				{
+					SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+					TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 3), // Monday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "TestFilter",
+							TotalRelevantHours = 1000
+						}
+					},
+					Rationale = "Test Rationale",
+					SkillMixRationale = "Test Skill Mix"
+				};
+
+				WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+				FullWorkspace ws = new FullWorkspace(workspace);
+
+				ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+				Assert.IsFalse(result.Any());
+
+				// Add a day so PoP start is no longer on a Sunday
+				moqType.TableData.First().PoPEnd = new DateTime(2022, 1, 10);
+
+				result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+				Assert.IsTrue(result.Any());
+				Assert.AreEqual(1, result.Count);
+				Assert.IsTrue(result.First().Contains("Sunday"));
+
+				// Lastly clear the date to make sure we get the required field validation, but not the Monday validation
+				moqType.TableData.First().PoPEnd = new DateTime(1, 1, 1);
+
+				result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+				Assert.IsTrue(result.Any());
+				Assert.IsTrue(result.Any(x => x.Contains("required")));
+				Assert.IsFalse(result.Any(x => x.Contains("Sunday")));
+			}
+		}
+	}
 }
