@@ -1242,7 +1242,17 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
     $scope.convertJsonDate = function (date) {
         return new Date(JSON.parse(date.match(/\d+/)));
-	};
+    };
+
+    $scope.ValidatePopStart = function (date) {
+        // validate PoP Start is on a Monday (1)
+        return typeof date !== "undefined" && date.getDay() != 1;
+    }
+
+    $scope.ValidatePopEnd = function (date) {
+        // validate PoP End is on a Sunday (0)
+        return typeof date !== "undefined" && date.getDay() != 0;
+    }
 }]);
 
 // initialize MOQ Equation Widget.. moved here so that way this much script is not in the ascx page
