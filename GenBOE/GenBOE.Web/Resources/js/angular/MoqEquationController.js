@@ -963,6 +963,13 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								} else {
 									tableData.TotalWbsHours = 0;
 								}
+
+								// this is RMS only
+								if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {
+									// only set if currently unset and response is set
+									tableData.ContractNumber = res.ContractNumber;
+								}
+
 								MOQEquationFieldWidget.setDirty();
 								$scope.actualsValidation.isDirty.delete(res.TableId);
 								$scope.refreshDisableSave();
@@ -1045,6 +1052,13 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 										} else {
 											tableData.TotalWbsHours = 0;
 										}
+
+										// this is RMS only
+										if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {
+											// only set if currently unset and response is set
+											tableData.ContractNumber = res.ContractNumber;
+										}
+
 										MOQEquationFieldWidget.setDirty();
 									}
 								});
