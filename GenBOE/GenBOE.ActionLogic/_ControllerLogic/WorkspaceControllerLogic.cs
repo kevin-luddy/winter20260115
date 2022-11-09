@@ -2310,6 +2310,11 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						resultModel.WbsHoursPrevious = table.TotalWbsHours;
 						table.TotalWbsHours = model.WbsHours.HasValue ? Convert.ToDecimal(model.WbsHours.Value) : default(decimal);
 						resultModel.WbsHours = table.TotalWbsHours;
+
+						if (string.IsNullOrWhiteSpace(table.ContractNumber) && !string.IsNullOrWhiteSpace(model.ContractNumber))
+						{
+							table.ContractNumber = model.ContractNumber;
+						}
 					}
 
 					resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;

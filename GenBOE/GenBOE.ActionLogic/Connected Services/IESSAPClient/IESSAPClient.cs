@@ -962,6 +962,9 @@ namespace GenBOE.ActionLogic.IESSAPClient
         [Newtonsoft.Json.JsonProperty("tableId", Required = Newtonsoft.Json.Required.DisallowNull, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public int TableId { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("contractNumber", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string ContractNumber { get; set; }
+    
     
     }
     
