@@ -12,6 +12,7 @@ namespace GenBOE.ActionLogic.IO.Export
     using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
+    using System.Text.RegularExpressions;
     using DocumentFormat.OpenXml;
     using DocumentFormat.OpenXml.Packaging;
     using DocumentFormat.OpenXml.Wordprocessing;
@@ -681,14 +682,18 @@ namespace GenBOE.ActionLogic.IO.Export
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_PoPEndDate), table.PoPEndString);
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_TotalWBSHours), table.TotalWbsHours.ToString("G29"));
                     WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_TotalRelevantHours), table.TotalRelevantHours.ToString("G29"));
-                    
-                    // populate/remove Additional Query filters based on selected components
-                    if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQAdditionalQueryFilters) || selectedComponents.Contains(BoeCustomReportComponent.TaskMOQEmployeeIDFilters) 
-                        || (!selectedComponents.Any() && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST))
-                    {
-                        WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_AdditionalQueryFilters), table.AdditionalQueryFilters);
+
+					// populate/remove Additional Query filters based on selected components
+                    bool isSpace = SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems;
+
+					if (selectedComponents.Contains(BoeCustomReportComponent.TaskMOQAdditionalQueryFilters) || selectedComponents.Contains(BoeCustomReportComponent.TaskMOQEmployeeIDFilters) 
+                        || (!selectedComponents.Any() && !isSpace))
+					{
+						IDictionary<string, IList<string>> EmployeeIdFilters = GetEmployeeIds(table.AdditionalQueryFilters);
+						WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_AdditionalQueryFilters), 
+                            isSpace ? table.AdditionalQueryFilters : MaskRmsEmployeeIds(EmployeeIdFilters, table.AdditionalQueryFilters));
                     }
-                    else if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
+                    else if (isSpace)
                     {
                         WordUtilities.SetElementText(WordUtilities.GetTaggedChildElement(moqTypeTableContainer, BOEExporterConstants.FieldName_AdditionalQueryFilters), BOEExporterConstants.EMPLOYEE_ID_FILTERS_EXCLUSION_TEXT);
                     }
@@ -782,11 +787,61 @@ namespace GenBOE.ActionLogic.IO.Export
             WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.Table_MOQType);
         }
 
-        /// <summary>
-        /// Remove the rows with CER/PR/AR elements
-        /// </summary>
-        /// <param name="moqTypeContainer">MOQ Type Container</param>
-        private void RemoveCerPrArRows(SdtElement moqTypeContainer)
+		/// <summary>
+		/// Get a dictionary of employee id filters and the employee ids in them
+		/// </summary>
+		/// <param name="filter">The full filter from the MOQ Table</param>
+		/// <returns>dictionary of employee id filters and the employee ids in them</returns>
+		private IDictionary<string, IList<string>> GetEmployeeIds(string filter)
+        {
+            IDictionary<string, IList<string>> toReturn = new Dictionary<string, IList<string>>();
+            IList<string> filterComponents = filter.Split(new string[] { "\n" }, StringSplitOptions.None).ToList();
+            IList<string> employeeIdFilters = filterComponents.Where(x => x.StartsWith(BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL)).ToList();
+
+            foreach (string employeeIdFilter in employeeIdFilters)
+            {
+                // get all numbers to get the employee ids using regex matches
+                MatchCollection employeeIdMatches = Regex.Matches(employeeIdFilter, @"\d+");
+                IList<string> employeeIds = employeeIdMatches.Cast<Match>().Select(x => x.Value).ToList();
+
+                toReturn.Add(employeeIdFilter, employeeIds);
+            }
+
+            return toReturn;
+		}
+
+		/// <summary>
+		/// Mask Employee Ids for RMS
+		/// </summary>
+		/// <param name="employeeIdFilters">dictionary of of employee id filters and the employee ids in them</param>
+        /// <param name="additionalQueryFilters">Full Additional Query Filters string</param>
+		/// <returns>filters with employee ids masked</returns>
+		private string MaskRmsEmployeeIds(IDictionary<string, IList<string>> employeeIdFilters, string additionalQueryFilters)
+        {
+            foreach (KeyValuePair<string, IList<string>> employeeIdFilter in employeeIdFilters)
+            {
+                string maskedFilter = employeeIdFilter.Key;
+
+				foreach (string employeeId in employeeIdFilter.Value)
+                {
+                    string maskedId = employeeId.Length > 3 ? $"***{employeeId.Substring(3)}" : new string('*', employeeId.Length);
+
+					// use ReplaceFirst so a smaller id doesn't risk replacing a portion of a later one
+					// ex. a filter of "Starts with 1, 4321" using regular string replace would result in "Starts with *, 432*". ReplaceFirst results in "Starts with *, ***1"
+					maskedFilter = maskedFilter.ReplaceFirst(employeeId, maskedId);
+                }
+
+				additionalQueryFilters = additionalQueryFilters.Replace(employeeIdFilter.Key, maskedFilter);
+            }
+
+            return additionalQueryFilters;
+        }
+
+		/// <summary>
+		/// Remove the rows with CER/PR/AR elements
+		/// </summary>
+		/// <param name="moqTypeContainer">MOQ Type Container</param>
+		private void RemoveCerPrArRows(SdtElement moqTypeContainer)
         {
             WordUtilities.RemoveTableRowWithTaggedElement(moqTypeContainer, BOEExporterConstants.FieldName_CerPmArName);
         }

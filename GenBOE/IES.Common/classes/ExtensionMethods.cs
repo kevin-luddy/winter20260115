@@ -959,5 +959,28 @@ namespace IES.Common
         {
             return !source.Any();
         }
+
+		/// <summary>
+		/// Replace only the first instance of a string instead of every instance like in string.Replace
+		/// based on https://stackoverflow.com/questions/141045/how-do-i-replace-the-first-instance-of-a-string-in-net
+		/// </summary>
+		/// <param name="text">original string</param>
+		/// <param name="search">text to be replaced</param>
+		/// <param name="replace">text to replace it with</param>
+		/// <returns>Text with only first instance of 'search' replaced</returns>
+		public static string ReplaceFirst(this string text, string search, string replace)
+        {
+			_ = text ?? throw new ArgumentNullException(nameof(text));
+			_ = search ?? throw new ArgumentNullException(nameof(search));
+
+			int i = text.IndexOf(search);
+
+            if (i < 0)
+            {
+                return text;
+            }
+
+            return $"{text.Substring(0, i)}{replace}{text.Substring(i + search.Length)}";
+        }
     }
 }

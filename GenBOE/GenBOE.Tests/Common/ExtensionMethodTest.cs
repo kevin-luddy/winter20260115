@@ -391,5 +391,17 @@ namespace GenBOE.Tests.Common
 
             return;
         }
+
+        /// <summary>
+        /// Test ReplaceFirst and that it only replaces the first instance of the search string
+        /// </summary>
+        [TestMethod]
+        public void TestReplaceFirst()
+        {
+            string test = "test test test";
+            string result = test.ReplaceFirst("test", "replace");
+
+            Assert.AreEqual("replace test test", result);
+        }
     }
 }
