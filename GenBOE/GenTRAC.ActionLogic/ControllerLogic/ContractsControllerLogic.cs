@@ -122,7 +122,10 @@ namespace GenTRAC.ActionLogic
             // in the event that a contract entry hasn't yet been created for the proposal, create a blank one for the evaluation of calculated properties
             if (dto == null)
             {
-                dto = new ContractsDto();
+				dto = new ContractsDto
+				{
+					ProposalId = proposalId
+				};
             }
 
             // Get security info to ensure our read-only users can do just that
