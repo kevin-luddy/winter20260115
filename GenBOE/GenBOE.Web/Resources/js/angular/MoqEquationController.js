@@ -964,12 +964,10 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 									tableData.TotalWbsHours = 0;
 								}
 
-								if (!ManageTaskModel.IsSpace) {
 								// this is RMS only
-									if (!tableData.ContractNumber && res.ContractNumber) {
-										// only set if currently unset and response is set
-										tableData.ContractNumber = res.ContractNumber;
-									}
+								if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {
+									// only set if currently unset and response is set
+									tableData.ContractNumber = res.ContractNumber;
 								}
 
 								MOQEquationFieldWidget.setDirty();
@@ -1054,13 +1052,13 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 										} else {
 											tableData.TotalWbsHours = 0;
 										}
-										if (!ManageTaskModel.IsSpace) {
-											// this is RMS only
-											if (!tableData.ContractNumber && res.ContractNumber) {
-												// only set if currently unset and response is set
-												tableData.ContractNumber = res.ContractNumber;
-											}
+
+										// this is RMS only
+										if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {
+											// only set if currently unset and response is set
+											tableData.ContractNumber = res.ContractNumber;
 										}
+
 										MOQEquationFieldWidget.setDirty();
 									}
 								});
