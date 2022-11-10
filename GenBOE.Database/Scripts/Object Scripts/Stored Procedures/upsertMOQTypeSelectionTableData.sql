@@ -20,7 +20,7 @@ CREATE PROCEDURE [dbo].[upsertMOQTypeSelectionTableData]
 	@DateOfReport datetime2,
 	@HistoricalProgramName varchar(125),
 	@ContractNumber varchar(255),
-	@WbsElement varchar(2500),
+	@WbsElement varchar(8000),
 	@PeriodOfPerformanceStartDate datetime2,
 	@PeriodOfPerformanceEndDate datetime2,
 	@TotalWbsHours decimal(10,2),
@@ -42,7 +42,7 @@ AS
 *******************************************************************************
 **		Date:		Author:				Description:
 **		--------	--------			-------------------------------------------
-**		
+**		10/27/22	ranzalon			IES-1951 - fix WBS Element size
 *******************************************************************************/
 SET NOCOUNT ON 
 
