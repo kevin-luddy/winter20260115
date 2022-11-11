@@ -502,5 +502,49 @@ namespace GenTRAC.Tests.DAL
 
             Assert.AreEqual(expectedResult.IsActive, actualResult.IsActive);
         }
-    }
+
+        /// <summary>
+        /// Asserts to make sure that both dtos match.
+        /// </summary>
+        /// <param name="expectedResult">Expected result.</param>
+        /// <param name="actualResult">Actual result, from the DB.</param>
+        public static void AssertDtos(CoverSheetDataDto expectedResult, CoverSheetDataDto actualResult)
+        {
+			if (actualResult == null)
+			{
+				throw new ArgumentNullException(nameof(actualResult));
+			}
+
+			if (expectedResult == null)
+			{
+				throw new ArgumentNullException(nameof(expectedResult));
+			}
+
+			Assert.AreEqual(expectedResult.CageCode, actualResult.CageCode);
+            Assert.AreEqual(expectedResult.IsCCPDRequired, actualResult.IsCCPDRequired);
+            Assert.AreEqual(expectedResult.ContractActionType, actualResult.ContractActionType);
+            Assert.AreEqual(expectedResult.ContractsLead, actualResult.ContractsLead);
+            Assert.AreEqual(expectedResult.ContractTypeGroup, actualResult.ContractTypeGroup);
+            Assert.AreEqual(expectedResult.CostThroughCom, actualResult.CostThroughCom);
+            Assert.AreEqual(expectedResult.CoverSheetApproverNtid, actualResult.CoverSheetApproverNtid);
+            Assert.AreEqual(expectedResult.CoverSheetApproverSignedDate, actualResult.CoverSheetApproverSignedDate);
+            Assert.AreEqual(expectedResult.CustomerSubmittalDate, actualResult.CustomerSubmittalDate);
+            Assert.AreEqual(expectedResult.LMSpaceTotalPrice, actualResult.LMSpaceTotalPrice);
+            Assert.AreEqual(expectedResult.OtherContractActionType, actualResult.OtherContractActionType);
+            Assert.AreEqual(expectedResult.ProfitFee, actualResult.ProfitFee);
+
+            if (expectedResult.OfferorAddress is null)
+            {
+                Assert.IsNull(actualResult.OfferorAddress);
+            }
+            else
+            {
+                Assert.AreEqual(expectedResult.OfferorAddress.Count, actualResult.OfferorAddress.Count);
+                for (int i = 0; i < expectedResult.OfferorAddress.Count; i++)
+                {
+                    Assert.AreEqual(expectedResult.OfferorAddress.ElementAt(i), actualResult.OfferorAddress.ElementAt(i));
+                }
+            }
+        }
+	}
 }
