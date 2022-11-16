@@ -605,10 +605,15 @@ namespace GenTRAC.ActionLogic.Validation
             /// </summary>
             public const string SUBMITTAL_DATE_FORMAT = GENERAL_INFO_VALIDATION + "Proposal Submittal Date format must be mm/dd/yyyy";
 
-            /// <summary>
-            /// Peer Reviewer invalid NTID
-            /// </summary>
-            public const string PEER_REVIEWER_INVALID_NTID = GENERAL_INFO_VALIDATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Peer Reviewer.";
+			/// <summary>
+			/// Proposal checklist saved already
+			/// </summary>
+			public const string DUPLICATE_CHECKLIST = GENERAL_INFO_VALIDATION + "Proposal Checklist saved in another session.  Please refresh and try again.";
+
+			/// <summary>
+			/// Peer Reviewer invalid NTID
+			/// </summary>
+			public const string PEER_REVIEWER_INVALID_NTID = GENERAL_INFO_VALIDATION + "Invalid NT ID or User name not found in the Global Address List (GAL) for Peer Reviewer.";
 
             #endregion Checklist General Section
             #region Checklist Proposal Pricing Data
