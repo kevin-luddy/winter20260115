@@ -47,7 +47,8 @@ namespace GenBOE.ActionLogic.IO.Export
                 table.WbsElement,
                 table.PoPStartString,
                 table.PoPEndString,
-                table.TotalWbsHours.ToString(),
+				table.PoPMonths.ToString(),
+				table.TotalWbsHours.ToString(),
                 table.AdditionalQueryFilters,
                 table.TotalRelevantHours.ToString()
             };
