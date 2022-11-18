@@ -128,18 +128,23 @@ namespace GenBOE.ActionLogic.IESSAPClient
     
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<QueryFieldViewModel>> ApiQueryFilterGetAllFieldsAsync()
+        public System.Threading.Tasks.Task<System.Collections.Generic.ICollection<QueryFieldViewModel>> ApiQueryFilterGetAllFieldsForCompanyCodeAsync(CompanyConfiguration? company)
         {
-            return ApiQueryFilterGetAllFieldsAsync(System.Threading.CancellationToken.None);
+            return ApiQueryFilterGetAllFieldsForCompanyCodeAsync(company, System.Threading.CancellationToken.None);
         }
     
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>Success</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<QueryFieldViewModel>> ApiQueryFilterGetAllFieldsAsync(System.Threading.CancellationToken cancellationToken)
+        public async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<QueryFieldViewModel>> ApiQueryFilterGetAllFieldsForCompanyCodeAsync(CompanyConfiguration? company, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/QueryFilter/GetAllFields");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/QueryFilter/GetAllFieldsForCompanyCode?");
+            if (company != null)
+            {
+                urlBuilder_.Append(System.Uri.EscapeDataString("company") + "=").Append(System.Uri.EscapeDataString(ConvertToString(company, System.Globalization.CultureInfo.InvariantCulture))).Append("&");
+            }
+            urlBuilder_.Length--;
     
             var client_ = _httpClient;
             var disposeClient_ = false;

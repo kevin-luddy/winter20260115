@@ -3317,7 +3317,18 @@ namespace GenBOE.ActionLogic.ControllerLogic
                 {
                     Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, (await tokenService.GetToken()).AccessToken);
 
-                    return await iesSapClient.ApiQueryFilterGetAllFieldsAsync();
+					string company = SystemConfiguration.Instance().CompanyMode.ToString();
+					ActionLogic.IESSAPClient.CompanyConfiguration configuration;
+
+					if (Enum.TryParse<ActionLogic.IESSAPClient.CompanyConfiguration>(company, out configuration))
+					{
+
+						return await iesSapClient.ApiQueryFilterGetAllFieldsForCompanyCodeAsync(configuration);
+					}
+					else
+					{
+						throw new GeneralAppException("Company Code could not be converted.");
+					}
                 }
                 catch(Exception ex)
                 {

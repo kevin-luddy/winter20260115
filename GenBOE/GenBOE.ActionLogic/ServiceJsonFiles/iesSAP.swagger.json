@@ -43,10 +43,19 @@
 				}
 			}
 		},
-		"/api/QueryFilter/GetAllFields": {
+		"/api/QueryFilter/GetAllFieldsForCompanyCode": {
 			"get": {
 				"tags": [
 					"QueryFilter"
+				],
+				"parameters": [
+					{
+						"name": "company",
+						"in": "query",
+						"schema": {
+							"$ref": "#/components/schemas/CompanyConfiguration"
+						}
+					}
 				],
 				"responses": {
 					"200": {

@@ -44,12 +44,21 @@
         }
       }
     },
-    "/api/QueryFilter/GetAllFields": {
+    "/api/QueryFilter/GetAllFieldsForCompanyCode": {
       "get": {
         "tags": [
           "QueryFilter"
         ],
-        "operationId": "GetAllFields",
+        "operationId": "GetAllFieldsForCompanyCode",
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CompanyConfiguration"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success",
