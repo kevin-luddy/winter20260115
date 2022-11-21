@@ -623,6 +623,7 @@ namespace GenTRAC.Tests.ActionLogic
 
             ContractsDto dto = new ContractsDto
             {
+                ProposalId = 1,
                 PreviouslySubmittedROM = 12345,
                 ContractsCorrespondenceLogNumber = "XYZ123",
                 EppDelegationAuthority = (int)EppDelegationAuthority.Space,
@@ -632,6 +633,10 @@ namespace GenTRAC.Tests.ActionLogic
                 CageCode = "ABC123",
                 LobEppDate = DateTime.Now
             };
+
+            ProposalDto proposal = new ProposalDto() { AgreementDate = DateTime.Now };
+            this.proposalLoader.Setup(x => x.GetById(dto.ProposalId)).Returns(proposal);
+            this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(new FullProposal(proposal));
 
             bool isValid = sut.ContractDataValidForCompleteProposalSave(dto, messages);
 
@@ -726,6 +731,82 @@ namespace GenTRAC.Tests.ActionLogic
             Assert.AreEqual(cageCodesDTOSetup.Zip, cageCodesDTOActual.Zip);
 
             Assert.AreNotEqual(notMatchingFakeCageCode, cageCodesDTOActual.CageCode);
+        }
+
+        /// <summary>
+        /// Test ValidateContractModelView for a valid modelview
+        /// </summary>
+        [TestMethod]
+        public void ValidateContractModelView()
+        {
+            ContractsControllerLogic sut = this.CreateSystem();
+
+            ContractsModelView mv = new ContractsModelView
+            {
+                ProposalId = 1,
+                CustomerSubmittalDt = DateTime.Now.AddDays(1),
+                NegotiationsSubmittedDt = DateTime.Now
+            };
+
+            ProposalDto proposal = new ProposalDto() { AgreementDate = DateTime.Now.AddDays(-1) };
+            this.proposalLoader.Setup(x => x.GetById(mv.ProposalId)).Returns(proposal);
+            this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(new FullProposal(proposal));
+
+            ICollection<string> result = sut.ValidateContractModelView(mv);
+
+            Assert.IsFalse(result.Any());
+        }
+
+        /// <summary>
+        /// Test ValidateContractModelView for an invalid Proposal Submittal Date to the Customer
+        /// </summary>
+        [TestMethod]
+        public void ValidateContractModelView_InvalidProposalSubmittalDate()
+        {
+            ContractsControllerLogic sut = this.CreateSystem();
+
+            ContractsModelView mv = new ContractsModelView
+            {
+                ProposalId = 1,
+                CustomerSubmittalDt = DateTime.Now.AddDays(-1),
+                NegotiationsSubmittedDt = DateTime.Now
+            };
+
+            ProposalDto proposal = new ProposalDto() { AgreementDate = DateTime.Now.AddDays(-1) };
+            this.proposalLoader.Setup(x => x.GetById(mv.ProposalId)).Returns(proposal);
+            this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(new FullProposal(proposal));
+
+            ICollection<string> result = sut.ValidateContractModelView(mv);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual(Constants.INVALID_PROPOSAL_SUBMITTAL_DATE, result.First());
+        }
+
+        /// <summary>
+        /// Test ValidateContractModelView for an invalid Date Confirmation of Negotiations Submitted
+        /// </summary>
+        [TestMethod]
+        public void ValidateContractModelView_InvalidNegotiationsSubmitted()
+        {
+            ContractsControllerLogic sut = this.CreateSystem();
+
+            ContractsModelView mv = new ContractsModelView
+            {
+                ProposalId = 1,
+                CustomerSubmittalDt = DateTime.Now.AddDays(1),
+                NegotiationsSubmittedDt = DateTime.Now
+            };
+
+            ProposalDto proposal = new ProposalDto() { AgreementDate = DateTime.Now.AddDays(1) };
+            this.proposalLoader.Setup(x => x.GetById(mv.ProposalId)).Returns(proposal);
+            this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(new FullProposal(proposal));
+
+            ICollection<string> result = sut.ValidateContractModelView(mv);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.AreEqual(Constants.INVALID_NEGOTIATIONS_SUBMITTED, result.First());
         }
     }
 }

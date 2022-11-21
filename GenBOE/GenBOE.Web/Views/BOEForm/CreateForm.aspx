@@ -209,7 +209,7 @@
         <div class="module-content-data" style="width: 900px;">
             <div class="form-row">
                 <div class="form-label">Form Type *</div>
-                <div class="form-element"><%: Html.EnumDropDownListFor(m => m.BOEFormType, new { id = "BOEFormType" }) %></div>
+                <div class="form-element"><%: @Html.DropDownListFor(m => m.BOEFormType, EnumHelper.GetSelectList(typeof(BOEFormType), Model.BOEFormType).OrderBy(t => t.Text), new { id = "BOEFormType" }) %></div>
             </div>
             <div id="boeFormContainer">
                 <% using (Html.BeginForm("", "", FormMethod.Post, new { id = "CreateBOEForm", onSubmit = "return false" }))

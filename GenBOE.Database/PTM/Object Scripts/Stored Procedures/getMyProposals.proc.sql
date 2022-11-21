@@ -39,6 +39,7 @@ AS
 **			8/14/2020	ranzalon				BOEJ-4676 - Use revised submittal date when available
 **			2/2/2021	ranzalon				BOEJ-4861 - Add submitted value
 **			2/28/2022	koovackal				IES-846 Create 2 new statuses
+**			11/14/2022	twilson3				IES-1976 - Fix missing parens
 ******************************************************************************/
 	SET NOCOUNT ON 
 
@@ -178,12 +179,14 @@ AS
 			) OR (
 				@ProposalStatusID IS NULL 
 				AND (
-					(@AssignedStart IS NULL OR CAST (P.DateAssigned AS Date) > = @AssignedStart) 
-					AND (@AssignedEnd IS NULL OR CAST (P.DateAssigned AS Date) < = @AssignedEnd) 
-				) OR (
-					(@AssignedStart IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) > = @AssignedStart) 
-					AND (@AssignedEnd IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) < = @AssignedEnd) 
-				) 
+					  (
+						(@AssignedStart IS NULL OR CAST (P.DateAssigned AS Date) > = @AssignedStart) 
+						AND (@AssignedEnd IS NULL OR CAST (P.DateAssigned AS Date) < = @AssignedEnd) 
+					  ) OR (
+						(@AssignedStart IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) > = @AssignedStart) 
+						AND (@AssignedEnd IS NULL OR CAST ([ProposalReviewCompleteDate].MaxSubmitDate AS Date) < = @AssignedEnd) 
+					  )
+					) 
 			)
 		) AND (
 			(ISNULL(@ProposalClassFilterID,0) < 1) /* All */

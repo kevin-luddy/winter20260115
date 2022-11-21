@@ -122,7 +122,10 @@ namespace GenTRAC.ActionLogic
             // in the event that a contract entry hasn't yet been created for the proposal, create a blank one for the evaluation of calculated properties
             if (dto == null)
             {
-                dto = new ContractsDto();
+				dto = new ContractsDto
+				{
+					ProposalId = proposalId
+				};
             }
 
             // Get security info to ensure our read-only users can do just that
@@ -225,14 +228,41 @@ namespace GenTRAC.ActionLogic
             return cageCodeViewModel;
         }
 
-        #region Contract Validate / Save
+		#region Contract Validate / Save
 
-        /// <summary>
-        /// Saves the contract.
-        /// </summary>
-        /// <param name="proposalId">The proposal identifier.</param>
-        /// <param name="model">The model.</param>
-        public int? SaveContract(ContractsModelView model)
+		/// <summary>
+		/// Perform validation of the Contracts ModelView that isn't covered by ModelState
+		/// </summary>
+		/// <param name="model">model to validate</param>
+		/// <returns>collection of validation messages</returns>
+		public ICollection<string> ValidateContractModelView(ContractsModelView model)
+		{
+            _ = model ?? throw new ArgumentNullException(nameof(model));
+
+			ICollection<string> validationMessages = new Collection<string>();
+            FullProposal proposal = this.GetFullProposalDto(model.ProposalId);
+
+			if (model.CustomerSubmittalDt.HasValue && model.NegotiationsSubmittedDt.HasValue 
+                && model.CustomerSubmittalDt < model.NegotiationsSubmittedDt)
+			{
+				validationMessages.Add(Constants.INVALID_PROPOSAL_SUBMITTAL_DATE);
+			}
+
+            if (model.NegotiationsSubmittedDt.HasValue && proposal.AgreementDate.HasValue
+				&& model.NegotiationsSubmittedDt < proposal.AgreementDate)
+            {
+                validationMessages.Add(Constants.INVALID_NEGOTIATIONS_SUBMITTED);
+            }
+
+			return validationMessages;
+		}
+
+		/// <summary>
+		/// Saves the contract.
+		/// </summary>
+		/// <param name="proposalId">The proposal identifier.</param>
+		/// <param name="model">The model.</param>
+		public int? SaveContract(ContractsModelView model)
         {
             _ = model ?? throw new ArgumentNullException(nameof(model));
 
@@ -240,8 +270,6 @@ namespace GenTRAC.ActionLogic
 
             using (StopwatchTimer sw = new StopwatchTimer("ContractsControllerLogic.SaveContract", this.log))
             {
-                // TODO: this.ValidateContract(model, false);
-
                 ContractsDto contract = this.ConvertContractsModelToDto(model);
 
                 using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = System.Transactions.IsolationLevel.Snapshot, Timeout = new TimeSpan(0, 0, Convert.ToInt32(WebConfigurationManager.AppSettings["TransactionTimeout"])) }))
@@ -658,6 +686,8 @@ namespace GenTRAC.ActionLogic
                 isValid = false;
                 messages.Add(Constants.INVALID_LM_WIN_LOSS);
             }
+
+            messages.AddRange(ValidateContractModelView(ConvertContractsDtoToModel(dto)));
 
             return isValid;
         }

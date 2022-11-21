@@ -66,18 +66,7 @@ namespace GenBOE.ActionLogic.IO.Import
             }
 
             // Total WBS/WBS Element Hours
-            if (row.ContainsKey(TOTAL_WBS_HOURS) && !string.IsNullOrEmpty(row[TOTAL_WBS_HOURS]))
-            {
-                if (decimal.TryParse(row[TOTAL_WBS_HOURS], out decimal totalWbsHours))
-                {
-                    moqTable.TotalWbsHours = totalWbsHours;
-                }
-                else
-                {
-                    moqTable.ImportTypes.Add(MoqTableImportType.InvalidWbsHours);
-                }
-            }
-            else if (!moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
+            if ((!row.ContainsKey(TOTAL_WBS_HOURS) || string.IsNullOrEmpty(row[TOTAL_WBS_HOURS])) && !moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
             {
                 moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
             }

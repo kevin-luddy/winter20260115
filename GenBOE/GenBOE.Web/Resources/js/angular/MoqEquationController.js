@@ -646,11 +646,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 		var data = {};
 		data.filters = angular.copy($scope.filterDialog.data);
-		data.filters.forEach(item => {
-			if (item.Operator) {
-				item.Operator = item.Operator.Value;
-			}
-		});
 		data.boeId = ManageTaskModel.boeId;
 
 		// Convert view models into text
@@ -848,9 +843,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					item.ParensChecked = false;
 					if (item.Field) {
 						item.Type = $scope.filterDialog.fields[item.Field].Type;
-						if (item.Operator && $scope.filterDialog.operators[item.Type]) {
-							item.Operator = $scope.filterDialog.operators[item.Type].find(i => i.Value === item.Operator);
-						}
 					}
 
 					if (!item.Value) {
@@ -971,6 +963,13 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 								} else {
 									tableData.TotalWbsHours = 0;
 								}
+
+								// this is RMS only
+								if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {
+									// only set if currently unset and response is set
+									tableData.ContractNumber = res.ContractNumber;
+								}
+
 								MOQEquationFieldWidget.setDirty();
 								$scope.actualsValidation.isDirty.delete(res.TableId);
 								$scope.refreshDisableSave();
@@ -1053,6 +1052,13 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 										} else {
 											tableData.TotalWbsHours = 0;
 										}
+
+										// this is RMS only
+										if (!ManageTaskModel.IsSpace && !tableData.ContractNumber && res.ContractNumber) {
+											// only set if currently unset and response is set
+											tableData.ContractNumber = res.ContractNumber;
+										}
+
 										MOQEquationFieldWidget.setDirty();
 									}
 								});
@@ -1234,7 +1240,17 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
     $scope.convertJsonDate = function (date) {
         return new Date(JSON.parse(date.match(/\d+/)));
-	};
+    };
+
+    $scope.ValidatePopStart = function (date) {
+        // validate PoP Start is on a Monday (1)
+        return typeof date !== "undefined" && date.getDay() != 1;
+    }
+
+    $scope.ValidatePopEnd = function (date) {
+        // validate PoP End is on a Sunday (0)
+        return typeof date !== "undefined" && date.getDay() != 0;
+    }
 }]);
 
 // initialize MOQ Equation Widget.. moved here so that way this much script is not in the ascx page

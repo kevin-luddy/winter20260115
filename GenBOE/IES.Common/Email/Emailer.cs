@@ -576,7 +576,7 @@ namespace IES.Common
             Subject = "PTM: DOCUMENT UPLOAD REMINDER",
             Body = "Reminder: At the time of your approval, as Lead{0} Estimator of PTM record {1} - {2}, you had not uploaded the Documented "
                 + "Approval to Submit (and DOA if applicable). This is a reminder to upload the document today or as soon as it becomes available.<br/>"
-                + "To upload the document, navigate to the <a href=\"{3}\">Post Submittal Attachments tab</a>."
+                + "To upload the document, navigate to the <a href=\"{3}\">Attachments tab</a>."
         };
 
         /// <summary>

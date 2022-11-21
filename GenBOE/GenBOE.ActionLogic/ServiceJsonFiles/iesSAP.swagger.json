@@ -550,6 +550,10 @@
 					"tableId": {
 						"type": "integer",
 						"format": "int32"
+					},
+					"contractNumber": {
+						"type": "string",
+						"nullable": true
 					}
 				},
 				"additionalProperties": false
@@ -705,6 +709,10 @@
 						"nullable": true
 					},
 					"value": {
+						"type": "string",
+						"nullable": true
+					},
+					"dropdownText": {
 						"type": "string",
 						"nullable": true
 					}

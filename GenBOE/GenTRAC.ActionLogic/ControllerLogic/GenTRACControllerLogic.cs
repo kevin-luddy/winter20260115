@@ -494,6 +494,12 @@ namespace GenTRAC.ActionLogic
 			}
 			#endregion
 
+			// Validate that this is not a duplicate save
+			if (checklistGeneralInfo.ProposalChecklistID <= 0 && fullProposal.ProposalChecklistData.Any())
+			{
+				inValidationErrors.Add(new ValidationMessage(ValidationConstants.ChecklistValidationConstants.DUPLICATE_CHECKLIST));
+			}
+
 			// only do certain save validation if its a pricer doing the save
 			if (checklistGeneralInfo.ShowChecklistResponse == ShowChecklistResponse.Pricer)
 			{

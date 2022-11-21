@@ -272,7 +272,7 @@ namespace GenTRAC.Tests.DAL.Mapper
         private ProposalControllerLogic CreateSystem(IPickListMapper pickListMapper)
         {
             return new ProposalControllerLogic(null, null, null, null, null, null, null, null, null,
-                null, pickListMapper, null, null, null, null, null, null, null);
+                null, pickListMapper, null, null, null, null, null, null, null, null);
         }
     }
 }

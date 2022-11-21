@@ -389,7 +389,6 @@ namespace GenBOE.Tests.ActionLogic.Import
             Assert.IsTrue(importTypes.Contains(MoqTableImportType.InvalidPopEnd));
             Assert.IsTrue(importTypes.Contains(MoqTableImportType.InvalidPopRange));
             Assert.IsTrue(importTypes.Contains(MoqTableImportType.LargeContractNumber));
-            Assert.IsTrue(importTypes.Contains(MoqTableImportType.InvalidWbsHours));
             Assert.IsTrue(importTypes.Contains(MoqTableImportType.InvalidTotalRelevantHours));
             Assert.IsFalse(importTypes.Contains(MoqTableImportType.CreateMoqTable));
             Assert.IsFalse(importTypes.Contains(MoqTableImportType.None));

@@ -974,15 +974,15 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
                 ProposalNumber = "pn",
                 RFP = "rfp",
                 SupplierName = "sn",
-                ValidityDate = "date2"
+                ValidityDate = "date2",
+				SupplierProposedValue = 30m,
+				VendorId = "vendorId"
             };
 
             sut.ValidatePBOE(pboe, messages);
 
             Assert.AreEqual(0, messages.Count);
 
-            sut.ValidatePBOE(pboe, messages);
-            Assert.AreEqual(1, messages.Count);
             messages = new Collection<ValidationMessage>();
 
             pboe.CCoPDApplies = false;

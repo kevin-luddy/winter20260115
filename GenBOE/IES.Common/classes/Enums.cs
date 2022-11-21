@@ -1402,7 +1402,6 @@ namespace IES.Common
         LargeRepositoryName = 5,
         InvalidQueryType = 6,
         LargeContractNumber = 7,
-        InvalidWbsHours = 8,
         InvalidDateOfReport = 9,
         LargeHistoricalProgramName = 10,
         LargeWBSElement = 11,

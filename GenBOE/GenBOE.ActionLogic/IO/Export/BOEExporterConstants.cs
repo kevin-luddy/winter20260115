@@ -428,6 +428,11 @@ namespace GenBOE.ActionLogic.IO.Export
         /// </summary>
         public const string EMPLOYEE_ID_FILTERS_EXCLUSION_TEXT = "Employee IDs are considered “Personal Information,” and when utilized to filter relevant hours, have been omitted from this table. Lockheed Martin Space will provide this information upon request from the DCAA/DCMA.";
 
+        /// <summary>
+        /// Label for Employee ID filter in Additional Query Filters
+        /// </summary>
+        public const string EMPLOYEE_ID_FILTERS_LABEL = "Personnel Number";
+
         #endregion
 
         #endregion
