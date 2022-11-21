@@ -64,7 +64,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 	$scope.refreshDisableSave = function () {
 		// only check for disabling save if SAP is enabled
-		if ($scope.model.SAPEnabled) {
+		if ($scope.model.SAPEnabled) { 
 			// check if any DateOfReport is older than 60 days
 			let olderThan60 = false;
 			let newTableNeedsCalculated = false;
@@ -1251,6 +1251,26 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
         // validate PoP End is on a Sunday (0)
         return typeof date !== "undefined" && date.getDay() != 0;
     }
+
+    $scope.IsSapEnabledAndSetAsRepository = function(repositoryName)
+    {
+        if ($scope.model.IsRMS) {
+            // RMS does not use Repository Name, so just return SAP Enabled
+            return $scope.model.SAPEnabled;
+        } else {
+            // SSC requires Repository Name to be set to SAP / WEBI
+            return $scope.model.SAPEnabled && repositoryName == $scope.model.SapWebiRepository;
+		}
+	}
+
+    $scope.UpdateRepository = function (tableData) {
+        console.log($scope.model);
+        if (tableData.RepositoryNameSelection == $scope.model.SapWebiRepository) {
+            tableData.RepositoryName = $scope.model.SapWebiRepository;
+        } else {
+            tableData.RepositoryName = "";
+		}
+	}
 }]);
 
 // initialize MOQ Equation Widget.. moved here so that way this much script is not in the ascx page
