@@ -171,6 +171,16 @@ namespace GenBOE.ActionLogic.ModelView
         public string PoPEndString { get { return FormatMoqTablePoPDate(this.PoPEnd, this.PoPEndWeek, this.PoPEndYear, this.QueryType); } }
 
         /// <summary>
+        /// Number of months between PoP Start and PoP End
+        /// </summary>
+        public decimal PoPMonths { get { return this.PoPStart.MonthDifferenceDecimal(this.PoPEnd); } }
+
+        /// <summary>
+        /// PoP Months as string with 2 decimal places
+        /// </summary>
+        public string PoPMonthsString { get { return this.PoPMonths.ToString("0.##"); } }
+
+        /// <summary>
         /// Formats the PoP Date for printing purposes, based on the Company and Query Type
         /// 
         /// RMS -> just print the date

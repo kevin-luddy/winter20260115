@@ -261,6 +261,34 @@ namespace GenBOE.Tests.Common
             Assert.IsTrue(expectedResult == actualResult);
         }
 
+        /// <summary>
+        /// Test for MonthDifferenceDecimal properly returns a decimal value of months between 2 dates
+        /// </summary>
+        [TestMethod]
+        public void MonthDifferenceDecimalTest()
+        {
+            // Difference of 30 days returns 1 month
+            DateTime start = DateTime.Now;
+            DateTime end = DateTime.Now.AddDays(30);
+            decimal result = start.MonthDifferenceDecimal(end);
+            Assert.AreEqual(1M, result);
+
+            // 45 days returns 1.5 months
+			end = DateTime.Now.AddDays(45);
+			result = start.MonthDifferenceDecimal(end);
+			Assert.AreEqual(1.5M, result);
+
+            // 40 days returns 1.33333... months
+			end = DateTime.Now.AddDays(40);
+			result = start.MonthDifferenceDecimal(end);
+			Assert.AreEqual(4/3M, result);
+
+            // 50 days returns 1.66666... months
+			end = DateTime.Now.AddDays(50);
+			result = start.MonthDifferenceDecimal(end);
+			Assert.AreEqual(5/3M, result);
+		}
+
         [TestMethod]
         public void GetDescription_Test()
         {

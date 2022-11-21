@@ -358,7 +358,8 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string FieldName_WbsElement = "WbsElement";
         internal const string FieldName_PoPStartDate = "PoPStartDate";
         internal const string FieldName_PoPEndDate = "PoPEndDate";
-        internal const string FieldName_TotalWBSHours = "TotalWBSHours";
+        internal const string FieldName_PoPMonths = "PoPMonths";
+		internal const string FieldName_TotalWBSHours = "TotalWBSHours";
         internal const string FieldName_AdditionalQueryFilters = "AdditionalQueryFilters";
         internal const string FieldName_TotalRelevantHours = "TotalRelevantHours";
         internal const string FieldName_MOQTypeTableNote = "MOQTypeTableNote";

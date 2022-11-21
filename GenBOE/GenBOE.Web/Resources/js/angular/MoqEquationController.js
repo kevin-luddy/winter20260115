@@ -1251,6 +1251,11 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
         // validate PoP End is on a Sunday (0)
         return typeof date !== "undefined" && date.getDay() != 0;
     }
+
+    $scope.RefreshPoPMonths = function (popStart, popEnd) {
+        // Get the difference between the two dates in months (30 days), rounded to 2 decimals
+        return +((popEnd - popStart) / (1000 * 60 * 60 * 24) / 30).toFixed(2);
+	}
 }]);
 
 // initialize MOQ Equation Widget.. moved here so that way this much script is not in the ascx page
