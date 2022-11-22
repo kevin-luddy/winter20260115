@@ -1024,6 +1024,12 @@ namespace GenBOE.ActionLogic.IESSAPClient
         [Newtonsoft.Json.JsonProperty("poPEnd", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public System.DateTimeOffset? PoPEnd { get; set; }
     
+        [Newtonsoft.Json.JsonProperty("poPStartFW", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string PoPStartFW { get; set; }
+    
+        [Newtonsoft.Json.JsonProperty("poPEndFW", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
+        public string PoPEndFW { get; set; }
+    
         [Newtonsoft.Json.JsonProperty("filters", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
         public string Filters { get; set; }
     

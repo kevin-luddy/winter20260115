@@ -719,8 +719,12 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			}
 		}
 
-
 		if ($scope.filterDialog.data && $scope.filterDialog.data.length > index) {
+			// check to see if last row.  If so, remove join from previous row
+			if ($scope.filterDialog.data.length > 1 && $scope.filterDialog.data.length == index + 1) {
+				$scope.filterDialog.data[index - 1].Join = undefined;
+			}
+
 			$scope.filterDialog.data.splice(index, 1);
 		}
 	};
@@ -765,8 +769,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 
 		// validate selected checkboxes are allowed (not already having start/end parens for 2 selected rows)
-		var firstRow = $scope.filterDialog.data[firstRowIndex];
-		var secondRow = $scope.filterDialog.data[secondRowIndex];
+		const firstRow = $scope.filterDialog.data[firstRowIndex];
+		const secondRow = $scope.filterDialog.data[secondRowIndex];
 
 		if (firstRow.StartParens || firstRow.EndParens || secondRow.StartParens || secondRow.EndParens) {
 			if (!(firstRow.StartParens && secondRow.EndParens)) {
@@ -776,10 +780,10 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		}
 
 		// validate equal number of start parens to end parens between the 2 rows
-		var numStartParens = 0;
-		var numEndParens = 0;
-		for (var j = firstRowIndex + 1; j < secondRowIndex; j++) {
-			var parensRow = $scope.filterDialog.data[j];
+		let numStartParens = 0;
+		let numEndParens = 0;
+		for (let j = firstRowIndex + 1; j < secondRowIndex; j++) {
+			const parensRow = $scope.filterDialog.data[j];
 			if (parensRow.StartParens) {
 				numStartParens++;
 			} else if (parensRow.EndParens) {
@@ -813,7 +817,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.filterDialog.showError = false;
 		$scope.filterDialog.open = true;
 
-		var data = {};
+		const data = {};
 		if (Array.isArray(tableData.AdditionalQueryFilters)) {
 			data.text = tableData.AdditionalQueryFilters.join("\n");
 		} else {
@@ -868,9 +872,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	// Move MOQ Filter up
 	$scope.MoveFilterUp = function (index) {
 		// first make a copy of the array
-		var arr = $scope.filterDialog.data.slice();
-		var orig = arr[index];
-		var prev = arr[index - 1];
+		const arr = $scope.filterDialog.data.slice();
+		const orig = arr[index];
+		const prev = arr[index - 1];
 		// swap the joins and the parens
 		const origJoin = orig.Join;
 		const origStartParens = orig.StartParens;
@@ -892,9 +896,9 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	// Move MOQ Filter down
 	$scope.MoveFilterDown = function (index) {
 		// first make a copy of the array
-		var arr = $scope.filterDialog.data.slice();
-		var orig = arr[index];
-		var next = arr[index + 1];
+		const arr = $scope.filterDialog.data.slice();
+		const orig = arr[index];
+		const next = arr[index + 1];
 		// swap the joins and the parens
 		const origJoin = orig.Join;
 		const origStartParens = orig.StartParens;
@@ -913,6 +917,19 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.filterDialog.data = arr;
 	};
 
+	$scope.setPoP = function (table, tableData) {
+		// If Space then we need to look at query type. If Weekly then need to convert
+		if (ManageTaskModel.IsSpace && tableData.QueryType === 'Weekly') {
+			if (tableData.PoPStartWeek && tableData.PoPStartYear) {
+				table.PopStartFW = tableData.PoPStartYear.toString() + tableData.PoPStartWeek.toString().padStart(2, '0');
+			}
+
+			if (tableData.PoPEndWeek && tableData.PoPEndYear) {
+				table.PopEndFW = tableData.PoPEndYear.toString() + tableData.PoPEndWeek.toString().padStart(2, '0');
+			}
+		}
+	}
+
 	$scope.calculateActuals = function (tableData) {
 		$scope.actualsValidation.errors = new Map();
 
@@ -928,6 +945,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			Filters: tableData.AdditionalQueryFilters,
 			TableId: tableData.Id
 		};
+
+		$scope.setPoP(table, tableData);
 
 		if (Array.isArray(tableData.AdditionalQueryFilters)) {
 			table.Filters = tableData.AdditionalQueryFilters.join("\n");
@@ -992,22 +1011,24 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.actualsValidation.errors = new Map();
 		$scope.actualsValidation.isDirty = new Map();
 		// Get all the data tables
-		var data = {
+		const data = {
 			tableData: []
 		};
 
-		var moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
+		const moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
 		if (moqTypes) {
 			moqTypes.forEach(moq => {
 				if (moq.TableData) {
 					moq.TableData.forEach(tableData => {
-						var table = {
+						const table = {
 							WbsElement: tableData.WbsElement,
 							PoPStart: tableData.PoPStart,
 							PoPEnd: tableData.PoPEnd,
 							Filters: tableData.AdditionalQueryFilters,
 							TableId: tableData.Id
 						};
+
+						$scope.setPoP(table, tableData);
 
 						if (Array.isArray(tableData.AdditionalQueryFilters)) {
 							table.Filters = tableData.AdditionalQueryFilters.join("\n");
@@ -1107,7 +1128,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.actualsValidation.errors = new Map();
 		// pull the data from the form
 
-		var data = {};
+		const data = {};
 		data.tableData = {
 			WbsElement: tableData.WbsElement,
 			PoPStart: tableData.PoPStart,
@@ -1115,6 +1136,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			Filters: tableData.AdditionalQueryFilters,
 			TableId: tableData.Id
 		};
+
+		$scope.setPoP(data.tableData, tableData);
 
 		if (Array.isArray(tableData.AdditionalQueryFilters)) {
 			data.tableData.Filters = tableData.AdditionalQueryFilters.join("\n");
@@ -1140,15 +1163,15 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 				}
 			}
 			else {
-				var blob = $scope.b64toBlob(response.data.Data, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-				var filename = 'ActualsExport.xlsx';
+				const blob = $scope.b64toBlob(response.data.Data, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+				const filename = 'ActualsExport.xlsx';
 				
 				if (navigator.msSaveBlob)
 					navigator.msSaveBlob(blob, filename);
 				else {
 					// trick to download store a file having its URL
-					var fileURL = URL.createObjectURL(blob);
-					var a = document.createElement('a');
+					const fileURL = URL.createObjectURL(blob);
+					const a = document.createElement('a');
 					a.href = fileURL;
 					a.target = '_blank';
 					a.download = filename;
@@ -1192,7 +1215,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.actualsValidation.errors = new Map();
 		// pull the data from the form
 
-		var data = {};
+		const data = {};
 		data.tableData = {
 			WbsElement: tableData.WbsElement,
 			PoPStart: tableData.PoPStart,
@@ -1200,6 +1223,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			Filters: tableData.AdditionalQueryFilters,
 			TableId: tableData.Id
 		};
+
+		$scope.setPoP(data.tableData, tableData);
 
 		if (Array.isArray(tableData.AdditionalQueryFilters)){
 			data.tableData.Filters = tableData.AdditionalQueryFilters.join("\n");
