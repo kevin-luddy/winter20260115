@@ -79,22 +79,22 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					moq.TableData.forEach(tableData => {
 						if (tableData.DateOfReport < sixtyDays) {
 							olderThan60 = true;
-						}
+                        }
 
-						if (tableData.TotalRelevantHours === undefined) {
+                        if (tableData.TotalRelevantHours === undefined && ($scope.model.IsRMS || (!$scope.model.IsRMS && tableData.RepositoryName == $scope.model.SapWebiRepository))) {
 							newTableNeedsCalculated = true;
 						}
 					});
 				}
 			});
 
-			if (olderThan60) {
+            if (olderThan60) {
 				ManageTaskModel.DisableSave = true;
 				ManageTaskModel.DisableSaveText = 'All MOQ Tables older than two months need to have Actuals recalculated before Saving'
-			} else if (newTableNeedsCalculated) {
+            } else if (newTableNeedsCalculated) {
 				ManageTaskModel.DisableSave = true;
 				ManageTaskModel.DisableSaveText = 'All new MOQ Tables need to have Actuals calculated before Saving';
-			} else if ($scope.actualsValidation.isDirty.size > 0) {
+            } else if ($scope.actualsValidation.isDirty.size > 0) {
 				ManageTaskModel.DisableSave = true;
 				ManageTaskModel.DisableSaveText = 'All MOQ Tables that have had filters updated need to have Actuals recalculated before Saving';
 			} else {
@@ -228,7 +228,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
             $scope.$apply(function () {
                 var index = tableDataArray.indexOf(item);
                 tableDataArray.splice(index, 1);
-				MOQEquationFieldWidget.setDirty();
+                MOQEquationFieldWidget.setDirty();
+                $scope.actualsValidation.isDirty.delete(item.Id); 
 				$scope.refreshDisableSave();
             });
         });
@@ -1264,12 +1265,15 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 	}
 
     $scope.UpdateRepository = function (tableData) {
-        console.log($scope.model);
         if (tableData.RepositoryNameSelection == $scope.model.SapWebiRepository) {
+            $scope.actualsValidation.isDirty.set(tableData.Id, true); 
             tableData.RepositoryName = $scope.model.SapWebiRepository;
         } else {
+            $scope.actualsValidation.isDirty.delete(tableData.Id); 
             tableData.RepositoryName = "";
-		}
+        }
+
+        $scope.refreshDisableSave();
 	}
 }]);
 

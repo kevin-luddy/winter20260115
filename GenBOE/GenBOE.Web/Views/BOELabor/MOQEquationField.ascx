@@ -174,12 +174,12 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.RepositoryNameComparativeSuffix);"></div>
                             </td>
                             <td>
-                                <select data-ng-readonly="ActualReadOnly()" class="skip-read-only" data-ng-model="tableData.RepositoryNameSelection" data-ng-change="UpdateRepository(tableData)">
+                                <select data-ng-readonly="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.RepositoryNameSelection" data-ng-change="UpdateRepository(tableData)">
                                     <option value=""></option>
                                     <option value="<%: RepositoryName.SapWebi.GetDescription() %>"><%: RepositoryName.SapWebi.GetDescription() %></option>
                                     <option value="<%: RepositoryName.Other.GetDescription() %>"><%: RepositoryName.Other.GetDescription() %></option>
                                 </select>
-                                <input data-ng-if="tableData.RepositoryNameSelection == '<%: RepositoryName.Other.GetDescription() %>'" data-ng-readonly="ActualReadOnly()" class="skip-read-only repository-name-other" type="text" data-ng-model="tableData.RepositoryName" />
+                                <input data-ng-if="tableData.RepositoryNameSelection == '<%: RepositoryName.Other.GetDescription() %>'" data-ng-readonly="ActualReadOnly()" class="skip-read-only repository-name-other" type="text" required data-ng-model="tableData.RepositoryName" />
                             </td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="!model.IsRMS">
@@ -249,7 +249,7 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.DateOfReportHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.DateOfReportComparativeSuffix);"></div>
                             </td>
-                            <td><input data-ng-readonly="ActualReadOnly() || IsSapEnabledAndSetAsRepository(tableData.RepositoryName)<%--.ToString().ToLower()--%>" class="skip-read-only" type="date" required data-ng-model="tableData.DateOfReport" onchange="MOQEquationFieldWidget.setDirty()" /></td>
+                            <td><input data-ng-readonly="ActualReadOnly() || IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" class="skip-read-only" type="date" required data-ng-model="tableData.DateOfReport" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.ContractNumber}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.ContractNumberSuffix);"></div></td>
