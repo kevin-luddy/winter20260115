@@ -214,7 +214,7 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPStartComparativeSuffix);"></div>
                             </td>
                             <td>
-                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPStart" data-ng-class="{'ng-invalid': ValidatePopStart(tableData.PoPStart) }" onchange="MOQEquationFieldWidget.setDirty()" />
+                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPStart" data-ng-class="{'ng-invalid': ValidatePopStart(tableData.PoPStart) }" onchange="MOQEquationFieldWidget.setDirty()" data-ng-change="tableData.PoPMonthsString = RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd)" />
                                 <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPStart" onchange="MOQEquationFieldWidget.setDirty()" />
 
                                 <span data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" >
@@ -229,7 +229,7 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.PoPEndComparativeSuffix);"></div>
                             </td>
                             <td>
-                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPEnd" data-ng-class="{'ng-invalid': ValidatePopEnd(tableData.PoPEnd) }" onchange="MOQEquationFieldWidget.setDirty()" />
+                                <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="date"  data-ng-if="model.IsRMS" required data-ng-model="tableData.PoPEnd" data-ng-class="{'ng-invalid': ValidatePopEnd(tableData.PoPEnd) }" onchange="MOQEquationFieldWidget.setDirty()" data-ng-change="tableData.PoPMonthsString = RefreshPoPMonths(tableData.PoPStart, tableData.PoPEnd)" />
                                 <input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="month" data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.MONTHLY%>'" required data-ng-model="tableData.PoPEnd" onchange="MOQEquationFieldWidget.setDirty()" />
                                 
                                 <span data-ng-if="!model.IsRMS && tableData.QueryType === '<%: MoqTableData.WEEKLY%>'" >
@@ -237,6 +237,10 @@
                                     Year <input data-ng-readonly="ActualReadOnly()" type="number" class="weekYear skip-read-only" min="1980" max="2050" step="1" required data-ng-model="tableData.PoPEndYear" onchange="MOQEquationFieldWidget.setDirty()" />
                                 </span>
                             </td>
+                        </tr>
+                        <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
+                            <td class="form-label">{{model.MoqTypeTableDataLabels.PoPMonths}}</td><%-- todo - needs to update on date change--%>
+                            <td><input data-ng-readonly="true" type="text" data-ng-model="tableData.PoPMonthsString" /></td>
                         </tr>
                         <tr data-ng-repeat="customField in MoqTableCustomFields" data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{customField.CustomFieldMetaData.FieldName}}{{(customField.CustomFieldMetaData.isRequired) ? ' *' : ''}}</td>

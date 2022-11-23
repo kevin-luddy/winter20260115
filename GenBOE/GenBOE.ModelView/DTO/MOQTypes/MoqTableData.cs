@@ -183,25 +183,35 @@ namespace GenBOE.ActionLogic.ModelView
 		/// </summary>
 		public string PoPEndString { get { return FormatMoqTablePoPDate(this.PoPEnd, this.PoPEndWeek, this.PoPEndYear, this.QueryType); } }
 
-		/// <summary>
-		/// Formats the PoP Date for printing purposes, based on the Company and Query Type
-		/// 
-		/// RMS -> just print the date
-		/// 
-		/// Space -> the date is formatted based on the query Type (Weekly / Monthly)
-		///         month -> MM/YYYY
-		///         weeks -> FW ww/YYYY, where ww is the week value of 1-53
-		/// </summary>
-		/// <param name="date"></param>
-		/// <param name="queryType"></param>
-		/// <returns></returns>
-		public static string FormatMoqTablePoPDate(DateTime date, int? week, int? year, string queryType)
-		{
-			return
-				SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST
-					? date.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) :
-					queryType == MoqTableData.MONTHLY ? $"{date.Month.ToString("00")}/{date.Year}" : $"FW {week ?? 0:00}/{year}";
-		}
+        /// <summary>
+        /// Number of months between PoP Start and PoP End
+        /// </summary>
+        public decimal PoPMonths { get { return this.PoPStart.MonthDifferenceDecimal(this.PoPEnd); } }
+
+        /// <summary>
+        /// PoP Months as string with 2 decimal places
+        /// </summary>
+        public string PoPMonthsString { get { return this.PoPMonths.ToString("0.##"); } }
+
+        /// <summary>
+        /// Formats the PoP Date for printing purposes, based on the Company and Query Type
+        /// 
+        /// RMS -> just print the date
+        /// 
+        /// Space -> the date is formatted based on the query Type (Weekly / Monthly)
+        ///         month -> MM/YYYY
+        ///         weeks -> FW ww/YYYY, where ww is the week value of 1-53
+        /// </summary>
+        /// <param name="date"></param>
+        /// <param name="queryType"></param>
+        /// <returns></returns>
+        public static string FormatMoqTablePoPDate(DateTime date, int? week, int? year, string queryType)
+        {
+            return
+                SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST
+                    ? date.ToString(Constants.DATE_FORMATTING_MONTH_DAY_YEAR) :
+                    queryType == MoqTableData.MONTHLY ? $"{date.Month.ToString("00")}/{date.Year}" : $"FW {week ?? 0:00}/{year}";
+        }
 
 		/// <summary>
 		/// Creates a date out of week / year. The way we split weeks is week 1-30 will fall into January 1-30. Weeks 31-53 will fall into February.
