@@ -40,7 +40,8 @@
         IsRMS: '<%:Model.Company == CompanyConfiguration.MST%>'.isTrue(),
         HistoricalMoqType: <%:(int)MOQType.Historical%>,
         ComparativeMoqType: <%:(int)MOQType.Comparative%>,
-        SAPEnabled: '<%:Utilities.IsSAPEnabled%>'.isTrue()
+        SAPEnabled: '<%:Utilities.IsSAPEnabled%>'.isTrue(),
+        SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>'
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;
@@ -172,7 +173,14 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.RepositoryNameHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.RepositoryNameComparativeSuffix);"></div>
                             </td>
-                            <td><input data-ng-readonly="ActualReadOnly()" class="skip-read-only" type="text" required data-ng-model="tableData.RepositoryName" /></td>
+                            <td>
+                                <select data-ng-readonly="ActualReadOnly()" class="skip-read-only" required data-ng-model="tableData.RepositoryNameSelection" data-ng-change="UpdateRepository(tableData)">
+                                    <option value=""></option>
+                                    <option value="<%: RepositoryName.SapWebi.GetDescription() %>"><%: RepositoryName.SapWebi.GetDescription() %></option>
+                                    <option value="<%: RepositoryName.Other.GetDescription() %>"><%: RepositoryName.Other.GetDescription() %></option>
+                                </select>
+                                <input data-ng-if="tableData.RepositoryNameSelection == '<%: RepositoryName.Other.GetDescription() %>'" data-ng-readonly="ActualReadOnly()" class="skip-read-only repository-name-other" type="text" required data-ng-model="tableData.RepositoryName" />
+                            </td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="!model.IsRMS">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.QueryType}} * 
@@ -245,7 +253,7 @@
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.DateOfReportHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.DateOfReportComparativeSuffix);"></div>
                             </td>
-                            <td><input data-ng-readonly="ActualReadOnly() || <%:Utilities.IsSAPEnabled.ToString().ToLower()%>" class="skip-read-only" type="date" required data-ng-model="tableData.DateOfReport" onchange="MOQEquationFieldWidget.setDirty()" /></td>
+                            <td><input data-ng-readonly="ActualReadOnly() || IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" class="skip-read-only" type="date" required data-ng-model="tableData.DateOfReport" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.ContractNumber}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.ContractNumberSuffix);"></div></td>
@@ -253,13 +261,13 @@
                         </tr>
                         <tr data-ng-show="!tableData.collapsed" data-ng-if="model.IsRMS">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.TotalWbsHours}} * <div class="help-icon" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalWBSHoursSuffix);"></div></td>
-                            <td><input data-ng-readonly="ActualReadOnly() || model.SAPEnabled" class="skip-read-only" type="number" required data-ng-model="tableData.TotalWbsHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
+                            <td><input data-ng-readonly="ActualReadOnly() || IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" class="skip-read-only" type="number" required data-ng-model="tableData.TotalWbsHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                         <tr data-ng-show="!tableData.collapsed">
                             <td class="form-label">{{model.MoqTypeTableDataLabels.AdditionalQueryFilters}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.AdditionalQueryFiltersComparativeSuffix);"></div>
-                                <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="ShowFilterDialog(tableData)">Update Filters</button>
+                                <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="ShowFilterDialog(tableData)">Update Filters</button>
                             </td>
                             <td><textarea data-ng-readonly="ActualReadOnly()" class="skip-read-only" cols="20" required data-ng-model="tableData.AdditionalQueryFilters" /></td>
                         </tr>
@@ -267,7 +275,7 @@
                             <td class="form-label">{{model.MoqTypeTableDataLabels.TotalRelevantHours}} * 
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Historical%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalRelevantHoursHistoricalSuffix);"></div>
                                 <div class="help-icon" data-ng-if="moqType.SelectedMOQType == <%:(int)MOQType.Comparative%>" data-ng-click="openHelp(model.MoqTypeHelpUrls.TotalRelevantHoursComparativeSuffix);"></div></td>
-                            <td><input data-ng-readonly="ActualReadOnly() || model.SAPEnabled" class="skip-read-only" type="number" required min="0" data-ng-model="tableData.TotalRelevantHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
+                            <td><input data-ng-readonly="ActualReadOnly() || IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" class="skip-read-only" type="number" required min="0" data-ng-model="tableData.TotalRelevantHours" onchange="MOQEquationFieldWidget.setDirty()" /></td>
                         </tr>
                    </table>
                 </div>
@@ -275,9 +283,9 @@
                     <button data-ng-if="!ActualReadOnly() && $index == 0" data-ng-click="CreateNewTable(moqType.TableData)" type="button" class="ies-action moqTypesButton">Add Table Data</button>
                     <button data-ng-if="!ActualReadOnly() && $index == 0" data-ng-disabled="moqType.TableData.length <= 1" data-ng-click="displayReOrderMoqTablesDialog(moqType)" class="moqTypesButton ies-blue" type="button">Sort MOQ Tables</button>
                     <button data-ng-if="!ActualReadOnly() && moqType.TableData.length > 1" style="display:block;" data-ng-click="RemoveTable(tableData, moqType.TableData)" type="button" class="ies-danger moqTypesButton" data-ng-class="{'moqTypesDelete': $index == 0}">Delete Table Data</button>
-                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="exportActuals(tableData)">Export Actuals</button>
-                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="validateActuals(tableData)">Validate Actuals</button>
-                    <button data-ng-if="!ActualReadOnly() && model.SAPEnabled" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="calculateActuals(tableData)">Calculate Actuals</button>
+                    <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="exportActuals(tableData)">Export Actuals</button>
+                    <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="validateActuals(tableData)">Validate Actuals</button>
+                    <button data-ng-if="!ActualReadOnly() && IsSapEnabledAndSetAsRepository(tableData.RepositoryName)" type="button" class="ies-action moqTypesButton sapButton" data-ng-click="calculateActuals(tableData)">Calculate Actuals</button>
                 </div>
                 <hr />
             </div>

@@ -8445,10 +8445,18 @@ input.labelLookFeel {
     width: 400px;
 }
 
+.tableData td .repository-name-other {
+    width: 272px;
+}
+
 .tableData td input[type="number"],
 .tableData td input[type="date"],
 .tableData td select {
     width: 125px;
+}
+
+.tableData td select {
+    padding: 1px;
 }
 
 .tableData td input[type="number"] {

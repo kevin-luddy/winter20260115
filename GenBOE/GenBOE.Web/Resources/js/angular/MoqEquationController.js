@@ -64,7 +64,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 	$scope.refreshDisableSave = function () {
 		// only check for disabling save if SAP is enabled
-		if ($scope.model.SAPEnabled) {
+		if ($scope.model.SAPEnabled) { 
 			// check if any DateOfReport is older than 60 days
 			let olderThan60 = false;
 			let newTableNeedsCalculated = false;
@@ -79,22 +79,22 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 					moq.TableData.forEach(tableData => {
 						if (tableData.DateOfReport < sixtyDays) {
 							olderThan60 = true;
-						}
+                        }
 
-						if (tableData.TotalRelevantHours === undefined) {
+                        if (tableData.TotalRelevantHours === undefined && ($scope.model.IsRMS || (!$scope.model.IsRMS && tableData.RepositoryName == $scope.model.SapWebiRepository))) {
 							newTableNeedsCalculated = true;
 						}
 					});
 				}
 			});
 
-			if (olderThan60) {
+            if (olderThan60) {
 				ManageTaskModel.DisableSave = true;
 				ManageTaskModel.DisableSaveText = 'All MOQ Tables older than two months need to have Actuals recalculated before Saving'
-			} else if (newTableNeedsCalculated) {
+            } else if (newTableNeedsCalculated) {
 				ManageTaskModel.DisableSave = true;
 				ManageTaskModel.DisableSaveText = 'All new MOQ Tables need to have Actuals calculated before Saving';
-			} else if ($scope.actualsValidation.isDirty.size > 0) {
+            } else if ($scope.actualsValidation.isDirty.size > 0) {
 				ManageTaskModel.DisableSave = true;
 				ManageTaskModel.DisableSaveText = 'All MOQ Tables that have had filters updated need to have Actuals recalculated before Saving';
 			} else {
@@ -228,7 +228,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
             $scope.$apply(function () {
                 var index = tableDataArray.indexOf(item);
                 tableDataArray.splice(index, 1);
-				MOQEquationFieldWidget.setDirty();
+                MOQEquationFieldWidget.setDirty();
+                $scope.actualsValidation.isDirty.delete(item.Id); 
 				$scope.refreshDisableSave();
             });
         });
@@ -1255,6 +1256,29 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
     $scope.RefreshPoPMonths = function (popStart, popEnd) {
         // Get the difference between the two dates in months (30 days), rounded to 2 decimals
         return +((popEnd - popStart) / (1000 * 60 * 60 * 24) / 30).toFixed(2);
+	}
+
+    $scope.IsSapEnabledAndSetAsRepository = function(repositoryName)
+    {
+        if ($scope.model.IsRMS) {
+            // RMS does not use Repository Name, so just return SAP Enabled
+            return $scope.model.SAPEnabled;
+        } else {
+            // SSC requires Repository Name to be set to SAP / WEBI
+            return $scope.model.SAPEnabled && repositoryName == $scope.model.SapWebiRepository;
+		}
+	}
+
+    $scope.UpdateRepository = function (tableData) {
+        if (tableData.RepositoryNameSelection == $scope.model.SapWebiRepository) {
+            $scope.actualsValidation.isDirty.set(tableData.Id, true); 
+            tableData.RepositoryName = $scope.model.SapWebiRepository;
+        } else {
+            $scope.actualsValidation.isDirty.delete(tableData.Id); 
+            tableData.RepositoryName = "";
+        }
+
+        $scope.refreshDisableSave();
 	}
 }]);
 
