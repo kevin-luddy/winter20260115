@@ -808,7 +808,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// </summary>
 		/// <param name="filter">The full filter from the MOQ Table</param>
 		/// <returns>dictionary of employee id filters and the employee ids in them</returns>
-		private IDictionary<string, IList<string>> GetEmployeeIds(string filter)
+		internal IDictionary<string, IList<string>> GetEmployeeIds(string filter)
         {
             IDictionary<string, IList<string>> toReturn = new Dictionary<string, IList<string>>();
             IList<string> filterComponents = filter.Split(new string[] { "\n" }, StringSplitOptions.None).ToList();
@@ -832,7 +832,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <param name="employeeIdFilters">dictionary of of employee id filters and the employee ids in them</param>
 		/// <param name="additionalQueryFilters">Full Additional Query Filters string</param>
 		/// <returns>filters with employee ids masked</returns>
-		private string MaskSpaceEmployeeIds(IDictionary<string, IList<string>> employeeIdFilters, string additionalQueryFilters)
+		internal string MaskSpaceEmployeeIds(IDictionary<string, IList<string>> employeeIdFilters, string additionalQueryFilters)
 		{
 			if (employeeIdFilters.Any())
 			{
