@@ -459,6 +459,30 @@ namespace GenBOE.Tests.ActionLogic.Export
             Assert.IsNotNull(result);
         }
 
+		[TestMethod]
+		public void WordExporter_MaskSSCEmployeeIds_Test()
+		{
+			WordExporter wordExporter = new BOEExporter(null, null, null, null, null, null);
+			string filters = $"{BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL} = 123456";
+			IDictionary<string, IList<string>> employeeIdFilters = wordExporter.GetEmployeeIds(filters);
+			string output = wordExporter.MaskSpaceEmployeeIds(employeeIdFilters, filters);
+
+			Assert.IsTrue(output.Contains(BOEExporterConstants.EMPLOYEE_ID_FILTERS_EXCLUSION_TEXT));
+			Assert.IsTrue(output.Contains(BOEExporterConstants.EMPLOYEE_ID_FILTERS_REPLACEMENT_TEXT));
+			Assert.IsFalse(output.Contains("123456"));
+
+			filters = $"{BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL} = 123456, 345678, 234567";
+			employeeIdFilters = wordExporter.GetEmployeeIds(filters);
+			output = wordExporter.MaskSpaceEmployeeIds(employeeIdFilters, filters);
+
+			Assert.IsTrue(output.Contains(BOEExporterConstants.EMPLOYEE_ID_FILTERS_EXCLUSION_TEXT));
+			Assert.IsTrue(output.Contains(BOEExporterConstants.EMPLOYEE_ID_FILTERS_REPLACEMENT_TEXT));
+			Assert.AreNotEqual(output.IndexOf(BOEExporterConstants.EMPLOYEE_ID_FILTERS_REPLACEMENT_TEXT), output.LastIndexOf(BOEExporterConstants.EMPLOYEE_ID_FILTERS_REPLACEMENT_TEXT));
+			Assert.IsFalse(output.Contains("123456"));
+			Assert.IsFalse(output.Contains("345678"));
+			Assert.IsFalse(output.Contains("234567"));
+		}
+
         #region Helper Methods
 
         private void AssertValueByMonthDeepEquality<T>(ValuesByMonth<T> original, ValuesByMonth<T> compare) where T : struct
