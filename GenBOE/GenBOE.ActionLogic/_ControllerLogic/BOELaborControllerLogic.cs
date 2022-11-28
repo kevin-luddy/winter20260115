@@ -3793,9 +3793,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     Filters = t.Filters,
                     PoPEnd = t.PoPEnd,
                     PoPStart = t.PoPStart,
-					PoPStartFW = t.PoPStartFW,
-					PoPEndFW = t.PoPEndFW,
-					WbsElement = t.WbsElement,
+                    PoPStartFW = t.PoPStartFW,
+                    PoPEndFW = t.PoPEndFW,
+                    WbsElement = t.WbsElement,
                     TableId = t.TableId
                 }).ToList();
 

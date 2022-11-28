@@ -38,8 +38,6 @@ namespace GenBOE.ActionLogic.ModelView
 		/// </summary>
 		public string PoPEndFW { get; set; }
 
-
-
 		/// <summary>
 		/// Gets or sets the Query Filters
 		/// </summary>
