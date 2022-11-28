@@ -14,9 +14,15 @@ namespace GenBOE.ActionLogic.IESSAPClient
     /// </summary>
     public partial class IESSAPClient
 	{
-        /// <summary>
-        /// Http Client
-        /// </summary>
-        public HttpClient HttpClient { get { return this._httpClient; } }
+		/// <summary>
+		/// internal constructor for unit tests mocks
+		/// </summary>
+		internal IESSAPClient()
+		{ }
+
+		/// <summary>
+		/// Http Client
+		/// </summary>
+		public HttpClient HttpClient { get { return this._httpClient; } }
     }
 }

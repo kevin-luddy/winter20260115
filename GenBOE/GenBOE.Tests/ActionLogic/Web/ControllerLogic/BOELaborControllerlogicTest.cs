@@ -1237,7 +1237,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
-            Assert.AreEqual(1, results.Count());
+            Assert.AreEqual(1, results.Count);
         }
 
         /// <summary>
@@ -1270,8 +1270,40 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
 
             sut.ValidateTaskDetails(boe, task, results, ws);
-            Assert.AreEqual(1, results.Count());
+            Assert.AreEqual(1, results.Count);
         }
+
+		[TestMethod]
+		public void TestValidateTaskDetails_SAPWEBI_REPO_ValueInMoqTypeTableCF()
+		{
+			BOELaborControllerLogic sut = CreateSystem();
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 2, CostDecimalPrecision = 2, ResourceDecimalPrecision = 3, ResourceListID = 1, UsingTemplateBOE = false };
+			FullBoe boe = new FullBoe(new BoeDTO { Id = 1, WorkspaceID = workspace.Id, StartDate = Convert.ToDateTime("12/01/2012"), EndDate = Convert.ToDateTime("12/01/2016"), IsMultiClinWbs = true });
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			LaborTaskDataModelView task = CreateModelView(boe, ws);
+
+			CustomFieldDTO moqTypeTableCustomField = new CustomFieldDTO { Id = 2, CustomFieldName = "MoqColor", WorkspaceID = ws.Id, CustomFieldDisplayID = CustomFieldType.MoqTypeTableDataDisplay, CustomFieldRequired = true, IsOpenEnded = true };
+			Collection<CustomFieldValueDTO> colorOptions = new Collection<CustomFieldValueDTO>();
+			retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(It.IsAny<int>())).Returns(new Collection<CustomFieldDTO> { moqTypeTableCustomField });
+			retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(new Collection<int> { moqTypeTableCustomField.Id }, It.IsAny<int>())).Returns(colorOptions);
+
+			task.MOQTypes.First().TableData.First().RepositoryName = RepositoryName.SapWebi.GetDescription();
+
+			task.MOQTypes.First().TableData.First().CustomFieldValueContainers.Add(new CustomFieldValueContainer()
+			{
+				Id = 1,
+				CustomFieldID = moqTypeTableCustomField.Id,
+				IsOpenEnded = true,
+				OpenEndedValue = string.Empty
+			});
+
+			ICollection<ValidationMessage> results = new Collection<ValidationMessage>();
+
+			sut.ValidateTaskDetails(boe, task, results, ws);
+			Assert.AreEqual(1, results.Count);
+		}
 
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
         public void TestValidateTaskDetails_ExBoe()
