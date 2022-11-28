@@ -3696,7 +3696,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     Filters = tableData.Filters,
                     PoPEnd = tableData.PoPEnd,
                     PoPStart = tableData.PoPStart,
-                    WbsElement = tableData.WbsElement,
+					PoPStartFW = tableData.PoPStartFW,
+					PoPEndFW = tableData.PoPEndFW,
+					WbsElement = tableData.WbsElement,
                     TableId = tableData.TableId
                 };
 
@@ -3742,7 +3744,9 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     Filters = tableData.Filters,
                     PoPEnd = tableData.PoPEnd,
                     PoPStart = tableData.PoPStart,
-                    WbsElement = tableData.WbsElement,
+					PoPStartFW = tableData.PoPStartFW,
+					PoPEndFW = tableData.PoPEndFW,
+					WbsElement = tableData.WbsElement,
                     TableId = tableData.TableId
                 };
 
@@ -3789,6 +3793,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
                     Filters = t.Filters,
                     PoPEnd = t.PoPEnd,
                     PoPStart = t.PoPStart,
+                    PoPStartFW = t.PoPStartFW,
+                    PoPEndFW = t.PoPEndFW,
                     WbsElement = t.WbsElement,
                     TableId = t.TableId
                 }).ToList();

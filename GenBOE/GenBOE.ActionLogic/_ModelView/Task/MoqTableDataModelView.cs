@@ -28,10 +28,20 @@ namespace GenBOE.ActionLogic.ModelView
         /// </summary>
         public DateTime? PoPEnd { get; set; }
 
-        /// <summary>
-        /// Gets or sets the Query Filters
-        /// </summary>
-        public string Filters { get; set; }
+		/// <summary>
+		/// Gets or sets the POP Start using Fiscal Weeks in yyyyWW format
+		/// </summary>
+		public string PoPStartFW { get; set; }
+
+		/// <summary>
+		/// Gets or sets the POP End using Fiscal Weeks in yyyyWW format
+		/// </summary>
+		public string PoPEndFW { get; set; }
+
+		/// <summary>
+		/// Gets or sets the Query Filters
+		/// </summary>
+		public string Filters { get; set; }
 
         /// <summary>
         /// Gets or sets the Table Id
