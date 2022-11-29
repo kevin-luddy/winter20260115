@@ -1676,18 +1676,32 @@ namespace GenBOE.ActionLogic.ControllerLogic
         {
             ICollection<BOECustomFieldModelView> moqTypeTableCustomFields = this.GetCustomFieldOptionModelViews(ws, ControllerCustomFieldType.MoqTypeTable);
 
-            ICollection<CustomFieldValueContainer> customFields = laborTaskData.MOQTypes.SelectMany(x => x.TableData).SelectMany(x => x.CustomFieldValueContainers).ToCollection();
-            ICollection<BOECustomFieldModelView> requiredCustomFields = moqTypeTableCustomFields.Where(x => x.CustomFieldMetaData.isRequired).ToCollection();
+			ICollection<MoqTableData> moqTables = laborTaskData.MOQTypes.SelectMany(x => x.TableData).ToList();
+			ICollection<BOECustomFieldModelView> requiredCustomFields = moqTypeTableCustomFields.Where(x => x.CustomFieldMetaData.isRequired).ToCollection();
+			string sapWebiName = RepositoryName.SapWebi.GetDescription();
+			foreach (MoqTableData moqTable in moqTables)
+			{
+				foreach (CustomFieldValueContainer cf in moqTable.CustomFieldValueContainers)
+				{
+					BOECustomFieldModelView customField = requiredCustomFields.FirstOrDefault(c => c.CustomFieldMetaData.CustomFieldID == cf.CustomFieldID);
+					if (customField != null &&
+						string.IsNullOrEmpty(cf.OpenEndedValue))
+					{
+						inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldMetaData.FieldName)));
+					}
 
-            foreach (CustomFieldValueContainer cf in customFields)
-            {
-                BOECustomFieldModelView customField = requiredCustomFields.FirstOrDefault(c => c.CustomFieldMetaData.CustomFieldID == cf.CustomFieldID);
-                if (customField != null &&
-                    string.IsNullOrEmpty(cf.OpenEndedValue))
-                {
-                    inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.CUSTOM_FIELD_IS_REQUIRED, customField.CustomFieldMetaData.FieldName)));
-                }
-            }
+					if (moqTable.RepositoryName == sapWebiName && !string.IsNullOrEmpty(cf.OpenEndedValue))
+					{
+						BOECustomFieldModelView actualCustomField = moqTypeTableCustomFields.FirstOrDefault(c => c.CustomFieldMetaData.CustomFieldID == cf.CustomFieldID);
+						if (actualCustomField != null)
+						{
+							inValidationErrors.Add(new ValidationMessage("CustomField", string.Format(Constants.MOQ_CUSTOM_FIELD_EMPTY_WHEN_SAP_WEBI, actualCustomField.CustomFieldMetaData.FieldName)));
+						}
+					}
+				}
+			}
+
+
         }
 
         /// <summary>
