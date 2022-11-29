@@ -1273,6 +1273,9 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             Assert.AreEqual(1, results.Count);
         }
 
+		/// <summary>
+		/// Test Custom Fields Validation for MOQ Type Tables when Repo is set to SAP/WEBI
+		/// </summary>
 		[TestMethod]
 		public void TestValidateTaskDetails_SAPWEBI_REPO_ValueInMoqTypeTableCF()
 		{
