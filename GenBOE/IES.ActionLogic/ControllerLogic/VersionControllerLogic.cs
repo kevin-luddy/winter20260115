@@ -103,8 +103,7 @@ namespace IES.ActionLogic.ControllerLogic
             modelView.SelectedVersionNumberDisplay = wipRevision != null && wipRevision.Id == firstSelectedRevision.Id
                 ? CommonConstants.WorkInProgress
                 : string.Format("Revision {0}", modelView.SelectedVersionNumber);
-            modelView.PreviousVersionNumberDisplay = string.Format("Revision {0}", modelView.PreviousVersionNumber);
-
+            
             // Update list of versions available to compare to 
             modelView.AvailableCompareToVersions = new List<RevisionOptionModelView>();
             foreach (RevisionOptionModelView version in modelView.AvailableVersions)
@@ -144,9 +143,15 @@ namespace IES.ActionLogic.ControllerLogic
             {
                 throw new ArgumentException("Could not find specified revision");
             }
-            
-            // Don't update second revision and differences for eariest version as neither will exist in that case
-            if (!modelView.IsEarliestVersion)
+
+			int previousVersionNumber;
+			int.TryParse(secondSelectedRevision.Revision, out previousVersionNumber);
+
+			modelView.PreviousVersionNumber = previousVersionNumber;
+			modelView.PreviousVersionNumberDisplay = string.Format("Revision {0}", modelView.PreviousVersionNumber);
+
+			// Don't update second revision and differences for eariest version as neither will exist in that case
+			if (!modelView.IsEarliestVersion)
             {
                 modelView.SecondSelectedRevision = modelView.AvailableCompareToVersions.FirstOrDefault(x => x.Id == secondSelectedRevision.Id);
                 modelView.PPRDDifferences = this.RevisionMediator.GetVersionComparisonRows(secondSelectedRevision.Id, firstSelectedRevision.Id);

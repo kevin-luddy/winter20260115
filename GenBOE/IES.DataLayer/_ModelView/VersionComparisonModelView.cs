@@ -58,25 +58,19 @@ namespace IES.DataBridge.ModelViews
         public int SelectedVersionNumber { get; set; }
 
         /// <summary>
-        /// Gets previous version (Selected Version - 1)
+        /// Gets/Sets the Second selected (previous) Version Number
         /// </summary>
-        public int PreviousVersionNumber
-        {
-            get
-            {
-                return this.SelectedVersionNumber - 1;
-            }
-        }
+        public int PreviousVersionNumber { get; set; }
 
         /// <summary>
         /// Gets/Sets the display value for the selected version, i.e. "Version 173" or "WIP Version".
         /// </summary>
         public string SelectedVersionNumberDisplay { get; set; }
 
-        /// <summary>
-        /// Gets/Sets the display value for the previous version 
-        /// </summary>
-        public string PreviousVersionNumberDisplay { get; set;  }
+		/// <summary>
+		/// Gets/Sets the display value for the second selected (previous) version, i.e. "Version 172"
+		/// </summary>
+		public string PreviousVersionNumberDisplay { get; set;  }
 
         /// <summary>
         /// Gets/Sets the rows of the Comparison Grid
