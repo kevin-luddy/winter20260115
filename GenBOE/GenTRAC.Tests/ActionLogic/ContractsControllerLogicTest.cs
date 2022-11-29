@@ -768,19 +768,43 @@ namespace GenTRAC.Tests.ActionLogic
             ContractsModelView mv = new ContractsModelView
             {
                 ProposalId = 1,
-                CustomerSubmittalDt = DateTime.Now.AddDays(-1),
-                NegotiationsSubmittedDt = DateTime.Now
+                CustomerSubmittalDt = DateTime.Now.AddDays(-1)
             };
 
             ProposalDto proposal = new ProposalDto() { AgreementDate = DateTime.Now.AddDays(-1) };
             this.proposalLoader.Setup(x => x.GetById(mv.ProposalId)).Returns(proposal);
             this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(new FullProposal(proposal));
+            this.retriever.Setup(x => x.GetProposalChecklists(proposal.Id)).Returns(new List<ProposalChecklistDto>() { new ProposalChecklistDto() { EstimatingSubmitsToContractsDate = DateTime.Now } });
 
             ICollection<string> result = sut.ValidateContractModelView(mv);
 
             Assert.IsTrue(result.Any());
             Assert.AreEqual(1, result.Count);
             Assert.AreEqual(Constants.INVALID_PROPOSAL_SUBMITTAL_DATE, result.First());
+        }
+
+        /// <summary>
+        /// Test ValidateContractModelView for a valid Proposal Submittal Date to the Customer (w/ time being different)
+        /// </summary>
+        [TestMethod]
+        public void ValidateContractModelView_ValidProposalSubmittalDate()
+        {
+            ContractsControllerLogic sut = this.CreateSystem();
+
+            ContractsModelView mv = new ContractsModelView
+            {
+                ProposalId = 1,
+                CustomerSubmittalDt = DateTime.Now.AddHours(-1)
+            };
+
+            ProposalDto proposal = new ProposalDto() { AgreementDate = DateTime.Now.AddDays(5) };
+            this.proposalLoader.Setup(x => x.GetById(mv.ProposalId)).Returns(proposal);
+            this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(new FullProposal(proposal));
+            this.retriever.Setup(x => x.GetProposalChecklists(proposal.Id)).Returns(new List<ProposalChecklistDto>() { new ProposalChecklistDto() { EstimatingSubmitsToContractsDate = DateTime.Now } });
+
+            ICollection<string> result = sut.ValidateContractModelView(mv);
+
+            Assert.IsFalse(result.Any());
         }
 
         /// <summary>
