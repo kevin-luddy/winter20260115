@@ -698,8 +698,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
                                 if (row.DateOfReport.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.DateOfReport} must be on or before today's date."); }
 
                                 ValidateRequiredField(moqType.SelectedMOQType, row.HistoricalProgramName, labels.HistoricalProgramName, Constants.MOQ_HISTORICAL_PROG_NAME_FIELD_LENGTH, errorMessages);
-                                ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, 
-                                    SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ? Constants.MOQ_WBS_ELEMENT_RMS_FIELD_LENGTH : Constants.MOQ_WBS_ELEMENT_SSC_FIELD_LENGTH, errorMessages);
+                                ValidateRequiredField(moqType.SelectedMOQType, row.WbsElement, labels.WbsElement, Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH, errorMessages);
 
                                 if (row.PoPStart.Year == 1) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} is required."); }
                                 if (row.PoPStart.Date > DateTime.Now.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before today's date."); }

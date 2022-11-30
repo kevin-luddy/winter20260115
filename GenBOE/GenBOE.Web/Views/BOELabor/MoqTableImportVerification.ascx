@@ -99,7 +99,7 @@
             </ul>
         </div>
         <div <% if (Model.Where(m => m.ImportType == (int)MoqTableImportType.LargeWBSElement).Count() == 0) { %> class="display-none"<% } %>>
-            <div class="title"><%: Model.Where(m => m.ImportType == (int)MoqTableImportType.LargeWBSElement).Count()%> MOQ Table(s) will not be added because the WBS/WBS Element is over the maximum <%: SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST ? Constants.MOQ_WBS_ELEMENT_RMS_FIELD_LENGTH : Constants.MOQ_WBS_ELEMENT_SSC_FIELD_LENGTH %> characters:</div>
+            <div class="title"><%: Model.Where(m => m.ImportType == (int)MoqTableImportType.LargeWBSElement).Count()%> MOQ Table(s) will not be added because the WBS/WBS Element is over the maximum <%: Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH %> characters:</div>
             <ul>
                 <% foreach (ImportMoqTableResultsModelView result in Model.Where(m => m.ImportType == (int)MoqTableImportType.LargeWBSElement))
                    { %>

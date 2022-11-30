@@ -55,7 +55,7 @@ namespace GenBOE.ActionLogic.IO.Import
             if (row.ContainsKey(WBS_ELEMENT) && !string.IsNullOrEmpty(row[WBS_ELEMENT]))
             {
                 moqTable.WbsElement = row[WBS_ELEMENT];
-                if (moqTable.WbsElement.Length > Constants.MOQ_WBS_ELEMENT_RMS_FIELD_LENGTH)
+                if (moqTable.WbsElement.Length > Constants.MOQ_WBS_ELEMENT_FIELD_LENGTH)
                 {
                     moqTable.ImportTypes.Add(MoqTableImportType.LargeWBSElement);
                 }
