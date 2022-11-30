@@ -1412,4 +1412,15 @@ namespace IES.Common
         InvalidPopStartFW = 16,
         InvalidPopEndFW = 17
     }
+
+    /// <summary>
+    /// Selectable options for Repository Name
+    /// </summary>
+    public enum RepositoryName
+    {
+        None = 0,
+        [Description("SAP / WEBI")]
+        SapWebi = 1,
+        Other = 2
+    }
 }

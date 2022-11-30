@@ -3523,7 +3523,7 @@ namespace GenBOE.Tests.ActionLogic.ControllerLogic
 
 				Utilities.AddAuthorizationHeader(client.HttpClient, (await tokenService.GetToken()).AccessToken);
 
-				fields = await client.ApiQueryFilterGetAllFieldsAsync();
+				fields = await client.ApiQueryFilterGetAllFieldsForCompanyCodeAsync(GenBOE.ActionLogic.IESSAPClient.CompanyConfiguration.SpaceSystems);
 			}
 
 			Assert.IsTrue(fields.Any());

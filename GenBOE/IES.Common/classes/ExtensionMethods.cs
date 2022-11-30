@@ -240,9 +240,20 @@ namespace IES.Common
             return numberOfMonths;
         }
 
-        #endregion Date/Time methods
+		/// <summary>
+		/// Provides the month (30 day) difference between start and end dates with decimal precision, taking days into account
+		/// </summary>
+		/// <param name="startDate">Start Date</param>
+		/// <param name="endDate">End Date</param>
+		/// <returns>Month difference</returns>
+		public static decimal MonthDifferenceDecimal(this DateTime startDate, DateTime endDate)
+        {
+            return (decimal)(endDate.Subtract(startDate).Days / 30M);
+        }
 
-        public static int GetIndex(this string value, int occurence = 1)
+		#endregion Date/Time methods
+
+		public static int GetIndex(this string value, int occurence = 1)
         {
             int index = -1;  // no match found
 

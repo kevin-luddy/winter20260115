@@ -242,8 +242,10 @@ namespace GenTRAC.ActionLogic
 			ICollection<string> validationMessages = new Collection<string>();
             FullProposal proposal = this.GetFullProposalDto(model.ProposalId);
 
-			if (model.CustomerSubmittalDt.HasValue && model.NegotiationsSubmittedDt.HasValue 
-                && model.CustomerSubmittalDt < model.NegotiationsSubmittedDt)
+            DateTime? dateSubmittedToContracts = proposal.ProposalChecklistData?.FirstOrDefault()?.EstimatingSubmitsToContractsDate;
+
+			if (model.CustomerSubmittalDt.HasValue && dateSubmittedToContracts.HasValue 
+                && model.CustomerSubmittalDt.Value.Date < dateSubmittedToContracts.Value.Date)
 			{
 				validationMessages.Add(Constants.INVALID_PROPOSAL_SUBMITTAL_DATE);
 			}

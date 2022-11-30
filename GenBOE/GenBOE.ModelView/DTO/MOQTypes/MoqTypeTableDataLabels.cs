@@ -28,6 +28,7 @@ namespace GenBOE.ActionLogic.ModelView
             this.WbsElement = "WBS/WBS Element";
             this.PoPStart = "Period of Performance (PoP): Start Date";
             this.PoPEnd = "Period of Performance (PoP): End Date";
+            this.PoPMonths = "Period of Performance (PoP): Months";
             this.TotalWbsHours = "Total WBS/WBS Element Hours";
             if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
             {
@@ -85,6 +86,11 @@ namespace GenBOE.ActionLogic.ModelView
         /// Label for PoP End
         /// </summary>
         public string PoPEnd { get; set; }
+
+        /// <summary>
+        /// Label for PoP Months
+        /// </summary>
+        public string PoPMonths { get; set; }
 
         /// <summary>
         /// Label for Total WbsHours

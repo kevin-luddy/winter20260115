@@ -44,12 +44,21 @@
         }
       }
     },
-    "/api/QueryFilter/GetAllFields": {
+    "/api/QueryFilter/GetAllFieldsForCompanyCode": {
       "get": {
         "tags": [
           "QueryFilter"
         ],
-        "operationId": "GetAllFields",
+        "operationId": "GetAllFieldsForCompanyCode",
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CompanyConfiguration"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success",
@@ -620,6 +629,14 @@
           "poPEnd": {
             "type": "string",
             "format": "date-time",
+            "nullable": true
+          },
+          "poPStartFW": {
+            "type": "string",
+            "nullable": true
+          },
+          "poPEndFW": {
+            "type": "string",
             "nullable": true
           },
           "filters": {

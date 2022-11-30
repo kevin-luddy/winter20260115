@@ -358,7 +358,8 @@ namespace GenBOE.ActionLogic.IO.Export
         internal const string FieldName_WbsElement = "WbsElement";
         internal const string FieldName_PoPStartDate = "PoPStartDate";
         internal const string FieldName_PoPEndDate = "PoPEndDate";
-        internal const string FieldName_TotalWBSHours = "TotalWBSHours";
+        internal const string FieldName_PoPMonths = "PoPMonths";
+		internal const string FieldName_TotalWBSHours = "TotalWBSHours";
         internal const string FieldName_AdditionalQueryFilters = "AdditionalQueryFilters";
         internal const string FieldName_TotalRelevantHours = "TotalRelevantHours";
         internal const string FieldName_MOQTypeTableNote = "MOQTypeTableNote";
@@ -428,10 +429,15 @@ namespace GenBOE.ActionLogic.IO.Export
         /// </summary>
         public const string EMPLOYEE_ID_FILTERS_EXCLUSION_TEXT = "Employee IDs are considered “Personal Information,” and when utilized to filter relevant hours, have been omitted from this table. Lockheed Martin Space will provide this information upon request from the DCAA/DCMA.";
 
-        /// <summary>
-        /// Label for Employee ID filter in Additional Query Filters
-        /// </summary>
-        public const string EMPLOYEE_ID_FILTERS_LABEL = "Personnel Number";
+		/// <summary>
+		/// Text to display for SSC to replace Employee IDs when they are excluded from the custom export
+		/// </summary>
+		public const string EMPLOYEE_ID_FILTERS_REPLACEMENT_TEXT = "[redacted]*";
+
+		/// <summary>
+		/// Label for Employee ID filter in Additional Query Filters
+		/// </summary>
+		public const string EMPLOYEE_ID_FILTERS_LABEL = "Personnel Number";
 
         #endregion
 
