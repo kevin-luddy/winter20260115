@@ -662,7 +662,7 @@ namespace GenTRAC.ActionLogic
             }
 
             // Final Negotiated Value is required
-            if (dto.FinalNegotiatedValue == null || dto.FinalNegotiatedValue == 0) // Can the value be $0?
+            if (dto.FinalNegotiatedValue == null)
             {
                 isValid = false;
                 messages.Add(Constants.INVALID_FINAL_NEGOTIATED_VALUE);
