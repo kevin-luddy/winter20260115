@@ -649,6 +649,42 @@ namespace GenTRAC.Tests.ActionLogic
         }
 
         /// <summary>
+        /// Get list of non-epp date related validation failures; zero final negotiated value is valid
+        /// </summary>
+        [TestMethod]
+        public void ValidationFinalAllNonEppZeroFinalNegotiatedValue()
+        {
+            ContractsControllerLogic sut = this.CreateSystem();
+            List<string> messages = new List<string>();
+
+            ContractsDto dto = new ContractsDto
+            {
+                ProposalId = 1,
+                PreviouslySubmittedROM = 12345,
+                ContractsCorrespondenceLogNumber = "XYZ123",
+                EppDelegationAuthority = (int)EppDelegationAuthority.Space,
+                SpaceEppDate = DateTime.Now,
+                PreSpaceEppDate = DateTime.Now,
+                ProgramEppDate = DateTime.Now,
+                CageCode = "ABC123",
+                LobEppDate = DateTime.Now,
+                FinalNegotiatedValue = 0,
+                ModCompletedDate = DateTime.Now,
+                NegotiationsSubmitted = DateTime.Now,
+                LmWon = true
+            };
+
+            ProposalDto proposal = new ProposalDto() { AgreementDate = DateTime.Now };
+            this.proposalLoader.Setup(x => x.GetById(dto.ProposalId)).Returns(proposal);
+            this.objectFactory.Setup(x => x.CreateFullProposal(It.IsAny<ProposalDto>())).Returns(new FullProposal(proposal));
+
+            bool isValid = sut.ContractDataValidForCompleteProposalSave(dto, messages);
+
+            Assert.IsTrue(isValid);
+            Assert.AreEqual(0, messages.Count);
+        }
+
+        /// <summary>
         /// Runs through a valid test of getting all cage code data
         /// </summary>
         [TestMethod]
