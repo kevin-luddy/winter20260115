@@ -1103,7 +1103,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.refreshDisableSave();
 	};
 
-	$scope.setActualsErrors = function (id, errors) {
+    $scope.setActualsErrors = function (id, errors) {
 		if (Array.isArray(errors)) {
 			if (errors.length > 0) {
 				// need to see if we need to convert to ValidationMessage
@@ -1255,6 +1255,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
         } else {
             $scope.actualsValidation.isDirty.delete(tableData.Id); 
             tableData.RepositoryName = "";
+            $scope.actualsValidation.errors.set(tableData.Id, []); // clear SAP validation messages
         }
 
         $scope.refreshDisableSave();
