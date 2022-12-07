@@ -3686,54 +3686,6 @@ namespace GenBOE.ActionLogic.ControllerLogic
         }
 
         /// <summary>
-        /// Validates Actuals data for SAP
-        /// </summary>
-        /// <param name="tableData">The MOQ Table Data</param>
-        /// <returns>Validation Response</returns>
-        public async Task<IESResponse<bool>> ValidateActualsSap(MoqTableDataModelView tableData)
-        {
-            IESResponse<bool> response = new IESResponse<bool>();
-
-            try
-            {
-                // Get Token
-                Token token = await this.tokenservice.GetToken();
-                Utilities.AddAuthorizationHeader(iesSapClient.HttpClient, token.AccessToken);
-
-                // Convert company configuration
-                ActionLogic.IESSAPClient.CompanyConfiguration companyConfiguration = 
-                    (ActionLogic.IESSAPClient.CompanyConfiguration)((int)SystemConfiguration.Instance().CompanyMode);
-
-                // Convert table data
-                DataTableViewModel dataTable = new DataTableViewModel()
-                {
-                    Filters = tableData.Filters,
-                    PoPEnd = tableData.PoPEnd,
-                    PoPStart = tableData.PoPStart,
-					PoPStartFW = tableData.PoPStartFW,
-					PoPEndFW = tableData.PoPEndFW,
-					WbsElement = tableData.WbsElement,
-                    TableId = tableData.TableId
-                };
-
-                // Call Swagger Client
-                BooleanResult result = await iesSapClient.ApiQueryParserIsQueryValidAsync(companyConfiguration, dataTable);
-                response.Messages = result.Messages;
-                response.IsSuccessful = result.IsSuccessful;
-                response.Data.Add(result.Data);
-            }
-            catch (Exception ex)
-            {
-                // gracefully handle error
-                logger.Error(ex, "Error calling SAP API to Check if Data Table is Valid.");
-                response.Messages.Add("Error calling SAP API to Check if Data Table is Valid");
-                response.IsSuccessful = false;
-            }
-
-            return response;
-        }
-
-        /// <summary>
         /// Export Actuals data for SAP
         /// </summary>
         /// <param name="tableData">The MOQ Table Data</param>

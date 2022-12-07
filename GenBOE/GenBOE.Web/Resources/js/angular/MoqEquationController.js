@@ -1212,52 +1212,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		return blob;
 	};
 
-	$scope.validateActuals = function (tableData) {
-		$scope.actualsValidation.errors = new Map();
-		// pull the data from the form
-
-		const data = {};
-		data.tableData = {
-			WbsElement: tableData.WbsElement,
-			PoPStart: tableData.PoPStart,
-			PoPEnd: tableData.PoPEnd,
-			Filters: tableData.AdditionalQueryFilters,
-			TableId: tableData.Id
-		};
-
-		$scope.setPoP(data.tableData, tableData);
-
-		if (Array.isArray(tableData.AdditionalQueryFilters)){
-			data.tableData.Filters = tableData.AdditionalQueryFilters.join("\n");
-		}
-
-		data.boeId = ManageTaskModel.boeId;
-
-		// send to backend
-		// display response to user
-		$(document).trigger("SHOW_LOADING_BOX");
-
-		$http({
-			method: 'POST',
-			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.ValidateActualsSapAction, ''),
-			data: data
-		}).then(function (response) {
-			// place returned html into the content div
-			if (response.data.IsSuccessful !== true) {
-				if (response.data.Messages && response.data.Messages.length > 0) {
-					$scope.setActualsErrors(tableData.Id, response.data.Messages);
-				} else {
-					$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }]);
-				}
-			}
-			$(document).trigger("HIDE_LOADING_BOX");
-		}).catch(function () {
-			$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }]);
-			$(document).trigger("HIDE_LOADING_BOX");
-		});
-
-	};
-
     //#endregion SAP Filters
 
 	$scope.refreshPage = function () {

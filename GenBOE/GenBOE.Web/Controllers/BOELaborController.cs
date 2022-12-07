@@ -1481,36 +1481,6 @@ namespace GenBOE.Web.Controllers
 		}
 
         /// <summary>
-        /// Validates Actuals data for SAP
-        /// </summary>
-        /// <param name="workspace">Workspace name</param>
-		/// <param name="boeId">BOE Id</param>
-        /// <param name="tableData">The MOQ Table Data</param>
-		/// <returns>Validation Response</returns>
-        public async Task<ActionResult> ValidateActualsSap(string workspace, int boeId, MoqTableDataModelView tableData)
-        {
-            if (tableData == null)
-            {
-                throw new ArgumentNullException(nameof(tableData));
-            }
-
-            // Initialize Action
-            FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
-
-            Stopwatch sw = InitializeAction(_log, WebConstants.ACTION_VALIDATE_ACTUALS_SAP, SecurityPage.TaskElements, SecurityAuthorization.CreateReadUpdateDelete, ws, boeId);
-
-            // Call to Controller Logic
-            IESResponse<bool> response = await this._BoeLaborControllerLogic.ValidateActualsSap(tableData);
-
-            List<ErrorModelView> errors = response.Messages?.Select(m => new ErrorModelView (){ ValidationIssue = m }).ToList();
-            JsonResult toReturn = this.Json(new { IsSuccessful = response != null && response.IsSuccessful, Messages = errors });
-
-            // Finalize Action
-            FinalizeAction(_log, WebConstants.ACTION_VALIDATE_ACTUALS_SAP, sw);
-            return toReturn;
-        }
-
-        /// <summary>
         /// Export Actuals data for SAP
         /// </summary>
         /// <param name="workspace">Workspace name</param>
