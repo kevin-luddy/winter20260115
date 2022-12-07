@@ -579,14 +579,28 @@ namespace IES.Common
         }
 
         /// <summary>
+        /// Private for Is Sap Enabled, used for unit testing.. I know this is horrid design :(
+        /// </summary>
+        private static bool? isSapEnabled;
+
+        /// <summary>
 		/// Indicates whether SAP features are enabled
 		/// </summary>
 		public static bool IsSAPEnabled
         {
             get
             {
-                bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableSAP"), out bool value);
-                return value;
+                if (isSapEnabled == null) 
+                {
+                    bool.TryParse(ConfigurationUtilities.GetAppSetting("EnableSAP"), out bool value);
+                    isSapEnabled = value;
+				}
+
+                return isSapEnabled.Value;
+		    }
+            internal set // be able to override for unit test purposes
+            {
+                isSapEnabled = value;
             }
         }
     }

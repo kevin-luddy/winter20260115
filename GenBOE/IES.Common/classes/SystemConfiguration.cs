@@ -51,6 +51,10 @@ namespace IES.Common.classes
             {
                 return _CompanyMode;
             }
+            internal set // for unit testing only
+            {
+                _CompanyMode = value;
+            }
         }
 
         /// <summary>
