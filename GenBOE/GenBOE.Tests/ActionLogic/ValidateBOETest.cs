@@ -26,7 +26,10 @@ namespace GenBOE.Tests.ActionLogic
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), TestClass]
+	/// <summary>
+	/// ValidateBOE Tests
+	/// </summary>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1505:AvoidUnmaintainableCode"), TestClass]
     public class ValidateBOETest : MOQObject
     {
         private Mock<IFullObjectFactory> factory = new Mock<IFullObjectFactory>();
@@ -101,28 +104,28 @@ namespace GenBOE.Tests.ActionLogic
         /// <returns>sut</returns>
         private ValidateBOE CreateSystem()
         {
-			GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
-			GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
-			Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
-			GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
+            Mock<IPermissionsDTODataLoader> permloader = new Mock<IPermissionsDTODataLoader>();
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
 
-			Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
-			Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
-			Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
-			Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
-			Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
-			Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
-			Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-			
+            Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
+            Mock<VariableSelectBOEtoSumCalculation> _VariableSelectBOEtoSumCalculation = new Mock<VariableSelectBOEtoSumCalculation>(perfOrgLoader.Object);
+            Mock<IBOECommentDTODataLoader> _boeCommentDTODataLoader = new Mock<IBOECommentDTODataLoader>();
+            Mock<BOECommentsResponsesValidator> _BOECommentsResponsesValidator = new Mock<BOECommentsResponsesValidator>(_boeCommentDTODataLoader.Object);
+            Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
+            Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
+            Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
+
             ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-            
-            return sut;
-		}
 
-		/// <summary>
-		/// This is a basic test using the global boe to validate
-		/// </summary>
-		[TestMethod]
+            return sut;
+        }
+
+        /// <summary>
+        /// This is a basic test using the global boe to validate
+        /// </summary>
+        [TestMethod]
         public void BL_ValidateBOE()
         {
             // Set up
@@ -156,7 +159,7 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-           
+
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
             Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
@@ -177,10 +180,10 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
             retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
 
-            ValidateBOE sut = new ValidateBOE( _VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             //Assert
             Assert.IsNotNull(validationBOE, "The BOE to validate was null");
@@ -256,9 +259,9 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), _permissions.Object);
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-           
+
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
-            
+
             this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
             Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
@@ -280,10 +283,10 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
 
-            IValidateBOE sut = new ValidateBOE( _VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            IValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
@@ -308,10 +311,10 @@ namespace GenBOE.Tests.ActionLogic
             }
 
             //now test it in Space Systems mode
-            sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             toAssertTasks = new Collection<ValidationBOETasks>();
@@ -376,7 +379,7 @@ namespace GenBOE.Tests.ActionLogic
                 TotalHours = 100,
                 WorkspaceVariableIDs = new Collection<int> { 2 },
                 TaskElementType = TaskElementType.Labor
-            };           
+            };
 
             BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, DataSource = "validate data" };
 
@@ -398,7 +401,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
             retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
-            retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int> {boe.Id}, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
+            retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
@@ -414,10 +417,10 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new List<FullBoe>() { boeObject });
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
@@ -456,7 +459,7 @@ namespace GenBOE.Tests.ActionLogic
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 
             //setup clin
-            ClinDTO clin = new ClinDTO { Id = 8, WorkspaceID = 1, StartDate=null, EndDate=null };
+            ClinDTO clin = new ClinDTO { Id = 8, WorkspaceID = 1, StartDate = null, EndDate = null };
 
             //setup custom fields to be false, we'll check them in another test
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
@@ -527,10 +530,10 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
@@ -571,7 +574,7 @@ namespace GenBOE.Tests.ActionLogic
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
 
             //setup clin
-            ClinDTO clin = new ClinDTO { Id = 8, WorkspaceID = 1, StartDate=null, EndDate=null};
+            ClinDTO clin = new ClinDTO { Id = 8, WorkspaceID = 1, StartDate = null, EndDate = null };
 
             //setup custom fields to be false, we'll check them in another test
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = false };
@@ -601,7 +604,7 @@ namespace GenBOE.Tests.ActionLogic
                 TaskElementType = TaskElementType.Labor
             };
 
-            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, DataSource = "validate data", StartDate = Convert.ToDateTime("01/01/2011"), EndDate = Convert.ToDateTime("04/01/2011")};
+            BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, DataSource = "validate data", StartDate = Convert.ToDateTime("01/01/2011"), EndDate = Convert.ToDateTime("04/01/2011") };
 
             this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
@@ -635,11 +638,11 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
 
-            retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", 
-                ODCTypes = new Collection<OtherDirectCostType> { 
-                    new OtherDirectCostType { ODCTypeID = 1, 
-                                                BoeID = boe.Id, 
-                                                PerformingOrgID = this.Perforg.Id, 
+            retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title",
+                ODCTypes = new Collection<OtherDirectCostType> {
+                    new OtherDirectCostType { ODCTypeID = 1,
+                                                BoeID = boe.Id,
+                                                PerformingOrgID = this.Perforg.Id,
                                                 ResourceID = this.Resource.Id,
                                                 StartDate = Convert.ToDateTime("02/01/2011"),
                                                 EndDate = Convert.ToDateTime("06/01/2011")
@@ -649,10 +652,10 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetClinsByWorkspaceId(workspace.Id)).Returns(new List<FullClin>());
 
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
@@ -775,11 +778,11 @@ namespace GenBOE.Tests.ActionLogic
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
 
-            retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", 
-                ODCTypes = new Collection<OtherDirectCostType> { 
-                    new OtherDirectCostType { ODCTypeID = 1, 
-                                                BoeID = boe.Id, 
-                                                PerformingOrgID = this.Perforg.Id, 
+            retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title",
+                ODCTypes = new Collection<OtherDirectCostType> {
+                    new OtherDirectCostType { ODCTypeID = 1,
+                                                BoeID = boe.Id,
+                                                PerformingOrgID = this.Perforg.Id,
                                                 ResourceID = this.Resource.Id,
                                                 StartDate = Convert.ToDateTime("02/01/2011"),
                                                 EndDate = Convert.ToDateTime("06/01/2011")
@@ -795,7 +798,7 @@ namespace GenBOE.Tests.ActionLogic
 
             Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 2, "BOE Header messages did not return 2 msgs");
             Assert.IsTrue(validationBOE.BOEHeaderMsgs[0].Contains("Start Date must be on or after the Contract start date (04/2011)"), "The validation msg was correct");
-            Assert.IsTrue(validationBOE.BOEHeaderMsgs[1].Contains("End Date must be on or before the Contract end date (01/2011)"), "The validation msg was correct");    
+            Assert.IsTrue(validationBOE.BOEHeaderMsgs[1].Contains("End Date must be on or before the Contract end date (01/2011)"), "The validation msg was correct");
         }
 
         // This test case will test that if a BOE doesn't have a start/end date, the clin start/end date are used
@@ -888,7 +891,7 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             #region Setup Unity references
 
@@ -898,7 +901,7 @@ namespace GenBOE.Tests.ActionLogic
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
@@ -1020,12 +1023,12 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-            
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
@@ -1140,12 +1143,12 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-            
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
@@ -1249,7 +1252,7 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             #region Setup Unity references
 
@@ -1258,7 +1261,7 @@ namespace GenBOE.Tests.ActionLogic
             #endregion
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
@@ -1368,11 +1371,11 @@ namespace GenBOE.Tests.ActionLogic
             //setup custom fields to be false, we'll check them in another test
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.TaskDisplay, CustomFieldRequired = true, IsOpenEnded = false };
             CustomFieldValueDTO customValue = new CustomFieldValueDTO { CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueInUseFlag = true, Id = 1 };
-            
+
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(new Dictionary<int, ICollection<KeyValuePair<int, int>>>() { });
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
-            
+
             _TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<TripDTO>());
             _MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<MiscTravelRateDTO>());
             _LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<LocationDTO>());
@@ -1383,12 +1386,12 @@ namespace GenBOE.Tests.ActionLogic
             Dictionary<int, ICollection<KeyValuePair<int, int>>> toReturn = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
             toReturn[boeTE.Id] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>(customField.Id, customValue.Id) };
             retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(toReturn);
-            
-            
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-            
+
+
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
@@ -1517,16 +1520,16 @@ namespace GenBOE.Tests.ActionLogic
             _TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<TripDTO>());
             _MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<MiscTravelRateDTO>());
             _LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<LocationDTO>());
-            
+
             CustomFieldValueDTO customFieldValue = new CustomFieldValueDTO { Id = 1, CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueDescription = "TestDesc", CustomFieldValueName = "TestName" };
             retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customFieldValue });
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
             retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByTaskElementIds(It.IsAny<Collection<int>>())).Returns(new Dictionary<int, ICollection<KeyValuePair<int, int>>>() { });
-            
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
@@ -1550,7 +1553,7 @@ namespace GenBOE.Tests.ActionLogic
             workspaceObject = new FullWorkspace(workspace);
 
             validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
-            
+
             toAssertTasks = validationBOE.Tasks;
 
             // want to extract the validation contract message
@@ -1569,6 +1572,8 @@ namespace GenBOE.Tests.ActionLogic
         [TestMethod]
         public void BL_ValidateMoqTypeTableCustomFields()
         {
+            Utilities.IsSAPEnabled = false;
+
             Mock<IResourceDTODataLoader> resourceDTOLoader = new Mock<IResourceDTODataLoader>();
 
             Mock<IPerformingOrgDTODataLoader> perfOrgLoader = new Mock<IPerformingOrgDTODataLoader>();
@@ -1614,7 +1619,7 @@ namespace GenBOE.Tests.ActionLogic
                 WorkspaceVariableIDs = new Collection<int> { 2 },
                 TaskElementType = TaskElementType.Labor
             };
-            
+
             MoqTableData moqTableData = new MoqTableData()
             {
                 Id = 1,
@@ -1835,24 +1840,24 @@ namespace GenBOE.Tests.ActionLogic
 
             //setup custom fields to be false, we'll check them in another test
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.LaborTypeDisplay, CustomFieldRequired = true, IsOpenEnded = false };
-            CustomFieldValueDTO customValue = new CustomFieldValueDTO { CustomFieldID = 1, CustomFieldValueID =1, CustomFieldValueInUseFlag = true, Id=1 };
+            CustomFieldValueDTO customValue = new CustomFieldValueDTO { CustomFieldID = 1, CustomFieldValueID = 1, CustomFieldValueInUseFlag = true, Id = 1 };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
             retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customValue });
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
             Dictionary<int, ICollection<KeyValuePair<int, int>>> toReturn = new Dictionary<int, ICollection<KeyValuePair<int, int>>>();
-            toReturn[boeLT.Id] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int,int>(customField.Id,customValue.Id)};
+            toReturn[boeLT.Id] = new Collection<KeyValuePair<int, int>> { new KeyValuePair<int, int>(customField.Id, customValue.Id) };
             retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByLaborTypeIds(It.IsAny<Collection<int>>())).Returns(toReturn);
-            
+
             _TripDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<TripDTO>());
             _MiscTravelRateDTOLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<MiscTravelRateDTO>());
             _LocationDTODataLoader.Setup(x => x.GetByIds(new Collection<int>())).Returns(new Collection<LocationDTO>());
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             // only need to assert if task count = 0, because if there was a labor type validation msg,
@@ -1970,12 +1975,12 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { customFieldValue });
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>() { resource });
             retriever.Setup(x => x.GetCustomFieldValueIDsContainerIdsByLaborTypeIds(It.IsAny<Collection<int>>())).Returns(new Dictionary<int, ICollection<KeyValuePair<int, int>>>() { });
-                        
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-            
+
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
@@ -2103,10 +2108,10 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.CheckIfBoeExistsGivenCustomFieldID(boe.Id, customField.Id)).Returns(true);
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Assert.IsTrue(validationBOE.BOECustomFieldValidationMessages.Count == 0, "There were BOE Custom msgs");
@@ -2202,10 +2207,10 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             //Assert
             Assert.IsTrue(validationBOE.BOECustomFieldValidationMessages.Count == 1, "Validation Msgs did not equal 1");
@@ -2229,7 +2234,7 @@ namespace GenBOE.Tests.ActionLogic
 
 
             ValidationBOEModelView validationBOE = new ValidationBOEModelView();
-            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object); 
+            GenBOEUnityContainer.Container.RegisterInstance(typeof(IRetriever), retriever.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permissionLoader.Object);
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
             // set up workspace
@@ -2273,9 +2278,9 @@ namespace GenBOE.Tests.ActionLogic
             BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, DataSource = "validate data", HistoricMetricDisclosureChecked = false };
 
             this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            
+
             GenBOEUnityContainer.Container.RegisterInstance(typeof(ICommonDataMapper), _CommonDataMapper.Object);
-          
+
             FullBoe boeObject = new FullBoe(boe);
 
             retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(workspace.Id, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
@@ -2308,11 +2313,11 @@ namespace GenBOE.Tests.ActionLogic
             ids.Add(boeTE.Id);
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
-            
+
             ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-            
+
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
@@ -2388,7 +2393,7 @@ namespace GenBOE.Tests.ActionLogic
             BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", WorkspaceID = 1, CLINID = 8, StartDate = Convert.ToDateTime("01/10/2011"), EndDate = Convert.ToDateTime("02/03/2012"), DataSource = "validate data" };
 
             this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-        
+
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
             FullBoe boeObject = new FullBoe(boe);
 
@@ -2419,10 +2424,10 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
@@ -2468,7 +2473,7 @@ namespace GenBOE.Tests.ActionLogic
             BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "Validate BOE", StartDate = Convert.ToDateTime("02/01/2011"), EndDate = Convert.ToDateTime("10/01/2011"), WorkspaceID = workspace.Id, WasDescriptionSet = true, WasDataSourceSet = true };
 
             this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-            
+
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IPermissionsDTODataLoader), permloader.Object);
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
             FullBoe boeObject = new FullBoe(boe);
@@ -2482,7 +2487,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetTravelByWorkspaceId(workspace.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
-            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> {boeObject});
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id)).Returns(new Collection<FullBoe> { boeObject });
 
             Collection<WorkspaceVariableDTO> workspaceVars = new Collection<WorkspaceVariableDTO> { new WorkspaceVariableDTO { WorkspaceID = 1, Id = 2, WorkspaceVariableName = "Validate1", WorkspaceVariableValue = 64.0m } };
             this.retriever.Setup(x => x.GetWorkspaceVariableDTOsByWorkspaceId(boe.WorkspaceID)).Returns(workspaceVars);
@@ -2497,10 +2502,10 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, EndDate = Convert.ToDateTime("07/01/2011"), StartDate = Convert.ToDateTime("06/01/2011"), PerformingOrgID = null, ResourceID = null } }, WasDescriptionSet = true, WasMoqTextSet = true } });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertCosts = new Collection<ValidationBOETasks>();
@@ -2535,7 +2540,7 @@ namespace GenBOE.Tests.ActionLogic
             Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
             Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
             Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
+
 
 
             // set up workspace
@@ -2665,7 +2670,7 @@ namespace GenBOE.Tests.ActionLogic
             Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
             Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
             Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
+
             Mock<RMSZoneTravelRatesFeesDataLoader> zoneTravelLoader = new Mock<RMSZoneTravelRatesFeesDataLoader>();
 
             // set up workspace
@@ -2716,9 +2721,9 @@ namespace GenBOE.Tests.ActionLogic
                                                                         ModeID = MSTTravelMode.ZoneNoAirfare,
                                                                         ZoneOriginName = "Test Origin",
                                                                         ZoneDestinationName = "Test Destination"}}}});
-                
+
             ValidateBOE sut = new ValidateBOEMst(mstMetricLoader.Object, _VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, mstZoneTravelValidator.Object, zoneTravelLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
-            mstZoneTravelValidator.Setup(x => x.ValidateTravelTaskDetails(It.IsAny<TravelDTO>(), It.IsAny<int>())).Returns(new Collection<ValidationMessage>() { new ValidationMessage() { ValidationIssue = "Test Travel Details Issue" } } );
+            mstZoneTravelValidator.Setup(x => x.ValidateTravelTaskDetails(It.IsAny<TravelDTO>(), It.IsAny<int>())).Returns(new Collection<ValidationMessage>() { new ValidationMessage() { ValidationIssue = "Test Travel Details Issue" } });
             mstZoneTravelValidator.Setup(x => x.ValidateTravelTrips(It.IsAny<ICollection<MSTTravelTripType>>(), It.IsAny<DateTime?>(), It.IsAny<DateTime?>(), It.IsAny<int>(), It.IsAny<ICollection<int>>(), It.IsAny<bool>(), It.IsAny<string>())).Returns(new Collection<ValidationMessage>() { new ValidationMessage() { ValidationIssue = "Test Travel Trip Issue" } });
 
             //Act
@@ -2732,7 +2737,7 @@ namespace GenBOE.Tests.ActionLogic
             Assert.AreEqual(1, toAssertTravels.Count);
             Assert.AreEqual("Trip: 1 Domestic – Zone - No Airfare Test Origin to Test Destination", toAssertTravels[0].LaborTypes[0].LaborTypeHeader);
             Assert.AreEqual("Test Travel Details Issue", toAssertTravels[0].TaskElementDetails.TaskElementDetailValidationMessages[0]);
-            Assert.AreEqual("Test Travel Trip Issue", toAssertTravels[0].LaborTypes[0].LaborTypeValidationMsgs[0]); 
+            Assert.AreEqual("Test Travel Trip Issue", toAssertTravels[0].LaborTypes[0].LaborTypeValidationMsgs[0]);
             Assert.AreEqual("Task: T01 title1", toAssertTravels[0].TaskMessage);
         }
 
@@ -2883,7 +2888,7 @@ namespace GenBOE.Tests.ActionLogic
             Mock<ITripDTODataLoader> _TripDTODataLoader = new Mock<ITripDTODataLoader>();
             Mock<IMiscTravelRateDTOLoader> _MiscTravelRateDTOLoader = new Mock<IMiscTravelRateDTOLoader>();
             Mock<ILocationDTODataLoader> _LocationDTODataLoader = new Mock<ILocationDTODataLoader>();
-            
+
 
 
             // set up workspace
@@ -2923,10 +2928,10 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetNumberOfMaterialsForBoeId(boe.Id)).Returns(0);
             retriever.Setup(x => x.GetMaterialCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
             toAssertTasks = validationBOE.Tasks;
 
@@ -3001,10 +3006,10 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { new OtherDirectCostDTO { Id = 1, BoeID = boe.Id, MoqText = "something", TaskDescription = "mock odc", TaskTitle = "task title", ODCTypes = new Collection<OtherDirectCostType> { new OtherDirectCostType { ODCTypeID = 1, BoeID = boe.Id, PerformingOrgID = this.Perforg.Id, ResourceID = this.Resource.Id } } } });
             resourceDTOLoader.Setup(x => x.GetByIds(It.IsAny<ICollection<int>>())).Returns(new List<ResourceDTO>());
 
-            IValidateBOE sut = new ValidateBOE( _VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            IValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
@@ -3023,10 +3028,10 @@ namespace GenBOE.Tests.ActionLogic
             }
 
             // now test in Space Systems mode - only the MOQ Text difference needs to be verified
-            sut = new ValidateBOESpaceSystems( _VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             toAssertTasks = new Collection<ValidationBOETasks>();
@@ -3102,10 +3107,10 @@ namespace GenBOE.Tests.ActionLogic
 
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(new Collection<CustomFieldDTO>());
 
-            IValidateBOE sut = new ValidateBOE( _VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            IValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Collection<ValidationBOETasks> toAssertTasks = new Collection<ValidationBOETasks>();
@@ -3124,10 +3129,10 @@ namespace GenBOE.Tests.ActionLogic
             }
 
             // now test in Space Systems mode - only the MOQ Text difference needs to be verified
-            sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            sut = new ValidateBOESpaceSystems(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             toAssertTasks = new Collection<ValidationBOETasks>();
@@ -3195,7 +3200,7 @@ namespace GenBOE.Tests.ActionLogic
             BoeDTO boe = new BoeDTO { Id = 4, Title = "My BOE Title", Description = "DooDah.", StartDate = Convert.ToDateTime("08/01/2012"), EndDate = Convert.ToDateTime("03/01/2014"), WorkspaceID = workspace.Id, DataSource = "validate data", CLINID = clin.Id };
             FullWorkspace workspaceObject = new FullWorkspace(workspace);
             this.retriever.Setup(x => x.GetWorkspaceById(boe.WorkspaceID)).Returns(workspace);
-           
+
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IFullObjectFactory), factory.Object);
             FullBoe boeObject = new FullBoe(boe);
             retriever.Setup(x => x.GetCustomFieldsByWorkspaceId(workspace.Id)).Returns(customFields);
@@ -3211,14 +3216,14 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            retriever.Setup(x=>x.GetFullBoesByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullBoe>() {boeObject});
+            retriever.Setup(x => x.GetFullBoesByWorkspaceId(boe.WorkspaceID)).Returns(new Collection<FullBoe>() { boeObject });
             GenBOEUnityContainer.Container.RegisterInstance(typeof(IResourceDTODataLoader), resourceDTOLoader.Object);
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO>() { });
             retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(4, It.IsAny<bool>(), It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO> { boeTE });
             retriever.Setup(x => x.GetOdcCollectionByBoeIds(new Collection<int>() { boe.Id }, It.IsAny<bool>())).Returns(new Collection<OtherDirectCostDTO> { });
             retriever.Setup(x => x.GetTravelCollectionByBoeID(boe.Id, It.IsAny<bool>())).Returns(new Collection<TravelDTO> { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
             this.factory.Setup(x => x.CreateFullWbses(It.IsAny<ICollection<int>>())).Returns(new List<FullWbs>());
 
             #region Setup Unity references
@@ -3228,7 +3233,7 @@ namespace GenBOE.Tests.ActionLogic
             #endregion
 
             //Act
-            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject,workspaceObject);
+            validationBOE = sut.ValidateBOE_OnValidateBtnClick(boeObject, workspaceObject);
 
             // Assert
             Assert.IsTrue(validationBOE.BOEHeaderMsgs.Count == 2, "The BOE Header was empty");
@@ -3274,7 +3279,7 @@ namespace GenBOE.Tests.ActionLogic
             this.retriever.Setup(x => x.GetFullWorkspaceById(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
             factory.Setup(x => x.CreateFullWorkspace(workspace)).Returns(new FullWorkspace(workspace));
             factory.Setup(x => x.CreateFullWorkspace(boe.WorkspaceID)).Returns(new FullWorkspace(workspace));
-            
+
             //setup custom fields to be false, we'll check them in another test
             CustomFieldDTO customField = new CustomFieldDTO { Id = 1, CustomFieldDisplayID = CustomFieldType.BoeDisplay, CustomFieldRequired = false };
             ICollection<CustomFieldDTO> customFields = new Collection<CustomFieldDTO>() { customField };
@@ -3301,7 +3306,7 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetMaterialsByBoeIds(new Collection<int> { boe.Id, boe2.Id }, It.IsAny<bool>())).Returns(new Collection<MaterialDTO> { });
             retriever.Setup(x => x.GetResourcesByResourceListId(workspace.ResourceListID)).Returns(new Collection<ResourceDTO> { });
 
-            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object,  _BOECommentsResponsesValidator.Object,  _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
+            ValidateBOE sut = new ValidateBOE(_VariableSelectBOEtoSumCalculation.Object, _BOECommentsResponsesValidator.Object, _TripDTODataLoader.Object, _MiscTravelRateDTOLoader.Object, _LocationDTODataLoader.Object, offloadRatesLoader.Object, rteTemplateLoader.Object);
 
             Collection<FullBoe> boesToValidate = new Collection<FullBoe>();
             boesToValidate.Add(boeObject);
@@ -3309,44 +3314,44 @@ namespace GenBOE.Tests.ActionLogic
             retriever.Setup(x => x.GetFullBoesByWorkspaceId(workspace.Id, true)).Returns(boesToValidate);
 
             //Act
-           validationBOE = sut.ValidateAllBOEs(ws);
+            validationBOE = sut.ValidateAllBOEs(ws);
 
 
             // verify that we have mulitple boe errors
             foreach (ValidationBOEModelView z in validationBOE.AllBOEs)
             {
                 //check the cost.
-                foreach(ValidationBOETasks x in z.Costs)
+                foreach (ValidationBOETasks x in z.Costs)
                 {
-                // verify labor error messages 
-                foreach (ValidationBOELaborType y in x.LaborTypes)
-                {
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 3, "There weren't 3 labor type messages");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.RESOURCE_CODE_REQUIRED), "The validation msg was correct");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.PERFORM_ORG_REQUIRED), "The validation msg was correct");
-                    Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.SPREAD_REQUIRED), "The valdiating msg was correct");
+                    // verify labor error messages 
+                    foreach (ValidationBOELaborType y in x.LaborTypes)
+                    {
+                        Assert.IsTrue(y.LaborTypeValidationMsgs.Count == 3, "There weren't 3 labor type messages");
+                        Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.RESOURCE_CODE_REQUIRED), "The validation msg was correct");
+                        Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.PERFORM_ORG_REQUIRED), "The validation msg was correct");
+                        Assert.IsTrue(y.LaborTypeValidationMsgs.Contains(OtherDirectCostDTO.SPREAD_REQUIRED), "The valdiating msg was correct");
+                    }
                 }
-            }}
+            }
         }
 
-		/// <summary>
-		/// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Monday
-		/// </summary>
-		[TestMethod]
-        public void BL_ValidateTemplateMoqForTask_PoPStartMonday()
+        /// <summary>
+        /// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Monday
+        /// </summary>
+        [TestMethod]
+        public void BL_ValidateTemplateMoqForTask_PoPStartMonday_RmsMode()
         {
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
-			{
-				ValidateBOE sut = CreateSystem();
+            SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
+            Utilities.IsSAPEnabled = true;
 
-				// need to test against RMS as this is RMS-only validation
-				SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["CompanyConfiguration"] = "RMS";
+            ValidateBOE sut = CreateSystem();
+            Utilities.IsSAPEnabled = true;
 
-				// Create a valid MOQ Table
-				MoqTypeSelection moqType = new MoqTypeSelection()
-                {
-                    SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
-                    TableData = new Collection<MoqTableData>()
+            // Create a valid MOQ Table
+            MoqTypeSelection moqType = new MoqTypeSelection()
+            {
+                SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+                TableData = new Collection<MoqTableData>()
                     {
                         new MoqTableData()
                         {
@@ -3361,55 +3366,53 @@ namespace GenBOE.Tests.ActionLogic
                             TotalRelevantHours = 1000
                         }
                     },
-                    Rationale = "Test Rationale",
-                    SkillMixRationale = "Test Skill Mix"
-                };
+                Rationale = "Test Rationale",
+                SkillMixRationale = "Test Skill Mix"
+            };
 
-				WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS"};
-				FullWorkspace ws = new FullWorkspace(workspace);
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+            FullWorkspace ws = new FullWorkspace(workspace);
 
-				ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+            ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
-                Assert.IsFalse(result.Any());
+            Assert.IsFalse(result.Any());
 
-                // Add a day so PoP start is no longer on a Monday
-                moqType.TableData.First().PoPStart = new DateTime(2022, 1, 4);
+            // Add a day so PoP start is no longer on a Monday
+            moqType.TableData.First().PoPStart = new DateTime(2022, 1, 4);
 
-				result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+            result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
-				Assert.IsTrue(result.Any());
-                Assert.AreEqual(1, result.Count);
-                Assert.IsTrue(result.First().Contains("Monday"));
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().Contains("Monday"));
 
-                // Lastly clear the date to make sure we get the required field validation, but not the Monday validation
-                moqType.TableData.First().PoPStart = new DateTime(1, 1, 1);
+            // Lastly clear the date to make sure we get the required field validation, but not the Monday validation
+            moqType.TableData.First().PoPStart = new DateTime(1, 1, 1);
 
-				result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+            result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
-				Assert.IsTrue(result.Any());
-                Assert.IsTrue(result.Any(x => x.Contains("required")));
-				Assert.IsFalse(result.Any(x => x.Contains("Monday")));
-			}
-		}
+            Assert.IsTrue(result.Any());
+            Assert.IsTrue(result.Any(x => x.Contains("required")));
+            Assert.IsFalse(result.Any(x => x.Contains("Monday")));
+        }
 
 		/// <summary>
-		/// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday
+		/// Test ValidateTemplateMoqForTask for validation that PoPStart is on a Monday; Space Mode, no validation should happen
 		/// </summary>
 		[TestMethod]
-		public void BL_ValidateTemplateMoqForTask_PoPEndSunday()
+		public void BL_ValidateTemplateMoqForTask_PoPStartMonday_SpaceMode()
 		{
-			if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabled = true;
+
+			ValidateBOE sut = CreateSystem();
+			Utilities.IsSAPEnabled = true;
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
 			{
-				ValidateBOE sut = CreateSystem();
-
-				// need to test against RMS as this is RMS-only validation
-				SystemConfiguration.Instance().CompanyConfigurationSettings.AppSettings["CompanyConfiguration"] = "RMS";
-
-				// Create a valid MOQ Table
-				MoqTypeSelection moqType = new MoqTypeSelection()
-				{
-					SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
-					TableData = new Collection<MoqTableData>()
+				SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+				TableData = new Collection<MoqTableData>()
 					{
 						new MoqTableData()
 						{
@@ -3421,38 +3424,260 @@ namespace GenBOE.Tests.ActionLogic
 							PoPStart = new DateTime(2022, 1, 3), // Monday
                             PoPEnd = new DateTime(2022, 1, 9), // Sunday
                             AdditionalQueryFilters = "TestFilter",
-							TotalRelevantHours = 1000
+							TotalRelevantHours = 1000,
+							RepositoryName = "aa",
+							QueryType = "aa"
 						}
 					},
-					Rationale = "Test Rationale",
-					SkillMixRationale = "Test Skill Mix"
-				};
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix"
+			};
 
-				WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
-				FullWorkspace ws = new FullWorkspace(workspace);
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+			FullWorkspace ws = new FullWorkspace(workspace);
 
-				ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
-				Assert.IsFalse(result.Any());
+			Assert.IsFalse(result.Any());
 
-				// Add a day so PoP start is no longer on a Sunday
-				moqType.TableData.First().PoPEnd = new DateTime(2022, 1, 10);
+			// Add a day so PoP start is no longer on a Monday
+			moqType.TableData.First().PoPStart = new DateTime(2022, 1, 4);
 
-				result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
 
-				Assert.IsTrue(result.Any());
-				Assert.AreEqual(1, result.Count);
-				Assert.IsTrue(result.First().Contains("Sunday"));
+			Assert.IsFalse(result.Any());
+		}
 
-				// Lastly clear the date to make sure we get the required field validation, but not the Monday validation
-				moqType.TableData.First().PoPEnd = new DateTime(1, 1, 1);
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday.. Testing for RMS, validation should happen
+		/// </summary>
+		[TestMethod]
+        public void BL_ValidateTemplateMoqForTask_PoPEndSunday_MstMode()
+        {
+            SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
+            Utilities.IsSAPEnabled = true;
 
-				result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+            ValidateBOE sut = CreateSystem();
 
-				Assert.IsTrue(result.Any());
-				Assert.IsTrue(result.Any(x => x.Contains("required")));
-				Assert.IsFalse(result.Any(x => x.Contains("Sunday")));
-			}
+            // Create a valid MOQ Table
+            MoqTypeSelection moqType = new MoqTypeSelection()
+            {
+                SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+                TableData = new Collection<MoqTableData>()
+                    {
+                        new MoqTableData()
+                        {
+                            TableName = "Test Table",
+                            ContractNumber = "1",
+                            DateOfReport = DateTime.Now,
+                            HistoricalProgramName = "Test Name",
+                            WbsElement = "Test WBS",
+                            PoPStart = new DateTime(2022, 1, 3), // Monday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "TestFilter",
+                            TotalRelevantHours = 1000
+                        }
+                    },
+                Rationale = "Test Rationale",
+                SkillMixRationale = "Test Skill Mix"
+            };
+
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+            FullWorkspace ws = new FullWorkspace(workspace);
+
+            ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+            Assert.IsFalse(result.Any());
+
+            // Add a day so PoP start is no longer on a Sunday
+            moqType.TableData.First().PoPEnd = new DateTime(2022, 1, 10);
+
+            result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+            Assert.IsTrue(result.Any());
+            Assert.AreEqual(1, result.Count);
+            Assert.IsTrue(result.First().Contains("Sunday"));
+
+            // Lastly clear the date to make sure we get the required field validation, but not the Monday validation
+            moqType.TableData.First().PoPEnd = new DateTime(1, 1, 1);
+
+            result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+            Assert.IsTrue(result.Any());
+            Assert.IsTrue(result.Any(x => x.Contains("required")));
+            Assert.IsFalse(result.Any(x => x.Contains("Sunday")));
+        }
+
+        /// <summary>
+        /// Test ValidateTemplateMoqForTask for validation that PoPEnd is on a Sunday.. Testing for Space, no validation should happen
+        /// </summary>
+        [TestMethod]
+        public void BL_ValidateTemplateMoqForTask_PoPEndSunday_SpaceMode()
+        {
+            SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+            Utilities.IsSAPEnabled = true;
+
+            ValidateBOE sut = CreateSystem();
+
+            // Create a valid MOQ Table
+            MoqTypeSelection moqType = new MoqTypeSelection()
+            {
+                SelectedMOQType = MOQType.Historical, // Historical so we are using the MOQ Table
+                TableData = new Collection<MoqTableData>()
+                    {
+                        new MoqTableData()
+                        {
+                            TableName = "Test Table",
+                            ContractNumber = "1",
+                            DateOfReport = DateTime.Now,
+                            HistoricalProgramName = "Test Name",
+                            WbsElement = "Test WBS",
+                            PoPStart = new DateTime(2022, 1, 3), // Monday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "TestFilter",
+                            TotalRelevantHours = 1000,
+                            RepositoryName = "aa",
+                            QueryType = "aa"
+                        }
+                    },
+                Rationale = "Test Rationale",
+                SkillMixRationale = "Test Skill Mix"
+            };
+
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+            FullWorkspace ws = new FullWorkspace(workspace);
+
+            ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+            Assert.IsFalse(result.Any());
+
+            // Add a day so PoP start is no longer on a Sunday
+            moqType.TableData.First().PoPEnd = new DateTime(2022, 1, 10);
+
+            result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+            Assert.IsFalse(result.Any());
+        }
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask, specifically rules for Additional Query Field.. RMS Company
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_AdditionalQueryFields_RMS()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.MST;
+			Utilities.IsSAPEnabled = true;
+
+			ValidateBOE sut = CreateSystem();
+
+            // Create a valid MOQ Table
+            MoqTypeSelection moqType = new MoqTypeSelection()
+            {
+                SelectedMOQType = MOQType.Historical,
+                TableData = new Collection<MoqTableData>()
+                    {
+                        new MoqTableData()
+                        {
+                            TableName = "Test Table",
+                            ContractNumber = "1",
+                            DateOfReport = DateTime.Now,
+                            HistoricalProgramName = "Test Name",
+                            WbsElement = "Test WBS",
+                            PoPStart = new DateTime(2022, 1, 3), // Monday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+                            TotalRelevantHours = 1000,
+							RepositoryName = "aa",
+							QueryType = "aa"
+						}
+                    },
+                Rationale = "Test Rationale",
+                SkillMixRationale = "Test Skill Mix"
+            };
+
+            WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+            FullWorkspace ws = new FullWorkspace(workspace);
+
+            ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+            // Valid data to start
+            Assert.IsFalse(result.Any());
+
+			// Make the additional query filters null
+			moqType.TableData.First().AdditionalQueryFilters = null;
+
+			// RMS && SAP = true -> Not Required - False (IsAny)
+			Utilities.IsSAPEnabled = true;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			Assert.IsFalse(result.Any());
+
+			// RMS && SAP = false -> Required - True (IsAny)
+			Utilities.IsSAPEnabled = false;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			Assert.IsTrue(result.Any());
+		}
+
+		/// <summary>
+		/// Test ValidateTemplateMoqForTask, specifically rules for Additional Query Field.. Space Company
+		/// </summary>
+		[TestMethod]
+		public void BL_ValidateTemplateMoqForTask_AdditionalQueryFields_Space()
+		{
+			SystemConfiguration.Instance().CompanyMode = CompanyConfiguration.SpaceSystems;
+			Utilities.IsSAPEnabled = true;
+
+			ValidateBOE sut = CreateSystem();
+
+			// Create a valid MOQ Table
+			MoqTypeSelection moqType = new MoqTypeSelection()
+			{
+				SelectedMOQType = MOQType.Historical,
+				TableData = new Collection<MoqTableData>()
+					{
+						new MoqTableData()
+						{
+							TableName = "Test Table",
+							ContractNumber = "1",
+							DateOfReport = DateTime.Now,
+							HistoricalProgramName = "Test Name",
+							WbsElement = "Test WBS",
+							PoPStart = new DateTime(2022, 1, 3), // Monday
+                            PoPEnd = new DateTime(2022, 1, 9), // Sunday
+                            AdditionalQueryFilters = "aaa",
+							TotalRelevantHours = 1000,
+							RepositoryName = RepositoryName.SapWebi.GetDescription(),
+							QueryType = "aa"
+						}
+					},
+				Rationale = "Test Rationale",
+				SkillMixRationale = "Test Skill Mix"
+			};
+
+			WorkspaceDTO workspace = new WorkspaceDTO { Id = 1, WorkspaceName = "Test WS" };
+			FullWorkspace ws = new FullWorkspace(workspace);
+
+			ICollection<string> result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+
+			// Valid data to start
+			Assert.IsFalse(result.Any());
+
+			// Make the additional query filters null
+			moqType.TableData.First().AdditionalQueryFilters = null;
+
+			// SSC && SAP = True && Repo = SAP -> Not Required - False (IsAny)
+			moqType.TableData.First().RepositoryName = RepositoryName.SapWebi.GetDescription();
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			Assert.IsFalse(result.Any());
+
+			// SSC && SAP = True && Repo = Other -> Required - True (IsAny)
+			moqType.TableData.First().RepositoryName = RepositoryName.Other.GetDescription();
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			Assert.IsTrue(result.Any());
+
+			// SSC && SAP = false -> Required - True (IsAny)
+			Utilities.IsSAPEnabled = false;
+			result = sut.ValidateTemplateMoqForTask(new Collection<MoqTypeSelection>() { moqType }, ws, false);
+			Assert.IsTrue(result.Any());
 		}
 	}
 }

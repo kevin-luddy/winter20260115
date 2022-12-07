@@ -707,7 +707,7 @@ namespace GenBOE.ActionLogic.WBS.BOE
 
                                 if (row.PoPEnd.Date < row.PoPStart.Date) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.PoPStart} must be on or before {labels.PoPEnd}."); }
 
-                                if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
+                                if (Utilities.IsSAPEnabled && SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST)
                                 {
                                     if (row.PoPStart.Year > 1 && row.PoPStart.DayOfWeek != DayOfWeek.Monday)
                                     {
@@ -720,7 +720,13 @@ namespace GenBOE.ActionLogic.WBS.BOE
 									}
 								}
 
-                                if (string.IsNullOrEmpty(row.AdditionalQueryFilters)) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.AdditionalQueryFilters} is required, otherwise indicate N/A."); }
+                                // "Additional Query Fields" is required ONLY when SAP is disabled OR (Company mode == space && repository name != SAP / Webi)
+                                if ((!Utilities.IsSAPEnabled ||
+                                        (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems && row.RepositoryName != RepositoryName.SapWebi.GetDescription()))
+                                    && string.IsNullOrEmpty(row.AdditionalQueryFilters))
+                                {
+                                    errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.AdditionalQueryFilters} is required, otherwise indicate N/A.");
+                                }
 
                                 if (row.TotalRelevantHours <= 0) { errorMessages.Add($"{moqType.SelectedMOQType.GetDescription()}: {labels.TotalRelevantHours} must be a number greater than 0."); }
 
