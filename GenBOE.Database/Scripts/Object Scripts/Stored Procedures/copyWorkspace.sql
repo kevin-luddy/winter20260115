@@ -1598,7 +1598,7 @@ DECLARE @MOQTypeSelectionTableData TABLE
 	[PeriodOfPerformanceStartDate] [datetime2](7) NOT NULL,
 	[PeriodOfPerformanceEndDate] [datetime2](7) NOT NULL,
 	[TotalWbsHours] [decimal](10,2) NOT NULL,
-	[AdditionalQueryFilters] [varchar](2500) NOT NULL,
+	[AdditionalQueryFilters] [varchar](2500) NULL,
 	[TotalRelevantHoursAfterQueryFilters] [decimal](10,2) NOT NULL,
 	Processed bit,
 	NewMOQTypeSelectionTableDataId int,
