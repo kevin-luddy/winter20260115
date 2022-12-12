@@ -74,7 +74,7 @@
                         </thead>
                         <tbody>
                             <tr data-ng-show="isLoading"><td colspan="{{colSpan}}"><div class="loader"></div></td></tr>
-                            <tr data-ng-show="!isLoading && (data.length === 0 || filteredResults.length === 0)"><td colspan="{{colSpan}}"><div class="empty-grid-text">There are no MOQ Tables with Actuals.</div></td></tr>
+                            <tr data-ng-show="!isLoading && (data.length === 0 || filteredResults.length === 0)"><td colspan="{{colSpan}}"><div class="empty-grid-text">There are no updates to Actuals inside MOQ Tables.</div></td></tr>
                             <tr data-ng-repeat="actual in (filteredResults = (data | filter:filterActuals | orderBy:predicate:reverse)) | limitTo:pageSize:currentPage*pageSize">
                                 <td class="text" title="{{::actual.BoeTitle}}">{{::actual.BoeTitle}}</td>
                                 <td class="text"  title="{{::actual.Task}}">{{::actual.Task}}</td>
