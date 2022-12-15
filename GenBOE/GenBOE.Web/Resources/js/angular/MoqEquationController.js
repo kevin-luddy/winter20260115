@@ -64,42 +64,49 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
 	$scope.refreshDisableSave = function () {
 		// only check for disabling save if SAP is enabled
-		if ($scope.model.SAPEnabled) { 
-			// check if any DateOfReport is older than 60 days
-			let olderThan60 = false;
-			let newTableNeedsCalculated = false;
-			const sixtyDays = new Date();
-			sixtyDays.setMonth(sixtyDays.getMonth() - 2);
-
+        if ($scope.model.SAPEnabled) { 
 			// only look at historical and comparative moq
 			let moqTypes = $scope.model.SelectedMoqTypes.filter(x => x.SelectedMOQType == $scope.model.ComparativeMoqType || x.SelectedMOQType == $scope.model.HistoricalMoqType);
 
-			moqTypes.forEach(moq => {
-				if (moq.TableData) {
-					moq.TableData.forEach(tableData => {
-						if (tableData.DateOfReport < sixtyDays) {
-							olderThan60 = true;
-                        }
+            // Only continue if in RMS or there is a repository set to SAP/WEBI for SSC
+            if ($scope.IsSapSetAsAnyRepository(moqTypes)) {
+                // check if any DateOfReport is older than 60 days
+                let olderThan60 = false;
+                let newTableNeedsCalculated = false;
+                const sixtyDays = new Date();
+                sixtyDays.setMonth(sixtyDays.getMonth() - 2);
 
-                        if (tableData.TotalRelevantHours === undefined && ($scope.model.IsRMS || (!$scope.model.IsRMS && tableData.RepositoryName == $scope.model.SapWebiRepository))) {
-							newTableNeedsCalculated = true;
-						}
-					});
-				}
-			});
+                moqTypes.forEach(moq => {
+                    if (moq.TableData) {
+                        moq.TableData.forEach(tableData => {
+                            if ($scope.IsSAPSetAsRepository(tableData.RepositoryName)) {
+                                if (tableData.DateOfReport < sixtyDays) {
+                                    olderThan60 = true;
+                                }
 
-            if (olderThan60) {
-				ManageTaskModel.DisableSave = true;
-				ManageTaskModel.DisableSaveText = 'All MOQ Tables older than two months need to have Actuals recalculated before Saving'
-            } else if (newTableNeedsCalculated) {
-				ManageTaskModel.DisableSave = true;
-				ManageTaskModel.DisableSaveText = 'All new MOQ Tables need to have Actuals calculated before Saving';
-            } else if ($scope.actualsValidation.isDirty.size > 0) {
-				ManageTaskModel.DisableSave = true;
-				ManageTaskModel.DisableSaveText = 'All MOQ Tables that have had filters updated need to have Actuals recalculated before Saving';
-			} else {
-				ManageTaskModel.DisableSave = false;
-			}
+                                if (tableData.TotalRelevantHours === undefined) {
+                                    newTableNeedsCalculated = true;
+                                }
+                            }
+                        });
+                    }
+                });
+
+                if (olderThan60) {
+                    ManageTaskModel.DisableSave = true;
+                    ManageTaskModel.DisableSaveText = 'All MOQ Tables older than two months need to have Actuals recalculated before Saving'
+                } else if (newTableNeedsCalculated) {
+                    ManageTaskModel.DisableSave = true;
+                    ManageTaskModel.DisableSaveText = 'All new MOQ Tables need to have Actuals calculated before Saving';
+                } else if ($scope.actualsValidation.isDirty.size > 0) {
+                    ManageTaskModel.DisableSave = true;
+                    ManageTaskModel.DisableSaveText = 'All MOQ Tables that have had filters updated need to have Actuals recalculated before Saving';
+                } else {
+                    ManageTaskModel.DisableSave = false;
+                }
+            } else {
+                ManageTaskModel.DisableSave = false;
+            }
 		}
 	};
 
@@ -1103,7 +1110,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		$scope.refreshDisableSave();
 	};
 
-	$scope.setActualsErrors = function (id, errors) {
+    $scope.setActualsErrors = function (id, errors) {
 		if (Array.isArray(errors)) {
 			if (errors.length > 0) {
 				// need to see if we need to convert to ValidationMessage
@@ -1212,52 +1219,6 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 		return blob;
 	};
 
-	$scope.validateActuals = function (tableData) {
-		$scope.actualsValidation.errors = new Map();
-		// pull the data from the form
-
-		const data = {};
-		data.tableData = {
-			WbsElement: tableData.WbsElement,
-			PoPStart: tableData.PoPStart,
-			PoPEnd: tableData.PoPEnd,
-			Filters: tableData.AdditionalQueryFilters,
-			TableId: tableData.Id
-		};
-
-		$scope.setPoP(data.tableData, tableData);
-
-		if (Array.isArray(tableData.AdditionalQueryFilters)){
-			data.tableData.Filters = tableData.AdditionalQueryFilters.join("\n");
-		}
-
-		data.boeId = ManageTaskModel.boeId;
-
-		// send to backend
-		// display response to user
-		$(document).trigger("SHOW_LOADING_BOX");
-
-		$http({
-			method: 'POST',
-			url: CreatePostURL(ManageTaskModel.workspace, ManageTaskModel.controller, ManageTaskModel.ValidateActualsSapAction, ''),
-			data: data
-		}).then(function (response) {
-			// place returned html into the content div
-			if (response.data.IsSuccessful !== true) {
-				if (response.data.Messages && response.data.Messages.length > 0) {
-					$scope.setActualsErrors(tableData.Id, response.data.Messages);
-				} else {
-					$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }]);
-				}
-			}
-			$(document).trigger("HIDE_LOADING_BOX");
-		}).catch(function () {
-			$scope.setActualsErrors(tableData.Id, [{ ValidationIssue: 'Error talking to backend to Validate Actuals' }]);
-			$(document).trigger("HIDE_LOADING_BOX");
-		});
-
-	};
-
     //#endregion SAP Filters
 
 	$scope.refreshPage = function () {
@@ -1283,7 +1244,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
         return +((popEnd - popStart) / (1000 * 60 * 60 * 24) / 30).toFixed(2);
 	}
 
-    $scope.IsSapEnabledAndSetAsRepository = function(repositoryName)
+    $scope.IsSapEnabledAndSetAsRepository = function (repositoryName)
     {
         if ($scope.model.IsRMS) {
             // RMS does not use Repository Name, so just return SAP Enabled
@@ -1292,7 +1253,31 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
             // SSC requires Repository Name to be set to SAP / WEBI
             return $scope.model.SAPEnabled && repositoryName == $scope.model.SapWebiRepository;
 		}
-	}
+    }
+
+    $scope.IsSAPSetAsRepository = function (repositoryName) {
+        if ($scope.model.IsRMS) {
+            // RMS does not use Repository Name, so just return true
+            return true;
+        } else {
+            // Return true if Repository Name set to SAP / WEBI for SSC
+            return repositoryName == $scope.model.SapWebiRepository;
+        }
+    }
+
+    $scope.IsSapSetAsAnyRepository = function (moqTypes) {
+        if ($scope.model.IsRMS) {
+            // RMS does not use Repository Name, so just true
+            return true;
+        } else {
+            // Return true if any Repository Name set to SAP / WEBI for SSC
+            if (moqTypes.some(moq => moq.TableData)) {
+                return moqTypes.map(moq => moq.TableData)[0].some(table => table.RepositoryName == $scope.model.SapWebiRepository);
+            } else {
+                return false;
+			}
+        }
+    }
 
     $scope.UpdateRepository = function (tableData) {
         if (tableData.RepositoryNameSelection == $scope.model.SapWebiRepository) {
@@ -1301,6 +1286,7 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
         } else {
             $scope.actualsValidation.isDirty.delete(tableData.Id); 
             tableData.RepositoryName = "";
+            $scope.actualsValidation.errors.set(tableData.Id, []); // clear SAP validation messages
         }
 
         $scope.refreshDisableSave();

@@ -109,9 +109,10 @@ namespace GenBOE.ActionLogic.IO.Export
 				string nextLevel = additionalLevels.FirstOrDefault();
 				ICollection<string> nextAdditionalLevels = additionalLevels.Skip(1).ToList();
 
+				// TODO - see if we need to order these (all categories)
+
 				if (currentLevel.Equals(SummaryFieldType.CLINNum.GetDescription(), StringComparison.CurrentCultureIgnoreCase))
 				{
-					// TODO - see if we need to order these (all categories)
 					foreach (int? clinId in resourceTypes.Select(x => x.CLINID).Distinct())
 					{
 						TraceTableBoeData newChild = new TraceTableBoeData()
@@ -126,7 +127,15 @@ namespace GenBOE.ActionLogic.IO.Export
 				}
 				else if (currentLevel.Equals(SummaryFieldType.WBSNum.GetDescription(), StringComparison.CurrentCultureIgnoreCase))
 				{
-					foreach (int? wbsId in resourceTypes.Select(x => x.WBSID).Distinct())
+					IList<int?> wbsIdList = resourceTypes.Select(x => x.WBSID).Distinct().ToList();
+					IList<int?> wbsElementsNoMultiWbsList = workspace.WbsElementsNoMultiWbs.Where(x => wbsIdList.Contains(x.Id)).Select(x => (int?)x.Id).ToList();
+
+					if (wbsIdList.Any(x => x == null))
+					{
+						wbsElementsNoMultiWbsList.Add(null);
+					}
+
+					foreach (int? wbsId in wbsElementsNoMultiWbsList)
 					{
 						TraceTableBoeData newChild = new TraceTableBoeData()
 						{

@@ -162,6 +162,13 @@ namespace GenBOE.Tests.ActionLogic.Export
 			resourceType4.CustomFieldValueContainers.Add(cfvc7);
 			resourceType4.CustomFieldValueContainers.Add(cfvc8);
 
+			CustomFieldValueDTO cfv1 = new CustomFieldValueDTO() { CustomFieldValueID = cfvc1.Id, CustomFieldID = cfvc1.CustomFieldID, CustomFieldValueDescription = cfvc1.OpenEndedValue };
+			CustomFieldValueDTO cfv2 = new CustomFieldValueDTO() { CustomFieldValueID = cfvc2.Id, CustomFieldID = cfvc2.CustomFieldID, CustomFieldValueDescription = cfvc2.OpenEndedValue };
+			CustomFieldValueDTO cfv3 = new CustomFieldValueDTO() { CustomFieldValueID = cfvc4.Id, CustomFieldID = cfvc4.CustomFieldID, CustomFieldValueDescription = cfvc4.OpenEndedValue };
+			CustomFieldValueDTO cfv4 = new CustomFieldValueDTO() { CustomFieldValueID = cfvc5.Id, CustomFieldID = cfvc5.CustomFieldID, CustomFieldValueDescription = cfvc5.OpenEndedValue };
+			CustomFieldValueDTO cfv5 = new CustomFieldValueDTO() { CustomFieldValueID = cfvc6.Id, CustomFieldID = cfvc6.CustomFieldID, CustomFieldValueDescription = cfvc6.OpenEndedValue };
+			retriever.Setup(x => x.GetCustomFieldValuesByFieldIds(It.IsAny<ICollection<int>>(), It.IsAny<int>())).Returns(new Collection<CustomFieldValueDTO>() { cfv1, cfv2, cfv3, cfv4, cfv5 });
+
 			BoeTaskElementDTO task1 = new BoeTaskElementDTO() { Id = 1, TaskTitle = "Task 1",  taskElementLabors = new Collection<ResourceTypeDto>() { resourceType1, resourceType2 } };
 			BoeTaskElementDTO task2 = new BoeTaskElementDTO() { Id = 2, TaskTitle = "Task 2", taskElementLabors = new Collection<ResourceTypeDto>() { resourceType3 } };
 			BoeTaskElementDTO task3 = new BoeTaskElementDTO() { Id = 3, TaskTitle = "Task 3", taskElementLabors = new Collection<ResourceTypeDto>() { resourceType4, resourceType5 } };
@@ -315,6 +322,221 @@ namespace GenBOE.Tests.ActionLogic.Export
 			Assert.AreEqual(resourceType1.ValueSpread + resourceType4.ValueSpread, cf2Field.TotalValue);
 			Assert.IsTrue(cf2Field.SpreadValuesForYear.Any());
 			Assert.IsFalse(cf2Field.ChildData.Any());
+		}
+
+		/// <summary>
+		/// Test ExportTraceTableData for WBS
+		/// </summary>
+		[TestMethod]
+		public void TestExportTraceTableDataWbs()
+		{
+			ITraceTableExporter sut = new TraceTableExporter();
+			FullWorkspace ws = new FullWorkspace() { Id = 1 };
+
+			ResourceTypeDto resourceType1 = new ResourceTypeDto()
+			{
+				Id = 1,
+				BoeID = 1,
+				TaskElementId = 1,
+				CLINID = 1,
+				WBSID = 1,
+				ResourceID = 1,
+				PerformingOrgID = 1,
+				SpreadType = SpreadType.Hours,
+				StartDate = new DateTime(2021, 1, 1),
+				EndDate = new DateTime(2023, 12, 31),
+				SpreadCurveID = SpreadCurves.SpreadCurve3,
+				ValueSpread = 36
+			};
+			resourceType1.LaborSpreads = CreateResourceSpreads(resourceType1.ValueSpread.Value, resourceType1.Id, resourceType1.StartDate.Value, resourceType1.EndDate.Value, resourceType1.BoeID);
+
+			ResourceTypeDto resourceType2 = new ResourceTypeDto()
+			{
+				Id = 1,
+				BoeID = 1,
+				TaskElementId = 1,
+				CLINID = null,
+				WBSID = 2,
+				ResourceID = 2,
+				PerformingOrgID = 2,
+				SpreadType = SpreadType.Hours,
+				StartDate = new DateTime(2021, 1, 1),
+				EndDate = new DateTime(2023, 12, 31),
+				SpreadCurveID = SpreadCurves.SpreadCurve1,
+				ValueSpread = 360
+			};
+			resourceType2.LaborSpreads = CreateResourceSpreads(resourceType2.ValueSpread.Value, resourceType2.Id, resourceType2.StartDate.Value, resourceType2.EndDate.Value, resourceType2.BoeID);
+
+			ResourceTypeDto resourceType3 = new ResourceTypeDto()
+			{
+				Id = 1,
+				BoeID = 1,
+				TaskElementId = 2,
+				CLINID = 1,
+				WBSID = 3,
+				ResourceID = 1,
+				PerformingOrgID = 1,
+				SpreadType = SpreadType.Hours,
+				StartDate = new DateTime(2021, 1, 1),
+				EndDate = new DateTime(2023, 12, 31),
+				SpreadCurveID = SpreadCurves.SpreadCurve2,
+				ValueSpread = 3600
+			};
+			resourceType3.LaborSpreads = CreateResourceSpreads(resourceType3.ValueSpread.Value, resourceType3.Id, resourceType3.StartDate.Value, resourceType3.EndDate.Value, resourceType3.BoeID);
+
+			ResourceTypeDto resourceType4 = new ResourceTypeDto()
+			{
+				Id = 1,
+				BoeID = 2,
+				TaskElementId = 3,
+				CLINID = 1,
+				WBSID = 4,
+				ResourceID = 1,
+				PerformingOrgID = 1,
+				SpreadType = SpreadType.Hours,
+				StartDate = new DateTime(2021, 1, 1),
+				EndDate = new DateTime(2023, 12, 31),
+				SpreadCurveID = SpreadCurves.SpreadCurve5,
+				ValueSpread = 36000
+			};
+			resourceType4.LaborSpreads = CreateResourceSpreads(resourceType4.ValueSpread.Value, resourceType4.Id, resourceType4.StartDate.Value, resourceType4.EndDate.Value, resourceType4.BoeID);
+
+			ResourceTypeDto resourceType5 = new ResourceTypeDto()
+			{
+				Id = 1,
+				BoeID = 2,
+				TaskElementId = 3,
+				CLINID = 2,
+				WBSID = 5,
+				ResourceID = 3,
+				PerformingOrgID = 1,
+				SpreadType = SpreadType.Hours,
+				StartDate = new DateTime(2021, 1, 1),
+				EndDate = new DateTime(2023, 12, 31),
+				SpreadCurveID = SpreadCurves.SpreadCurve6,
+				ValueSpread = 360000
+			};
+			resourceType5.LaborSpreads = CreateResourceSpreads(resourceType5.ValueSpread.Value, resourceType5.Id, resourceType5.StartDate.Value, resourceType5.EndDate.Value, resourceType5.BoeID);
+
+			ResourceTypeDto resourceType6 = new ResourceTypeDto()
+			{
+				Id = 1,
+				BoeID = 2,
+				TaskElementId = 3,
+				CLINID = 2,
+				WBSID = 6,
+				ResourceID = 3,
+				PerformingOrgID = 1,
+				SpreadType = SpreadType.Hours,
+				StartDate = new DateTime(2021, 1, 1),
+				EndDate = new DateTime(2023, 12, 31),
+				SpreadCurveID = SpreadCurves.SpreadCurve6,
+				ValueSpread = 360000
+			};
+			resourceType6.LaborSpreads = CreateResourceSpreads(resourceType6.ValueSpread.Value, resourceType6.Id, resourceType6.StartDate.Value, resourceType6.EndDate.Value, resourceType6.BoeID);
+
+			ResourceTypeDto resourceType7 = new ResourceTypeDto()
+			{
+				Id = 1,
+				BoeID = 2,
+				TaskElementId = 3,
+				CLINID = 2,
+				WBSID = 7,
+				ResourceID = 3,
+				PerformingOrgID = 1,
+				SpreadType = SpreadType.Hours,
+				StartDate = new DateTime(2021, 1, 1),
+				EndDate = new DateTime(2023, 12, 31),
+				SpreadCurveID = SpreadCurves.SpreadCurve6,
+				ValueSpread = 360000
+			};
+			resourceType7.LaborSpreads = CreateResourceSpreads(resourceType7.ValueSpread.Value, resourceType7.Id, resourceType7.StartDate.Value, resourceType7.EndDate.Value, resourceType7.BoeID);
+
+			ResourceTypeDto resourceType8 = new ResourceTypeDto()
+			{
+				Id = 1,
+				BoeID = 2,
+				TaskElementId = 3,
+				CLINID = 2,
+				WBSID = 8,
+				ResourceID = 3,
+				PerformingOrgID = 1,
+				SpreadType = SpreadType.Hours,
+				StartDate = new DateTime(2021, 1, 1),
+				EndDate = new DateTime(2023, 12, 31),
+				SpreadCurveID = SpreadCurves.SpreadCurve6,
+				ValueSpread = 360000
+			};
+			resourceType5.LaborSpreads = CreateResourceSpreads(resourceType8.ValueSpread.Value, resourceType8.Id, resourceType8.StartDate.Value, resourceType8.EndDate.Value, resourceType8.BoeID);
+
+			ResourceTypeDto resourceType9 = new ResourceTypeDto()
+			{
+				Id = 1,
+				BoeID = 2,
+				TaskElementId = 3,
+				CLINID = 2,
+				WBSID = null,
+				ResourceID = 3,
+				PerformingOrgID = 1,
+				SpreadType = SpreadType.Hours,
+				StartDate = new DateTime(2021, 1, 1),
+				EndDate = new DateTime(2023, 12, 31),
+				SpreadCurveID = SpreadCurves.SpreadCurve6,
+				ValueSpread = 360000
+			};
+			resourceType9.LaborSpreads = CreateResourceSpreads(resourceType9.ValueSpread.Value, resourceType9.Id, resourceType9.StartDate.Value, resourceType9.EndDate.Value, resourceType9.BoeID);
+
+			BoeTaskElementDTO task = new BoeTaskElementDTO() { Id = 1, TaskTitle = "Task 1", taskElementLabors = new Collection<ResourceTypeDto>() { resourceType1, resourceType2, resourceType3, resourceType4, resourceType5, resourceType6, resourceType7, resourceType8, resourceType9 } };
+
+			FullBoe boe = new FullBoe() { Id = 1, Title = "BOE1", Workspace = ws, IsMultiClinWbs = true };
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByWorkspaceId(ws.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { task });
+			retriever.Setup(x => x.GetBoeTaskElementCollectionByBoeId(boe.Id, false, It.IsAny<int>(), It.IsAny<int>())).Returns(new Collection<BoeTaskElementDTO>() { task});
+			retriever.Setup(x => x.GetOdcCollectionByBoeIds(It.IsAny<ICollection<int>>(), false)).Returns(new Collection<OtherDirectCostDTO>());
+			retriever.Setup(x => x.GetTravelByWorkspaceId(It.IsAny<int>(), false)).Returns(new Collection<TravelDTO>());
+			retriever.Setup(x => x.GetFullBoesByWorkspaceId(ws.Id)).Returns(new Collection<FullBoe>() { boe });
+
+			ResourceDTO resource1 = new ResourceDTO() { Id = 1, ResourceName = "TEST1", ResourceDesc = "TEST1 - TESTING ONE", ElementOfCost = ElementOfCostType.LMLabor };
+			ResourceDTO resource2 = new ResourceDTO() { Id = 2, ResourceName = "TEST2", ResourceDesc = "TEST2 - TESTING TWO", ElementOfCost = ElementOfCostType.LMLabor };
+			ResourceDTO resource3 = new ResourceDTO() { Id = 3, ResourceName = "TEST3", ResourceDesc = "TEST2 - TESTING THREE", ElementOfCost = ElementOfCostType.LMLabor };
+			retriever.Setup(x => x.GetResourcesByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<ResourceDTO>() { resource1, resource2, resource3 });
+
+			PerformingOrgDTO perfOrg1 = new PerformingOrgDTO() { Id = 1, PerformingOrgName = "ORG 1" };
+			PerformingOrgDTO perfOrg2 = new PerformingOrgDTO() { Id = 2, PerformingOrgName = "ORG 2" };
+			retriever.Setup(x => x.GetPerformingOrgsByIds(It.IsAny<ICollection<int>>())).Returns(new Collection<PerformingOrgDTO>() { perfOrg1, perfOrg2 });
+
+			FullWbs wbs1 = new FullWbs() { Id = 1, WbsNumber = "2", WbsPaddedNumber = "00002??" };
+			FullWbs wbs2 = new FullWbs() { Id = 2, WbsNumber = "10", WbsPaddedNumber = "00010??" };
+			FullWbs wbs3 = new FullWbs() { Id = 3, WbsNumber = "1.2", WbsPaddedNumber = "00001??.00002??" };
+			FullWbs wbs4 = new FullWbs() { Id = 4, WbsNumber = "20.1.3.2", WbsPaddedNumber = "00020??.00001??.00003??.00002??" };
+			FullWbs wbs5 = new FullWbs() { Id = 5, WbsNumber = "2.0.1", WbsPaddedNumber = "00002??.00000??.00001??" };
+			FullWbs wbs6 = new FullWbs() { Id = 6, WbsNumber = "4.0", WbsPaddedNumber = "00004??.00000??" };
+			FullWbs wbs7 = new FullWbs() { Id = 7, WbsNumber = "1.1.9", WbsPaddedNumber = "00001??.00001??.00009??" };
+			FullWbs wbs8 = new FullWbs() { Id = 8, WbsNumber = "1.0", WbsPaddedNumber = "00001??.00000??" };
+			retriever.Setup(x => x.GetFullWbsElementsByWorkspaceId(ws.Id)).Returns(new Collection<FullWbs>() { wbs1, wbs2, wbs3, wbs4, wbs5, wbs6, wbs7, wbs8 });
+
+			TraceTableSettingsData settings = new TraceTableSettingsData()
+			{
+				ElementsOfCost = new Collection<int> { (int)ElementOfCostType.LMLabor },
+				RateType = (int)RateType.Hours,
+				ShowYears = true,
+				SummaryFields = new Collection<string>() { SummaryFieldType.WBSNum.GetDescription() }
+			};
+
+			ICollection<TraceTableBoeData> result = sut.ExportTraceTableData(ws, settings);
+
+			Assert.IsTrue(result.Any());
+			Assert.AreEqual(9, result.Count());
+
+			// Check WBS order
+			Assert.AreEqual(wbs8.WbsNumber, result.First().SummaryFieldValue);
+			Assert.AreEqual(wbs7.WbsNumber, result.ElementAt(1).SummaryFieldValue);
+			Assert.AreEqual(wbs3.WbsNumber, result.ElementAt(2).SummaryFieldValue);
+			Assert.AreEqual(wbs1.WbsNumber, result.ElementAt(3).SummaryFieldValue);
+			Assert.AreEqual(wbs5.WbsNumber, result.ElementAt(4).SummaryFieldValue);
+			Assert.AreEqual(wbs6.WbsNumber, result.ElementAt(5).SummaryFieldValue);
+			Assert.AreEqual(wbs2.WbsNumber, result.ElementAt(6).SummaryFieldValue);
+			Assert.AreEqual(wbs4.WbsNumber, result.ElementAt(7).SummaryFieldValue);
+			Assert.AreEqual(CommonConstants.Unassigned_WBS_Display_Text, result.Last().SummaryFieldValue);
 		}
 
 		/// <summary>

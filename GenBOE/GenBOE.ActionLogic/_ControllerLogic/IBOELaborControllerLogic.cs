@@ -345,15 +345,6 @@ namespace GenBOE.ActionLogic
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
         Task<IESResponse<QueryViewModel>> ParseSapFilter(string text);
 
-
-        /// <summary>
-        /// Validates Actuals data for SAP
-        /// </summary>
-        /// <param name="tableData">The MOQ Table Data</param>
-        /// <returns>Validation Response</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures")]
-        Task<IESResponse<bool>> ValidateActualsSap(MoqTableDataModelView tableData);
-
         /// <summary>
         /// Export Actuals data for SAP
         /// </summary>

@@ -71,6 +71,12 @@
     <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/system.web/httpCookies/@requireSSL">
     </parameterentry>
   </parameter>
+
+  <!--elmah-->
+  <parameter name="elmahConnectionString" description="doesn't matter" defaultvalue="__elmahConnectionString__" tags="">
+    <parameterentry kind="XmlFile" scope="\\web.config$" match="/configuration/elmah/errorLog[@type='Elmah.SqlErrorLog, Elmah']/@connectionString">
+	</parameterentry>
+  </parameter>
   
   <!--system.webServer-->
   <parameter name="enableSslRedirect" description="doesn't matter" defaultvalue="__enableSslRedirect__" tags="">
