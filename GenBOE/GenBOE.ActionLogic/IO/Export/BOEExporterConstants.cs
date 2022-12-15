@@ -437,7 +437,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		/// <summary>
 		/// Label for Employee ID filter in Additional Query Filters
 		/// </summary>
-		public const string EMPLOYEE_ID_FILTERS_LABEL = "Personnel Number";
+		public const string EMPLOYEE_ID_FILTERS_LABEL = "Employee ID";
 
         #endregion
 
