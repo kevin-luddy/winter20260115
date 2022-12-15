@@ -2222,6 +2222,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 		{
 			List<WorkspaceCalculateActualsModelView> result = new List<WorkspaceCalculateActualsModelView>();
 
+			bool isRMS = SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST;
+			string sapRepo = RepositoryName.SapWebi.GetDescription();
 			Dictionary<int, FullBoe> boes = ws.Boes.ToDictionary(b => b.Id);
 			Dictionary<int, MoqTableData> tables = new Dictionary<int, MoqTableData>();
 			Dictionary<int, MoqTypeSelection> tableIdToMoqType = new Dictionary<int, MoqTypeSelection>();
@@ -2236,8 +2238,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
 
 					foreach (MoqTableData table in moqType.TableData)
 					{
-						tables.Add(table.Id, table);
-						tableIdToMoqType.Add(table.Id, moqType);
+						// only recalculate if RMS or SAP/WEBI set as Repo
+						if (isRMS || table.RepositoryName == sapRepo)
+						{
+							tables.Add(table.Id, table);
+							tableIdToMoqType.Add(table.Id, moqType);
+						}
 					}
 				}
 			}

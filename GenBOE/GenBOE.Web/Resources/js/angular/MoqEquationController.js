@@ -1028,21 +1028,23 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 			moqTypes.forEach(moq => {
 				if (moq.TableData) {
 					moq.TableData.forEach(tableData => {
-						const table = {
-							WbsElement: tableData.WbsElement,
-							PoPStart: tableData.PoPStart,
-							PoPEnd: tableData.PoPEnd,
-							Filters: tableData.AdditionalQueryFilters,
-							TableId: tableData.Id
-						};
+						if ($scope.IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
+							const table = {
+								WbsElement: tableData.WbsElement,
+								PoPStart: tableData.PoPStart,
+								PoPEnd: tableData.PoPEnd,
+								Filters: tableData.AdditionalQueryFilters,
+								TableId: tableData.Id
+							};
 
-						$scope.setPoP(table, tableData);
+							$scope.setPoP(table, tableData);
 
-						if (Array.isArray(tableData.AdditionalQueryFilters)) {
-							table.Filters = tableData.AdditionalQueryFilters.join("\n");
+							if (Array.isArray(tableData.AdditionalQueryFilters)) {
+								table.Filters = tableData.AdditionalQueryFilters.join("\n");
+							}
+
+							data.tableData.push(table);
 						}
-
-						data.tableData.push(table);
 					});
 				}
 			});
