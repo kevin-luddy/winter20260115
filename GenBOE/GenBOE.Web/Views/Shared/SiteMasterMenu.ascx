@@ -7,7 +7,11 @@
 
         if ('<%: ViewData["DisplayINLForms"] %>' == 'False') {
             $('a[name=ManageINLFormsMenu]').parent().addClass('display-none');
-        }
+		}
+
+		if ('<%: ViewData["EnableSAP"] %>' == 'False') {
+			$('a[name=CalculateActualsMenuLink]').parent().addClass('display-none');
+		}
 
         if ('<%: ViewData["DisplayProjectMapOnly"] %>' == 'True') {
             $('a[name=ImportIMSMenuLink]').parent().addClass('display-none');
@@ -15,7 +19,8 @@
             $('a[name=ManageWBSMenuLink]').parent().addClass('display-none');
             $('a[name=ManageBOEsMenuLink]').parent().addClass('display-none');
             $('a[name=FindReplaceBOEMenuLink]').parent().addClass('display-none');
-            $('a[name=BOEBulkSubmitMenuLink]').parent().addClass('display-none');
+			$('a[name=BOEBulkSubmitMenuLink]').parent().addClass('display-none');
+			$('a[name=CalculateActualsMenuLink]').parent().addClass('display-none');
             // Hidden for now since there is only BOE Bulk Submit in the Menu 
             $('a[name=BOEBulkSubmitMenuLink]').parent().parent().parent().addClass('display-none');
         }
