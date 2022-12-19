@@ -318,7 +318,7 @@ namespace GenBOE.Tests.ActionLogic.Export
                 Assert.AreEqual(expected.ElementAt(i).WbsElement, results.ElementAt(i).WbsElement);
                 Assert.AreEqual(expected.ElementAt(i).PoPStart, results.ElementAt(i).PoPStart);
                 Assert.AreEqual(expected.ElementAt(i).PoPEnd, results.ElementAt(i).PoPEnd);
-                Assert.AreEqual(expected.ElementAt(i).TotalWbsHours, results.ElementAt(i).TotalWbsHours);
+				// TotalWbsHours will be overridden with a call to SAP Api
                 Assert.AreEqual(expected.ElementAt(i).AdditionalQueryFilters, results.ElementAt(i).AdditionalQueryFilters);
                 Assert.AreEqual(expected.ElementAt(i).TotalRelevantHours, results.ElementAt(i).TotalRelevantHours);
                 Assert.AreEqual(expected.ElementAt(i).MOQTypeSelectionId, results.ElementAt(i).MOQTypeSelectionId);

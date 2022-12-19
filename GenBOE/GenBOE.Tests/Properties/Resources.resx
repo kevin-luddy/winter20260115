@@ -283,16 +283,16 @@
   <data name="MoqTableRmsValid" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\ActionLogic\Import\MOQ Table\MOQTableRMS_Valid.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="MOQTableRMS" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\ActionLogic\Export\MOQTableRMS.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="MOQTableRMSInvalid" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\ActionLogic\Import\MOQ Table\MOQTableRMS_Invalid.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="MOQTableSSC" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\ActionLogic\Export\MOQTableSSC.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="MOQTableSSCInvalid" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\ActionLogic\Import\MOQ Table\MOQTableSSC_Invalid.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MOQTableRMS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\moqtablerms.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="MOQTableSSC" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\moqtablessc.xlsx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

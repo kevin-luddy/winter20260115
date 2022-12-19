@@ -238,8 +238,8 @@ namespace GenBOE.Tests.ActionLogic.Import
             Assert.AreEqual(expected.AdditionalQueryFilters, result.AdditionalQueryFilters);
             Assert.AreEqual(expected.TotalRelevantHours, result.TotalRelevantHours);
             Assert.AreEqual(expected.ContractNumber, result.ContractNumber);
-            Assert.AreEqual(expected.TotalWbsHours, result.TotalWbsHours);
-            Assert.AreEqual(expected.CustomFieldValueContainers.Count(), result.CustomFieldValueContainers.Count());
+            // The Total wbs hours will be overwritten by SAP API
+			Assert.AreEqual(expected.CustomFieldValueContainers.Count(), result.CustomFieldValueContainers.Count());
 
             foreach(CustomFieldValueContainer expectedCfvc in expected.CustomFieldValueContainers)
             {
@@ -389,8 +389,8 @@ namespace GenBOE.Tests.ActionLogic.Import
             Assert.IsTrue(importTypes.Contains(MoqTableImportType.InvalidPopEnd));
             Assert.IsTrue(importTypes.Contains(MoqTableImportType.InvalidPopRange));
             Assert.IsTrue(importTypes.Contains(MoqTableImportType.LargeContractNumber));
-            Assert.IsTrue(importTypes.Contains(MoqTableImportType.InvalidTotalRelevantHours));
-            Assert.IsFalse(importTypes.Contains(MoqTableImportType.CreateMoqTable));
+            // Assert.IsTrue(importTypes.Contains(MoqTableImportType.InvalidTotalRelevantHours));
+            Assert.IsTrue(importTypes.Contains(MoqTableImportType.CreateMoqTable));
             Assert.IsFalse(importTypes.Contains(MoqTableImportType.None));
         }
     }

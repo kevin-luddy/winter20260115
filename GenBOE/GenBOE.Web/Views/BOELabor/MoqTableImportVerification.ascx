@@ -161,6 +161,21 @@
                 <% } %>
             </ul>
         </div>
+		<div <% if (!Model.Any(m => m.ImportType == (int)MoqTableImportType.InvalidSapCalculation)) { %> class="display-none"<% } %>>
+            <div class="title"><%: Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidSapCalculation).Count()%> MOQ Table(s) will not be added because the Table did not pass SAP Validation/Calculation:</div>
+            
+                <% foreach (ImportMoqTableResultsModelView result in Model.Where(m => m.ImportType == (int)MoqTableImportType.InvalidSapCalculation))
+                   { %>
+                <ul><strong>Table Name:</strong> <%: result.TableName %>
+						<% foreach(string errorMessage in result.ErrorMessages) 
+						{  %>
+							<li><%: errorMessage %></li>
+						<% } %>
+				</ul>
+				<br />
+                <% } %>
+            
+        </div>
     </div>
     <% } else { %>
         <div class="import-results">
