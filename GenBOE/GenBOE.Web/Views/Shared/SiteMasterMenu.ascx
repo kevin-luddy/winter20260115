@@ -9,7 +9,7 @@
             $('a[name=ManageINLFormsMenu]').parent().addClass('display-none');
 		}
 
-		if ('<%: ViewData["EnableSAP"] %>' == 'False') {
+		if ('<%: ViewData["EnableSAP"] %>' === 'False') {
 			$('a[name=CalculateActualsMenuLink]').parent().addClass('display-none');
 		}
 
