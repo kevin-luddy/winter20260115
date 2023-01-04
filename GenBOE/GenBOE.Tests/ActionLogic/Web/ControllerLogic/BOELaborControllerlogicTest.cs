@@ -3282,7 +3282,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
 			ImportMoqTableResultDataModelView results = await sut.ImportMoqTables(ws, request.Object);
 
             // Assert all results
-            Assert.IsTrue(results.Result.Any());
+            Assert.IsNotNull(results.Result);
             Assert.AreEqual(2, results.Result.Count);
             Assert.IsTrue(results.Result.Any(x => x.Id == -1));
             Assert.IsTrue(results.Result.Any(x => x.Id == -2));
