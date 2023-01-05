@@ -1410,8 +1410,9 @@ namespace IES.Common
         InvalidPopRange = 14,
         InvalidTotalRelevantHours = 15,
         InvalidPopStartFW = 16,
-        InvalidPopEndFW = 17
-    }
+        InvalidPopEndFW = 17,
+		InvalidSapCalculation = 18
+	}
 
     /// <summary>
     /// Selectable options for Repository Name

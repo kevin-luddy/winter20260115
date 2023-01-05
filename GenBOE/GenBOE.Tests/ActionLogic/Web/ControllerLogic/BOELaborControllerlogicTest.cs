@@ -3263,7 +3263,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         /// Test ImportMoqTables
         /// </summary>
         [TestMethod]
-        public void ImportMoqTables_Test()
+        public async void ImportMoqTables_Test()
         {
             BOELaborControllerLogic sut = CreateSystem();
 
@@ -3279,23 +3279,22 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             expected.Add(new ImportedMoqTable() { Id = -2, TableName = "test 2", ImportTypes = new Collection<MoqTableImportType>() { MoqTableImportType.MissingRequiredField } });
             this.moqTableImporter.Setup(x => x.ImportMoqTableFromExcelFile(It.IsAny<Stream>(), It.IsAny<FullWorkspace>())).Returns(expected);
 
-            ICollection<ImportMoqTableResultsModelView> results = sut.ImportMoqTables(ws, request.Object, out ICollection<ImportMoqTableResultsModelView> dataToSave, out bool errorsOccurred, out Exception exception);
+			ImportMoqTableResultDataModelView results = await sut.ImportMoqTables(ws, request.Object);
 
             // Assert all results
-            Assert.IsTrue(results.Any());
-            Assert.AreEqual(2, results.Count);
-            Assert.IsTrue(results.Any(x => x.Id == -1));
-            Assert.IsTrue(results.Any(x => x.Id == -2));
+            Assert.IsNotNull(results.Result);
+            Assert.AreEqual(2, results.Result.Count);
+            Assert.IsTrue(results.Result.Any(x => x.Id == -1));
+            Assert.IsTrue(results.Result.Any(x => x.Id == -2));
 
             // Assert results to save (only those with CreateMoqTable Import Type)
-            Assert.IsTrue(dataToSave.Any());
-            Assert.AreEqual(1, dataToSave.Count);
-            Assert.IsTrue(dataToSave.Any(x => x.Id == -1));
-            Assert.IsFalse(dataToSave.Any(x => x.Id == -2));
+            Assert.IsTrue(results.DataToSave().Any());
+            Assert.AreEqual(1, results.DataToSave().Count);
+            Assert.IsTrue(results.DataToSave().Any(x => x.Id == -1));
+            Assert.IsFalse(results.DataToSave().Any(x => x.Id == -2));
 
             // Assert no errors
-            Assert.IsFalse(errorsOccurred);
-            Assert.IsNull(exception);
+            Assert.IsFalse(results.ErrorsOccurred);
         }
 
 
@@ -3303,7 +3302,7 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
         /// Test ImportMoqTables returning caught exception
         /// </summary>
         [TestMethod]
-        public void ImportMoqTables_Test_CaughtException()
+        public async void ImportMoqTables_Test_CaughtException()
         {
             BOELaborControllerLogic sut = CreateSystem();
 
@@ -3313,37 +3312,36 @@ namespace GenBOE.Tests.ActionLogic.Web.ControllerLogic
             // Don't setup request further so it causes an exception
             Mock<HttpRequestBase> request = new Mock<HttpRequestBase>();
 
-            ICollection<ImportMoqTableResultsModelView> results = sut.ImportMoqTables(ws, request.Object, out ICollection<ImportMoqTableResultsModelView> dataToSave, out bool errorsOccurred, out Exception exception);
+			ImportMoqTableResultDataModelView results = await sut.ImportMoqTables(ws, request.Object);
 
-            Assert.IsTrue(errorsOccurred);
-            Assert.IsNotNull(exception);
+            Assert.IsTrue(results.ErrorsOccurred);
         }
 
         /// <summary>
         /// Test ImportMoqTables throws exception when ws is null
         /// </summary>
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
-        public void ImportMoqTables_Test_CaughtException_NullWs()
+        public async void ImportMoqTables_Test_CaughtException_NullWs()
         {
             BOELaborControllerLogic sut = CreateSystem();
 
             Mock<HttpRequestBase> request = new Mock<HttpRequestBase>();
 
-            ICollection<ImportMoqTableResultsModelView> results = sut.ImportMoqTables(null, request.Object, out ICollection<ImportMoqTableResultsModelView> dataToSave, out bool errorsOccurred, out Exception exception);
+			ImportMoqTableResultDataModelView results = await sut.ImportMoqTables(null, request.Object);
         }
 
         /// <summary>
         /// Test ImportMoqTables throws exception when request is null
         /// </summary>
         [TestMethod, ExpectedException(typeof(ArgumentNullException))]
-        public void ImportMoqTables_Test_CaughtException_NullRequest()
+        public async void ImportMoqTables_Test_CaughtException_NullRequest()
         {
             BOELaborControllerLogic sut = CreateSystem();
 
             WorkspaceDTO workspace = new WorkspaceDTO { Id = 1 };
             FullWorkspace ws = new FullWorkspace(workspace);
 
-            ICollection<ImportMoqTableResultsModelView> results = sut.ImportMoqTables(ws, null, out ICollection<ImportMoqTableResultsModelView> dataToSave, out bool errorsOccurred, out Exception exception);
+			ImportMoqTableResultDataModelView results = await sut.ImportMoqTables(ws, null);
         }
 
         /// <summary>

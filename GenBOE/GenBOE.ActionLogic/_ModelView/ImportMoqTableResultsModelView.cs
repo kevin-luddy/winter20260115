@@ -7,7 +7,8 @@
 namespace GenBOE.ActionLogic.ModelView
 {
     using System;
-    using GenBOE.ActionLogic.IO.Import;
+	using System.Collections.Generic;
+	using GenBOE.ActionLogic.IO.Import;
     using IES.Common;
 
     public class ImportMoqTableResultsModelView : MoqTableData
@@ -15,7 +16,7 @@ namespace GenBOE.ActionLogic.ModelView
         public ImportMoqTableResultsModelView()
             :base ()
         {
-        }
+		}
 
         public ImportMoqTableResultsModelView(ImportedMoqTable table, MoqTableImportType importType)
             :base ()
@@ -49,5 +50,10 @@ namespace GenBOE.ActionLogic.ModelView
         /// Import type - either create or error type
         /// </summary>
         public int ImportType { get; set; }
+
+		/// <summary>
+		/// Error messages from SAP validation/calculation
+		/// </summary>
+		public ICollection<string> ErrorMessages { get; set; } = new List<string>();
     }
 }

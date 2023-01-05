@@ -1355,7 +1355,7 @@ namespace GenBOE.Web.Controllers
         /// <param name="taskElementID">Task ID</param>
         /// <returns>View with imported MOQ Table data</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "moqTypeId")]
-        public ViewResult ImportMoqTables(string workspace, int taskElementID)
+        public async Task<ViewResult> ImportMoqTables(string workspace, int taskElementID)
         {
             FullWorkspace ws = this.Factory.CreateFullWorkspace(workspace);
             BoeTaskElementDTO taskElement = this.Factory.CreateTaskElement(taskElementID, ws.DecimalPrecision, ws.CostDecimalPrecision); 
@@ -1365,18 +1365,13 @@ namespace GenBOE.Web.Controllers
 
             JavaScriptSerializer serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
 
-            ICollection<ImportMoqTableResultsModelView> importResults = this._BoeLaborControllerLogic.ImportMoqTables(ws, Request, out ICollection<ImportMoqTableResultsModelView> dataToSave, out bool errorsOccurred, out Exception ex);
+			ImportMoqTableResultDataModelView importResults = await this._BoeLaborControllerLogic.ImportMoqTables(ws, Request);
 
-            this.ViewData["ERRORS_OCCURRED"] = errorsOccurred;
-            this.ViewData["SERIALIZED_DATA"] = serializer.Serialize(dataToSave);
+            this.ViewData["ERRORS_OCCURRED"] = importResults.ErrorsOccurred;
+            this.ViewData["SERIALIZED_DATA"] = serializer.Serialize(importResults.DataToSave());
             this.ViewData["DOCUMENT_DOMAIN"] = this.Request["documentDomain"];
 
-            if (errorsOccurred)
-            {
-                this._log.Error(ex);
-            }
-
-            ViewResult toReturn = this.View(WebConstants.VIEW_MOQ_TABLE_IMPORT_VERIFICATION, importResults);
+            ViewResult toReturn = this.View(WebConstants.VIEW_MOQ_TABLE_IMPORT_VERIFICATION, importResults.Result);
 
             // Finalize Action
             FinalizeAction(_log, WebConstants.ACTION_IMPORT_MOQ_TABLES, sw);
