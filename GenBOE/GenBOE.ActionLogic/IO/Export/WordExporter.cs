@@ -811,7 +811,7 @@ namespace GenBOE.ActionLogic.IO.Export
 		internal IDictionary<string, IList<string>> GetEmployeeIds(string filter)
         {
             IDictionary<string, IList<string>> toReturn = new Dictionary<string, IList<string>>();
-			filter = filter ?? String.Empty;
+            filter = filter ?? String.Empty;
             IList<string> filterComponents = filter.Split(new string[] { "\n" }, StringSplitOptions.None).ToList();
             IList<string> employeeIdFilters = filterComponents.Where(x => x.StartsWith(BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL) || x.StartsWith("( " + BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL)).ToList();
 
