@@ -1281,6 +1281,11 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
         }
     }
 
+    $scope.SetTableDirty = function (tableData) {
+        $scope.actualsValidation.isDirty.set(tableData.Id, true);
+        $scope.refreshDisableSave();
+    };
+
     $scope.UpdateRepository = function (tableData) {
         if (tableData.RepositoryNameSelection == $scope.model.SapWebiRepository) {
             $scope.actualsValidation.isDirty.set(tableData.Id, true); 
