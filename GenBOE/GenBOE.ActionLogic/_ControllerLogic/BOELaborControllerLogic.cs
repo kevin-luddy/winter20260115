@@ -3570,8 +3570,12 @@ namespace GenBOE.ActionLogic.ControllerLogic
             {
 				// COnvert into SAP API params
 				string sapRepo = RepositoryName.SapWebi.GetDescription();
-				ICollection<MoqTableDataModelView> validRows = dataToSave.Where(x => SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST ||
-					x.RepositoryName == sapRepo).Select(d =>
+
+				ImportMoqTableResultsModelView[] dataToSaveArray = dataToSave.Where(x => SystemConfiguration.Instance().CompanyMode == IES.Common.CompanyConfiguration.MST ||
+					x.RepositoryName == sapRepo).ToArray();
+
+				int index = 0;
+				ICollection<MoqTableDataModelView> validRows = dataToSave.Select(d =>
 						new MoqTableDataModelView
 						{
 							WbsElement = d.WbsElement,
@@ -3581,21 +3585,22 @@ namespace GenBOE.ActionLogic.ControllerLogic
 							PoPStartFW = d.SAPApiPoPStartString,
 							PoPEndFW = d.SAPApiPoPEndString,
 							Filters = d.AdditionalQueryFilters,
-							TableId = (d.TableName ?? string.Empty).GetHashCode()
+							TableId = index++
 						}).ToList();
 
 				// run SAP Validation/Calculation and update correct fields
 				if (validRows.Any())
 				{
+					
 					ICollection<IESResponse<CalculateActualsViewModel>> sapResults = await this.CalculateAllActualsSap(validRows);
 					foreach (IESResponse<CalculateActualsViewModel> sapResult in sapResults)
 					{
 						CalculateActualsViewModel calculateActualsViewModel = sapResult.Data.FirstOrDefault();
-						// the id's are all -1, so we need to match by table name instead
-						ImportMoqTableResultsModelView modelView = resultData.Result.FirstOrDefault(r => (r.TableName ?? string.Empty).GetHashCode() == calculateActualsViewModel?.TableId);
-
-						if (modelView != null && calculateActualsViewModel != null)
+						if (calculateActualsViewModel != null && calculateActualsViewModel.TableId >= 0 && calculateActualsViewModel.TableId < dataToSaveArray.Length)
 						{
+							// match by the tableId to the index in the array
+							ImportMoqTableResultsModelView modelView = dataToSaveArray[calculateActualsViewModel.TableId];
+
 							if (sapResult.IsSuccessful)
 							{
 								// update the totals and date
