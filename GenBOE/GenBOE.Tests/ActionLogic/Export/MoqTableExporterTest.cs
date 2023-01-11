@@ -312,14 +312,14 @@ namespace GenBOE.Tests.ActionLogic.Export
                 Assert.AreEqual(expected.ElementAt(i).TableName, results.ElementAt(i).TableName);
                 Assert.AreEqual(expected.ElementAt(i).RepositoryName, results.ElementAt(i).RepositoryName);
                 Assert.AreEqual(expected.ElementAt(i).QueryType, results.ElementAt(i).QueryType);
-                Assert.AreEqual(expected.ElementAt(i).DateOfReport, results.ElementAt(i).DateOfReport);
+                Assert.AreEqual(expected.ElementAt(i).DateOfReport.Normalize(DateTimePrecision.Day), results.ElementAt(i).DateOfReport);
                 Assert.AreEqual(expected.ElementAt(i).HistoricalProgramName, results.ElementAt(i).HistoricalProgramName);
                 Assert.AreEqual(expected.ElementAt(i).ContractNumber, results.ElementAt(i).ContractNumber);
                 Assert.AreEqual(expected.ElementAt(i).WbsElement, results.ElementAt(i).WbsElement);
-                Assert.AreEqual(expected.ElementAt(i).PoPStart, results.ElementAt(i).PoPStart);
-                Assert.AreEqual(expected.ElementAt(i).PoPEnd, results.ElementAt(i).PoPEnd);
+				Assert.AreEqual(expected.ElementAt(i).QueryType == MoqTableData.WEEKLY ? expected.ElementAt(i).PoPStart : expected.ElementAt(i).PoPStart.Normalize(DateTimePrecision.Day), results.ElementAt(i).PoPStart);
+				Assert.AreEqual(expected.ElementAt(i).QueryType == MoqTableData.WEEKLY ? expected.ElementAt(i).PoPEnd : expected.ElementAt(i).PoPEnd.Normalize(DateTimePrecision.Day), results.ElementAt(i).PoPEnd);
 				// TotalWbsHours will be overridden with a call to SAP Api
-                Assert.AreEqual(expected.ElementAt(i).AdditionalQueryFilters, results.ElementAt(i).AdditionalQueryFilters);
+				Assert.AreEqual(expected.ElementAt(i).AdditionalQueryFilters, results.ElementAt(i).AdditionalQueryFilters);
                 Assert.AreEqual(expected.ElementAt(i).TotalRelevantHours, results.ElementAt(i).TotalRelevantHours);
                 Assert.AreEqual(expected.ElementAt(i).MOQTypeSelectionId, results.ElementAt(i).MOQTypeSelectionId);
                 Assert.AreEqual(expected.ElementAt(i).CustomFieldValueContainers.Count(), results.ElementAt(i).CustomFieldValueContainers.Count());
