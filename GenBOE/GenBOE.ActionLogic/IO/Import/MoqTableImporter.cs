@@ -44,14 +44,15 @@ namespace GenBOE.ActionLogic.IO.Import
 
         internal const string IMPORT_TAB = "MOQ Tables";
 
-        protected virtual List<string> REQUIRED_COLUMNS  => new List<string> { TABLE_NAME, REPOSITORY_NAME, QUERY_TYPE, DATE_OF_REPORT, HISTORICAL_PROGRAM_NAME, WBS_ELEMENT, START_DATE, END_DATE, EMPLOYEE_ID_FILTERS, TOTAL_RELEVANT_HOURS_SSC };
+        protected virtual List<string> REQUIRED_COLUMNS  => new List<string> { TABLE_NAME, REPOSITORY_NAME, QUERY_TYPE, DATE_OF_REPORT, HISTORICAL_PROGRAM_NAME, WBS_ELEMENT, START_DATE, END_DATE };
+		protected virtual List<string> ALL_COLUMNS => new List<string> { TABLE_NAME, REPOSITORY_NAME, QUERY_TYPE, DATE_OF_REPORT, HISTORICAL_PROGRAM_NAME, WBS_ELEMENT, START_DATE, END_DATE, EMPLOYEE_ID_FILTERS, TOTAL_RELEVANT_HOURS_SSC };
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// construtor
-        /// </summary>
-        public MoqTableImporter()
+		/// <summary>
+		/// construtor
+		/// </summary>
+		public MoqTableImporter()
         {
         }
 
@@ -74,7 +75,7 @@ namespace GenBOE.ActionLogic.IO.Import
 
                     using (SpreadsheetDocument document = SpreadsheetDocument.Open(excelFileStream, false))
                     {
-                        IList<string> allColumns = this.REQUIRED_COLUMNS;
+                        IList<string> allColumns = this.ALL_COLUMNS;
                         IList<string> requiredColumns = this.REQUIRED_COLUMNS;
 
                         ICollection<CustomFieldDTO> customFields = ws.CustomFields.Where(x => x.CustomFieldDisplayID == CustomFieldType.MoqTypeTableDataDisplay).ToCollection();
@@ -353,22 +354,25 @@ namespace GenBOE.ActionLogic.IO.Import
                 moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
             }
 
-            // Total Relevant Hours
-            if (row.ContainsKey(TOTAL_RELEVANT_HOURS_SSC) && !string.IsNullOrEmpty(row[TOTAL_RELEVANT_HOURS_SSC]))
-            {
-                if (decimal.TryParse(row[TOTAL_RELEVANT_HOURS_SSC], out decimal totalRelevantHours))
-                {
-                    moqTable.TotalRelevantHours = totalRelevantHours;
-                }
-                else
-                {
-                    moqTable.ImportTypes.Add(MoqTableImportType.InvalidTotalRelevantHours);
-                }
-            }
-            else if (!moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
-            {
-                moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
-            }
+			// Total Relevant Hours 
+			if (!Utilities.IsSAPEnabled)
+			{
+				if (row.ContainsKey(TOTAL_RELEVANT_HOURS_SSC) && !string.IsNullOrEmpty(row[TOTAL_RELEVANT_HOURS_SSC]))
+				{
+					if (decimal.TryParse(row[TOTAL_RELEVANT_HOURS_SSC], out decimal totalRelevantHours))
+					{
+						moqTable.TotalRelevantHours = totalRelevantHours;
+					}
+					else
+					{
+						moqTable.ImportTypes.Add(MoqTableImportType.InvalidTotalRelevantHours);
+					}
+				}
+				else if (!moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
+				{
+					moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
+				}
+			}
         }
 
         /// <summary>
