@@ -59,9 +59,9 @@
                         </colgroup>
                         <thead>
                             <tr>
-								<th class="bootstrap"><a data-ng-click="changeSorting(columns.boe)" data-ng-class="{ 'bold': boldSort(columns.boe) }">Boe</a></th>
-								<th class="bootstrap"><a data-ng-click="changeSorting(columns.task)" data-ng-class="{ 'bold': boldSort(columns.task) }">Task</a></th>
-								<th class="bootstrap"><a data-ng-click="changeSorting(columns.table)" data-ng-class="{ 'bold': boldSort(columns.table) }">Table</a></th>
+								<th class="bootstrap"><a data-ng-click="changeSorting(columns.boe)" data-ng-class="{ 'bold': boldSort(columns.boe) }">Boe Title</a></th>
+								<th class="bootstrap"><a data-ng-click="changeSorting(columns.task)" data-ng-class="{ 'bold': boldSort(columns.task) }">Task Title</a></th>
+								<th class="bootstrap"><a data-ng-click="changeSorting(columns.table)" data-ng-class="{ 'bold': boldSort(columns.table) }">Table Name</a></th>
                                 <th class="bootstrap"><a data-ng-click="changeSorting(columns.boeState)" data-ng-class="{ 'bold': boldSort(columns.boePrevState) }">Boe Previous State</a></th>
 								 <% if (IES.Common.classes.SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.MST) 
 								   {  %>
