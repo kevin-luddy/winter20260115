@@ -1283,7 +1283,8 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
     $scope.SetTableDirty = function (tableData) {
         $scope.actualsValidation.isDirty.set(tableData.Id, true);
-        $scope.refreshDisableSave();
+		$scope.refreshDisableSave();
+		MOQEquationFieldWidget.setDirty();
     };
 
     $scope.UpdateRepository = function (tableData) {
