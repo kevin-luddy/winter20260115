@@ -164,7 +164,7 @@ namespace GenBOE.ActionLogic.IO.Import
                 {
                     if (dateOfReport <= DateTime.Now)
                     {
-                        toReturn.DateOfReport = dateOfReport;
+                        toReturn.DateOfReport = dateOfReport.Normalize(DateTimePrecision.Day);
                     }
                     else
                     {
@@ -220,7 +220,7 @@ namespace GenBOE.ActionLogic.IO.Import
                     bool validStartDate = DateTime.TryParse(row[START_DATE], out popStartDate);
                     if (validStartDate && popStartDate <= DateTime.Now)
                     {
-                        toReturn.PoPStart = popStartDate;
+                        toReturn.PoPStart = popStartDate.Normalize(DateTimePrecision.Day);
                     }
                     else
                     {
@@ -258,7 +258,7 @@ namespace GenBOE.ActionLogic.IO.Import
                     bool validEndDate = DateTime.TryParse(row[END_DATE], out popEndDate);
                     if (validEndDate && popEndDate <= DateTime.Now)
                     {
-                        toReturn.PoPEnd = popEndDate;
+                        toReturn.PoPEnd = popEndDate.Normalize(DateTimePrecision.Day);
                     }
                     else
                     {

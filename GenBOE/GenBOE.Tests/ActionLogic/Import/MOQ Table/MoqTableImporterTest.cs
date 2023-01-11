@@ -230,11 +230,11 @@ namespace GenBOE.Tests.ActionLogic.Import
             Assert.AreEqual(expected.TableName, result.TableName);
             Assert.AreEqual(expected.RepositoryName, result.RepositoryName);
             Assert.AreEqual(expected.QueryType, result.QueryType);
-            Assert.AreEqual(expected.DateOfReport, result.DateOfReport);
+            Assert.AreEqual(expected.DateOfReport.Normalize(DateTimePrecision.Day), result.DateOfReport);
             Assert.AreEqual(expected.HistoricalProgramName, result.HistoricalProgramName);
             Assert.AreEqual(expected.WbsElement, result.WbsElement);
-            Assert.AreEqual(expected.PoPStart, result.PoPStart);
-            Assert.AreEqual(expected.PoPEnd, result.PoPEnd);
+            Assert.AreEqual(expected.QueryType == MoqTableData.WEEKLY ? expected.PoPStart : expected.PoPStart.Normalize(DateTimePrecision.Day), result.PoPStart);
+            Assert.AreEqual(expected.QueryType == MoqTableData.WEEKLY ? expected.PoPEnd : expected.PoPEnd.Normalize(DateTimePrecision.Day), result.PoPEnd);
             Assert.AreEqual(expected.AdditionalQueryFilters, result.AdditionalQueryFilters);
             Assert.AreEqual(expected.TotalRelevantHours, result.TotalRelevantHours);
             Assert.AreEqual(expected.ContractNumber, result.ContractNumber);
