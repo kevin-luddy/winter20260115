@@ -559,7 +559,7 @@
                     <div class="title">Step 2: Enter/Update MOQ Tables in the file</div>
                     <div>Enter new MOQ Tables into the file or update existing MOQ Tables. </div>
                     <div>All columns besides custom fields are required. Custom field columns may be required or optional. </div>
-                    <div data-ng-if="model.IsRMS">Date of Report, PoP Start Date, and PoP End date must be in the format m/yyyy or mm/yyyy</div>
+                    <div data-ng-if="model.IsRMS">Date of Report, PoP Start Date, and PoP End date must be in the format mm/dd/yyyy or m/d/yyyy.</div>
                     <div data-ng-if="!model.IsRMS">
                         <div>Date of Report must be in the format m/yyyy or mm/yyyy</div>
                         <div>For Weekly Query Type, PoP Start Date and PoP End date must be in the format fw/yyyy</div>
