@@ -16,12 +16,13 @@
     $scope.createBOEsDisabled = true;
     $scope.containsOCI = true;
     $scope.availableClins = [];
-    $scope.isExporting = false;
+	$scope.isExporting = false;
+	$scope.hasLoaded = false;
     // Calculate Actuals can be done when workspace state is Working
 	$scope.isWorkingState = WorkspaceCalculateActualsModel.workspaceState === 'Working';
 	
     $scope.data = [];
-    $scope.isLoading = true;
+    $scope.isLoading = false;
 
 	$scope.reverse = false;
 	$scope.predicate = [$scope.columns.order];
@@ -76,36 +77,29 @@
         return $scope.predicate[0] === sortColumn;
     };
 
-    $scope.numberOfPages = function (numFilteredRows) {
-        const totalRows = angular.isDefined(numFilteredRows) ? numFilteredRows.length : 0;
-        return Math.ceil(totalRows / $scope.pageSize);
-    }
+	$scope.numberOfPages = function (numFilteredRows) {
+		const totalRows = angular.isDefined(numFilteredRows) ? numFilteredRows.length : 0;
+		return Math.ceil(totalRows / $scope.pageSize);
+	};
 
-    /*
-     * *********** NOTE ************
-     * Private variables & functions 
-     * *****************************
-     */
-    let loadActuals = function () {
-        $scope.isLoading = true;
-        $scope.data = [];
-        $scope.errors = [];
+	$scope.recalculate = function () {
+		$scope.isLoading = true;
+		$scope.data = [];
+		$scope.errors = [];
 
-        return $http({
-            method: 'POST',
+		return $http({
+			method: 'POST',
 			url: CreatePostURL(WorkspaceCalculateActualsModel.workspace, WorkspaceCalculateActualsModel.controller, WorkspaceCalculateActualsModel.action, '')
-        }).then(function (response) {
+		}).then(function (response) {
 
 			$scope.data = response.data;
 
 			$scope.isLoading = false;
-            
-        }, function errorCallback(response) {
-            $scope.errors = response.data.MessageList;
-            $scope.isLoading = false;
-        });
-    }    
+			$scope.hasLoaded = true;
 
-    // load the main data
-	loadActuals();
+		}, function errorCallback(response) {
+			$scope.errors = response.data.MessageList;
+			$scope.isLoading = false;
+		});
+	};
 }]);
