@@ -311,10 +311,21 @@
     /**
     * Wraps the jQuery UI datepicker in a directive.
     * 
-    * @example <gen-datepicker></gen-datepicker>
+    * @example <gendatepicker></gendatepicker>
     */
-    .directive('genDatepicker', function () {
-    })
+	.directive('gendatepicker', function () {
+		return {
+			restrict: 'A',
+			require: 'ngModel',
+			link: function (scope, element, attrs, ctrl) {
+				$(element).datepicker({
+					dateFormat: 'mm/dd/yy',
+					showButtonPanel: false,
+					showOn: "button"
+				});
+			}
+		};
+	})
 
     /**
     * Wraps the jQuery UI datepicker in a directive to be used for monthly datepicker inside ui-grid.

@@ -483,9 +483,36 @@ namespace GenBOE.Tests.ActionLogic.Export
 			Assert.IsFalse(output.Contains("234567"));
 		}
 
-        #region Helper Methods
+        /// <summary>
+        /// Test masking of employee ids for RMS - all but the last 3 characters should be replaced
+        /// </summary>
+        [TestMethod]
+        public void WordExporter_MaskRmsEmployeeIds_Test()
+        {
+            // Test for single ID
+			WordExporter wordExporter = new BOEExporter(null, null, null, null, null, null);
+			string filters = $"{BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL} = 123456";
+			IDictionary<string, IList<string>> employeeIdFilters = wordExporter.GetEmployeeIds(filters);
+			string output = wordExporter.MaskRmsEmployeeIds(employeeIdFilters, filters);
 
-        private void AssertValueByMonthDeepEquality<T>(ValuesByMonth<T> original, ValuesByMonth<T> compare) where T : struct
+			Assert.IsFalse(output.Contains("123456"));
+			Assert.IsTrue(output.Contains("***456"));
+
+            // Test for multiple IDs
+			filters = $"{BOEExporterConstants.EMPLOYEE_ID_FILTERS_LABEL} = 123456, 12345678, 123";
+			employeeIdFilters = wordExporter.GetEmployeeIds(filters);
+			output = wordExporter.MaskRmsEmployeeIds(employeeIdFilters, filters);
+
+			Assert.IsFalse(output.Contains("123456"));
+			Assert.IsFalse(output.Contains("123456789"));
+			Assert.IsTrue(output.Contains("***456"));
+			Assert.IsTrue(output.Contains("*****678"));
+			Assert.IsTrue(output.Contains("123"));
+		}
+
+		#region Helper Methods
+
+		private void AssertValueByMonthDeepEquality<T>(ValuesByMonth<T> original, ValuesByMonth<T> compare) where T : struct
         {
             Assert.AreEqual(original.January, compare.January);
             Assert.AreEqual(original.February, compare.February);
