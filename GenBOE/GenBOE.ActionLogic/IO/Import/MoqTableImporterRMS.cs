@@ -73,6 +73,11 @@ namespace GenBOE.ActionLogic.IO.Import
             {
                 moqTable.AdditionalQueryFilters = row[ADDITIONAL_QUERY_FILTERS];
             }
+			else if (!Utilities.IsSAPEnabled && !moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
+			{
+				// Additional Query Filters is required if SAP is disabled 
+				moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
+			}
 
 			// Total WBS/WBS Element Hours
 			if (!Utilities.IsSAPEnabled)

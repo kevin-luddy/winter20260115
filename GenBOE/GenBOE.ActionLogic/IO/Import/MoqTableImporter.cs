@@ -349,8 +349,10 @@ namespace GenBOE.ActionLogic.IO.Import
             {
                 moqTable.AdditionalQueryFilters = row[EMPLOYEE_ID_FILTERS];
             }
-            else if (!moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField))
+            else if (!moqTable.ImportTypes.Contains(MoqTableImportType.MissingRequiredField) &&
+				(!Utilities.IsSAPEnabled || moqTable.RepositoryName != RepositoryName.SapWebi.GetDescription()))
             {
+				// Employee ID filter is required if SAP is disabled or if Repo is not set to SAP/Webi
                 moqTable.ImportTypes.Add(MoqTableImportType.MissingRequiredField);
             }
 

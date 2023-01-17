@@ -1233,12 +1233,21 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
 
     $scope.ValidatePopStart = function (date) {
         // validate PoP Start is on a Monday (1)
-        return typeof date !== "undefined" && date.getDay() != 1;
+		if (!$scope.model.SAPEnabled) {
+			return false; // true means invalid
+		} else {
+			return typeof date !== "undefined" && date.getDay() != 1;
+		}
     }
 
     $scope.ValidatePopEnd = function (date) {
         // validate PoP End is on a Sunday (0)
-        return typeof date !== "undefined" && date.getDay() != 0;
+		// validate PoP Start is on a Monday (1)
+		if (!$scope.model.SAPEnabled) {
+			return false; // true means invalid
+		} else {
+			return typeof date !== "undefined" && date.getDay() != 0;
+		}
     }
 
     $scope.RefreshPoPMonths = function (popStart, popEnd) {
@@ -1281,9 +1290,11 @@ moqEquationApp.controller('MoqEquationController', ['$scope', '$uibModal', '$win
         }
     }
 
-    $scope.SetTableDirty = function (tableData) {
-        $scope.actualsValidation.isDirty.set(tableData.Id, true);
-		$scope.refreshDisableSave();
+	$scope.SetTableDirty = function (tableData) {
+		if (IsSapEnabledAndSetAsRepository(tableData.RepositoryName)) {
+			$scope.actualsValidation.isDirty.set(tableData.Id, true);
+			$scope.refreshDisableSave();
+		}
 		MOQEquationFieldWidget.setDirty();
     };
 
