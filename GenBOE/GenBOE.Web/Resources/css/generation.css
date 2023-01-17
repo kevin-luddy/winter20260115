@@ -2568,18 +2568,17 @@ div#LaborTypeWarningFlag .warning-message
     width: 100%;
 }
 
-.lmlogo
-{
-    background: transparent url(/Resources/css/images/homepage/LM_logo.png) repeat-x 0 center;
+.lmlogo {
+    background: transparent url(/Resources/css/images/homepage/LM-logo-White.png) repeat-x 0 center;
     height: 60px;
     width: 203px;
     margin-right: 20px;
     margin-top: -5px !important;
     display: inline-block;
-    *display: inline;
-    *zoom: 1;
-
+    display: inline;
+    zoom: 1;
     float: right;
+    filter: invert(1);
 }
 .home .validation-box li
 {

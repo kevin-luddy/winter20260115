@@ -1014,6 +1014,7 @@ div.peerComments{
     float: right;
     padding-top: 5px;
     width: 200px;
+    filter: invert(1);
 }
 
 .ptm-logo-header {

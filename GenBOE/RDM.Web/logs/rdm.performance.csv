@@ -5102,3 +5102,46 @@
 1/16/2023 4:18:49 PM,US\e436851,MISS - GetAll -> Key: get_all_revisions,1193
 1/16/2023 4:18:49 PM,US\e436851,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,1194
 1/16/2023 4:18:49 PM,US\e436851,ACTION - GetRevisions,1208
+1/17/2023 9:40:54 AM,US\e436851,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+1/17/2023 9:40:56 AM,US\e436851,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,2402
+1/17/2023 9:42:05 AM,US\e436851,ACTION - Index,68666
+1/17/2023 9:42:08 AM,US\e436851,BEGIN - IES.DataBridge.Loaders.RateConfigLoader.GetAll ,0
+1/17/2023 9:42:09 AM,US\e436851,IES.DataBridge.Loaders.RateConfigLoader.GetAll ,970
+1/17/2023 9:42:11 AM,US\e436851,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+1/17/2023 9:42:11 AM,US\e436851,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+1/17/2023 9:42:11 AM,US\e436851,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,474
+1/17/2023 9:42:11 AM,US\e436851,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+1/17/2023 9:42:11 AM,US\e436851,BEGIN - IES.DataBridge.Loaders.RevisionLoader.GetAll ,0
+1/17/2023 9:42:12 AM,US\e436851,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,1850
+1/17/2023 9:42:12 AM,US\e436851,ACTION - GetMenuOptions,40
+1/17/2023 9:42:13 AM,US\e436851,IES.DataBridge.Loaders.RevisionLoader.GetAll ,2099
+1/17/2023 9:42:13 AM,US\e436851,MISS - GetAll -> Key: get_all_revisions,2104
+1/17/2023 9:42:13 AM,US\e436851,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,2106
+1/17/2023 9:42:13 AM,US\e436851,ACTION - GetRevisions,2124
+1/17/2023 9:45:48 AM,US\e436851,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+1/17/2023 9:45:50 AM,US\e436851,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,2148
+1/17/2023 9:46:58 AM,US\e436851,ACTION - Index,68273
+1/17/2023 9:47:00 AM,US\e436851,BEGIN - IES.DataBridge.Loaders.RateConfigLoader.GetAll ,0
+1/17/2023 9:47:01 AM,US\e436851,IES.DataBridge.Loaders.RateConfigLoader.GetAll ,804
+1/17/2023 9:47:01 AM,US\e436851,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+1/17/2023 9:47:01 AM,US\e436851,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+1/17/2023 9:47:01 AM,US\e436851,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,331
+1/17/2023 9:47:01 AM,US\e436851,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+1/17/2023 9:47:01 AM,US\e436851,BEGIN - IES.DataBridge.Loaders.RevisionLoader.GetAll ,0
+1/17/2023 9:47:02 AM,US\e436851,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,1078
+1/17/2023 9:47:02 AM,US\e436851,ACTION - GetMenuOptions,43
+1/17/2023 9:47:03 AM,US\e436851,IES.DataBridge.Loaders.RevisionLoader.GetAll ,1289
+1/17/2023 9:47:03 AM,US\e436851,MISS - GetAll -> Key: get_all_revisions,1294
+1/17/2023 9:47:03 AM,US\e436851,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,1295
+1/17/2023 9:47:03 AM,US\e436851,ACTION - GetRevisions,1310
+1/17/2023 9:47:10 AM,US\e436851,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+1/17/2023 9:47:11 AM,US\e436851,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,284
+1/17/2023 9:47:11 AM,US\e436851,ACTION - Index,0
+1/17/2023 9:47:11 AM,US\e436851,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+1/17/2023 9:47:11 AM,US\e436851,BEGIN - IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,0
+1/17/2023 9:47:12 AM,US\e436851,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,272
+1/17/2023 9:47:12 AM,US\e436851,BEGIN - IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,0
+1/17/2023 9:47:12 AM,US\e436851,IES.ActionLogic.Mediator.RevisionMediator.GetAll DataMapper.GetById,1
+1/17/2023 9:47:12 AM,US\e436851,ACTION - GetRevisions,3
+1/17/2023 9:47:12 AM,US\e436851,IES.DataBridge.Loaders.WhosOnlineLoader.UpdateLastAccessTime ,407
+1/17/2023 9:47:12 AM,US\e436851,ACTION - GetMenuOptions,0
