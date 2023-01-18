@@ -516,14 +516,22 @@ namespace GenBOE.Web.Controllers
 			{
 				tokenHandler.AuthenticateUserFromAuthorizationToken();
 
-				FullWorkspace workspace = this.Factory.CreateFullWorkspace(workspaceShortName);
-				result.Data = new Collection<bool>() { workspace.ContainsOCI };
-				result.IsSuccessful = true;
+				bool? containsOci = loader.GetWorkspaceOciSettingByShortname(workspaceShortName);
+
+				if (containsOci != null)
+				{
+					result.Data = new Collection<bool>() { containsOci.Value };
+					result.IsSuccessful = true;
+				}
+				else
+				{
+					result.Messages.Add("Unable to retrieve OCI setting.");
+				}
 			}
 			catch (Exception ex)
 			{
 				logger.Error(ex);
-				result.Messages.Add($"Unknown Error occurred returning OCI data: {ex.Message}");
+				result.Messages.Add($"Unknown Error occurred returning OCI setting data: {ex.Message}");
 			}
 
 			return result;

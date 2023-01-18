@@ -714,6 +714,31 @@ namespace GenBOE.DataBridge.DTO
             return tempWorkspaceId;
         }
 
+		/// <summary>
+		/// Get the ContainsOCI setting for the given workspace
+		/// </summary>
+		/// <param name="shortName">workspace shortname</param>
+		/// <returns>ContainsOCI setting</returns>
+		[DbQuery]
+        public bool? GetWorkspaceOciSettingByShortname(string shortName)
+        {
+            bool? containsOci = null;
+
+            if (!string.IsNullOrWhiteSpace(shortName))
+            {
+                using (StopwatchTimer sw = new StopwatchTimer(this.Log))
+                {
+                    using (GenBoeEntities gbe = new GenBoeEntities())
+                    {
+                        containsOci = (from w in gbe.Workspaces.Where(w => w.WorkspaceShortName == shortName)
+                                       select w.ContainsOCI).FirstOrDefault();
+                    }
+                }
+            }
+
+            return containsOci;
+        }
+
         #endregion
 
         #region Commits
