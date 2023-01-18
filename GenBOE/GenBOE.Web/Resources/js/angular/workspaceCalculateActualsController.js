@@ -83,6 +83,14 @@
 	};
 
 	$scope.recalculate = function () {
+		GenSession.confirmDialog("Recalculate Workspace Actuals", "This is a long running process and will recalculate the actuals on each MOQ table in this workspace.  If changes are found, it will implement the changes and list the changes made in the table below.  If a change is found and implemented, the BOE status will be reset to Draft.",
+			function () {
+				loadActuals();
+			}
+			, null);
+	};
+
+	let loadActuals = function () {
 		$scope.isLoading = true;
 		$scope.data = [];
 		$scope.errors = [];
