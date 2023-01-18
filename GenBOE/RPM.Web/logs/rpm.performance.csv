@@ -194,3 +194,23 @@
 1/17/2023 9:38:48 AM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,256
 1/17/2023 9:47:45 AM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
 1/17/2023 9:47:45 AM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/17/2023 3:31:53 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/17/2023 3:31:53 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/17/2023 3:31:55 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,2135
+1/17/2023 3:31:55 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/17/2023 3:31:55 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,69
+1/17/2023 3:31:56 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/17/2023 3:31:56 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,390
+1/17/2023 3:31:56 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/17/2023 3:31:56 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,143
+1/17/2023 3:31:56 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,2979
+1/18/2023 11:59:25 AM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/18/2023 11:59:25 AM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/18/2023 11:59:27 AM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,2332
+1/18/2023 11:59:27 AM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/18/2023 11:59:27 AM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,62
+1/18/2023 11:59:27 AM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/18/2023 11:59:27 AM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,145
+1/18/2023 11:59:27 AM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/18/2023 11:59:27 AM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,144
+1/18/2023 11:59:27 AM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,2899
