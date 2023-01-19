@@ -234,3 +234,245 @@
 1/18/2023 7:56:15 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
 1/18/2023 7:56:15 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,103
 1/18/2023 7:56:15 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,307
+1/19/2023 2:38:56 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 2:38:56 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 2:39:00 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,3556
+1/19/2023 2:39:00 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 2:39:00 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,66
+1/19/2023 2:39:00 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 2:39:00 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,241
+1/19/2023 2:39:00 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 2:39:00 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,138
+1/19/2023 2:39:00 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,4465
+1/19/2023 2:39:34 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 2:39:34 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 2:39:37 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,2967
+1/19/2023 2:39:37 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 2:39:37 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,69
+1/19/2023 2:39:37 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 2:39:37 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,138
+1/19/2023 2:39:37 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 2:39:38 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,144
+1/19/2023 2:39:38 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,3759
+1/19/2023 2:39:54 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 2:39:54 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 2:39:57 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 2:39:57 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 2:39:57 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,3171
+1/19/2023 2:39:57 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 2:39:57 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,61
+1/19/2023 2:39:57 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 2:39:58 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,160
+1/19/2023 2:39:58 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 2:39:58 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,639
+1/19/2023 2:39:58 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 2:39:58 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,67
+1/19/2023 2:39:58 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 2:39:58 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,67
+1/19/2023 2:39:58 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 2:39:58 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,137
+1/19/2023 2:39:58 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,3983
+1/19/2023 2:39:58 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,89
+1/19/2023 2:39:58 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,866
+1/19/2023 2:40:21 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 2:40:21 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 2:40:24 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 2:40:24 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 2:40:24 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,3138
+1/19/2023 2:40:24 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 2:40:24 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,60
+1/19/2023 2:40:24 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 2:40:25 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,140
+1/19/2023 2:40:25 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 2:40:25 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,632
+1/19/2023 2:40:25 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 2:40:25 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,63
+1/19/2023 2:40:25 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 2:40:25 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,69
+1/19/2023 2:40:25 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 2:40:25 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,151
+1/19/2023 2:40:25 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,3945
+1/19/2023 2:40:25 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,105
+1/19/2023 2:40:25 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,888
+1/19/2023 2:40:58 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 2:40:58 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 2:41:00 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 2:41:00 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 2:41:03 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,5115
+1/19/2023 2:41:03 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 2:41:03 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,2644
+1/19/2023 2:41:03 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 2:41:03 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,69
+1/19/2023 2:41:03 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 2:41:03 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,74
+1/19/2023 2:41:03 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 2:41:03 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,153
+1/19/2023 2:41:03 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 2:41:03 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,148
+1/19/2023 2:41:03 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 2:41:03 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,179
+1/19/2023 2:41:03 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,178
+1/19/2023 2:41:03 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,3046
+1/19/2023 2:41:03 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,6692
+1/19/2023 3:01:55 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:01:55 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:02:16 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:02:16 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:02:20 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,4244
+1/19/2023 3:02:20 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 3:02:20 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,65
+1/19/2023 3:02:20 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 3:02:21 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,290
+1/19/2023 3:02:21 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 3:02:21 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,155
+1/19/2023 3:02:21 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,5212
+1/19/2023 3:02:45 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:02:45 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:02:48 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,2997
+1/19/2023 3:02:48 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 3:02:48 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,62
+1/19/2023 3:02:48 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 3:02:48 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,146
+1/19/2023 3:02:48 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 3:02:48 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,179
+1/19/2023 3:02:48 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,3845
+1/19/2023 3:03:13 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:03:13 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:03:17 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,3214
+1/19/2023 3:03:17 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 3:03:17 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,64
+1/19/2023 3:03:17 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 3:03:17 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,154
+1/19/2023 3:03:17 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 3:03:17 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,145
+1/19/2023 3:03:17 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,4029
+1/19/2023 3:03:31 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:03:31 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:03:46 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:03:47 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:03:50 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,3172
+1/19/2023 3:03:50 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 3:03:50 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,61
+1/19/2023 3:03:50 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 3:03:50 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,142
+1/19/2023 3:03:50 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 3:03:50 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,146
+1/19/2023 3:03:50 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,4007
+1/19/2023 3:04:06 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:04:07 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:04:37 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:04:38 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:04:41 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,3485
+1/19/2023 3:04:41 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 3:04:41 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,70
+1/19/2023 3:04:41 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 3:04:41 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,156
+1/19/2023 3:04:41 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 3:04:41 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,154
+1/19/2023 3:04:41 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,4310
+1/19/2023 3:04:57 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:04:57 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:05:00 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,3213
+1/19/2023 3:05:00 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 3:05:00 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,70
+1/19/2023 3:05:00 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 3:05:00 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,162
+1/19/2023 3:05:00 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 3:05:01 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,153
+1/19/2023 3:05:01 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,4057
+1/19/2023 3:05:27 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:05:27 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:05:30 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,3227
+1/19/2023 3:05:30 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 3:05:30 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,71
+1/19/2023 3:05:30 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 3:05:30 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,160
+1/19/2023 3:05:30 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 3:05:30 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,146
+1/19/2023 3:05:30 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,4056
+1/19/2023 3:06:03 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:06:03 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:06:06 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,3112
+1/19/2023 3:06:06 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 3:06:06 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,65
+1/19/2023 3:06:06 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 3:06:06 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,144
+1/19/2023 3:06:06 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 3:06:06 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,137
+1/19/2023 3:06:06 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,3920
+1/19/2023 3:06:33 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:06:33 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:06:36 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,3486
+1/19/2023 3:06:36 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 3:06:36 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,88
+1/19/2023 3:06:36 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 3:06:37 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,207
+1/19/2023 3:06:37 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 3:06:37 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,141
+1/19/2023 3:06:37 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,4390
+1/19/2023 3:06:58 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:06:58 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:07:01 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,3107
+1/19/2023 3:07:01 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 3:07:02 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,68
+1/19/2023 3:07:02 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 3:07:02 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,163
+1/19/2023 3:07:02 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 3:07:02 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,140
+1/19/2023 3:07:02 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,3943
+1/19/2023 3:07:19 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:07:19 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:07:36 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:07:36 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:07:39 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,3088
+1/19/2023 3:07:39 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 3:07:39 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,64
+1/19/2023 3:07:39 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 3:07:40 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,158
+1/19/2023 3:07:40 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 3:07:40 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,145
+1/19/2023 3:07:40 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,3916
+1/19/2023 3:08:08 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:08:08 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:08:12 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,3152
+1/19/2023 3:08:12 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 3:08:12 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,66
+1/19/2023 3:08:12 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 3:08:12 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,146
+1/19/2023 3:08:12 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 3:08:12 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,138
+1/19/2023 3:08:12 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,4018
+1/19/2023 3:09:01 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:09:02 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:10:38 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:10:38 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:10:40 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,2281
+1/19/2023 3:10:40 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 3:10:40 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,92
+1/19/2023 3:10:40 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 3:10:40 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,148
+1/19/2023 3:10:40 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 3:10:41 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,142
+1/19/2023 3:10:41 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,2898
+1/19/2023 3:16:37 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:16:37 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 3:16:39 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,2360
+1/19/2023 3:16:39 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 3:16:39 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,62
+1/19/2023 3:16:39 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 3:16:39 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,171
+1/19/2023 3:16:39 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 3:16:39 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,144
+1/19/2023 3:16:39 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,2950
+1/19/2023 3:48:11 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 3:48:11 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 4:04:50 PM,US\e436851,BEGIN - RPM.Web.Controllers.HomeController.RetrieveProposalData ,0
+1/19/2023 4:04:50 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,0
+1/19/2023 4:04:53 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetLoBs ,3060
+1/19/2023 4:04:53 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,0
+1/19/2023 4:04:53 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetContractTypes ,77
+1/19/2023 4:04:53 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,0
+1/19/2023 4:04:53 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProgramAreas ,155
+1/19/2023 4:04:53 PM,US\e436851,BEGIN - RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,0
+1/19/2023 4:04:53 PM,US\e436851,RPM.DataBridge.DataLoaders.ProposalDataMVDataLoader.GetProposalModelView ,134
+1/19/2023 4:04:53 PM,US\e436851,RPM.Web.Controllers.HomeController.RetrieveProposalData ,3968
