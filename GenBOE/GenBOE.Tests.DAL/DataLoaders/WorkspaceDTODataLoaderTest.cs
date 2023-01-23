@@ -873,8 +873,42 @@ namespace GenBOE.Tests.DAL.DataLoaders
             Assert.AreEqual(1, result.Count(x => x.Field.Contains("Task MOQ Rationale")));
             Assert.AreEqual(1, result.Count(x => x.Field.Contains("BOE Sources Of Data")));
             Assert.AreEqual(1, result.Count(x => x.Field.Contains("BOE Description")));
-        }
-    }
+		}
+
+		/// <summary>
+		/// Test GetWorkspaceOciSettingByShortname 
+		/// </summary>
+		[TestMethod]
+		public void TestGetWorkspaceOciSettingByShortname()
+		{
+			string shortName;
+
+			using (GenBoeEntities gbe = new GenBoeEntities())
+			{
+				shortName = gbe.Workspaces.First(x => x.ContainsOCI == true).WorkspaceShortName;
+			}
+
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+			bool? result = sut.GetWorkspaceOciSettingByShortname(shortName);
+
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result.Value);
+		}
+
+		/// <summary>
+		/// Test GetWorkspaceOciSettingByShortname when shortname is empty
+		/// </summary>
+		[TestMethod]
+		public void TestGetWorkspaceOciSettingByShortname_EmptyName()
+		{
+			string shortName = String.Empty;
+
+			WorkspaceDTODataLoader sut = new WorkspaceDTODataLoader();
+			bool? result = sut.GetWorkspaceOciSettingByShortname(shortName);
+
+			Assert.IsNull(result);
+		}
+	}
 
     /// <summary>
     /// Separated this into a new class, so that way we don't automatically create all the objects which are carried via MOQLoaderObject

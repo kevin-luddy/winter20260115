@@ -8,13 +8,13 @@ namespace GenBOE.Web.Controllers
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Collections.ObjectModel;
 	using System.IO;
 	using System.Linq;
 	using System.Net;
 	using System.Net.Http;
 	using System.Net.Http.Headers;
 	using System.Web.Http;
-	using System.Web.Http.Results;
 	using GenBOE.ActionLogic;
 	using GenBOE.ActionLogic.ControllerLogic;
 	using GenBOE.ActionLogic.IO.Export;
@@ -496,6 +496,42 @@ namespace GenBOE.Web.Controllers
 			{
 				logger.Error(ex);
 				result.Messages.Add($"Unknown Error occurred returning PBOE data: {ex.Message}");
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Get the ContainsOCI setting for the given workspace
+		/// </summary>
+		/// <param name="workspaceShortName">Workspace Short Name</param>
+		/// <returns>HttpResponseMessage containing the ContainsOCI setting</returns>
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
+		[HttpGet]
+		public IESResponse<bool> GetOciSetting(string workspaceShortName)
+		{
+			IESResponse<bool> result = new IESResponse<bool>();
+
+			try
+			{
+				tokenHandler.AuthenticateUserFromAuthorizationToken();
+
+				bool? containsOci = loader.GetWorkspaceOciSettingByShortname(workspaceShortName);
+
+				if (containsOci != null)
+				{
+					result.Data = new Collection<bool>() { containsOci.Value };
+					result.IsSuccessful = true;
+				}
+				else
+				{
+					result.Messages.Add("Unable to retrieve OCI setting.");
+				}
+			}
+			catch (Exception ex)
+			{
+				logger.Error(ex);
+				result.Messages.Add($"Unknown Error occurred returning OCI setting data: {ex.Message}");
 			}
 
 			return result;
