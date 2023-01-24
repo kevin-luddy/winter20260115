@@ -9,3 +9,7 @@
 1/17/2023 10:25:40 AM,US\e436851,ACTION - Index,1
 1/17/2023 3:21:54 PM,US\e436851,BEGIN - IES.Common.DataLoader`1[[IES.DataBridge.ModelViews.BannerModelView, IES.DataBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]].GetAll ,0
 1/17/2023 3:21:57 PM,US\e436851,IES.Common.DataLoader`1[[IES.DataBridge.ModelViews.BannerModelView, IES.DataBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]].GetAll ,2546
+1/19/2023 3:41:11 PM,US\e436851,BEGIN - IES.Common.DataLoader`1[[IES.DataBridge.ModelViews.BannerModelView, IES.DataBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]].GetAll ,0
+1/19/2023 3:41:13 PM,US\e436851,IES.Common.DataLoader`1[[IES.DataBridge.ModelViews.BannerModelView, IES.DataBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]].GetAll ,2389
+1/19/2023 3:54:00 PM,US\e436851,BEGIN - IES.Common.DataLoader`1[[IES.DataBridge.ModelViews.BannerModelView, IES.DataBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]].GetAll ,0
+1/19/2023 3:54:04 PM,US\e436851,IES.Common.DataLoader`1[[IES.DataBridge.ModelViews.BannerModelView, IES.DataBridge, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]].GetAll ,3386
