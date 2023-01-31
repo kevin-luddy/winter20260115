@@ -849,6 +849,7 @@
             $scope.data.RteSizeLimit = result.RteSizeLimit;
             $scope.data.UsingTemplateBoe = result.UsingTemplateBoe;
             $scope.data.InitialUsingTemplateBoe = result.UsingTemplateBoe;
+            $scope.data.EnableSAPConnection = result.EnableSAPConnection;
                 
             if ($scope.data.WSExactCopy) {
                 $scope.data.ContainsOCI = result.ContainsOCI;

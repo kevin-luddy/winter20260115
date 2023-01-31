@@ -188,7 +188,8 @@ namespace GenBOE.Web.Controllers
                 ContainsDiscrete = containsDiscrete,
                 DescriptionTemplateAnswers = rteAnswers.Where(t => t.SourceId == (int)RteTemplateSource.TaskDescription).ToList(),
                 TaskDescription = taskDescription,
-                UsingTemplateBOE = ws.UsingTemplateBOE
+                UsingTemplateBOE = ws.UsingTemplateBOE,
+                EnableSAPConnection = ws.EnableSAPConnection
             };
 
             this._BoeLaborControllerLogic.GetMetricSearchDialogParameters(modelView);

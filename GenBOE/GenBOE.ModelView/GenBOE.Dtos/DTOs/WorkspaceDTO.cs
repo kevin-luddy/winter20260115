@@ -9,6 +9,7 @@ namespace GenBOE.Dtos
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.ComponentModel.DataAnnotations;
     using System.Diagnostics.CodeAnalysis;
     using IES.Common;
     using IES.Common.classes;
@@ -53,6 +54,7 @@ namespace GenBOE.Dtos
             this.CustomFieldSorting = CustomFieldSorting.Description;
             this.ResourceSorting = CustomFieldSorting.Description;
             this.PerfOrgSorting = CustomFieldSorting.Description;
+            this.EnableSAPConnection = true;
         }
 
         /// <summary>
@@ -209,6 +211,11 @@ namespace GenBOE.Dtos
         /// This drives MOQ Type usage. Yes -> new, more complex types. No -> legacy / original code.
         /// </summary>
         public bool UsingTemplateBOE { get; set; } = true;
+
+        /// <summary>
+        /// Get or set wheter using Enable SAP Connection is selected.
+        /// </summary>
+        public bool EnableSAPConnection { get; set; } = true;
 
         /// <summary>
         /// WS Creation Date

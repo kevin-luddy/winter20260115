@@ -150,6 +150,11 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         bool UsingTemplateBoe { get; set; }
 
         /// <summary>
+        /// Get/set wheter using Enable SAP Connection is selected.
+        /// </summary>
+        bool EnableSAPConnection { get; set; }
+
+        /// <summary>
         /// Was WS created prior to Boe Templates being enabled
         /// </summary>
         bool CreatedPriorToBoeTemplates { get; set; }

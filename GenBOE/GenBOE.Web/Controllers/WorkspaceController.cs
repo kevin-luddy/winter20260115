@@ -3138,6 +3138,7 @@ namespace GenBOE.Web.Controllers
                 ws.PerfOrgSorting = workspaceDetails.PerfOrgSorting;
                 ws.RteSizeLimit = workspaceDetails.RteSizeLimit;
                 ws.UsingTemplateBOE = workspaceDetails.UsingTemplateBoe;
+                ws.EnableSAPConnection = workspaceDetails.EnableSAPConnection;
 
                 // Populate the company specific properties
                 _ControllerLogic.PopulateCompanySpecificWorkspaceProperties(workspaceDetails, ws);
@@ -5107,6 +5108,7 @@ namespace GenBOE.Web.Controllers
                     newWorkspaceDTO.IsUsingTM = newWorkspace.IsUsingTM;
                     newWorkspaceDTO.RteSizeLimit = newWorkspace.RteSizeLimit;
                     newWorkspaceDTO.UsingTemplateBOE = newWorkspace.UsingTemplateBoe;
+                    newWorkspaceDTO.EnableSAPConnection = newWorkspace.EnableSAPConnection;
                     
                     if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.SpaceSystems)
                     {

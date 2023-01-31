@@ -113,5 +113,11 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// </summary>
         [Required(ErrorMessage = "Template BOE selection is required.")]
         public bool UsingTemplateBoe { get; set; }
+
+        /// <summary>
+        /// Get/set wheter using Enable SAP Connection is selected.
+        /// </summary>
+        [Required(ErrorMessage = "Enable SAP connection selection is required.")]
+        public bool EnableSAPConnection { get; set; }
     }
 }
