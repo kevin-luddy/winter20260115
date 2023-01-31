@@ -85,7 +85,7 @@
             ProposalClass: '-1',                    // SSC only
             SelectedContractTypes: [],              // SSC only, array of strings
             UsingTemplateBoe: '',
-            EnableSAPConnection: true
+            EnableSAPConnection: true               // RMS only
         };
     };
 
@@ -851,7 +851,6 @@
             $scope.data.UsingTemplateBoe = result.UsingTemplateBoe;
             $scope.data.InitialUsingTemplateBoe = result.UsingTemplateBoe;
             $scope.data.EnableSAPConnection = result.EnableSAPConnection;
-            console.log(result.EnableSAPConnection);
                 
             if ($scope.data.WSExactCopy) {
                 $scope.data.ContainsOCI = result.ContainsOCI;

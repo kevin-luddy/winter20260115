@@ -7,8 +7,6 @@
 namespace GenBOE.Web.ModelView
 {
     using System;
-    using System.ComponentModel.DataAnnotations;
-
     public class WorkspaceToCopyModelView
     {
         public WorkspaceToCopyModelView()

@@ -9,7 +9,6 @@ namespace GenBOE.Dtos
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
-    using System.ComponentModel.DataAnnotations;
     using System.Diagnostics.CodeAnalysis;
     using IES.Common;
     using IES.Common.classes;
