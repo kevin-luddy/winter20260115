@@ -132,7 +132,7 @@ namespace GenBOE.ActionLogic.ModelView
         public bool UsingTemplateBOE { get; set; }
 
         /// <summary>
-        /// Get or set wheter using Enable SAP Connection is selected.
+        /// Get or set whether using Enable SAP Connection is selected.
         /// </summary>
         public bool EnableSAPConnection { get; set; }
     }
