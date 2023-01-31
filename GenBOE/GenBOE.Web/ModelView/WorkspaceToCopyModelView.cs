@@ -7,6 +7,7 @@
 namespace GenBOE.Web.ModelView
 {
     using System;
+    using System.ComponentModel.DataAnnotations;
 
     public class WorkspaceToCopyModelView
     {
@@ -85,5 +86,10 @@ namespace GenBOE.Web.ModelView
         /// Get/Set whether using Template BOE
         /// </summary>
         public bool UsingTemplateBoe { get; set; }
+
+        /// <summary>
+        /// Get or set whether using Enable SAP Connection is selected.
+        /// </summary>
+        public bool EnableSAPConnection { get; set; }
     }
 }

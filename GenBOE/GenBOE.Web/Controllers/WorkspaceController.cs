@@ -5584,7 +5584,8 @@ namespace GenBOE.Web.Controllers
                     AllowGridEdit = workspace.AllowGridEdit,
                     LineOfBusinessID = workspace.LineOfBusiness.Id,
                     RteSizeLimit = workspace.RteSizeLimit,
-                    UsingTemplateBoe = workspace.UsingTemplateBOE
+                    UsingTemplateBoe = workspace.UsingTemplateBOE,
+                    EnableSAPConnection = workspace.EnableSAPConnection
                 };
 
                 toReturn = Json(modelView);
