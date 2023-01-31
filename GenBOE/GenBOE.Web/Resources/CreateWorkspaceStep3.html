@@ -338,10 +338,26 @@
         </select>
     </div>
 </div>
-{{setupIdentificationPage()}}
-<script type="text/javascript">
-    (function () {
-        SetupMonthPicker("#ContractStartDate");
-        SetupMonthPicker("#ContractEndDate");
-    })();
-</script>
+<div class="form-row" data-ng-show="!model.isSSC">
+    <div class="form-label">
+        <span>SAP Connection Enabled *</span>
+        <div id="using-template-boe-help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
+        <div id="using-template-boe-help-dialog" class="help-dialog" style="width: 200px;">
+            <div class="help-dialog-close"></div>
+            <div class="help-dialog-text">Will this Workspace use SAP in its BOE?</div>
+        </div>
+    </div>
+    <div class="form-element" id="SAPConnectionSelect">
+        <select name="EnableSAPConnection" id="EnableSAPConnection" data-ng-model="data.EnableSAPConnection" data-ng-disabled="data.WorkspaceToCopyID > 0">
+            <option data-ng-value="true">Yes</option>
+            <option data-ng-value="false">No</option>
+        </select>
+    </div>
+</div>
+    {{setupIdentificationPage()}}
+    <script type="text/javascript">
+        (function () {
+            SetupMonthPicker("#ContractStartDate");
+            SetupMonthPicker("#ContractEndDate");
+        })();
+    </script>
