@@ -53,6 +53,7 @@ namespace GenBOE.Dtos
             this.CustomFieldSorting = CustomFieldSorting.Description;
             this.ResourceSorting = CustomFieldSorting.Description;
             this.PerfOrgSorting = CustomFieldSorting.Description;
+            this.EnableSAPConnection = true;
         }
 
         /// <summary>
@@ -209,6 +210,11 @@ namespace GenBOE.Dtos
         /// This drives MOQ Type usage. Yes -> new, more complex types. No -> legacy / original code.
         /// </summary>
         public bool UsingTemplateBOE { get; set; } = true;
+
+        /// <summary>
+        /// Get or set whether using Enable SAP Connection is selected.
+        /// </summary>
+        public bool EnableSAPConnection { get; set; } = true;
 
         /// <summary>
         /// WS Creation Date

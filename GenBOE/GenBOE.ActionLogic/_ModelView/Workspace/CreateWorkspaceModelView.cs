@@ -49,6 +49,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
             this.IsUsingEquivalentPerson = false;
             this.IsUsingTM = false;
             this.ProjectMapType = ProjectMapType.StandardWithoutOffload;
+            this.EnableSAPConnection = true;
         }
 
         public override string ToString()
@@ -251,5 +252,11 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
         /// </summary>
         [Required(ErrorMessage = "A selection for Template BOE is required.")]
         public bool UsingTemplateBoe { get; set; }
+
+        /// <summary>
+        /// Get/set whether using Enable SAP Connection is selected.
+        /// </summary>
+        [Required(ErrorMessage = "Enable SAP connection selection is required.")]
+        public bool EnableSAPConnection { get; set; }
     }
 }
