@@ -1230,6 +1230,22 @@
 
 							if (Array.isArray(postedTable.AdditionalQueryFilters)) {
 								postedTable.AdditionalQueryFilters = postedTable.AdditionalQueryFilters.join("\n");
+                            }
+
+                            // Update table source
+                            if ($scope.ManageTaskModel.SapConnectionEnabled) {
+                                if (!$scope.ManageTaskModel.IsSpace) {
+                                    postedTable.RepositoryName = $scope.ManageTaskModel.RmsSapEnabledSource;
+								}
+                            }
+                            else {
+                                if ($scope.ManageTaskModel.IsSpace) {
+                                    if (postedTable.RepositoryName == $scope.ManageTaskModel.SapWebiRepository) {
+                                        postedTable.RepositoryName = $scope.ManageTaskModel.SscSapDisabledSource;
+                                    }
+                                } else {
+                                    postedTable.RepositoryName = $scope.ManageTaskModel.RmsSapDisabledSource;
+								}
 							}
 
                             if (moqTablecustomFieldDictionary[postedTable.Id] !== undefined) {

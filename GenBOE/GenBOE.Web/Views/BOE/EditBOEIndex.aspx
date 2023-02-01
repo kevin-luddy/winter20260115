@@ -45,7 +45,12 @@
 			CalculateAllActualsSapAction: '<%: WebConstants.ACTION_CALCULATE_ALL_ACTUALS_SAP %>',
 			ExportActualsSapAction: '<%: WebConstants.ACTION_EXPORT_ACTUALS_SAP %>',
 			DisableSave: false,
-			DisableSaveText: ''
+			DisableSaveText: '',
+			SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>',
+			SapConnectionEnabled: '<%=ViewData["EnableSAPConnection"]%>'.isTrue(),
+			RmsSapEnabledSource: '<%=RepositoryName.SAP.GetDescription()%>',
+            RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>',
+			SscSapDisabledSource: '<%=RepositoryName.ConnectionDisabledSapWebi.GetDescription()%>'
         });
 
         $(function () {

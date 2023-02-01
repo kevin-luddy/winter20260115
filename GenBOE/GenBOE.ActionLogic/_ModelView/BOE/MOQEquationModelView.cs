@@ -182,6 +182,11 @@ namespace GenBOE.ActionLogic.ModelView.BOE
         public bool UsingTemplateBOE { get; set; }
 
         /// <summary>
+        /// If Enable SAP Connection is true/false for the Workspace
+        /// </summary>
+        public bool EnableSAPConnection { get; set; }
+
+        /// <summary>
         /// MOQ Types for DropDown
         /// </summary>
         public ICollection<SelectListItem> MOQTypes { get; set; }

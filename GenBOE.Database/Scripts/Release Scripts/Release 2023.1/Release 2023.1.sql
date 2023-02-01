@@ -56,3 +56,23 @@ GO
 
     ## END ##
 */
+*/
+
+/*
+    ## START ##
+
+    1/31/2023 [ranzalon] - ACV-209 RMS MOQ Table Source Field
+*/
+
+IF DB_NAME() like '%MST%' AND NOT EXISTS (SELECT 1 FROM [dbo].[MOQTypeSelectionTableData] WHERE RepositoryName is not null)
+BEGIN
+    UPDATE [dbo].[MOQTypeSelectionTableData]
+    SET RepositoryName = 'User'
+END
+GO
+
+/*
+    1/31/2023 [ranzalon] - ACV-209 RMS MOQ Table Source Field
+
+    ## END ##
+*/
