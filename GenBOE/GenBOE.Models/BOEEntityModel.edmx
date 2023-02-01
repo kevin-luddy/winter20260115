@@ -691,11 +691,11 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.BOEFormPBOEResourcesXREF' does
           <Property Name="DateOfReport" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="HistoricalProgramName" Type="varchar" MaxLength="125" Nullable="false" />
           <Property Name="ContractNumber" Type="varchar" MaxLength="255" />
-          <Property Name="WbsElement" Type="varchar" MaxLength="5000" Nullable="false" />
+          <Property Name="WbsElement" Type="varchar" MaxLength="8000" />
           <Property Name="PeriodOfPerformanceStartDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="PeriodOfPerformanceEndDate" Type="datetime2" Precision="7" Nullable="false" />
           <Property Name="TotalWbsHours" Type="decimal" Precision="10" Scale="2" Nullable="false" />
-          <Property Name="AdditionalQueryFilters" Type="varchar" MaxLength="2500" Nullable="false" />
+          <Property Name="AdditionalQueryFilters" Type="varchar" MaxLength="2500" />
           <Property Name="TotalRelevantHoursAfterQueryFilters" Type="decimal" Precision="10" Scale="2" Nullable="false" />
         </EntityType>
         <EntityType Name="MoqTypeTableCustomFieldValueXREF">
@@ -1460,6 +1460,7 @@ warning 6002: The table/view 'genBOESpace_UAT.dbo.UserLog' does not have a prima
           <Property Name="WorkspaceCreationDate" Type="datetime2" Precision="7" />
           <Property Name="RevisedSubmittalDate" Type="datetime2" Precision="7" />
           <Property Name="TemplateBoe" Type="bit" Nullable="false" />
+          <Property Name="EnableSAPConnection" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="WorkspaceContractTypeXREF">
           <Key>
@@ -5604,6 +5605,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Parameter Name="RteSizeLimit" Type="int" Mode="In" />
           <Parameter Name="RevisedSubmittalDate" Type="datetime2" Mode="In" />
           <Parameter Name="TemplateBoe" Type="bit" Mode="In" />
+          <Parameter Name="EnableSAPConnection" Type="bit" Mode="In" />
         </Function>
         <Function Name="upsertWorkspaceEmail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="WorkspaceEmailID" Type="int" Mode="In" />
@@ -11646,6 +11648,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
             <Parameter Name="RteSizeLimit" Mode="In" Type="Int32" />
             <Parameter Name="RevisedSubmittalDate" Mode="In" Type="DateTime" />
             <Parameter Name="TemplateBoe" Mode="In" Type="Boolean" />
+            <Parameter Name="EnableSAPConnection" Mode="In" Type="Boolean" />
           </FunctionImport>
           <FunctionImport Name="upsertWorkspacePerformingOrganization" ReturnType="Collection(Int32)">
             <Parameter Name="PerformingOrganizationID" Mode="In" Type="Int32" />
@@ -12871,6 +12874,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <NavigationProperty Name="WorkspaceVersions" Relationship="GenBOE.Models.FK_WorkspaceVersion_Workspace" FromRole="Workspace" ToRole="WorkspaceVersion" />
           <NavigationProperty Name="RteTemplates" Relationship="GenBOE.Models.FK_RteTemplate_Workspace" FromRole="Workspace" ToRole="RteTemplate" />
           <Property Name="TemplateBoe" Type="Boolean" Nullable="false" />
+          <Property Name="EnableSAPConnection" Type="Boolean" Nullable="false" />
         </EntityType>
         <Association Name="FK_BOE_Workspace">
           <End Type="GenBOE.Models.Workspace" Role="Workspace" Multiplicity="1" />
@@ -13575,11 +13579,11 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <Property Name="DateOfReport" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="HistoricalProgramName" Type="String" Nullable="false" MaxLength="125" FixedLength="false" Unicode="false" />
           <Property Name="ContractNumber" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="WbsElement" Type="String" Nullable="false" MaxLength="5000" FixedLength="false" Unicode="false" />
+          <Property Name="WbsElement" Type="String" MaxLength="8000" FixedLength="false" Unicode="false" />
           <Property Name="PeriodOfPerformanceStartDate" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="PeriodOfPerformanceEndDate" Type="DateTime" Nullable="false" Precision="7" />
           <Property Name="TotalWbsHours" Type="Decimal" Nullable="false" Precision="10" Scale="2" />
-          <Property Name="AdditionalQueryFilters" Type="String" Nullable="false" MaxLength="2500" FixedLength="false" Unicode="false" />
+          <Property Name="AdditionalQueryFilters" Type="String" MaxLength="2500" FixedLength="false" Unicode="false" />
           <Property Name="TotalRelevantHoursAfterQueryFilters" Type="Decimal" Nullable="false" Precision="10" Scale="2" />
           <NavigationProperty Name="MOQTypeSelection" Relationship="GenBOE.Models.FK__MOQTypeSe__MOQTy__378B3DE0" FromRole="MOQTypeSelectionTableData" ToRole="MOQTypeSelection" />
           <NavigationProperty Name="MoqTypeTableCustomFieldValueXREFs" Relationship="GenBOE.Models.FK__MoqTypeTa__MoqTy__4F44628E" FromRole="MOQTypeSelectionTableData" ToRole="MoqTypeTableCustomFieldValueXREF" />
@@ -15762,6 +15766,7 @@ warning 6002: The table/view 'genBOESpace_UAT.version.WorkBreakdownStructure' do
           <EntitySetMapping Name="Workspaces">
             <EntityTypeMapping TypeName="GenBOE.Models.Workspace">
               <MappingFragment StoreEntitySet="Workspace">
+                <ScalarProperty Name="EnableSAPConnection" ColumnName="EnableSAPConnection" />
                 <ScalarProperty Name="TemplateBoe" ColumnName="TemplateBoe" />
                 <ScalarProperty Name="RevisedSubmittalDate" ColumnName="RevisedSubmittalDate" />
                 <ScalarProperty Name="WorkspaceCreationDate" ColumnName="WorkspaceCreationDate" />

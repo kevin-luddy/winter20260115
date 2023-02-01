@@ -36,6 +36,7 @@ AS
 **		4/13/2022	jquijano			IES-1014: Remove deprecated PBOE fields
 **		4/22/2022	jquijano			IES-1019: Add new fields to copy workspace
 **		5/2/2022	jquijano			IES-1126: Add VendorId, SupplierProposedValue
+**		1/31/23		e405721				ACV-221 - Enable SAP Connection
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -115,6 +116,7 @@ INSERT INTO [dbo].[Workspace]
 		   ,[RteSizeLimit]
 		   ,[RevisedSubmittalDate]
 		   ,[TemplateBoe]
+		   ,[EnableSAPConnection]
            )
 SELECT [UpdateDT]
       ,@WorkspaceName
@@ -160,6 +162,7 @@ SELECT [UpdateDT]
 	  ,[RteSizeLimit]
 	  ,[RevisedSubmittalDate]
 	  ,[TemplateBoe]
+	  ,[EnableSAPConnection]
   FROM [dbo].[Workspace]
 WHERE WorkspaceID = @WorkspaceID
 

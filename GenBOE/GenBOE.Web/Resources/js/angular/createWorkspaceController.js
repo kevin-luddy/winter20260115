@@ -85,7 +85,7 @@
             ProposalClass: '-1',                    // SSC only
             SelectedContractTypes: [],              // SSC only, array of strings
             UsingTemplateBoe: '',
-            EnableSAPConnection: true               // RMS only
+            EnableSAPConnection: true
         };
     };
 

@@ -30,3 +30,29 @@ GO
 
     ## END ##
 */
+
+/*
+    ## START ##
+
+    1/31/2023 [e405721] - ACV-221 "SAP Connection Enabled"
+*/
+
+IF COL_LENGTH('dbo.Workspace', 'EnableSAPConnection') IS NULL
+BEGIN
+	ALTER TABLE dbo.Workspace
+		ADD EnableSAPConnection BIT DEFAULT 0 NOT NULL
+END
+GO
+
+IF COL_LENGTH('version.Workspace', 'EnableSAPConnection') IS NULL
+BEGIN
+	ALTER TABLE [version].Workspace
+		ADD EnableSAPConnection BIT DEFAULT 0 NOT NULL
+END
+GO
+
+/*
+    1/31/2023 [e405721] - ACV-221 "SAP Connection Enabled"
+
+    ## END ##
+*/

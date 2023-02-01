@@ -671,6 +671,18 @@
                 <%} %>
             </div>
         </div>
+        <div class="form-row">
+            <div class="form-label">
+                <span helptext="Does this Workspace use the SAP in its BOEs?">SAP Connection Enabled</span>
+            </div>
+            <div class="form-element">
+                <%: Html.DropDownListFor(c => c.EnableSAPConnection, new List<SelectListItem>()
+                    {
+                        new SelectListItem() { Text = "Yes", Value = "True" },
+                        new SelectListItem() { Text = "No", Value = "False" }
+                    }) %>
+            </div>
+        </div>
         <button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>
         <% } %>
     </div>
