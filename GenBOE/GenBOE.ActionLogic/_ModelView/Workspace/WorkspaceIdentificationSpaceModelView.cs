@@ -48,6 +48,7 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
                 this.TrackingNumber = workspaceDTO.TrackingNumber;
                 this.IsUsingTM = workspaceDTO.IsUsingTM;
                 this.ProposalTitle = workspaceDTO.ProposalTitle;
+                this.EnableSAPConnection = workspaceDTO.EnableSAPConnection;
                 this.RevisedSubmittalDate = workspaceDTO.RevisedSubmittalDate.HasValue?
                     workspaceDTO.RevisedSubmittalDate.Value.ToString("MM/dd/yyyy") : 
                     string.Empty;
