@@ -76,7 +76,8 @@ namespace GenBOE.ActionLogic.ModelView.Workspace
                 this.EnableTemplateBoeSelect = false;
                 this.UsingTemplateBoe = workspaceDTO.UsingTemplateBOE;
                 this.CreatedPriorToBoeTemplates = !workspaceDTO.CreationDate.HasValue || workspaceDTO.CreationDate < DateTime.Parse(ConfigurationUtilities.GetAppSetting("MoqTemplateStartDate"));
-            }
+				this.EnableSAPConnection = workspaceDTO.EnableSAPConnection;
+			}
             if (costVolumeLeadDTO != null)
             {
                 this.CostVolumeLeadPricerDisplayName = costVolumeLeadDTO.DisplayName;
