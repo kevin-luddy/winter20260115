@@ -433,6 +433,7 @@
                         new SelectListItem() { Text = "No", Value = "False" }
                     }, new { onchange="WorkspaceIdentificationWidget.OnSapConnectionChange(this)" }) %>
             </div>
+            <%: Html.HiddenFor(c => c.EnableSAPConnection) %>
         </div>
         <button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>
         <% } %>
