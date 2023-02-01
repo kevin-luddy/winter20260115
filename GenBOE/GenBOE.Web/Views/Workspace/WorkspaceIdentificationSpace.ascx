@@ -679,9 +679,11 @@
                 <%: Html.DropDownListFor(c => c.EnableSAPConnection, new List<SelectListItem>()
                     {
                         new SelectListItem() { Text = "Yes", Value = "True" },
-                        new SelectListItem() { Text = "No", Value = "False" }
-                    }) %>
+                        new SelectListItem() { Text = "No", Value = "False", Selected = !Model.UsingTemplateBoe }
+                    },
+                    new { @disabled = !Model.UsingTemplateBoe }) %>
             </div>
+            <%: Html.HiddenFor(c => c.EnableSAPConnection) %>
         </div>
         <button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>
         <% } %>

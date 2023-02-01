@@ -338,6 +338,10 @@
         </select>
     </div>
 </div>
+<!-- to remove the bottom before merge -->
+<div>UsingTemplateBoe: {{data.UsingTemplateBoe}}</div>
+<div>Enable SAP Connection: {{data.EnableSAPConnection}}</div>
+<!--<div class="form-row" data-ng-hide="!data.EnableSAPConnection">-->
 <div class="form-row">
     <div class="form-label">
         <span>SAP Connection Enabled *</span>
@@ -348,10 +352,12 @@
         </div>
     </div>
     <div class="form-element" id="SAPConnectionSelect">
-        <select name="EnableSAPConnection" id="EnableSAPConnection" data-ng-model="data.EnableSAPConnection" data-ng-disabled="data.WorkspaceToCopyID > 0">
+        <!-- There isn't a readonly attr for selects, need to use disabled and pass in the value via hidden attr -->
+        <select name="EnableSAPConnection" id="EnableSAPConnection" data-ng-model="data.EnableSAPConnection" data-ng-disabled="data.WorkspaceToCopyID > 0 || (!data.UsingTemplateBoe)">
             <option data-ng-value="true">Yes</option>
-            <option data-ng-value="false">No</option>
+            <option data-ng-value="false" data-ng-selected="!data.UsingTemplateBoe">No</option>
         </select>
+        <input type="hidden" name="EnableSAPConnection" id="EnableSAPConnection" />
     </div>
 </div>
     {{setupIdentificationPage()}}
