@@ -48,6 +48,7 @@ AS
 **		9/15/20		ranzalon			BOEJ-4776/4825 - MOQ Types update
 **		12/8/2020	ranzalon			BOEJ-4972 - remove CER location and BOELaborType MOQTypeSelectionId fields
 **		1/4/2021	Dusan				BOEJ-4894: Added support for MoqTypeTableCustomFieldValueXREF; additional cleanup
+**		1/31/23		e405721				ACV-221 - Enable SAP Connection
 *******************************************************************************/
 SET NOCOUNT ON 
 
@@ -539,6 +540,7 @@ BEGIN
 			,[RteSizeLimit] = vW.[RteSizeLimit]
 			,[RevisedSubmittalDate] = vW.[RevisedSubmittalDate]
 			,[TemplateBoe] = vW.[TemplateBoe]
+			,[EnableSAPConnection] = vW.[EnableSAPConnection]
 		FROM [dbo].[Workspace] W
 			INNER JOIN [version].[Workspace] vW ON W.WorkspaceID = vW.WorkspaceID
 			LEFT OUTER JOIN [dbo].[ResourceList] RL ON vW.ResourceListID = RL.ResourceListID

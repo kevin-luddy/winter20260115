@@ -287,7 +287,8 @@ namespace GenBOE.DataBridge.DTO
                                     LastProPricerProposal = w.LastProPricerProposal,
                                     RteSizeLimit = w.RteSizeLimit,
                                     RevisedSubmittalDate = w.RevisedSubmittalDate,
-                                    UsingTemplateBOE = w.TemplateBoe,
+                                    UsingTemplateBOE = w.TemplateBoe, 
+                                    EnableSAPConnection = w.EnableSAPConnection,
                                     CreationDate = w.WorkspaceCreationDate
                                 }).ToCollection();
 
@@ -381,6 +382,7 @@ namespace GenBOE.DataBridge.DTO
                                         RteSizeLimit = w.RteSizeLimit,
                                         RevisedSubmittalDate = w.RevisedSubmittalDate,
                                         UsingTemplateBOE = w.TemplateBoe,
+                                        EnableSAPConnection = w.EnableSAPConnection,
                                         CreationDate = w.WorkspaceCreationDate
                                     }).FirstOrDefault();
 
@@ -915,7 +917,6 @@ namespace GenBOE.DataBridge.DTO
                        wsToSave.Shortname.Trim(),
                        Convert.ToInt32(wsToSave.WorkspaceState),
                        wsToSave.ContractStartDate,
-                       // ?
                        wsToSave.ContractEndDate,
                        wsToSave.ProposalSubmittalDate,
                        wsToSave.Description,
@@ -955,7 +956,8 @@ namespace GenBOE.DataBridge.DTO
                         wsToSave.LastProPricerProposal,
                         wsToSave.RteSizeLimit,
                         wsToSave.RevisedSubmittalDate,
-                        wsToSave.UsingTemplateBOE).FirstOrDefault());
+                        wsToSave.UsingTemplateBOE,
+                        wsToSave.EnableSAPConnection).FirstOrDefault());
 
                     // if the result ID is not a positive number, something bad went wrong so Log it
                     if (resultID <= 0)

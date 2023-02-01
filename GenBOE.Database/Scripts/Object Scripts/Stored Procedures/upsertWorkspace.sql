@@ -50,7 +50,8 @@ CREATE  PROCEDURE [dbo].[upsertWorkspace]
 @LastProPricerProposal varchar(50),
 @RteSizeLimit int,
 @RevisedSubmittalDate DateTime2(7),
-@TemplateBoe bit
+@TemplateBoe bit,
+@EnableSAPConnection bit
 )
 AS
 /******************************************************************************
@@ -81,6 +82,7 @@ AS
 **			10/2/18		ranzalon				BOEJ-3699 - RTE Size Limit
 **			9/25/19		ranzalon				BOEJ-4349 - Revised Submittal Date
 **			8/27/20		ranzalon				BOEJ-4760 - Template Boe
+**			1/31/23		e405721					ACV-221 - Enable SAP Connection
 *******************************************************************************/
 
 /*
@@ -191,6 +193,7 @@ IF @WorkspaceID  < 0  /*Insert Record*/
 		   ,[RteSizeLimit]
 		   ,[RevisedSubmittalDate]
 		   ,[TemplateBoe]
+           ,[EnableSAPConnection]
            )
      OUTPUT inserted.WorkspaceID INTO @InsertedWorkspace           
      VALUES
@@ -232,6 +235,7 @@ IF @WorkspaceID  < 0  /*Insert Record*/
 		   ,@RteSizeLimit
 		   ,@RevisedSubmittalDate
 		   ,@TemplateBoe
+		   ,@EnableSAPConnection
            )
 
       SELECT @WorkspaceID = WorkspaceID FROM @InsertedWorkspace
@@ -375,6 +379,7 @@ ELSE
 									,[RteSizeLimit] = @RteSizeLimit
 									,[RevisedSubmittalDate] = @RevisedSubmittalDate
 									,[TemplateBoe] = @TemplateBoe
+									,[EnableSAPConnection] = @EnableSAPConnection
                         WHERE 
                               WorkspaceID = @WorkspaceID
                               
