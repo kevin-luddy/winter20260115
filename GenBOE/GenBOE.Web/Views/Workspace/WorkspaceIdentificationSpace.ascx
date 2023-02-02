@@ -412,6 +412,28 @@
 	   originalTrackingNumber = $('#TrackingNumber').val();
 	   originalSapConnectionEnabled = $('#EnableSAPConnection').val();
    });
+
+    // Dynamically set disabled/readonly dropdown for SAP connection
+    if ('<%: Model.UsingTemplateBoe %>' == "False") {
+        var dropdown = $('#EnableSAPConnection');
+        dropdown.addClass('disabled');
+        dropdown.attr('disabled', true);
+    }
+    $('#UsingTemplateBoe').change(function () {
+        if ($('#UsingTemplateBoe').val() == "False") {
+            console.log("false/no")
+            var dropdown = $('#EnableSAPConnection');
+            dropdown.addClass('disabled');
+            dropdown.attr('disabled', true);
+            dropdown.val('False');
+        } else {
+            console.log("true/yes")
+            var dropdown = $('#EnableSAPConnection');
+            dropdown.removeClass('disabled');
+            dropdown.removeAttr('disabled');
+            dropdown.val('True');
+        }
+    });
 </script>
 
 <div id="WorkspaceIdentification" class="workspace-identification module ">
@@ -704,19 +726,21 @@
 				<%} %>
 			</div>
 		</div>
-		<div class="form-row">
-			<div class="form-label">
-				<span helptext="Does this Workspace use the SAP in its BOEs?">SAP Connection Enabled</span>
+		<%if (Utilities.IsSAPEnabled) { %>
+			<div class="form-row">
+				<div class="form-label">
+					<span helptext="Does this Workspace use the SAP in its BOEs?">SAP Connection Enabled</span>
+				</div>
+				<div class="form-element">
+					<%: Html.DropDownListFor(c => c.EnableSAPConnection, new List<SelectListItem>()
+						{
+							new SelectListItem() { Text = "Yes", Value = "True" },
+							new SelectListItem() { Text = "No", Value = "False" }
+						}, new { onchange="WorkspaceIdentificationWidget.OnSapConnectionChange(this)" }) %>
+				</div>
+				<%: Html.HiddenFor(c => c.EnableSAPConnection) %>
 			</div>
-			<div class="form-element">
-				<%: Html.DropDownListFor(c => c.EnableSAPConnection, new List<SelectListItem>()
-                    {
-                        new SelectListItem() { Text = "Yes", Value = "True" },
-                        new SelectListItem() { Text = "No", Value = "False" }
-                    }, new { onchange="WorkspaceIdentificationWidget.OnSapConnectionChange(this)" }) %>
-			</div>
-			<%: Html.HiddenFor(c => c.EnableSAPConnection) %>
-		</div>
+		<% } %>
 		<button id="Back-WorkspaceIdentification" class="ies back-to-workspace-settings-button display-none" type="button">Back to Workspace Settings</button>
 		<% } %>
 	</div>

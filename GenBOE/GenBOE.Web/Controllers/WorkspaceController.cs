@@ -531,6 +531,15 @@ namespace GenBOE.Web.Controllers
         }
 
         /// <summary>
+        /// Returns the value of the EnableSAP value in Web.config
+        /// </summary>
+        /// <returns>The value of the EnableSAP config</returns>
+        public bool GetEnableSAPConfig()
+        {
+            return Utilities.IsSAPEnabled;
+        }
+
+        /// <summary>
         /// Converts the message validations to a string.
         /// </summary>
         /// <param name="validationList">The validation list.</param>

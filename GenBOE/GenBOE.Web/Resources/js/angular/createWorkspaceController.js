@@ -38,7 +38,20 @@
         selectedPtmTrackingNumber: '',              // SSC only
         isAdmin: CreateWorkspaceModelView.IsAdmin,  // SSC only
         ptmTrackingNumberNotRequired: CreateWorkspaceModelView.PtmTrackingNumberNotRequired || CreateWorkspaceModelView.IsAdmin, // SSC only TODO - remove admin part
-        nextRevision: '' // SSC only, the next revision of the PTM tracking number
+        nextRevision: '', // SSC only, the next revision of the PTM tracking number
+        isSAPConfigurationEnabled: false    // This value will be grabbed from Web.config
+    };
+
+    $scope.getSapConfiguration = function () {
+        var sapConfigUrl = CreateSAPEnabledURL(CreateWorkspaceModelView.Controller);
+        $http({
+            method: 'GET',
+            url: sapConfigUrl,
+            headers: { 'Content-Type': 'application/json' },
+            withCredentials: true
+        }).then(function (response) {
+            $scope.model.isSAPConfigurationEnabled = response.data;
+        })
     };
 
     // data houses the data being saved and sent to the back-end
@@ -936,6 +949,8 @@
         } else {
             $scope.isDataLoading = false;
         }
+
+        $scope.getSapConfiguration();
     };
 
     $scope.initialize();

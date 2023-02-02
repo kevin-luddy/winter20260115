@@ -1351,6 +1351,12 @@ function CreateSystemAdminPostURL(controllerName, actionName) {
 	return postURL;
 }
 
+function CreateSAPEnabledURL(controllerName) {
+	var getURL = window.location.protocol + '//' + window.location.host + '/' + "default" +
+		'/' + controllerName + '/GetEnableSAPConfig';
+	return getURL;
+}
+
 /* GRID ADDABLE ROW   
 ----------------------------------------------------------*/
 

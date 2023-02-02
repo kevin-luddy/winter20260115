@@ -338,11 +338,7 @@
         </select>
     </div>
 </div>
-<!-- to remove the bottom before merge -->
-<div>UsingTemplateBoe: {{data.UsingTemplateBoe}}</div>
-<div>Enable SAP Connection: {{data.EnableSAPConnection}}</div>
-<!--<div class="form-row" data-ng-hide="!data.EnableSAPConnection">-->
-<div class="form-row">
+<div class="form-row" data-ng-show="model.isSAPConfigurationEnabled">
     <div class="form-label">
         <span>SAP Connection Enabled *</span>
         <div id="using-template-boe-help" class="help-icon" onclick="CreateWorkspace.ToggleHelp(this);"></div>
