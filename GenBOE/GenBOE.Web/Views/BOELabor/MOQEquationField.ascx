@@ -41,7 +41,8 @@
         HistoricalMoqType: <%:(int)MOQType.Historical%>,
         ComparativeMoqType: <%:(int)MOQType.Comparative%>,
         SAPEnabled: '<%:Utilities.IsSAPEnabled%>'.isTrue(),
-        SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>'
+        SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>',
+        SapConnectionEnabled: '<%=Model.EnableSAPConnection%>'.isTrue()
     };
 
     var ordinaryVariables = <%= serializer.Serialize(Model.TaskOrdinaryVariables) %>;

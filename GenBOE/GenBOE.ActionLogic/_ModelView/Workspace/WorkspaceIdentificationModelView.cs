@@ -7,232 +7,233 @@
 
 namespace GenBOE.ActionLogic.ModelView.Workspace
 {
-    using System;
-    using System.Collections.Generic;
-    using System.ComponentModel;
-    using System.ComponentModel.DataAnnotations;
-    using System.Web.Mvc;
-    using GenBOE.ActionLogic.Validation;
-    using GenBOE.Dtos;
-    using GenBOE.Objects;
-    using IES.Common;
+	using System;
+	using System.Collections.Generic;
+	using System.ComponentModel;
+	using System.ComponentModel.DataAnnotations;
+	using System.Web.Mvc;
+	using GenBOE.ActionLogic.Validation;
+	using GenBOE.Dtos;
+	using GenBOE.Objects;
+	using IES.Common;
 
-    /// <summary>
-    /// Workspace Identification ModelView that extends persisted data model view
-    /// </summary>
-    public class WorkspaceIdentificationModelView : PersistedDataModelView
-    {
-        /// <summary>
-        /// Default Constructor
-        /// </summary>
-        public WorkspaceIdentificationModelView()
-        {
-            this.ContractStartDate = DateTime.MinValue.ToString("MM/yyyy");
-            this.ContractEndDate = DateTime.MaxValue.ToString("MM/yyyy");
-            this.ProposalSubmittalDate = string.Empty;
-            this.ProposalStatus = ProposalStatusType.None;
-            this.StatusComments = string.Empty;
-            this.WorkspaceID = -1;
-            this.CostDecimalPrecision = 2;
-            this.CostPrecisionSelect = new List<SelectListItem>();
-            this.CostPrecisionSelect.Add(new SelectListItem { Text = "0", Value = "0", Selected = false });
-            this.CostPrecisionSelect.Add(new SelectListItem { Text = "2", Value = "2", Selected = true });
-            this.CustomFieldSortingSelect = ExtensionMethods.GetSelectItems<CustomFieldSorting>();
-        }
+	/// <summary>
+	/// Workspace Identification ModelView that extends persisted data model view
+	/// </summary>
+	public class WorkspaceIdentificationModelView : PersistedDataModelView
+	{
+		/// <summary>
+		/// Default Constructor
+		/// </summary>
+		public WorkspaceIdentificationModelView()
+		{
+			this.ContractStartDate = DateTime.MinValue.ToString("MM/yyyy");
+			this.ContractEndDate = DateTime.MaxValue.ToString("MM/yyyy");
+			this.ProposalSubmittalDate = string.Empty;
+			this.ProposalStatus = ProposalStatusType.None;
+			this.StatusComments = string.Empty;
+			this.WorkspaceID = -1;
+			this.CostDecimalPrecision = 2;
+			this.CostPrecisionSelect = new List<SelectListItem>();
+			this.CostPrecisionSelect.Add(new SelectListItem { Text = "0", Value = "0", Selected = false });
+			this.CostPrecisionSelect.Add(new SelectListItem { Text = "2", Value = "2", Selected = true });
+			this.CustomFieldSortingSelect = ExtensionMethods.GetSelectItems<CustomFieldSorting>();
+		}
 
-        /// <summary>
-        /// Constructor to take in workspace and user DTOs
-        /// </summary>
-        public WorkspaceIdentificationModelView(FullWorkspace workspaceDTO, UserDTO costVolumeLeadDTO) : this()
-        {
-            if (workspaceDTO != null)
-            {
-                this.WorkspaceName = workspaceDTO.WorkspaceName;
-                this.WorkspaceID = workspaceDTO.Id;
-                this.Description = workspaceDTO.Description;
-                this.ContractStartDate = workspaceDTO.ContractStartDate.ToString("MM/yyyy");
-                this.ContractEndDate = workspaceDTO.ContractEndDate.ToString("MM/yyyy");
-                this.ProposalSubmittalDate =
-                    workspaceDTO.ProposalSubmittalDate.HasValue ?
-                    workspaceDTO.ProposalSubmittalDate.Value.ToString("MM/dd/yyyy") : 
-                    string.Empty;
-                this.RFPNumber = workspaceDTO.RFPNumber;
-                this.ContainsOCI = workspaceDTO.ContainsOCI;
-                this.UpdateDate = workspaceDTO.UpdateDate;
-                this.ProposalStatus = workspaceDTO.ProposalStatus;
-                this.StatusComments = workspaceDTO.StatusComment;
-                this.ShortName = workspaceDTO.Shortname;
-                this.LineOfBusinessDisplayName = workspaceDTO.LineOfBusiness.Text;
-                this.ResourceDecimalPrecision = workspaceDTO.ResourceDecimalPrecision;
-                this.CostDecimalPrecision = workspaceDTO.CostDecimalPrecision;
-                this.CostPrecisionSelect = new List<SelectListItem>();
-                this.CostPrecisionSelect.Add(new SelectListItem { Text = "0", Value = "0", Selected = workspaceDTO.CostDecimalPrecision == 0 });
-                this.CostPrecisionSelect.Add(new SelectListItem { Text = "2", Value = "2", Selected = workspaceDTO.CostDecimalPrecision == 2 });
-                this.IsUsingEquivalentPerson = FullObjectHelper.ShowEquivalentPersonsOption && workspaceDTO.IsUsingEquivalentPerson;
-                this.CustomFieldSorting = workspaceDTO.CustomFieldSorting;
-                this.ResourceSorting = workspaceDTO.ResourceSorting;
-                this.PerfOrgSorting = workspaceDTO.PerfOrgSorting;
-                this.RteSizeLimit = workspaceDTO.RteSizeLimit;
-                this.EnableTemplateBoeSelect = false;
-                this.UsingTemplateBoe = workspaceDTO.UsingTemplateBOE;
-                this.CreatedPriorToBoeTemplates = !workspaceDTO.CreationDate.HasValue || workspaceDTO.CreationDate < DateTime.Parse(ConfigurationUtilities.GetAppSetting("MoqTemplateStartDate"));
-            }
-            if (costVolumeLeadDTO != null)
-            {
-                this.CostVolumeLeadPricerDisplayName = costVolumeLeadDTO.DisplayName;
-            }
-        }
+		/// <summary>
+		/// Constructor to take in workspace and user DTOs
+		/// </summary>
+		public WorkspaceIdentificationModelView(FullWorkspace workspaceDTO, UserDTO costVolumeLeadDTO) : this()
+		{
+			if (workspaceDTO != null)
+			{
+				this.WorkspaceName = workspaceDTO.WorkspaceName;
+				this.WorkspaceID = workspaceDTO.Id;
+				this.Description = workspaceDTO.Description;
+				this.ContractStartDate = workspaceDTO.ContractStartDate.ToString("MM/yyyy");
+				this.ContractEndDate = workspaceDTO.ContractEndDate.ToString("MM/yyyy");
+				this.ProposalSubmittalDate =
+					workspaceDTO.ProposalSubmittalDate.HasValue ?
+					workspaceDTO.ProposalSubmittalDate.Value.ToString("MM/dd/yyyy") :
+					string.Empty;
+				this.RFPNumber = workspaceDTO.RFPNumber;
+				this.ContainsOCI = workspaceDTO.ContainsOCI;
+				this.UpdateDate = workspaceDTO.UpdateDate;
+				this.ProposalStatus = workspaceDTO.ProposalStatus;
+				this.StatusComments = workspaceDTO.StatusComment;
+				this.ShortName = workspaceDTO.Shortname;
+				this.LineOfBusinessDisplayName = workspaceDTO.LineOfBusiness.Text;
+				this.ResourceDecimalPrecision = workspaceDTO.ResourceDecimalPrecision;
+				this.CostDecimalPrecision = workspaceDTO.CostDecimalPrecision;
+				this.CostPrecisionSelect = new List<SelectListItem>();
+				this.CostPrecisionSelect.Add(new SelectListItem { Text = "0", Value = "0", Selected = workspaceDTO.CostDecimalPrecision == 0 });
+				this.CostPrecisionSelect.Add(new SelectListItem { Text = "2", Value = "2", Selected = workspaceDTO.CostDecimalPrecision == 2 });
+				this.IsUsingEquivalentPerson = FullObjectHelper.ShowEquivalentPersonsOption && workspaceDTO.IsUsingEquivalentPerson;
+				this.CustomFieldSorting = workspaceDTO.CustomFieldSorting;
+				this.ResourceSorting = workspaceDTO.ResourceSorting;
+				this.PerfOrgSorting = workspaceDTO.PerfOrgSorting;
+				this.RteSizeLimit = workspaceDTO.RteSizeLimit;
+				this.EnableTemplateBoeSelect = false;
+				this.UsingTemplateBoe = workspaceDTO.UsingTemplateBOE;
+				this.CreatedPriorToBoeTemplates = !workspaceDTO.CreationDate.HasValue || workspaceDTO.CreationDate < DateTime.Parse(ConfigurationUtilities.GetAppSetting("MoqTemplateStartDate"));
+				this.EnableSAPConnection = workspaceDTO.EnableSAPConnection;
+			}
+			if (costVolumeLeadDTO != null)
+			{
+				this.CostVolumeLeadPricerDisplayName = costVolumeLeadDTO.DisplayName;
+			}
+		}
 
-        /// <summary>
-        /// The name of the workspace
-        /// </summary>
-        [Required(ErrorMessage = "Workspace Name is required.")]
-        [StringLength(100, ErrorMessage = "Workspace Name must not exceed 100 chars.")]
-        public string WorkspaceName { get; set; }
+		/// <summary>
+		/// The name of the workspace
+		/// </summary>
+		[Required(ErrorMessage = "Workspace Name is required.")]
+		[StringLength(100, ErrorMessage = "Workspace Name must not exceed 100 chars.")]
+		public string WorkspaceName { get; set; }
 
-        /// <summary>
-        /// Workspace Id
-        /// </summary>
-        [Required(ErrorMessage = "Workspace ID is required.")]
-        public int WorkspaceID { get; set; }
+		/// <summary>
+		/// Workspace Id
+		/// </summary>
+		[Required(ErrorMessage = "Workspace ID is required.")]
+		public int WorkspaceID { get; set; }
 
-        /// <summary>
-        /// Description
-        /// </summary>
-        [StringLength(1000, ErrorMessage = "Description must not exceed 1000 chars.")]
-        public string Description { get; set; }
+		/// <summary>
+		/// Description
+		/// </summary>
+		[StringLength(1000, ErrorMessage = "Description must not exceed 1000 chars.")]
+		public string Description { get; set; }
 
-        /// <summary>
-        /// The name of the workspace shortname.
-        /// </summary>
-        public string ShortName { get; set; }
+		/// <summary>
+		/// The name of the workspace shortname.
+		/// </summary>
+		public string ShortName { get; set; }
 
-        /// <summary>
-        /// Cost Volume Lead Pricer Display Name
-        /// </summary>
-        public string CostVolumeLeadPricerDisplayName { get; set; }
+		/// <summary>
+		/// Cost Volume Lead Pricer Display Name
+		/// </summary>
+		public string CostVolumeLeadPricerDisplayName { get; set; }
 
-        /// <summary>
-        /// Contract Start Date. Allows 01-12 for month, 01-31 for day, 1999-2000 for year
-        /// </summary>
-        public string ContractStartDate { get; set; }
+		/// <summary>
+		/// Contract Start Date. Allows 01-12 for month, 01-31 for day, 1999-2000 for year
+		/// </summary>
+		public string ContractStartDate { get; set; }
 
-        /// <summary>
-        /// Contract End Date. Allows 01-12 for month, 01-31 for day, 1999-2000 for year
-        /// Contract End Date must occur after the Contract Start Date.
-        /// </summary>
-        public string ContractEndDate { get; set; }
+		/// <summary>
+		/// Contract End Date. Allows 01-12 for month, 01-31 for day, 1999-2000 for year
+		/// Contract End Date must occur after the Contract Start Date.
+		/// </summary>
+		public string ContractEndDate { get; set; }
 
-        /// <summary>
-        /// Proposal Submittal Date. Allows 01-12 for month, 01-31 for day, 1999-2000 for year
-        /// </summary>
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
-        [RegularExpression(ValidationConstants.DATE_FULL, ErrorMessage = "Proposal Submittal Date format must be mm/dd/yyyy.")]
-        public string ProposalSubmittalDate { get; set; }
+		/// <summary>
+		/// Proposal Submittal Date. Allows 01-12 for month, 01-31 for day, 1999-2000 for year
+		/// </summary>
+		[DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+		[RegularExpression(ValidationConstants.DATE_FULL, ErrorMessage = "Proposal Submittal Date format must be mm/dd/yyyy.")]
+		public string ProposalSubmittalDate { get; set; }
 
-        /// <summary>
-        /// Number of decimal digits for labor hours precision.
-        /// </summary>
-        [DisplayName("Resource Decimal Precision")]
-        [Range(0, 6, ErrorMessage = "Resource Decimal Precision must be between 0 and 6.")]
-        public int? ResourceDecimalPrecision { get; set; }
+		/// <summary>
+		/// Number of decimal digits for labor hours precision.
+		/// </summary>
+		[DisplayName("Resource Decimal Precision")]
+		[Range(0, 6, ErrorMessage = "Resource Decimal Precision must be between 0 and 6.")]
+		public int? ResourceDecimalPrecision { get; set; }
 
-        /// <summary>
-        /// Number of decimal digits for labor costs precision.
-        /// </summary>
-        [DisplayName("Cost Decimal Precision")]
-        public int CostDecimalPrecision { get; set; }
+		/// <summary>
+		/// Number of decimal digits for labor costs precision.
+		/// </summary>
+		[DisplayName("Cost Decimal Precision")]
+		public int CostDecimalPrecision { get; set; }
 
-        /// <summary>
-        /// Select list of valid precisions.
-        /// </summary>
-        public ICollection<SelectListItem> CostPrecisionSelect { get; set; }
+		/// <summary>
+		/// Select list of valid precisions.
+		/// </summary>
+		public ICollection<SelectListItem> CostPrecisionSelect { get; set; }
 
-        /// <summary>
-        /// RFP Number
-        /// </summary>
-        [StringLength(100, ErrorMessage = "A maximum of 100 characters are allowed for the RFP#")]
-        public string RFPNumber { get; set; }
+		/// <summary>
+		/// RFP Number
+		/// </summary>
+		[StringLength(100, ErrorMessage = "A maximum of 100 characters are allowed for the RFP#")]
+		public string RFPNumber { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is using equivalent person (true) or hours (false).
-        /// </summary>
-        public bool IsUsingEquivalentPerson { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether this instance is using equivalent person (true) or hours (false).
+		/// </summary>
+		public bool IsUsingEquivalentPerson { get; set; }
 
-        /// <summary>
-        /// Gets or sets the custom field sorting.
-        /// </summary>
-        public CustomFieldSorting CustomFieldSorting { get; set; }
+		/// <summary>
+		/// Gets or sets the custom field sorting.
+		/// </summary>
+		public CustomFieldSorting CustomFieldSorting { get; set; }
 
-        /// <summary>
-        /// Gets or sets the resource sorting.
-        /// </summary>
-        public CustomFieldSorting ResourceSorting { get; set; }
+		/// <summary>
+		/// Gets or sets the resource sorting.
+		/// </summary>
+		public CustomFieldSorting ResourceSorting { get; set; }
 
-        /// <summary>
-        /// Gets or sets the perf org sorting.
-        /// </summary>
-        public CustomFieldSorting PerfOrgSorting { get; set; }
+		/// <summary>
+		/// Gets or sets the perf org sorting.
+		/// </summary>
+		public CustomFieldSorting PerfOrgSorting { get; set; }
 
-        /// <summary>
-        /// Gets or sets the custom field sorting select items.
-        /// </summary>
-        public ICollection<SelectListItem> CustomFieldSortingSelect { get; set; }
+		/// <summary>
+		/// Gets or sets the custom field sorting select items.
+		/// </summary>
+		public ICollection<SelectListItem> CustomFieldSortingSelect { get; set; }
 
-        /// <summary>
-        /// Contains OCI
-        /// </summary>
-        [Required(ErrorMessage = "Contains OCI Information is required.")]
-        public bool ContainsOCI { get; set; }
+		/// <summary>
+		/// Contains OCI
+		/// </summary>
+		[Required(ErrorMessage = "Contains OCI Information is required.")]
+		public bool ContainsOCI { get; set; }
 
-        /// <summary>
-        /// Proposal Status
-        /// </summary>
-        [Required(ErrorMessage = "Proposal Status is required.")]
-        public ProposalStatusType ProposalStatus { get; set; }
+		/// <summary>
+		/// Proposal Status
+		/// </summary>
+		[Required(ErrorMessage = "Proposal Status is required.")]
+		public ProposalStatusType ProposalStatus { get; set; }
 
-        /// <summary>
-        /// Status Comments
-        /// </summary>
-        [StringLength(1000, ErrorMessage = "A maximum of 1000 characters are allowed for the Status Comments")]
-        public string StatusComments { get; set; }
+		/// <summary>
+		/// Status Comments
+		/// </summary>
+		[StringLength(1000, ErrorMessage = "A maximum of 1000 characters are allowed for the Status Comments")]
+		public string StatusComments { get; set; }
 
-        /// <summary>
-        /// Product Line display name for the UI.
-        /// </summary>
-        public string LineOfBusinessDisplayName { get; set; }
+		/// <summary>
+		/// Product Line display name for the UI.
+		/// </summary>
+		public string LineOfBusinessDisplayName { get; set; }
 
-        /// <summary>
-        /// Application URL.
-        /// </summary>
-        public Uri ApplicationURL { get; set; }
+		/// <summary>
+		/// Application URL.
+		/// </summary>
+		public Uri ApplicationURL { get; set; }
 
-        /// <summary>
-        /// Get/Set the RTE Size Limit (number of characters)
-        /// </summary>
-        [Range(100, 100000, ErrorMessage = "Rich Text Editor Character Limit must be between 100 and 100,000.")]
-        public int? RteSizeLimit { get; set; }
+		/// <summary>
+		/// Get/Set the RTE Size Limit (number of characters)
+		/// </summary>
+		[Range(100, 100000, ErrorMessage = "Rich Text Editor Character Limit must be between 100 and 100,000.")]
+		public int? RteSizeLimit { get; set; }
 
-        /// <summary>
-        /// Get/Set whether to enable the Template BOE dropdown
-        /// </summary>
-        public bool EnableTemplateBoeSelect { get; set; }
+		/// <summary>
+		/// Get/Set whether to enable the Template BOE dropdown
+		/// </summary>
+		public bool EnableTemplateBoeSelect { get; set; }
 
-        /// <summary>
-        /// Get/Set whether using template BOE
-        /// </summary>
-        [Required(ErrorMessage = "A selection for Template BOE is required.")]
-        public bool UsingTemplateBoe { get; set; }
+		/// <summary>
+		/// Get/Set whether using template BOE
+		/// </summary>
+		[Required(ErrorMessage = "A selection for Template BOE is required.")]
+		public bool UsingTemplateBoe { get; set; }
 
-        /// <summary>
-        /// Get/set whether using Enable SAP Connection is selected.
-        /// </summary>
-        [Required(ErrorMessage = "Enable SAP connection selection is required.")]
-        public bool EnableSAPConnection { get; set; }
+		/// <summary>
+		/// Get/set whether using Enable SAP Connection is selected.
+		/// </summary>
+		[Required(ErrorMessage = "Enable SAP connection selection is required.")]
+		public bool EnableSAPConnection { get; set; }
 
-        /// <summary>
-        /// Was WS created prior to Boe Templates being enabled
-        /// </summary>
-        public bool CreatedPriorToBoeTemplates { get; set; }
-    }
+		/// <summary>
+		/// Was WS created prior to Boe Templates being enabled
+		/// </summary>
+		public bool CreatedPriorToBoeTemplates { get; set; }
+	}
 }

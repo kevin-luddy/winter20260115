@@ -591,6 +591,7 @@ namespace GenBOE.Web.Controllers
             }
 
             modelView.UsingTemplateBOE = fullWorkspace.UsingTemplateBOE;
+            modelView.EnableSAPConnection = fullWorkspace.EnableSAPConnection;
             modelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(fullWorkspace.CreationDate >= moqTemplateUsageStartDate, null);
             if (fullWorkspace.UsingTemplateBOE)
             {
@@ -2277,8 +2278,8 @@ namespace GenBOE.Web.Controllers
             theModelView.HelpText = _BoeLaborControllerLogic.GetMOQTypesHelpText();
             theModelView.MOQTextLabel = _BoeLaborControllerLogic.GetMOQTextLabel();
             theModelView.UsingTemplateBOE = ws.UsingTemplateBOE;
-
-            
+            theModelView.EnableSAPConnection = ws.EnableSAPConnection;
+                        
             theModelView.MOQTypes = this._BoeLaborControllerLogic.GetMOQTypeSelectList(ws.CreationDate >= moqTemplateUsageStartDate, null);
 
             if (ws.UsingTemplateBOE)
