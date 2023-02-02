@@ -421,13 +421,11 @@
     }
     $('#UsingTemplateBoe').change(function () {
         if ($('#UsingTemplateBoe').val() == "False") {
-            console.log("false/no")
             var dropdown = $('#EnableSAPConnection');
             dropdown.addClass('disabled');
             dropdown.attr('disabled', true);
             dropdown.val('False');
         } else {
-            console.log("true/yes")
             var dropdown = $('#EnableSAPConnection');
             dropdown.removeClass('disabled');
             dropdown.removeAttr('disabled');
