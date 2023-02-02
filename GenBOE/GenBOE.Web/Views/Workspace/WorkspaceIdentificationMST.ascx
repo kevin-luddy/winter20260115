@@ -436,8 +436,7 @@
                         {
                             new SelectListItem() { Text = "Yes", Value = "True" },
                             new SelectListItem() { Text = "No", Value = "False" }
-                        },
-                        new { @disabled = !Model.UsingTemplateBoe }) %>
+                        }) %>
                 </div>
                 <%: Html.HiddenFor(c => c.EnableSAPConnection) %>
             </div>
