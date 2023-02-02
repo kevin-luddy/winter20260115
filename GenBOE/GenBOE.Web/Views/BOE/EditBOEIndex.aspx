@@ -48,7 +48,6 @@
 			DisableSaveText: '',
 			SapWebiRepository: '<%=RepositoryName.SapWebi.GetDescription()%>',
 			SapConnectionEnabled: '<%=ViewData["EnableSAPConnection"]%>'.isTrue(),
-			RmsSapEnabledSource: '<%=RepositoryName.SAP.GetDescription()%>',
             RmsSapDisabledSource: '<%=RepositoryName.User.GetDescription()%>',
 			SscSapDisabledSource: '<%=RepositoryName.ConnectionDisabledSapWebi.GetDescription()%>'
         });

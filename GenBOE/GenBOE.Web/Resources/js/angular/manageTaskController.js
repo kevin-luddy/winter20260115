@@ -1232,13 +1232,8 @@
 								postedTable.AdditionalQueryFilters = postedTable.AdditionalQueryFilters.join("\n");
                             }
 
-                            // Update table source
-                            if ($scope.ManageTaskModel.SapConnectionEnabled) {
-                                if (!$scope.ManageTaskModel.IsSpace) {
-                                    postedTable.RepositoryName = $scope.ManageTaskModel.RmsSapEnabledSource;
-								}
-                            }
-                            else {
+                            // Update table source if SAP Connection is disabled
+                            if (!$scope.ManageTaskModel.SapConnectionEnabled) {
                                 if ($scope.ManageTaskModel.IsSpace) {
                                     if (postedTable.RepositoryName == $scope.ManageTaskModel.SapWebiRepository) {
                                         postedTable.RepositoryName = $scope.ManageTaskModel.SscSapDisabledSource;

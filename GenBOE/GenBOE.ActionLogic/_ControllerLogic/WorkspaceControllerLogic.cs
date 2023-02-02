@@ -2341,6 +2341,8 @@ namespace GenBOE.ActionLogic.ControllerLogic
 						{
 							table.ContractNumber = model.ContractNumber;
 						}
+
+						table.RepositoryName = RepositoryName.SAP.GetDescription();
 					}
 
 					resultModel.TotalRelevantHoursPrevious = table.TotalRelevantHours;
