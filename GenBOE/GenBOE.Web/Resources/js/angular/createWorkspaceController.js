@@ -4,6 +4,7 @@
     $scope.step = 1;                        // Current step of the wizard
     $scope.errors = [];
     $scope.identificationPageSetup = false; // Has the identification page been setup yet.  Used to make sure the setup code is only run once when Step 3 is shown to user.
+    $scope.sapEnabledAPI = 'GetEnableSAPConfig';    // API method name used to retrieve the value in Web.config
 
     // model houses the labels, dropdowns, etc for page setup
     $scope.model = {
@@ -43,7 +44,7 @@
     };
 
     $scope.getSapConfiguration = function () {
-        var sapConfigUrl = CreateSAPEnabledURL(CreateWorkspaceModelView.Controller);
+        var sapConfigUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, $scope.sapEnabledAPI);
         $http({
             method: 'GET',
             url: sapConfigUrl,

@@ -206,7 +206,6 @@
 
 	   originalSapConnectionEnabled = $('#EnableSAPConnection').val();
     });
-   });
 
 	// Dynamically set disabled/readonly dropdown for SAP connection
 	if ('<%: Model.UsingTemplateBoe %>' == "False") {
