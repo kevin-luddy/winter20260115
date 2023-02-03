@@ -1,0 +1,643 @@
+﻿using ACV.Shared;
+using APTSPropricerApi.Connection;
+using APTSPropricerApi.DTOs;
+using EBS.Core;
+using EBS.ProPricer.Data;
+using EBS.ProPricer.Model;
+using EBS.ProPricer.Model.General;
+using EBS.ProPricer.Model.Pricing;
+
+namespace APTSPropricerApi.Common
+{
+    public static class Utility
+    {
+        /// <summary>
+        /// Get All Proposals
+        /// </summary>
+        /// <param name="ppc">The ProPricer Connection</param>
+        /// <param name="logger">The Logger</param>
+        /// <returns>List of all proposals</returns>
+        public static List<ProposalFolderInfo> GetAllProposals(IProPricerConnection ppc, ILogger logger)
+        {
+            List<ProposalFolderInfo> tree = new List<ProposalFolderInfo>();
+
+            try
+            {
+                if (ppc.Workspace != null)
+                {
+                    List<ProposalFolderInfo> allFolders = ppc.Workspace.GlobalLibrary.Folders.GetItems(FolderCategory.Proposal).Select(x => new ProposalFolderInfo(x)).OrderBy(f => f.Name).ToList();
+
+                    List<ProposalFolderInfo> allProposals = ppc.Workspace.Proposals.Items().Select(x => new ProposalFolderInfo(x)).OrderBy(f => f.Name).ToList();
+
+                    allFolders.AddRange(allProposals);
+
+                    Dictionary<EntityId, ProposalFolderInfo> proposalFolderById = allFolders.ToDictionary(x => x.EntityId);
+
+                    foreach (ProposalFolderInfo folder in allFolders)
+                    {
+                        bool parentFound = false;
+                        if (folder.ParentEntityId.HasValue)
+                        {
+                            if (proposalFolderById.TryGetValue(folder.ParentEntityId.Value, out ProposalFolderInfo parentFolder))
+                            {
+                                parentFound = true;
+                                parentFolder.ChildElements.Add(folder);
+                            }
+                        }
+
+                        if (!parentFound)
+                        {
+                            tree.Add(folder);
+                        }
+                    };
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "GetAllProposals");
+                throw new Exception("Operation failed.");
+            }
+
+            return tree;
+        }
+
+        /// <summary>
+		/// Gets the Pool Manager instances.
+		/// </summary>
+		/// <returns>Returns a collection of the pool manager instances.</returns>
+        public static ICollection<PoolInstanceDto> GetAllPoolInstances(PoolManagerList poolManagerList, ILogger logger)
+        {
+            List<PoolInstanceDto> instances = new List<PoolInstanceDto>();
+
+            try
+            {
+                bool isUsingBackup = ConfigurationServiceWeb.Configuration.GetValue<bool>("UseProPricerBackup");
+                foreach (PoolManager poolManager in poolManagerList.Instances)
+                {
+                    instances.Add(new PoolInstanceDto
+                    {
+                        Id = poolManager.InstanceId,
+                        IsBackup = isUsingBackup,
+                        FriendlyName = poolManager.FriendlyName
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Get Pool Instances");
+                throw new Exception("Operation failed.");
+            }
+
+            return instances;
+        }
+
+        /// <summary>
+        /// Returns the general proposal data for a given proposal
+        /// </summary>
+        /// <param name="instanceId">The instance identifier.</param>
+        /// <param name="id">The EntityId of the proposal in the form of a GUID. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
+        /// <returns>
+        /// Returns the general proposal data for a given proposal
+        /// </returns>
+        public static ProposalDto GetProposal(PoolManagerList poolManagerList, ILogger logger, int instanceId, string id)
+        {
+            ProposalDto pDto = new ProposalDto();
+            Proposal pr = null;
+
+            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+            {
+                // GUID or Name|Version?
+                if (id.Contains("|"))
+                {
+                    // Name
+                    string[] parts = id.Split('|');
+                    pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value();
+                }
+                else
+                {
+                    // GUID
+                    EntityId pEntityId = new EntityId(new Guid(id));
+                    pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
+                }
+
+                try
+                {
+                    pr.Open();
+                    pDto.CreatorName = pr.Creator == null ? string.Empty : pr.Creator.Name;
+                    pDto.Id = pr.Id.ToString();
+                    pDto.Number = pr.Number;
+                    pDto.Name = pr.Name;
+                    pDto.Version = pr.Version;
+                    pDto.Description = pr.Description;
+                    //System.Diagnostics.Debug.WriteLine(pr.Notes.Text);
+                    pDto.Title = pr.Title;
+                    pDto.Manager = pr.Manager;
+                    pDto.BusinessUnit = pr.BusinessUnit;
+                    pDto.Rfq = pr.RFQ;
+                    pDto.FiscalYearStartMonthOffset = pr.FiscalYearStartMonthOffset;
+                    pDto.TaskIdLabel = pr.TaskIdLabel;
+                    pDto.RptFooter = pr.RptFooter;
+                    pDto.StartDate = pr.StartDate.ToString();
+                    pDto.EndDate = pr.EndDate.ToString();
+                    pDto.NumberMonths = ((pr.EndDate.Value.Year - pr.StartDate.Value.Year) * 12) + pr.EndDate.Month - pr.StartDate.Month + 1;
+                    pDto.DueDate = pr.DueDate.ToString();
+                    pDto.ResourceDecimalPercision = pr.ResourceDecimals;
+                    pDto.AwardProbability = pr.AwardProbability.ToString();
+                    pDto.TargetPrice = pr.TargetPrice.ToString();
+                    pDto.GlobalProfitFactor = pr.GlobalProfitFactor.HasValue ? pr.GlobalProfitFactor.Value.ToString() : "0";
+                    pDto.DirectRateTable = pr.DirectRateTable != null ? pr.DirectRateTable.Name : string.Empty;
+                    pDto.BurdenRateTable = pr.BurdenRateTable != null ? pr.BurdenRateTable.Name : string.Empty;
+                    pDto.TravelRateTable = pr.TravelRateTable != null ? pr.TravelRateTable.Name : string.Empty;
+                    pDto.FactorRateTable = pr.FactorRateTable != null ? pr.FactorRateTable.Name : string.Empty;
+                    pr.Notes.Open();
+                    pDto.Notes = pr.Notes.Text;
+                    pr.Notes.Close();
+
+                    foreach (SummaryFieldDefinition sfd in pr.SummaryFieldDefinitions.Items())
+                    {
+                        SummaryFieldDefinitionsDto sfdDto = new SummaryFieldDefinitionsDto
+                        {
+                            Name = sfd.Name,
+                            DataType = sfd.DataType.ToString(),
+                            MaxLength = sfd.MaxLength,
+                            SortType = sfd.SortType.ToString()
+                        };
+                        try
+                        {
+                            sfdDto.TitleTable = sfd.TitleTable != null ? sfd.TitleTable.Name : string.Empty;
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogError(ex, "Property: TitleTable");
+                        }
+
+                        try
+                        {
+                            sfdDto.Validate = sfd.Validate;
+                        }
+                        catch // (Exception ex)
+                        {
+                            // Dusan - this seems to be failing quite a bit, and clogging up logs. Leaving it in here in case that property serves a purpose, but not going to keep logging it
+                            // logger.LogError(ex, "Property: Validate");
+                        }
+
+                        sfdDto.Required = sfd.Required;
+                    }
+
+                    pr.Close();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error retrieving Proposal");
+                    throw new Exception("Operation failed.");
+                }
+            }
+
+            return pDto;
+        }
+
+        /// <summary>
+        /// Returns the tasks for a given proposal
+        /// </summary>
+        /// <param name="instanceId">The instance identifier.</param>
+        /// <param name="id">The EntityId of the proposal in the form of a GUID. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
+        /// <returns>
+        /// Returns the tasks for a given proposal
+        /// </returns>
+        public static ICollection<TaskDto> GetTasksForProposal(PoolManagerList poolManagerList, ILogger logger, int instanceId, string id)
+        {
+            bool getall = false;
+            if (id.EndsWith("Direct"))
+            {
+                id = id.Substring(0, id.Length - 6);
+            }
+            else
+            {
+                getall = true;
+            }
+
+            Proposal pr = null;
+            string whichvar = "proposal id";
+            List<TaskDto> tasks = new List<TaskDto>();
+            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+            {
+                try
+                {
+                    // GUID or Name|Version?
+                    if (id.Contains("|"))
+                    {
+                        // Name
+                        string[] parts = id.Split('|');
+                        pr = ppc.Workspace.Proposals.Find(parts[0], parts[1]).Value();
+                    }
+                    else
+                    {
+                        // GUID
+                        EntityId pEntityId = new EntityId(new Guid(id));
+                        pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
+                    }
+
+                    pr.Open();
+                    ///////////////////////////////////
+                    foreach (EBS.ProPricer.Model.Task t in pr.Tasks.Items())
+                    {
+                        whichvar = "tasks";
+                        t.Open();
+                        TaskDto tdto = new TaskDto
+                        {
+                            Id = t.Id.ToString(),
+                            Name = t.Name,
+                            Description = t.Description,
+                            StartDate = t.StartDate.ToString(),
+                            EndDate = t.EndDate.ToString(),
+                            ActualFee = t.ActualFee.ToString(),
+                            Quantity = t.Quantity
+                        };
+                        //          if ((t.ActualFee != t.Fee) && (t.Fee != null))
+                        //          {
+                        //              System.Diagnostics.Debug.WriteLine("Actual fee  " + t.ActualFee.ToString() + "Fee" + t.Fee.ToString());
+                        //          }
+
+                        whichvar = "resource assignment";
+                        List<ResourceAssignmentDto> resourceAssignments = new List<ResourceAssignmentDto>();
+
+                        if (t.ResourceAssignments != null && t.ResourceAssignments.Count > 0)
+                        {
+                            foreach (IResourceAssignment r in t.ResourceAssignments.Items())
+                            {
+                                r.Open();
+                                if (r.Source.Type.ToString() == "Direct" || getall)
+                                {
+                                    //System.Diagnostics.Debug.WriteLine("Resource: " + r.Info.Description);
+
+                                    //CostInfo cInfo = r.GetCost();
+                                    //System.Diagnostics.Debug.WriteLine("DirectCost: " + cInfo.DirectCost);
+
+                                    //BurdenCostElementCollection bcec = cInfo.BurdenElements;
+                                    //foreach (var bce in bcec)
+                                    //{
+                                    //    System.Diagnostics.Debug.WriteLine(bce.Name);
+                                    //}
+
+                                    ResourceAssignmentDto rdto = new ResourceAssignmentDto();
+
+                                    List<SpreadDto> spread = new List<SpreadDto>();
+                                    //System.Diagnostics.Debug.WriteLine(r.Spread.Curve);
+                                    rdto.SpreadCurve = r.Spread.Curve != null ? r.Spread.Curve.Name : string.Empty;
+                                    rdto.Amount = r.Spread.Amount.ToString();
+                                    rdto.StartDate = r.Spread.StartDate != null ? r.Spread.StartDate.ToString() : string.Empty;
+                                    rdto.EndDate = r.Spread.EndDate != null ? r.Spread.EndDate.ToString() : string.Empty;
+                                    rdto.Id = r.Info.Resource.Id.ToString();
+                                    rdto.Name = r.Info.Resource.Name;
+                                    rdto.InfoDescription = r.Info.Resource.Description;
+                                    rdto.SourceType = r.Source.Type.ToString();
+
+                                    List<ResourceFieldsDto> rsfdto = new List<ResourceFieldsDto>();
+                                    if (r.Info.ResourceFields != null)
+                                    {
+                                        foreach (KeyValuePair<IResourceFieldDefinition, IResourceFieldStandardValue> item in r.Info.ResourceFields)
+                                        {
+                                            ResourceFieldsDto rfdto = new ResourceFieldsDto
+                                            {
+                                                Key = item.Key != null ? item.Key.Name : string.Empty,
+                                                Value = item.Value != null ? item.Value.Value.ToString() : string.Empty
+                                            };
+                                            rsfdto.Add(rfdto);
+                                        }
+                                    }
+
+                                    rdto.ResourceFields = rsfdto;
+
+                                    if (rdto.SourceType == "Group")
+                                    {
+                                        rdto.SourceType = "CER";
+                                    }
+
+                                    // COST for v9.2+
+                                    if (r.GetCost() != null)
+                                    {
+                                        CostInfo c = r.GetCost();
+                                        rdto.DirectCost = c.DirectCost.ToString();
+                                        // Look in BurdenElements to find the Price element (Linq)
+                                        IEnumerable<IBurdenCostElement> price =
+                                            from ele in c.BurdenElements
+                                            where ele.Name.Equals("Price")
+                                            select ele;
+
+                                        if (price != null && price.Any())
+                                        {
+                                            rdto.Price = c.BurdenCost(price.ElementAt(0).Position).ToString();
+                                        }
+
+                                        List<BurdenCostDto> burdensDto = new List<BurdenCostDto>();
+                                        foreach (IBurdenCostElement el in c.BurdenElements)
+                                        {
+                                            BurdenCostDto burdens = new BurdenCostDto
+                                            {
+                                                Name = el.Name
+                                            };
+                                            int pos = el.Position;
+                                            burdens.Value = c.BurdenCost(pos).ToString();
+                                            burdensDto.Add(burdens);
+                                        }
+
+                                        rdto.BurdenCost = burdensDto;
+                                    }
+
+                                    r.GetCost();
+
+                                    if (r.Spread.Distribution != null)
+                                    {
+                                        spread.AddRange(r.Spread.Distribution.Select(s => new SpreadDto
+                                        {
+                                            Year = s.Key.Year,
+                                            Month = s.Key.Month,
+                                            Value = s.Value.ToString()
+                                        }));
+                                    }
+
+                                    rdto.Spread = spread;
+                                    resourceAssignments.Add(rdto);
+                                } //direct
+
+                                r.Close();
+                            }
+                        }
+
+                        tdto.ResourceAssignments = resourceAssignments;
+
+                        whichvar = "material assignment";
+                        // material assignment
+                        List<MaterialAssignmentDto> materialAssignments = new List<MaterialAssignmentDto>();
+                        foreach (MaterialAssignment ma in t.MaterialAssignments.Items())
+                        {
+                            ma.Open();
+
+                            MaterialAssignmentDto madto = new MaterialAssignmentDto();
+
+                            List<SpreadDto> spread = new List<SpreadDto>();
+                            //System.Diagnostics.Debug.WriteLine(r.Spread.Curve);
+                            madto.MaterialName = ma.MaterialName; //mat id 
+                            madto.Description = ma.Description;
+                            madto.Type = ma.Type.ToString();
+                            madto.PartName = ma.Name; //Assembly/Part
+                            madto.PartDescription = ma.MaterialDescription;
+                            madto.MakeBuy = ma.MakeBuy.ToString();
+                            madto.UnitQty = ma.UnitQty.ToString();
+                            madto.ShipQty = ma.ShipQty.ToString();
+                            madto.TotalMfgStartQty = ma.TotalMfgStartQty.ToString();
+                            madto.UnitCost = ma.UnitCost.ToString();
+                            madto.TotalCost = ma.TotalCost.ToString();
+                            //  madto.spreadCurve = (ma.Spread.Curve != null) ? ma.Spread.Curve.Name : string.Empty;
+                            //  madto.startDate = (ma.Spread.StartDate != null) ? ma.Spread.StartDate.ToString() : string.Empty;
+                            //  madto.endDate = (ma.Spread.EndDate != null) ? ma.Spread.EndDate.ToString() : string.Empty;
+
+                            whichvar = "material resource assignment";
+
+                            if (ma.ResourceAssignmentInfo != null)
+                            {
+                                // if (r.Source.Type.ToString() == "Direct")
+                                // {
+
+                                ResourceAssignmentDto rdto = new ResourceAssignmentDto();
+
+                                List<SpreadDto> matspread = new List<SpreadDto>();
+
+                                rdto.InfoDescription = ma.ResourceAssignmentInfo.Resource.Description;
+                                rdto.Name = ma.ResourceAssignmentInfo.Resource.Name;
+
+                                rdto.SpreadCurve = ma.Spread.Curve != null ? ma.Spread.Curve.Name : string.Empty;
+                                rdto.StartDate = ma.Spread.StartDate != null ? ma.Spread.StartDate.ToString() : string.Empty;
+                                rdto.EndDate = ma.Spread.EndDate != null ? ma.Spread.EndDate.ToString() : string.Empty;
+                                rdto.Amount = ma.Spread.Amount != null ? ma.Spread.Amount.ToString() : "0";
+
+                                List<ResourceFieldsDto> rsfdto = new List<ResourceFieldsDto>();
+                                if (ma.ResourceAssignmentInfo.ResourceFields != null)
+                                {
+                                    foreach (KeyValuePair<IResourceFieldDefinition, IResourceFieldStandardValue> item in ma.ResourceAssignmentInfo.ResourceFields)
+                                    {
+                                        ResourceFieldsDto rfdto = new ResourceFieldsDto
+                                        {
+                                            Key = item.Key != null ? item.Key.Name : string.Empty,
+                                            Value = item.Value != null ? item.Value.Value.ToString() : string.Empty
+                                        };
+                                        rsfdto.Add(rfdto);
+                                    }
+                                }
+
+                                rdto.ResourceFields = rsfdto;
+
+                                if (ma.Spread != null)
+                                {
+                                    foreach (KeyValuePair<TimeFrame, double> s in ma.Spread)
+                                    {
+                                        SpreadDto sdto = new SpreadDto
+                                        {
+                                            Year = s.Key.Year,
+                                            Month = s.Key.Month,
+                                            Value = s.Value.ToString()
+                                        };
+                                        matspread.Add(sdto);
+                                    }
+                                }
+
+                                rdto.Spread = matspread;
+                                madto.ResourceAssignment = rdto;
+                            }
+
+                            whichvar = "material associated costs";
+
+                            List<AssociatedCostsDto> asclistdto = new List<AssociatedCostsDto>();
+                            if (ma.AssociatedCosts != null && ma.AssociatedCosts.Count > 0)
+                            {
+                                List<SpreadDto> ascspread = new List<SpreadDto>();
+                                foreach (MaterialAssignmentAssociatedCost asc in ma.AssociatedCosts.Items())
+                                {
+                                    AssociatedCostsDto ascdto = new AssociatedCostsDto
+                                    {
+                                        Id = asc.Id.ToString(),
+                                        Name = asc.Name,
+
+                                        SpreadCurve = asc.Spread.Curve != null ? asc.Spread.Curve.Name : string.Empty,
+                                        StartDate = asc.Spread.StartDate != null ? asc.Spread.StartDate.ToString() : string.Empty,
+                                        EndDate = asc.Spread.EndDate != null ? asc.Spread.EndDate.ToString() : string.Empty,
+                                        TotalAmount = asc.Spread.Amount ?? 0,
+                                        Amount = asc.Amount,
+                                        LinkQty = asc.LinkQty,
+                                        LinkSpread = asc.LinkSpread
+                                    };
+
+                                    ResourcesDto ascresdto = new ResourcesDto
+                                    {
+                                        Name = asc.ResourceAssignmentInfo.Resource.Name,
+                                        Description = asc.ResourceAssignmentInfo.Resource.Description,
+                                        Rclass = asc.ResourceAssignmentInfo.Resource.ResourceClass.Name,
+                                        Type = asc.ResourceAssignmentInfo.Resource.Type.ToString()
+                                    };
+                                    ascdto.Resource = ascresdto;
+
+                                    List<ResourceFieldsDto> rsfdto = new List<ResourceFieldsDto>();
+                                    if (asc.ResourceAssignmentInfo.ResourceFields != null)
+                                    {
+                                        foreach (KeyValuePair<IResourceFieldDefinition, IResourceFieldStandardValue> item in asc.ResourceAssignmentInfo.ResourceFields)
+                                        {
+                                            ResourceFieldsDto rfdto = new ResourceFieldsDto
+                                            {
+                                                Key = item.Key != null ? item.Key.Name : string.Empty,
+                                                Value = item.Value != null ? item.Value.Value.ToString() : string.Empty
+                                            };
+                                            rsfdto.Add(rfdto);
+                                        }
+                                    }
+
+                                    ascdto.ResourceFields = rsfdto;
+
+                                    if (asc.Spread != null)
+                                    {
+                                        foreach (KeyValuePair<TimeFrame, double> s in asc.Spread)
+                                        {
+                                            SpreadDto sdto = new SpreadDto
+                                            {
+                                                Year = s.Key.Year,
+                                                Month = s.Key.Month,
+                                                Value = s.Value.ToString()
+                                            };
+                                            ascspread.Add(sdto);
+                                        }
+                                    }
+
+                                    ascdto.Spread = ascspread;
+                                    asclistdto.Add(ascdto);
+                                }
+                            }
+
+                            madto.AssociatedCosts = asclistdto;
+                            materialAssignments.Add(madto);
+                            ma.Close();
+                        }
+
+                        tdto.MaterialAssignments = materialAssignments;
+
+                        whichvar = "summary fields";
+                        List<SummaryFieldsDto> summaryFields = new List<SummaryFieldsDto>();
+                        foreach (KeyValuePair<SummaryFieldDefinition, SummaryFieldValue?> sf in t.SummaryFields)
+                        {
+                            SummaryFieldsDto sfdto = new SummaryFieldsDto();
+                            System.Diagnostics.Debug.WriteLine("sf.Key: " + sf.Key.Name);
+                            System.Diagnostics.Debug.WriteLine("sf.Value: " + sf.Value);
+                            sfdto.Key = sf.Key.Name;
+                            sfdto.Value = sf.Value.ToString();
+                            summaryFields.Add(sfdto);
+                        }
+
+                        tdto.SummaryFields = summaryFields;
+
+                        whichvar = "travel";
+                        // travel
+                        List<TravelsDto> trvlDto = new List<TravelsDto>();
+                        foreach (TravelAssignment trv in t.Travels.Items())
+                        {
+                            TravelsDto trvl = new TravelsDto
+                            {
+                                Id = trv.Id.ToString(),
+                                Name = trv.Name,
+                                Description = trv.Description,
+                                Destination = trv.DestinationName,
+                                DestinationDescription = trv.DestinationDescription,
+                                Comments = trv.Comments,
+                                People = trv.People,
+                                Days = trv.Days.ToString(),
+                                Trips = trv.Trips,
+                                TripCost = trv.TripCost.ToString(),
+                                TotalCost = trv.TotalCost.ToString()
+                            };
+
+                            ResourceAssignmentDto resassign = new ResourceAssignmentDto();
+                            if (trv.ResourceAssignmentInfo.Resource != null)
+                            {
+                                resassign.Name = trv.ResourceAssignmentInfo.Resource.Name;
+                                resassign.InfoDescription = trv.ResourceAssignmentInfo.Resource.Description;
+                            }
+
+                            List<ResourceFieldsDto> rsfdto = new List<ResourceFieldsDto>();
+                            if (trv.ResourceAssignmentInfo.ResourceFields != null)
+                            {
+                                foreach (KeyValuePair<IResourceFieldDefinition, IResourceFieldStandardValue> item in trv.ResourceAssignmentInfo.ResourceFields)
+                                {
+                                    ResourceFieldsDto rfdto = new ResourceFieldsDto
+                                    {
+                                        Key = item.Key != null ? item.Key.Name : string.Empty,
+                                        Value = item.Value != null ? item.Value.Value.ToString() : string.Empty
+                                    };
+                                    rsfdto.Add(rfdto);
+                                }
+                            }
+
+                            resassign.ResourceFields = rsfdto;
+
+                            resassign.SpreadCurve = trv.Spread.Curve != null ? trv.Spread.Curve.Name : string.Empty;
+                            resassign.StartDate = trv.Spread.StartDate != null ? trv.Spread.StartDate.ToString() : string.Empty;
+                            resassign.EndDate = trv.Spread.EndDate != null ? trv.Spread.EndDate.ToString() : string.Empty;
+                            resassign.Amount = trv.Spread.Amount != null ? trv.Spread.Amount.ToString() : "0";
+
+                            List<SpreadDto> trvspread = new List<SpreadDto>();
+                            if (trv.Spread != null)
+                            {
+                                foreach (KeyValuePair<TimeFrame, double> s in trv.Spread)
+                                {
+                                    SpreadDto sdto = new SpreadDto
+                                    {
+                                        Year = s.Key.Year,
+                                        Month = s.Key.Month,
+                                        Value = s.Value.ToString()
+                                    };
+                                    trvspread.Add(sdto);
+                                }
+                            }
+
+                            resassign.Spread = trvspread;
+
+                            trvl.ResourceAssignment = resassign;
+
+                            List<TravelExpenseDto> trexdto = new List<TravelExpenseDto>();
+                            if (trv.Expenses != null)
+                            {
+                                foreach (TravelAssignment.Expense item in trv.Expenses.Items())
+                                {
+                                    TravelExpenseDto trdto = new TravelExpenseDto
+                                    {
+                                        Name = item.Definition.Name,
+                                        Qty = item.Quantity.ToString(),
+                                        Rate = item.Rate.ToString(),
+                                        Cost = item.Cost.ToString()
+                                    };
+                                    trexdto.Add(trdto);
+                                }
+                            }
+
+                            trvl.Expenses = trexdto;
+
+                            trvlDto.Add(trvl);
+                        }
+
+                        tdto.Travels = trvlDto;
+
+                        t.Close();
+
+                        tasks.Add(tdto);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "Error with " + whichvar);
+                    tasks[tasks.Count].Id = "Error with " + whichvar + " - " + ex.Message;
+                }
+                //////////////////////////////////
+
+                pr.Close();
+            }
+
+            return tasks;
+        }
+    }
+}
