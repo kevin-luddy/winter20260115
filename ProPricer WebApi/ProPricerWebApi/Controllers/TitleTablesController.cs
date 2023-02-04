@@ -19,6 +19,9 @@ namespace APTSPropricerApi.Controllers
 {
     public class TitleTablesController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -41,7 +44,7 @@ namespace APTSPropricerApi.Controllers
         [Route("{instanceId}")]
         public IEnumerable<string> Get(int instanceId)
         {
-            List<string> titles = new List<string>();
+            List<string> titles = new();
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
                 if (ppc.Workspace != null)
@@ -74,7 +77,7 @@ namespace APTSPropricerApi.Controllers
         public IEnumerable<TitleTablesDto> Get(int instanceId, string id)
         {
             TitleTable tt = null;
-            List<TitleTablesDto> titles = new List<TitleTablesDto>();
+            List<TitleTablesDto> titles = new();
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
                 // example id - F35 System Code
@@ -84,7 +87,7 @@ namespace APTSPropricerApi.Controllers
                     tt.Open();
                     foreach (Title t in tt.Elements.Items())
                     {
-                        TitleTablesDto ttd = new TitleTablesDto
+                        TitleTablesDto ttd = new()
                         {
                             Name = t.Name,
                             Description = t.Description

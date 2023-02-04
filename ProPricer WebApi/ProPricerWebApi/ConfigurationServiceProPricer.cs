@@ -3,13 +3,15 @@
     using ACV.Shared;
     using APTSPropricerApi.Common;
     using HealthChecks.UI.Client;
-    using Microsoft.AspNetCore.Authentication;
     using Microsoft.AspNetCore.Authentication.Negotiate;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Diagnostics.HealthChecks;
     using Serilog;
 
-    public class ConfigurationServiceNegotiate : ConfigurationServiceWeb
+    /// <summary>
+    /// Configuration Service Class that adds Negotiate and IES Auth Token
+    /// </summary>
+    public class ConfigurationServiceProPricer : ConfigurationServiceWeb
     {
         public void AddMultiAuthentication(IServiceCollection services)
         {
@@ -25,6 +27,10 @@
                 );
         }
 
+        /// <summary>
+        /// Adds Authorization Policies to the Service Collection
+        /// </summary>
+        /// <param name="services">Service Collection</param>
         protected override void AddAuthorizationPolicies(IServiceCollection services)
         {
             services.AddAuthorization(options =>
@@ -44,7 +50,7 @@
         }
 
         /// <summary>
-        /// Configure Health Checks for the application
+        /// Configure Health Checks for the application (removing Database dependency)
         /// 
         /// Should be called from Startup.ConfigureServices
         /// </summary>
@@ -57,6 +63,7 @@
 
         /// <summary>
 		/// Configure AppBuilder w/ Serilog and setup a health endpoint
+        /// Add custom Middleware for User
 		/// </summary>
 		/// <param name="app">App to configure</param>
 		public new void ConfigureAppBuilder(IApplicationBuilder app)
@@ -69,8 +76,8 @@
             app.UseRouting();
             app.UseCors("CorsPolicy");
             app.UseAuthorization();
-            // app.UseMiddleware<UserLoggingMiddleware>();
-            // app.UseMiddleware<CorrelationMiddleware>();
+            app.UseMiddleware<ProPricerUserLoggingMiddleware>();
+            app.UseMiddleware<CorrelationMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {

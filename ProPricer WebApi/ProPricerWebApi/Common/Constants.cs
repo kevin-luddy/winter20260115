@@ -94,7 +94,7 @@ namespace APTSPropricerApi
         /// 
         /// It is set to 5 minutes.. This is not meant as a performance benchmark, just as a fail-safe to prevent the application from locking up IIS
         /// </summary>
-        public static readonly TimeSpan REGEX_TIMEOUT = new TimeSpan(0, 5, 0);
+        public static readonly TimeSpan REGEX_TIMEOUT = new(0, 5, 0);
 
         /// <summary>
         /// Temporary directory for files

@@ -83,11 +83,11 @@ namespace APTSPropricerApi
             string taskData, string resourceData, ProPricerExportOption taskExportOption,
             ProPricerExportOption resourceExportOption)
         {
-            ProPricerExportResults exportResults = new ProPricerExportResults();
+            ProPricerExportResults exportResults = new();
 
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
-                Guid id = new Guid(proposalId);
+                Guid id = new(proposalId);
                 Proposal proposal = ppc.Workspace.Proposals.Find(id).Value();
                 if (proposal != null)
                 {
@@ -124,12 +124,12 @@ namespace APTSPropricerApi
         /// <returns>The results of the export.</returns>
         private ProPricerExportResult ExportTasksToProposal(Proposal proposal, string taskExportFileName, string exceptionFileName, ProPricerExportOption taskExportOption)
         {
-            ProPricerExportResult exportResults = new ProPricerExportResult();
+            ProPricerExportResult exportResults = new();
 
             try
             {
                 // Instantiate, Initialize and Execute export using ProPricer ASCII "Task Data" import API.
-                TaskDataImport taskDataImport = new TaskDataImport(proposal.Tasks);
+                TaskDataImport taskDataImport = new(proposal.Tasks);
 
                 if (taskExportOption == ProPricerExportOption.ReplaceAllExisting)
                 {
@@ -169,12 +169,12 @@ namespace APTSPropricerApi
         /// <returns>The results of the export.</returns>
         private ProPricerExportResult ExportResourcesToProposal(Proposal proposal, string resourceExportFile, string exceptionFileName, ProPricerExportOption resourceExportOption)
         {
-            ProPricerExportResult exportResults = new ProPricerExportResult();
+            ProPricerExportResult exportResults = new();
 
             try
             {
                 // Instantiate, Initialize and Execute export using ProPricer ASCII "Resource Hours/Cost" import API.
-                ResourceHoursCostImport hoursCostImport = new ResourceHoursCostImport(proposal.Tasks);
+                ResourceHoursCostImport hoursCostImport = new(proposal.Tasks);
 
                 if (resourceExportOption == ProPricerExportOption.ReplaceAllExisting)
                 {
@@ -248,7 +248,7 @@ namespace APTSPropricerApi
         private string CreateTemporaryExportFile(string folderPath, string fileExtension, string data)
         {
             // Create a new unique file name for saving the data.
-            string fullFileName = Path.GetDirectoryName(folderPath) + "\\" + Path.GetRandomFileName() + "." + fileExtension;
+            string fullFileName = $"{Path.GetDirectoryName(folderPath)}\\{Path.GetRandomFileName()}.{fileExtension}";
             File.WriteAllText(fullFileName, data);
 
             return fullFileName;
@@ -263,7 +263,7 @@ namespace APTSPropricerApi
         /// <returns>Export results string.</returns>
         private ProPricerExportResult GetExportResults(Statistics importStats, string exceptionFileName, string logFileName)
         {
-            ProPricerExportResult exportResults = new ProPricerExportResult
+            ProPricerExportResult exportResults = new()
             {
                 TotalRecordsInException = importStats.Exceptioned,
                 TotalRecordsInImportFile = importStats.All,
@@ -284,6 +284,7 @@ namespace APTSPropricerApi
         /// contains records we attempted to export and the log file contains error messages resulting in the failed export of
         /// those records.
         /// </summary>
+        /// <param name="exportResults">The Export Results</param>
         /// <param name="exceptionFile">Fully qualified path to the exception file.</param>
         /// <param name="logFile">Fully qualified path to the log file.</param>
         public void ProcessExceptionFile(ProPricerExportResult exportResults, string exceptionFile, string logFile)
@@ -321,7 +322,7 @@ namespace APTSPropricerApi
                 }
                 catch (Exception ex)
                 {
-                    StringBuilder error = new StringBuilder(ex.Message);
+                    StringBuilder error = new(ex.Message);
                     error.Append(" Please Contact your system administrator. ");
                     exportResults.ProcessExceptionFileError = error.ToString();
                     error.Append(ex.StackTrace);
@@ -348,7 +349,7 @@ namespace APTSPropricerApi
         /// <returns>Export results string.</returns>
         private string GetImportStatistics(Statistics importStats)
         {
-            StringBuilder stats = new StringBuilder();
+            StringBuilder stats = new();
             stats.Append("IMPORTING COMPLETED" + Environment.NewLine + Environment.NewLine);
             stats.Append("Records in the Import File:       " + importStats.All + Environment.NewLine);
             stats.Append("Records in the Exception File:    " + importStats.Exceptioned + Environment.NewLine);

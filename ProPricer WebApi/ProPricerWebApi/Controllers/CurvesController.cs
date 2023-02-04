@@ -21,6 +21,9 @@ namespace APTSPropricerApi.Controllers
     /// </summary>
     public class CurvesController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>

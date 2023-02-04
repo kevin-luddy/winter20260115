@@ -28,7 +28,7 @@ namespace APTSPropricerApi
 		/// <summary>
 		/// Configuration Service
 		/// </summary>
-		private readonly ConfigurationServiceNegotiate configurationService;
+		private readonly ConfigurationServiceProPricer configurationService;
 
 		/// <summary>
 		/// Ctor

@@ -15,6 +15,9 @@ namespace APTSPropricerApi.Controllers
 {
     public class BurdenRateTablesController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>

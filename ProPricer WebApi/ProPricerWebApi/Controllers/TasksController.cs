@@ -25,6 +25,9 @@ namespace APTSPropricerApi.Controllers
     /// </summary>
     public class TasksController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -62,7 +65,7 @@ namespace APTSPropricerApi.Controllers
         [Route("{instanceId}")]
         public IEnumerable<TaskDto> Post(int instanceId, [FromBody] ProposalDto proposalAndTasks)
         {
-            List<TaskDto> retasks = new List<TaskDto>();
+            List<TaskDto> retasks = new();
             TaskDto retask;
             if (proposalAndTasks == null)
             {
@@ -81,7 +84,7 @@ namespace APTSPropricerApi.Controllers
             {
                 try
                 {
-                    EntityId pEntityId = new EntityId(new Guid(proposalAndTasks.Id));
+                    EntityId pEntityId = new(new Guid(proposalAndTasks.Id));
                     ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
 
                     //  Proposal ppProposal = ppc.workspace.Proposals.Find(proposalAndTasks.Name, proposalAndTasks.Version).Value;
@@ -150,7 +153,7 @@ namespace APTSPropricerApi.Controllers
             {
                 try
                 {
-                    EntityId pEntityId = new EntityId(new Guid(id));
+                    EntityId pEntityId = new(new Guid(id));
                     Proposal pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
 
                     //lock the proposal for modification.
@@ -177,7 +180,7 @@ namespace APTSPropricerApi.Controllers
         // loop thru each supplied task and add to the current proposal
         private List<TaskDto> AddTasks(IProPricerConnection ppc, Proposal proposal, ProposalDto proposalAndTasks, BurdenPoolLibrary burdenPoolLibrary)
         {
-            List<TaskDto> retasks = new List<TaskDto>();
+            List<TaskDto> retasks = new();
             foreach (TaskDto task in proposalAndTasks.Tasks)
             {
                 //if (task.name == "175")
@@ -185,7 +188,7 @@ namespace APTSPropricerApi.Controllers
                 //    task.id = task.id;
                 //}
                 string rc = this.AddTask(ppc, proposal, task, burdenPoolLibrary);
-                TaskDto retask = new TaskDto();
+                TaskDto retask = new();
                 if (rc == string.Empty)
                 {
                     Optional<Task> tc = proposal.Tasks.Find(task.Name);
@@ -1017,7 +1020,7 @@ namespace APTSPropricerApi.Controllers
         {
             if (proposalAndTasks == null)
             {
-                ReturnDto retdto = new ReturnDto
+                ReturnDto retdto = new()
                 {
                     Retcode = "500",
                     Retmsg = "No data was entered to change"
@@ -1031,7 +1034,7 @@ namespace APTSPropricerApi.Controllers
             {
                 try
                 {
-                    EntityId pEntityId = new EntityId(new Guid(proposalAndTasks.Id));
+                    EntityId pEntityId = new(new Guid(proposalAndTasks.Id));
                     Proposal ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
 
                     //  Proposal ppProposal = ppc.workspace.Proposals.Find(proposalAndTasks.Name, proposalAndTasks.Version).Value;
@@ -1104,7 +1107,7 @@ namespace APTSPropricerApi.Controllers
                 {
                     this.Logger.LogError(ex, "Error with " + whichvar + " - " + ex.BrokenRules[0]);
                     System.Diagnostics.Debug.WriteLine("Error with " + whichvar + " - " + ex.BrokenRules[0]);
-                    ReturnDto retdto = new ReturnDto
+                    ReturnDto retdto = new()
                     {
                         Retcode = "500",
                         Retmsg = "Broken rules with " + whichvar + " - " + ex.BrokenRules[0]
@@ -1116,7 +1119,7 @@ namespace APTSPropricerApi.Controllers
                 {
                     this.Logger.LogError(ex, "Error with " + whichvar);
                     System.Diagnostics.Debug.WriteLine("Error with " + whichvar + " - " + ex.Message);
-                    ReturnDto retdto = new ReturnDto
+                    ReturnDto retdto = new()
                     {
                         Retcode = "500",
                         Retmsg = "Error with " + whichvar + " - " + ex.Message
@@ -1124,7 +1127,7 @@ namespace APTSPropricerApi.Controllers
                     return retdto;
                 }
             }
-            ReturnDto goodretdto = new ReturnDto
+            ReturnDto goodretdto = new()
             {
                 Retcode = rc,
                 Retmsg = "Successful"

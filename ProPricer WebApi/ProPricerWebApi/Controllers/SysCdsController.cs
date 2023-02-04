@@ -18,6 +18,9 @@ namespace APTSPropricerApi.Controllers
 {
     public class SysCdsController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -40,7 +43,7 @@ namespace APTSPropricerApi.Controllers
         [Route("{instanceId}")]
         public IEnumerable<SysCdsDto> Get(int instanceId)
         {
-            List<SysCdsDto> sysCds = new List<SysCdsDto>();
+            List<SysCdsDto> sysCds = new();
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
                 if (ppc.Workspace != null)
@@ -55,7 +58,7 @@ namespace APTSPropricerApi.Controllers
                             rsd.Open();
                             foreach (Title sysCd in rsd.Elements.Items())
                             {
-                                SysCdsDto sysCdDto = new SysCdsDto
+                                SysCdsDto sysCdDto = new()
                                 {
                                     Name = sysCd.Name,
                                     Description = sysCd.Description

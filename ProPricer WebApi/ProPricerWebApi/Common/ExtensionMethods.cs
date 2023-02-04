@@ -29,12 +29,12 @@ namespace APTSPropricerApi
         /// <summary>
         /// Create static Regex object for Indices.
         /// </summary>
-        private static Regex regexIndices = new Regex("\\[\\d+\\]", RegexOptions.None, Constants.REGEX_TIMEOUT);
+        private static Regex regexIndices = new("\\[\\d+\\]", RegexOptions.None, Constants.REGEX_TIMEOUT);
 
         /// <summary>
         /// Create static Regex object for CarriageReturns.
         /// </summary>
-        private static Regex regexCarriageReturns = new Regex(@"\n+", RegexOptions.None, Constants.REGEX_TIMEOUT);
+        private static Regex regexCarriageReturns = new(@"\n+", RegexOptions.None, Constants.REGEX_TIMEOUT);
 
         /// <summary>
         /// Returns true if the value is equal after both ToLower, and Trim
@@ -375,7 +375,7 @@ namespace APTSPropricerApi
         /// <returns>Sorted list</returns>
         private static IEnumerable<T> _PropertyNameSort<T>(IEnumerable<T> inAllItems, SortOrder inSortOrder, string inSortField)
         {
-            List<T> toReturn = new List<T>();
+            List<T> toReturn = new();
 
             if (inAllItems != null)
             {
@@ -423,7 +423,7 @@ namespace APTSPropricerApi
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
         public static Collection<T> ToCollection<T>(this List<T> list)
         {
-            Collection<T> toReturn = new Collection<T>();
+            Collection<T> toReturn = new();
             if (list == null)
             {
                 throw new ArgumentNullException("list", "ToCollection conversion");
@@ -444,7 +444,7 @@ namespace APTSPropricerApi
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1002:DoNotExposeGenericLists")]
         public static Collection<T> ToCollection<T>(this IEnumerable<T> items)
         {
-            Collection<T> toReturn = new Collection<T>();
+            Collection<T> toReturn = new();
             if (items == null)
             {
                 throw new ArgumentNullException("items", "ToCollection conversion");
@@ -455,23 +455,6 @@ namespace APTSPropricerApi
                 toReturn.Add(t);
             }
             return toReturn;
-        }
-
-        /// <summary>
-        /// Makes a deep copy of a Serializable object using the <see cref="BinaryFormatter"/>
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="source">The object to deep copy</param>
-        /// <returns>The copied object</returns>
-        public static T DeepClone<T>(this T source) // where T: ISerializable
-        {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                BinaryFormatter formatter = new BinaryFormatter();
-                formatter.Serialize(stream, source);
-                stream.Position = 0;
-                return (T)formatter.Deserialize(stream);
-            }
         }
 
         /// <summary>
@@ -584,7 +567,7 @@ namespace APTSPropricerApi
         /// <returns>true if string can be date, false if not</returns>
         public static bool IsValidDate(this string date)
         {
-            DateTime dateCheck = new DateTime();
+            DateTime dateCheck = new();
             bool isValidDate = DateTime.TryParse(date, out dateCheck);
             return isValidDate;
 
@@ -660,7 +643,7 @@ namespace APTSPropricerApi
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter")]
         public static Collection<SelectListItem> GetSelectItems<T>() where T : struct, IComparable, IFormattable, IConvertible
         {
-            Collection<SelectListItem> items = new Collection<SelectListItem>();
+            Collection<SelectListItem> items = new();
             foreach (T propType in ExtensionMethods.GetEnumValues<T>())
             {
                 items.Add(new SelectListItem() { Value = propType.ToString(), Text = propType.GetDescription() });

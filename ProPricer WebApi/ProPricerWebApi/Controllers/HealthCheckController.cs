@@ -22,7 +22,10 @@ namespace APTSPropricerApi.Controllers
 	[ApiController]
 	public class HealthCheckController : ControllerBase
 	{
-		private readonly PoolManagerList poolManagerList;
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
+        private readonly PoolManagerList poolManagerList;
 
 		/// <summary>
 		/// #ctor

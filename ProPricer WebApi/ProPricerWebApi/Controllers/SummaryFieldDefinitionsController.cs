@@ -19,6 +19,9 @@ namespace APTSPropricerApi.Controllers
 {
     public class SummaryFieldDefinitionsController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -99,7 +102,7 @@ namespace APTSPropricerApi.Controllers
                 Proposal pr;
 
                 // GUID or Name|Version?
-                if (id.Contains("|"))
+                if (id.Contains('|'))
                 {
                     // Name
                     string[] parts = id.Split('|');
@@ -108,18 +111,18 @@ namespace APTSPropricerApi.Controllers
                 else
                 {
                     // GUID
-                    EntityId pEntityId = new EntityId(new Guid(id));
+                    EntityId pEntityId = new(new Guid(id));
                     pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                 }
 
-                List<SummaryFieldDefinitionsDto> sfdl = new List<SummaryFieldDefinitionsDto>();
+                List<SummaryFieldDefinitionsDto> sfdl = new();
                 if (pr != null)
                 {
                     pr.Open();
                     pr.SummaryFieldDefinitions.Open();
                     foreach (SummaryFieldDefinition sfd in pr.SummaryFieldDefinitions.Items())
                     {
-                        SummaryFieldDefinitionsDto sfddto = new SummaryFieldDefinitionsDto
+                        SummaryFieldDefinitionsDto sfddto = new()
                         {
                             Id = sfd.Id.ToString(),
                             Name = sfd.Name,
@@ -141,10 +144,10 @@ namespace APTSPropricerApi.Controllers
 
                         if (sfddto.DataType == "List")
                         {
-                            List<SummaryFieldListDto> sflist = new List<SummaryFieldListDto>();
+                            List<SummaryFieldListDto> sflist = new();
                             foreach (SummaryFieldStandardValue sf in sfd.ValueList.Items())
                             {
-                                SummaryFieldListDto sfdto = new SummaryFieldListDto
+                                SummaryFieldListDto sfdto = new()
                                 {
                                     Value = sf.Value,
                                     Description = sf.Description
@@ -186,7 +189,7 @@ namespace APTSPropricerApi.Controllers
                 Proposal ppProposal = null;
                 try
                 {
-                    EntityId pEntityId = new EntityId(new Guid(proposalAndSummaryFields.Id));
+                    EntityId pEntityId = new(new Guid(proposalAndSummaryFields.Id));
                     ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
 
                     //lock the proposal for modification.
@@ -254,7 +257,7 @@ namespace APTSPropricerApi.Controllers
                 Proposal ppProposal = null;
                 try
                 {
-                    EntityId pEntityId = new EntityId(new Guid(proposalAndSummaryFields.Id));
+                    EntityId pEntityId = new(new Guid(proposalAndSummaryFields.Id));
                     ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
 
                     //lock the proposal for modification.
@@ -320,7 +323,7 @@ namespace APTSPropricerApi.Controllers
                 Proposal ppProposal = null;
                 try
                 {
-                    EntityId pEntityId = new EntityId(new Guid(proposalAndSummaryFields.Id));
+                    EntityId pEntityId = new(new Guid(proposalAndSummaryFields.Id));
                     ppProposal = ppc.Workspace.Proposals.Find(pEntityId).Value();
 
                     //lock the proposal for modification.
@@ -382,7 +385,7 @@ namespace APTSPropricerApi.Controllers
                 Proposal pr;
 
                 // GUID or Name|Version?
-                if (id.Contains("|"))
+                if (id.Contains('|'))
                 {
                     // Name
                     string[] parts = id.Split('|');
@@ -391,7 +394,7 @@ namespace APTSPropricerApi.Controllers
                 else
                 {
                     // GUID
-                    EntityId pEntityId = new EntityId(new Guid(id));
+                    EntityId pEntityId = new(new Guid(id));
                     pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                 }
 

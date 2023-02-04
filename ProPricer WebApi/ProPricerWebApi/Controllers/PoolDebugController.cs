@@ -19,7 +19,10 @@ namespace APTSPropricerApi.Controllers
 	[Route("api/[controller]")]
 	public class PoolDebugController : ControllerBase
     {
-		private readonly PoolManagerList poolManagerList;
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
+        private readonly PoolManagerList poolManagerList;
 
 		/// <summary>
 		/// #ctor
@@ -38,14 +41,14 @@ namespace APTSPropricerApi.Controllers
         [HttpGet]
 		public IEnumerable<PoolDebugDto> Get(int instanceId)
         {
-            List<PoolDebugDto> poollist = new List<PoolDebugDto>();
+            List<PoolDebugDto> poollist = new();
             foreach (PoolManager poolManager in poolManagerList.Instances)
             {
                 int maxpool = poolManager.CurrentObjectsInPool;
 
                 for (int i = 0; i < maxpool; i++)
                 {
-                    PoolDebugDto pool = new PoolDebugDto
+                    PoolDebugDto pool = new()
                     {
                         InstanceId = poolManager.InstanceId.ToString(),
                         PoolMaxNum = maxpool.ToString(),

@@ -9,7 +9,6 @@
 
 namespace APTSPropricerApi
 {
-    using ACV.Shared;
     using System.ComponentModel;
 
     /// <summary>
@@ -23,11 +22,10 @@ namespace APTSPropricerApi
         static volatile private SystemConfiguration _UniqueInstance = null;
 
         // static lock object used to make methods thread safe
-        static private object mLock = new object();
+        static private object mLock = new();
 
-        private CompanyConfiguration _CompanyMode;
-        // private CompanyConfigurationSection _CompanyConfigurationSection;
-
+        private readonly CompanyConfiguration _CompanyMode;
+        
         #endregion Private Members
 
         #region private methods
@@ -39,10 +37,8 @@ namespace APTSPropricerApi
         {
             //get the company configuration string if it doesn't contain a valid value set to IS&GS
             // Note: This MUST NOT use the ConfigurationUtilities methods or an infinite loop condition will occur
-            string sCompany = ConfigurationServiceWeb.Configuration.GetValue<string>("CompanyConfiguration");
+            string sCompany = ConfigurationServiceProPricer.Configuration.GetValue<string>("CompanyConfiguration");
             this._CompanyMode = string.IsNullOrEmpty(sCompany) ? CompanyConfiguration.SpaceSystems : sCompany.GetEnumeratedValue<CompanyConfiguration>(CompanyConfiguration.SpaceSystems);
-
-            //this._CompanyConfigurationSection = SystemConfigurationSection.Section[this.CompanyMode];
         }
 
         #endregion private methods
@@ -57,17 +53,6 @@ namespace APTSPropricerApi
                 return this._CompanyMode;
             }
         }
-
-        ///// <summary>
-        ///// Company-specific configuration override settings
-        ///// </summary>
-        //public CompanyConfigurationSection CompanyConfigurationSettings
-        //{
-        //    get
-        //    {
-        //        return this._CompanyConfigurationSection;
-        //    }
-        //}
 
         #region public methods
 

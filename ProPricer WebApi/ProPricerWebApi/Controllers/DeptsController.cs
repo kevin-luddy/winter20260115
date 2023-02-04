@@ -18,6 +18,9 @@ namespace APTSPropricerApi.Controllers
 {
     public class DeptsController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -37,7 +40,7 @@ namespace APTSPropricerApi.Controllers
         [Route("{instanceId}")]
         public IEnumerable<DeptsDto> Get(int instanceId)
         {
-            List<DeptsDto> depts = new List<DeptsDto>();
+            List<DeptsDto> depts = new();
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
                 if (ppc.Workspace != null)
@@ -51,7 +54,7 @@ namespace APTSPropricerApi.Controllers
                         {
                             foreach (ResourceFieldStandardValue dept in rsd.ValueList.Items())
                             {
-                                DeptsDto deptdto = new DeptsDto
+                                DeptsDto deptdto = new()
                                 {
                                     Value = dept.Value.ToString(),
                                     Description = dept.Description

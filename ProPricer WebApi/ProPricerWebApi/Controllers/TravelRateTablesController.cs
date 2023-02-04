@@ -18,6 +18,9 @@ namespace APTSPropricerApi.Controllers
 {
     public class TravelRateTablesController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>

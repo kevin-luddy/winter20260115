@@ -19,9 +19,11 @@ namespace APTSPropricerApi.Controllers
     /// <summary>
     /// The Resource Rate Tables Controller.
     /// </summary>
-    /// <seealso cref="System.Web.Http.ApiController" />
     public class ResourceRateTablesController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -44,7 +46,7 @@ namespace APTSPropricerApi.Controllers
             using (IProPricerConnection ppc = (Connection.IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
                 ppc.Workspace.GlobalLibrary.ResourceRateTables.Open();
-                List<ResourceRateTableDto> resourceRateTablesResult = new List<ResourceRateTableDto>();
+                List<ResourceRateTableDto> resourceRateTablesResult = new();
                 if (ppc.Workspace != null)
                 {
                     try
@@ -53,7 +55,7 @@ namespace APTSPropricerApi.Controllers
 
                         foreach (DirectRateTable rattbl in dircol.Items())
                         {
-                            ResourceRateTableDto rttdto = new ResourceRateTableDto
+                            ResourceRateTableDto rttdto = new()
                             {
                                 Id = rattbl.Id.ToString(),
                                 Name = rattbl.Name,

@@ -20,6 +20,9 @@ namespace APTSPropricerApi.Controllers
     //[APTSPropricerApi.HandleError]
     public class ProposalandTasksController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>

@@ -33,14 +33,21 @@ namespace APTSPropricerApi.Controllers
 	[Route("api/BatchReports")]
 	public class BatchReportsController : ControllerBase
 	{
+        /// <summary>
+        /// The Pool Manager List
+        /// </summary>
 		private readonly PoolManagerList poolManagerList;
 
+        /// <summary>
+        /// The Logger
+        /// </summary>
 		private readonly ILogger<BatchReportsController> Logger;
 		
 		/// <summary>
 		/// #ctor
 		/// </summary>
 		/// <param name="logger">The logger</param>
+        /// <param name="poolManagerList">Pool manager list</param>
 		public BatchReportsController(ILogger<BatchReportsController> logger, PoolManagerList poolManagerList)
 		{
 			this.Logger = logger;
@@ -57,8 +64,10 @@ namespace APTSPropricerApi.Controllers
         [Route("{instanceId}")]
 		public ProPricerResponse<ICollection<BatchReportDto>> Get(int instanceId)
         {
-            ProPricerResponse<ICollection<BatchReportDto>> response = new ProPricerResponse<ICollection<BatchReportDto>>();
-            response.Data = new List<BatchReportDto>();
+            ProPricerResponse<ICollection<BatchReportDto>> response = new()
+            {
+                Data = new List<BatchReportDto>()
+            };
             try
             {
                 response = GetBatchReports(instanceId);
@@ -84,7 +93,7 @@ namespace APTSPropricerApi.Controllers
         [Route("Export/{instanceId}")]
         public ProPricerResponse<ICollection<Table>> ExportBatchReport(int instanceId, [FromBody] ProPricerExportContainer container)
         {
-            ProPricerResponse<ICollection<Table>> response = new ProPricerResponse<ICollection<Table>>();
+            ProPricerResponse<ICollection<Table>> response = new();
 
             if (container == null)
             {
@@ -139,14 +148,16 @@ namespace APTSPropricerApi.Controllers
         /// <returns>A pro pricer response object containing reports</returns>
         internal ProPricerResponse<ICollection<BatchReportDto>> GetBatchReports(int instanceId)
         {
-            ProPricerResponse<ICollection<BatchReportDto>> response = new ProPricerResponse<ICollection<BatchReportDto>>();
-            response.Data = new List<BatchReportDto>();
+            ProPricerResponse<ICollection<BatchReportDto>> response = new()
+            {
+                Data = new List<BatchReportDto>()
+            };
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
                 ppc.Workspace.Reports.BatchReports.Open();
                 foreach (BatchReport rep in ppc.Workspace.Reports.BatchReports.Items())
                 {
-                    BatchReportDto dto = new BatchReportDto(rep);
+                    BatchReportDto dto = new(rep);
                     response.Data.Add(dto);
                 }
 
@@ -166,8 +177,10 @@ namespace APTSPropricerApi.Controllers
         /// <returns>A ProPricerResponse object containing Tables from an exported Batch Report</returns>
         internal ProPricerResponse<ICollection<Table>> ExportBatchReport(int instanceId, ProPricerExportContainer container, out string tempFile)
         {
-            ProPricerResponse<ICollection<Table>> response = new ProPricerResponse<ICollection<Table>>();
-            response.Data = new List<Table>();
+            ProPricerResponse<ICollection<Table>> response = new()
+            {
+                Data = new List<Table>()
+            };
             tempFile = GenerateBatchReportFile(instanceId, container.proposalId, container.batchReportId, response);
             ReadBatchFile(tempFile, response);
             response.IsSuccessful = true;
@@ -181,7 +194,7 @@ namespace APTSPropricerApi.Controllers
         /// <param name="response">The response object used to add Table data and error messages</param>
         private void ReadBatchFile(string tempFile, ProPricerResponse<ICollection<Table>> response)
         {
-            TxtLoadOptions opts = new TxtLoadOptions(LoadFormat.TabDelimited)
+            TxtLoadOptions opts = new(LoadFormat.TabDelimited)
             {
                 MemorySetting = MemorySetting.MemoryPreference,
                 LoadFilter = new LoadFilter(LoadDataFilterOptions.CellData),
@@ -190,15 +203,15 @@ namespace APTSPropricerApi.Controllers
                 ConvertDateTimeData = false
             };
 
-            using (Workbook book = new Workbook(tempFile, opts))
+            using (Workbook book = new(tempFile, opts))
             {
                 foreach (Worksheet sheet in book.Worksheets)
                 {
-                    Table convertedSheet = new Table();
+                    Table convertedSheet = new();
                     response.Data.Add(convertedSheet);
                     foreach (Aspose.Cells.Row row in sheet.Cells.Rows)
                     {
-                        Common.Row convertedRow = new Common.Row();
+                        Common.Row convertedRow = new();
                         convertedSheet.Rows.Add(convertedRow);
                         // Get enumerator from an object of Row
                         System.Collections.IEnumerator rowEnumerator = row.GetEnumerator();
@@ -230,7 +243,7 @@ namespace APTSPropricerApi.Controllers
                 BatchReport batchReport = null;
                 try
                 {
-                    Guid proposalGuid = new Guid(proposalId);
+                    Guid proposalGuid = new(proposalId);
                     proposal = ppc.Workspace.Proposals.Find(proposalGuid).Value();
                     
                     if (proposal != null)
@@ -244,8 +257,8 @@ namespace APTSPropricerApi.Controllers
 
                             tempFile = Path.GetRandomFileName();
 
-                            BatchReportContextManager mgr = new BatchReportContextManager(proposal);
-                            BatchReportRuntimeContext ctx = new BatchReportRuntimeContext(batchReport, mgr);
+                            BatchReportContextManager mgr = new(proposal);
+                            BatchReportRuntimeContext ctx = new(batchReport, mgr);
                             ctx.Options.ExportType = EBS.ProPricer.Reports.Export.ExportType.Excel;
                             ctx.Options.Folder = Constants.TEMP_DIRECTORY;
                             ctx.Options.FileName = Path.GetFileNameWithoutExtension(tempFile);
@@ -253,7 +266,7 @@ namespace APTSPropricerApi.Controllers
                             ctx.Options.OutputMode = OutputMode.Combined;
                             ctx.ProcessAll = true;
 
-                            BatchReportGenerator generator = new BatchReportGenerator(ctx);
+                            BatchReportGenerator generator = new(ctx);
                             ctx.Generator = generator;
 
                             generator.Process();

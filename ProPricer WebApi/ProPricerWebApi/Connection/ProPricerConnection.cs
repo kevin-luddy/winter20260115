@@ -31,18 +31,30 @@ namespace APTSPropricerApi.Connection
         /// </summary>
         private DataServer DataServer { get; set; }
 
+        /// <summary>
+        /// The instance Id
+        /// </summary>
         private int InstanceId { get; }
 
+        /// <summary>
+        /// The pool manager list
+        /// </summary>
 		private readonly PoolManagerList poolManagerList;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ProPricerConnection" /> class.
-		/// </summary>
-		/// <param name="instanceId">The instance identifier.</param>
-		/// <param name="connectionName">Name of the connection.</param>
-		/// <param name="server">The server.</param>
-		/// <param name="port">The port.</param>
-		public ProPricerConnection(int instanceId, string connectionName, string server, int port,
+        /// <summary>
+        /// True if this connection has been disposed
+        /// </summary>
+        private bool disposedValue;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProPricerConnection" /> class.
+        /// </summary>
+        /// <param name="instanceId">The instance identifier.</param>
+        /// <param name="connectionName">Name of the connection.</param>
+        /// <param name="server">The server.</param>
+        /// <param name="port">The port.</param>
+        /// <param name="poolManagerList">The pool manager list</param>
+        public ProPricerConnection(int instanceId, string connectionName, string server, int port,
 			PoolManagerList poolManagerList)
         {
             this.InstanceId = instanceId;
@@ -50,6 +62,12 @@ namespace APTSPropricerApi.Connection
 			this.EstablishConnection(connectionName, server, port);
         }
 
+        /// <summary>
+        /// Establishes a connection to propricer
+        /// </summary>
+        /// <param name="connection">The connection string</param>
+        /// <param name="serverName">The server name</param>
+        /// <param name="port">The port number</param>
         private void EstablishConnection(string connection, string serverName, int port)
         {
             // Assigning the server name and port to the datacenter
@@ -69,6 +87,11 @@ namespace APTSPropricerApi.Connection
             this.Workspace = this.DataServer.OpenWorkspace(this.GetUserLogon, GetRegistration, this.GetActivation);
         }
 
+        /// <summary>
+        /// Gets if User can logon
+        /// </summary>
+        /// <param name="info"></param>
+        /// <returns>True if user has required ProPricer permissions to access and modify the target data</returns>
         private bool GetUserLogon(LogonInfo info)
         {
             // ProPricer user with required permissions to access and modify the target data
@@ -77,6 +100,11 @@ namespace APTSPropricerApi.Connection
             return !(string.IsNullOrEmpty(info.UserName) || string.IsNullOrEmpty(info.Password));
         }
 
+        /// <summary>
+        /// Gets if registration key works
+        /// </summary>
+        /// <param name="registrationInfo">The registration info</param>
+        /// <returns>True if propricer license key is registered</returns>
         private static bool GetRegistration(RegistrationInformation registrationInfo)
         {
             string sProPricerRegistrationKey = ConfigurationServiceWeb.Configuration.GetValue<string>("ProPricerRegistrationKey");
@@ -85,6 +113,12 @@ namespace APTSPropricerApi.Connection
             return true;
         }
 
+        /// <summary>
+        /// Tries to activate using the ProPricer key
+        /// </summary>
+        /// <param name="activation">The activation instance</param>
+        /// <param name="changeKey">The change key</param>
+        /// <returns>True if activated online</returns>
         private bool GetActivation(ProPricerActivation activation, ref bool changeKey)
         {
             if (!activation.IsActivated)
@@ -96,12 +130,41 @@ namespace APTSPropricerApi.Connection
         }
 
         /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// Dispose of managed and unmanaged objects
         /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <param name="disposing">true for disposing of managed objects</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // dispose managed state (managed objects)
+                    this.poolManagerList.GetInstance(this.InstanceId).GiveObjectBackToPool(this);
+                    if (this.Workspace is not null)
+                    {
+                        if (this.Workspace.IsOpened())
+                        {
+                            Workspace.Close();
+                        }
+                        this.Workspace = null;
+                    }
+                }
+
+                // free unmanaged resources (unmanaged objects) and override finalizer
+                // set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        /// <summary>
+        /// Dispose of this instance
+        /// </summary>
         public void Dispose()
         {
-            this.poolManagerList.GetInstance(this.InstanceId).GiveObjectBackToPool(this);
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -7,124 +7,9 @@
     and is not to be made available to third parties without the prior written permission of Lockheed Martin Corporation.
 */
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using ACV.Shared;
-
 namespace APTSPropricerApi.Connection
 {
-
-	public sealed class PoolManagerList
-	{
-		private readonly ILogger logger;
-		private readonly Dictionary<int, PoolManager> poolManagers = new Dictionary<int, PoolManager>();
-		private readonly object ObjLock = new object();
-
-		public PoolManagerList(ILogger<PoolManagerList> logger)
-		{
-			this.logger = logger;
-		}
-
-		/// <summary>
-		/// Static property to retrieve the instance of the Pool Manager
-		/// </summary>
-		public PoolManager GetInstance(int id)
-		{
-			if (poolManagers.None())
-			{
-				lock (ObjLock)
-				{
-					if (poolManagers.None())
-					{
-						ResetPoolManagers();
-					}
-				}
-			}
-
-			return poolManagers[id];
-		}
-
-		/// <summary>
-		/// Resets the pool managers.
-		/// </summary>
-		public void ResetPoolManagers()
-		{
-			lock (ObjLock)
-			{
-				if (poolManagers.Any())
-				{
-					// No need to close the current connections since the pool managers will not allow any old connections to be added to them (since they are already full)
-					poolManagers.Clear();
-				}
-
-				ProPricerInstanceElement[] proPricerInstances = ConfigurationServiceWeb.Configuration.GetSection("ProPricerInstanceConfig").Get<ProPricerInstanceElement[]>();
-
-				bool isUsingBackup = ConfigurationServiceWeb.Configuration.GetValue<bool>("UseProPricerBackup");
-                string company = SystemConfiguration.Instance().CompanyMode.GetDescription();
-				bool isProduction = ConfigurationServiceWeb.Configuration.GetValue<bool>("IsProduction");
-
-				foreach (ProPricerInstanceElement element in proPricerInstances)
-				{
-					if (isProduction == element.IsProduction && element.IsBackup == isUsingBackup && element.Company == company)
-					{
-						try
-						{
-							PoolManager poolManager = new PoolManager(element.InstanceId, element.FriendlyName, element.NumberConnections);
-							for (int i = 0; i < poolManager.poolSize; i++)
-							{
-								IProPricerConnection ppc = new ProPricerConnection(element.InstanceId, element.ConnectionName, element.Server, element.Port, this);
-								if (ppc.Workspace != null)
-								{
-									poolManager.AddObject(ppc);
-									System.Diagnostics.Debug.WriteLine("Success");
-								}
-								else
-								{
-									logger.LogError("Error creating Connection to ProPricer, the Connection worked, but the Workspace is null.");
-								}
-							}
-
-							if (poolManager.CurrentObjectsInPool > 0)
-							{
-								poolManagers.Add(element.InstanceId, poolManager);
-							}
-
-							System.Diagnostics.Debug.WriteLine(poolManager.CurrentObjectsInPool.ToString());
-						}
-						catch (Exception ex)
-						{
-							logger.LogError(ex, "Error creating Connection to ProPricer");
-						}
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Static property to retrieve the instances of the Pool Manager
-		/// </summary>
-		public ICollection<PoolManager> Instances
-		{
-			get
-			{
-				if (poolManagers.None())
-				{
-					lock (ObjLock)
-					{
-						if (poolManagers.None())
-						{
-							ResetPoolManagers();
-						}
-					}
-				}
-
-				return poolManagers.Values;
-			}
-		}
-	}
+    using System.Collections;
 
     /// <summary>
     /// A class to manage objects in a pool. 
@@ -133,12 +18,35 @@ namespace APTSPropricerApi.Connection
     /// </summary>
     public sealed class PoolManager
     {
-        private readonly Queue poolQueue = new Queue();
-        private readonly Hashtable objPool = new Hashtable();
+        /// <summary>
+        /// Queue for this Pool
+        /// </summary>
+        private readonly Queue poolQueue = new();
+
+        /// <summary>
+        /// Hashtable for the Pool objects
+        /// </summary>
+        private readonly Hashtable objPool = new();
+
+        /// <summary>
+        /// Maximum Pool size
+        /// </summary>
         internal readonly int poolSize;
+
+        /// <summary>
+        /// Count of current objects in pool
+        /// </summary>
         private int objCount;
+
+        /// <summary>
+        /// Whether the objects are in use
+        /// </summary>
         private readonly bool[] objInUse;
-		private readonly object ObjLock = new object();
+
+        /// <summary>
+        /// lock object
+        /// </summary>
+		private readonly object ObjLock = new();
 
 		/// <summary>
 		/// Gets the identifier.
@@ -149,7 +57,6 @@ namespace APTSPropricerApi.Connection
         /// Gets the name of the friendly.
         /// </summary>
         public string FriendlyName { get; }
-
 
         /// <summary>
         /// Public constructor to prevent instantiation

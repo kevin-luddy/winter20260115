@@ -17,6 +17,9 @@ namespace APTSPropricerApi.Controllers
 {
     public class UserController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -36,7 +39,7 @@ namespace APTSPropricerApi.Controllers
         [Route("{instanceId}")]
         public IEnumerable<UserDto> Get(int instanceId)
         {
-            List<UserDto> ul = new List<UserDto>();
+            List<UserDto> ul = new();
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
                 if (ppc.Workspace != null)
@@ -44,7 +47,7 @@ namespace APTSPropricerApi.Controllers
                     ppc.Workspace.Users.Open();
                     foreach (User user in ppc.Workspace.Users.Items())
                     {
-                        UserDto uldto = new UserDto
+                        UserDto uldto = new()
                         {
                             Id = user.Id.ToString(),
                             LoginType = user.LoginType.ToString(),
@@ -79,12 +82,12 @@ namespace APTSPropricerApi.Controllers
         [Route("{instanceId}/{id}")]
         public RolesDto Get(int instanceId, string id)
         {
-            RolesDto rldto = new RolesDto();
+            RolesDto rldto = new();
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
                 if (ppc.Workspace != null)
                 {
-                    EBS.ProPricer.Data.EntityId pEntityId = new EBS.ProPricer.Data.EntityId(new Guid(id));
+                    EBS.ProPricer.Data.EntityId pEntityId = new(new Guid(id));
                     User user = ppc.Workspace.Users.Find(pEntityId).Value();
                     //  var u2 = ppc.workspace.Users.FindName("Mcbride, Mike");
                     ppc.Workspace.Roles.Open();

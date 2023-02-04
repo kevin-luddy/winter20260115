@@ -16,7 +16,6 @@ namespace APTSPropricerApi
 	/// <summary>
 	/// Abstract base class for Controllers connecting to Pro Pricer
 	/// </summary>
-	/// <seealso cref="System.Web.Http.ApiController" />
 	//[APTSPropricerApi.HandleError]
 	[ApiController, Authorize(AuthenticationSchemes = NegotiateDefaults.AuthenticationScheme)]
 	[Route("api/[controller]")]

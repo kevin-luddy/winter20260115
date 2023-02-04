@@ -19,6 +19,9 @@ namespace APTSPropricerApi.Controllers
 {
     public class RolesController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -38,7 +41,7 @@ namespace APTSPropricerApi.Controllers
         [Route("{instanceId}")]
         public IEnumerable<RolesDto> Get(int instanceId)
         {
-            List<RolesDto> rl = new List<RolesDto>();
+            List<RolesDto> rl = new();
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
                 if (ppc.Workspace != null)
@@ -46,7 +49,7 @@ namespace APTSPropricerApi.Controllers
                     ppc.Workspace.Roles.Open();
                     foreach (Role role in ppc.Workspace.Roles.Items())
                     {
-                        RolesDto rldto = new RolesDto
+                        RolesDto rldto = new()
                         {
                             Id = role.Id.ToString(),
                             Name = role.Name,
@@ -76,19 +79,19 @@ namespace APTSPropricerApi.Controllers
         [Route("{instanceId}/{id}")]
         public IEnumerable<UserDto> Get(int instanceId, string id)
         {
-            List<UserDto> ul = new List<UserDto>();
+            List<UserDto> ul = new();
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
                 if (ppc.Workspace != null)
                 {
-                    EBS.ProPricer.Data.EntityId pEntityId = new EBS.ProPricer.Data.EntityId(new Guid(id));
+                    EBS.ProPricer.Data.EntityId pEntityId = new(new Guid(id));
                     Role role = ppc.Workspace.Roles.Find(pEntityId).Value();
                     ppc.Workspace.Users.Open();
                     foreach (User user in ppc.Workspace.Users.Items())
                     {
                         if (user.Role.Id == role.Id)
                         {
-                            UserDto uldto = new UserDto
+                            UserDto uldto = new()
                             {
                                 Id = user.Id.ToString(),
                                 LoginType = user.LoginType.ToString(),

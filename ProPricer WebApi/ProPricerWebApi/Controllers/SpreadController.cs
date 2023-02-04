@@ -25,6 +25,9 @@ namespace APTSPropricerApi.Controllers
     /// </summary>
     public class SpreadController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -51,17 +54,17 @@ namespace APTSPropricerApi.Controllers
         [Route("{instanceId}")]
         public IEnumerable<SpreadDto> Get(int instanceId, double amount, string curve, string startDate, string endDate)
         {
-            List<SpreadDto> spreadList = new List<SpreadDto>();
+            List<SpreadDto> spreadList = new();
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
                 try
                 {
-                    EntityId pEntityId = new EntityId(new Guid(curve));
+                    EntityId pEntityId = new(new Guid(curve));
                     Curve c = ppc.Workspace.GlobalLibrary.Curves.Find(pEntityId).Value();
 
-                    TimeFrame start = new TimeFrame(DateTime.Parse(startDate + "-01"));
-                    TimeFrame end = new TimeFrame(DateTime.Parse(endDate + "-01"));
-                    TimePeriod period = new TimePeriod(TimeUnit.Month, start, end);
+                    TimeFrame start = new(DateTime.Parse(startDate + "-01"));
+                    TimeFrame end = new(DateTime.Parse(endDate + "-01"));
+                    TimePeriod period = new(TimeUnit.Month, start, end);
 
                     IEnumerable<KeyValuePair<int, double>> rawSpreadList = SpreadUtils.GenerateSpread(amount, period, TimeUnit.Month, 2, SpreadMethod.WeightedAvg, c);
 
@@ -71,7 +74,7 @@ namespace APTSPropricerApi.Controllers
                     foreach (KeyValuePair<int, double> item in rawSpreadList)
                     {
                         Console.WriteLine(item.ToString());
-                        SpreadDto s = new SpreadDto();
+                        SpreadDto s = new();
                         DateTime thisDate = dtStart.AddMonths(item.Key);
                         s.Year = thisDate.Year;
                         s.Month = thisDate.Month;

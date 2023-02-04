@@ -25,6 +25,9 @@ namespace APTSPropricerApi.Controllers
     /// </summary>
     public class TraceReportController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -59,18 +62,18 @@ namespace APTSPropricerApi.Controllers
                 getall = true;
             }
 
-            ProposalDto pDto = new ProposalDto();
+            ProposalDto pDto = new();
             Proposal pr = null;
             string whichvar = "proposal id";
-            List<TraceReportDto> tracerep = new List<TraceReportDto>();
-            List<TraceReportDto> traceclass = new List<TraceReportDto>();
-            BurdenCostDto burdens = new BurdenCostDto();
+            List<TraceReportDto> tracerep = new();
+            List<TraceReportDto> traceclass = new();
+            BurdenCostDto burdens = new();
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
                 try
                 {
                     // GUID or Name|Version?
-                    if (id.Contains("|"))
+                    if (id.Contains('|'))
                     {
                         // Name
                         string[] parts = id.Split('|');
@@ -79,7 +82,7 @@ namespace APTSPropricerApi.Controllers
                     else
                     {
                         // GUID
-                        EBS.ProPricer.Data.EntityId pEntityId = new EBS.ProPricer.Data.EntityId(new Guid(id));
+                        EBS.ProPricer.Data.EntityId pEntityId = new(new Guid(id));
                         pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                     }
 
@@ -151,7 +154,7 @@ namespace APTSPropricerApi.Controllers
 
                                         if (!havecost)
                                         {
-                                            TraceReportDto tracecost = new TraceReportDto
+                                            TraceReportDto tracecost = new()
                                             {
                                                 ResName = r.Info.Resource.Name,
                                                 ResDescription = r.Info.Resource.Description,
@@ -195,7 +198,7 @@ namespace APTSPropricerApi.Controllers
 
                                         if (!havecost)
                                         {
-                                            TraceReportDto tracecost = new TraceReportDto
+                                            TraceReportDto tracecost = new()
                                             {
                                                 ResName = null,
                                                 ResDescription = null,
@@ -271,7 +274,7 @@ namespace APTSPropricerApi.Controllers
 
                                     if (!havecost)
                                     {
-                                        TraceReportDto tracecost = new TraceReportDto
+                                        TraceReportDto tracecost = new()
                                         {
                                             ResName = r.Info.Resource.Name,
                                             ResDescription = r.Info.Resource.Description,
@@ -317,7 +320,7 @@ namespace APTSPropricerApi.Controllers
 
                                     if (!havecost)
                                     {
-                                        TraceReportDto tracecost = new TraceReportDto
+                                        TraceReportDto tracecost = new()
                                         {
                                             ResName = null,
                                             ResDescription = null,
@@ -397,7 +400,7 @@ namespace APTSPropricerApi.Controllers
 
                                                 if (!havecost)
                                                 {
-                                                    TraceReportDto tracecost = new TraceReportDto
+                                                    TraceReportDto tracecost = new()
                                                     {
                                                         ResName = r.Info.Resource.Name,
                                                         ResDescription = r.Info.Resource.Description,
@@ -435,7 +438,7 @@ namespace APTSPropricerApi.Controllers
 
                                                     if (!havecost)
                                                     {
-                                                        TraceReportDto tracecost = new TraceReportDto
+                                                        TraceReportDto tracecost = new()
                                                         {
                                                             ResName = burdens.Name,
                                                             ResDescription = null,
@@ -463,7 +466,7 @@ namespace APTSPropricerApi.Controllers
                 {
                     this.Logger.LogError(ex, "Error with " + whichvar);
                     traceclass = new List<TraceReportDto>();
-                    TraceReportDto tracecost = new TraceReportDto
+                    TraceReportDto tracecost = new()
                     {
                         ResName = "Error",
                         ResDescription = ex.Message,

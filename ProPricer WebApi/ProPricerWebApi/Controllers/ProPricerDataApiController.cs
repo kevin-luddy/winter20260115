@@ -32,6 +32,9 @@ namespace APTSPropricerApi.Controllers
         /// </summary>
         private readonly ILogger logger;
 
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -52,7 +55,7 @@ namespace APTSPropricerApi.Controllers
         [HttpGet]
         public ProPricerResponse<ICollection<ProposalFolderInfo>> Get(int instanceId)
         {
-            ProPricerResponse<ICollection<ProposalFolderInfo>> response = new ProPricerResponse<ICollection<ProposalFolderInfo>>();
+            ProPricerResponse<ICollection<ProposalFolderInfo>> response = new();
 
             try
             {
@@ -79,7 +82,7 @@ namespace APTSPropricerApi.Controllers
         [HttpGet]
         public ProPricerResponse<ICollection<PoolInstanceDto>> Get()
         {
-            ProPricerResponse<ICollection<PoolInstanceDto>> response = new ProPricerResponse<ICollection<PoolInstanceDto>>();
+            ProPricerResponse<ICollection<PoolInstanceDto>> response = new();
 
             try
             {
@@ -105,7 +108,7 @@ namespace APTSPropricerApi.Controllers
         [HttpGet]
         public ProPricerResponse<PricingData> GetPricingData(int instanceId, string proposalId)
         {
-            ProPricerResponse<PricingData> response = new ProPricerResponse<PricingData>();
+            ProPricerResponse<PricingData> response = new();
             try
             {
                 ProposalDto pDto = Utility.GetProposal(poolManagerList, logger, instanceId, proposalId);
@@ -138,7 +141,7 @@ namespace APTSPropricerApi.Controllers
         [HttpGet]
         public ProPricerResponse<PricingTotals> GetPricingDataTotals(int instanceId, string proposalId)
         {
-            ProPricerResponse<PricingTotals> response = new ProPricerResponse<PricingTotals>();
+            ProPricerResponse<PricingTotals> response = new();
             try
             {
                 ProposalDto pDto = Utility.GetProposal(poolManagerList, logger, instanceId, proposalId);

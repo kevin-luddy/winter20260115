@@ -18,6 +18,9 @@ namespace APTSPropricerApi.Controllers
 {
     public class ResourceFieldDefinitionsController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -40,7 +43,7 @@ namespace APTSPropricerApi.Controllers
         [Route("{instanceId}")]
         public IEnumerable<ResourceFieldDefinitionsDto> Get(int instanceId)
         {
-            List<ResourceFieldDefinitionsDto> resdfl = new List<ResourceFieldDefinitionsDto>();
+            List<ResourceFieldDefinitionsDto> resdfl = new();
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
                 if (ppc.Workspace != null)
@@ -50,7 +53,7 @@ namespace APTSPropricerApi.Controllers
 
                     foreach (ResourceFieldDefinition rsd in ppc.Workspace.GlobalLibrary.ResourceFieldDefinitions.Items())
                     {
-                        ResourceFieldDefinitionsDto rsddto = new ResourceFieldDefinitionsDto
+                        ResourceFieldDefinitionsDto rsddto = new()
                         {
                             Id = rsd.Id.ToString(),
                             Name = rsd.Name,
@@ -82,7 +85,7 @@ namespace APTSPropricerApi.Controllers
             Proposal pr;
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
-                if (id.Contains("|"))
+                if (id.Contains('|'))
                 {
                     // Name
                     string[] parts = id.Split('|');
@@ -91,18 +94,18 @@ namespace APTSPropricerApi.Controllers
                 else
                 {
                     // GUID
-                    EBS.ProPricer.Data.EntityId pEntityId = new EBS.ProPricer.Data.EntityId(new Guid(id));
+                    EBS.ProPricer.Data.EntityId pEntityId = new(new Guid(id));
                     pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                 }
 
-                List<ResourceFieldDefinitionsDto> resdfl = new List<ResourceFieldDefinitionsDto>();
+                List<ResourceFieldDefinitionsDto> resdfl = new();
                 if (pr != null)
                 {
                     pr.Open();
 
                     foreach (IResourceFieldDefinition rsd in pr.ResourceFields())
                     {
-                        ResourceFieldDefinitionsDto rsddto = new ResourceFieldDefinitionsDto
+                        ResourceFieldDefinitionsDto rsddto = new()
                         {
                             Id = rsd.Id.ToString(),
                             Name = rsd.Name,

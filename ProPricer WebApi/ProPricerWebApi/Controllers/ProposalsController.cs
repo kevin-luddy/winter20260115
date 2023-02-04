@@ -28,6 +28,9 @@ namespace APTSPropricerApi.Controllers
     /// </summary>
     public class ProposalsController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -38,43 +41,33 @@ namespace APTSPropricerApi.Controllers
             this.poolManagerList = poolManagerList;
         }
 
-        ///// <summary>
-        ///// Looks up the list of current proposals in ProPricer
-        ///// </summary>
-        ///// <param name="instanceId">The instance identifier.</param>
-        ///// <returns>
-        ///// An array of basic proposal information
-        ///// </returns>
-        //public IEnumerable<ProposalDto> Get(int instanceId)
-        //{
-        //    IEnumerable<ProposalDto> proposalsResult = null;
-        //    using(IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-        //    { 
-        //        if (ppc.Workspace != null)
-        //        {
-        //            try
-        //            {
-        //                proposalsResult =
-        //                    from prop in ppc.Workspace.Proposals.Cast<Proposal>()
-        //                    select new ProposalDto
-        //                    {
-        //                        Id = prop.Id.ToString(),
-        //                        Name = prop.Name,
-        //                        Version = prop.Version,
-        //                        CreatorName = prop.Creator == null ? string.Empty : prop.Creator.Name,
-        //                        Description = prop.Description,
-        //                        ParentFolderName = prop.ParentFolder == null ? string.Empty : prop.ParentFolder.Name
-        //                    };
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                this.Logger.LogError(ex);
-        //            }
-        //        }
-        //    }
+        /// <summary>
+        /// Looks up the list of Proposals in ProPricer that the user is able to access
+        /// </summary>
+        /// <param name="instanceId">ProPricer Instance Id</param>
+        /// <returns>An array of basic proposal information</returns>
+        [HttpGet]
+        [Route("{instanceId}")]
+        public ICollection<ProposalFolderInfo> Get(int instanceId)
+        {
+            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
+            {
+                ICollection<ProposalFolderInfo> result;
 
-        //    return proposalsResult;
-        //}
+                if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.RMS)
+                {
+                    // RMS allows access to all proposals
+                    result = Utility.GetAllProposals(ppc, Logger);
+                }
+                else
+                {
+                    // SSC uses NTID to control access
+                    result = this.GetSpecificUsersProposals(ppc, Thread.CurrentPrincipal.Identity.Name);
+                }
+
+                return result;
+            }
+        }
 
         // GET api/proposals/id
         /// <summary>
@@ -113,7 +106,7 @@ namespace APTSPropricerApi.Controllers
         {
             if (newProp?.Name == null || newProp.Name.Trim() == string.Empty)
             {
-                ReturnDto retdto = new ReturnDto
+                ReturnDto retdto = new()
                 {
                     Retcode = "500",
                     Retmsg = "New Proposal name cannot be blank"
@@ -219,7 +212,7 @@ namespace APTSPropricerApi.Controllers
                     //Close the proposal
                     proposal.Close();
 
-                    ReturnDto retdto = new ReturnDto
+                    ReturnDto retdto = new()
                     {
                         Retcode = "200",
                         Retmsg = proposal.Id.ToString()
@@ -247,7 +240,7 @@ namespace APTSPropricerApi.Controllers
 
                     //  throw new HttpResponseException(message);
 
-                    ReturnDto retdto = new ReturnDto
+                    ReturnDto retdto = new()
                     {
                         Retcode = "500",
                         Retmsg = "Broken rules with " + whichvar + " - " + ex.BrokenRules[0]
@@ -273,7 +266,7 @@ namespace APTSPropricerApi.Controllers
                     //  EBS.Core.DisposeHelper.Dispose(ref ppcwork);
                     //  throw new HttpResponseException(message);
 
-                    ReturnDto retdto = new ReturnDto
+                    ReturnDto retdto = new()
                     {
                         Retcode = "500",
                         Retmsg = "Error with " + whichvar + " - " + ex.Message
@@ -302,7 +295,7 @@ namespace APTSPropricerApi.Controllers
         {
             if (changeProp == null)
             {
-                ReturnDto retdto = new ReturnDto
+                ReturnDto retdto = new()
                 {
                     Retcode = "500",
                     Retmsg = "No data was entered to change"
@@ -316,11 +309,11 @@ namespace APTSPropricerApi.Controllers
             {
                 try
                 {
-                    EntityId pEntityId = new EntityId(new Guid(changeProp.Id));
+                    EntityId pEntityId = new(new Guid(changeProp.Id));
                     pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                     if (pr.Locked)
                     {
-                        ReturnDto ret = new ReturnDto
+                        ReturnDto ret = new()
                         {
                             Retcode = "500",
                             Retmsg = "This proposal is locked in PROPRICER. It must be unlocked or renamed before send-to-pricing can be done in APTS"
@@ -470,7 +463,7 @@ namespace APTSPropricerApi.Controllers
                     pr.Close();
                     //Close the proposal
 
-                    ReturnDto retdto = new ReturnDto
+                    ReturnDto retdto = new()
                     {
                         Retcode = "200",
                         Retmsg = "Successful"
@@ -493,7 +486,7 @@ namespace APTSPropricerApi.Controllers
 
                     //   throw new HttpResponseException(message);
 
-                    ReturnDto retdto = new ReturnDto
+                    ReturnDto retdto = new()
                     {
                         Retcode = "500",
                         Retmsg = "Broken rules with " + whichvar + " - " + ex.BrokenRules[0]
@@ -516,7 +509,7 @@ namespace APTSPropricerApi.Controllers
 
                     //    throw new HttpResponseException(message);
 
-                    ReturnDto retdto = new ReturnDto
+                    ReturnDto retdto = new()
                     {
                         Retcode = "500",
                         Retmsg = "Error with " + whichvar + " - " + ex.Message
@@ -539,7 +532,7 @@ namespace APTSPropricerApi.Controllers
         {
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
-                EntityId pEntityId = new EntityId(new Guid(id));
+                EntityId pEntityId = new(new Guid(id));
                 Optional<Proposal> res = ppc.Workspace.Proposals.Find(pEntityId);
                 if (res.HasValue)
                 {
@@ -570,34 +563,6 @@ namespace APTSPropricerApi.Controllers
             return Ok();
         }
 
-        /// <summary>
-        /// Looks up the list of Proposals in ProPricer that the user is able to access
-        /// </summary>
-        /// <param name="instanceId">ProPricer Instance Id</param>
-        /// <returns>An array of basic proposal information</returns>
-        [HttpGet]
-        [Route("{instanceId}")]
-        public ICollection<ProposalFolderInfo> Get(int instanceId)
-        {
-            ICollection<ProposalFolderInfo> result = new List<ProposalFolderInfo>();
-
-            using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
-            {
-                if (SystemConfiguration.Instance().CompanyMode == CompanyConfiguration.RMS)
-                {
-                    // RMS allows access to all proposals
-                    result = Utility.GetAllProposals(ppc, Logger);
-                }
-                else
-                {
-                    // SSC uses NTID to control access
-                    result = this.GetSpecificUsersProposals(ppc, Thread.CurrentPrincipal.Identity.Name);
-                }
-
-                return result;
-            }
-        }
-
         #region Private Helpers
 
         /// <summary>
@@ -608,7 +573,7 @@ namespace APTSPropricerApi.Controllers
         /// <returns>A tree structure of all folders and proposals, to which the user has access</returns>
         private ICollection<ProposalFolderInfo> GetSpecificUsersProposals(IProPricerConnection ppc, string ntid)
         {
-            List<ProposalFolderInfo> tree = new List<ProposalFolderInfo>();
+            List<ProposalFolderInfo> tree = new();
 
             if (string.IsNullOrWhiteSpace(ntid))
             {
@@ -630,7 +595,7 @@ namespace APTSPropricerApi.Controllers
                     else
                     {
                         // we don't want to have to flatten the tree to search its contents, so we will just keep track on the fly.. ugly, I know :(
-                        List<ProposalFolderInfo> allItemsFlat = new List<ProposalFolderInfo>();
+                        List<ProposalFolderInfo> allItemsFlat = new();
 
                         user.ProposalPermissionInfo.Open();
                         // In ProPricer lingo.. AllowView means that you are allowed to edit... (facepalm)

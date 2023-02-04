@@ -9,6 +9,9 @@ using EBS.ProPricer.Model.Pricing;
 
 namespace APTSPropricerApi.Common
 {
+    /// <summary>
+    /// Utility Class for Common Methods used in multiple Controllers.
+    /// </summary>
     public static class Utility
     {
         /// <summary>
@@ -19,7 +22,7 @@ namespace APTSPropricerApi.Common
         /// <returns>List of all proposals</returns>
         public static List<ProposalFolderInfo> GetAllProposals(IProPricerConnection ppc, ILogger logger)
         {
-            List<ProposalFolderInfo> tree = new List<ProposalFolderInfo>();
+            List<ProposalFolderInfo> tree = new();
 
             try
             {
@@ -67,7 +70,7 @@ namespace APTSPropricerApi.Common
 		/// <returns>Returns a collection of the pool manager instances.</returns>
         public static ICollection<PoolInstanceDto> GetAllPoolInstances(PoolManagerList poolManagerList, ILogger logger)
         {
-            List<PoolInstanceDto> instances = new List<PoolInstanceDto>();
+            List<PoolInstanceDto> instances = new();
 
             try
             {
@@ -94,6 +97,8 @@ namespace APTSPropricerApi.Common
         /// <summary>
         /// Returns the general proposal data for a given proposal
         /// </summary>
+        /// <param name="poolManagerList">The pool manager list</param>
+        /// <param name="logger">The logger</param>
         /// <param name="instanceId">The instance identifier.</param>
         /// <param name="id">The EntityId of the proposal in the form of a GUID. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
         /// <returns>
@@ -101,13 +106,12 @@ namespace APTSPropricerApi.Common
         /// </returns>
         public static ProposalDto GetProposal(PoolManagerList poolManagerList, ILogger logger, int instanceId, string id)
         {
-            ProposalDto pDto = new ProposalDto();
-            Proposal pr = null;
-
+            ProposalDto pDto = new();
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
+                Proposal pr;
                 // GUID or Name|Version?
-                if (id.Contains("|"))
+                if (id.Contains('|'))
                 {
                     // Name
                     string[] parts = id.Split('|');
@@ -116,7 +120,7 @@ namespace APTSPropricerApi.Common
                 else
                 {
                     // GUID
-                    EntityId pEntityId = new EntityId(new Guid(id));
+                    EntityId pEntityId = new(new Guid(id));
                     pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                 }
 
@@ -129,7 +133,6 @@ namespace APTSPropricerApi.Common
                     pDto.Name = pr.Name;
                     pDto.Version = pr.Version;
                     pDto.Description = pr.Description;
-                    //System.Diagnostics.Debug.WriteLine(pr.Notes.Text);
                     pDto.Title = pr.Title;
                     pDto.Manager = pr.Manager;
                     pDto.BusinessUnit = pr.BusinessUnit;
@@ -155,7 +158,7 @@ namespace APTSPropricerApi.Common
 
                     foreach (SummaryFieldDefinition sfd in pr.SummaryFieldDefinitions.Items())
                     {
-                        SummaryFieldDefinitionsDto sfdDto = new SummaryFieldDefinitionsDto
+                        SummaryFieldDefinitionsDto sfdDto = new()
                         {
                             Name = sfd.Name,
                             DataType = sfd.DataType.ToString(),
@@ -199,6 +202,8 @@ namespace APTSPropricerApi.Common
         /// <summary>
         /// Returns the tasks for a given proposal
         /// </summary>
+        /// <param name="poolManagerList">The pool manager list</param>
+        /// <param name="logger">The logger</param>
         /// <param name="instanceId">The instance identifier.</param>
         /// <param name="id">The EntityId of the proposal in the form of a GUID. Ex: 58b0d1c8-b06d-11e3-83f5-b499bae158c0</param>
         /// <returns>
@@ -209,7 +214,7 @@ namespace APTSPropricerApi.Common
             bool getall = false;
             if (id.EndsWith("Direct"))
             {
-                id = id.Substring(0, id.Length - 6);
+                id = id[..^6];
             }
             else
             {
@@ -218,13 +223,13 @@ namespace APTSPropricerApi.Common
 
             Proposal pr = null;
             string whichvar = "proposal id";
-            List<TaskDto> tasks = new List<TaskDto>();
+            List<TaskDto> tasks = new();
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
                 try
                 {
                     // GUID or Name|Version?
-                    if (id.Contains("|"))
+                    if (id.Contains('|'))
                     {
                         // Name
                         string[] parts = id.Split('|');
@@ -233,7 +238,7 @@ namespace APTSPropricerApi.Common
                     else
                     {
                         // GUID
-                        EntityId pEntityId = new EntityId(new Guid(id));
+                        EntityId pEntityId = new(new Guid(id));
                         pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                     }
 
@@ -243,7 +248,7 @@ namespace APTSPropricerApi.Common
                     {
                         whichvar = "tasks";
                         t.Open();
-                        TaskDto tdto = new TaskDto
+                        TaskDto tdto = new()
                         {
                             Id = t.Id.ToString(),
                             Name = t.Name,
@@ -253,13 +258,9 @@ namespace APTSPropricerApi.Common
                             ActualFee = t.ActualFee.ToString(),
                             Quantity = t.Quantity
                         };
-                        //          if ((t.ActualFee != t.Fee) && (t.Fee != null))
-                        //          {
-                        //              System.Diagnostics.Debug.WriteLine("Actual fee  " + t.ActualFee.ToString() + "Fee" + t.Fee.ToString());
-                        //          }
-
+                        
                         whichvar = "resource assignment";
-                        List<ResourceAssignmentDto> resourceAssignments = new List<ResourceAssignmentDto>();
+                        List<ResourceAssignmentDto> resourceAssignments = new();
 
                         if (t.ResourceAssignments != null && t.ResourceAssignments.Count > 0)
                         {
@@ -279,10 +280,9 @@ namespace APTSPropricerApi.Common
                                     //    System.Diagnostics.Debug.WriteLine(bce.Name);
                                     //}
 
-                                    ResourceAssignmentDto rdto = new ResourceAssignmentDto();
+                                    ResourceAssignmentDto rdto = new();
 
-                                    List<SpreadDto> spread = new List<SpreadDto>();
-                                    //System.Diagnostics.Debug.WriteLine(r.Spread.Curve);
+                                    List<SpreadDto> spread = new();
                                     rdto.SpreadCurve = r.Spread.Curve != null ? r.Spread.Curve.Name : string.Empty;
                                     rdto.Amount = r.Spread.Amount.ToString();
                                     rdto.StartDate = r.Spread.StartDate != null ? r.Spread.StartDate.ToString() : string.Empty;
@@ -292,12 +292,12 @@ namespace APTSPropricerApi.Common
                                     rdto.InfoDescription = r.Info.Resource.Description;
                                     rdto.SourceType = r.Source.Type.ToString();
 
-                                    List<ResourceFieldsDto> rsfdto = new List<ResourceFieldsDto>();
+                                    List<ResourceFieldsDto> rsfdto = new();
                                     if (r.Info.ResourceFields != null)
                                     {
                                         foreach (KeyValuePair<IResourceFieldDefinition, IResourceFieldStandardValue> item in r.Info.ResourceFields)
                                         {
-                                            ResourceFieldsDto rfdto = new ResourceFieldsDto
+                                            ResourceFieldsDto rfdto = new()
                                             {
                                                 Key = item.Key != null ? item.Key.Name : string.Empty,
                                                 Value = item.Value != null ? item.Value.Value.ToString() : string.Empty
@@ -329,10 +329,10 @@ namespace APTSPropricerApi.Common
                                             rdto.Price = c.BurdenCost(price.ElementAt(0).Position).ToString();
                                         }
 
-                                        List<BurdenCostDto> burdensDto = new List<BurdenCostDto>();
+                                        List<BurdenCostDto> burdensDto = new();
                                         foreach (IBurdenCostElement el in c.BurdenElements)
                                         {
-                                            BurdenCostDto burdens = new BurdenCostDto
+                                            BurdenCostDto burdens = new()
                                             {
                                                 Name = el.Name
                                             };
@@ -368,26 +368,25 @@ namespace APTSPropricerApi.Common
 
                         whichvar = "material assignment";
                         // material assignment
-                        List<MaterialAssignmentDto> materialAssignments = new List<MaterialAssignmentDto>();
+                        List<MaterialAssignmentDto> materialAssignments = new();
                         foreach (MaterialAssignment ma in t.MaterialAssignments.Items())
                         {
                             ma.Open();
 
-                            MaterialAssignmentDto madto = new MaterialAssignmentDto();
-
-                            List<SpreadDto> spread = new List<SpreadDto>();
-                            //System.Diagnostics.Debug.WriteLine(r.Spread.Curve);
-                            madto.MaterialName = ma.MaterialName; //mat id 
-                            madto.Description = ma.Description;
-                            madto.Type = ma.Type.ToString();
-                            madto.PartName = ma.Name; //Assembly/Part
-                            madto.PartDescription = ma.MaterialDescription;
-                            madto.MakeBuy = ma.MakeBuy.ToString();
-                            madto.UnitQty = ma.UnitQty.ToString();
-                            madto.ShipQty = ma.ShipQty.ToString();
-                            madto.TotalMfgStartQty = ma.TotalMfgStartQty.ToString();
-                            madto.UnitCost = ma.UnitCost.ToString();
-                            madto.TotalCost = ma.TotalCost.ToString();
+                            MaterialAssignmentDto madto = new()
+                            {
+                                MaterialName = ma.MaterialName, //mat id 
+                                Description = ma.Description,
+                                Type = ma.Type.ToString(),
+                                PartName = ma.Name, //Assembly/Part
+                                PartDescription = ma.MaterialDescription,
+                                MakeBuy = ma.MakeBuy.ToString(),
+                                UnitQty = ma.UnitQty.ToString(),
+                                ShipQty = ma.ShipQty.ToString(),
+                                TotalMfgStartQty = ma.TotalMfgStartQty.ToString(),
+                                UnitCost = ma.UnitCost.ToString(),
+                                TotalCost = ma.TotalCost.ToString()
+                            };
                             //  madto.spreadCurve = (ma.Spread.Curve != null) ? ma.Spread.Curve.Name : string.Empty;
                             //  madto.startDate = (ma.Spread.StartDate != null) ? ma.Spread.StartDate.ToString() : string.Empty;
                             //  madto.endDate = (ma.Spread.EndDate != null) ? ma.Spread.EndDate.ToString() : string.Empty;
@@ -399,9 +398,9 @@ namespace APTSPropricerApi.Common
                                 // if (r.Source.Type.ToString() == "Direct")
                                 // {
 
-                                ResourceAssignmentDto rdto = new ResourceAssignmentDto();
+                                ResourceAssignmentDto rdto = new();
 
-                                List<SpreadDto> matspread = new List<SpreadDto>();
+                                List<SpreadDto> matspread = new();
 
                                 rdto.InfoDescription = ma.ResourceAssignmentInfo.Resource.Description;
                                 rdto.Name = ma.ResourceAssignmentInfo.Resource.Name;
@@ -411,12 +410,12 @@ namespace APTSPropricerApi.Common
                                 rdto.EndDate = ma.Spread.EndDate != null ? ma.Spread.EndDate.ToString() : string.Empty;
                                 rdto.Amount = ma.Spread.Amount != null ? ma.Spread.Amount.ToString() : "0";
 
-                                List<ResourceFieldsDto> rsfdto = new List<ResourceFieldsDto>();
+                                List<ResourceFieldsDto> rsfdto = new();
                                 if (ma.ResourceAssignmentInfo.ResourceFields != null)
                                 {
                                     foreach (KeyValuePair<IResourceFieldDefinition, IResourceFieldStandardValue> item in ma.ResourceAssignmentInfo.ResourceFields)
                                     {
-                                        ResourceFieldsDto rfdto = new ResourceFieldsDto
+                                        ResourceFieldsDto rfdto = new()
                                         {
                                             Key = item.Key != null ? item.Key.Name : string.Empty,
                                             Value = item.Value != null ? item.Value.Value.ToString() : string.Empty
@@ -431,7 +430,7 @@ namespace APTSPropricerApi.Common
                                 {
                                     foreach (KeyValuePair<TimeFrame, double> s in ma.Spread)
                                     {
-                                        SpreadDto sdto = new SpreadDto
+                                        SpreadDto sdto = new()
                                         {
                                             Year = s.Key.Year,
                                             Month = s.Key.Month,
@@ -447,13 +446,13 @@ namespace APTSPropricerApi.Common
 
                             whichvar = "material associated costs";
 
-                            List<AssociatedCostsDto> asclistdto = new List<AssociatedCostsDto>();
+                            List<AssociatedCostsDto> asclistdto = new();
                             if (ma.AssociatedCosts != null && ma.AssociatedCosts.Count > 0)
                             {
-                                List<SpreadDto> ascspread = new List<SpreadDto>();
+                                List<SpreadDto> ascspread = new();
                                 foreach (MaterialAssignmentAssociatedCost asc in ma.AssociatedCosts.Items())
                                 {
-                                    AssociatedCostsDto ascdto = new AssociatedCostsDto
+                                    AssociatedCostsDto ascdto = new()
                                     {
                                         Id = asc.Id.ToString(),
                                         Name = asc.Name,
@@ -467,7 +466,7 @@ namespace APTSPropricerApi.Common
                                         LinkSpread = asc.LinkSpread
                                     };
 
-                                    ResourcesDto ascresdto = new ResourcesDto
+                                    ResourcesDto ascresdto = new()
                                     {
                                         Name = asc.ResourceAssignmentInfo.Resource.Name,
                                         Description = asc.ResourceAssignmentInfo.Resource.Description,
@@ -476,12 +475,12 @@ namespace APTSPropricerApi.Common
                                     };
                                     ascdto.Resource = ascresdto;
 
-                                    List<ResourceFieldsDto> rsfdto = new List<ResourceFieldsDto>();
+                                    List<ResourceFieldsDto> rsfdto = new();
                                     if (asc.ResourceAssignmentInfo.ResourceFields != null)
                                     {
                                         foreach (KeyValuePair<IResourceFieldDefinition, IResourceFieldStandardValue> item in asc.ResourceAssignmentInfo.ResourceFields)
                                         {
-                                            ResourceFieldsDto rfdto = new ResourceFieldsDto
+                                            ResourceFieldsDto rfdto = new()
                                             {
                                                 Key = item.Key != null ? item.Key.Name : string.Empty,
                                                 Value = item.Value != null ? item.Value.Value.ToString() : string.Empty
@@ -496,7 +495,7 @@ namespace APTSPropricerApi.Common
                                     {
                                         foreach (KeyValuePair<TimeFrame, double> s in asc.Spread)
                                         {
-                                            SpreadDto sdto = new SpreadDto
+                                            SpreadDto sdto = new()
                                             {
                                                 Year = s.Key.Year,
                                                 Month = s.Key.Month,
@@ -519,10 +518,10 @@ namespace APTSPropricerApi.Common
                         tdto.MaterialAssignments = materialAssignments;
 
                         whichvar = "summary fields";
-                        List<SummaryFieldsDto> summaryFields = new List<SummaryFieldsDto>();
+                        List<SummaryFieldsDto> summaryFields = new();
                         foreach (KeyValuePair<SummaryFieldDefinition, SummaryFieldValue?> sf in t.SummaryFields)
                         {
-                            SummaryFieldsDto sfdto = new SummaryFieldsDto();
+                            SummaryFieldsDto sfdto = new();
                             System.Diagnostics.Debug.WriteLine("sf.Key: " + sf.Key.Name);
                             System.Diagnostics.Debug.WriteLine("sf.Value: " + sf.Value);
                             sfdto.Key = sf.Key.Name;
@@ -534,10 +533,10 @@ namespace APTSPropricerApi.Common
 
                         whichvar = "travel";
                         // travel
-                        List<TravelsDto> trvlDto = new List<TravelsDto>();
+                        List<TravelsDto> trvlDto = new();
                         foreach (TravelAssignment trv in t.Travels.Items())
                         {
-                            TravelsDto trvl = new TravelsDto
+                            TravelsDto trvl = new()
                             {
                                 Id = trv.Id.ToString(),
                                 Name = trv.Name,
@@ -552,19 +551,19 @@ namespace APTSPropricerApi.Common
                                 TotalCost = trv.TotalCost.ToString()
                             };
 
-                            ResourceAssignmentDto resassign = new ResourceAssignmentDto();
+                            ResourceAssignmentDto resassign = new();
                             if (trv.ResourceAssignmentInfo.Resource != null)
                             {
                                 resassign.Name = trv.ResourceAssignmentInfo.Resource.Name;
                                 resassign.InfoDescription = trv.ResourceAssignmentInfo.Resource.Description;
                             }
 
-                            List<ResourceFieldsDto> rsfdto = new List<ResourceFieldsDto>();
+                            List<ResourceFieldsDto> rsfdto = new();
                             if (trv.ResourceAssignmentInfo.ResourceFields != null)
                             {
                                 foreach (KeyValuePair<IResourceFieldDefinition, IResourceFieldStandardValue> item in trv.ResourceAssignmentInfo.ResourceFields)
                                 {
-                                    ResourceFieldsDto rfdto = new ResourceFieldsDto
+                                    ResourceFieldsDto rfdto = new()
                                     {
                                         Key = item.Key != null ? item.Key.Name : string.Empty,
                                         Value = item.Value != null ? item.Value.Value.ToString() : string.Empty
@@ -580,12 +579,12 @@ namespace APTSPropricerApi.Common
                             resassign.EndDate = trv.Spread.EndDate != null ? trv.Spread.EndDate.ToString() : string.Empty;
                             resassign.Amount = trv.Spread.Amount != null ? trv.Spread.Amount.ToString() : "0";
 
-                            List<SpreadDto> trvspread = new List<SpreadDto>();
+                            List<SpreadDto> trvspread = new();
                             if (trv.Spread != null)
                             {
                                 foreach (KeyValuePair<TimeFrame, double> s in trv.Spread)
                                 {
-                                    SpreadDto sdto = new SpreadDto
+                                    SpreadDto sdto = new()
                                     {
                                         Year = s.Key.Year,
                                         Month = s.Key.Month,
@@ -599,12 +598,12 @@ namespace APTSPropricerApi.Common
 
                             trvl.ResourceAssignment = resassign;
 
-                            List<TravelExpenseDto> trexdto = new List<TravelExpenseDto>();
+                            List<TravelExpenseDto> trexdto = new();
                             if (trv.Expenses != null)
                             {
                                 foreach (TravelAssignment.Expense item in trv.Expenses.Items())
                                 {
-                                    TravelExpenseDto trdto = new TravelExpenseDto
+                                    TravelExpenseDto trdto = new()
                                     {
                                         Name = item.Definition.Name,
                                         Qty = item.Quantity.ToString(),

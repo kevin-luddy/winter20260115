@@ -20,6 +20,9 @@ namespace APTSPropricerApi.Controllers
     /// </summary>
     public class FactorRateTablesController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -58,11 +61,11 @@ namespace APTSPropricerApi.Controllers
                 //ppc.workspace.GlobalLibrary.FactorRateTables.Close();
                 //return factorsResult;
 
-                List<FactorRateTableDto> factors = new List<FactorRateTableDto>();
+                List<FactorRateTableDto> factors = new();
                 ppc.Workspace.GlobalLibrary.FactorRateTables.Open();
                 foreach (FactorRateTable ppFactor in ppc.Workspace.GlobalLibrary.FactorRateTables.Items())
                 {
-                    FactorRateTableDto factorTbl = new FactorRateTableDto
+                    FactorRateTableDto factorTbl = new()
                     {
                         Id = ppFactor.Id.ToString(),
                         Name = ppFactor.Name,

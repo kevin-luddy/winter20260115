@@ -17,6 +17,9 @@ namespace APTSPropricerApi.Controllers
 {
     public class TravelDestinationsController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -39,7 +42,7 @@ namespace APTSPropricerApi.Controllers
         [Route("{instanceId}")]
         public IEnumerable<TravelDestinationsDto> Get(int instanceId)
         {
-            List<TravelDestinationsDto> trv = new List<TravelDestinationsDto>();
+            List<TravelDestinationsDto> trv = new();
             using (IProPricerConnection ppc = (IProPricerConnection)poolManagerList.GetInstance(instanceId).GetObjectsFromPool())
             {
                 if (ppc.Workspace != null)
@@ -47,7 +50,7 @@ namespace APTSPropricerApi.Controllers
                     ppc.Workspace.GlobalLibrary.Travels.Open();
                     foreach (Travel trvdes in ppc.Workspace.GlobalLibrary.Travels.Items())
                     {
-                        TravelDestinationsDto trvdto = new TravelDestinationsDto
+                        TravelDestinationsDto trvdto = new()
                         {
                             Id = trvdes.Id.ToString(),
                             Name = trvdes.Name,

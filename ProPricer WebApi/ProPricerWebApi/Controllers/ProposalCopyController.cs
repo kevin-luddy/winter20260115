@@ -21,6 +21,9 @@ namespace APTSPropricerApi.Controllers
     /// </summary>
     public class ProposalCopyController : ProPricerController
     {
+        /// <summary>
+        /// Pool Manager
+        /// </summary>
         private readonly PoolManagerList poolManagerList;
 
         /// <summary>
@@ -53,7 +56,7 @@ namespace APTSPropricerApi.Controllers
         {
             if (newProp?.Name == null || newProp.Name.Trim() == string.Empty)
             {
-                ReturnDto retdto = new ReturnDto
+                ReturnDto retdto = new()
                 {
                     Retcode = "500",
                     Retmsg = "New Proposal name cannot be blank"
@@ -73,7 +76,7 @@ namespace APTSPropricerApi.Controllers
                 {
                     Proposal pr;
 
-                    if (newProp.Id.Contains("|"))
+                    if (newProp.Id.Contains('|'))
                     {
                         // Name
                         string[] parts = newProp.Id.Split('|');
@@ -82,7 +85,7 @@ namespace APTSPropricerApi.Controllers
                     else
                     {
                         // GUID
-                        EntityId pEntityId = new EntityId(new Guid(newProp.Id));
+                        EntityId pEntityId = new(new Guid(newProp.Id));
                         pr = ppc.Workspace.Proposals.Find(pEntityId).Value();
                     }
 
@@ -100,7 +103,7 @@ namespace APTSPropricerApi.Controllers
                     whichvar = "new proposal id";
                     Proposal newpr = ppc.Workspace.Proposals.Find(newProp.Name, newProp.Version).Value();
 
-                    ReturnDto retdto = new ReturnDto
+                    ReturnDto retdto = new()
                     {
                         Retcode = "200",
                         Retmsg = newpr.Id.ToString()
@@ -112,7 +115,7 @@ namespace APTSPropricerApi.Controllers
                     this.Logger.LogError(ex, "Error with " + whichvar);
                     System.Diagnostics.Debug.WriteLine("Error with " + whichvar + " - " + ex.Message);
 
-                    ReturnDto retdto = new ReturnDto
+                    ReturnDto retdto = new()
                     {
                         Retcode = "500",
                         Retmsg = "Error with " + whichvar + " - " + ex.Message
