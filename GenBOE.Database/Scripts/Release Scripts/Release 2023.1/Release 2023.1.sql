@@ -56,7 +56,6 @@ GO
 
     ## END ##
 */
-*/
 
 /*
     ## START ##
@@ -70,9 +69,21 @@ BEGIN
     SET RepositoryName = 'User'
 END
 GO
-
 /*
     1/31/2023 [ranzalon] - ACV-209 RMS MOQ Table Source Field
+
+    ## END ##
+*/
+
+/*
+    ## START ##
+
+    2/5/2023 [Dusan] - ACV-245 - Backups failing for a few workspaces;
+*/
+ALTER TABLE [version].MoqTypeSelectionTableData ALTER COLUMN WbsElement VARCHAR(8000) NULL;
+GO
+/*
+    2/5/2023 [Dusan] - ACV-245 - Backups failing for a few workspaces;
 
     ## END ##
 */
