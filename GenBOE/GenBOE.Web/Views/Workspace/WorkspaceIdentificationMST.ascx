@@ -208,22 +208,20 @@
     });
 
 	// Dynamically set disabled/readonly dropdown for SAP connection
-	if ('<%: Model.UsingTemplateBoe %>' == "False") {
-		var dropdown = $('#EnableSAPConnection');
-		dropdown.addClass('disabled');
-		dropdown.attr('disabled', true);
+	var usingTemplateBoeInit = '<%:Model.UsingTemplateBoe%>'.isTrue();
+	var enableSAPDropdown = $('#EnableSAPConnection');
+
+	if (!usingTemplateBoeInit) {
+		enableSAPDropdown.addClass('disabled').attr('disabled', true);
 	}
+
 	$('#UsingTemplateBoe').change(function () {
-		if ($('#UsingTemplateBoe').val() == "False") {
-			var dropdown = $('#EnableSAPConnection');
-			dropdown.addClass('disabled');
-			dropdown.attr('disabled', true);
-			dropdown.val('False');
+		if ($('#UsingTemplateBoe').val() === 'False') {
+			enableSAPDropdown.addClass('disabled').attr('disabled', true);
+			enableSAPDropdown.val('False');
 		} else {
-			var dropdown = $('#EnableSAPConnection');
-			dropdown.removeClass('disabled');
-			dropdown.removeAttr('disabled');
-			dropdown.val('True');
+			enableSAPDropdown.removeClass('disabled').removeAttr('disabled');
+			enableSAPDropdown.val('True');
 		}
 	});
 </script>

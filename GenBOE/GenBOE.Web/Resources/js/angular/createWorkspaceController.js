@@ -4,7 +4,6 @@
     $scope.step = 1;                        // Current step of the wizard
     $scope.errors = [];
     $scope.identificationPageSetup = false; // Has the identification page been setup yet.  Used to make sure the setup code is only run once when Step 3 is shown to user.
-    $scope.sapEnabledAPI = 'GetEnableSAPConfig';    // API method name used to retrieve the value in Web.config
 
     // model houses the labels, dropdowns, etc for page setup
     $scope.model = {
@@ -41,18 +40,6 @@
         ptmTrackingNumberNotRequired: CreateWorkspaceModelView.PtmTrackingNumberNotRequired || CreateWorkspaceModelView.IsAdmin, // SSC only TODO - remove admin part
         nextRevision: '', // SSC only, the next revision of the PTM tracking number
         isSAPConfigurationEnabled: false    // This value will be grabbed from Web.config
-    };
-
-    $scope.getSapConfiguration = function () {
-        var sapConfigUrl = CreateSystemAdminPostURL(CreateWorkspaceModelView.Controller, $scope.sapEnabledAPI);
-        $http({
-            method: 'GET',
-            url: sapConfigUrl,
-            headers: { 'Content-Type': 'application/json' },
-            withCredentials: true
-        }).then(function (response) {
-            $scope.model.isSAPConfigurationEnabled = response.data;
-        })
     };
 
     // data houses the data being saved and sent to the back-end
@@ -716,6 +703,7 @@
                 $scope.data.SelectedContractTypes = response.data.ContractTypes;
                 $scope.data.ProposalSubmittalDate = response.data.AnticipatedDeliveryDate;
                 $scope.data.RevisedSubmittalDate = response.data.RevisedSubmittalDate;
+                $scope.model.isSAPConfigurationEnabled = response.data.IsSAPEnabledConfig;
 
                 if (!$scope.data.IsAttemptingToImport) {
                     $scope.data.UsingTemplateBoe = response.data.UsingTemplateBoe;
@@ -950,8 +938,6 @@
         } else {
             $scope.isDataLoading = false;
         }
-
-        $scope.getSapConfiguration();
     };
 
     $scope.initialize();

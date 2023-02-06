@@ -531,15 +531,6 @@ namespace GenBOE.Web.Controllers
         }
 
         /// <summary>
-        /// Returns the value of the EnableSAP value in Web.config
-        /// </summary>
-        /// <returns>The value of the EnableSAP config</returns>
-        public bool GetEnableSAPConfig()
-        {
-            return Utilities.IsSAPEnabled;
-        }
-
-        /// <summary>
         /// Converts the message validations to a string.
         /// </summary>
         /// <param name="validationList">The validation list.</param>
@@ -4796,6 +4787,7 @@ namespace GenBOE.Web.Controllers
             string anticipatedDeliveryDate = string.Empty;
             string revisedSubmittalDate = string.Empty;
             bool usingTemplateBoe = false;
+            bool isSAPEnabledConfig = false;
 
             // see if this is a valid PTM Tracking Number
             int proposalId = this.proposalLoader.GetIdByTrackingNumber(trackingNumber);
@@ -4832,6 +4824,8 @@ namespace GenBOE.Web.Controllers
 
                 // Default Template BOE switch to Yes if CCoPD is set to true
                 usingTemplateBoe = proposal.IsCCPDRequired.HasValue ? proposal.IsCCPDRequired.Value : false;
+
+                isSAPEnabledConfig = Utilities.IsSAPEnabled;
             }
             else
             {
@@ -4840,7 +4834,7 @@ namespace GenBOE.Web.Controllers
 
             return Json(new { TrackingNumberRevision = nextRevision, LOBId = lobId, RFPNumber = rfpNumber, ContractTypes = selectedContractTypes,
                 Title = title, ProposalClassId = proposalClassId, AnticipatedDeliveryDate = anticipatedDeliveryDate, RevisedSubmittalDate = revisedSubmittalDate,
-                UsingTemplateBoe = usingTemplateBoe
+                UsingTemplateBoe = usingTemplateBoe, IsSAPEnabledConfig = isSAPEnabledConfig
             });
         }
 
